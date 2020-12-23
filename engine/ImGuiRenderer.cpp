@@ -9,62 +9,67 @@
 
 #include <iostream>
 
-void RenderDebugInfo();
-
-ImGuiRenderer::ImGuiRenderer(GLFWwindow *window)
-{
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO &io = ImGui::GetIO();
-	// Setup Platform/Renderer bindings
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 330 core");
-	// Setup Dear ImGui style
-	ImGui::StyleColorsClassic();
-}
-
-ImGuiRenderer::~ImGuiRenderer()
-{
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-}
-
-void ImGuiRenderer::Render()
+namespace jle
 {
 
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
+	void RenderDebugInfo();
 
-
-	if (InputState::state.showDebugInfo)
+	ImGuiRenderer::ImGuiRenderer(GLFWwindow* window)
 	{
-		RenderDebugInfo();
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO();
+		// Setup Platform/Renderer bindings
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplOpenGL3_Init("#version 330 core");
+		// Setup Dear ImGui style
+		ImGui::StyleColorsClassic();
 	}
 
-
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-}
-
-void RenderDebugInfo()
-{
-
-	constexpr ImGuiWindowFlags window_flags =
-		ImGuiWindowFlags_NoDecoration |
-		ImGuiWindowFlags_AlwaysAutoResize |
-		ImGuiWindowFlags_NoSavedSettings |
-		ImGuiWindowFlags_NoFocusOnAppearing |
-		ImGuiWindowFlags_NoNav |
-		ImGuiWindowFlags_NoMove;
-	if (ImGui::Begin("Debug info", nullptr, window_flags))
+	ImGuiRenderer::~ImGuiRenderer()
 	{
-		ImGui::Text("FPS : %d (%f ms)", EngineStatus::GetFps(), EngineStatus::GetDeltaTime());
-		ImGui::Text("Last Pressed  : %c (%d)", InputState::debugState.lastPressedButton, InputState::debugState.lastPressedButton);
-		ImGui::Text("Last Released : %c (%d)", InputState::debugState.lastReleasedButton, InputState::debugState.lastReleasedButton);
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
 	}
-	ImGui::End();
 
+	void ImGuiRenderer::Render()
+	{
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+
+		if (InputState::state.showDebugInfo)
+		{
+			RenderDebugInfo();
+		}
+
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+	}
+
+	void RenderDebugInfo()
+	{
+
+		constexpr ImGuiWindowFlags window_flags =
+			ImGuiWindowFlags_NoDecoration |
+			ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoSavedSettings |
+			ImGuiWindowFlags_NoFocusOnAppearing |
+			ImGuiWindowFlags_NoNav |
+			ImGuiWindowFlags_NoMove;
+		if (ImGui::Begin("Debug info", nullptr, window_flags))
+		{
+			ImGui::Text("FPS : %d (%f ms)", EngineStatus::GetFps(), EngineStatus::GetDeltaTime());
+			ImGui::Text("Last Pressed  : %c (%d)", InputState::debugState.lastPressedButton, InputState::debugState.lastPressedButton);
+			ImGui::Text("Last Released : %c (%d)", InputState::debugState.lastReleasedButton, InputState::debugState.lastReleasedButton);
+		}
+		ImGui::End();
+
+	}
 }
+

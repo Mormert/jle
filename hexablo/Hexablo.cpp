@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-Texture myTexture{ "GameAssets/HexagonDiabloConcept.png" };
+jle::graphics::Texture myTexture{ "GameAssets/HexagonDiabloConcept.png" };
 float posx = 25.0f;
 float posy = 25.0f;
 
@@ -18,9 +18,9 @@ float v = 0.0f;
 
 float a = 9.82f;
 
-Sprite mySprite(myTexture ,39, 48, 11, 26);
+jle::graphics::Sprite mySprite(myTexture ,39, 48, 11, 26);
 
-Animation myAnimation;
+jle::graphics::Animation myAnimation;
 
 
 void Hexablo::Start()
@@ -41,17 +41,17 @@ void Hexablo::Update(float dt)
 
 	std::cout << v << "\n";
 
-	if (Input::GetKeyDown('A'))
+	if (jle::Input::GetKeyDown('A'))
 	{
 		posx -= dt * 45.0f;
 	}
 
-	if (Input::GetKeyDown('D'))
+	if (jle::Input::GetKeyDown('D'))
 	{
 		posx += dt * 45.0f;
 	}
 
-	if (Input::GetKeyDown('W'))
+	if (jle::Input::GetKeyDown('W'))
 	{
 		v = -25.0f;
 	}
@@ -65,7 +65,7 @@ void Hexablo::Update(float dt)
 	}
 
 
-	myAnimation.DrawAnimation(posx, posy, 0.0f, static_cast<int>(EngineStatus::GetTime()));
+	myAnimation.DrawAnimation(posx, posy, 0.0f, static_cast<int>(jle::EngineStatus::GetTime()));
 
 	//renderer2D->RenderQuadTexture(5, 5, 0.0f, *myTexture, 25, 25, 100, 100);
 

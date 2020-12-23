@@ -3,7 +3,7 @@
 int main()
 {
 
-	EngineSettings engineSettings{ "Hexablo", 800, 600 };
+	jle::EngineSettings engineSettings{ "Hexablo", 800, 600 };
 
 	Hexablo hexabloGame{ engineSettings };
 	hexabloGame.Run();

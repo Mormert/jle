@@ -2,10 +2,14 @@
 
 #include <GLFW/glfw3.h>
 
-class ImGuiRenderer
+namespace jle
 {
-public:
-	ImGuiRenderer(GLFWwindow *window);
-	~ImGuiRenderer();
-	void Render();
-};
+	class ImGuiRenderer
+	{
+	public:
+		ImGuiRenderer(GLFWwindow* window);
+		~ImGuiRenderer();
+		void Render();
+	};
+}
+

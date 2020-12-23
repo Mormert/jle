@@ -11,6 +11,6 @@ namespace gameobjects
 
 	private:
 		int worldX, worldY;
-		Sprite sprite;
+		jle::graphics::Sprite sprite;
 	};
 }

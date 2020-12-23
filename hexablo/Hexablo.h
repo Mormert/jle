@@ -3,7 +3,7 @@
 #include "Engine.h"
 #include "ObjectManager.h"
 
-class Hexablo final : public Engine
+class Hexablo final : public jle::Engine
 {
 public:
 

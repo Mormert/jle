@@ -5,18 +5,23 @@
 #include "Renderer2D.h"
 #include "Texture.h"
 
-class Sprite
+namespace jle
 {
-public:
+	namespace graphics
+	{
+		class Sprite
+		{
+		public:
 
-	Sprite(Texture& texture, int x, int y, int width, int height);
+			Sprite(Texture& texture, int x, int y, int width, int height);
 
-	void DrawSprite(int worldX, int worldY, float depth);
+			void DrawSprite(int worldX, int worldY, float depth);
 
-private:
-	Texture& texture;
+		private:
+			Texture& texture;
 
-	// Positions on the sprite sheet
-	int x, y, width, height;
-};
-
+			// Positions on the sprite sheet
+			int x, y, width, height;
+		};
+	}
+}

@@ -3,33 +3,39 @@
 #include <string>
 #include "3rdparty/stb_image.h"
 
-class Texture
+namespace jle
 {
-public:
-	Texture(std::string texturePath);
-	virtual ~Texture();
+	namespace graphics
+	{
+		class Texture
+		{
+		public:
+			Texture(std::string texturePath);
+			virtual ~Texture();
 
 
-	Texture(const Texture& t) = delete;
-	Texture& operator= (const Texture& t) = delete;
-	Texture(Texture&& t) = delete;
-	Texture& operator=(Texture&& t) = delete;
+			Texture(const Texture& t) = delete;
+			Texture& operator= (const Texture& t) = delete;
+			Texture(Texture&& t) = delete;
+			Texture& operator=(Texture&& t) = delete;
 
 
-	bool IsActive();
-	void SetToActiveTexture();
-	
-	int GetWidth();
-	int GetHeight();
+			bool IsActive();
+			void SetToActiveTexture();
 
-private:
-	
-	const std::string texturePath;
-	bool isCreated = false;
+			int GetWidth();
+			int GetHeight();
 
-	int width = 0, height = 0, nrChannels = 0;
-	unsigned int texture_id = UINT_MAX; // OpenGL Texture ID
+		private:
 
-	static unsigned int globalActiveTexture;
+			const std::string texturePath;
+			bool isCreated = false;
 
-};
+			int width = 0, height = 0, nrChannels = 0;
+			unsigned int texture_id = UINT_MAX; // OpenGL Texture ID
+
+			static unsigned int globalActiveTexture;
+
+		};
+	}
+}

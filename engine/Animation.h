@@ -4,15 +4,21 @@
 #include <vector>
 #include <string>
 
-class Animation
+namespace jle
 {
-	//Animation(std::string animationDataPath, float frameTime);
-public:
-	void DrawAnimation(int worldX, int worldY, float depth, unsigned int frame);
+	namespace graphics
+	{
+		class Animation
+		{
+			//Animation(std::string animationDataPath, float frameTime);
+		public:
+			void DrawAnimation(int worldX, int worldY, float depth, unsigned int frame);
 
-	void InsertFrame(const Sprite& frame);
+			void InsertFrame(const Sprite& frame);
 
-private:
+		private:
 
-	std::vector<Sprite> frames;
-};
+			std::vector<Sprite> frames;
+		};
+	}
+}

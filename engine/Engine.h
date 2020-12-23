@@ -6,40 +6,42 @@
 #include "ImGuiRenderer.h"
 #include "Renderer2D.h"
 
-struct EngineSettings
+namespace jle
 {
-	const char* WindowTitle = "Game";
-	int windowWidth = 500, windowHeight = 500;
+	struct EngineSettings
+	{
+		const char* WindowTitle = "Game";
+		int windowWidth = 500, windowHeight = 500;
 
-	bool startFpsMode = false;
-};
+		bool startFpsMode = false;
+	};
 
-// Abstract class a game inherits from
-class Engine
-{
-public:
-	Engine(EngineSettings engineSettings);
-	void Run();
+	// Abstract class a game inherits from
+	class Engine
+	{
+	public:
+		Engine(EngineSettings engineSettings);
+		void Run();
 
-	virtual void Start() = 0;
-	virtual void Update(float dt) = 0;
+		virtual void Start() = 0;
+		virtual void Update(float dt) = 0;
 
-	Engine(const Engine &e) = delete;
-	Engine& operator=(const Engine& e) = delete;
-	Engine(Engine&& e) = delete;
-	Engine& operator=(Engine&& e) = delete;
+		Engine(const Engine& e) = delete;
+		Engine& operator=(const Engine& e) = delete;
+		Engine(Engine&& e) = delete;
+		Engine& operator=(Engine&& e) = delete;
 
-private:
+	private:
 
-	void Loop();
-	void CollectInput();
+		void Loop();
+		void CollectInput();
 
-	bool running{ false };
+		bool running{ false };
 
-	Window window;
-	ImGuiRenderer imGuiRenderer;
+		internals::Window window;
+		ImGuiRenderer imGuiRenderer;
 
-protected:
-	Renderer2D renderer;
-};
-
+	protected:
+		Renderer2D renderer;
+	};
+}
