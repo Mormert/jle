@@ -2,7 +2,6 @@
 
 #include "EngineStatus.h"
 
-#include "KeyboardEvents.h"
 #include "InputManager.h"
 
 #include <GLFW/glfw3.h>
@@ -45,7 +44,6 @@ void Engine::Loop()
 		renderer->Render();
 		imGuiRenderer.Render();
 
-		Update();
 		game->Update(EngineStatus::deltaTime);
 
 		CollectInput();
@@ -61,9 +59,4 @@ void Engine::CollectInput()
 	InputManager::FlushKeyPresses();
 	InputManager::UpdateLastMousePosition();
 	window.PollEvents();
-}
-
-void Engine::Update()
-{
-	KeyboardEvents::ProcessKeyboardEvents();
 }

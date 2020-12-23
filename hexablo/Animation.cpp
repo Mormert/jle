@@ -2,23 +2,18 @@
 
 #include "EngineStatus.h"
 
-Animation::Animation(std::string animationDataPath, double frameTime) :
-	timePerFrame { frameTime }
+//Animation::Animation(std::string animationDataPath, float frameTime) :
+//{
+//}
+
+void Animation::InsertFrame(const Sprite &frame)
 {
-
-
-	currentFrame = 0;
+	frames.push_back(frame);
 }
 
-void Animation::DrawAnimation(int worldX, int worldY, float depth)
+void Animation::DrawAnimation(int worldX, int worldY, float depth, unsigned int frame)
 {
-	//if (EngineStatus::GetTime() > lastFrameTime + timePerFrame)
-	//{
-	//	if (currentFrame++ >= amountOfFrames-1)
-	//	{
-	//		currentFrame = 0;
-	//	}
-	//}
+	const unsigned int frameAmount = frames.size();
 
-	frames[currentFrame].DrawSprite(worldX, worldY, depth);
+	frames[frame % frameAmount].DrawSprite(worldX, worldY, depth);
 }

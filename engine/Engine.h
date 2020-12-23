@@ -31,7 +31,6 @@ private:
 	void Loop();
 
 	void CollectInput();
-	void Update();
 
 	bool running{ false };
 

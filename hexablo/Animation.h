@@ -6,18 +6,13 @@
 
 class Animation
 {
-	Animation(std::string animationDataPath, double frameTime);
+	//Animation(std::string animationDataPath, float frameTime);
+public:
+	void DrawAnimation(int worldX, int worldY, float depth, unsigned int frame);
 
-	void DrawAnimation(int worldX, int worldY, float depth);
+	void InsertFrame(const Sprite &frame);
 
 private:
 
-	const double timePerFrame;
-
-	//static double lastFrameTime;
-	unsigned int currentFrame;
-
-	unsigned int amountOfFrames;
 	std::vector<Sprite> frames;
 };
-

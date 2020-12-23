@@ -1,8 +1,9 @@
 #include "Hexablo.h"
 
 #include "InputManager.h"
-
+#include "EngineStatus.h"
 #include "Sprite.h"
+#include "Animation.h"
 #include "GameObject.h"
 
 #include <memory>
@@ -12,10 +13,22 @@
 Texture myTexture{ "GameAssets/HexagonDiabloConcept.png" };
 float posx = 25.0f;
 float posy = 25.0f;
-Sprite mySprite(myTexture ,0, 0, 25, 25);
+
+float v = 0.0f;
+
+float a = 9.82f;
+
+Sprite mySprite(myTexture ,39, 48, 11, 26);
+
+Animation myAnimation;
+
 
 void Hexablo::Start()
 {
+
+
+	myAnimation.InsertFrame(mySprite);
+
 	//myTexture = std::make_shared<Texture>(Texture{"GameAssets/HexagonDiabloConcept.png"});
 	//std::cout << "start\n";
 }
@@ -23,26 +36,35 @@ void Hexablo::Start()
 void Hexablo::Update(float dt)
 {
 
+	v += a * dt * 3;
+
+	std::cout << v << "\n";
+
 	if (InputManager::GetKeyDown('A'))
 	{
-		posx -= dt * 25.0f;
+		posx -= dt * 45.0f;
 	}
 
 	if (InputManager::GetKeyDown('D'))
 	{
-		posx += dt * 25.0f;
+		posx += dt * 45.0f;
 	}
 
 	if (InputManager::GetKeyDown('W'))
 	{
-		posy -= dt * 25.0f;
+		v = -25.0f;
 	}
 
-	if (InputManager::GetKeyDown('S'))
+
+	posy += (v * dt)/2.0f;
+
+	if (posy > 100.0f && v != 0.0f)
 	{
-		posy += dt * 25.0f;
+		v = 0.0f;
 	}
-	mySprite.DrawSprite(posx,posy,0.0f);
+
+
+	myAnimation.DrawAnimation(posx, posy, 0.0f, static_cast<int>(EngineStatus::GetTime()));
 
 	//renderer2D->RenderQuadTexture(5, 5, 0.0f, *myTexture, 25, 25, 100, 100);
 

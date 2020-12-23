@@ -29,7 +29,6 @@
     <ClCompile Include="ImGuiRenderer.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="InputState.cpp" />
-    <ClCompile Include="KeyboardEvents.cpp" />
     <ClCompile Include="Renderer2D.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -47,7 +46,6 @@
     <ClInclude Include="ImGuiRenderer.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="InputState.h" />
-    <ClInclude Include="KeyboardEvents.h" />
     <ClInclude Include="Renderer2D.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
