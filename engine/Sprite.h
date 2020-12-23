@@ -9,12 +9,12 @@ class Sprite
 {
 public:
 
-	Sprite(Texture &texture, int x, int y, int width, int height);
-	
+	Sprite(Texture& texture, int x, int y, int width, int height);
+
 	void DrawSprite(int worldX, int worldY, float depth);
 
 private:
-	Texture &texture;
+	Texture& texture;
 
 	// Positions on the sprite sheet
 	int x, y, width, height;

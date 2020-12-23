@@ -1,17 +1,17 @@
 #pragma once
 
-#include "Game.h"
+#include "Engine.h"
 #include "ObjectManager.h"
 
-#include <memory>
-
-class Hexablo : public Game
+class Hexablo final : public Engine
 {
 public:
-	
+
+	// Inherits ctors
+	using Engine::Engine; 
+
 	void Start() override;
 	void Update(float dt) override;
-
 private:
 
 	ObjectManager objectManager;

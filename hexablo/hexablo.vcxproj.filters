@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Animation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -25,9 +22,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ObjectManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
@@ -38,9 +32,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Animation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -48,9 +39,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ObjectManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Hexablo.h">

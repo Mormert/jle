@@ -22,7 +22,11 @@ int Texture::GetWidth()
 
 Texture::~Texture()
 {
-	glDeleteTextures(1, &texture_id);
+	if (texture_id != UINT_MAX)
+	{
+		glDeleteTextures(1, &texture_id);
+	}
+	
 	std::cout << "Destroyed texture " << texture_id << ".\n";
 }
 
@@ -52,7 +56,7 @@ void Texture::SetToActiveTexture()
 
 		if (textureData)
 		{
-			GLenum format;
+			GLenum format = GL_RGBA;
 			if (nrChannels == 1)
 				format = GL_RED;
 			else if (nrChannels == 3)

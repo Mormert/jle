@@ -51,9 +51,6 @@
     <ClCompile Include="3rdparty\imgui_impl_opengl3.cpp">
       <Filter>3rdparty</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="3rdparty\glad.c">
       <Filter>3rdparty\glad</Filter>
     </ClCompile>
@@ -61,6 +58,12 @@
       <Filter>3rdparty</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -95,9 +98,6 @@
     <ClInclude Include="Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="3rdparty\glad\glad.h">
       <Filter>3rdparty\glad</Filter>
     </ClInclude>
@@ -108,6 +108,12 @@
       <Filter>3rdparty</Filter>
     </ClInclude>
     <ClInclude Include="Input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

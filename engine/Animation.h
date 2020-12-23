@@ -10,7 +10,7 @@ class Animation
 public:
 	void DrawAnimation(int worldX, int worldY, float depth, unsigned int frame);
 
-	void InsertFrame(const Sprite &frame);
+	void InsertFrame(const Sprite& frame);
 
 private:
 

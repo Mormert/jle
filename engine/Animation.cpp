@@ -6,7 +6,7 @@
 //{
 //}
 
-void Animation::InsertFrame(const Sprite &frame)
+void Animation::InsertFrame(const Sprite& frame)
 {
 	frames.push_back(frame);
 }

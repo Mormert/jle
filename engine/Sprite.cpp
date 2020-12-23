@@ -2,8 +2,8 @@
 
 #include "Renderer2D.h"
 
-Sprite::Sprite(Texture &texture, int x, int y, int width, int height)
-	: x{x}, y{y}, width{width}, height{height}, texture{ texture }
+Sprite::Sprite(Texture& texture, int x, int y, int width, int height)
+	: x{ x }, y{ y }, width{ width }, height{ height }, texture{ texture }
 {
 }
 

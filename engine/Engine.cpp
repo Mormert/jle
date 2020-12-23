@@ -8,11 +8,9 @@
 
 #include <iostream>
 
-Engine::Engine(std::shared_ptr<Game> game, EngineSettings engineSettings) :
+Engine::Engine(EngineSettings engineSettings) :
 	window{ engineSettings.windowWidth, engineSettings.windowHeight, engineSettings.WindowTitle },
-	imGuiRenderer{ &window.GetNativeWindow() },
-	renderer {std::make_shared<Renderer2D>()},
-	game{ game }
+	imGuiRenderer{ &window.GetNativeWindow() }
 {
 
 	window.SetResizeWindowEvent(Input::ResizeWindowEvent);
@@ -21,17 +19,15 @@ Engine::Engine(std::shared_ptr<Game> game, EngineSettings engineSettings) :
 	window.FpsModeCursor(engineSettings.startFpsMode);
 	window.SetMainWindow();
 
-	Input::AddResizeWindowCallback(renderer.get(), &Renderer2D::SetAspectRatio);
+	Input::AddResizeWindowCallback(&renderer, &Renderer2D::SetAspectRatio);
 	Input::LinkWindow(&window);
-
-	game->renderer2D = renderer;
 
 }
 
 void Engine::Run()
 {
 	running = true;
-	game->Start();
+	Start();
 	Loop();
 }
 
@@ -41,10 +37,10 @@ void Engine::Loop()
 	{
 		EngineStatus::UpdateEngineStatus();
 
-		renderer->Render();
+		renderer.Render();
 		imGuiRenderer.Render();
 
-		game->Update(EngineStatus::deltaTime);
+		Update(EngineStatus::deltaTime);
 
 		CollectInput();
 

@@ -36,6 +36,7 @@ void Hexablo::Start()
 void Hexablo::Update(float dt)
 {
 
+
 	v += a * dt * 3;
 
 	std::cout << v << "\n";

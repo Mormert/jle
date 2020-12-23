@@ -155,21 +155,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Hexablo.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Hexagon.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
-    <ClCompile Include="Sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Animation.h" />
     <ClInclude Include="Hexablo.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Hexagon.h" />
     <ClInclude Include="ObjectManager.h" />
-    <ClInclude Include="Sprite.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\engine\engine.vcxproj">

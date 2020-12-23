@@ -5,21 +5,24 @@
 #include "Window.h"
 #include "ImGuiRenderer.h"
 #include "Renderer2D.h"
-#include "Game.h"
 
 struct EngineSettings
 {
-	const char* WindowTitle;
-	int windowWidth, windowHeight;
+	const char* WindowTitle = "Game";
+	int windowWidth = 500, windowHeight = 500;
 
 	bool startFpsMode = false;
 };
 
-class Engine final
+// Abstract class a game inherits from
+class Engine
 {
 public:
-	Engine(std::shared_ptr<Game> game, EngineSettings engineSettings);
+	Engine(EngineSettings engineSettings);
 	void Run();
+
+	virtual void Start() = 0;
+	virtual void Update(float dt) = 0;
 
 	Engine(const Engine &e) = delete;
 	Engine& operator=(const Engine& e) = delete;
@@ -29,15 +32,14 @@ public:
 private:
 
 	void Loop();
-
 	void CollectInput();
 
 	bool running{ false };
 
 	Window window;
 	ImGuiRenderer imGuiRenderer;
-	const std::shared_ptr<Renderer2D> renderer;
 
-	std::shared_ptr<Game> game;
+protected:
+	Renderer2D renderer;
 };
 
