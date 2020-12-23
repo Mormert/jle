@@ -1,6 +1,6 @@
 #include "Window.h"
 
-#include "InputManager.h"
+#include "Input.h"
 
 #include <iostream>
 
@@ -30,8 +30,8 @@ void Window::key_callback(GLFWwindow* window, int key, int scancode, int action,
 
 void Window::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	InputManager::SetScrollX(static_cast<float>(xoffset));
-	InputManager::SetScrollY(static_cast<float>(yoffset));
+	Input::SetScrollX(static_cast<float>(xoffset));
+	Input::SetScrollY(static_cast<float>(yoffset));
 }
 
 void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height)

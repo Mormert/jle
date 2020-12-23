@@ -1,6 +1,6 @@
 #include "Hexablo.h"
 
-#include "InputManager.h"
+#include "Input.h"
 #include "EngineStatus.h"
 #include "Sprite.h"
 #include "Animation.h"
@@ -40,17 +40,17 @@ void Hexablo::Update(float dt)
 
 	std::cout << v << "\n";
 
-	if (InputManager::GetKeyDown('A'))
+	if (Input::GetKeyDown('A'))
 	{
 		posx -= dt * 45.0f;
 	}
 
-	if (InputManager::GetKeyDown('D'))
+	if (Input::GetKeyDown('D'))
 	{
 		posx += dt * 45.0f;
 	}
 
-	if (InputManager::GetKeyDown('W'))
+	if (Input::GetKeyDown('W'))
 	{
 		v = -25.0f;
 	}

@@ -27,7 +27,7 @@
     <ClCompile Include="EngineStatus.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="ImGuiRenderer.cpp" />
-    <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="InputState.cpp" />
     <ClCompile Include="Renderer2D.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -44,7 +44,7 @@
     <ClInclude Include="EngineStatus.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="ImGuiRenderer.h" />
-    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="InputState.h" />
     <ClInclude Include="Renderer2D.h" />
     <ClInclude Include="Shader.h" />

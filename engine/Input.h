@@ -5,7 +5,7 @@
 #include <functional>
 #include <vector>
 
-class InputManager
+class Input
 {
 public:
 

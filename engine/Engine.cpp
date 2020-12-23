@@ -2,7 +2,7 @@
 
 #include "EngineStatus.h"
 
-#include "InputManager.h"
+#include "Input.h"
 
 #include <GLFW/glfw3.h>
 
@@ -15,14 +15,14 @@ Engine::Engine(std::shared_ptr<Game> game, EngineSettings engineSettings) :
 	game{ game }
 {
 
-	window.SetResizeWindowEvent(InputManager::ResizeWindowEvent);
-	window.SetKeyPressedEvent(InputManager::KeyPressedEvent);
-	window.SetKeyReleasedEvent(InputManager::KeyReleasedEvent);
+	window.SetResizeWindowEvent(Input::ResizeWindowEvent);
+	window.SetKeyPressedEvent(Input::KeyPressedEvent);
+	window.SetKeyReleasedEvent(Input::KeyReleasedEvent);
 	window.FpsModeCursor(engineSettings.startFpsMode);
 	window.SetMainWindow();
 
-	InputManager::AddResizeWindowCallback(renderer.get(), &Renderer2D::SetAspectRatio);
-	InputManager::LinkWindow(&window);
+	Input::AddResizeWindowCallback(renderer.get(), &Renderer2D::SetAspectRatio);
+	Input::LinkWindow(&window);
 
 	game->renderer2D = renderer;
 
@@ -56,7 +56,7 @@ void Engine::Loop()
 
 void Engine::CollectInput()
 {
-	InputManager::FlushKeyPresses();
-	InputManager::UpdateLastMousePosition();
+	Input::FlushKeyPresses();
+	Input::UpdateLastMousePosition();
 	window.PollEvents();
 }
