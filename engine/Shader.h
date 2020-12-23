@@ -10,7 +10,12 @@ class Shader
 public:
 	unsigned int ID;
 
-	Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr);
+	// Create shader from file
+	explicit Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr);
+
+	// Create shader from string containing the shader code
+	explicit Shader(std::string vertexCode, std::string fragmentCode, std::string geometryCode = "");
+
 	~Shader();
 
 	void Use();
