@@ -11,7 +11,7 @@ namespace jle
 		{
 		}
 
-		void Sprite::DrawSprite(int worldX, int worldY, float depth)
+		void Sprite::DrawSprite(int worldX, int worldY, float depth) const
 		{
 			Renderer2D::GetMainRenderer().RenderQuadTexture(worldX, worldY, depth, texture, x, y, width, height);
 		}

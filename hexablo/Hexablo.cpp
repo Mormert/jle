@@ -6,75 +6,71 @@
 #include "Animation.h"
 #include "GameObject.h"
 
+#include "HexMap.h"
+
 #include <memory>
 
 #include <iostream>
 
 jle::graphics::Texture myTexture{ "GameAssets/HexagonDiabloConcept.png" };
-float posx = 25.0f;
-float posy = 25.0f;
+jle::graphics::Texture myTexture2{ "GameAssets/FullScene.png" };
 
-float v = 0.0f;
-
-float a = 9.82f;
+float posx = 25;
+float posy = 25;
 
 jle::graphics::Sprite mySprite(myTexture ,39, 48, 11, 26);
 
+jle::graphics::Sprite mySprite2(myTexture2, 0, 0, 384, 216);
+
 jle::graphics::Animation myAnimation;
+HexMap hexMap;
 
 
 void Hexablo::Start()
 {
-
-
 	myAnimation.InsertFrame(mySprite);
 
-	//myTexture = std::make_shared<Texture>(Texture{"GameAssets/HexagonDiabloConcept.png"});
-	//std::cout << "start\n";
+	
+	hexMap.GenerateHexagons();
+
 }
 
 void Hexablo::Update(float dt)
 {
 
 
-	v += a * dt * 3;
-
-	std::cout << v << "\n";
+	renderer.camera.xPos = posx - renderer.camera.width / 2.0f;
+	renderer.camera.yPos = posy - renderer.camera.height / 2.0f;
 
 	if (jle::Input::GetKeyDown('A'))
 	{
-		posx -= dt * 45.0f;
+		posx -= 8.0f * dt;
+		renderer.camera.xPos-=2;
 	}
 
 	if (jle::Input::GetKeyDown('D'))
 	{
-		posx += dt * 45.0f;
+		posx += 8.0f * dt;
+		renderer.camera.xPos+=2;
 	}
 
 	if (jle::Input::GetKeyDown('W'))
 	{
-		v = -25.0f;
+		posy -= 8.0f * dt;
+		renderer.camera.yPos-= 2;
 	}
 
-
-	posy += (v * dt)/2.0f;
-
-	if (posy > 100.0f && v != 0.0f)
+	if (jle::Input::GetKeyDown('S'))
 	{
-		v = 0.0f;
+		posy += 8.0f * dt;
+		renderer.camera.yPos+= 2;
 	}
 
 
-	myAnimation.DrawAnimation(posx, posy, 0.0f, static_cast<int>(jle::EngineStatus::GetTime()));
+	hexMap.RenderHexagons();
 
-	//renderer2D->RenderQuadTexture(5, 5, 0.0f, *myTexture, 25, 25, 100, 100);
+	myAnimation.DrawAnimation(posx, posy, 0.1f, static_cast<int>(jle::EngineStatus::GetTime()));
 
-	//Texture myTexture{ "GameAssets/HexagonDiabloConcept.png" };
+	//mySprite2.DrawSprite(0, 0, 0.0f);
 
-	//Sprite mySprite{ myTexture, 110,187,40,40 };
-
-	//mySprite.DrawSprite(25, 25, 0.0f);
-
-
-	//objectManager.UpdateObjects();
 }

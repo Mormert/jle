@@ -18,9 +18,6 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hexagon.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ObjectManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -30,18 +27,21 @@
     <ClCompile Include="Hexablo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HexMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hexagon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ObjectManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Hexablo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HexMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

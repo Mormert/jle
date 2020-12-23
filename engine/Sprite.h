@@ -15,7 +15,7 @@ namespace jle
 
 			Sprite(Texture& texture, int x, int y, int width, int height);
 
-			void DrawSprite(int worldX, int worldY, float depth);
+			void DrawSprite(int worldX, int worldY, float depth) const;
 
 		private:
 			Texture& texture;

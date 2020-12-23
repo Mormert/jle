@@ -157,14 +157,14 @@
   <ItemGroup>
     <ClCompile Include="Hexablo.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="Hexagon.cpp" />
+    <ClCompile Include="HexMap.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Hexablo.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="Hexagon.h" />
+    <ClInclude Include="HexMap.h" />
     <ClInclude Include="ObjectManager.h" />
   </ItemGroup>
   <ItemGroup>

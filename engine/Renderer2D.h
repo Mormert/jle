@@ -24,15 +24,15 @@ namespace jle
 
 		static Renderer2D& GetMainRenderer() { return *mainRenderer; };
 
+		struct {
+			int xPos = 0, yPos = 0, width = 240, height = 135;
+		} camera;
+
 	private:
 
 		unsigned int quadVBO, quadVAO;
 
 		internals::Shader quadTextureShader;
-
-		struct {
-			int xPos = 0, yPos = 0, width = 240, height = 135;
-		} Camera;
 
 		glm::mat4 cameraMat{ 1.0f };
 		glm::mat4& GetCameraMat();

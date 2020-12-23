@@ -75,10 +75,10 @@ namespace jle
 		glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		cameraMat = glm::ortho(static_cast<float>(Camera.xPos),
-			static_cast<float>(Camera.xPos) + Camera.width,
-			static_cast<float>(Camera.yPos) + Camera.height,
-			static_cast<float>(Camera.yPos), -1.0f, 1.0f);
+		cameraMat = glm::ortho(static_cast<float>(camera.xPos),
+			static_cast<float>(camera.xPos) + camera.width,
+			static_cast<float>(camera.yPos) + camera.height,
+			static_cast<float>(camera.yPos), -1.0f, 1.0f);
 
 		mainRenderer = this;
 	}
@@ -89,8 +89,8 @@ namespace jle
 
 		float ratio = float(w) / float(h);
 
-		Camera.width = 270 * ratio;
-		Camera.height = 270;
+		camera.width = 270 * ratio;
+		camera.height = 270;
 	}
 
 
@@ -161,5 +161,7 @@ namespace jle
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, quadIndices);
 	}
+
+
 }
 
