@@ -27,10 +27,10 @@ namespace jle
 	private:
 
 		friend class Engine;
-		friend class internals::Window;
+		friend class Window;
 
 		// Link the input manager to a window
-		static void LinkWindow(internals::Window* w);
+		static void LinkWindow(Window* w);
 
 		// Called from window manager
 		static void SetScrollX(float xscrl);
@@ -54,7 +54,7 @@ namespace jle
 		static std::vector<char> keysReleased;
 		static int lastMouseX, lastMouseY;
 		static float scrollX, scrollY;
-		static internals::Window* window;
+		static Window* window;
 		static std::vector<std::function<void(int, int)>> resizeWindowCallbacks;
 	};
 

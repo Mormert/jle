@@ -21,6 +21,7 @@ namespace jle
 	{
 	public:
 		Engine(EngineSettings engineSettings);
+		virtual ~Engine(){}
 		void Run();
 
 		virtual void Start() = 0;
@@ -38,10 +39,10 @@ namespace jle
 
 		bool running{ false };
 
-		internals::Window window;
-		ImGuiRenderer imGuiRenderer;
-
 	protected:
+
+		Window window;
+		ImGuiRenderer imGuiRenderer;
 		Renderer2D renderer;
 	};
 }

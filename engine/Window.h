@@ -5,54 +5,66 @@
 
 namespace jle
 {
-	namespace internals
+	
+	class Window final
 	{
-		class Window
-		{
-		public:
-			Window(int width, int height, const char* title);
-			~Window();
+	public:
 
-			//Window(const Window &w) = delete;
-			//Window& operator=(const Window &w) = delete;
+		~Window();
 
-			void SetResizeWindowEvent(void(*_event)(int, int));
-			void SetKeyPressedEvent(void(*_event)(char));
-			void SetKeyReleasedEvent(void(*_event)(char));
+		Window(const Window &w) = delete;
+		Window& operator=(const Window &w) = delete;
+		Window(Window&& w) = delete;
+		Window& operator=(Window&& w) = delete;
 
-			void SetMainWindow();
+		GLFWwindow& GetNativeWindow();
 
-			void PollEvents();
-			void SwapBuffers();
+		int GetWindowHeight();
+		int GetWindowWidth();
 
-			void FpsModeCursor(bool enabled);
-			const bool& fpsModeEnabled;
+		static Window* GetMainWindow();
+			
+	private:
+		friend class Engine;
 
-			bool ShouldClose();
+		/// Called by Engine **********************************
 
-			GLFWwindow& GetNativeWindow();
+		Window(int width, int height, const char* title);
 
-			static Window* GetMainWindow();
+		void SetResizeWindowEvent(void(*_event)(int, int));
+		void SetKeyPressedEvent(void(*_event)(char));
+		void SetKeyReleasedEvent(void(*_event)(char));
 
-		private:
-			GLFWwindow* glfwWindow;
+		void SetMainWindow();
 
-			int window_width;
-			int window_height;
+		void PollEvents();
+		void SwapBuffers();
 
-			bool fpsModeEnabled_{ false };
+		void FpsModeCursor(bool enabled);
+		const bool& fpsModeEnabled;
 
-			static void error_callback(int error, const char* description);
-			static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-			static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-			static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+		bool ShouldClose();
 
-			static void(*resizeEvent)(int, int);
-			static void(*keyPressedEvent)(char);
-			static void(*keyReleasedEvent)(char);
+		/// End called by Engine ********************************
 
-			static Window* mainWindow;
-		};
-	}
+		GLFWwindow* glfwWindow;
+
+		int window_width;
+		int window_height;
+
+		bool fpsModeEnabled_{ false };
+
+		static void error_callback(int error, const char* description);
+		static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+		static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+		static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
+		static void(*resizeEvent)(int, int);
+		static void(*keyPressedEvent)(char);
+		static void(*keyReleasedEvent)(char);
+
+		static Window* mainWindow;
+	};
+	
 }
 

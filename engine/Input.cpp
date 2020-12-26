@@ -19,7 +19,7 @@ namespace jle
 	float Input::scrollX{ 0.0f };
 	float Input::scrollY{ 0.0f };
 
-	internals::Window* Input::window{ nullptr };
+	Window* Input::window{ nullptr };
 
 	std::vector<std::function<void(int, int)>> Input::resizeWindowCallbacks{};
 
@@ -95,7 +95,7 @@ namespace jle
 		scrollY = yscrl;
 	}
 
-	void Input::LinkWindow(internals::Window* w)
+	void Input::LinkWindow(Window* w)
 	{
 		window = w;
 	}

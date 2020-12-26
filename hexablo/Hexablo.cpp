@@ -42,6 +42,10 @@ void Hexablo::Update(float dt)
 	renderer.camera.xPos = posx - renderer.camera.width / 2.0f;
 	renderer.camera.yPos = posy - renderer.camera.height / 2.0f;
 
+	//std::cout << jle::Input::GetMouseX() - renderer.camera.xPos << std::endl;
+
+	std::cout << window.GetWindowHeight() << std::endl;;
+
 	if (jle::Input::GetKeyDown('A'))
 	{
 		posx -= 8.0f * dt;

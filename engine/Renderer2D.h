@@ -12,7 +12,7 @@ namespace jle
 	{
 	public:
 
-		Renderer2D();
+		
 		~Renderer2D();
 
 		Renderer2D(const Renderer2D& r) = delete;
@@ -39,6 +39,9 @@ namespace jle
 
 
 		/// Called by engine
+
+		Renderer2D();
+
 		void Render();
 		void SetAspectRatio(int w, int h);
 		static Renderer2D* mainRenderer;
