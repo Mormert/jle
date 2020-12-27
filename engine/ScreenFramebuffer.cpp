@@ -93,9 +93,14 @@ namespace jle
 			const int screenHeight{ Window::GetMainWindow()->GetWindowHeight() };
 			const int screenWidth{ Window::GetMainWindow()->GetWindowWidth() };
 			glViewport(0, 0, screenWidth, screenHeight);
+
+
+			quadScreenShader.Use();
+			glBindVertexArray(quadVAO);
+			glDisable(GL_DEPTH_TEST);
+			glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+
 		}
-
-		
-
 	}
 }

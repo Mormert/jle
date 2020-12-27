@@ -23,7 +23,7 @@ namespace jle
 			void RenderToScreen();
 
 		private:
-			const jle::internals::Shader quadScreenShader;
+			jle::internals::Shader quadScreenShader;
 			unsigned int quadVAO, quadVBO;
 		};
 
