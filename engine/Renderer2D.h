@@ -3,6 +3,9 @@
 #include "Texture.h"
 #include "Shader.h"
 
+#include "ScreenFramebuffer.h"
+
+
 #include <map>
 #include <glm/glm.hpp>
 
@@ -33,6 +36,8 @@ namespace jle
 		unsigned int quadVBO, quadVAO;
 
 		internals::Shader quadTextureShader;
+
+		gfx::ScreenFramebuffer screenFramebuffer;
 
 		glm::mat4 cameraMat{ 1.0f };
 		glm::mat4& GetCameraMat();

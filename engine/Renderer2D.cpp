@@ -94,9 +94,10 @@ namespace jle
 	}
 
 
-	Renderer2D::Renderer2D()
-		: quadTextureShader{ quadVertexShaderSrc, quadFragShaderSrc },
-		cameraMat{ 1.0f }
+	Renderer2D::Renderer2D() : 
+		quadTextureShader{ quadVertexShaderSrc, quadFragShaderSrc },
+		screenFramebuffer{240, 135}
+		
 	{
 		glViewport(0, 0, 800, 600);
 		glEnable(GL_DEPTH_TEST); // Used for "z-coordinate"

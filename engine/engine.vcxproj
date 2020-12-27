@@ -30,9 +30,11 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="InputState.cpp" />
     <ClCompile Include="Renderer2D.cpp" />
+    <ClCompile Include="ScreenFramebuffer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -48,9 +50,11 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="InputState.h" />
     <ClInclude Include="Renderer2D.h" />
+    <ClInclude Include="ScreenFramebuffer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
