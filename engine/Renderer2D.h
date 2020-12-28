@@ -47,7 +47,9 @@ namespace jle
 
 		Renderer2D();
 
+		void PrepareRender();
 		void Render();
+
 		void SetAspectRatio(int w, int h);
 		static Renderer2D* mainRenderer;
 

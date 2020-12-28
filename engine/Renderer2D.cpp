@@ -70,6 +70,11 @@ namespace jle
 {
 	Renderer2D* Renderer2D::mainRenderer{ nullptr };
 
+	void Renderer2D::PrepareRender()
+	{
+
+	}
+
 	void Renderer2D::Render()
 	{
 		glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
@@ -82,6 +87,8 @@ namespace jle
 
 		mainRenderer = this;
 	}
+
+	
 
 	void Renderer2D::SetAspectRatio(int w, int h)
 	{

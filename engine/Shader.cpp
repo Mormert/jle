@@ -1,5 +1,7 @@
 #include "Shader.h"
 
+#include "3rdparty/glad/glad.h"
+
 #include <string>
 #include <fstream>
 #include <sstream>

@@ -29,6 +29,7 @@
     <ClCompile Include="ImGuiRenderer.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="InputState.cpp" />
+    <ClCompile Include="PixelQuadRenderer.cpp" />
     <ClCompile Include="Renderer2D.cpp" />
     <ClCompile Include="ScreenFramebuffer.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -49,6 +50,7 @@
     <ClInclude Include="ImGuiRenderer.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="InputState.h" />
+    <ClInclude Include="PixelQuadRenderer.h" />
     <ClInclude Include="Renderer2D.h" />
     <ClInclude Include="ScreenFramebuffer.h" />
     <ClInclude Include="Shader.h" />
