@@ -3,9 +3,12 @@
 #include "Texture.h"
 #include "Shader.h"
 
+
+#include "PixelQuadRenderer.h"
 #include "ScreenFramebuffer.h"
 
 
+#include <memory>
 #include <map>
 #include <glm/glm.hpp>
 
@@ -14,9 +17,6 @@ namespace jle
 	class Renderer2D final
 	{
 	public:
-
-		
-		~Renderer2D();
 
 		Renderer2D(const Renderer2D& r) = delete;
 		Renderer2D& operator= (const Renderer2D& r) = delete;
@@ -27,30 +27,30 @@ namespace jle
 
 		static Renderer2D& GetMainRenderer() { return *mainRenderer; };
 
+		int GetMouseWorldX();
+		int GetMouseWorldY();
+
 		struct {
 			int xPos = 0, yPos = 0, width = 240, height = 135;
 		} camera;
 
+		PixelQuadRenderer pixelQuadRenderer;
+
 	private:
-
-		unsigned int quadVBO, quadVAO;
-
-		internals::Shader quadTextureShader;
-
-		gfx::ScreenFramebuffer screenFramebuffer;
+		std::unique_ptr<gfx::ScreenFramebuffer> screenFramebuffer;
 
 		glm::mat4 cameraMat{ 1.0f };
 		glm::mat4& GetCameraMat();
 
 
-		/// Called by engine
-
+		// Called by engine
 		Renderer2D();
 
-		void PrepareRender();
 		void Render();
 
 		void SetAspectRatio(int w, int h);
+		int screenWidth, screenHeight;
+
 		static Renderer2D* mainRenderer;
 
 		friend class Engine;

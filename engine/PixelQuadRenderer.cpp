@@ -86,7 +86,12 @@ namespace jle
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
-	
+	}
+
+	PixelQuadRenderer::~PixelQuadRenderer()
+	{
+		glDeleteBuffers(1, &quadVBO);
+		glDeleteVertexArrays(1, &quadVAO);
 	}
 
 	void PixelQuadRenderer::SendTexturedPixelQuadDynamic(int worldX, int worldY, float depth, graphics::Texture& texture, int x, int y, int width, int height)

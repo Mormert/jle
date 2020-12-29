@@ -12,7 +12,13 @@ namespace jle
 	class PixelQuadRenderer
 	{
 	public:
-		// Sends a textured pixel quads to-be-rendered on Render() call
+
+		PixelQuadRenderer(const PixelQuadRenderer& p) = delete;
+		PixelQuadRenderer& operator= (const PixelQuadRenderer& p) = delete;
+		PixelQuadRenderer(PixelQuadRenderer&& p) = delete;
+		PixelQuadRenderer& operator=(PixelQuadRenderer&& p) = delete;
+
+		// Sends a textured pixel quad to-be-rendered on Render() called from Renderer2D
 		void SendTexturedPixelQuadDynamic(int worldX, int worldY, float depth, graphics::Texture& texture, int x, int y, int width, int height);
 
 	private:
@@ -20,6 +26,7 @@ namespace jle
 		friend class Renderer2D;
 
 		PixelQuadRenderer();
+		virtual ~PixelQuadRenderer();
 
 		const static unsigned char quadIndices[];
 		const static std::string quadVertexShaderSrc;

@@ -205,7 +205,7 @@ namespace jle
 		}
 
 
-		void Shader::CheckCompileErrors(GLuint shader, std::string type)
+		void Shader::CheckCompileErrors(unsigned int shader, std::string type)
 		{
 			GLint success;
 			GLchar infoLog[1024];

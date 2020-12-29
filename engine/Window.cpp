@@ -1,5 +1,6 @@
 #include "Window.h"
 
+
 #include "Input.h"
 
 #include <iostream>
@@ -85,6 +86,7 @@ namespace jle
 		glfwSetScrollCallback(glfwWindow, scroll_callback);
 		glfwSetFramebufferSizeCallback(glfwWindow, framebuffer_size_callback);
 
+		glfwSetWindowSizeLimits(glfwWindow, 240, 135, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 		glfwMakeContextCurrent(glfwWindow);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))

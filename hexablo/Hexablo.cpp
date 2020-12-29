@@ -44,7 +44,15 @@ void Hexablo::Update(float dt)
 
 	//std::cout << jle::Input::GetMouseX() - renderer.camera.xPos << std::endl;
 
-	std::cout << window.GetWindowHeight() << std::endl;;
+	//std::cout << window.GetWindowHeight() << std::endl;;
+	int a = renderer.GetMouseWorldY();
+
+	std::cout << "camera x " << renderer.camera.xPos << std::endl;
+
+	if (jle::Input::GetKeyDown('Z'))
+	{
+		dt *= 5;
+	}
 
 	if (jle::Input::GetKeyDown('A'))
 	{

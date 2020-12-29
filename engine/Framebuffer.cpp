@@ -19,8 +19,8 @@ namespace jle
 			glGenTextures(1, &texColorBuffer);
 			glBindTexture(GL_TEXTURE_2D, texColorBuffer);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glBindTexture(GL_TEXTURE_2D, 0);
 
 			// attach it to currently bound framebuffer object
@@ -51,6 +51,8 @@ namespace jle
 			glDeleteFramebuffers(1, &framebuffer);
 			glDeleteRenderbuffers(1, &rbo);
 			glDeleteTextures(1, &texColorBuffer);
+
+			std::cout << "Deleted Framebuffer with id " << framebuffer << "!\n";
 		}
 
 		void Framebuffer::Use()
