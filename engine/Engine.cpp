@@ -10,18 +10,21 @@
 
 namespace jle
 {
-	Engine::Engine(EngineSettings engineSettings) :
-		window{ engineSettings.windowWidth, engineSettings.windowHeight, engineSettings.WindowTitle },
-		imGuiRenderer{ &window.GetNativeWindow() }
+	Engine::Engine(EngineSettings es) :
+		window{ es.windowWidth, es.windowHeight, es.WindowTitle },
+		viewport{ es.viewportWidth, es.viewportHeight, es.windowWidth, es.windowHeight },
+		renderer{viewport},
+		imGuiRenderer{&window.GetNativeWindow()}
 	{
 
 		window.SetResizeWindowEvent(Input::ResizeWindowEvent);
 		window.SetKeyPressedEvent(Input::KeyPressedEvent);
 		window.SetKeyReleasedEvent(Input::KeyReleasedEvent);
-		window.FpsModeCursor(engineSettings.startFpsMode);
+		window.FpsModeCursor(es.startFpsMode);
 		window.SetMainWindow();
 
 		Input::AddResizeWindowCallback(&renderer, &Renderer2D::SetAspectRatio);
+		Input::AddResizeWindowCallback(&viewport, &Viewport::SetWindowDimensions);
 		Input::LinkWindow(&window);
 
 	}
@@ -42,7 +45,7 @@ namespace jle
 			renderer.Render();
 			imGuiRenderer.Render();
 
-			Update(EngineStatus::deltaTime);
+			Update(static_cast<float>(EngineStatus::deltaTime));
 
 			CollectInput();
 

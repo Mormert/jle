@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "Window.h"
+#include "Viewport.h"
 #include "ImGuiRenderer.h"
 #include "Renderer2D.h"
 
@@ -12,6 +13,7 @@ namespace jle
 	{
 		const char* WindowTitle = "Game";
 		int windowWidth = 500, windowHeight = 500;
+		unsigned int viewportWidth = 500, viewportHeight = 500;
 
 		bool startFpsMode = false;
 	};
@@ -20,7 +22,7 @@ namespace jle
 	class Engine
 	{
 	public:
-		Engine(EngineSettings engineSettings);
+		Engine(EngineSettings es);
 		virtual ~Engine(){}
 		void Run();
 
@@ -42,6 +44,7 @@ namespace jle
 	protected:
 
 		Window window;
+		Viewport viewport;
 		ImGuiRenderer imGuiRenderer;
 		Renderer2D renderer;
 	};

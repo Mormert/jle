@@ -44,7 +44,7 @@ namespace jle
 
 		static void ResizeWindowEvent(int x, int y);
 
-		template<class T> static void AddResizeWindowCallback(T* const object, void(T::* const mf)(int, int))
+		template<class T> static void AddResizeWindowCallback(T* const object, void(T::* const mf)(unsigned int,unsigned int))
 		{
 			using namespace std::placeholders;
 			resizeWindowCallbacks.emplace_back(std::bind(mf, object, _1, _2));

@@ -42,24 +42,21 @@ namespace jle
 
 	
 
-	void Renderer2D::SetAspectRatio(int w, int h)
+	void Renderer2D::SetAspectRatio(unsigned int w, unsigned int h)
 	{
-		screenWidth = w;
-		screenHeight = h;
-
 		glViewport(0, 0, w, h);
 
 		float ratio = float(w) / float(h);
 
-		camera.width = 135 * ratio;
+		camera.width = static_cast<int>(135.0f * ratio);
 		camera.height = 135;
 
 		screenFramebuffer = std::make_unique<gfx::ScreenFramebuffer>(camera.width, camera.height);
 	}
 
-	int Renderer2D::GetMouseWorldX()
+	int Renderer2D::GetMouseWorldX() const noexcept
 	{
-		float widthRatio = static_cast<float>(screenWidth) / static_cast<float>(camera.width);
+		float widthRatio = static_cast<float>(viewport.GetViewportHeight()) / static_cast<float>(camera.width);
 
 		int mouseXScreenSpace = Input::GetMouseX();
 		int mouseXWorldSpace = static_cast<int>(static_cast<float>(mouseXScreenSpace) / widthRatio);
@@ -67,9 +64,9 @@ namespace jle
 		return camera.xPos + mouseXWorldSpace;
 	}
 
-	int Renderer2D::GetMouseWorldY()
+	int Renderer2D::GetMouseWorldY() const noexcept
 	{
-		float widthRatio = static_cast<float>(screenHeight) / static_cast<float>(camera.height);
+		float widthRatio = static_cast<float>(viewport.GetViewportWidth()) / static_cast<float>(camera.height);
 
 		int mouseYScreenSpace = Input::GetMouseY();
 		int mouseYWorldSpace = static_cast<int>(static_cast<float>(mouseYScreenSpace) / widthRatio);
@@ -78,12 +75,10 @@ namespace jle
 	}
 
 
-	Renderer2D::Renderer2D() : 
-		screenFramebuffer{ std::make_unique<gfx::ScreenFramebuffer>(240, 135) },
-		screenWidth{800}, screenHeight{600}
+	Renderer2D::Renderer2D(Viewport& vp) : 
+		viewport {vp},
+		screenFramebuffer{ std::make_unique<gfx::ScreenFramebuffer>(vp.GetViewportWidth(), vp.GetViewportWidth()) }
 	{
-		glViewport(0, 0, 800, 600);
-		glEnable(GL_DEPTH_TEST); // Note : Used for 2D depth
 	}
 
 
@@ -94,4 +89,3 @@ namespace jle
 
 
 }
-

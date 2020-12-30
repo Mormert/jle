@@ -4,6 +4,7 @@
 #include "Shader.h"
 
 
+#include "Viewport.h"
 #include "PixelQuadRenderer.h"
 #include "ScreenFramebuffer.h"
 
@@ -27,8 +28,8 @@ namespace jle
 
 		static Renderer2D& GetMainRenderer() { return *mainRenderer; };
 
-		int GetMouseWorldX();
-		int GetMouseWorldY();
+		int GetMouseWorldX() const noexcept;
+		int GetMouseWorldY() const noexcept;
 
 		struct {
 			int xPos = 0, yPos = 0, width = 240, height = 135;
@@ -44,12 +45,13 @@ namespace jle
 
 
 		// Called by engine
-		Renderer2D();
+		Renderer2D(Viewport& vp);
+
+		Viewport& viewport;
 
 		void Render();
 
-		void SetAspectRatio(int w, int h);
-		int screenWidth, screenHeight;
+		void SetAspectRatio(unsigned int w, unsigned int h);
 
 		static Renderer2D* mainRenderer;
 

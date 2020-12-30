@@ -1,6 +1,5 @@
 #include "Window.h"
 
-
 #include "Input.h"
 
 #include <iostream>
@@ -100,6 +99,7 @@ namespace jle
 		int w, h;
 		glfwGetFramebufferSize(glfwWindow, &w, &h);
 		glViewport(0, 0, width, height);
+
 	}
 
 	Window::~Window()

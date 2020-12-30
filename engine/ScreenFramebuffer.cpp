@@ -52,8 +52,8 @@ namespace jle
 		 1.0f,  1.0f,  1.0f, 1.0f
 		};
 		
-		ScreenFramebuffer::ScreenFramebuffer(int width, int height) : Framebuffer(width, height),
-			quadScreenShader(quadScreenShaderVertexSource, quadScreenShaderFragSource)
+		ScreenFramebuffer::ScreenFramebuffer(unsigned int width, unsigned int height) : Framebuffer{ width, height },
+			quadScreenShader{ quadScreenShaderVertexSource, quadScreenShaderFragSource }
 		{
 			// Configure screen quad
 			glGenVertexArrays(1, &quadVAO);

@@ -12,7 +12,7 @@ namespace jle
 		public:
 			using Framebuffer::Framebuffer;
 
-			ScreenFramebuffer(int width, int height);
+			ScreenFramebuffer(unsigned int width, unsigned int height);
 
 			virtual ~ScreenFramebuffer() override;
 

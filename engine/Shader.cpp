@@ -7,6 +7,8 @@
 #include <sstream>
 #include <iostream>
 
+// Inspired & based on examples found on learnopengl.com
+
 namespace jle
 {
 	namespace internals
@@ -110,7 +112,7 @@ namespace jle
 			glCompileShader(fragment);
 			CheckCompileErrors(fragment, "FRAGMENT");
 			// if geometry shader is given, compile geometry shader
-			unsigned int geometry;
+			unsigned int geometry{ 0 };
 			if (geometryCode != "")
 			{
 				const char* gShaderCode = geometryCode.c_str();
