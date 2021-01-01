@@ -81,6 +81,9 @@
     <ClCompile Include="Camera2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GLStateMachine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\imgui_impl_glfw.h">
@@ -144,6 +147,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Camera2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GLStateMachine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

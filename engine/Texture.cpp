@@ -2,13 +2,14 @@
 
 #include "3rdparty/glad/glad.h"
 
+#include "GLStateMachine.h"
+
 #include <iostream>
 
 namespace jle
 {
 	namespace graphics
 	{
-		unsigned int Texture::globalActiveTexture{ 0 };
 
 		Texture::Texture(std::string texturePath)
 			: texturePath{ texturePath } {}
@@ -36,7 +37,8 @@ namespace jle
 
 		bool Texture::IsActive()
 		{
-			return globalActiveTexture == texture_id;
+			//std::cout << globalActiveTexture << " " << texture_id << "\n";
+			return gfx::glStateMachine.globalActiveTexture == texture_id;
 		}
 
 		void Texture::SetToActiveTexture()
@@ -94,7 +96,7 @@ namespace jle
 
 			glBindTexture(GL_TEXTURE_2D, texture_id);
 			glActiveTexture(GL_TEXTURE0);
-			globalActiveTexture = texture_id;
+			gfx::glStateMachine.globalActiveTexture = texture_id;
 		}
 	}
 }

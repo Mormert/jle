@@ -34,8 +34,6 @@ namespace jle
 			int width = 0, height = 0, nrChannels = 0;
 			unsigned int texture_id = UINT_MAX; // OpenGL Texture ID
 
-			static unsigned int globalActiveTexture;
-
 		};
 	}
 }

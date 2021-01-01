@@ -4,6 +4,8 @@
 
 #include "Window.h"
 
+#include "GLStateMachine.h"
+
 // Based on and inspired by examples found on learnopengl.com
 
 #include <iostream>
@@ -101,6 +103,7 @@ namespace jle
 			glBindVertexArray(quadVAO);
 			glDisable(GL_DEPTH_TEST);
 			glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+			glStateMachine.globalActiveTexture = texColorBuffer;
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		}
