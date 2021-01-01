@@ -39,44 +39,51 @@ void Hexablo::Update(float dt)
 {
 
 
-	renderer.camera.xPos = posx - renderer.camera.width / 2.0f;
-	renderer.camera.yPos = posy - renderer.camera.height / 2.0f;
+	camera.SetWorldPosition(posx - camera.GetViewportWidth() / 2.0f, posy - camera.GetViewportHeight() / 2.0f);
+
+	//renderer.camera.xPos = posx - renderer.camera.width / 2.0f;
+	//renderer.camera.yPos = posy - renderer.camera.height / 2.0f;
 
 	//std::cout << jle::Input::GetMouseX() - renderer.camera.xPos << std::endl;
 
 	//std::cout << window.GetWindowHeight() << std::endl;;
-	int a = renderer.GetMouseWorldY();
+	std::cout << "X: " << jle::Input::GetMouseWorldX() << " Y:" << jle::Input::GetMouseWorldY() << "\n";
 
-	std::cout << "camera x " << renderer.camera.xPos << std::endl;
+	//std::cout << "camera x " << camera.GetWorldPositionX() << std::endl;
 
 	if (jle::Input::GetKeyDown('Z'))
 	{
 		dt *= 5;
 	}
 
+	int camposX = camera.GetWorldPositionX();
+	int camposY = camera.GetWorldPositionY();
+
 	if (jle::Input::GetKeyDown('A'))
 	{
 		posx -= 8.0f * dt;
-		renderer.camera.xPos-=2;
+		camposX -= 2;
 	}
 
 	if (jle::Input::GetKeyDown('D'))
 	{
 		posx += 8.0f * dt;
-		renderer.camera.xPos+=2;
+		camposX +=2;
 	}
 
 	if (jle::Input::GetKeyDown('W'))
 	{
 		posy -= 8.0f * dt;
-		renderer.camera.yPos-= 2;
+		camposY -= 2;
 	}
 
 	if (jle::Input::GetKeyDown('S'))
 	{
 		posy += 8.0f * dt;
-		renderer.camera.yPos+= 2;
+		camposY += 2;
 	}
+
+	camera.SetWorldPosition(camposX, camposY);
 
 
 	hexMap.RenderHexagons();

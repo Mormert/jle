@@ -6,6 +6,8 @@
 
 // Based on and inspired by examples found on learnopengl.com
 
+#include <iostream>
+
 namespace jle
 {
 	namespace gfx

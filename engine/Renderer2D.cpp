@@ -8,7 +8,7 @@
 #include <vector>
 #include <iostream>
 
-#include <glm/gtc/matrix_transform.hpp>
+
 
 namespace jle
 {
@@ -19,29 +19,24 @@ namespace jle
 		pixelQuadRenderer.SendTexturedPixelQuadDynamic(worldX, worldY, depth, texture, x, y, width, height);
 	}
 
-	void Renderer2D::Render()
+	void Renderer2D::Render(Camera2D &cam)
 	{
 
-		screenFramebuffer->PrepareForSceneRender();
+		cam.screenFramebuffer->PrepareForSceneRender();
+
 
 		glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		cameraMat = glm::ortho(static_cast<float>(camera.xPos),
-			static_cast<float>(camera.xPos) + camera.width,
-			static_cast<float>(camera.yPos) + camera.height,
-			static_cast<float>(camera.yPos), -1.0f, 1.0f);
+		pixelQuadRenderer.Render(cam.GetCameraMat());
 
-
-		pixelQuadRenderer.Render(cameraMat);
-
-		screenFramebuffer->RenderToScreen();
+		cam.screenFramebuffer->RenderToScreen();
 
 		mainRenderer = this;
 	}
 
 	
-
+	/*
 	void Renderer2D::SetAspectRatio(unsigned int w, unsigned int h)
 	{
 		glViewport(0, 0, w, h);
@@ -73,18 +68,10 @@ namespace jle
 
 		return camera.yPos + mouseYWorldSpace;
 	}
+	*/
 
-
-	Renderer2D::Renderer2D(Viewport& vp) : 
-		viewport {vp},
-		screenFramebuffer{ std::make_unique<gfx::ScreenFramebuffer>(vp.GetViewportWidth(), vp.GetViewportWidth()) }
+	Renderer2D::Renderer2D()
 	{
-	}
-
-
-	glm::mat4& Renderer2D::GetCameraMat()
-	{
-		return cameraMat;
 	}
 
 

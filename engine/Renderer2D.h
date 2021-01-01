@@ -3,10 +3,8 @@
 #include "Texture.h"
 #include "Shader.h"
 
-
-#include "Viewport.h"
+#include "Camera2D.h"
 #include "PixelQuadRenderer.h"
-#include "ScreenFramebuffer.h"
 
 
 #include <memory>
@@ -28,30 +26,15 @@ namespace jle
 
 		static Renderer2D& GetMainRenderer() { return *mainRenderer; };
 
-		int GetMouseWorldX() const noexcept;
-		int GetMouseWorldY() const noexcept;
-
-		struct {
-			int xPos = 0, yPos = 0, width = 240, height = 135;
-		} camera;
-
 		PixelQuadRenderer pixelQuadRenderer;
 
 	private:
-		std::unique_ptr<gfx::ScreenFramebuffer> screenFramebuffer;
-
-		glm::mat4 cameraMat{ 1.0f };
-		glm::mat4& GetCameraMat();
 
 
 		// Called by engine
-		Renderer2D(Viewport& vp);
+		Renderer2D();
 
-		Viewport& viewport;
-
-		void Render();
-
-		void SetAspectRatio(unsigned int w, unsigned int h);
+		void Render(Camera2D& cam);
 
 		static Renderer2D* mainRenderer;
 

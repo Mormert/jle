@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Window.h"
+#include "Viewport.h"
 
 #include <functional>
 #include <vector>
@@ -15,14 +16,30 @@ namespace jle
 		static bool GetKeyReleased(char key);
 		static bool GetKeyDown(char key);
 
-		static int GetMouseX();
-		static int GetMouseY();
+		// Gets the real X mouse position on the Window
+		static int GetMouseXRaw() noexcept;
+		// Gets the real Y mouse position on the Window
+		static int GetMouseYRaw() noexcept;
 
-		static float GetMouseXDelta();
-		static float GetMouseYDelta();
+		// Gets the X mouse position 
+		static int GetMouseX() noexcept;
+		// Gets the X mouse position 
+		static int GetMouseY() noexcept;
 
-		static float GetScrollX();
-		static float GetScrollY();
+		// Gets the X position in the world where the mouse hovers over
+		static int GetMouseWorldX() noexcept;
+		// Gets the Y position in the world where the mouse hovers over
+		static int GetMouseWorldY() noexcept;
+
+		// Gets the real X mouse delta for 1 frame
+		static float GetMouseXRawDelta() noexcept;
+		// Gets the real Y mouse delta for 1 frame
+		static float GetMouseYRawDelta() noexcept;
+
+		// Returns a float != 0 if scroll detected, value depend on scroll
+		static float GetScrollX() noexcept;
+		// Returns a float != 0 if scroll detected, value depend on scroll
+		static float GetScrollY() noexcept;
 
 	private:
 
@@ -31,6 +48,9 @@ namespace jle
 
 		// Link the input manager to a window
 		static void LinkWindow(Window* w);
+
+		// Link the input manager to a viewport
+		static void LinkViewport(Viewport* vp);
 
 		// Called from window manager
 		static void SetScrollX(float xscrl);
@@ -55,6 +75,7 @@ namespace jle
 		static int lastMouseX, lastMouseY;
 		static float scrollX, scrollY;
 		static Window* window;
+		static Viewport* viewport;
 		static std::vector<std::function<void(int, int)>> resizeWindowCallbacks;
 	};
 

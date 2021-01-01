@@ -12,8 +12,7 @@ namespace jle
 {
 	Engine::Engine(EngineSettings es) :
 		window{ es.windowWidth, es.windowHeight, es.WindowTitle },
-		viewport{ es.viewportWidth, es.viewportHeight, es.windowWidth, es.windowHeight },
-		renderer{viewport},
+		camera{ es.viewportWidth, es.viewportHeight, es.windowWidth, es.windowHeight },
 		imGuiRenderer{&window.GetNativeWindow()}
 	{
 
@@ -23,9 +22,12 @@ namespace jle
 		window.FpsModeCursor(es.startFpsMode);
 		window.SetMainWindow();
 
-		Input::AddResizeWindowCallback(&renderer, &Renderer2D::SetAspectRatio);
-		Input::AddResizeWindowCallback(&viewport, &Viewport::SetWindowDimensions);
+		camera.SetAspectDependance(jle::Camera2D::AspectDependOn::height, 135);
+
 		Input::LinkWindow(&window);
+		Input::LinkViewport(&camera);
+
+		Input::AddResizeWindowCallback(&camera, &Camera2D::SetWindowDimensions);
 
 	}
 
@@ -42,7 +44,7 @@ namespace jle
 		{
 			EngineStatus::UpdateEngineStatus();
 
-			renderer.Render();
+			renderer.Render(camera);
 			imGuiRenderer.Render();
 
 			Update(static_cast<float>(EngineStatus::deltaTime));
