@@ -18,8 +18,11 @@ namespace jle
 		PixelQuadRenderer(PixelQuadRenderer&& p) = delete;
 		PixelQuadRenderer& operator=(PixelQuadRenderer&& p) = delete;
 
-		// Sends a textured pixel quad to-be-rendered on Render() called from Renderer2D
+		// Sends a textured pixel quad to-be-rendered on Render() called from Renderer2D, exsists in world space
 		void SendTexturedPixelQuadDynamic(int worldX, int worldY, float depth, graphics::Texture& texture, int x, int y, int width, int height);
+
+		// Sends a textured pixel quad to-be-rendered on Render() called from Renderer2D, exsists in GUI space
+		void SendTexturedPixelQuadGUIDynamic(int screenX, int screenY, float depth, graphics::Texture& texture, int x, int y, int width, int height);
 
 	private:
 
@@ -39,6 +42,7 @@ namespace jle
 		// Renders out all previously send textured pixel quads,
 		// called from Renderer2D.
 		void Render(const glm::mat4& cameraMat);
+		void RenderGUI(const glm::mat4& cameraMatNoTranslation);
 
 		// Contains all data necessary to render a textured pixel quad
 		struct TexturedPixelQuad {
@@ -51,6 +55,10 @@ namespace jle
 		// Contains this frame's textured pixel quads to be rendered
 		// The vector is cleared after all have been rendered
 		std::vector<TexturedPixelQuad> texturedPixelQuadsDynamic;
+
+		// Contains this frame's textured pixel quads to be rendered as GUI
+		// The vector is cleared after all have been rendered
+		std::vector<TexturedPixelQuad> texturedPixelQuadsDynamicGUI;
 	};
 }
 

@@ -20,6 +20,8 @@ namespace jle
 		// Returns a 4x4 matrix representing the 2D camera for OpenGL
 		glm::mat4 GetCameraMat() const noexcept;
 
+		glm::mat4 GetCameraMatNoTranslate() const noexcept;
+
 		void SetWindowDimensions(unsigned int width, unsigned int height);
 
 		void SetAspectDependance(AspectDependOn aspect, int dimension);		

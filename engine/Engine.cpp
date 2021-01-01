@@ -22,8 +22,6 @@ namespace jle
 		window.FpsModeCursor(es.startFpsMode);
 		window.SetMainWindow();
 
-		camera.SetAspectDependance(jle::Camera2D::AspectDependOn::height, 135);
-
 		Input::LinkWindow(&window);
 		Input::LinkViewport(&camera);
 

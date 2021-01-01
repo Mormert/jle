@@ -23,6 +23,7 @@ namespace jle
 		Renderer2D& operator=(Renderer2D&& r) = delete;
 
 		void RenderQuadTexture(int worldX, int worldY, float depth, graphics::Texture& texture, int x, int y, int width, int height);
+		void RenderQuadTextureUI(int screenX, int screenY, float depth, graphics::Texture& texture, int x, int y, int width, int height);
 
 		static Renderer2D& GetMainRenderer() { return *mainRenderer; };
 

@@ -26,6 +26,18 @@ namespace jle
 		return cam;
 	}
 
+	glm::mat4 Camera2D::GetCameraMatNoTranslate() const noexcept
+	{
+		glm::mat4 cam{ 1.0f };
+
+		cam = glm::ortho(0.0f,
+			static_cast<float>(GetViewportWidth()),
+			static_cast<float>(GetViewportHeight()),
+			0.0f, -1.0f, 1.0f);
+
+		return cam;
+	}
+
 	void Camera2D::SetAspectDependance(AspectDependOn aspect, int dimension)
 	{
 		height_or_width = dimension;

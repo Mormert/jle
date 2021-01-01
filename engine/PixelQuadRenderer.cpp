@@ -2,6 +2,8 @@
 
 #include "3rdparty/glad/glad.h"
 
+#include <iostream>
+
 namespace jle
 {
 	const std::string PixelQuadRenderer::quadVertexShaderSrc = 
@@ -99,14 +101,20 @@ namespace jle
 		texturedPixelQuadsDynamic.push_back({ worldX, worldY, depth, texture, x, y, width, height });
 	}
 
+	void PixelQuadRenderer::SendTexturedPixelQuadGUIDynamic(int screenX, int screenY, float depth, graphics::Texture& texture, int x, int y, int width, int height)
+	{
+		texturedPixelQuadsDynamicGUI.push_back({ screenX, screenY, depth, texture, x, y, width, height });
+	}
+
 
 	void PixelQuadRenderer::Render(const glm::mat4 &cameraMat)
 	{
-
+		
 		quadShader.Use();
 
-		for (auto t : texturedPixelQuadsDynamic)
+		for (const auto &t : texturedPixelQuadsDynamic)
 		{
+			
 			if (!t.texture.IsActive())
 			{
 				t.texture.SetToActiveTexture();
@@ -126,10 +134,41 @@ namespace jle
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, quadIndices);
 		}
 
-
-
-
 		texturedPixelQuadsDynamic.clear();
+		
 	}
+
+	void PixelQuadRenderer::RenderGUI(const glm::mat4& cameraMatNoTranslation)
+	{
+
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		quadShader.Use();
+
+		for (const auto& t : texturedPixelQuadsDynamicGUI)
+		{
+
+			if (!t.texture.IsActive())
+			{
+				t.texture.SetToActiveTexture();
+				quadShader.SetVec2("textureDims", glm::vec2{ float(t.texture.GetWidth()), float(t.texture.GetHeight()) });
+			}
+
+			glBindVertexArray(quadVAO);
+
+			glm::vec4 uv{ t.x, t.y, t.width, t.height };
+			glm::vec3 position{ t.worldX, t.worldY, t.depth };
+
+			quadShader.SetVec4("uv", uv);
+			quadShader.SetVec3("position", position);
+			quadShader.SetMat4("camera", cameraMatNoTranslation);
+			quadShader.SetInt("texture0", 0);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, quadIndices);
+		}
+
+		texturedPixelQuadsDynamicGUI.clear();
+	}
+
 
 }

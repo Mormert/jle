@@ -2,6 +2,10 @@
 
 #include "3rdparty/glad/glad.h"
 
+#include "Texture.h"
+
+#include "GLStateMachine.h"
+
 #include <iostream>
 
 // Much code based from learnopengl.com
@@ -43,6 +47,7 @@ namespace jle
 			}
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glStateMachine.globalActiveTexture = 0;
 				
 		}
 

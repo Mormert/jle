@@ -19,6 +19,11 @@ namespace jle
 		pixelQuadRenderer.SendTexturedPixelQuadDynamic(worldX, worldY, depth, texture, x, y, width, height);
 	}
 
+	void Renderer2D::RenderQuadTextureUI(int screenX, int screenY, float depth, graphics::Texture& texture, int x, int y, int width, int height)
+	{
+		pixelQuadRenderer.SendTexturedPixelQuadGUIDynamic(screenX, screenY, depth, texture, x, y, width, height);
+	}
+
 	void Renderer2D::Render(Camera2D &cam)
 	{
 
@@ -29,6 +34,7 @@ namespace jle
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		pixelQuadRenderer.Render(cam.GetCameraMat());
+		pixelQuadRenderer.RenderGUI(cam.GetCameraMatNoTranslate());
 
 		cam.screenFramebuffer->RenderToScreen();
 

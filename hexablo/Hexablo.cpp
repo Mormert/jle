@@ -41,16 +41,6 @@ void Hexablo::Update(float dt)
 
 	camera.SetWorldPosition(posx - camera.GetViewportWidth() / 2.0f, posy - camera.GetViewportHeight() / 2.0f);
 
-	//renderer.camera.xPos = posx - renderer.camera.width / 2.0f;
-	//renderer.camera.yPos = posy - renderer.camera.height / 2.0f;
-
-	//std::cout << jle::Input::GetMouseX() - renderer.camera.xPos << std::endl;
-
-	//std::cout << window.GetWindowHeight() << std::endl;;
-	std::cout << "X: " << jle::Input::GetMouseWorldX() << " Y:" << jle::Input::GetMouseWorldY() << "\n";
-
-	//std::cout << "camera x " << camera.GetWorldPositionX() << std::endl;
-
 	if (jle::Input::GetKeyDown('Z'))
 	{
 		dt *= 5;
@@ -83,13 +73,13 @@ void Hexablo::Update(float dt)
 		camposY += 2;
 	}
 
+	renderer.RenderQuadTextureUI(25, 25, 0.0f, myTexture, 39, 48, 11, 26);
+
 	camera.SetWorldPosition(camposX, camposY);
-
-
-	hexMap.RenderHexagons();
 
 	myAnimation.DrawAnimation(posx, posy, 0.1f, static_cast<int>(jle::EngineStatus::GetTime()));
 
-	//mySprite2.DrawSprite(0, 0, 0.0f);
+	hexMap.RenderHexagons();
+
 
 }
