@@ -3,7 +3,7 @@
 #include "InputState.h"
 #include "Viewport.h"
 
-#include <GLFW/glfw3.h>
+//#include <GLFW/glfw3.h>
 
 #include <algorithm>
 
@@ -45,21 +45,24 @@ namespace jle
 
 	bool Input::GetKeyDown(char key)
 	{
-		return glfwGetKey(&window->GetNativeWindow(), key);
+		return WindowGetKey(*window, key);
+		//return glfwGetKey(&window->Pimpl()->asd, key);
 	}
 
 
 	int Input::GetMouseXRaw() noexcept
 	{
 		double x, y;
-		glfwGetCursorPos(&window->GetNativeWindow(), &x, &y);
+		WindowGetCursorPosition(*window, x, y);
+		//glfwGetCursorPos(&window->GetNativeWindow(), &x, &y);
 		return static_cast<int>(x);
 	}
 
 	int Input::GetMouseYRaw() noexcept
 	{
 		double x, y;
-		glfwGetCursorPos(&window->GetNativeWindow(), &x, &y);
+		WindowGetCursorPosition(*window, x, y);
+		//glfwGetCursorPos(&window->GetNativeWindow(), &x, &y);
 		return static_cast<int>(y);
 	}
 
@@ -93,14 +96,16 @@ namespace jle
 	float Input::GetMouseXRawDelta() noexcept
 	{
 		double x, y;
-		glfwGetCursorPos(&window->GetNativeWindow(), &x, &y);
+		WindowGetCursorPosition(*window, x, y);
+		//glfwGetCursorPos(&window->GetNativeWindow(), &x, &y);
 		return x - lastMouseX;
 	}
 
 	float Input::GetMouseYRawDelta() noexcept
 	{
 		double x, y;
-		glfwGetCursorPos(&window->GetNativeWindow(), &x, &y);
+		WindowGetCursorPosition(*window, x, y);
+		//glfwGetCursorPos(&window->GetNativeWindow(), &x, &y);
 		return lastMouseY - y;
 	}
 
@@ -154,7 +159,8 @@ namespace jle
 	void Input::UpdateLastMousePosition()
 	{
 		double x, y;
-		glfwGetCursorPos(&window->GetNativeWindow(), &x, &y);
+		WindowGetCursorPosition(*window, x, y);
+		//glfwGetCursorPos(&window->GetNativeWindow(), &x, &y);
 		lastMouseX = static_cast<int>(x);
 		lastMouseY = static_cast<int>(y);
 	}

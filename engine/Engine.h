@@ -43,9 +43,12 @@ namespace jle
 
 	protected:
 
+		// Entry point for a game to access the public Window methods
 		Window window;
+		// Entry point for a game to specify the properties of the 2D camera
 		Camera2D camera;
-		ImGuiRenderer imGuiRenderer;
+		//ImGuiRenderer imGuiRenderer;
+		// Entry point for a game to render graphics to the game world and to the UI
 		Renderer2D renderer;
 	};
 }

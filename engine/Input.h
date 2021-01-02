@@ -12,8 +12,11 @@ namespace jle
 	{
 	public:
 
+		// Returns true if a specified key is pressed
 		static bool GetKeyPressed(char key);
+		// Returns true if a specified key is released
 		static bool GetKeyReleased(char key);
+		// Returns true if a speicifed key is down
 		static bool GetKeyDown(char key);
 
 		// Gets the real X mouse position on the Window
@@ -44,7 +47,7 @@ namespace jle
 	private:
 
 		friend class Engine;
-		friend class Window;
+		friend class WindowImpl;
 
 		// Link the input manager to a window
 		static void LinkWindow(Window* w);
@@ -52,19 +55,26 @@ namespace jle
 		// Link the input manager to a viewport
 		static void LinkViewport(Viewport* vp);
 
-		// Called from window manager
+		// Called from Window (WindowImpl)
 		static void SetScrollX(float xscrl);
+		// Called from Window (WindowImpl)
 		static void SetScrollY(float yscrl);
 
+		// Called from Engine
 		static void UpdateLastMousePosition();
+		// Called from Engine
 		static void FlushKeyPresses();
 
+		// Should be called when a key is registered to be pressed
 		static void KeyPressedEvent(char key);
+		// Should be called when a key is registered to be released
 		static void KeyReleasedEvent(char key);
 
+		// Should be called when a window has been resized, it forwards the data to
+		// all callbacks added via AddResizeWindowCallback.
 		static void ResizeWindowEvent(int x, int y);
 
-		template<class T> static void AddResizeWindowCallback(T* const object, void(T::* const mf)(unsigned int,unsigned int))
+		template<class T> static void AddResizeWindowCallback(T* const object, void(T::* const mf)(unsigned int, unsigned int))
 		{
 			using namespace std::placeholders;
 			resizeWindowCallbacks.emplace_back(std::bind(mf, object, _1, _2));
