@@ -15,7 +15,7 @@
 jle::graphics::Texture myTexture{ "GameAssets/HexagonDiabloConcept.png" };
 jle::graphics::Texture myTexture2{ "GameAssets/FullScene.png" };
 
-float posx = 25;
+float posx = 200;
 float posy = 25;
 
 jle::graphics::Sprite mySprite(myTexture ,39, 48, 11, 26);
@@ -39,38 +39,31 @@ void Hexablo::Update(float dt)
 {
 
 
-	camera.SetWorldPosition(posx - camera.GetViewportWidth() / 2.0f, posy - camera.GetViewportHeight() / 2.0f);
-
-	if (jle::Input::GetKeyDown('Z'))
-	{
-		dt *= 5;
-	}
-
 	int camposX = camera.GetWorldPositionX();
 	int camposY = camera.GetWorldPositionY();
 
 	if (jle::Input::GetKeyDown('A'))
 	{
-		posx -= 8.0f * dt;
-		camposX -= 2;
+		posx--;
+		//camposX -= 1;
 	}
 
 	if (jle::Input::GetKeyDown('D'))
 	{
-		posx += 8.0f * dt;
-		camposX +=2;
+		posx++;
+		//camposX +=1;
 	}
 
 	if (jle::Input::GetKeyDown('W'))
 	{
-		posy -= 8.0f * dt;
-		camposY -= 2;
+		posy--;
+		//camposY -= 1;
 	}
 
 	if (jle::Input::GetKeyDown('S'))
 	{
-		posy += 8.0f * dt;
-		camposY += 2;
+		posy++;
+		//camposY += 1;
 	}
 
 	renderer.RenderQuadTextureUI(25, 25, 0.0f, myTexture, 39, 48, 11, 26);
@@ -79,7 +72,14 @@ void Hexablo::Update(float dt)
 
 	myAnimation.DrawAnimation(posx, posy, 0.1f, static_cast<int>(jle::EngineStatus::GetTime()));
 
+	for (int i = 0; i < 1000; i += 11)
+	{
+		myAnimation.DrawAnimation(i, 300, 0.1f, static_cast<int>(jle::EngineStatus::GetTime()));
+	}
+
 	hexMap.RenderHexagons();
+
+	camera.SetWorldPosition(floorf(posx - camera.GetViewportWidth() / 2.0f), floorf(posy - camera.GetViewportHeight() / 2.0f));
 
 
 }
