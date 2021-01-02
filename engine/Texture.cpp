@@ -1,5 +1,7 @@
 #include "Texture.h"
 
+#include "3rdparty/stb_image.h"
+
 #include "3rdparty/glad/glad.h"
 
 #include "GLStateMachine.h"

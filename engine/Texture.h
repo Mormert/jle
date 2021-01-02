@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include "3rdparty/stb_image.h"
 
 namespace jle
 {
