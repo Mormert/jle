@@ -198,4 +198,9 @@ namespace jle
 	{
 		glfwGetCursorPos(window.Pimpl()->glfwWindow, &x, &y);
 	}
+
+	void* Window::GetNative()
+	{
+		return pImpl->glfwWindow;
+	}
 }

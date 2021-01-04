@@ -4,7 +4,7 @@
 
 #include "Window.h"
 #include "Camera2D.h"
-#include "ImGuiRenderer.h"
+#include "DebugRenderer.h"
 #include "Renderer2D.h"
 
 namespace jle
@@ -45,9 +45,13 @@ namespace jle
 
 		// Entry point for a game to access the public Window methods
 		Window window;
+
 		// Entry point for a game to specify the properties of the 2D camera
 		Camera2D camera;
-		//ImGuiRenderer imGuiRenderer;
+
+		// Entry point to output visual debug information on screen
+		DebugRenderer debugRenderer;
+
 		// Entry point for a game to render graphics to the game world and to the UI
 		Renderer2D renderer;
 	};

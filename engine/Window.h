@@ -34,6 +34,8 @@ namespace jle
 		// Sets referenced x & y values to cursor position for specified Window
 		friend void WindowGetCursorPosition(const Window& window, double &x, double &y);
 
+		
+
 	private:
 		friend class Engine;
 
@@ -73,16 +75,19 @@ namespace jle
 
 		static Window* mainWindow;
 
+		// Returns the native GLFW window handle, must be casted
+		// to a GLFWwindow* however after retrieval
+		void* GetNative();
 
-		// Pimpl idiom implementation
-		friend class WindowImpl;
-		// Gets a const version of the pImpl
-		const WindowImpl* Pimpl() const { return pImpl.get(); };
-		// Gets the Window Pimpl class
-		WindowImpl* Pimpl() { return pImpl.get(); };
+		/// Pimpl idiom implementation
+			friend class WindowImpl;
+			// Gets a const version of the pImpl
+			const WindowImpl* Pimpl() const { return pImpl.get(); };
+			// Gets the Window Pimpl class
+			WindowImpl* Pimpl() { return pImpl.get(); };
 
-		// Smart pointer to the implementation (exsists in Window.cpp)
-		std::unique_ptr<WindowImpl> pImpl;
+			// Smart pointer to the implementation (exsists in Window.cpp)
+			std::unique_ptr<WindowImpl> pImpl;
 
 	};
 	

@@ -12,10 +12,9 @@ namespace jle
 {
 	Engine::Engine(EngineSettings es) :
 		window{ es.windowWidth, es.windowHeight, es.WindowTitle },
-		camera{ es.viewportWidth, es.viewportHeight, es.windowWidth, es.windowHeight }
-		//imGuiRenderer{&window.GetNativeWindow()}
+		camera{ es.viewportWidth, es.viewportHeight, es.windowWidth, es.windowHeight },
+		debugRenderer{ window.GetNative() }
 	{
-
 		window.SetResizeWindowEvent(Input::ResizeWindowEvent);
 		window.SetKeyPressedEvent(Input::KeyPressedEvent);
 		window.SetKeyReleasedEvent(Input::KeyReleasedEvent);
@@ -43,7 +42,7 @@ namespace jle
 			EngineStatus::UpdateEngineStatus();
 
 			renderer.Render(camera);
-			//imGuiRenderer.Render();
+			debugRenderer.Render();
 
 			Update(static_cast<float>(EngineStatus::deltaTime));
 

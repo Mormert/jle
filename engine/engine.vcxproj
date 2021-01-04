@@ -28,7 +28,7 @@
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="EngineStatus.cpp" />
     <ClCompile Include="GLStateMachine.cpp" />
-    <ClCompile Include="ImGuiRenderer.cpp" />
+    <ClCompile Include="DebugRenderer.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="InputState.cpp" />
     <ClCompile Include="PixelQuadRenderer.cpp" />
@@ -52,7 +52,7 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="EngineStatus.h" />
     <ClInclude Include="GLStateMachine.h" />
-    <ClInclude Include="ImGuiRenderer.h" />
+    <ClInclude Include="DebugRenderer.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="InputState.h" />
     <ClInclude Include="PixelQuadRenderer.h" />
