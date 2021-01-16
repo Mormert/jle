@@ -31,10 +31,8 @@ void Hexablo::Start()
 {
 	myAnimation.InsertFrame(mySprite);
 
-	//debugRenderer.AddText<const char*>("wtf bro");
-	//debugRenderer.AddText("ehy säg walla");
-	//debugRenderer.AddInt(&a);
-	debugRenderer.AddText<int*>(&a);
+	debugRenderer.AddText<float*>(&posx);
+	debugRenderer.AddText<float*>(&posy);
 
 	debugRenderer.AddText(std::string{"hej"});
 	debugRenderer.AddText("hesj");
