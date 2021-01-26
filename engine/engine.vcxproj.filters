@@ -19,6 +19,30 @@
     <Filter Include="3rdparty\glad">
       <UniqueIdentifier>{ebd9e414-e5db-42a7-b904-efea9f23d0b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Interfaces">
+      <UniqueIdentifier>{48b1c76c-c6ed-4e9d-8b38-3576370b31c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Interfaces\external">
+      <UniqueIdentifier>{c5ecdcb3-296f-4f6b-8607-b24298d3ba14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Interfaces\internal">
+      <UniqueIdentifier>{d35db650-7335-49f5-94b0-9f673904ddc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\internal">
+      <UniqueIdentifier>{499cad08-2577-4488-8c6f-3987448607b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\external">
+      <UniqueIdentifier>{f8cf8d7c-256b-4e3c-8632-d2ab1651ec74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\internal">
+      <UniqueIdentifier>{0442b038-28bf-4e7a-af1d-dbfdecab569f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\external">
+      <UniqueIdentifier>{7c02ba28-00a7-442c-a607-69309bb972fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\utility">
+      <UniqueIdentifier>{c37eee44-4dc7-4c8d-8d4e-11684d0b8449}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -83,6 +107,15 @@
     </ClCompile>
     <ClCompile Include="DebugRenderer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GLFWWindowOpenGL.cpp">
+      <Filter>Source Files\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="GLFWOpenGL33WindowInitializer.cpp">
+      <Filter>Source Files\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLRenderingAPI.cpp">
+      <Filter>Source Files\internal</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +184,42 @@
     </ClInclude>
     <ClInclude Include="DebugRenderer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iAudioAPI.h">
+      <Filter>Header Files\Interfaces\external</Filter>
+    </ClInclude>
+    <ClInclude Include="iDebugRendererAPI.h">
+      <Filter>Header Files\Interfaces\external</Filter>
+    </ClInclude>
+    <ClInclude Include="iInputAPI.h">
+      <Filter>Header Files\Interfaces\external</Filter>
+    </ClInclude>
+    <ClInclude Include="iRenderingAPI.h">
+      <Filter>Header Files\Interfaces\external</Filter>
+    </ClInclude>
+    <ClInclude Include="iWindowAPI.h">
+      <Filter>Header Files\Interfaces\external</Filter>
+    </ClInclude>
+    <ClInclude Include="iWindowInternalAPI.h">
+      <Filter>Header Files\Interfaces\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="GLFWWindowOpenGL.h">
+      <Filter>Header Files\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="iWindowInitializer.h">
+      <Filter>Header Files\Interfaces\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="iRenderingInternalAPI.h">
+      <Filter>Header Files\Interfaces\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="GLFWOpenGL33WindowInitializer.h">
+      <Filter>Header Files\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLRenderingAPI.h">
+      <Filter>Header Files\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="no_copy_no_move.h">
+      <Filter>Header Files\utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

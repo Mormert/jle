@@ -1,11 +1,15 @@
 #pragma once
 
+#include "no_copy_no_move.h"
+
 #include <memory>
 
-#include "Window.h"
-#include "Camera2D.h"
-#include "DebugRenderer.h"
-#include "Renderer2D.h"
+//#include "Window.h"
+#include "iWindowAPI.h"
+//#include "Camera2D.h"
+//#include "DebugRenderer.h"
+//#include "Renderer2D.h"
+#include "iRenderingAPI.h"
 
 namespace jle
 {
@@ -29,10 +33,12 @@ namespace jle
 		virtual void Start() = 0;
 		virtual void Update(float dt) = 0;
 
-		Engine(const Engine& e) = delete;
-		Engine& operator=(const Engine& e) = delete;
-		Engine(Engine&& e) = delete;
-		Engine& operator=(Engine&& e) = delete;
+		NO_COPY_NO_MOVE(Engine);
+
+		//Engine(const Engine& e) = delete;
+		//Engine& operator=(const Engine& e) = delete;
+		//Engine(Engine&& e) = delete;
+		//Engine& operator=(Engine&& e) = delete;
 
 	private:
 
@@ -44,15 +50,16 @@ namespace jle
 	protected:
 
 		// Entry point for a game to access the public Window methods
-		Window window;
+		std::shared_ptr<iWindowAPI> window;
 
 		// Entry point for a game to specify the properties of the 2D camera
-		Camera2D camera;
+		//Camera2D camera;
 
 		// Entry point to output visual debug information on screen
-		DebugRenderer debugRenderer;
+		//DebugRenderer debugRenderer;
 
 		// Entry point for a game to render graphics to the game world and to the UI
-		Renderer2D renderer;
+		//Renderer2D renderer;
+		std::shared_ptr<iRenderingAPI> rendering;
 	};
 }
