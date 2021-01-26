@@ -27,10 +27,12 @@
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="EngineStatus.cpp" />
+    <ClCompile Include="GLFWOpenGL33WindowInitializer.cpp" />
     <ClCompile Include="GLStateMachine.cpp" />
     <ClCompile Include="DebugRenderer.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="InputState.cpp" />
+    <ClCompile Include="OpenGLRenderingAPI.cpp" />
     <ClCompile Include="PixelQuadRenderer.cpp" />
     <ClCompile Include="Renderer2D.cpp" />
     <ClCompile Include="ScreenFramebuffer.cpp" />
@@ -40,6 +42,7 @@
     <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="Viewport.cpp" />
     <ClCompile Include="Window.cpp" />
+    <ClCompile Include="GLFWWindowOpenGL.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\glad\glad.h" />
@@ -51,10 +54,21 @@
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="EngineStatus.h" />
+    <ClInclude Include="GLFWOpenGL33WindowInitializer.h" />
     <ClInclude Include="GLStateMachine.h" />
     <ClInclude Include="DebugRenderer.h" />
+    <ClInclude Include="iAudioAPI.h" />
+    <ClInclude Include="iDebugRendererAPI.h" />
+    <ClInclude Include="iInputAPI.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="InputState.h" />
+    <ClInclude Include="iRenderingAPI.h" />
+    <ClInclude Include="iRenderingInternalAPI.h" />
+    <ClInclude Include="iWindowInitializer.h" />
+    <ClInclude Include="iWindowAPI.h" />
+    <ClInclude Include="iWindowInternalAPI.h" />
+    <ClInclude Include="no_copy_no_move.h" />
+    <ClInclude Include="OpenGLRenderingAPI.h" />
     <ClInclude Include="PixelQuadRenderer.h" />
     <ClInclude Include="Renderer2D.h" />
     <ClInclude Include="ScreenFramebuffer.h" />
@@ -64,6 +78,7 @@
     <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="Viewport.h" />
     <ClInclude Include="Window.h" />
+    <ClInclude Include="GLFWWindowOpenGL.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

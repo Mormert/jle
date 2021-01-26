@@ -29,7 +29,7 @@ int a = 3;
 
 void Hexablo::Start()
 {
-	myAnimation.InsertFrame(mySprite);
+	/*myAnimation.InsertFrame(mySprite);
 
 	debugRenderer.AddText<float*>(&posx);
 	debugRenderer.AddText<float*>(&posy);
@@ -37,14 +37,14 @@ void Hexablo::Start()
 	debugRenderer.AddText(std::string{"hej"});
 	debugRenderer.AddText("hesj");
 
-	hexMap.GenerateHexagons();
+	hexMap.GenerateHexagons();*/
 
 }
 
 void Hexablo::Update(float dt)
 {
 
-	a++;
+	/*a++;
 
 	//std::cout << jle::EngineStatus::GetFps() << "\n";
 
@@ -89,6 +89,6 @@ void Hexablo::Update(float dt)
 	hexMap.RenderHexagons();
 
 	camera.SetWorldPosition(floorf(posx - camera.GetViewportWidth() / 2.0f), floorf(posy - camera.GetViewportHeight() / 2.0f));
-
+	*/
 
 }

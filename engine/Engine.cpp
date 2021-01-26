@@ -4,27 +4,36 @@
 
 #include "Input.h"
 
-#include <GLFW/glfw3.h>
+#include "GLFWWindowOpenGL.h"
+#include "OpenGLRenderingAPI.h"
+#include "GLFWOpenGL33WindowInitializer.h"
 
 #include <iostream>
 
 namespace jle
 {
 	Engine::Engine(EngineSettings es) :
-		window{ es.windowWidth, es.windowHeight, es.WindowTitle },
-		camera{ es.viewportWidth, es.viewportHeight, es.windowWidth, es.windowHeight },
-		debugRenderer{ window.GetNative() }
+		window{ std::make_shared<GLFWWindowOpenGL>() },
+		rendering {std::make_shared<OpenGLRenderingAPI>()}
 	{
-		window.SetResizeWindowEvent(Input::ResizeWindowEvent);
-		window.SetKeyPressedEvent(Input::KeyPressedEvent);
-		window.SetKeyReleasedEvent(Input::KeyReleasedEvent);
-		window.FpsModeCursor(es.startFpsMode);
-		window.SetMainWindow();
+		//window.SetResizeWindowEvent(Input::ResizeWindowEvent);
+		//window.SetKeyPressedEvent(Input::KeyPressedEvent);
+		//window.SetKeyReleasedEvent(Input::KeyReleasedEvent);
+		//window.FpsModeCursor(es.startFpsMode);
+		//window.SetMainWindow();
 
-		Input::LinkWindow(&window);
-		Input::LinkViewport(&camera);
+		iWindowInternalAPI& windowInternal = *(iWindowInternalAPI*)window.get();
 
-		Input::AddResizeWindowCallback(&camera, &Camera2D::SetWindowDimensions);
+		windowInternal.SetFpsMode(es.startFpsMode);
+
+		GLFWOpenGL33WindowInitializer windowInitializer;
+		windowInternal.SetWindowSettings(es.windowWidth, es.windowHeight, es.WindowTitle);
+		windowInternal.InitWindow(windowInitializer, std::static_pointer_cast<iRenderingInternalAPI>(rendering) );
+
+		//Input::LinkWindow(&window);
+		//Input::LinkViewport(&camera);
+
+		//Input::AddResizeWindowCallback(&camera, &Camera2D::SetWindowDimensions);
 
 	}
 
@@ -41,24 +50,25 @@ namespace jle
 		{
 			EngineStatus::UpdateEngineStatus();
 
-			renderer.Render(camera);
-			debugRenderer.Render();
+			((iRenderingInternalAPI*)rendering.get())->Render();
+			//renderer.Render(camera);
+			//debugRenderer.Render();
 
 			Update(static_cast<float>(EngineStatus::deltaTime));
 
 			CollectInput();
 
-			window.SwapBuffers();
+			((iWindowInternalAPI*)window.get())->UpdateWindow();
 
-			running = !window.ShouldClose();
+			running = !((iWindowInternalAPI*)window.get())->WindowShouldClose();
 		}
 	}
 
 	void Engine::CollectInput()
 	{
-		Input::FlushKeyPresses();
-		Input::UpdateLastMousePosition();
-		window.PollEvents();
+		//Input::FlushKeyPresses();
+		//Input::UpdateLastMousePosition();
+		//window.PollEvents();
 	}
 
 }
