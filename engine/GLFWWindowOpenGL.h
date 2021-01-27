@@ -17,10 +17,10 @@ public:
 	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-	void SetWindowSettings(unsigned int width, unsigned int height, const std::string& title) override;
+	void SetWindowSettings(WindowSettings& windowSettings) override;
 
-	void SetFpsMode(bool enable) override;
-	bool IsFpsMode() override;
+	void DisplayCursor(bool enable) override;
+	bool IsCursorDisplayed() override;
 
 	unsigned int GetWindowHeight() override;
 	unsigned int GetWindowWidth() override;
@@ -42,18 +42,12 @@ protected:
 	// Native handle to GLFW window
 	GLFWwindow* nativeWindow;
 
-	// The window's width in pixels
-	unsigned int window_width;
-	// The window's height in pixels
-	unsigned int window_height;
+	WindowSettings windowSettings;
 
 	float currentScrollX;
 	float currentScrollY;
 
-	std::string window_title;
-
-	// Client tracking of if FPS mode is enabled or not
-	bool fpsModeEnabled{ false };
+	bool cursorVisible{ false };
 
 private:
 	std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI;

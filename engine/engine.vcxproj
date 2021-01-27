@@ -32,6 +32,8 @@
     <ClCompile Include="DebugRenderer.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="InputState.cpp" />
+    <ClCompile Include="KeyboardInputInternal.cpp" />
+    <ClCompile Include="MouseInputInternal.cpp" />
     <ClCompile Include="OpenGLRenderingAPI.cpp" />
     <ClCompile Include="PixelQuadRenderer.cpp" />
     <ClCompile Include="Renderer2D.cpp" />
@@ -59,7 +61,9 @@
     <ClInclude Include="DebugRenderer.h" />
     <ClInclude Include="iAudioAPI.h" />
     <ClInclude Include="iDebugRendererAPI.h" />
-    <ClInclude Include="iInputAPI.h" />
+    <ClInclude Include="InputAPI.h" />
+    <ClInclude Include="iKeyboardInput.h" />
+    <ClInclude Include="iMouseInput.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="InputState.h" />
     <ClInclude Include="iRenderingAPI.h" />
@@ -67,6 +71,9 @@
     <ClInclude Include="iWindowInitializer.h" />
     <ClInclude Include="iWindowAPI.h" />
     <ClInclude Include="iWindowInternalAPI.h" />
+    <ClInclude Include="iWindowLinkable.h" />
+    <ClInclude Include="KeyboardInputInternal.h" />
+    <ClInclude Include="MouseInputInternal.h" />
     <ClInclude Include="no_copy_no_move.h" />
     <ClInclude Include="OpenGLRenderingAPI.h" />
     <ClInclude Include="PixelQuadRenderer.h" />

@@ -27,8 +27,8 @@ void GLFWWindowOpenGL::framebuffer_size_callback(GLFWwindow* window, int width, 
 {
 	activeWindow->internalRenderingAPI->SetViewportDimensions(0, 0, static_cast<unsigned int>(width), static_cast<unsigned int>(height));
 
-	activeWindow->window_width = static_cast<unsigned int>(width);
-	activeWindow->window_height = static_cast<unsigned int>(height);
+	activeWindow->windowSettings.windowWidth = static_cast<unsigned int>(width);
+	activeWindow->windowSettings.windowHeight = static_cast<unsigned int>(height);
 
 	//if (resizeEvent) { (*resizeEvent)(width, height); }
 }
@@ -49,38 +49,36 @@ GLFWWindowOpenGL::~GLFWWindowOpenGL()
 	glfwTerminate();
 }
 
-void GLFWWindowOpenGL::SetWindowSettings(unsigned int width, unsigned int height, const std::string& title)
+void GLFWWindowOpenGL::SetWindowSettings(WindowSettings& windowSettings)
 {
-	window_width = width;
-	window_height = height;
-	window_title = title;
+	this->windowSettings = windowSettings;
 }
 
-void GLFWWindowOpenGL::SetFpsMode(bool enable)
+void GLFWWindowOpenGL::DisplayCursor(bool enable)
 {
 	if (enable)
 	{
-		glfwSetInputMode(nativeWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetInputMode(nativeWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
 	else
 	{
-		glfwSetInputMode(nativeWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		glfwSetInputMode(nativeWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
-	fpsModeEnabled = enable;
+	cursorVisible = enable;
 }
 
-bool GLFWWindowOpenGL::IsFpsMode()
+bool GLFWWindowOpenGL::IsCursorDisplayed()
 {
-	return fpsModeEnabled;
+	return cursorVisible;
 }
 
 unsigned int GLFWWindowOpenGL::GetWindowHeight()
 {
-	return window_height;
+	return windowSettings.windowHeight;
 }
 unsigned int GLFWWindowOpenGL::GetWindowWidth()
 {
-	return window_width;
+	return windowSettings.windowWidth;
 }
 
 void GLFWWindowOpenGL::InitWindow(iWindowInitializer& windowInitializer, std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI)
@@ -96,13 +94,31 @@ void GLFWWindowOpenGL::InitWindow(iWindowInitializer& windowInitializer, std::sh
 	activeWindow = this;
 	glfwSetErrorCallback(error_callback);
 
-	nativeWindow = static_cast<GLFWwindow*>(windowInitializer.InitWindow(window_width, window_height, window_title.c_str()));
+
+	if (!glfwInit())
+	{
+		std::cerr << "GLFW ERROR: COULD NOT INITIALIZE";
+		exit(1);
+	}
+
+	if (windowSettings.windowIsRezisable)
+	{
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+	}
+	else
+	{
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	}
+
+	nativeWindow = static_cast<GLFWwindow*>(windowInitializer.InitWindow(windowSettings.windowWidth, windowSettings.windowHeight, windowSettings.WindowTitle.c_str()));
 
 	glfwSetKeyCallback(nativeWindow, key_callback);
 	glfwSetScrollCallback(nativeWindow, scroll_callback);
 	glfwSetFramebufferSizeCallback(nativeWindow, framebuffer_size_callback);
 
-	glfwSetWindowSizeLimits(nativeWindow, 240, 135, GLFW_DONT_CARE, GLFW_DONT_CARE);
+	glfwSetWindowSizeLimits(nativeWindow, windowSettings.windowWidthMin, windowSettings.windowHeightMin, GLFW_DONT_CARE, GLFW_DONT_CARE);
+
+	DisplayCursor(windowSettings.windowDisplayCursor);
 
 	glfwSwapInterval(0);
 

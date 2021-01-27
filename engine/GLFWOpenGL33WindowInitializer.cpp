@@ -9,12 +9,6 @@
 InterfaceWindowPtr GLFWOpenGL33WindowInitializer::InitWindow(int width, int height, const char* title)
 {
 
-	if (!glfwInit())
-	{
-		std::cerr << "GLFW ERROR: COULD NOT INITIALIZE";
-		exit(1);
-	}
-
 	// Runs on OpenGL 3.3
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);

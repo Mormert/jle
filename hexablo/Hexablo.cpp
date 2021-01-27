@@ -44,6 +44,11 @@ void Hexablo::Start()
 void Hexablo::Update(float dt)
 {
 
+	if (input->keyboard->GetKeyDown('A'))
+	{
+		std::cout << "a pressed\n";
+	}
+
 	/*a++;
 
 	//std::cout << jle::EngineStatus::GetFps() << "\n";

@@ -2,7 +2,8 @@
 
 #include "EngineStatus.h"
 
-#include "Input.h"
+#include "KeyboardInputInternal.h"
+#include "MouseInputInternal.h"
 
 #include "GLFWWindowOpenGL.h"
 #include "OpenGLRenderingAPI.h"
@@ -16,24 +17,16 @@ namespace jle
 		window{ std::make_shared<GLFWWindowOpenGL>() },
 		rendering {std::make_shared<OpenGLRenderingAPI>()}
 	{
-		//window.SetResizeWindowEvent(Input::ResizeWindowEvent);
-		//window.SetKeyPressedEvent(Input::KeyPressedEvent);
-		//window.SetKeyReleasedEvent(Input::KeyReleasedEvent);
-		//window.FpsModeCursor(es.startFpsMode);
-		//window.SetMainWindow();
-
 		iWindowInternalAPI& windowInternal = *(iWindowInternalAPI*)window.get();
 
-		windowInternal.SetFpsMode(es.startFpsMode);
-
 		GLFWOpenGL33WindowInitializer windowInitializer;
-		windowInternal.SetWindowSettings(es.windowWidth, es.windowHeight, es.WindowTitle);
+		windowInternal.SetWindowSettings(es.windowSettings);
 		windowInternal.InitWindow(windowInitializer, std::static_pointer_cast<iRenderingInternalAPI>(rendering) );
 
-		//Input::LinkWindow(&window);
-		//Input::LinkViewport(&camera);
+		input = std::make_shared<InputAPI>(
+			std::make_shared<KeyboardInputInternal>(std::static_pointer_cast<iWindowInternalAPI>(window)),
+			std::make_shared<MouseInputInternal>(std::static_pointer_cast<iWindowInternalAPI>(window)));
 
-		//Input::AddResizeWindowCallback(&camera, &Camera2D::SetWindowDimensions);
 
 	}
 
@@ -56,19 +49,9 @@ namespace jle
 
 			Update(static_cast<float>(EngineStatus::deltaTime));
 
-			CollectInput();
-
 			((iWindowInternalAPI*)window.get())->UpdateWindow();
 
 			running = !((iWindowInternalAPI*)window.get())->WindowShouldClose();
 		}
 	}
-
-	void Engine::CollectInput()
-	{
-		//Input::FlushKeyPresses();
-		//Input::UpdateLastMousePosition();
-		//window.PollEvents();
-	}
-
 }

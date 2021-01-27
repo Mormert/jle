@@ -8,18 +8,14 @@
 #include "iWindowAPI.h"
 //#include "Camera2D.h"
 //#include "DebugRenderer.h"
-//#include "Renderer2D.h"
+#include "InputAPI.h"
 #include "iRenderingAPI.h"
 
 namespace jle
 {
 	struct EngineSettings
 	{
-		const char* WindowTitle = "Game";
-		int windowWidth = 500, windowHeight = 500;
-		unsigned int viewportWidth = 100, viewportHeight = 100;
-
-		bool startFpsMode = false;
+		WindowSettings windowSettings;
 	};
 
 	// Abstract class a game inherits from
@@ -30,24 +26,17 @@ namespace jle
 		virtual ~Engine(){}
 		void Run();
 
-		virtual void Start() = 0;
-		virtual void Update(float dt) = 0;
-
 		NO_COPY_NO_MOVE(Engine);
-
-		//Engine(const Engine& e) = delete;
-		//Engine& operator=(const Engine& e) = delete;
-		//Engine(Engine&& e) = delete;
-		//Engine& operator=(Engine&& e) = delete;
 
 	private:
 
 		void Loop();
-		void CollectInput();
-
 		bool running{ false };
 
 	protected:
+
+		virtual void Start() = 0;
+		virtual void Update(float dt) = 0;
 
 		// Entry point for a game to access the public Window methods
 		std::shared_ptr<iWindowAPI> window;
@@ -57,7 +46,7 @@ namespace jle
 
 		// Entry point to output visual debug information on screen
 		//DebugRenderer debugRenderer;
-
+		std::shared_ptr<InputAPI> input;
 		// Entry point for a game to render graphics to the game world and to the UI
 		//Renderer2D renderer;
 		std::shared_ptr<iRenderingAPI> rendering;

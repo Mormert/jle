@@ -1,9 +1,11 @@
 #pragma once
 
-#include "iWindowAPI.h"
+#include <memory>
 
 class iRenderingAPI
 {
 public:
 	virtual ~iRenderingAPI() {};
+
+	std::unique_ptr<iRendering2DAPI> rendering2DAPI;
 };

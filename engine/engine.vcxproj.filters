@@ -117,6 +117,12 @@
     <ClCompile Include="OpenGLRenderingAPI.cpp">
       <Filter>Source Files\internal</Filter>
     </ClCompile>
+    <ClCompile Include="MouseInputInternal.cpp">
+      <Filter>Source Files\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyboardInputInternal.cpp">
+      <Filter>Source Files\internal</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\imgui_impl_glfw.h">
@@ -191,9 +197,6 @@
     <ClInclude Include="iDebugRendererAPI.h">
       <Filter>Header Files\Interfaces\external</Filter>
     </ClInclude>
-    <ClInclude Include="iInputAPI.h">
-      <Filter>Header Files\Interfaces\external</Filter>
-    </ClInclude>
     <ClInclude Include="iRenderingAPI.h">
       <Filter>Header Files\Interfaces\external</Filter>
     </ClInclude>
@@ -220,6 +223,24 @@
     </ClInclude>
     <ClInclude Include="no_copy_no_move.h">
       <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="iKeyboardInput.h">
+      <Filter>Header Files\Interfaces\external</Filter>
+    </ClInclude>
+    <ClInclude Include="iMouseInput.h">
+      <Filter>Header Files\Interfaces\external</Filter>
+    </ClInclude>
+    <ClInclude Include="InputAPI.h">
+      <Filter>Header Files\external</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardInputInternal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iWindowLinkable.h">
+      <Filter>Header Files\Interfaces\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseInputInternal.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

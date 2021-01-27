@@ -3,7 +3,8 @@
 int main()
 {
 
-	jle::EngineSettings engineSettings{ "Hexablo", 800, 600, 267, 200 };
+	jle::EngineSettings engineSettings;
+	engineSettings.windowSettings.WindowTitle = "Hexablo";
 
 	Hexablo hexabloGame{ engineSettings };
 	hexabloGame.Run();
