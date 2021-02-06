@@ -1,39 +1,16 @@
 #pragma once
 
-#include "Viewport.h"
-#include "ScreenFramebuffer.h"
-
-#include <memory>
-
-namespace jle
+struct Camera2d
 {
-	class Camera2D : public Viewport
-	{
+	/*enum class AspectDependance{ width, height } aspect;
 
-	public:
+	// Camera Zoom in pixels, along the axis set by aspect variable
+	// where the other axis is depending on the aspect ratio for the window
+	float cameraZoom = 100;*/
 
-		enum class AspectDependOn { height, width } aspect{ AspectDependOn::height }; // default to height
+	float zoom = 1.f;
 
-		Camera2D(unsigned int viewportWidth, unsigned int viewportHeight,
-			unsigned int windowWidth, unsigned int windowHeight);
+	float xPosition = 0.f, yPosition = 0.f;
 
-		// Returns a 4x4 matrix representing the 2D camera for OpenGL
-		glm::mat4 GetCameraMat() const noexcept;
-
-		glm::mat4 GetCameraMatNoTranslate() const noexcept;
-
-		void SetWindowDimensions(unsigned int width, unsigned int height);
-
-		void SetAspectDependance(AspectDependOn aspect, int dimension);		
-
-	private:
-
-		// can act as height or width, depending on what aspect is set to
-		int height_or_width;
-
-		friend class Renderer2D;
-		std::unique_ptr<gfx::ScreenFramebuffer> screenFramebuffer;
-
-	};
-}
-
+	float rotation = 0.f;
+};

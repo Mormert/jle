@@ -70,8 +70,6 @@ namespace jle
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
-
-		
 	}
 }
 

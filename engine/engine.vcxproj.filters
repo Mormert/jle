@@ -99,9 +99,6 @@
     <ClCompile Include="Viewport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Camera2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GLStateMachine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -122,6 +119,21 @@
     </ClCompile>
     <ClCompile Include="KeyboardInputInternal.cpp">
       <Filter>Source Files\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="iQuadRendering.h">
+      <Filter>Header Files\Interfaces\external</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera2Dold.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLFrameBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLFramebufferFullscreenRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLQuadRendering.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -182,9 +194,6 @@
     <ClInclude Include="Viewport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Camera2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GLStateMachine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -240,6 +249,30 @@
       <Filter>Header Files\Interfaces\internal</Filter>
     </ClInclude>
     <ClInclude Include="MouseInputInternal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iQuadRenderingInternal.h">
+      <Filter>Header Files\Interfaces\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera2Dold.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iFramebuffer.h">
+      <Filter>Header Files\Interfaces\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLFrameBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iFramebufferFullscreenRenderer.h">
+      <Filter>Header Files\Interfaces\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLFramebufferFullscreenRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLQuadRendering.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

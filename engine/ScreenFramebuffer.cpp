@@ -105,7 +105,6 @@ namespace jle
 			glBindTexture(GL_TEXTURE_2D, texColorBuffer);
 			glStateMachine.globalActiveTexture = texColorBuffer;
 			glDrawArrays(GL_TRIANGLES, 0, 6);
-
 		}
 	}
 }
