@@ -17,6 +17,6 @@ namespace jle
 
 		static void UpdateEngineStatus();
 
-		friend class Engine;
+		friend class jleCore;
 	};
 }

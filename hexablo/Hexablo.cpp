@@ -25,7 +25,8 @@ jle::graphics::Sprite mySprite2(myTexture2, 0, 0, 384, 216);
 jle::graphics::Animation myAnimation;
 HexMap hexMap;
 
-int a = 3;
+float y = 134;
+float x = 40;
 
 void Hexablo::Start()
 {
@@ -46,8 +47,36 @@ void Hexablo::Update(float dt)
 
 	if (input->keyboard->GetKeyDown('A'))
 	{
-		std::cout << "a pressed\n";
+		x -= dt * 25.f;
 	}
+	if (input->keyboard->GetKeyDown('D'))
+	{
+		x += dt * 25.f;
+	}
+	if (input->keyboard->GetKeyDown('W'))
+	{
+		y -= dt * 25.f;
+	}
+	if (input->keyboard->GetKeyDown('S'))
+	{
+		y += dt * 25.f;
+	}
+
+	TexturedQuad tq{ myTexture };
+
+	tq.textureX = 15;
+	tq.textureY = 15;
+	tq.width = 15;
+	tq.height = 15;
+	tq.x = static_cast<int>(x);
+	tq.y = static_cast<int>(y);
+
+	rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
+
+	tq.x += 25;
+	rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
+
+	std::cout << "x, : " << x << ", y: " << y << '\n';
 
 	/*a++;
 

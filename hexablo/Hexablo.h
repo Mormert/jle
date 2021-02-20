@@ -3,12 +3,12 @@
 #include "Engine.h"
 #include "ObjectManager.h"
 
-class Hexablo final : public jle::Engine
+class Hexablo final : public jle::jleCore
 {
 public:
 
 	// Inherits ctors
-	using Engine::Engine; 
+	using jleCore::jleCore;
 
 	void Start() override;
 	void Update(float dt) override;

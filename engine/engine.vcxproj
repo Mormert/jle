@@ -28,6 +28,7 @@
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="EngineStatus.cpp" />
     <ClCompile Include="GLFWOpenGL33WindowInitializer.cpp" />
+    <ClCompile Include="GLFWWindowFactory.cpp" />
     <ClCompile Include="GLStateMachine.cpp" />
     <ClCompile Include="DebugRenderer.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -37,8 +38,10 @@
     <ClCompile Include="MouseInputInternal.cpp" />
     <ClCompile Include="OpenGLFrameBuffer.cpp" />
     <ClCompile Include="OpenGLFramebufferFullscreenRenderer.cpp" />
+    <ClCompile Include="OpenGLFullscreenRendering.cpp" />
     <ClCompile Include="OpenGLQuadRendering.cpp" />
     <ClCompile Include="OpenGLRenderingAPI.cpp" />
+    <ClCompile Include="OpenGLRenderingFactory.cpp" />
     <ClCompile Include="PixelQuadRenderer.cpp" />
     <ClCompile Include="Renderer2D.cpp" />
     <ClCompile Include="ScreenFramebuffer.cpp" />
@@ -62,12 +65,14 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="EngineStatus.h" />
     <ClInclude Include="GLFWOpenGL33WindowInitializer.h" />
+    <ClInclude Include="GLFWWindowFactory.h" />
     <ClInclude Include="GLStateMachine.h" />
     <ClInclude Include="DebugRenderer.h" />
     <ClInclude Include="iAudioAPI.h" />
     <ClInclude Include="iDebugRendererAPI.h" />
     <ClInclude Include="iFramebuffer.h" />
     <ClInclude Include="iFramebufferFullscreenRenderer.h" />
+    <ClInclude Include="iFullscreenRendering.h" />
     <ClInclude Include="InputAPI.h" />
     <ClInclude Include="iKeyboardInput.h" />
     <ClInclude Include="iMouseInput.h" />
@@ -75,7 +80,9 @@
     <ClInclude Include="InputState.h" />
     <ClInclude Include="iQuadRenderingInternal.h" />
     <ClInclude Include="iRenderingAPI.h" />
+    <ClInclude Include="iRenderingClassesFactory.h" />
     <ClInclude Include="iRenderingInternalAPI.h" />
+    <ClInclude Include="iWindowFactory.h" />
     <ClInclude Include="iWindowInitializer.h" />
     <ClInclude Include="iWindowAPI.h" />
     <ClInclude Include="iWindowInternalAPI.h" />
@@ -85,8 +92,10 @@
     <ClInclude Include="no_copy_no_move.h" />
     <ClInclude Include="OpenGLFrameBuffer.h" />
     <ClInclude Include="OpenGLFramebufferFullscreenRenderer.h" />
+    <ClInclude Include="OpenGLFullscreenRendering.h" />
     <ClInclude Include="OpenGLQuadRendering.h" />
     <ClInclude Include="OpenGLRenderingAPI.h" />
+    <ClInclude Include="OpenGLRenderingFactory.h" />
     <ClInclude Include="PixelQuadRenderer.h" />
     <ClInclude Include="Renderer2D.h" />
     <ClInclude Include="ScreenFramebuffer.h" />

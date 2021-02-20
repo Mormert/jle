@@ -6,19 +6,21 @@ enum class RenderingMethod { Dynamic, Static };
 
 struct Quad
 {
-	float x, y;
-	float depth;
+	float x = 0.f, y = 0.f;
+	float depth = 0.f;
 };
 
 struct TexturedQuad : public Quad
 {
+	TexturedQuad(jle::graphics::Texture& texture) : texture{texture} {}
+
 	jle::graphics::Texture& texture;
 
 	// Coordinates on the texture
-	int textureX, textureY;
+	int textureX = 0, textureY = 0;
 
 	// Dimensions of quad on the texture
-	unsigned int width, height;
+	unsigned int width = 1, height = 1;
 };
 
 struct ColoredQuad : public Quad

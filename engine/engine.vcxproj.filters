@@ -135,6 +135,15 @@
     <ClCompile Include="OpenGLQuadRendering.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OpenGLFullscreenRendering.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLRenderingFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GLFWWindowFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\imgui_impl_glfw.h">
@@ -273,6 +282,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OpenGLQuadRendering.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iFullscreenRendering.h">
+      <Filter>Header Files\Interfaces\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLFullscreenRendering.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iRenderingClassesFactory.h">
+      <Filter>Header Files\Interfaces\external</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLRenderingFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iWindowFactory.h">
+      <Filter>Header Files\Interfaces\external</Filter>
+    </ClInclude>
+    <ClInclude Include="GLFWWindowFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,23 +10,33 @@
 //#include "DebugRenderer.h"
 #include "InputAPI.h"
 #include "iRenderingAPI.h"
+#include "iFramebuffer.h"
 
 namespace jle
 {
+
+	struct EngineInternalAPIs
+	{
+		enum class RenderingAPI{ OPENGL_33 } renderingAPI = RenderingAPI::OPENGL_33;
+		enum class WindowAPI{ GLFW } windowingAPI = WindowAPI::GLFW;
+		enum class WindowInitializer { GLFW_OPENGL_33 } windowInitAPI = WindowInitializer::GLFW_OPENGL_33;
+	};
+
 	struct EngineSettings
 	{
 		WindowSettings windowSettings;
+		EngineInternalAPIs engineAPIs;
 	};
 
 	// Abstract class a game inherits from
-	class Engine
+	class jleCore
 	{
 	public:
-		Engine(EngineSettings es);
-		virtual ~Engine(){}
+		jleCore(EngineSettings es);
+		virtual ~jleCore(){}
 		void Run();
 
-		NO_COPY_NO_MOVE(Engine);
+		NO_COPY_NO_MOVE(jleCore)
 
 	private:
 
@@ -47,6 +57,10 @@ namespace jle
 		// Entry point to output visual debug information on screen
 		//DebugRenderer debugRenderer;
 		std::shared_ptr<InputAPI> input;
+
+		// Main framebuffer
+		std::shared_ptr<iFramebuffer> framebuffer;
+
 		// Entry point for a game to render graphics to the game world and to the UI
 		//Renderer2D renderer;
 		std::shared_ptr<iRenderingAPI> rendering;

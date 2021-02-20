@@ -1,7 +1,10 @@
-#include "OpenGLFramebufferFullscreenRenderer.h"
+#include "OpenGLFullscreenRendering.h"
 
 #include "3rdparty/glad/glad.h"
+
 #include "GLStateMachine.h"
+
+#include <string>
 
 const std::string quadScreenShaderVertexSource =
 R"(
@@ -44,14 +47,10 @@ constexpr float quadVertices[] = { // Vertex attributes for a quad that fills th
 	 1.0f,  1.0f,  1.0f, 1.0f
 };
 
-OpenGLFramebufferFullscreenRenderer::~OpenGLFramebufferFullscreenRenderer()
-{
-	glDeleteVertexArrays(1, &quadVAO);
-	glDeleteBuffers(1, &quadVBO);
-}
 
-OpenGLFramebufferFullscreenRenderer::OpenGLFramebufferFullscreenRenderer() :
-	quadScreenShader{ quadScreenShaderVertexSource, quadScreenShaderFragSource }
+
+OpenGLFullscreenRendering::OpenGLFullscreenRendering()
+	: quadScreenShader{ quadScreenShaderVertexSource, quadScreenShaderFragSource }
 {
 	// Configure screen quad
 	glGenVertexArrays(1, &quadVAO);
@@ -65,20 +64,27 @@ OpenGLFramebufferFullscreenRenderer::OpenGLFramebufferFullscreenRenderer() :
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
 
-void OpenGLFramebufferFullscreenRenderer::RenderFramebufferFullscreen(iFramebuffer& framebuffer, unsigned int screenWidth, unsigned int screenHeight)
+OpenGLFullscreenRendering::~OpenGLFullscreenRendering()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default framebuffer
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDeleteVertexArrays(1, &quadVAO);
+	glDeleteBuffers(1, &quadVBO);
+}
+
+void OpenGLFullscreenRendering::RenderFramebufferFullscreen(iFramebuffer& framebuffer, unsigned int screenWidth, unsigned int screenHeight)
+{
 
 	glViewport(0, 0, screenWidth, screenHeight);
 
-	const unsigned int framebufferTexture = (unsigned int)framebuffer.GetTexture();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
+	glClearColor(0.f, 0.f, 0.f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	
 
 	quadScreenShader.Use();
 	glBindVertexArray(quadVAO);
 	glDisable(GL_DEPTH_TEST);
-	glBindTexture(GL_TEXTURE_2D, framebufferTexture);
-	jle::gfx::glStateMachine.globalActiveTexture = framebufferTexture;
+	glBindTexture(GL_TEXTURE_2D, (unsigned int)framebuffer.GetTexture());
+	jle::gfx::glStateMachine.globalActiveTexture = (unsigned int)framebuffer.GetTexture();
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }

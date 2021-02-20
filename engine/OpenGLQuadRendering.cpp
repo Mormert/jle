@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include <iostream>
+
 const std::string quadVertexShaderSrc =
 R"(
 	#version 330 core
@@ -110,7 +112,6 @@ void OpenGLQuadRendering::SendColoredQuad(ColoredQuad& coloredQuad, RenderingMet
 
 void OpenGLQuadRendering::Render(iFramebuffer& framebufferOut)
 {
-
 	const int viewportWidth = framebufferOut.GetWidth();
 	const int viewportHeight = framebufferOut.GetHeight();
 
@@ -118,6 +119,12 @@ void OpenGLQuadRendering::Render(iFramebuffer& framebufferOut)
 		static_cast<float>(viewportWidth),
 		static_cast<float>(viewportHeight),
 		static_cast<float>(0.f), -1.f, 1.f) };
+
+	framebufferOut.BindToFramebuffer();
+
+	glClearColor(1.f, 0.f, 0.f, 1.0f); // red
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
 
 	quadShader.Use();
 
@@ -144,5 +151,7 @@ void OpenGLQuadRendering::Render(iFramebuffer& framebufferOut)
 	}
 
 	texturedQuads.clear();
+
+	framebufferOut.BindToDefaultFramebuffer();
 
 }

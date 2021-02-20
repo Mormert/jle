@@ -28,7 +28,7 @@ namespace jle
 		void AddText(const char* text);
 
 	private:
-		friend class Engine;
+		friend class jleCore;
 
 		DebugRenderer(void* glfwNative);
 		void Render();
