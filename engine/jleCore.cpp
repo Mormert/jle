@@ -1,4 +1,4 @@
-#include "Engine.h"
+#include "jleCore.h"
 
 #include "EngineStatus.h"
 
@@ -22,6 +22,7 @@ namespace jle
 
 	static std::unique_ptr<iFullscreenRendering> fullscreenRenderer;
 
+	jleCore* jleCore::core { nullptr };
 
 	std::unique_ptr<iRenderingClassesFactory> CreateRenderingFactory(EngineInternalAPIs& eia)
 	{
@@ -50,14 +51,13 @@ namespace jle
 	}
 
 
-	jleCore::jleCore(EngineSettings es)
+	jleCore::jleCore(EngineSettings es) : 
+		renderingFactory { CreateRenderingFactory(es.engineAPIs) },
+		windowFactory { CreateWindowFactory(es.engineAPIs) }
 	{
 
-		std::unique_ptr<iRenderingClassesFactory> renderingClassesFactory = CreateRenderingFactory(es.engineAPIs);
-		std::unique_ptr<iWindowFactory> windowFactory = CreateWindowFactory(es.engineAPIs);
-
 		window = windowFactory->CreateWindow();
-		rendering = renderingClassesFactory->CreateRenderingAPI();
+		rendering = renderingFactory->CreateRenderingAPI();
 
 		iWindowInternalAPI& windowInternal = *(iWindowInternalAPI*)window.get();
 
@@ -70,15 +70,22 @@ namespace jle
 			std::make_shared<MouseInputInternal>(std::static_pointer_cast<iWindowInternalAPI>(window)));
 
 
-		((iRenderingInternalAPI*)rendering.get())->Setup(renderingClassesFactory->CreateQuadRendering());
+		((iRenderingInternalAPI*)rendering.get())->Setup(renderingFactory->CreateQuadRendering());
 
-		framebuffer = renderingClassesFactory->CreateFramebuffer(es.windowSettings.windowWidth, es.windowSettings.windowHeight);
-		fullscreenRenderer = renderingClassesFactory->CreateFullscreenRendering();
+		framebuffer_main = renderingFactory->CreateFramebuffer(es.windowSettings.windowWidth, es.windowSettings.windowHeight);
+		fullscreenRenderer = renderingFactory->CreateFullscreenRendering();
 
 	}
 
 	void jleCore::Run()
 	{
+		if (core != nullptr)
+		{
+			std::cerr << "Error: Multiple instances of jleCore\n";
+			exit(1);
+		}
+		core = this;
+
 		running = true;
 		Start();
 		Loop();
@@ -90,8 +97,8 @@ namespace jle
 		{
 			EngineStatus::UpdateEngineStatus();
 
-			((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer.get(), window->GetWindowWidth(), window->GetWindowHeight());
-			fullscreenRenderer->RenderFramebufferFullscreen(*framebuffer.get(), window->GetWindowWidth(), window->GetWindowHeight());
+			((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
+			fullscreenRenderer->RenderFramebufferFullscreen(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
 
 			Update(static_cast<float>(EngineStatus::deltaTime));
 

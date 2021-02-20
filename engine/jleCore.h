@@ -12,8 +12,13 @@
 #include "iRenderingAPI.h"
 #include "iFramebuffer.h"
 
+#include "iRenderingClassesFactory.h"
+#include "iWindowFactory.h"
+
 namespace jle
 {
+
+
 
 	struct EngineInternalAPIs
 	{
@@ -32,11 +37,18 @@ namespace jle
 	class jleCore
 	{
 	public:
+		NO_COPY_NO_MOVE(jleCore)
+
 		jleCore(EngineSettings es);
-		virtual ~jleCore(){}
+		virtual ~jleCore() {}
+
 		void Run();
 
-		NO_COPY_NO_MOVE(jleCore)
+		const std::unique_ptr<iRenderingClassesFactory> renderingFactory;
+		const std::unique_ptr<iWindowFactory> windowFactory;
+
+		// Singleton
+		static jleCore* core;
 
 	private:
 
@@ -45,24 +57,19 @@ namespace jle
 
 	protected:
 
-		virtual void Start() = 0;
-		virtual void Update(float dt) = 0;
+		virtual void Start() {};
+		virtual void Update(float dt) {};
 
-		// Entry point for a game to access the public Window methods
+		// Entry point for a user to access the windowing API
 		std::shared_ptr<iWindowAPI> window;
 
-		// Entry point for a game to specify the properties of the 2D camera
-		//Camera2D camera;
-
-		// Entry point to output visual debug information on screen
-		//DebugRenderer debugRenderer;
+		// Entry point for a user to access the input API
 		std::shared_ptr<InputAPI> input;
 
 		// Main framebuffer
-		std::shared_ptr<iFramebuffer> framebuffer;
+		std::shared_ptr<iFramebuffer> framebuffer_main;
 
-		// Entry point for a game to render graphics to the game world and to the UI
-		//Renderer2D renderer;
+		// Entry point for a user to do fundamental rendering
 		std::shared_ptr<iRenderingAPI> rendering;
 	};
 }

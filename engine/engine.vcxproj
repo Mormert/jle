@@ -25,7 +25,7 @@
     <ClCompile Include="3rdparty\stb_image.cpp" />
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Camera2Dold.cpp" />
-    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="jleCore.cpp" />
     <ClCompile Include="EngineStatus.cpp" />
     <ClCompile Include="GLFWOpenGL33WindowInitializer.cpp" />
     <ClCompile Include="GLFWWindowFactory.cpp" />
@@ -62,7 +62,7 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Camera2d.h" />
     <ClInclude Include="Camera2Dold.h" />
-    <ClInclude Include="Engine.h" />
+    <ClInclude Include="jleCore.h" />
     <ClInclude Include="EngineStatus.h" />
     <ClInclude Include="GLFWOpenGL33WindowInitializer.h" />
     <ClInclude Include="GLFWWindowFactory.h" />
