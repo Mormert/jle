@@ -2,7 +2,7 @@
 
 #include "3rdparty/glad/glad.h"
 
-#include "GLStateMachine.h"
+#include "GLState.h"
 
 #include <string>
 
@@ -87,7 +87,7 @@ namespace jle
 		glBindVertexArray(quadVAO);
 		glDisable(GL_DEPTH_TEST);
 		glBindTexture(GL_TEXTURE_2D, (unsigned int)framebuffer.GetTexture());
-		jle::gfx::glStateMachine.globalActiveTexture = (unsigned int)framebuffer.GetTexture();
+		glStaticState.globalActiveTexture = (unsigned int)framebuffer.GetTexture();
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 }

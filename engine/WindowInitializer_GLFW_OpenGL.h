@@ -2,9 +2,9 @@
 
 #include "iWindowInitializer.h"
 
-class GLFWOpenGL33WindowInitializer final : public iWindowInitializer
+class WindowInitializer_GLFW_OpenGL final : public iWindowInitializer
 {
 public:
-	~GLFWOpenGL33WindowInitializer(){}
+	~WindowInitializer_GLFW_OpenGL(){}
 	void* InitWindow(int width, int height, const char* title) override;
 };

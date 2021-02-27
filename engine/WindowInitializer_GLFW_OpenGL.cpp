@@ -1,4 +1,4 @@
-#include "GLFWOpenGL33WindowInitializer.h"
+#include "WindowInitializer_GLFW_OpenGL.h"
 
 #include "3rdparty/glad/glad.h"
 #include <GLFW/glfw3.h>
@@ -6,7 +6,7 @@
 #include <iostream>
 
 
-InterfaceWindowPtr GLFWOpenGL33WindowInitializer::InitWindow(int width, int height, const char* title)
+InterfaceWindowPtr WindowInitializer_GLFW_OpenGL::InitWindow(int width, int height, const char* title)
 {
 
 	// Runs on OpenGL 3.3

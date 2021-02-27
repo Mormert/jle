@@ -20,6 +20,7 @@ namespace jle
 
 		virtual bool WindowShouldClose() = 0;
 
+		virtual float GetTime() = 0;
 		virtual bool GetKey(char key) = 0;
 		virtual float GetScrollX() = 0;
 		virtual float GetScrollY() = 0;

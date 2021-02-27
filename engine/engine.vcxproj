@@ -25,9 +25,9 @@
     <ClCompile Include="3rdparty\stb_image.cpp" />
     <ClCompile Include="jleCore.cpp" />
     <ClCompile Include="EngineStatus.cpp" />
-    <ClCompile Include="GLFWOpenGL33WindowInitializer.cpp" />
-    <ClCompile Include="GLFWWindowFactory.cpp" />
-    <ClCompile Include="GLStateMachine.cpp" />
+    <ClCompile Include="WindowInitializer_GLFW_OpenGL.cpp" />
+    <ClCompile Include="WindowFactory_GLFW.cpp" />
+    <ClCompile Include="GLState.cpp" />
     <ClCompile Include="iQuadRendering.h" />
     <ClCompile Include="jleGameEngine.cpp" />
     <ClCompile Include="KeyboardInputInternal.cpp" />
@@ -41,7 +41,7 @@
     <ClCompile Include="Shader_OpenGL.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Viewport.cpp" />
-    <ClCompile Include="GLFWWindowOpenGL.cpp" />
+    <ClCompile Include="Window_GLFW_OpenGL.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\glad\glad.h" />
@@ -50,11 +50,11 @@
     <ClInclude Include="3rdparty\KHR\khrplatform.h" />
     <ClInclude Include="3rdparty\stb_image.h" />
     <ClInclude Include="Camera2d.h" />
+    <ClInclude Include="GLState.h" />
     <ClInclude Include="jleCore.h" />
     <ClInclude Include="EngineStatus.h" />
-    <ClInclude Include="GLFWOpenGL33WindowInitializer.h" />
-    <ClInclude Include="GLFWWindowFactory.h" />
-    <ClInclude Include="GLStateMachine.h" />
+    <ClInclude Include="WindowInitializer_GLFW_OpenGL.h" />
+    <ClInclude Include="WindowFactory_GLFW.h" />
     <ClInclude Include="iAudioAPI.h" />
     <ClInclude Include="iDebugRendererAPI.h" />
     <ClInclude Include="iFramebuffer.h" />
@@ -85,7 +85,7 @@
     <ClInclude Include="Shader_OpenGL.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Viewport.h" />
-    <ClInclude Include="GLFWWindowOpenGL.h" />
+    <ClInclude Include="Window_GLFW_OpenGL.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

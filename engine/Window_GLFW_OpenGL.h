@@ -8,11 +8,11 @@
 
 namespace jle
 {
-	class GLFWWindowOpenGL : public iWindowInternalAPI
+	class Window_GLFW_OpenGL : public iWindowInternalAPI
 	{
 	public:
 
-		~GLFWWindowOpenGL();
+		~Window_GLFW_OpenGL();
 
 		static void error_callback(int error, const char* description);
 		static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -33,12 +33,13 @@ namespace jle
 
 		bool WindowShouldClose() override;
 
+		virtual float GetTime() override;
 		bool GetKey(char key) override;
 		float GetScrollX() override;
 		float GetScrollY() override;
 		std::pair<int, int> GetCursor() override;
 
-		static GLFWWindowOpenGL* activeWindow;
+		static Window_GLFW_OpenGL* activeWindow;
 
 	protected:
 		// Native handle to GLFW window
@@ -53,6 +54,7 @@ namespace jle
 
 	private:
 		std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI;
+		
 	};
 }
 

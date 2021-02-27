@@ -17,7 +17,6 @@ namespace jle
 		std::shared_ptr<iKeyboardInput> keyboard;
 		std::shared_ptr<iMouseInput> mouse;
 
-
 		/*// Gets the X mouse position
 		virtual int GetMouseX() noexcept;
 		// Gets the X mouse position

@@ -6,7 +6,7 @@
 
 namespace jle
 {
-	class GLFWWindowFactory : public iWindowFactory
+	class WindowFactory_GLFW : public iWindowFactory
 	{
 	public:
 		std::unique_ptr<iWindowAPI> CreateWindow() override;

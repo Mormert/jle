@@ -26,6 +26,3 @@ namespace jle
 		virtual void Render() override;
 	};
 }
-
-
-

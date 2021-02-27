@@ -43,6 +43,30 @@
     <Filter Include="Header Files\utility">
       <UniqueIdentifier>{c37eee44-4dc7-4c8d-8d4e-11684d0b8449}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{af3c2080-f17d-4fa2-be2a-1199e2611f37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Input">
+      <UniqueIdentifier>{556dc750-fbbd-4008-9997-dccbc7277a0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Audio">
+      <UniqueIdentifier>{b11abe04-f315-4daa-9b4e-736da49a950b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Rendering">
+      <UniqueIdentifier>{f6aa7a5c-b356-43bd-a9a2-7fc6784210cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Rendering\OpenGL_GLFW">
+      <UniqueIdentifier>{f272fb77-41ba-43da-829c-920cab14accf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Rendering\Interfaces">
+      <UniqueIdentifier>{4405ce81-be15-4685-82ce-d3d183248e7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Windowing">
+      <UniqueIdentifier>{4d9b4381-7b21-4bbc-b1ea-b60b1947cee9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Windowing\Interfaces">
+      <UniqueIdentifier>{a3d5ccd2-dc64-4fd4-b544-cf11f041834d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineStatus.cpp">
@@ -66,26 +90,11 @@
     <ClCompile Include="Viewport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GLStateMachine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GLFWWindowOpenGL.cpp">
-      <Filter>Source Files\internal</Filter>
-    </ClCompile>
-    <ClCompile Include="GLFWOpenGL33WindowInitializer.cpp">
-      <Filter>Source Files\internal</Filter>
-    </ClCompile>
     <ClCompile Include="MouseInputInternal.cpp">
       <Filter>Source Files\internal</Filter>
     </ClCompile>
     <ClCompile Include="KeyboardInputInternal.cpp">
       <Filter>Source Files\internal</Filter>
-    </ClCompile>
-    <ClCompile Include="iQuadRendering.h">
-      <Filter>Header Files\Interfaces\external</Filter>
-    </ClCompile>
-    <ClCompile Include="GLFWWindowFactory.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="jleCore.cpp">
       <Filter>Source Files</Filter>
@@ -114,6 +123,21 @@
     <ClCompile Include="RenderingAPI_OpenGL.cpp">
       <Filter>Source Files\internal</Filter>
     </ClCompile>
+    <ClCompile Include="WindowFactory_GLFW.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowInitializer_GLFW_OpenGL.cpp">
+      <Filter>Source Files\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="Window_GLFW_OpenGL.cpp">
+      <Filter>Source Files\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="GLState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iQuadRendering.h">
+      <Filter>Header Files\Core\Rendering\Interfaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\imgui_impl_glfw.h">
@@ -140,65 +164,14 @@
     <ClInclude Include="Viewport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GLStateMachine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="iAudioAPI.h">
-      <Filter>Header Files\Interfaces\external</Filter>
-    </ClInclude>
     <ClInclude Include="iDebugRendererAPI.h">
       <Filter>Header Files\Interfaces\external</Filter>
-    </ClInclude>
-    <ClInclude Include="iRenderingAPI.h">
-      <Filter>Header Files\Interfaces\external</Filter>
-    </ClInclude>
-    <ClInclude Include="iWindowAPI.h">
-      <Filter>Header Files\Interfaces\external</Filter>
-    </ClInclude>
-    <ClInclude Include="iWindowInternalAPI.h">
-      <Filter>Header Files\Interfaces\internal</Filter>
-    </ClInclude>
-    <ClInclude Include="GLFWWindowOpenGL.h">
-      <Filter>Header Files\internal</Filter>
-    </ClInclude>
-    <ClInclude Include="iWindowInitializer.h">
-      <Filter>Header Files\Interfaces\internal</Filter>
-    </ClInclude>
-    <ClInclude Include="iRenderingInternalAPI.h">
-      <Filter>Header Files\Interfaces\internal</Filter>
-    </ClInclude>
-    <ClInclude Include="GLFWOpenGL33WindowInitializer.h">
-      <Filter>Header Files\internal</Filter>
     </ClInclude>
     <ClInclude Include="no_copy_no_move.h">
       <Filter>Header Files\utility</Filter>
     </ClInclude>
-    <ClInclude Include="iKeyboardInput.h">
-      <Filter>Header Files\Interfaces\external</Filter>
-    </ClInclude>
-    <ClInclude Include="iMouseInput.h">
-      <Filter>Header Files\Interfaces\external</Filter>
-    </ClInclude>
-    <ClInclude Include="InputAPI.h">
-      <Filter>Header Files\external</Filter>
-    </ClInclude>
-    <ClInclude Include="KeyboardInputInternal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="iWindowLinkable.h">
-      <Filter>Header Files\Interfaces\internal</Filter>
-    </ClInclude>
-    <ClInclude Include="MouseInputInternal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="iQuadRenderingInternal.h">
-      <Filter>Header Files\Interfaces\internal</Filter>
-    </ClInclude>
     <ClInclude Include="Camera2d.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="iFramebuffer.h">
-      <Filter>Header Files\Interfaces\internal</Filter>
     </ClInclude>
     <ClInclude Include="iFramebufferFullscreenRenderer.h">
       <Filter>Header Files\Interfaces\internal</Filter>
@@ -206,41 +179,92 @@
     <ClInclude Include="iFullscreenRendering.h">
       <Filter>Header Files\Interfaces\internal</Filter>
     </ClInclude>
-    <ClInclude Include="iWindowFactory.h">
-      <Filter>Header Files\Interfaces\external</Filter>
-    </ClInclude>
-    <ClInclude Include="GLFWWindowFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="jleCore.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="iRenderingFactory.h">
-      <Filter>Header Files\Interfaces\external</Filter>
-    </ClInclude>
     <ClInclude Include="jleGameEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jleCore.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardInputInternal.h">
+      <Filter>Header Files\Core\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseInputInternal.h">
+      <Filter>Header Files\Core\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="iMouseInput.h">
+      <Filter>Header Files\Core\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="iKeyboardInput.h">
+      <Filter>Header Files\Core\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="iAudioAPI.h">
+      <Filter>Header Files\Core\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowFactory_GLFW.h">
+      <Filter>Header Files\Core\Rendering\OpenGL_GLFW</Filter>
+    </ClInclude>
     <ClInclude Include="Shader_OpenGL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderingFactory_OpenGL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="QuadRendering_OpenGL.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core\Rendering\OpenGL_GLFW</Filter>
     </ClInclude>
     <ClInclude Include="FrameBuffer_OpenGL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FullscreenRendering_OpenGL.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core\Rendering\OpenGL_GLFW</Filter>
     </ClInclude>
     <ClInclude Include="FramebufferFullscreenRenderer_OpenGL.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Core\Rendering\OpenGL_GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="FullscreenRendering_OpenGL.h">
+      <Filter>Header Files\Core\Rendering\OpenGL_GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadRendering_OpenGL.h">
+      <Filter>Header Files\Core\Rendering\OpenGL_GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingFactory_OpenGL.h">
+      <Filter>Header Files\Core\Rendering\OpenGL_GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="GLState.h">
+      <Filter>Header Files\Core\Rendering\OpenGL_GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="InputAPI.h">
+      <Filter>Header Files\Core\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="iFramebuffer.h">
+      <Filter>Header Files\Core\Rendering\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="iQuadRenderingInternal.h">
+      <Filter>Header Files\Core\Rendering\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="iRenderingInternalAPI.h">
+      <Filter>Header Files\Core\Rendering\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="RenderingAPI_OpenGL.h">
-      <Filter>Header Files\internal</Filter>
+      <Filter>Header Files\Core\Rendering\OpenGL_GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowInitializer_GLFW_OpenGL.h">
+      <Filter>Header Files\Core\Rendering\OpenGL_GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="Window_GLFW_OpenGL.h">
+      <Filter>Header Files\Core\Rendering\OpenGL_GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="iWindowInternalAPI.h">
+      <Filter>Header Files\Core\Windowing\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="iWindowLinkable.h">
+      <Filter>Header Files\Core\Windowing\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="iWindowInitializer.h">
+      <Filter>Header Files\Core\Windowing\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="iRenderingAPI.h">
+      <Filter>Header Files\Core\Rendering\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="iRenderingFactory.h">
+      <Filter>Header Files\Core\Rendering\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="iWindowAPI.h">
+      <Filter>Header Files\Core\Windowing\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="iWindowFactory.h">
+      <Filter>Header Files\Core\Windowing\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

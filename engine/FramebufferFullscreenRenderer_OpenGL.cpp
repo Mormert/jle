@@ -1,7 +1,7 @@
 #include "FramebufferFullscreenRenderer_OpenGL.h"
 
 #include "3rdparty/glad/glad.h"
-#include "GLStateMachine.h"
+#include "GLState.h"
 
 namespace jle
 {
@@ -81,7 +81,7 @@ namespace jle
 		glBindVertexArray(quadVAO);
 		glDisable(GL_DEPTH_TEST);
 		glBindTexture(GL_TEXTURE_2D, framebufferTexture);
-		jle::gfx::glStateMachine.globalActiveTexture = framebufferTexture;
+		jle::glStaticState.globalActiveTexture = framebufferTexture;
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 }

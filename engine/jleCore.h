@@ -18,6 +18,17 @@
 
 namespace jle
 {
+
+	struct CoreStatus
+	{
+		virtual ~CoreStatus() {}
+		virtual int GetFPS() = 0;
+		virtual float GetDeltaFrameTime() = 0;
+		virtual float GetCurrentFrameTime() = 0;
+		virtual float GetLastFrameTime() = 0;
+	};
+
+
 	struct EngineInternalAPIs
 	{
 		enum class RenderingAPI{ OPENGL_33 } renderingAPI = RenderingAPI::OPENGL_33;
@@ -56,6 +67,9 @@ namespace jle
 		// Entry point for a user to do fundamental rendering
 		const std::shared_ptr<iRenderingAPI> rendering;
 
+		// Entry point for a user to get core status
+		const std::shared_ptr<CoreStatus> status;
+
 	private:
 		void Loop();
 		bool running{ false };
@@ -65,6 +79,8 @@ namespace jle
 		// Internal impl data
 		struct jleCoreInternalImpl;
 		std::unique_ptr<jleCoreInternalImpl> coreImpl;
+
+		friend struct CoreStatus_Internal;
 
 	protected:
 		virtual void Start(CoreSettings cs) {}

@@ -2,22 +2,25 @@
 
 #include "iRenderingInternalAPI.h"
 
-jle::jleGameEngine::jleGameEngine(CoreSettings cs) : jleCore{ cs }
+namespace jle
 {
-}
+	jleGameEngine::jleGameEngine(CoreSettings cs) : jleCore{ cs }
+	{
+	}
 
-void jle::jleGameEngine::Start(CoreSettings cs)
-{
-	framebuffer_main = renderingFactory->CreateFramebuffer(cs.windowSettings.windowWidth, cs.windowSettings.windowHeight);
-	fullscreen_renderer = renderingFactory->CreateFullscreenRendering();
-}
+	void jleGameEngine::Start(CoreSettings cs)
+	{
+		framebuffer_main = renderingFactory->CreateFramebuffer(cs.windowSettings.windowWidth, cs.windowSettings.windowHeight);
+		fullscreen_renderer = renderingFactory->CreateFullscreenRendering();
+	}
 
-void jle::jleGameEngine::Update(float dt)
-{
-}
+	void jleGameEngine::Update(float dt)
+	{
+	}
 
-void jle::jleGameEngine::Render()
-{
-	((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
-	fullscreen_renderer->RenderFramebufferFullscreen(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
+	void jleGameEngine::Render()
+	{
+		((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
+		fullscreen_renderer->RenderFramebufferFullscreen(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
+	}
 }
