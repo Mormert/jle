@@ -4,10 +4,13 @@
 
 #include <memory>
 
-class iRenderingAPI
+namespace jle
 {
-public:
-	virtual ~iRenderingAPI() {};
+	class iRenderingAPI
+	{
+	public:
+		virtual ~iRenderingAPI() {};
 
-	std::unique_ptr<iQuadRendering> quads;
-};
+		std::unique_ptr<iQuadRendering> quads;
+	};
+}

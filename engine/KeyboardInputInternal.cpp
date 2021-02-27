@@ -1,27 +1,30 @@
 #include "KeyboardInputInternal.h"
 
-KeyboardInputInternal::KeyboardInputInternal(std::shared_ptr<iWindowInternalAPI> windowInternal)
+namespace jle
 {
-	this->windowInternal = windowInternal;
-}
+	KeyboardInputInternal::KeyboardInputInternal(std::shared_ptr<iWindowInternalAPI> windowInternal)
+	{
+		this->windowInternal = windowInternal;
+	}
 
-void KeyboardInputInternal::LinkWindow(std::shared_ptr<iWindowInternalAPI> windowInternal)
-{
-	this->windowInternal = windowInternal;
-}
+	void KeyboardInputInternal::LinkWindow(std::shared_ptr<iWindowInternalAPI> windowInternal)
+	{
+		this->windowInternal = windowInternal;
+	}
 
 
-bool KeyboardInputInternal::GetKeyPressed(char key)
-{
-	return false;
-}
+	bool KeyboardInputInternal::GetKeyPressed(char key)
+	{
+		return false;
+	}
 
-bool KeyboardInputInternal::GetKeyReleased(char key)
-{
-	return false;
-}
+	bool KeyboardInputInternal::GetKeyReleased(char key)
+	{
+		return false;
+	}
 
-bool KeyboardInputInternal::GetKeyDown(char key)
-{
-	return windowInternal->GetKey(key);
+	bool KeyboardInputInternal::GetKeyDown(char key)
+	{
+		return windowInternal->GetKey(key);
+	}
 }

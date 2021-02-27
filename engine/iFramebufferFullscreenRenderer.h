@@ -2,10 +2,14 @@
 
 #include "iFramebuffer.h"
 
-class iFramebufferFullscreenRenderer
+namespace jle
 {
-public:
-	virtual ~iFramebufferFullscreenRenderer(){}
+	class iFramebufferFullscreenRenderer
+	{
+	public:
+		virtual ~iFramebufferFullscreenRenderer() {}
 
-	virtual void RenderFramebufferFullscreen(iFramebuffer& framebuffer, unsigned int screenWidth, unsigned int screenHeight) = 0;
-};
+		virtual void RenderFramebufferFullscreen(iFramebuffer& framebuffer, unsigned int screenWidth, unsigned int screenHeight) = 0;
+	};
+
+}

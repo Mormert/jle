@@ -4,17 +4,22 @@
 
 #include "iQuadRenderingInternal.h"
 
-void RenderingAPI_OpenGL::SetViewportDimensions(int x, int y, unsigned int width, unsigned int height)
+namespace jle
 {
-	glViewport(x, y, static_cast<int>(width), static_cast<int>(height));
+	void RenderingAPI_OpenGL::SetViewportDimensions(int x, int y, unsigned int width, unsigned int height)
+	{
+		glViewport(x, y, static_cast<int>(width), static_cast<int>(height));
+	}
+
+	void RenderingAPI_OpenGL::Render(iFramebuffer& framebufferOut, unsigned int width, unsigned int height)
+	{
+		((iQuadRenderingInternal*)quads.get())->Render(framebufferOut);
+	}
+
+	void RenderingAPI_OpenGL::Setup(std::unique_ptr<iQuadRendering> quads)
+	{
+		this->quads = std::move(quads);
+	}
 }
 
-void RenderingAPI_OpenGL::Render(iFramebuffer& framebufferOut, unsigned int width, unsigned int height)
-{
-	((iQuadRenderingInternal*)quads.get())->Render(framebufferOut);
-}
 
-void RenderingAPI_OpenGL::Setup(std::unique_ptr<iQuadRendering> quads)
-{
-	this->quads = std::move(quads);
-}

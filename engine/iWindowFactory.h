@@ -6,11 +6,15 @@
 
 #include <memory>
 
-class iWindowFactory
+namespace jle
 {
-public:
-	virtual ~iWindowFactory(){}
+	class iWindowFactory
+	{
+	public:
+		virtual ~iWindowFactory() {}
 
-	virtual std::unique_ptr<iWindowAPI> CreateWindow() = 0;
-	virtual std::unique_ptr<iWindowInitializer> CreateWindowInitializer() = 0;
-};
+		virtual std::unique_ptr<iWindowAPI> CreateWindow() = 0;
+		virtual std::unique_ptr<iWindowInitializer> CreateWindowInitializer() = 0;
+	};
+}
+

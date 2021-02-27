@@ -4,23 +4,25 @@
 #include "iWindowLinkable.h"
 #include "iWindowInternalAPI.h"
 
-class MouseInputInternal : public iMouseInput, public iWindowLinkable
+namespace jle
 {
-public:
-	MouseInputInternal(std::shared_ptr<iWindowInternalAPI> windowInternal);
+	class MouseInputInternal : public iMouseInput, public iWindowLinkable
+	{
+	public:
+		MouseInputInternal(std::shared_ptr<iWindowInternalAPI> windowInternal);
 
-	void LinkWindow(std::shared_ptr<iWindowInternalAPI> windowInternal) override;
+		void LinkWindow(std::shared_ptr<iWindowInternalAPI> windowInternal) override;
 
-	int GetMouseX() override;
-	int GetMouseY() override;
+		int GetMouseX() override;
+		int GetMouseY() override;
 
-	float GetMouseXDelta() override;
-	float GetMouseYDelta() override;
+		float GetMouseXDelta() override;
+		float GetMouseYDelta() override;
 
-	float GetScrollX() override;
-	float GetScrollY() override;
+		float GetScrollX() override;
+		float GetScrollY() override;
 
-private:
-	std::shared_ptr<iWindowInternalAPI> windowInternal;
-};
-
+	private:
+		std::shared_ptr<iWindowInternalAPI> windowInternal;
+	};
+}

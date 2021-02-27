@@ -6,14 +6,16 @@
 
 #include "FullscreenRendering_OpenGL.h"
 
-class RenderingAPI_OpenGL : public iRenderingInternalAPI
+namespace jle
 {
-public:
-	~RenderingAPI_OpenGL(){}
+	class RenderingAPI_OpenGL : public iRenderingInternalAPI
+	{
+	public:
+		~RenderingAPI_OpenGL() {}
 
-	void Setup(std::unique_ptr<iQuadRendering> quads) override;
+		void Setup(std::unique_ptr<iQuadRendering> quads) override;
 
-	void SetViewportDimensions(int x, int y, unsigned int width, unsigned int height) override;
-	void Render(iFramebuffer& framebufferOut, unsigned int width, unsigned int height) override;
-};
-
+		void SetViewportDimensions(int x, int y, unsigned int width, unsigned int height) override;
+		void Render(iFramebuffer& framebufferOut, unsigned int width, unsigned int height) override;
+	};
+}

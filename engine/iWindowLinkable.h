@@ -2,9 +2,12 @@
 
 #include "iWindowInternalAPI.h"
 
-class iWindowLinkable
+namespace jle
 {
-public:
-	virtual ~iWindowLinkable(){}
-	virtual void LinkWindow(std::shared_ptr<iWindowInternalAPI> windowInternal) = 0;
-};
+	class iWindowLinkable
+	{
+	public:
+		virtual ~iWindowLinkable() {}
+		virtual void LinkWindow(std::shared_ptr<iWindowInternalAPI> windowInternal) = 0;
+	};
+}

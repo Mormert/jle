@@ -6,49 +6,53 @@
 
 #include <memory>
 
-class GLFWWindowOpenGL : public iWindowInternalAPI
+namespace jle
 {
-public:
+	class GLFWWindowOpenGL : public iWindowInternalAPI
+	{
+	public:
 
-	~GLFWWindowOpenGL();
+		~GLFWWindowOpenGL();
 
-	static void error_callback(int error, const char* description);
-	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+		static void error_callback(int error, const char* description);
+		static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+		static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+		static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-	void SetWindowSettings(WindowSettings& windowSettings) override;
+		void SetWindowSettings(WindowSettings& windowSettings) override;
 
-	void DisplayCursor(bool enable) override;
-	bool IsCursorDisplayed() override;
+		void DisplayCursor(bool enable) override;
+		bool IsCursorDisplayed() override;
 
-	unsigned int GetWindowHeight() override;
-	unsigned int GetWindowWidth() override;
+		unsigned int GetWindowHeight() override;
+		unsigned int GetWindowWidth() override;
 
-	void InitWindow(iWindowInitializer& windowInitializer, std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI) override;
+		void InitWindow(iWindowInitializer& windowInitializer, std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI) override;
 
-	void UpdateWindow() override;
+		void UpdateWindow() override;
 
-	bool WindowShouldClose() override;
+		bool WindowShouldClose() override;
 
-	bool GetKey(char key) override;
-	float GetScrollX() override;
-	float GetScrollY() override;
-	std::pair<int, int> GetCursor() override;
+		bool GetKey(char key) override;
+		float GetScrollX() override;
+		float GetScrollY() override;
+		std::pair<int, int> GetCursor() override;
 
-	static GLFWWindowOpenGL* activeWindow;
+		static GLFWWindowOpenGL* activeWindow;
 
-protected:
-	// Native handle to GLFW window
-	GLFWwindow* nativeWindow;
+	protected:
+		// Native handle to GLFW window
+		GLFWwindow* nativeWindow;
 
-	WindowSettings windowSettings;
+		WindowSettings windowSettings;
 
-	float currentScrollX;
-	float currentScrollY;
+		float currentScrollX;
+		float currentScrollY;
 
-	bool cursorVisible{ false };
+		bool cursorVisible{ false };
 
-private:
-	std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI;
-};
+	private:
+		std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI;
+	};
+}
+

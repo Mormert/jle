@@ -4,19 +4,23 @@
 #include "iWindowLinkable.h"
 #include "iWindowInternalAPI.h"
 
-class KeyboardInputInternal : public iKeyboardInput, public iWindowLinkable
+namespace jle
 {
-public:
-	KeyboardInputInternal(std::shared_ptr<iWindowInternalAPI> windowInternal);
-	
-	void LinkWindow(std::shared_ptr<iWindowInternalAPI> windowInternal) override;
+	class KeyboardInputInternal : public iKeyboardInput, public iWindowLinkable
+	{
+	public:
+		KeyboardInputInternal(std::shared_ptr<iWindowInternalAPI> windowInternal);
 
-	bool GetKeyPressed(char key) override;
+		void LinkWindow(std::shared_ptr<iWindowInternalAPI> windowInternal) override;
 
-	bool GetKeyReleased(char key) override;
+		bool GetKeyPressed(char key) override;
 
-	bool GetKeyDown(char key) override;
+		bool GetKeyReleased(char key) override;
 
-private:
-	std::shared_ptr<iWindowInternalAPI> windowInternal;
-};
+		bool GetKeyDown(char key) override;
+
+	private:
+		std::shared_ptr<iWindowInternalAPI> windowInternal;
+	};
+}
+

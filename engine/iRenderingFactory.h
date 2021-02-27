@@ -7,16 +7,19 @@
 
 #include <memory>
 
-class iRenderingFactory
+namespace jle
 {
-public:
-	virtual ~iRenderingFactory(){}
+	class iRenderingFactory
+	{
+	public:
+		virtual ~iRenderingFactory() {}
 
-	virtual std::unique_ptr<iRenderingAPI> CreateRenderingAPI() = 0;
-	virtual std::unique_ptr<iQuadRendering> CreateQuadRendering() = 0;
-	virtual std::unique_ptr<iFullscreenRendering> CreateFullscreenRendering() = 0;
+		virtual std::unique_ptr<iRenderingAPI> CreateRenderingAPI() = 0;
+		virtual std::unique_ptr<iQuadRendering> CreateQuadRendering() = 0;
+		virtual std::unique_ptr<iFullscreenRendering> CreateFullscreenRendering() = 0;
 
 
-	virtual std::unique_ptr<iFramebuffer> CreateFramebuffer(unsigned int width, unsigned int height) = 0;
+		virtual std::unique_ptr<iFramebuffer> CreateFramebuffer(unsigned int width, unsigned int height) = 0;
 
-};
+	};
+}

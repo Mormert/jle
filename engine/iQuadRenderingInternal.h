@@ -4,12 +4,15 @@
 
 #include "iFramebuffer.h"
 
-class iQuadRenderingInternal : public iQuadRendering
+namespace jle
 {
+	class iQuadRenderingInternal : public iQuadRendering
+	{
 
-public:
-	virtual ~iQuadRenderingInternal(){}
+	public:
+		virtual ~iQuadRenderingInternal() {}
 
-	// Renders to an output framebuffer
-	virtual void Render(iFramebuffer& framebufferOut) = 0;
-};
+		// Renders to an output framebuffer
+		virtual void Render(iFramebuffer& framebufferOut) = 0;
+	};
+}

@@ -4,11 +4,13 @@
 
 #include <memory>
 
-class GLFWWindowFactory : public iWindowFactory
+namespace jle
 {
-public:
-	std::unique_ptr<iWindowAPI> CreateWindow() override;
+	class GLFWWindowFactory : public iWindowFactory
+	{
+	public:
+		std::unique_ptr<iWindowAPI> CreateWindow() override;
 
-	virtual std::unique_ptr<iWindowInitializer> CreateWindowInitializer() override;
-};
-
+		virtual std::unique_ptr<iWindowInitializer> CreateWindowInitializer() override;
+	};
+}
