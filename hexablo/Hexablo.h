@@ -1,17 +1,18 @@
 #pragma once
 
-#include "jleCore.h"
+#include "jleGameEngine.h"
 #include "ObjectManager.h"
 
-class Hexablo final : public jle::jleCore
+class Hexablo final : public jle::jleGameEngine
 {
 public:
 
 	// Inherits ctors
-	using jleCore::jleCore;
+	using jleGameEngine::jleGameEngine;
 
-	void Start() override;
-	void Update(float dt) override;
+
+	//virtual void Start(jle::CoreSettings cs) override;
+	virtual void Update(float dt) override;
 private:
 
 	ObjectManager objectManager;

@@ -28,8 +28,8 @@ HexMap hexMap;
 float y = 134;
 float x = 40;
 
-void Hexablo::Start()
-{
+//void Hexablo::Start(jle::CoreSettings cs)
+//{
 	/*myAnimation.InsertFrame(mySprite);
 
 	debugRenderer.AddText<float*>(&posx);
@@ -40,7 +40,7 @@ void Hexablo::Start()
 
 	hexMap.GenerateHexagons();*/
 
-}
+//}
 
 void Hexablo::Update(float dt)
 {
@@ -68,8 +68,8 @@ void Hexablo::Update(float dt)
 	tq.textureY = 15;
 	tq.width = 15;
 	tq.height = 15;
-	tq.x = static_cast<int>(x);
-	tq.y = static_cast<int>(y);
+	tq.x = x;
+	tq.y = y;
 
 	rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
 

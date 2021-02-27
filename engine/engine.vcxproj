@@ -34,6 +34,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="InputState.cpp" />
     <ClCompile Include="iQuadRendering.h" />
+    <ClCompile Include="jleGameEngine.cpp" />
     <ClCompile Include="KeyboardInputInternal.cpp" />
     <ClCompile Include="MouseInputInternal.cpp" />
     <ClCompile Include="OpenGLFrameBuffer.cpp" />
@@ -80,13 +81,14 @@
     <ClInclude Include="InputState.h" />
     <ClInclude Include="iQuadRenderingInternal.h" />
     <ClInclude Include="iRenderingAPI.h" />
-    <ClInclude Include="iRenderingClassesFactory.h" />
+    <ClInclude Include="iRenderingFactory.h" />
     <ClInclude Include="iRenderingInternalAPI.h" />
     <ClInclude Include="iWindowFactory.h" />
     <ClInclude Include="iWindowInitializer.h" />
     <ClInclude Include="iWindowAPI.h" />
     <ClInclude Include="iWindowInternalAPI.h" />
     <ClInclude Include="iWindowLinkable.h" />
+    <ClInclude Include="jleGameEngine.h" />
     <ClInclude Include="KeyboardInputInternal.h" />
     <ClInclude Include="MouseInputInternal.h" />
     <ClInclude Include="no_copy_no_move.h" />

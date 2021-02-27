@@ -1,7 +1,7 @@
 #pragma once
-#include "iRenderingClassesFactory.h"
+#include "iRenderingFactory.h"
 
-class OpenGLRenderingFactory : public iRenderingClassesFactory
+class OpenGLRenderingFactory : public iRenderingFactory
 {
 public:
 	virtual std::unique_ptr<iRenderingAPI> CreateRenderingAPI() override;

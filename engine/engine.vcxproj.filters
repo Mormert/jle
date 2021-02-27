@@ -144,6 +144,9 @@
     <ClCompile Include="jleCore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="jleGameEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\imgui_impl_glfw.h">
@@ -287,9 +290,6 @@
     <ClInclude Include="OpenGLFullscreenRendering.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="iRenderingClassesFactory.h">
-      <Filter>Header Files\Interfaces\external</Filter>
-    </ClInclude>
     <ClInclude Include="OpenGLRenderingFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -300,6 +300,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="jleCore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iRenderingFactory.h">
+      <Filter>Header Files\Interfaces\external</Filter>
+    </ClInclude>
+    <ClInclude Include="jleGameEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

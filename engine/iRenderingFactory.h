@@ -7,10 +7,10 @@
 
 #include <memory>
 
-class iRenderingClassesFactory
+class iRenderingFactory
 {
 public:
-	virtual ~iRenderingClassesFactory(){}
+	virtual ~iRenderingFactory(){}
 
 	virtual std::unique_ptr<iRenderingAPI> CreateRenderingAPI() = 0;
 	virtual std::unique_ptr<iQuadRendering> CreateQuadRendering() = 0;

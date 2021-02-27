@@ -20,11 +20,9 @@
 namespace jle
 {
 
-	static std::unique_ptr<iFullscreenRendering> fullscreenRenderer;
-
 	jleCore* jleCore::core { nullptr };
 
-	std::unique_ptr<iRenderingClassesFactory> CreateRenderingFactory(EngineInternalAPIs& eia)
+	std::unique_ptr<iRenderingFactory> CreateRenderingFactory(EngineInternalAPIs& eia)
 	{
 		switch (eia.renderingAPI)
 		{
@@ -50,32 +48,34 @@ namespace jle
 		}
 	}
 
-
-	jleCore::jleCore(EngineSettings es) : 
-		renderingFactory { CreateRenderingFactory(es.engineAPIs) },
-		windowFactory { CreateWindowFactory(es.engineAPIs) }
+	struct jleCore::jleCoreInternalImpl
 	{
+		std::shared_ptr<iRenderingInternalAPI> rendering_internal;
+		std::shared_ptr<iWindowInternalAPI> window_internal;
 
-		window = windowFactory->CreateWindow();
-		rendering = renderingFactory->CreateRenderingAPI();
+		CoreSettings cs;
+	};
 
-		iWindowInternalAPI& windowInternal = *(iWindowInternalAPI*)window.get();
+	jleCore::jleCore(CoreSettings cs) : 
+		renderingFactory { CreateRenderingFactory(cs.engineAPIs) },
+		windowFactory { CreateWindowFactory(cs.engineAPIs) },
+		window {windowFactory->CreateWindow()},
+		rendering {renderingFactory->CreateRenderingAPI()},
+		input{ std::make_shared<InputAPI>( std::make_shared<KeyboardInputInternal>(std::static_pointer_cast<iWindowInternalAPI>(window)),
+											std::make_shared<MouseInputInternal>(std::static_pointer_cast<iWindowInternalAPI>(window)))},
+		window_initializer{windowFactory->CreateWindowInitializer()}
 
-		std::unique_ptr<iWindowInitializer> windowInitializer = windowFactory->CreateWindowInitializer();
-		windowInternal.SetWindowSettings(es.windowSettings);
-		windowInternal.InitWindow(*windowInitializer, std::static_pointer_cast<iRenderingInternalAPI>(rendering) );
+	{
+		coreImpl = std::make_unique<jleCoreInternalImpl>();
+		coreImpl->rendering_internal = std::static_pointer_cast<iRenderingInternalAPI>(rendering);
+		coreImpl->window_internal = std::static_pointer_cast<iWindowInternalAPI>(window);
 
-		input = std::make_shared<InputAPI>(
-			std::make_shared<KeyboardInputInternal>(std::static_pointer_cast<iWindowInternalAPI>(window)),
-			std::make_shared<MouseInputInternal>(std::static_pointer_cast<iWindowInternalAPI>(window)));
+		coreImpl->window_internal->SetWindowSettings(cs.windowSettings);
 
-
-		((iRenderingInternalAPI*)rendering.get())->Setup(renderingFactory->CreateQuadRendering());
-
-		framebuffer_main = renderingFactory->CreateFramebuffer(es.windowSettings.windowWidth, es.windowSettings.windowHeight);
-		fullscreenRenderer = renderingFactory->CreateFullscreenRendering();
-
+		coreImpl->cs = cs;
 	}
+
+	jleCore::~jleCore() = default;
 
 	void jleCore::Run()
 	{
@@ -86,8 +86,11 @@ namespace jle
 		}
 		core = this;
 
+		coreImpl->window_internal->InitWindow(*window_initializer, coreImpl->rendering_internal);
+		coreImpl->rendering_internal->Setup(renderingFactory->CreateQuadRendering());
+
 		running = true;
-		Start();
+		Start(coreImpl->cs);
 		Loop();
 	}
 
@@ -97,8 +100,7 @@ namespace jle
 		{
 			EngineStatus::UpdateEngineStatus();
 
-			((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
-			fullscreenRenderer->RenderFramebufferFullscreen(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
+			Render();
 
 			Update(static_cast<float>(EngineStatus::deltaTime));
 
