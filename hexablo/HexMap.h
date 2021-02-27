@@ -1,8 +1,9 @@
 #pragma once
 
+/*
 #include <vector>
 
-#include "Sprite.h"
+//#include "Sprite.h"
 
 
 
@@ -16,7 +17,7 @@ public:
 
 private:
 	int worldX, worldY;
-	jle::graphics::Sprite sprite;
+	//jle::graphics::Sprite sprite;
 };
 
 
@@ -29,5 +30,5 @@ public:
 
 private:
 	std::vector<Hexagon> hexagons;
-};
+};*/
 

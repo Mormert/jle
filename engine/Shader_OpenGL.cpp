@@ -1,4 +1,4 @@
-#include "Shader.h"
+#include "Shader_OpenGL.h"
 
 #include "3rdparty/glad/glad.h"
 
@@ -11,9 +11,9 @@
 
 namespace jle
 {
-	namespace internals
+	namespace gfx
 	{
-		Shader::Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath)
+		Shader_OpenGL::Shader_OpenGL(const char* vertexPath, const char* fragmentPath, const char* geometryPath)
 		{
 
 			std::string vertexCode;
@@ -95,7 +95,7 @@ namespace jle
 
 		}
 
-		Shader::Shader(std::string vertexCode, std::string fragmentCode, std::string geometryCode)
+		Shader_OpenGL::Shader_OpenGL(std::string vertexCode, std::string fragmentCode, std::string geometryCode)
 		{
 			const char* vShaderCode = vertexCode.c_str();
 			const char* fShaderCode = fragmentCode.c_str();
@@ -136,78 +136,78 @@ namespace jle
 				glDeleteShader(geometry);
 		}
 
-		Shader::~Shader()
+		Shader_OpenGL::~Shader_OpenGL()
 		{
 			glDeleteProgram(ID);
 		}
 
-		void Shader::Use()
+		void Shader_OpenGL::Use()
 		{
 			glUseProgram(ID);
 		}
 
-		void Shader::SetBool(const std::string& name, bool value) const
+		void Shader_OpenGL::SetBool(const std::string& name, bool value) const
 		{
 			glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
 		}
 
-		void Shader::SetInt(const std::string& name, int value) const
+		void Shader_OpenGL::SetInt(const std::string& name, int value) const
 		{
 			glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 		}
 
-		void Shader::SetFloat(const std::string& name, float value) const
+		void Shader_OpenGL::SetFloat(const std::string& name, float value) const
 		{
 			glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 		}
 
-		void Shader::SetVec2(const std::string& name, const glm::vec2& value) const
+		void Shader_OpenGL::SetVec2(const std::string& name, const glm::vec2& value) const
 		{
 			glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
 		}
 
-		void Shader::SetVec2(const std::string& name, float x, float y) const
+		void Shader_OpenGL::SetVec2(const std::string& name, float x, float y) const
 		{
 			glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y);
 		}
 
-		void Shader::SetVec3(const std::string& name, const glm::vec3& value) const
+		void Shader_OpenGL::SetVec3(const std::string& name, const glm::vec3& value) const
 		{
 			glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
 		}
 
-		void Shader::SetVec3(const std::string& name, float x, float y, float z) const
+		void Shader_OpenGL::SetVec3(const std::string& name, float x, float y, float z) const
 		{
 			glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
 		}
 
-		void Shader::SetVec4(const std::string& name, const glm::vec4& value) const
+		void Shader_OpenGL::SetVec4(const std::string& name, const glm::vec4& value) const
 		{
 			glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
 		}
 
-		void Shader::SetVec4(const std::string& name, float x, float y, float z, float w)
+		void Shader_OpenGL::SetVec4(const std::string& name, float x, float y, float z, float w)
 		{
 			glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
 		}
 
-		void Shader::SetMat2(const std::string& name, const glm::mat2& mat) const
+		void Shader_OpenGL::SetMat2(const std::string& name, const glm::mat2& mat) const
 		{
 			glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 		}
 
-		void Shader::SetMat3(const std::string& name, const glm::mat3& mat) const
+		void Shader_OpenGL::SetMat3(const std::string& name, const glm::mat3& mat) const
 		{
 			glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 		}
 
-		void Shader::SetMat4(const std::string& name, const glm::mat4& mat) const
+		void Shader_OpenGL::SetMat4(const std::string& name, const glm::mat4& mat) const
 		{
 			glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 		}
 
 
-		void Shader::CheckCompileErrors(unsigned int shader, std::string type)
+		void Shader_OpenGL::CheckCompileErrors(unsigned int shader, std::string type)
 		{
 			GLint success;
 			GLchar infoLog[1024];

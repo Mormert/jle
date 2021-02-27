@@ -2,19 +2,19 @@
 
 #include "iFramebufferFullscreenRenderer.h"
 
-#include "Shader.h"
+#include "Shader_OpenGL.h"
 
-class OpenGLFramebufferFullscreenRenderer : iFramebufferFullscreenRenderer
+class FramebufferFullscreenRenderer_OpenGL : iFramebufferFullscreenRenderer
 {
 public:
-	virtual ~OpenGLFramebufferFullscreenRenderer();
+	virtual ~FramebufferFullscreenRenderer_OpenGL();
 
-	OpenGLFramebufferFullscreenRenderer();
+	FramebufferFullscreenRenderer_OpenGL();
 
 	// Inherited via iFramebufferFullscreenRenderer
 	virtual void RenderFramebufferFullscreen(iFramebuffer& framebuffer, unsigned int screenWidth, unsigned int screenHeight) override;
 
 private:
-	jle::internals::Shader quadScreenShader;
+	jle::gfx::Shader_OpenGL quadScreenShader;
 	unsigned int quadVAO, quadVBO;
 };

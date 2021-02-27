@@ -6,13 +6,13 @@
 #include "MouseInputInternal.h"
 
 #include "GLFWWindowOpenGL.h"
-#include "OpenGLRenderingAPI.h"
+#include "RenderingAPI_OpenGL.h"
 #include "GLFWOpenGL33WindowInitializer.h"
-#include "OpenGLQuadRendering.h"
-#include "OpenGLFrameBuffer.h"
-#include "OpenGLFullscreenRendering.h"
+#include "QuadRendering_OpenGL.h"
+#include "FrameBuffer_OpenGL.h"
+#include "FullscreenRendering_OpenGL.h"
 
-#include "OpenGLRenderingFactory.h"
+#include "RenderingFactory_OpenGL.h"
 #include "GLFWWindowFactory.h"
 
 #include <iostream>
@@ -27,7 +27,7 @@ namespace jle
 		switch (eia.renderingAPI)
 		{
 		case EngineInternalAPIs::RenderingAPI::OPENGL_33:
-			return std::make_unique<OpenGLRenderingFactory>();
+			return std::make_unique<RenderingFactory_OpenGL>();
 		default:
 			std::cerr << "Setting rendering API failed!\n";
 			exit(1);

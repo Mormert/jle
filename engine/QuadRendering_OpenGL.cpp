@@ -1,4 +1,4 @@
-#include "OpenGLQuadRendering.h"
+#include "QuadRendering_OpenGL.h"
 
 #include "3rdparty/glad/glad.h"
 
@@ -63,7 +63,7 @@ const unsigned char quadIndices[] = { 0,1,2, // first triangle (bottom left - to
 									0,2,3 }; // second triangle (bottom left - top right - bottom right)
 
 
-OpenGLQuadRendering::OpenGLQuadRendering()
+QuadRendering_OpenGL::QuadRendering_OpenGL()
 	: quadShader{ quadVertexShaderSrc, quadFragShaderSrc }
 {
 
@@ -94,23 +94,23 @@ OpenGLQuadRendering::OpenGLQuadRendering()
 	glBindVertexArray(0);
 }
 
-OpenGLQuadRendering::~OpenGLQuadRendering()
+QuadRendering_OpenGL::~QuadRendering_OpenGL()
 {
 	glDeleteBuffers(1, &quadVBO);
 	glDeleteVertexArrays(1, &quadVAO);
 }
 
-void OpenGLQuadRendering::SendTexturedQuad(TexturedQuad& texturedQuad, RenderingMethod renderingMethod)
+void QuadRendering_OpenGL::SendTexturedQuad(TexturedQuad& texturedQuad, RenderingMethod renderingMethod)
 {
 	texturedQuads.push_back(texturedQuad);
 }
 
-void OpenGLQuadRendering::SendColoredQuad(ColoredQuad& coloredQuad, RenderingMethod renderingMethod)
+void QuadRendering_OpenGL::SendColoredQuad(ColoredQuad& coloredQuad, RenderingMethod renderingMethod)
 {
 	
 }
 
-void OpenGLQuadRendering::Render(iFramebuffer& framebufferOut)
+void QuadRendering_OpenGL::Render(iFramebuffer& framebufferOut)
 {
 	const int viewportWidth = framebufferOut.GetWidth();
 	const int viewportHeight = framebufferOut.GetHeight();

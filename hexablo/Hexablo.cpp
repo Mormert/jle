@@ -1,9 +1,9 @@
 #include "Hexablo.h"
 
-#include "Input.h"
+//#include "Input.h"
 #include "EngineStatus.h"
-#include "Sprite.h"
-#include "Animation.h"
+//#include "Sprite.h"
+//#include "Animation.h"
 #include "GameObject.h"
 
 #include "HexMap.h"
@@ -18,12 +18,12 @@ jle::graphics::Texture myTexture2{ "GameAssets/FullScene.png" };
 float posx = 200;
 float posy = 25;
 
-jle::graphics::Sprite mySprite(myTexture ,39, 48, 11, 26);
+//jle::graphics::Sprite mySprite(myTexture ,39, 48, 11, 26);
 
-jle::graphics::Sprite mySprite2(myTexture2, 0, 0, 384, 216);
+//jle::graphics::Sprite mySprite2(myTexture2, 0, 0, 384, 216);
 
-jle::graphics::Animation myAnimation;
-HexMap hexMap;
+//jle::graphics::Animation myAnimation;
+//HexMap hexMap;
 
 float y = 134;
 float x = 40;

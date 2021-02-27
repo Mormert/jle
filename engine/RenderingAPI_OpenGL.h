@@ -1,15 +1,15 @@
 #pragma once
 
-#include "OpenGLFrameBuffer.h"
+#include "FrameBuffer_OpenGL.h"
 #include "iRenderingInternalAPI.h"
 #include "iWindowInitializer.h"
 
-#include "OpenGLFullscreenRendering.h"
+#include "FullscreenRendering_OpenGL.h"
 
-class OpenGLRenderingAPI : public iRenderingInternalAPI
+class RenderingAPI_OpenGL : public iRenderingInternalAPI
 {
 public:
-	~OpenGLRenderingAPI(){}
+	~RenderingAPI_OpenGL(){}
 
 	void Setup(std::unique_ptr<iQuadRendering> quads) override;
 

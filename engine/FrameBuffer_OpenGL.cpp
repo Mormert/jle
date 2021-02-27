@@ -1,14 +1,14 @@
-#include "OpenGLFrameBuffer.h"
+#include "FrameBuffer_OpenGL.h"
 
 #include "3rdparty/glad/glad.h"
 #include <iostream>
 
-OpenGLFrameBuffer::OpenGLFrameBuffer(unsigned int width, unsigned int height)
+Framebuffer_OpenGL::Framebuffer_OpenGL(unsigned int width, unsigned int height)
 {
 	CreateFramebuffer(width, height);
 }
 
-OpenGLFrameBuffer::~OpenGLFrameBuffer()
+Framebuffer_OpenGL::~Framebuffer_OpenGL()
 {
 	glDeleteFramebuffers(1, &framebuffer);
 	glDeleteRenderbuffers(1, &rbo);
@@ -17,7 +17,7 @@ OpenGLFrameBuffer::~OpenGLFrameBuffer()
 	std::cout << "Deleted Framebuffer with id " << framebuffer << "!\n";
 }
 
-void OpenGLFrameBuffer::CreateFramebuffer(unsigned int width, unsigned int height)
+void Framebuffer_OpenGL::CreateFramebuffer(unsigned int width, unsigned int height)
 {
 	this->width = width;
 	this->height = height;
@@ -55,27 +55,27 @@ void OpenGLFrameBuffer::CreateFramebuffer(unsigned int width, unsigned int heigh
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void OpenGLFrameBuffer::BindToFramebuffer()
+void Framebuffer_OpenGL::BindToFramebuffer()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 }
 
-void OpenGLFrameBuffer::BindToDefaultFramebuffer()
+void Framebuffer_OpenGL::BindToDefaultFramebuffer()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-unsigned int OpenGLFrameBuffer::GetWidth()
+unsigned int Framebuffer_OpenGL::GetWidth()
 {
     return width;
 }
 
-unsigned int OpenGLFrameBuffer::GetHeight()
+unsigned int Framebuffer_OpenGL::GetHeight()
 {
     return height;
 }
 
-void* OpenGLFrameBuffer::GetTexture()
+void* Framebuffer_OpenGL::GetTexture()
 {
     return (void*)texColorBuffer;
 }

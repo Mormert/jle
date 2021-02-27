@@ -2,17 +2,17 @@
 
 #include "iQuadRenderingInternal.h"
 
-#include "Shader.h"
+#include "Shader_OpenGL.h"
 
 #include <vector>
 
-class OpenGLQuadRendering : public iQuadRenderingInternal
+class QuadRendering_OpenGL : public iQuadRenderingInternal
 {
 public:
 
-	OpenGLQuadRendering();
+	QuadRendering_OpenGL();
 
-	virtual ~OpenGLQuadRendering();
+	virtual ~QuadRendering_OpenGL();
 
 	// Inherited via iQuadRenderingInternal
 	virtual void SendTexturedQuad(TexturedQuad& texturedQuad, RenderingMethod renderingMethod) override;
@@ -20,7 +20,7 @@ public:
 	virtual void Render(iFramebuffer& framebufferOut) override;
 
 private:
-	jle::internals::Shader quadShader;
+	jle::gfx::Shader_OpenGL quadShader;
 	unsigned int quadVBO, quadVAO;
 
 	std::vector<TexturedQuad> texturedQuads;

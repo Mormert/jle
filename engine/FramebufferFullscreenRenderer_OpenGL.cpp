@@ -1,4 +1,4 @@
-#include "OpenGLFramebufferFullscreenRenderer.h"
+#include "FramebufferFullscreenRenderer_OpenGL.h"
 
 #include "3rdparty/glad/glad.h"
 #include "GLStateMachine.h"
@@ -44,13 +44,13 @@ constexpr float quadVertices[] = { // Vertex attributes for a quad that fills th
 	 1.0f,  1.0f,  1.0f, 1.0f
 };
 
-OpenGLFramebufferFullscreenRenderer::~OpenGLFramebufferFullscreenRenderer()
+FramebufferFullscreenRenderer_OpenGL::~FramebufferFullscreenRenderer_OpenGL()
 {
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
 }
 
-OpenGLFramebufferFullscreenRenderer::OpenGLFramebufferFullscreenRenderer() :
+FramebufferFullscreenRenderer_OpenGL::FramebufferFullscreenRenderer_OpenGL() :
 	quadScreenShader{ quadScreenShaderVertexSource, quadScreenShaderFragSource }
 {
 	// Configure screen quad
@@ -65,7 +65,7 @@ OpenGLFramebufferFullscreenRenderer::OpenGLFramebufferFullscreenRenderer() :
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
 
-void OpenGLFramebufferFullscreenRenderer::RenderFramebufferFullscreen(iFramebuffer& framebuffer, unsigned int screenWidth, unsigned int screenHeight)
+void FramebufferFullscreenRenderer_OpenGL::RenderFramebufferFullscreen(iFramebuffer& framebuffer, unsigned int screenWidth, unsigned int screenHeight)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default framebuffer
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);

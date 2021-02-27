@@ -1,5 +1,6 @@
 #include "HexMap.h"
 
+/*
 
 #include <iostream>
 
@@ -63,5 +64,5 @@ void HexMap::GenerateHexagons()
 		}
 		a = !a;
 	}
-
-}
+	
+}*/

@@ -1,4 +1,4 @@
-#include "OpenGLFullscreenRendering.h"
+#include "FullscreenRendering_OpenGL.h"
 
 #include "3rdparty/glad/glad.h"
 
@@ -49,7 +49,7 @@ constexpr float quadVertices[] = { // Vertex attributes for a quad that fills th
 
 
 
-OpenGLFullscreenRendering::OpenGLFullscreenRendering()
+FullscreenRendering_OpenGL::FullscreenRendering_OpenGL()
 	: quadScreenShader{ quadScreenShaderVertexSource, quadScreenShaderFragSource }
 {
 	// Configure screen quad
@@ -64,13 +64,13 @@ OpenGLFullscreenRendering::OpenGLFullscreenRendering()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
 
-OpenGLFullscreenRendering::~OpenGLFullscreenRendering()
+FullscreenRendering_OpenGL::~FullscreenRendering_OpenGL()
 {
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
 }
 
-void OpenGLFullscreenRendering::RenderFramebufferFullscreen(iFramebuffer& framebuffer, unsigned int screenWidth, unsigned int screenHeight)
+void FullscreenRendering_OpenGL::RenderFramebufferFullscreen(iFramebuffer& framebuffer, unsigned int screenWidth, unsigned int screenHeight)
 {
 
 	glViewport(0, 0, screenWidth, screenHeight);

@@ -51,18 +51,6 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="InputState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="3rdparty\imgui_impl_glfw.cpp">
       <Filter>3rdparty</Filter>
     </ClCompile>
@@ -75,40 +63,16 @@
     <ClCompile Include="3rdparty\stb_image.cpp">
       <Filter>3rdparty</Filter>
     </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Framebuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ScreenFramebuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PixelQuadRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Viewport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GLStateMachine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DebugRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GLFWWindowOpenGL.cpp">
       <Filter>Source Files\internal</Filter>
     </ClCompile>
     <ClCompile Include="GLFWOpenGL33WindowInitializer.cpp">
-      <Filter>Source Files\internal</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLRenderingAPI.cpp">
       <Filter>Source Files\internal</Filter>
     </ClCompile>
     <ClCompile Include="MouseInputInternal.cpp">
@@ -120,24 +84,6 @@
     <ClCompile Include="iQuadRendering.h">
       <Filter>Header Files\Interfaces\external</Filter>
     </ClCompile>
-    <ClCompile Include="Camera2Dold.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLFrameBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLFramebufferFullscreenRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLQuadRendering.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLFullscreenRendering.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpenGLRenderingFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GLFWWindowFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -147,6 +93,27 @@
     <ClCompile Include="jleGameEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Shader_OpenGL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingFactory_OpenGL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QuadRendering_OpenGL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBuffer_OpenGL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FullscreenRendering_OpenGL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FramebufferFullscreenRenderer_OpenGL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingAPI_OpenGL.cpp">
+      <Filter>Source Files\internal</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\imgui_impl_glfw.h">
@@ -155,22 +122,10 @@
     <ClInclude Include="3rdparty\imgui_impl_opengl3.h">
       <Filter>3rdparty</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="EngineStatus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InputState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="3rdparty\glad\glad.h">
@@ -182,31 +137,10 @@
     <ClInclude Include="3rdparty\stb_image.h">
       <Filter>3rdparty</Filter>
     </ClInclude>
-    <ClInclude Include="Input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Framebuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ScreenFramebuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PixelQuadRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Viewport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GLStateMachine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DebugRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="iAudioAPI.h">
@@ -236,9 +170,6 @@
     <ClInclude Include="GLFWOpenGL33WindowInitializer.h">
       <Filter>Header Files\internal</Filter>
     </ClInclude>
-    <ClInclude Include="OpenGLRenderingAPI.h">
-      <Filter>Header Files\internal</Filter>
-    </ClInclude>
     <ClInclude Include="no_copy_no_move.h">
       <Filter>Header Files\utility</Filter>
     </ClInclude>
@@ -263,35 +194,17 @@
     <ClInclude Include="iQuadRenderingInternal.h">
       <Filter>Header Files\Interfaces\internal</Filter>
     </ClInclude>
-    <ClInclude Include="Camera2Dold.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Camera2d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="iFramebuffer.h">
       <Filter>Header Files\Interfaces\internal</Filter>
     </ClInclude>
-    <ClInclude Include="OpenGLFrameBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="iFramebufferFullscreenRenderer.h">
       <Filter>Header Files\Interfaces\internal</Filter>
     </ClInclude>
-    <ClInclude Include="OpenGLFramebufferFullscreenRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLQuadRendering.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="iFullscreenRendering.h">
       <Filter>Header Files\Interfaces\internal</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLFullscreenRendering.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLRenderingFactory.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="iWindowFactory.h">
       <Filter>Header Files\Interfaces\external</Filter>
@@ -307,6 +220,27 @@
     </ClInclude>
     <ClInclude Include="jleGameEngine.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader_OpenGL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingFactory_OpenGL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadRendering_OpenGL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer_OpenGL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FullscreenRendering_OpenGL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FramebufferFullscreenRenderer_OpenGL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingAPI_OpenGL.h">
+      <Filter>Header Files\internal</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

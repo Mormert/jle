@@ -6,20 +6,20 @@
 
 namespace jle
 {
-	namespace internals
+	namespace gfx
 	{
-		class Shader
+		class Shader_OpenGL
 		{
 		public:
 			unsigned int ID;
 
 			// Create shader from file
-			explicit Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr);
+			explicit Shader_OpenGL(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr);
 
 			// Create shader from string containing the shader code
-			explicit Shader(std::string vertexCode, std::string fragmentCode, std::string geometryCode = "");
+			explicit Shader_OpenGL(std::string vertexCode, std::string fragmentCode, std::string geometryCode = "");
 
-			~Shader();
+			~Shader_OpenGL();
 
 			void Use();
 
