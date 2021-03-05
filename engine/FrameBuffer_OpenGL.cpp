@@ -57,6 +57,22 @@ namespace jle
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
+	void Framebuffer_OpenGL::ResizeFramebuffer(unsigned int width, unsigned int height)
+	{
+		this->width = width;
+		this->height = height;
+
+		// resize texture
+		glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		// resize renderbuffer
+		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	}
+
 	void Framebuffer_OpenGL::BindToFramebuffer()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
@@ -81,6 +97,8 @@ namespace jle
 	{
 		return (void*)texColorBuffer;
 	}
+
+
 
 }
 

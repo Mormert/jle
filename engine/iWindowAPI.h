@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include <functional>
+
 namespace jle
 {
 	struct WindowSettings
@@ -21,6 +23,8 @@ namespace jle
 		virtual ~iWindowAPI() {};
 
 		virtual void SetWindowSettings(WindowSettings& windowSettings) = 0;
+
+		virtual void SetWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback) = 0;
 
 		virtual void DisplayCursor(bool enable) = 0;
 		virtual bool IsCursorDisplayed() = 0;

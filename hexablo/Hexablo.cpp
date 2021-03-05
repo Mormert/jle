@@ -76,8 +76,8 @@ void Hexablo::Update(float dt)
 	tq.x += 25;
 	rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
 
-	//std::cout << "x, : " << x << ", y: " << y << '\n';
-	std::cout << status->GetCurrentFrameTime() << std::endl;
+	std::cout << "x, : " << x << ", y: " << y << '\n';
+	// std::cout << status->GetCurrentFrameTime() << std::endl;
 
 	/*a++;
 

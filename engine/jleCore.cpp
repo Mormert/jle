@@ -145,7 +145,7 @@ namespace jle
 
 			Render();
 
-			Update(static_cast<float>(EngineStatus::deltaTime));
+			Update(status->GetDeltaFrameTime());
 
 			((iWindowInternalAPI*)window.get())->UpdateWindow();
 

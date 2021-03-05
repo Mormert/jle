@@ -21,6 +21,8 @@ namespace jle
 
 		virtual void Start(CoreSettings cs) override;
 
+		void FramebufferResizeEvent(unsigned int width, unsigned int height);
+
 	protected:
 		virtual void Update(float dt) override;
 		virtual void Render() override;

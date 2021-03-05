@@ -12,10 +12,14 @@ namespace jle
 
 		virtual ~Framebuffer_OpenGL();
 		virtual void CreateFramebuffer(unsigned int width, unsigned int height) override;
+		virtual void ResizeFramebuffer(unsigned int width, unsigned int height) override;
+
 		virtual void BindToFramebuffer() override;
 		virtual void BindToDefaultFramebuffer() override;
+
 		virtual unsigned int GetWidth() override;
 		virtual unsigned int GetHeight() override;
+
 		virtual void* GetTexture() override;
 
 	private:

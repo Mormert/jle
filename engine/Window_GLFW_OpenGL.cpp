@@ -32,7 +32,7 @@ namespace jle
 		activeWindow->windowSettings.windowWidth = static_cast<unsigned int>(width);
 		activeWindow->windowSettings.windowHeight = static_cast<unsigned int>(height);
 
-		//if (resizeEvent) { (*resizeEvent)(width, height); }
+		activeWindow->windowResizedCallback(width, height);
 	}
 
 	float Window_GLFW_OpenGL::GetTime()
@@ -155,6 +155,11 @@ namespace jle
 		double x, y;
 		glfwGetCursorPos(nativeWindow, &x, &y);
 		return std::pair<int, int>(static_cast<int>(x), static_cast<int>(y));
+	}
+
+	void Window_GLFW_OpenGL::SetWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback)
+	{
+		windowResizedCallback = std::bind(callback, std::placeholders::_1, std::placeholders::_2);
 	}
 
 

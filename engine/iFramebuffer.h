@@ -8,6 +8,7 @@ namespace jle
 		virtual ~iFramebuffer() {}
 
 		virtual void CreateFramebuffer(unsigned int width, unsigned int height) = 0;
+		virtual void ResizeFramebuffer(unsigned int width, unsigned int height) = 0;
 
 		virtual void BindToFramebuffer() = 0;
 		virtual void BindToDefaultFramebuffer() = 0;
