@@ -28,8 +28,6 @@ namespace jle
 		std::shared_ptr<iRenderingInternalAPI> rendering_internal;
 		std::shared_ptr<iWindowInternalAPI> window_internal;
 		std::shared_ptr<CoreStatus_Internal> status_internal;
-
-		CoreSettings cs;
 	};
 
 	struct CoreStatus_Internal : CoreStatus
@@ -97,9 +95,9 @@ namespace jle
 
 
 
-	jleCore::jleCore(CoreSettings cs) : 
-		renderingFactory { CreateRenderingFactory(cs.engineAPIs) },
-		windowFactory { CreateWindowFactory(cs.engineAPIs) },
+	jleCore::jleCore(std::shared_ptr<CoreSettings> cs) :
+		renderingFactory { CreateRenderingFactory(cs->engineAPIs) },
+		windowFactory { CreateWindowFactory(cs->engineAPIs) },
 		window {windowFactory->CreateWindow()},
 		rendering {renderingFactory->CreateRenderingAPI()},
 		input{ std::make_shared<InputAPI>( std::make_shared<KeyboardInputInternal>(std::static_pointer_cast<iWindowInternalAPI>(window)),
@@ -113,9 +111,9 @@ namespace jle
 		coreImpl->window_internal = std::static_pointer_cast<iWindowInternalAPI>(window);
 		coreImpl->status_internal = std::static_pointer_cast<CoreStatus_Internal>(status);
 
-		coreImpl->window_internal->SetWindowSettings(cs.windowSettings);
+		coreImpl->window_internal->SetWindowSettings(cs->windowSettings);
 
-		coreImpl->cs = cs;
+		core_settings = cs;
 	}
 
 	jleCore::~jleCore() = default;
@@ -133,7 +131,7 @@ namespace jle
 		coreImpl->rendering_internal->Setup(renderingFactory->CreateQuadRendering());
 
 		running = true;
-		Start(coreImpl->cs);
+		Start();
 		Loop();
 	}
 

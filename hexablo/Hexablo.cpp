@@ -68,15 +68,41 @@ void Hexablo::Update(float dt)
 	tq.textureY = 15;
 	tq.width = 15;
 	tq.height = 15;
-	tq.x = x;
-	tq.y = y;
+	tq.x = static_cast<int>(x);
+	tq.y = static_cast<int>(y);
+
+	int posx = static_cast<int>(x);
+	int posy = static_cast<int>(y);
 
 	rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
 
-	tq.x += 25;
-	rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
+	/*for (int i = -10; i < 10; i++)
+	{
+		for (int j = -10; j < 10; j++)
+		{
+			tq.x = tq.x + i * 6;
+			tq.y = tq.y + j * 6;
+			rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
+		}
+	}*/
 
-	std::cout << "x, : " << x << ", y: " << y << '\n';
+	for (int i = -250; i < 250; i += 15)
+	{
+		//tq.x += i;
+		for (int j = -250; j < 250; j+=15)
+		{
+			tq.x = posx + i;
+			tq.y = posy + j;
+			rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
+		}
+
+		//rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
+	}
+
+	
+	
+
+	//std::cout << "x, : " << x << ", y: " << y << '\n';
 	// std::cout << status->GetCurrentFrameTime() << std::endl;
 
 	/*a++;

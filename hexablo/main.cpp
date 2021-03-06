@@ -1,20 +1,15 @@
 #include "Hexablo.h"
 
-//#include "jleCore.h"
-
 int main()
 {
 
-	//jle::CoreSettings cs;
-	//jle::jleCore game{ cs };
+	auto gameSettings = std::make_shared<jle::GameSettings>();
+		
+	gameSettings->windowSettings.WindowTitle = "Hexablo";
+	gameSettings->framebufferSettings.fixedAxis = jle::FIXED_AXIS::height;
+	gameSettings->framebufferSettings.fixedAxisPixels = 200;
 
-	//game.Run();
-
-
-	jle::CoreSettings engineSettings;
-	engineSettings.windowSettings.WindowTitle = "Hexablo";
-
-	Hexablo hexabloGame{ engineSettings };
+	Hexablo hexabloGame{ gameSettings };
 	hexabloGame.Run();
 
 	return 0;

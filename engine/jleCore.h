@@ -39,6 +39,8 @@ namespace jle
 	{
 		WindowSettings windowSettings;
 		EngineInternalAPIs engineAPIs;
+
+		virtual ~CoreSettings() {}
 	};
 
 	// Core part of the jle engine
@@ -47,7 +49,7 @@ namespace jle
 	public:
 		NO_COPY_NO_MOVE(jleCore)
 
-		jleCore(CoreSettings cs);
+		jleCore(std::shared_ptr<CoreSettings> cs);
 		virtual ~jleCore();
 
 		void Run();
@@ -83,8 +85,10 @@ namespace jle
 		friend struct CoreStatus_Internal;
 
 	protected:
-		virtual void Start(CoreSettings cs) {}
+		virtual void Start() {}
 		virtual void Update(float dt) {}
 		virtual void Render() {}
+
+		std::shared_ptr<CoreSettings> core_settings;
 	};
 }

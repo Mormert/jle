@@ -40,6 +40,17 @@ namespace jle
 
 	constexpr float quadVertices[] = { // Vertex attributes for a quad that fills the entire screen in NDC
 		// positions   // texCoords
+		-1.0f/ 1.5f,  1.0f/ 1.5f,  0.0f, 1.0f,
+		-1.0f / 1.5f, -1.0f / 1.5f,  0.0f, 0.0f,
+		 1.0f / 1.5f, -1.0f / 1.5f,  1.0f, 0.0f,
+
+		-1.0f / 1.5f,  1.0f / 1.5f,  0.0f, 1.0f,
+		 1.0f / 1.5f, -1.0f / 1.5f,  1.0f, 0.0f,
+		 1.0f / 1.5f,  1.0f / 1.5f,  1.0f, 1.0f
+	};
+
+	/*	constexpr float quadVertices[] = { // Vertex attributes for a quad that fills the entire screen in NDC
+		// positions   // texCoords
 		-1.0f,  1.0f,  0.0f, 1.0f,
 		-1.0f, -1.0f,  0.0f, 0.0f,
 		 1.0f, -1.0f,  1.0f, 0.0f,
@@ -47,7 +58,7 @@ namespace jle
 		-1.0f,  1.0f,  0.0f, 1.0f,
 		 1.0f, -1.0f,  1.0f, 0.0f,
 		 1.0f,  1.0f,  1.0f, 1.0f
-	};
+	};*/
 
 
 

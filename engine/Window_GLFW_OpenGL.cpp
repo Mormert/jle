@@ -33,7 +33,7 @@ namespace jle
 		activeWindow->windowSettings.windowHeight = static_cast<unsigned int>(height);
 
 		// Call all subscribed callbacks
-		for (auto callback : activeWindow->windowResizedCallbacks)
+		for (const auto &callback : activeWindow->windowResizedCallbacks)
 		{
 			callback.second(width, height);
 		}
@@ -167,9 +167,7 @@ namespace jle
 
 		// Find first available callback id
 		for (auto it = windowResizedCallbacks.cbegin(), end = windowResizedCallbacks.cend();
-			it != end && i == it->first; ++it, ++i)
-		{
-		}
+			it != end && i == it->first; ++it, ++i) {}
 
 		windowResizedCallbacks.insert(std::make_pair(i, std::bind(callback, std::placeholders::_1, std::placeholders::_2)));
 
