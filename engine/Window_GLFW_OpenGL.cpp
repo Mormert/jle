@@ -32,7 +32,11 @@ namespace jle
 		activeWindow->windowSettings.windowWidth = static_cast<unsigned int>(width);
 		activeWindow->windowSettings.windowHeight = static_cast<unsigned int>(height);
 
-		activeWindow->windowResizedCallback(width, height);
+		// Call all subscribed callbacks
+		for (auto callback : activeWindow->windowResizedCallbacks)
+		{
+			callback.second(width, height);
+		}
 	}
 
 	float Window_GLFW_OpenGL::GetTime()
@@ -157,10 +161,24 @@ namespace jle
 		return std::pair<int, int>(static_cast<int>(x), static_cast<int>(y));
 	}
 
-	void Window_GLFW_OpenGL::SetWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback)
+	unsigned int Window_GLFW_OpenGL::AddWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback)
 	{
-		windowResizedCallback = std::bind(callback, std::placeholders::_1, std::placeholders::_2);
+		unsigned int i = 0;
+
+		// Find first available callback id
+		for (auto it = windowResizedCallbacks.cbegin(), end = windowResizedCallbacks.cend();
+			it != end && i == it->first; ++it, ++i)
+		{
+		}
+
+		windowResizedCallbacks.insert(std::make_pair(i, std::bind(callback, std::placeholders::_1, std::placeholders::_2)));
+
+		return i;
 	}
 
+	void Window_GLFW_OpenGL::RemoveWindowResizeCallback(unsigned int callback_id)
+	{
+		windowResizedCallbacks.erase(callback_id);
+	}
 
 }

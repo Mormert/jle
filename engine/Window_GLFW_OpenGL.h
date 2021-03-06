@@ -5,6 +5,7 @@
 #include "GLFW/glfw3.h"
 
 #include <memory>
+#include <map>
 
 namespace jle
 {
@@ -28,7 +29,8 @@ namespace jle
 
 		virtual void InitWindow(iWindowInitializer& windowInitializer, std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI) override;
 
-		virtual void SetWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback) override;
+		virtual unsigned int AddWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback) override;
+		virtual void RemoveWindowResizeCallback(unsigned int callback_id) override;
 
 		virtual void UpdateWindow() override;
 
@@ -54,8 +56,10 @@ namespace jle
 		bool cursorVisible{ false };
 
 	private:
+		
 		std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI;
-		std::function<void(unsigned int, unsigned int)> windowResizedCallback;
+
+		std::map<unsigned int, std::function<void(unsigned int, unsigned int)>> windowResizedCallbacks;
 	};
 }
 
