@@ -44,6 +44,8 @@ namespace jle
 
 		static Window_GLFW_OpenGL* activeWindow;
 
+		GLFWwindow* GetGLFWWindow(){ return nativeWindow; }
+
 	protected:
 		// Native handle to GLFW window
 		GLFWwindow* nativeWindow;
