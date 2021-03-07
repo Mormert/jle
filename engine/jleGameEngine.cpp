@@ -6,6 +6,7 @@
 
 namespace jle
 {
+
 	jleGameEngine::jleGameEngine(std::shared_ptr<GameSettings> gs) : jleCore{ gs }
 	{
 		SetGameDimsPixels(gs->framebufferSettings.fixedAxis, gs->framebufferSettings.fixedAxisPixels);
@@ -19,11 +20,7 @@ namespace jle
 
 	std::pair<unsigned int, unsigned int> GetFramebufferDimensions(FIXED_AXIS fa, unsigned int pixels_along_axis, unsigned int windowWidth, unsigned int windowHeight)
 	{
-		if (fa == FIXED_AXIS::same_as_window)
-		{
-			return std::make_pair(windowWidth, windowHeight);
-		}
-		else if (fa == FIXED_AXIS::height)
+		if (fa == FIXED_AXIS::height)
 		{
 			float aspect = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
 
@@ -37,12 +34,13 @@ namespace jle
 			unsigned int h = static_cast<unsigned int>(pixels_along_axis * aspect);
 			return std::make_pair(pixels_along_axis, h);
 		}
+
+		return std::make_pair(windowWidth, windowHeight);
 	}
 
 	void jleGameEngine::Start()
 	{
 		auto dims = GetFramebufferDimensions(fixed_axis, gameDimsPixels, core_settings->windowSettings.windowWidth, core_settings->windowSettings.windowHeight);
-		std::cout << dims.first << " " << dims.second << '\n';
 		framebuffer_main = renderingFactory->CreateFramebuffer(dims.first, dims.second);
 
 		fullscreen_renderer = renderingFactory->CreateFullscreenRendering();
@@ -53,7 +51,6 @@ namespace jle
 	void jleGameEngine::FramebufferResizeEvent(unsigned int width, unsigned int height)
 	{
 		auto dims = GetFramebufferDimensions(fixed_axis, gameDimsPixels, width, height);
-		std::cout << dims.first << " " << dims.second << '\n';
 		framebuffer_main->ResizeFramebuffer(dims.first, dims.second);
 	}
 
@@ -63,7 +60,7 @@ namespace jle
 
 	void jleGameEngine::Render()
 	{
-		((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
+		((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get());
 		fullscreen_renderer->RenderFramebufferFullscreen(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
 	}
 }

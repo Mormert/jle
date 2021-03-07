@@ -11,7 +11,7 @@ namespace jle
 		glViewport(x, y, static_cast<int>(width), static_cast<int>(height));
 	}
 
-	void RenderingAPI_OpenGL::Render(iFramebuffer& framebufferOut, unsigned int width, unsigned int height)
+	void RenderingAPI_OpenGL::Render(iFramebuffer& framebufferOut)
 	{
 		((iQuadRenderingInternal*)quads.get())->Render(framebufferOut);
 	}

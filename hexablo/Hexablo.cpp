@@ -45,6 +45,8 @@ float x = 40;
 void Hexablo::Update(float dt)
 {
 
+	jleGameEngine::Update(dt);
+
 	if (input->keyboard->GetKeyDown('A'))
 	{
 		x -= dt * 25.f;

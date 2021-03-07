@@ -117,16 +117,22 @@ namespace jle
 		const int viewportWidth = framebufferOut.GetWidth();
 		const int viewportHeight = framebufferOut.GetHeight();
 
-		glm::mat4 view{ glm::ortho(static_cast<float>(0.f),
+		std::cout << "framebuffer: " << viewportWidth << ", " << viewportHeight << '\n';
+
+		glm::mat4 view{ 1.f };
+		view =  glm::ortho(static_cast<float>(0.f),
 			static_cast<float>(viewportWidth),
 			static_cast<float>(viewportHeight),
-			static_cast<float>(0.f), -1.f, 1.f) };
+			static_cast<float>(0.f), -1.f, 1.f);
 
 		framebufferOut.BindToFramebuffer();
 
 		glClearColor(1.f, 0.f, 0.f, 1.0f); // red
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
+
+		// Change viewport dimensions to match framebuffer's dimensions
+		glViewport(0, 0, viewportWidth, viewportHeight);
 
 		quadShader.Use();
 

@@ -13,7 +13,7 @@ namespace jle
 
 		virtual void Setup(std::unique_ptr<iQuadRendering> quads) = 0;
 
-		virtual void Render(iFramebuffer& framebufferOut, unsigned int width, unsigned int height) = 0;
+		virtual void Render(iFramebuffer& framebufferOut) = 0;
 	};
 }
 

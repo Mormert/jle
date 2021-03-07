@@ -49,7 +49,7 @@ namespace jle
 		 1.0f / 1.5f,  1.0f / 1.5f,  1.0f, 1.0f
 	};
 
-	/*	constexpr float quadVertices[] = { // Vertex attributes for a quad that fills the entire screen in NDC
+	/*constexpr float quadVertices[] = { // Vertex attributes for a quad that fills the entire screen in NDC
 		// positions   // texCoords
 		-1.0f,  1.0f,  0.0f, 1.0f,
 		-1.0f, -1.0f,  0.0f, 0.0f,
@@ -84,21 +84,27 @@ namespace jle
 	}
 
 	void FullscreenRendering_OpenGL::RenderFramebufferFullscreen(iFramebuffer& framebuffer, unsigned int screenWidth, unsigned int screenHeight)
-	{
+	{		
+		// Back to default screen framebuffer
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		glViewport(0, 0, screenWidth, screenHeight);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
+		// Set viewport to cover the entire screen
+		glViewport(0, 0, screenWidth, screenHeight);
 
 		quadScreenShader.Use();
 		glBindVertexArray(quadVAO);
+
+		// Disable depth testing for the fullscreen quad
 		glDisable(GL_DEPTH_TEST);
+
+		// Get the texture from the framebuffer
 		glBindTexture(GL_TEXTURE_2D, (unsigned int)framebuffer.GetTexture());
 		glStaticState.globalActiveTexture = (unsigned int)framebuffer.GetTexture();
+
+		// Draw quad with framebuffer's texture over the entire screen
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 }
