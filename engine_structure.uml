@@ -25,6 +25,8 @@ class iWindowInternalAPI{
 	+ virtual GetCursor()
 }
 
+class Game
+
 class Window_GLFW_OpenGL{
     + GLFWwindow*;
     + iRenderingInternalAPI*
@@ -85,9 +87,10 @@ class Hexablo{
 
 
 jleGameEngine -up-|> jleCore
-Hexablo -up-|> jleGameEngine
+jleGameEngine *-down- Game
+Hexablo -up-|> Game
 
-jleEditor  *-left-  jleGameEngine
+jleEditor  -left-|>  jleGameEngine
 
 jleCore  *-right-  iWindowAPI
 jleCore  *-left-  iRenderingAPI
