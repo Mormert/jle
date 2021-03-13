@@ -21,6 +21,11 @@ namespace jle
 
 	}
 
+	void jleGameEngine::SetGame(std::unique_ptr<jleGame> game)
+	{
+		this->game = std::move(game);
+	}
+
 	void jleGameEngine::SetGameDimsPixels(FIXED_AXIS fa, unsigned int pixels)
 	{
 		fixed_axis = fa;
@@ -66,6 +71,8 @@ namespace jle
 		ImGui_ImplOpenGL3_Init("#version 330 core");
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
+
+		game->Start();
 	}
 
 	void jleGameEngine::FramebufferResizeEvent(unsigned int width, unsigned int height)
@@ -76,6 +83,7 @@ namespace jle
 
 	void jleGameEngine::Update(float dt)
 	{
+		game->Update(dt);
 	}
 
 	void jleGameEngine::Render()

@@ -2,6 +2,8 @@
 
 #include "jleCore.h"
 
+#include "jleGame.h"
+
 #include "iFullscreenRendering.h"
 
 namespace jle
@@ -26,6 +28,7 @@ namespace jle
 		virtual ~jleGameEngine() {}
 
 		jleGameEngine(std::shared_ptr<GameSettings> gs);
+		void SetGame(std::unique_ptr<jleGame> game);
 
 		// Main framebuffer
 		std::shared_ptr<iFramebuffer> framebuffer_main;
@@ -47,5 +50,8 @@ namespace jle
 	protected:
 		virtual void Update(float dt) override;
 		virtual void Render() override;
+
+		std::unique_ptr<jleGame> game;
+
 	};
 }

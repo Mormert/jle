@@ -1,5 +1,7 @@
 #include "Hexablo.h"
 
+#include "jleCore.h"
+
 //#include "Input.h"
 #include "EngineStatus.h"
 //#include "Sprite.h"
@@ -42,24 +44,28 @@ float x = 40;
 
 //}
 
+void Hexablo::Start()
+{
+}
+
 void Hexablo::Update(float dt)
 {
 
-	jleGameEngine::Update(dt);
+	auto core = jle::jleCore::core;
 
-	if (input->keyboard->GetKeyDown('A'))
+	if (core->input->keyboard->GetKeyDown('A'))
 	{
 		x -= dt * 25.f;
 	}
-	if (input->keyboard->GetKeyDown('D'))
+	if (core->input->keyboard->GetKeyDown('D'))
 	{
 		x += dt * 25.f;
 	}
-	if (input->keyboard->GetKeyDown('W'))
+	if (core->input->keyboard->GetKeyDown('W'))
 	{
 		y -= dt * 25.f;
 	}
-	if (input->keyboard->GetKeyDown('S'))
+	if (core->input->keyboard->GetKeyDown('S'))
 	{
 		y += dt * 25.f;
 	}
@@ -76,7 +82,7 @@ void Hexablo::Update(float dt)
 	int posx = static_cast<int>(x);
 	int posy = static_cast<int>(y);
 
-	rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
+	core->rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
 
 	/*for (int i = -10; i < 10; i++)
 	{
@@ -95,7 +101,7 @@ void Hexablo::Update(float dt)
 		{
 			tq.x = posx + i;
 			tq.y = posy + j;
-			rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
+			core->rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
 		}
 
 		//rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
