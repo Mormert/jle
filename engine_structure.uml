@@ -1,0 +1,111 @@
+@startuml
+
+title Game Engine Structure - Class Diagram
+
+class iWindowAPI{
+    + WindowSettings
+    + virtual SetWindowSettings(WindowSettings&);
+	+ virtual AddWindowResizeCallback(&callback);
+	+ virtual RemoveWindowResizeCallback(id);
+	+ virtual DisplayCursor(bool enable);
+	+ virtual IsCursorDisplayed();
+	+ virtual GetWindowHeight()
+	+ virtual GetWindowWidth()
+}
+
+class iWindowInternalAPI{
+    + virtual InitWindow(iWindowInitializer&,
+    iRenderingInternalAPI*)
+	+ virtual UpdateWindow()
+	+ virtual WindowShouldClose()
+	+ virtual GetTime()
+	+ virtual GetKey(key)
+	+ virtual GetScrollX()
+	+ virtual GetScrollY()
+	+ virtual GetCursor()
+}
+
+class Window_GLFW_OpenGL{
+    + GLFWwindow*;
+    + iRenderingInternalAPI*
+}
+
+class InputAPI
+class iKeyboardInput{
+    + virtual GetKeyPressed(key)
+    + virtual GetKeyReleased(key)
+    + virutal GetKeyDown(key)
+}
+
+class iMouseInput{
+    + virtual GetMouseX()
+    + virtual GetMouseY()
+}
+
+class iRenderingAPI
+class iRenderingInternalAPI{
+    + virtual Setup(iQuadRendering*)
+	+ virtual Render(iFramebuffer& out)
+}
+class RenderingAPI_OpenGL
+
+class iQuadRendering{
+    + virtual SendTexturedQuad(TexturedQuad&);
+	+ virtual SendColoredQuad(ColoredQuad&);
+}
+class iQuadRenderingInternal{
+    +virtual Render(iFramebuffer& out);
+}
+class QuadRendering_OpenGL
+
+class CoreStatus{
+    + virtual GetFPS()
+	+ virtual GetDeltaFrameTime()
+	+ virtual GetCurrentFrameTime()
+	+ virtual GetLastFrameTime()
+}
+
+class jleCore {
+    +virtual Start()
+    +virtual Update(dt)
+    +virtual Render()
+}
+
+class jleGameEngine{
+    +iFramebuffer main
+}
+
+class jleEditor{
+
+}
+
+class Hexablo{
+
+}
+
+
+jleGameEngine -up-|> jleCore
+Hexablo -up-|> jleGameEngine
+
+jleEditor  *-left-  jleGameEngine
+
+jleCore  *-right-  iWindowAPI
+jleCore  *-left-  iRenderingAPI
+jleCore  *-up-  InputAPI
+jleCore  *-up-  CoreStatus
+
+iWindowInternalAPI -up-|> iWindowAPI
+Window_GLFW_OpenGL -up-|> iWindowInternalAPI
+
+iRenderingInternalAPI -up-|> iRenderingAPI
+RenderingAPI_OpenGL -up-|> iRenderingInternalAPI
+
+iRenderingAPI  *-left-  iQuadRendering
+iQuadRenderingInternal -up-|> iQuadRendering
+QuadRendering_OpenGL -up-|> iQuadRenderingInternal
+
+InputAPI *-up- iKeyboardInput
+InputAPI *-up- iMouseInput
+
+
+@enduml
