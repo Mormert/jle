@@ -38,8 +38,6 @@ namespace jle
 	private:
 		std::unique_ptr<iFullscreenRendering> fullscreen_renderer;
 
-		virtual void Start() override;
-
 		void FramebufferResizeEvent(unsigned int width, unsigned int height);
 
 		FIXED_AXIS fixed_axis;
@@ -48,6 +46,7 @@ namespace jle
 		unsigned int gameDimsPixels;
 
 	protected:
+		virtual void Start() override;
 		virtual void Update(float dt) override;
 		virtual void Render() override;
 

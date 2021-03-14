@@ -10,6 +10,9 @@ namespace jle
 
 	public:
 		void StartEditor();
+
+		virtual void Start() override;
+		virtual void Render() override;
 	};
 
 }
