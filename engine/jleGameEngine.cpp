@@ -12,13 +12,18 @@ namespace jle
 		SetGameDimsPixels(gs->framebufferSettings.fixedAxis, gs->framebufferSettings.fixedAxisPixels);
 	}
 
+	void jleGameEngine::SetGame(std::unique_ptr<jleGame> game)
+	{
+		this->game = std::move(game);
+	}
+
 	void jleGameEngine::SetGameDimsPixels(FIXED_AXIS fa, unsigned int pixels)
 	{
 		fixed_axis = fa;
 		gameDimsPixels = pixels;
 	}
 
-	std::pair<unsigned int, unsigned int> GetFramebufferDimensions(FIXED_AXIS fa, unsigned int pixels_along_axis, unsigned int windowWidth, unsigned int windowHeight)
+	std::pair<unsigned int, unsigned int> jleGameEngine::GetFramebufferDimensions(FIXED_AXIS fa, unsigned int pixels_along_axis, unsigned int windowWidth, unsigned int windowHeight)
 	{
 		if (fa == FIXED_AXIS::height)
 		{
@@ -46,6 +51,12 @@ namespace jle
 		fullscreen_renderer = renderingFactory->CreateFullscreenRendering();
 
 		window->AddWindowResizeCallback(std::bind(&jleGameEngine::FramebufferResizeEvent, this, std::placeholders::_1, std::placeholders::_2));
+
+		//framebuffer_main->ResizeFramebuffer(200, 200);
+
+
+
+		game->Start();
 	}
 
 	void jleGameEngine::FramebufferResizeEvent(unsigned int width, unsigned int height)
@@ -56,11 +67,13 @@ namespace jle
 
 	void jleGameEngine::Update(float dt)
 	{
+		game->Update(dt);
 	}
 
 	void jleGameEngine::Render()
 	{
 		((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get());
 		fullscreen_renderer->RenderFramebufferFullscreen(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
+
 	}
 }

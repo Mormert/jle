@@ -2,6 +2,8 @@
 
 #include "jleCore.h"
 
+#include "jleGame.h"
+
 #include "iFullscreenRendering.h"
 
 namespace jle
@@ -26,26 +28,35 @@ namespace jle
 		virtual ~jleGameEngine() {}
 
 		jleGameEngine(std::shared_ptr<GameSettings> gs);
+		void SetGame(std::unique_ptr<jleGame> game);
 
 		// Main framebuffer
 		std::shared_ptr<iFramebuffer> framebuffer_main;
 
+		
 		void SetGameDimsPixels(FIXED_AXIS fa, unsigned int pixels);
 
 	private:
 		std::unique_ptr<iFullscreenRendering> fullscreen_renderer;
 
-		virtual void Start() override;
-
 		void FramebufferResizeEvent(unsigned int width, unsigned int height);
+
+
+
+	protected:
+		virtual void Start() override;
+		virtual void Update(float dt) override;
+		virtual void Render() override;
+
+
+		std::pair<unsigned int, unsigned int> GetFramebufferDimensions(FIXED_AXIS fa, unsigned int pixels_along_axis, unsigned int windowWidth, unsigned int windowHeight);
 
 		FIXED_AXIS fixed_axis;
 
 		// Game dimensions in pixels, along axis specified by fixed_axis.
 		unsigned int gameDimsPixels;
 
-	protected:
-		virtual void Update(float dt) override;
-		virtual void Render() override;
+		std::unique_ptr<jleGame> game;
+
 	};
 }

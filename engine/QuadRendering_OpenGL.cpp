@@ -117,7 +117,7 @@ namespace jle
 		const int viewportWidth = framebufferOut.GetWidth();
 		const int viewportHeight = framebufferOut.GetHeight();
 
-		std::cout << "framebuffer: " << viewportWidth << ", " << viewportHeight << '\n';
+		//std::cout << "framebuffer: " << viewportWidth << ", " << viewportHeight << '\n';
 
 		glm::mat4 view{ 1.f };
 		view =  glm::ortho(static_cast<float>(0.f),

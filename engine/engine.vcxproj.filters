@@ -138,6 +138,12 @@
     <ClCompile Include="iQuadRendering.h">
       <Filter>Header Files\Core\Rendering\Interfaces</Filter>
     </ClCompile>
+    <ClCompile Include="jleEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jleGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\imgui_impl_glfw.h">
@@ -265,6 +271,12 @@
     </ClInclude>
     <ClInclude Include="iWindowFactory.h">
       <Filter>Header Files\Core\Windowing\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="jleEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jleGame.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

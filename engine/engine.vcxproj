@@ -25,6 +25,8 @@
     <ClCompile Include="3rdparty\stb_image.cpp" />
     <ClCompile Include="jleCore.cpp" />
     <ClCompile Include="EngineStatus.cpp" />
+    <ClCompile Include="jleEditor.cpp" />
+    <ClCompile Include="jleGame.cpp" />
     <ClCompile Include="WindowInitializer_GLFW_OpenGL.cpp" />
     <ClCompile Include="WindowFactory_GLFW.cpp" />
     <ClCompile Include="GLState.cpp" />
@@ -53,6 +55,8 @@
     <ClInclude Include="GLState.h" />
     <ClInclude Include="jleCore.h" />
     <ClInclude Include="EngineStatus.h" />
+    <ClInclude Include="jleEditor.h" />
+    <ClInclude Include="jleGame.h" />
     <ClInclude Include="WindowInitializer_GLFW_OpenGL.h" />
     <ClInclude Include="WindowFactory_GLFW.h" />
     <ClInclude Include="iAudioAPI.h" />
