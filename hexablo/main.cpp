@@ -12,15 +12,15 @@ int main()
 	gameSettings->framebufferSettings.fixedAxis = jle::FIXED_AXIS::height;
 	gameSettings->framebufferSettings.fixedAxisPixels = 200;
 
+	gameSettings->windowSettings.windowHeight = 720;
+	gameSettings->windowSettings.windowWidth = 1280;
+
 	auto hexabloGame = std::make_unique<Hexablo>();
 
-	auto gameEngine = std::make_unique<jle::jleEditor>(gameSettings);
+	auto gameEngine = std::make_unique<jle::jleGameEngine>(gameSettings);
 	gameEngine->SetGame(std::move(hexabloGame));
 
 	gameEngine->Run();
-
-	//Hexablo hexabloGame{ gameSettings };
-	//hexabloGame.Run();
 
 	return 0;
 }

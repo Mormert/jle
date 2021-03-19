@@ -23,7 +23,7 @@ namespace jle
 		gameDimsPixels = pixels;
 	}
 
-	std::pair<unsigned int, unsigned int> GetFramebufferDimensions(FIXED_AXIS fa, unsigned int pixels_along_axis, unsigned int windowWidth, unsigned int windowHeight)
+	std::pair<unsigned int, unsigned int> jleGameEngine::GetFramebufferDimensions(FIXED_AXIS fa, unsigned int pixels_along_axis, unsigned int windowWidth, unsigned int windowHeight)
 	{
 		if (fa == FIXED_AXIS::height)
 		{
@@ -52,7 +52,7 @@ namespace jle
 
 		window->AddWindowResizeCallback(std::bind(&jleGameEngine::FramebufferResizeEvent, this, std::placeholders::_1, std::placeholders::_2));
 
-		framebuffer_main->ResizeFramebuffer(200, 200);
+		//framebuffer_main->ResizeFramebuffer(200, 200);
 
 
 

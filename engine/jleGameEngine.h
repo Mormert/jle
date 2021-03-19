@@ -33,6 +33,7 @@ namespace jle
 		// Main framebuffer
 		std::shared_ptr<iFramebuffer> framebuffer_main;
 
+		
 		void SetGameDimsPixels(FIXED_AXIS fa, unsigned int pixels);
 
 	private:
@@ -40,15 +41,20 @@ namespace jle
 
 		void FramebufferResizeEvent(unsigned int width, unsigned int height);
 
-		FIXED_AXIS fixed_axis;
 
-		// Game dimensions in pixels, along axis specified by fixed_axis.
-		unsigned int gameDimsPixels;
 
 	protected:
 		virtual void Start() override;
 		virtual void Update(float dt) override;
 		virtual void Render() override;
+
+
+		std::pair<unsigned int, unsigned int> GetFramebufferDimensions(FIXED_AXIS fa, unsigned int pixels_along_axis, unsigned int windowWidth, unsigned int windowHeight);
+
+		FIXED_AXIS fixed_axis;
+
+		// Game dimensions in pixels, along axis specified by fixed_axis.
+		unsigned int gameDimsPixels;
 
 		std::unique_ptr<jleGame> game;
 
