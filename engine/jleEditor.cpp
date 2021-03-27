@@ -15,6 +15,7 @@
 #include "spdlog/spdlog.h"
 
 #include "GameEditorWindow.h"
+#include "ConsoleEditorWindow.h"
 
 namespace jle
 {
@@ -35,6 +36,7 @@ namespace jle
 		framebuffer_main = renderingFactory->CreateFramebuffer(dims.first, dims.second);
 
         AddImGuiWindow(std::make_shared<GameEditorWindow>());
+        AddImGuiWindow(std::make_shared<ConsoleEditorWindow>());
 
 		game->Start();
 

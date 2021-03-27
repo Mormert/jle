@@ -23,6 +23,7 @@
     <ClCompile Include="3rdparty\imgui_impl_glfw.cpp" />
     <ClCompile Include="3rdparty\imgui_impl_opengl3.cpp" />
     <ClCompile Include="3rdparty\stb_image.cpp" />
+    <ClCompile Include="ConsoleEditorWindow.cpp" />
     <ClCompile Include="GameEditorWindow.cpp" />
     <ClCompile Include="jleCore.cpp" />
     <ClCompile Include="EngineStatus.cpp" />
@@ -53,6 +54,7 @@
     <ClInclude Include="3rdparty\KHR\khrplatform.h" />
     <ClInclude Include="3rdparty\stb_image.h" />
     <ClInclude Include="Camera2d.h" />
+    <ClInclude Include="ConsoleEditorWindow.h" />
     <ClInclude Include="GameEditorWindow.h" />
     <ClInclude Include="GLState.h" />
     <ClInclude Include="iEditorImGuiWindow.h" />

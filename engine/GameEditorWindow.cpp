@@ -13,7 +13,6 @@ namespace jle
 	void GameEditorWindow::Update(jleGameEngine& ge)
 	{
 
-
 		ImGui::Begin("Game Window");
 
 

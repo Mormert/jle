@@ -144,13 +144,16 @@
     <ClCompile Include="iQuadRendering.h">
       <Filter>Header Files\Core\Rendering\Interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="jleEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="jleGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameEditorWindow.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="jleEditor.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleEditorWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -291,6 +294,9 @@
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
     <ClInclude Include="GameEditorWindow.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleEditorWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
