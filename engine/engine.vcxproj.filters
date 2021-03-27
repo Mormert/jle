@@ -67,6 +67,12 @@
     <Filter Include="Header Files\Core\Windowing\Interfaces">
       <UniqueIdentifier>{a3d5ccd2-dc64-4fd4-b544-cf11f041834d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Editor">
+      <UniqueIdentifier>{2124f651-c1a1-42c5-be69-b6c7c6944cc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Editor">
+      <UniqueIdentifier>{9fbd26f5-b375-4eb0-a1b4-897f3ee1b265}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineStatus.cpp">
@@ -142,6 +148,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="jleGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEditorWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -272,10 +281,16 @@
     <ClInclude Include="iWindowFactory.h">
       <Filter>Header Files\Core\Windowing\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="jleEditor.h">
+    <ClInclude Include="jleGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="jleGame.h">
+    <ClInclude Include="iEditorImGuiWindow.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="jleEditor.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEditorWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

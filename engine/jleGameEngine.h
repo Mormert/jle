@@ -33,23 +33,19 @@ namespace jle
 		// Main framebuffer
 		std::shared_ptr<iFramebuffer> framebuffer_main;
 
-		
 		void SetGameDimsPixels(FIXED_AXIS fa, unsigned int pixels);
+
+		std::pair<unsigned int, unsigned int> GetFramebufferDimensions(unsigned int windowWidth, unsigned int windowHeight);
 
 	private:
 		std::unique_ptr<iFullscreenRendering> fullscreen_renderer;
 
 		void FramebufferResizeEvent(unsigned int width, unsigned int height);
 
-
-
 	protected:
 		virtual void Start() override;
 		virtual void Update(float dt) override;
 		virtual void Render() override;
-
-
-		std::pair<unsigned int, unsigned int> GetFramebufferDimensions(FIXED_AXIS fa, unsigned int pixels_along_axis, unsigned int windowWidth, unsigned int windowHeight);
 
 		FIXED_AXIS fixed_axis;
 

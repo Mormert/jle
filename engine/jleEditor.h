@@ -2,6 +2,11 @@
 
 #include "jleGameEngine.h"
 
+#include "iEditorImGuiWindow.h"
+
+#include <vector>
+#include <memory>
+
 namespace jle
 {
 	class jleEditor : public jleGameEngine
@@ -21,7 +26,9 @@ namespace jle
 		void InitImgui();
 		void SetImguiTheme();
 
-		unsigned int lastGameWindowWidth = 0, lastGameWindowHeight = 0;
+		void AddImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window);
+
+		std::vector<std::shared_ptr<iEditorImGuiWindow>> ImGuiWindows;
 	};
 
 }

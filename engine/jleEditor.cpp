@@ -14,6 +14,8 @@
 
 #include "spdlog/spdlog.h"
 
+#include "GameEditorWindow.h"
+
 namespace jle
 {
 	jleEditor::jleEditor(std::shared_ptr<GameSettings> gs) : jleGameEngine{ gs }
@@ -29,8 +31,10 @@ namespace jle
 
         InitImgui();
 
-		auto dims = GetFramebufferDimensions(fixed_axis, gameDimsPixels, core_settings->windowSettings.windowWidth, core_settings->windowSettings.windowHeight);
+		auto dims = GetFramebufferDimensions(core_settings->windowSettings.windowWidth, core_settings->windowSettings.windowHeight);
 		framebuffer_main = renderingFactory->CreateFramebuffer(dims.first, dims.second);
+
+        AddImGuiWindow(std::make_shared<GameEditorWindow>());
 
 		game->Start();
 
@@ -52,36 +56,12 @@ namespace jle
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-        ImGui::Begin("Game Window");
+        // Update loop for all ImGui windows
+        for (auto window : ImGuiWindows)
+        {
+            window->Update(*this);
+        }
 
-        constexpr int negYOffset = 6;
-        constexpr int negXOffset = 6;
-		if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset == lastGameWindowWidth && ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset == lastGameWindowHeight))
-		{
-			lastGameWindowWidth = ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset;
-			lastGameWindowHeight = ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset;
-
-			auto dims = GetFramebufferDimensions(fixed_axis, gameDimsPixels, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
-			framebuffer_main->ResizeFramebuffer(dims.first, dims.second);
-		}
-
-        //ImGui::Text("%f , %f", ImGui::GetCursorStartPos().x, ImGui::GetCursorStartPos().y);
-        //ImGui::Text("%f , %f", ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y);
-        
-
-		//std::cout << ImGui::GetWindowHeight() << '\n';
-
-		//ImGui::Text("pointer = %p", (intptr_t)framebuffer_main->GetTexture());
-		//ImGui::Text("size = %d x %d", framebuffer_main->GetWidth(), framebuffer_main->GetHeight());
-
-		// Get the texture from the framebuffer
-		glBindTexture(GL_TEXTURE_2D, (unsigned int)framebuffer_main->GetTexture());
-		glStaticState.globalActiveTexture = (unsigned int)framebuffer_main->GetTexture();
-		ImGui::Image((void*)(intptr_t)framebuffer_main->GetTexture(), ImVec2(lastGameWindowWidth, lastGameWindowHeight), ImVec2(0, 1), ImVec2(1, 0));
-
-        
-
-		ImGui::End();
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -173,6 +153,11 @@ namespace jle
         style.FrameBorderSize = 0.0f;
         style.WindowBorderSize = 1.0f;
 	}
+
+    void jleEditor::AddImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window)
+    {
+        ImGuiWindows.push_back(window);
+    }
 
 }
 

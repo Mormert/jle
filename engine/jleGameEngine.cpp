@@ -23,21 +23,21 @@ namespace jle
 		gameDimsPixels = pixels;
 	}
 
-	std::pair<unsigned int, unsigned int> jleGameEngine::GetFramebufferDimensions(FIXED_AXIS fa, unsigned int pixels_along_axis, unsigned int windowWidth, unsigned int windowHeight)
+	std::pair<unsigned int, unsigned int> jleGameEngine::GetFramebufferDimensions(unsigned int windowWidth, unsigned int windowHeight)
 	{
-		if (fa == FIXED_AXIS::height)
+		if (fixed_axis == FIXED_AXIS::height)
 		{
 			float aspect = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
 
-			unsigned int w = static_cast<unsigned int>(pixels_along_axis * aspect);
-			return std::make_pair(w, pixels_along_axis);
+			unsigned int w = static_cast<unsigned int>(gameDimsPixels * aspect);
+			return std::make_pair(w, gameDimsPixels);
 		}
-		else if (fa == FIXED_AXIS::width)
+		else if (fixed_axis == FIXED_AXIS::width)
 		{
 			float aspect = static_cast<float>(windowHeight) / static_cast<float>(windowWidth);
 
-			unsigned int h = static_cast<unsigned int>(pixels_along_axis * aspect);
-			return std::make_pair(pixels_along_axis, h);
+			unsigned int h = static_cast<unsigned int>(gameDimsPixels * aspect);
+			return std::make_pair(gameDimsPixels, h);
 		}
 
 		return std::make_pair(windowWidth, windowHeight);
@@ -45,7 +45,7 @@ namespace jle
 
 	void jleGameEngine::Start()
 	{
-		auto dims = GetFramebufferDimensions(fixed_axis, gameDimsPixels, core_settings->windowSettings.windowWidth, core_settings->windowSettings.windowHeight);
+		auto dims = GetFramebufferDimensions(core_settings->windowSettings.windowWidth, core_settings->windowSettings.windowHeight);
 		framebuffer_main = renderingFactory->CreateFramebuffer(dims.first, dims.second);
 
 		fullscreen_renderer = renderingFactory->CreateFullscreenRendering();
@@ -61,7 +61,7 @@ namespace jle
 
 	void jleGameEngine::FramebufferResizeEvent(unsigned int width, unsigned int height)
 	{
-		auto dims = GetFramebufferDimensions(fixed_axis, gameDimsPixels, width, height);
+		auto dims = GetFramebufferDimensions(width, height);
 		framebuffer_main->ResizeFramebuffer(dims.first, dims.second);
 	}
 

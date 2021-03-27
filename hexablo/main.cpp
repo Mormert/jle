@@ -17,7 +17,11 @@ int main()
 
 	auto hexabloGame = std::make_unique<Hexablo>();
 
+#ifdef NDEBUG 
 	auto gameEngine = std::make_unique<jle::jleGameEngine>(gameSettings);
+#else
+	auto gameEngine = std::make_unique<jle::jleEditor>(gameSettings);
+#endif
 	gameEngine->SetGame(std::move(hexabloGame));
 
 	gameEngine->Run();
