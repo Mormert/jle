@@ -4,11 +4,13 @@
 
 #include "iEditorImGuiWindow.h"
 
-#include "imgui.h" // uses vcpkg
+#include "imgui.h"
+
+#include <plog/Appenders/IAppender.h>
 
 namespace jle
 {
-	class ConsoleEditorWindow : public iEditorImGuiWindow
+	class ConsoleEditorWindow : public iEditorImGuiWindow, public plog::IAppender
 	{
     public:
         ConsoleEditorWindow();
@@ -27,6 +29,9 @@ namespace jle
 
         static int TextEditCallbackStub(ImGuiInputTextCallbackData* data);
         int TextEditCallback(ImGuiInputTextCallbackData* data);
+
+        // Inherited from plog::IAppender
+        virtual void write(const plog::Record& record);
 
 	private:
         static const unsigned int InputBufSize = 256;

@@ -15,6 +15,16 @@
 #include "RenderingFactory_OpenGL.h"
 #include "WindowFactory_GLFW.h"
 
+
+// Plog logging library
+#include <plog/Log.h>
+#include <plog/Init.h>
+#include <plog/Formatters/TxtFormatter.h>
+#include <plog/Appenders/ColorConsoleAppender.h>
+#include <plog/Appenders/RollingFileAppender.h>
+
+
+
 #include <iostream>
 
 namespace jle
@@ -106,6 +116,13 @@ namespace jle
 		status {std::make_shared<CoreStatus_Internal>()}
 
 	{
+		// Initialize plog
+		static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("jle_log.txt", 1000, 5);	// Log to txt files
+		static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;						// Log to command window
+		plog::init<0>(plog::verbose, &fileAppender).addAppender(&consoleAppender);
+
+		PLOG_INFO << "Starting the core";
+
 		coreImpl = std::make_unique<jleCoreInternalImpl>();
 		coreImpl->rendering_internal = std::static_pointer_cast<iRenderingInternalAPI>(rendering);
 		coreImpl->window_internal = std::static_pointer_cast<iWindowInternalAPI>(window);

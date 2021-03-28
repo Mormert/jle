@@ -12,7 +12,7 @@
 
 #include <iostream>
 
-#include "spdlog/spdlog.h"
+#include <plog/Log.h>
 
 #include "GameEditorWindow.h"
 #include "ConsoleEditorWindow.h"
@@ -36,7 +36,12 @@ namespace jle
 		framebuffer_main = renderingFactory->CreateFramebuffer(dims.first, dims.second);
 
         AddImGuiWindow(std::make_shared<GameEditorWindow>());
-        AddImGuiWindow(std::make_shared<ConsoleEditorWindow>());
+
+        auto console = std::make_shared<ConsoleEditorWindow>();
+        plog::get<0>()->addAppender(&*console);
+        AddImGuiWindow(console);
+
+        LOG_INFO << "Starting the game engine in editor mode";
 
 		game->Start();
 

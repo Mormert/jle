@@ -1,5 +1,10 @@
 #include "ConsoleEditorWindow.h"
 
+#include <plog/Formatters/FuncMessageFormatter.h>
+
+#include <locale>
+#include <codecvt>
+
 namespace jle
 {
 
@@ -16,7 +21,6 @@ namespace jle
 		Commands.push_back("CLASSIFY");
 		AutoScroll = true;
 		ScrollToBottom = false;
-		AddLog("Welcome to Dear ImGui!");
 	}
 
 	ConsoleEditorWindow::~ConsoleEditorWindow()
@@ -126,23 +130,23 @@ namespace jle
             // ImGui::EndPopup();
         //}
 
-        ImGui::TextWrapped(
+        /*ImGui::TextWrapped(
             "This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys). A more elaborate "
             "implementation may want to store entries along with extra data such as timestamp, emitter, etc.");
-        ImGui::TextWrapped("Enter 'HELP' for help.");
+        ImGui::TextWrapped("Enter 'HELP' for help.");*/
 
         // TODO: display items starting from the bottom
 
-        if (ImGui::SmallButton("Add Debug Text")) { AddLog("%d some text", Items.Size); AddLog("some more text"); AddLog("display very important message here!"); }
-        ImGui::SameLine();
-        if (ImGui::SmallButton("Add Debug Error")) { AddLog("[error] something went wrong"); }
-        ImGui::SameLine();
+        //if (ImGui::SmallButton("Add Debug Text")) { AddLog("%d some text", Items.Size); AddLog("some more text"); AddLog("display very important message here!"); }
+        //ImGui::SameLine();
+        //if (ImGui::SmallButton("Add Debug Error")) { AddLog("[error] something went wrong"); }
+        //ImGui::SameLine();
         if (ImGui::SmallButton("Clear")) { ClearLog(); }
         ImGui::SameLine();
         bool copy_to_clipboard = ImGui::SmallButton("Copy");
         //static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddLog("Spam %f", t); }
 
-        ImGui::Separator();
+        ImGui::SameLine();
 
         // Options menu
         if (ImGui::BeginPopup("Options"))
@@ -350,5 +354,18 @@ namespace jle
         }
         return 0;
 	}
-}
 
+    void ConsoleEditorWindow::write(const plog::Record& record)
+    {
+        std::wostringstream woss;
+        woss << PLOG_NSTR("<") << plog::severityToString(record.getSeverity()) << PLOG_NSTR("> ") << record.getFunc() << PLOG_NSTR("@") << record.getLine() << PLOG_NSTR(": ") << record.getMessage() << PLOG_NSTR("\n");
+        auto wstr = woss.str();
+        
+        // Conversion from wstring to string is required
+        using convert_type = std::codecvt_utf8<wchar_t>;
+        static std::wstring_convert<convert_type, wchar_t> converter;
+
+        std::string converted_str = converter.to_bytes(wstr);
+        AddLog(converted_str.c_str());
+    }
+}

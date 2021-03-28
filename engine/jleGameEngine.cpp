@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+#include <plog/Log.h>
+
 namespace jle
 {
 
@@ -54,7 +56,7 @@ namespace jle
 
 		//framebuffer_main->ResizeFramebuffer(200, 200);
 
-
+		LOG_INFO << "Starting the game engine";
 
 		game->Start();
 	}
