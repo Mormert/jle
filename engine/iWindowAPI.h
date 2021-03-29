@@ -13,6 +13,8 @@ namespace jle
 		unsigned int windowWidth = 500, windowHeight = 500;
 		unsigned int windowWidthMin = 100, windowHeightMin = 100;
 
+		std::string iconPath{ "" };
+
 		bool windowIsRezisable = true;
 		bool windowDisplayCursor = true;
 	};

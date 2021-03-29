@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+#include "3rdparty/stb_image.h"
+
 namespace jle
 {
 	Window_GLFW_OpenGL* Window_GLFW_OpenGL::activeWindow{ nullptr };
@@ -136,6 +138,16 @@ namespace jle
 		int w, h;
 		glfwGetFramebufferSize(nativeWindow, &w, &h);
 		internalRenderingAPI->SetViewportDimensions(0, 0, static_cast<unsigned int>(w), static_cast<unsigned int>(h));
+
+		if (windowSettings.iconPath != "")
+		{
+			GLFWimage images[1];
+			images[0].pixels = stbi_load(windowSettings.iconPath.c_str(), &images[0].width, &images[0].height, 0, 4);
+			glfwSetWindowIcon(nativeWindow, 1, images);
+			stbi_image_free(images[0].pixels);
+		}
+
+		
 
 	}
 
