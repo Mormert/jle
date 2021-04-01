@@ -1,5 +1,7 @@
 #pragma once
 
+#include "iInput.h"
+
 #include "iKeyboardInput.h"
 #include "iMouseInput.h"
 
@@ -7,7 +9,7 @@
 
 namespace jle
 {
-	class InputAPI
+	class InputAPI : public iInput
 	{
 	public:
 		virtual ~InputAPI() {}
@@ -16,6 +18,15 @@ namespace jle
 
 		std::shared_ptr<iKeyboardInput> keyboard;
 		std::shared_ptr<iMouseInput> mouse;
+
+		// Set to false if the input system should stop polling
+		virtual void SetInputEnabled(bool enabled) override
+		{
+			iInput::SetInputEnabled(enabled);
+
+			keyboard->SetInputEnabled(enabled);
+			mouse->SetInputEnabled(enabled);
+		}
 
 		/*// Gets the X mouse position
 		virtual int GetMouseX() noexcept;

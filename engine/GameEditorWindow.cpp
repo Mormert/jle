@@ -42,7 +42,11 @@ namespace jle
 		glStaticState.globalActiveTexture = (unsigned int)ge.framebuffer_main->GetTexture();
 		ImGui::Image((void*)(intptr_t)ge.framebuffer_main->GetTexture(), ImVec2(lastGameWindowWidth, lastGameWindowHeight), ImVec2(0, 1), ImVec2(1, 0));
 
-
+		if (ImGui::IsWindowFocused() != wasFocused)
+		{
+			wasFocused = ImGui::IsWindowFocused();
+			ge.input->SetInputEnabled(wasFocused);
+		}
 
 		ImGui::End();
 	}

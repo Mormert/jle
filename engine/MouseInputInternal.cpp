@@ -14,12 +14,20 @@ namespace jle
 
 	int MouseInputInternal::GetMouseX()
 	{
-		return windowInternal->GetCursor().first;
+		if (input_enabled)
+		{
+			return windowInternal->GetCursor().first;
+		}
+		return 0;
 	}
 
 	int MouseInputInternal::GetMouseY()
 	{
-		return windowInternal->GetCursor().second;
+		if (input_enabled)
+		{
+			return windowInternal->GetCursor().second;
+		}
+		return 0;
 	}
 
 	float MouseInputInternal::GetMouseXDelta()

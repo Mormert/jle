@@ -25,6 +25,10 @@ namespace jle
 
 	bool KeyboardInputInternal::GetKeyDown(char key)
 	{
-		return windowInternal->GetKey(key);
+		if (input_enabled)
+		{
+			return windowInternal->GetKey(key);
+		}
+		return false;
 	}
 }

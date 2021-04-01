@@ -1,6 +1,8 @@
 #pragma once
 
-class iMouseInput
+#include "iInput.h"
+
+class iMouseInput : public iInput
 {
 public:
 	virtual ~iMouseInput() {}

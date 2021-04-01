@@ -1,8 +1,10 @@
 #pragma once
 
+#include "iInput.h"
+
 namespace jle
 {
-	class iKeyboardInput
+	class iKeyboardInput : public iInput
 	{
 	public:
 		virtual ~iKeyboardInput() {}
