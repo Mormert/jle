@@ -14,8 +14,8 @@
 
 #include <iostream>
 
-jle::graphics::Texture myTexture{ "GameAssets/HexagonDiabloConcept.png" };
-jle::graphics::Texture myTexture2{ "GameAssets/FullScene.png" };
+std::shared_ptr<jle::iTexture> myTexture;//{ jle::Image("GameAssets/HexagonDiabloConcept.png") };
+std::shared_ptr<jle::iTexture> myTexture2;//{ "GameAssets/FullScene.png" };
 
 float posx = 200;
 float posy = 25;
@@ -46,6 +46,8 @@ float x = 40;
 
 void Hexablo::Start()
 {
+	myTexture = jle::jleCore::core->texture_creator->CreateTextureFromImage(jle::Image{"GameAssets/HexagonDiabloConcept.png"});
+	myTexture2 = jle::jleCore::core->texture_creator->CreateTextureFromImage(jle::Image{ "GameAssets/FullScene.png" });
 }
 
 void Hexablo::Update(float dt)

@@ -70,12 +70,22 @@ namespace jle
 		if (image_data) { stbi_image_free(image_data); }
 	}
 
-	unsigned int Image::GetImageHeight()
+	unsigned int Image::GetImageHeight() const
 	{
 		return h;
 	}
 
-	unsigned int Image::GetImageWidth()
+	unsigned int Image::GetImageNrChannels() const
+	{
+		return nr_channels;
+	}
+
+	unsigned char* Image::GetImageData() const
+	{
+		return image_data;
+	}
+
+	unsigned int Image::GetImageWidth() const
 	{
 		return w;
 	}

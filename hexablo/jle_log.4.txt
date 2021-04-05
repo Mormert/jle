@@ -1,0 +1,22 @@
+﻿2021-04-05 14:36:52.928 VERB  [21324] [jle::Texture::IsActive@27] Is active check texture 2.
+
+2021-04-05 14:36:52.932 VERB  [21324] [jle::Texture::IsActive@27] Is active check texture 2.
+
+2021-04-05 14:36:52.933 VERB  [21324] [jle::Texture::IsActive@27] Is active check texture 2.
+
+2021-04-05 14:36:52.933 VERB  [21324] [jle::Texture::IsActive@27] Is active check texture 2.
+
+2021-04-05 14:36:52.934 VERB  [21324] [jle::Texture::IsActive@27] Is active check texture 2.
+
+2021-04-05 14:36:52.934 VERB  [21324] [jle::Texture::IsActive@27] Is active check texture 2.
+
+2021-04-05 14:36:52.935 VERB  [21324] [jle::Texture::IsActive@27] Is active check texture 2.
+
+2021-04-05 14:36:52.935 VERB  [21324] [jle::Texture::IsActive@27] Is active check texture 2.
+
+2021-04-05 14:36:52.936 VERB  [21324] [jle::Texture::IsActive@27] Is active check texture 2.
+
+2021-04-05 14:36:52.936 VERB  [21324] [jle::Texture::IsActive@27] Is active check texture 2.
+
+2021-04-05 14:36:52.941 VERB  [21324] [jle::Texture::IsActive@27] Is active check texture 2.
+

@@ -1,0 +1,15 @@
+﻿2021-04-05 14:49:10.338 INFO  [6012] [jle::jleGameEngine::Start@59] Starting the game engine
+2021-04-05 14:49:10.344 VERB  [6012] [jle::TextureCreator_OpenGL::CreateTextureFromImage@46] Generated OpenGL texture 2
+
+2021-04-05 14:49:10.348 VERB  [6012] [jle::TextureCreator_OpenGL::CreateTextureFromImage@46] Generated OpenGL texture 3
+
+2021-04-05 14:51:35.631 INFO  [26440] [jle::jleCore::jleCore@125] Starting the core
+2021-04-05 14:51:36.291 INFO  [26440] [jle::jleGameEngine::Start@59] Starting the game engine
+2021-04-05 14:51:36.293 VERB  [26440] [jle::TextureCreator_OpenGL::CreateTextureFromImage@51] Generated OpenGL texture 2
+
+2021-04-05 14:51:36.298 VERB  [26440] [jle::TextureCreator_OpenGL::CreateTextureFromImage@51] Generated OpenGL texture 3
+
+2021-04-05 14:52:06.058 INFO  [19944] [jle::jleCore::jleCore@125] Starting the core
+2021-04-05 14:52:06.922 INFO  [19944] [jle::jleEditor::Start@44] Starting the game engine in editor mode
+2021-04-05 14:52:06.933 VERB  [19944] [jle::TextureCreator_OpenGL::CreateTextureFromImage@51] Generated OpenGL texture 2
+

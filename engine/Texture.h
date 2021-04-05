@@ -1,43 +1,30 @@
 #pragma once
 
+#include "iTexture.h"
+#include "no_copy_no_move.h"
+
 #include <string>
 
 namespace jle
 {
-	namespace graphics
+	class Texture : public iTexture
 	{
-		class Texture
-		{
-		public:
-			// Created by specifying the path to the image that the
-			// texture will be based on
-			Texture(std::string texturePath);
-			virtual ~Texture();
+		NO_COPY_NO_MOVE(Texture)
+	public:
 
-			// no copy, no move
-			Texture(const Texture& t) = delete;
-			Texture& operator= (const Texture& t) = delete;
-			Texture(Texture&& t) = delete;
-			Texture& operator=(Texture&& t) = delete;
+		Texture() = default;
+		virtual ~Texture();
 
-			// Returns true if this Texture is the globally active texture
-			bool IsActive();
-			// Set this Texture to be the globally active texture
-			void SetToActiveTexture();
+		// Returns true if this Texture is the globally active texture
+		virtual bool IsActive() override;
+		// Set this Texture to be the globally active texture
+		virtual void SetToActiveTexture() override;
 
-			// Returns the width of the texture
-			int GetWidth();
-			// Returns the height of the texture
-			int GetHeight();
+	private:
+		friend class TextureCreator_OpenGL;
 
-		private:
+		unsigned int texture_id = UINT_MAX; // OpenGL Texture ID
 
-			const std::string texturePath;
-			bool isCreated = false;
+	};
 
-			int width = 0, height = 0, nrChannels = 0;
-			unsigned int texture_id = UINT_MAX; // OpenGL Texture ID
-
-		};
-	}
 }

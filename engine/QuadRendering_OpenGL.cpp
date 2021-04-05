@@ -139,10 +139,10 @@ namespace jle
 		for (const auto& t : texturedQuads)
 		{
 
-			if (!t.texture.IsActive())
+			if (!t.texture->IsActive())
 			{
-				t.texture.SetToActiveTexture();
-				quadShader.SetVec2("textureDims", glm::vec2{ float(t.texture.GetWidth()), float(t.texture.GetHeight()) });
+				t.texture->SetToActiveTexture();
+				quadShader.SetVec2("textureDims", glm::vec2{ float(t.texture->GetWidth()), float(t.texture->GetHeight()) });
 			}
 
 			glBindVertexArray(quadVAO);

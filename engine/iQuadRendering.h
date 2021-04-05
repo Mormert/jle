@@ -2,6 +2,8 @@
 
 #include "Texture.h"
 
+#include <memory>
+
 enum class RenderingMethod { Dynamic, Static };
 
 struct Quad
@@ -12,9 +14,9 @@ struct Quad
 
 struct TexturedQuad : public Quad
 {
-	TexturedQuad(jle::graphics::Texture& texture) : texture{texture} {}
+	TexturedQuad(std::shared_ptr<jle::iTexture> t) : texture{ t } {}
 
-	jle::graphics::Texture& texture;
+	std::shared_ptr<jle::iTexture> texture;
 
 	// Coordinates on the texture
 	int textureX = 0, textureY = 0;

@@ -11,7 +11,7 @@
 #include "InputAPI.h"
 #include "iRenderingAPI.h"
 #include "iFramebuffer.h"
-
+#include "iTextureCreator.h"
 #include "iRenderingFactory.h"
 #include "iWindowFactory.h"
 #include "iWindowInitializer.h"
@@ -68,6 +68,9 @@ namespace jle
 
 		// Entry point for a user to do fundamental rendering
 		const std::shared_ptr<iRenderingAPI> rendering;
+
+		// Entry point for a user to create textures of different kinds
+		const std::shared_ptr<iTextureCreator> texture_creator;
 
 		// Entry point for a user to get core status
 		const std::shared_ptr<CoreStatus> status;

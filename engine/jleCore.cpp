@@ -11,7 +11,7 @@
 #include "QuadRendering_OpenGL.h"
 #include "FrameBuffer_OpenGL.h"
 #include "FullscreenRendering_OpenGL.h"
-
+#include "TextureCreator_OpenGL.h"
 #include "RenderingFactory_OpenGL.h"
 #include "WindowFactory_GLFW.h"
 
@@ -113,6 +113,7 @@ namespace jle
 		input{ std::make_shared<InputAPI>( std::make_shared<KeyboardInputInternal>(std::static_pointer_cast<iWindowInternalAPI>(window)),
 											std::make_shared<MouseInputInternal>(std::static_pointer_cast<iWindowInternalAPI>(window)))},
 		window_initializer{windowFactory->CreateWindowInitializer()},
+		texture_creator{std::make_shared<TextureCreator_OpenGL>()},
 		status {std::make_shared<CoreStatus_Internal>()}
 
 	{

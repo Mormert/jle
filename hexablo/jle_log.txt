@@ -1,0 +1,8 @@
+﻿2021-04-05 14:52:06.942 VERB  [19944] [jle::TextureCreator_OpenGL::CreateTextureFromImage@51] Generated OpenGL texture 3
+
+2021-04-05 14:54:01.440 INFO  [5276] [jle::jleCore::jleCore@125] Starting the core
+2021-04-05 14:54:02.075 INFO  [5276] [jle::jleEditor::Start@44] Starting the game engine in editor mode
+2021-04-05 14:54:02.086 VERB  [5276] [jle::TextureCreator_OpenGL::CreateTextureFromImage@48] Generated OpenGL texture 2
+
+2021-04-05 14:54:02.095 VERB  [5276] [jle::TextureCreator_OpenGL::CreateTextureFromImage@48] Generated OpenGL texture 3
+

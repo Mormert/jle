@@ -16,8 +16,12 @@ namespace jle
 
 		~Image();
 
-		unsigned int GetImageWidth();
-		unsigned int GetImageHeight();
+		unsigned int GetImageWidth() const;
+		unsigned int GetImageHeight() const;
+
+		unsigned int GetImageNrChannels() const;
+
+		unsigned char* GetImageData() const;
 
 	private:
 		unsigned char* image_data { nullptr };
