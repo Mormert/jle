@@ -31,7 +31,7 @@ namespace jle
 
 		std::vector<std::shared_ptr<iEditorImGuiWindow>> ImGuiWindows;
 
-		std::unique_ptr<EditorBackgroundImage> background_image;
+		std::unique_ptr<EditorBackgroundImage> editor_background_image;
 	};
 
 }

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "iTexture.h"
-#include "iFramebuffer.h"
-#include "iFullscreenRendering.h"
+#include "iTextureCreator.h"
+#include "iRenderingFactory.h"
 #include "iQuadRenderingInternal.h"
 
 #include <memory>
@@ -12,10 +11,7 @@ namespace jle
 	class EditorBackgroundImage final
 	{
 	public:
-		EditorBackgroundImage(
-			std::shared_ptr<iTexture> texture,
-			std::unique_ptr<iFramebuffer>& framebuffer,
-			std::unique_ptr<iFullscreenRendering>& fullscreen_renderer);
+		EditorBackgroundImage(const Image& image, iTextureCreator& tc, iRenderingFactory& rf);
 
 		void Render(iQuadRenderingInternal& quadRenderer, unsigned int width, unsigned int height);
 	private:

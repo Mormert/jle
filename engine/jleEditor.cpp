@@ -40,11 +40,9 @@ namespace jle
 		auto dims = GetFramebufferDimensions(core_settings->windowSettings.windowWidth, core_settings->windowSettings.windowHeight);
 		framebuffer_main = renderingFactory->CreateFramebuffer(dims.first, dims.second);
 
-        Image img{ "GameAssets/jle_default_bg.jpg" };
-        std::shared_ptr<iTexture> backgroundTexture = texture_creator->CreateTextureFromImage( img );
-        auto backgroundFramebuffer = renderingFactory->CreateFramebuffer(img.GetImageWidth(), img.GetImageHeight());
-        auto backgroundFullscreenRendering = renderingFactory->CreateFullscreenRendering();
-        background_image = std::make_unique<EditorBackgroundImage>(backgroundTexture, backgroundFramebuffer, backgroundFullscreenRendering);
+        // Create editor background image
+        Image background_image{ "GameAssets/jle_default_bg.jpg" };
+        editor_background_image = std::make_unique<EditorBackgroundImage>(background_image, *texture_creator, *renderingFactory);
 
         AddImGuiWindow(std::make_shared<GameEditorWindow>());
 
@@ -70,7 +68,8 @@ namespace jle
 		// Set viewport to cover the entire screen
 		glViewport(0, 0, window->GetWindowWidth(), window->GetWindowHeight());
 
-        background_image->Render(*static_cast<iQuadRenderingInternal*>(rendering->quads.get()), window->GetWindowWidth(), window->GetWindowHeight());
+        // Render editor background image
+        editor_background_image->Render(*static_cast<iQuadRenderingInternal*>(rendering->quads.get()), window->GetWindowWidth(), window->GetWindowHeight());
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
