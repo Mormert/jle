@@ -3,6 +3,12 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Jle game engine specific
+*.plog
+imgui.ini
+
+
+
 # User-specific files
 *.rsuser
 *.suo
