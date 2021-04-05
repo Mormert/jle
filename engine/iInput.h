@@ -9,5 +9,5 @@ public:
 	bool GetInputEnabled() { return input_enabled; }
 
 protected:
-	bool input_enabled;
+	bool input_enabled = true;
 };
