@@ -2,6 +2,7 @@
 
 #include "jleGameEngine.h"
 
+#include "EditorBackgroundImage.h"
 #include "iEditorImGuiWindow.h"
 
 #include <vector>
@@ -29,6 +30,8 @@ namespace jle
 		void AddImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window);
 
 		std::vector<std::shared_ptr<iEditorImGuiWindow>> ImGuiWindows;
+
+		std::unique_ptr<EditorBackgroundImage> background_image;
 	};
 
 }

@@ -36,8 +36,6 @@ namespace jle
 			else if (image.GetImageNrChannels() == 4)
 				format = GL_RGBA;
 
-			PLOG_VERBOSE << "OpenGL texture with channels: " << image.GetImageNrChannels();
-
 			glBindTexture(GL_TEXTURE_2D, texture_opengl->texture_id);
 			if (format == GL_RGB)
 			{
@@ -57,11 +55,11 @@ namespace jle
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-			PLOG_VERBOSE << "Generated OpenGL texture " << texture_opengl->texture_id << '\n';
+			PLOG_VERBOSE << "Generated OpenGL texture " << texture_opengl->texture_id << " (" << image.GetImageNrChannels() << " channels)";
 		}
 		else
 		{
-			PLOG_ERROR << "Failed to generate OpenGL texture " << texture_opengl->texture_id << '\n';
+			PLOG_ERROR << "Failed to generate OpenGL texture " << texture_opengl->texture_id;
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glStaticState.globalActiveTexture = 0;
