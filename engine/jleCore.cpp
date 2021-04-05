@@ -118,7 +118,7 @@ namespace jle
 
 	{
 		// Initialize plog
-		static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("jle_log.txt", 1000, 5);	// Log to txt files
+		static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("jle_log.plog", 1000, 5);	// Log to txt files
 		static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;						// Log to command window
 		plog::init<0>(plog::verbose, &fileAppender).addAppender(&consoleAppender);
 
