@@ -36,7 +36,19 @@ namespace jle
 			else if (image.GetImageNrChannels() == 4)
 				format = GL_RGBA;
 
+			PLOG_VERBOSE << "OpenGL texture with channels: " << image.GetImageNrChannels();
+
 			glBindTexture(GL_TEXTURE_2D, texture_opengl->texture_id);
+			if (format == GL_RGB)
+			{
+				// Needed to load jpg images with different byte alignments
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+			}
+			else if(format == GL_RGBA)
+			{
+				// Byte alignment 4 is defaulted for RGBA images
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 4); 
+			}
 			glTexImage2D(GL_TEXTURE_2D, 0, format, image.GetImageWidth(), image.GetImageHeight(), 0, format, GL_UNSIGNED_BYTE, image.GetImageData());
 			glGenerateMipmap(GL_TEXTURE_2D);
 
