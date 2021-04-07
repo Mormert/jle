@@ -44,9 +44,9 @@ namespace jle
         Image background_image{ "GameAssets/jle_default_bg.jpg" };
         editor_background_image = std::make_unique<EditorBackgroundImage>(background_image, *texture_creator, *renderingFactory);
 
-        AddImGuiWindow(std::make_shared<GameEditorWindow>());
+        AddImGuiWindow(std::make_shared<GameEditorWindow>("Game Window"));
 
-        auto console = std::make_shared<ConsoleEditorWindow>();
+        auto console = std::make_shared<ConsoleEditorWindow>("Console Window");
         plog::get<0>()->addAppender(&*console);
         AddImGuiWindow(console);
 

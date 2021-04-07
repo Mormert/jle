@@ -13,7 +13,7 @@ namespace jle
 	class ConsoleEditorWindow : public iEditorImGuiWindow, public plog::IAppender
 	{
     public:
-        ConsoleEditorWindow();
+        ConsoleEditorWindow(const std::string& window_name);
         ~ConsoleEditorWindow();
 
         static int Stricmp(const char* s1, const char* s2);

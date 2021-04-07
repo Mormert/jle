@@ -9,11 +9,15 @@
 
 namespace jle
 {
+	GameEditorWindow::GameEditorWindow(const std::string& window_name) :
+		iEditorImGuiWindow{ window_name }
+	{
+	}
 
 	void GameEditorWindow::Update(jleGameEngine& ge)
 	{
 
-		ImGui::Begin("Game Window");
+		ImGui::Begin(window_name.c_str());
 
 
 

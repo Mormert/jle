@@ -8,7 +8,8 @@
 namespace jle
 {
 
-	ConsoleEditorWindow::ConsoleEditorWindow()
+	ConsoleEditorWindow::ConsoleEditorWindow(const std::string& window_name) :
+        iEditorImGuiWindow{ window_name }
 	{
 		ClearLog();
 		memset(InputBuf, 0, sizeof(InputBuf));
@@ -114,7 +115,7 @@ namespace jle
 	void ConsoleEditorWindow::Update(jleGameEngine& ge)
 	{
         ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
-        if (!ImGui::Begin("Console Window"))
+        if (!ImGui::Begin(window_name.c_str()))
         {
             ImGui::End();
             return;
