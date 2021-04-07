@@ -4,6 +4,9 @@
 
 #include "jleGameEngine.h"
 
+#include <vector>
+#include <memory>
+
 namespace jle
 {
 	class iEditorImGuiWindow
@@ -15,7 +18,14 @@ namespace jle
 
 		virtual void Update(jleGameEngine& ge) = 0;
 
+		virtual void OpenWindow()  { isOpened = true; }
+		virtual void CloseWindow() { isOpened = false; }
+		bool GetOpened() { return isOpened; }
+
+		const std::string& GetWindowName() { return window_name; }
+
 	protected:
 		std::string window_name;
+		bool isOpened = true;
 	};
 }

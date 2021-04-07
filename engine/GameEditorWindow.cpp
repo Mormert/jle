@@ -16,10 +16,12 @@ namespace jle
 
 	void GameEditorWindow::Update(jleGameEngine& ge)
 	{
+		if (!isOpened)
+		{
+			return;
+		}
 
 		ImGui::Begin(window_name.c_str());
-
-
 
 		constexpr int negYOffset = 6;
 		constexpr int negXOffset = 6;

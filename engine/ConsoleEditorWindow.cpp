@@ -114,6 +114,11 @@ namespace jle
 
 	void ConsoleEditorWindow::Update(jleGameEngine& ge)
 	{
+        if (!isOpened)
+        {
+            return;
+        }
+
         ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
         if (!ImGui::Begin(window_name.c_str()))
         {

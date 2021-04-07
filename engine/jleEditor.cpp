@@ -10,8 +10,10 @@
 #include "Window_GLFW_OpenGL.h"
 #include <GLFW/glfw3.h>
 
+#include "EditorWindowsPanel.h"
 #include "GameEditorWindow.h"
 #include "ConsoleEditorWindow.h"
+
 #include "Image.h"
 
 #include "iQuadRenderingInternal.h"
@@ -44,11 +46,17 @@ namespace jle
         Image background_image{ "GameAssets/jle_default_bg.jpg" };
         editor_background_image = std::make_unique<EditorBackgroundImage>(background_image, *texture_creator, *renderingFactory);
 
-        AddImGuiWindow(std::make_shared<GameEditorWindow>("Game Window"));
+        auto menu = std::make_shared<EditorWindowsPanel>("Menu");
+        AddImGuiWindow(menu);
+
+        auto gameWindow = std::make_shared<GameEditorWindow>("Game Window");
+        AddImGuiWindow(gameWindow);
+        menu->AddWindow(gameWindow);
 
         auto console = std::make_shared<ConsoleEditorWindow>("Console Window");
         plog::get<0>()->addAppender(&*console);
         AddImGuiWindow(console);
+        menu->AddWindow(console);
 
         LOG_INFO << "Starting the game engine in editor mode";
 

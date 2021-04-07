@@ -25,6 +25,7 @@
     <ClCompile Include="3rdparty\stb_image.cpp" />
     <ClCompile Include="ConsoleEditorWindow.cpp" />
     <ClCompile Include="EditorBackgroundImage.cpp" />
+    <ClCompile Include="EditorWindowsPanel.cpp" />
     <ClCompile Include="GameAssets.cpp" />
     <ClCompile Include="GameEditorWindow.cpp" />
     <ClCompile Include="Image.cpp" />
@@ -61,6 +62,7 @@
     <ClInclude Include="Camera2d.h" />
     <ClInclude Include="ConsoleEditorWindow.h" />
     <ClInclude Include="EditorBackgroundImage.h" />
+    <ClInclude Include="EditorWindowsPanel.h" />
     <ClInclude Include="GameAssets.h" />
     <ClInclude Include="GameEditorWindow.h" />
     <ClInclude Include="GLState.h" />
