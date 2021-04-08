@@ -13,6 +13,7 @@
 #include "EditorWindowsPanel.h"
 #include "GameEditorWindow.h"
 #include "ConsoleEditorWindow.h"
+#include "EditorGameControllerWindow.h"
 
 #include "Image.h"
 
@@ -57,6 +58,10 @@ namespace jle
         plog::get<0>()->addAppender(&*console);
         AddImGuiWindow(console);
         menu->AddWindow(console);
+
+        auto gameController = std::make_shared<EditorGameControllerWindow>("Game Controller");
+        AddImGuiWindow(gameController);
+        menu->AddWindow(gameController);
 
         LOG_INFO << "Starting the game engine in editor mode";
 
