@@ -120,7 +120,7 @@ namespace jle
         }
 
         ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
-        if (!ImGui::Begin(window_name.c_str()))
+        if (!ImGui::Begin(window_name.c_str(), &isOpened))
         {
             ImGui::End();
             return;

@@ -21,7 +21,9 @@ namespace jle
 			return;
 		}
 
-		ImGui::Begin(window_name.c_str());
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
+
+		ImGui::Begin(window_name.c_str(), &isOpened, flags);
 
 		constexpr int negYOffset = 6;
 		constexpr int negXOffset = 6;
