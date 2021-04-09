@@ -45,6 +45,44 @@ namespace jle
 		return std::make_pair(windowWidth, windowHeight);
 	}
 
+	void jleGameEngine::StartGame()
+	{
+	}
+
+	void jleGameEngine::KillGame()
+	{
+	}
+
+	void jleGameEngine::HaltGame()
+	{
+		gameHalted = true;
+	}
+
+	void jleGameEngine::UnhaltGame()
+	{
+		gameHalted = false;
+	}
+
+	void jleGameEngine::ExecuteNextFrame()
+	{
+		LOG_VERBOSE << "Next frame dt: " << status->GetDeltaFrameTime();
+		auto gameHaltedTemp = gameHalted;
+		gameHalted = false;
+		Update(status->GetDeltaFrameTime());
+		((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get());
+		gameHalted = gameHaltedTemp;
+	}
+
+	bool jleGameEngine::IsGameHalted()
+	{
+		return gameHalted;
+	}
+
+	jleGame& jleGameEngine::GetGameRef()
+	{
+		return *game;
+	}
+
 	void jleGameEngine::Start()
 	{
 		auto dims = GetFramebufferDimensions(core_settings->windowSettings.windowWidth, core_settings->windowSettings.windowHeight);
@@ -69,13 +107,19 @@ namespace jle
 
 	void jleGameEngine::Update(float dt)
 	{
-		game->Update(dt);
+		if (!gameHalted)
+		{
+			game->Update(dt);
+		}
 	}
 
 	void jleGameEngine::Render()
 	{
-		((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get());
-		fullscreen_renderer->RenderFramebufferFullscreen(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
-
+		if (!gameHalted)
+		{
+			((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get());
+			fullscreen_renderer->RenderFramebufferFullscreen(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
+		}
+		
 	}
 }

@@ -71,8 +71,11 @@ namespace jle
 
 	void jleEditor::Render()
 	{
-		((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get());
-
+        if (!gameHalted)
+        {
+            ((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get());
+        }
+		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		glClearColor(0.f, 0.f, 0.f, 1.f);

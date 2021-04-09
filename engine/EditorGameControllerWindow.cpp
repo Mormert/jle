@@ -30,32 +30,42 @@ namespace jle
 			}
 
 			ImGui::SameLine();
-			if (ImGui::Button("Stop Game", { 100, 25 }))
+			
+			if (!ge.IsGameHalted())
 			{
-				StopGame();
+				if (ImGui::Button("Halt Game", { 100, 25 }))
+				{
+					ge.HaltGame();
+				}
 			}
-
-			ImGui::SameLine();
-			if (ImGui::Button("Pause Game", { 100, 25 }))
+			else
 			{
-				PauseGame();
+				if (ImGui::Button("Unhalt Game", { 100, 25 }))
+				{
+					ge.UnhaltGame();
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Next Frame", { 100, 25 }))
+				{
+					ge.ExecuteNextFrame();
+				}
 			}
 		}
 
 		ImGui::End();
 	}
 
-	void EditorGameControllerWindow::StartGame()
+	inline void EditorGameControllerWindow::StartGame()
 	{
 		PLOG_INFO << "Starting the game.";
 	}
 
-	void EditorGameControllerWindow::StopGame()
+	inline void EditorGameControllerWindow::StopGame()
 	{
 		PLOG_INFO << "Stopping the game.";
 	}
 
-	void EditorGameControllerWindow::PauseGame()
+	inline void EditorGameControllerWindow::PauseGame()
 	{
 		PLOG_INFO << "Pausing the game.";
 	}

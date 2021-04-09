@@ -17,7 +17,7 @@
 std::shared_ptr<jle::iTexture> myTexture;//{ jle::Image("GameAssets/HexagonDiabloConcept.png") };
 std::shared_ptr<jle::iTexture> myTexture2;//{ "GameAssets/FullScene.png" };
 
-float posx = 200;
+float posx = -200;
 float posy = 25;
 
 //jle::graphics::Sprite mySprite(myTexture ,39, 48, 11, 26);
@@ -81,8 +81,11 @@ void Hexablo::Update(float dt)
 	tq.x = static_cast<int>(x);
 	tq.y = static_cast<int>(y);
 
-	int posx = static_cast<int>(x);
-	int posy = static_cast<int>(y);
+	int iposx = static_cast<int>(x);
+	int iposy = static_cast<int>(y);
+
+	posx += dt * 500.f;
+	tq.x = static_cast<int>(posx);
 
 	core->rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
 
@@ -101,8 +104,8 @@ void Hexablo::Update(float dt)
 		//tq.x += i;
 		for (int j = -250; j < 250; j+=15)
 		{
-			tq.x = posx + i;
-			tq.y = posy + j;
+			tq.x = iposx + i;
+			tq.y = iposy + j;
 			core->rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
 		}
 

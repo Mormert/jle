@@ -153,9 +153,6 @@
     <ClCompile Include="jleEditor.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
-    <ClCompile Include="ConsoleEditorWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GameAssets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -175,6 +172,9 @@
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
     <ClCompile Include="EditorGameControllerWindow.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleEditorWindow.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
   </ItemGroup>

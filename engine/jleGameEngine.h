@@ -37,11 +37,20 @@ namespace jle
 
 		std::pair<unsigned int, unsigned int> GetFramebufferDimensions(unsigned int windowWidth, unsigned int windowHeight);
 
+		void StartGame();
+		void KillGame();
+		void HaltGame();
+		void UnhaltGame();
+		void ExecuteNextFrame();
+
+		bool IsGameHalted();
+
+		jleGame& GetGameRef();
+
 	private:
 		std::unique_ptr<iFullscreenRendering> fullscreen_renderer;
 
 		void FramebufferResizeEvent(unsigned int width, unsigned int height);
-
 	protected:
 		virtual void Start() override;
 		virtual void Update(float dt) override;
@@ -53,6 +62,6 @@ namespace jle
 		unsigned int gameDimsPixels;
 
 		std::unique_ptr<jleGame> game;
-
+		bool gameHalted = false;
 	};
 }
