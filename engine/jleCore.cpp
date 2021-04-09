@@ -159,9 +159,9 @@ namespace jle
 		{
 			coreImpl->status_internal->Refresh();
 
-			Render();
-
 			Update(status->GetDeltaFrameTime());
+
+			Render();
 
 			((iWindowInternalAPI*)window.get())->UpdateWindow();
 
