@@ -24,14 +24,19 @@ namespace jle
 
 		if (ImGui::Begin(window_name.c_str(), &isOpened, flags))
 		{
-			if (ImGui::Button("Start Game", { 100, 25 }))
+			if (ge.IsGameKilled())
 			{
-				ge.StartGame();
+				if (ImGui::Button("Start Game", { 100, 25 }))
+				{
+					ge.StartGame();
+				}
 			}
-
-			if (ImGui::Button("Kill Game", { 100, 25 }))
+			else
 			{
-				ge.KillGame();
+				if (ImGui::Button("Kill Game", { 100, 25 }))
+				{
+					ge.KillGame();
+				}
 			}
 
 			ImGui::SameLine();
@@ -52,7 +57,10 @@ namespace jle
 				ImGui::SameLine();
 				if (ImGui::Button("Next Frame", { 100, 25 }))
 				{
-					ge.ExecuteNextFrame();
+					if (!ge.IsGameKilled())
+					{
+						ge.ExecuteNextFrame();
+					}
 				}
 			}
 		}

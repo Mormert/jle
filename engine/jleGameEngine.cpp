@@ -49,7 +49,6 @@ namespace jle
 		}
 		game = gameCreator->CreateGame();
 		game->Start();
-		gameHalted = false;
 	}
 
 	void jleGameEngine::KillGame()
@@ -75,6 +74,15 @@ namespace jle
 		Update(status->GetDeltaFrameTime());
 		((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get());
 		gameHalted = gameHaltedTemp;
+	}
+
+	bool jleGameEngine::IsGameKilled()
+	{
+		if (game)
+		{
+			return false;
+		}
+		return true;
 	}
 
 	bool jleGameEngine::IsGameHalted()

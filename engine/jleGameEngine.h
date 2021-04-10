@@ -46,6 +46,7 @@ namespace jle
 		void HaltGame();
 		void UnhaltGame();
 		void ExecuteNextFrame();
+		bool IsGameKilled();
 
 		bool IsGameHalted();
 
