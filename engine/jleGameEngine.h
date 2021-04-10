@@ -28,7 +28,12 @@ namespace jle
 		virtual ~jleGameEngine() {}
 
 		jleGameEngine(std::shared_ptr<GameSettings> gs);
-		void SetGame(std::unique_ptr<jleGame> game);
+		
+		template <class T>
+		void SetGame() {
+			gameCreator = std::make_unique<GameCreator<T>>();
+			game = gameCreator->CreateGame();
+		}
 
 		// Main framebuffer
 		std::shared_ptr<iFramebuffer> framebuffer_main;
@@ -48,6 +53,26 @@ namespace jle
 		jleGame& GetGameRef();
 
 	private:
+
+		class iGameCreator
+		{
+		public:
+			virtual ~iGameCreator() {}
+			virtual std::unique_ptr<jleGame> CreateGame() = 0;
+		};
+
+		template <class T>
+		class GameCreator : public iGameCreator {
+		public:
+			virtual ~GameCreator() {}
+			virtual std::unique_ptr<jleGame> CreateGame() override
+			{
+				return std::make_unique<T>();
+			}
+		};
+
+		std::unique_ptr<iGameCreator> gameCreator;
+
 		std::unique_ptr<iFullscreenRendering> fullscreen_renderer;
 
 		void FramebufferResizeEvent(unsigned int width, unsigned int height);

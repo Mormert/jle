@@ -17,8 +17,6 @@ int main()
 
 	gameSettings->windowSettings.iconPath = "GameAssets/game_icon.png";
 
-	auto hexabloGame = std::make_unique<Hexablo>();
-
 #ifdef NDEBUG 
 	auto gameEngine = std::make_unique<jle::jleGameEngine>(gameSettings);
 #else
@@ -26,7 +24,7 @@ int main()
 	gameSettings->windowSettings.iconPath = "GameAssets/game_icon_editor_mode.png";
 	auto gameEngine = std::make_unique<jle::jleEditor>(gameSettings);
 #endif
-	gameEngine->SetGame(std::move(hexabloGame));
+	gameEngine->SetGame<Hexablo>();
 
 	gameEngine->Run();
 

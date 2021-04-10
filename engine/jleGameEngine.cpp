@@ -14,11 +14,6 @@ namespace jle
 		SetGameDimsPixels(gs->framebufferSettings.fixedAxis, gs->framebufferSettings.fixedAxisPixels);
 	}
 
-	void jleGameEngine::SetGame(std::unique_ptr<jleGame> game)
-	{
-		this->game = std::move(game);
-	}
-
 	void jleGameEngine::SetGameDimsPixels(FIXED_AXIS fa, unsigned int pixels)
 	{
 		fixed_axis = fa;
@@ -107,7 +102,7 @@ namespace jle
 
 	void jleGameEngine::Update(float dt)
 	{
-		if (!gameHalted)
+		if (!gameHalted && game)
 		{
 			game->Update(dt);
 		}
@@ -115,7 +110,7 @@ namespace jle
 
 	void jleGameEngine::Render()
 	{
-		if (!gameHalted)
+		if (!gameHalted && game)
 		{
 			((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get());
 			fullscreen_renderer->RenderFramebufferFullscreen(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
