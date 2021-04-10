@@ -42,10 +42,19 @@ namespace jle
 
 	void jleGameEngine::StartGame()
 	{
+		if (!gameCreator)
+		{
+			LOG_WARNING << "Game has not been set! Use SetGame<jleGameDerived>() before starting the game.";
+			return;
+		}
+		game = gameCreator->CreateGame();
+		game->Start();
+		gameHalted = false;
 	}
 
 	void jleGameEngine::KillGame()
 	{
+		game.reset();
 	}
 
 	void jleGameEngine::HaltGame()
@@ -91,7 +100,7 @@ namespace jle
 
 		LOG_INFO << "Starting the game engine";
 
-		game->Start();
+		StartGame();
 	}
 
 	void jleGameEngine::FramebufferResizeEvent(unsigned int width, unsigned int height)

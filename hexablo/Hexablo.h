@@ -6,7 +6,7 @@
 class Hexablo final : public jle::jleGame
 {
 public:
-
+	virtual ~Hexablo();
 	virtual void Start() override;
 	virtual void Update(float dt) override;
 private:

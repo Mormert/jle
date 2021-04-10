@@ -65,13 +65,13 @@ namespace jle
 
         LOG_INFO << "Starting the game engine in editor mode";
 
-		game->Start();
+        StartGame();
 
 	}
 
 	void jleEditor::Render()
 	{
-        if (!gameHalted)
+        if (!gameHalted && game)
         {
             ((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get());
         }

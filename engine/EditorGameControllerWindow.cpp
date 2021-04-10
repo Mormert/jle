@@ -20,13 +20,18 @@ namespace jle
 			return;
 		}
 
-		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize;
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize;
 
 		if (ImGui::Begin(window_name.c_str(), &isOpened, flags))
 		{
 			if (ImGui::Button("Start Game", { 100, 25 }))
 			{
-				StartGame();
+				ge.StartGame();
+			}
+
+			if (ImGui::Button("Kill Game", { 100, 25 }))
+			{
+				ge.KillGame();
 			}
 
 			ImGui::SameLine();

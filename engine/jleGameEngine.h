@@ -32,7 +32,6 @@ namespace jle
 		template <class T>
 		void SetGame() {
 			gameCreator = std::make_unique<GameCreator<T>>();
-			game = gameCreator->CreateGame();
 		}
 
 		// Main framebuffer

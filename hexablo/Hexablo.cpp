@@ -44,10 +44,19 @@ float x = 40;
 
 //}
 
+Hexablo::~Hexablo()
+{
+	std::cout << "Game destroyed";
+}
+
 void Hexablo::Start()
 {
 	myTexture = jle::jleCore::core->texture_creator->CreateTextureFromImage(jle::Image{"GameAssets/HexagonDiabloConcept.png"});
 	myTexture2 = jle::jleCore::core->texture_creator->CreateTextureFromImage(jle::Image{ "GameAssets/FullScene.png" });
+	posx = -200;
+	posy = 25;
+	y = 134;
+	x = 40;
 }
 
 void Hexablo::Update(float dt)
