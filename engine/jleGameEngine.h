@@ -25,7 +25,7 @@ namespace jle
 	class jleGameEngine : public jle::jleCore
 	{
 	public:
-		virtual ~jleGameEngine() {}
+		virtual ~jleGameEngine();
 
 		jleGameEngine(std::shared_ptr<GameSettings> gs);
 		
@@ -80,6 +80,7 @@ namespace jle
 		virtual void Start() override;
 		virtual void Update(float dt) override;
 		virtual void Render() override;
+		virtual void Exiting() override;
 
 		FIXED_AXIS fixed_axis;
 

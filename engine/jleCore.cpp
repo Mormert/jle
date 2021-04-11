@@ -167,5 +167,6 @@ namespace jle
 
 			running = !((iWindowInternalAPI*)window.get())->WindowShouldClose();
 		}
+		Exiting();
 	}
 }

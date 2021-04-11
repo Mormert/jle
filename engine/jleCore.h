@@ -91,6 +91,7 @@ namespace jle
 		virtual void Start() {}
 		virtual void Update(float dt) {}
 		virtual void Render() {}
+		virtual void Exiting() {}
 
 		std::shared_ptr<CoreSettings> core_settings;
 	};

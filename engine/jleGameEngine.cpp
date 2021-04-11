@@ -14,6 +14,10 @@ namespace jle
 		SetGameDimsPixels(gs->framebufferSettings.fixedAxis, gs->framebufferSettings.fixedAxisPixels);
 	}
 
+	jleGameEngine::~jleGameEngine()
+	{
+	}
+
 	void jleGameEngine::SetGameDimsPixels(FIXED_AXIS fa, unsigned int pixels)
 	{
 		fixed_axis = fa;
@@ -133,5 +137,10 @@ namespace jle
 			fullscreen_renderer->RenderFramebufferFullscreen(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
 		}
 		
+	}
+
+	void jleGameEngine::Exiting()
+	{
+		KillGame();
 	}
 }
