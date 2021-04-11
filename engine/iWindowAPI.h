@@ -1,5 +1,7 @@
 #pragma once
 
+#include "JLE_ENGINE_CONFIG.h"
+
 #include <string>
 
 #include <functional>
@@ -13,7 +15,7 @@ namespace jle
 		unsigned int windowWidth = 500, windowHeight = 500;
 		unsigned int windowWidthMin = 100, windowHeightMin = 100;
 
-		std::string iconPath{ "" };
+		std::string iconPath{ JLE_ENGINE_PATH + "/EditorResources/jle_default_icon.png" };
 
 		bool windowIsRezisable = true;
 		bool windowDisplayCursor = true;

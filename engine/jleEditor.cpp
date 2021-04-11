@@ -1,5 +1,7 @@
 #include "jleEditor.h"
 
+#include "JLE_ENGINE_CONFIG.h"
+
 #include "imgui.h" // uses vcpkg
 #include "3rdparty/imgui_impl_glfw.h"
 #include "3rdparty/imgui_impl_opengl3.h"
@@ -15,8 +17,6 @@
 #include "ConsoleEditorWindow.h"
 #include "EditorGameControllerWindow.h"
 
-#include "Image.h"
-
 #include "iQuadRenderingInternal.h"
 
 #include <iostream>
@@ -27,8 +27,9 @@
 
 namespace jle
 {
-	jleEditor::jleEditor(std::shared_ptr<GameSettings> gs) : jleGameEngine{ gs }
+	jleEditor::jleEditor(std::shared_ptr<EditorSettings> es) : jleGameEngine{ es }
 	{
+        background_image = std::make_unique<Image>(es->editorBackgroundImage);
 	}
 
 	void jleEditor::StartEditor()
@@ -44,8 +45,7 @@ namespace jle
 		framebuffer_main = renderingFactory->CreateFramebuffer(dims.first, dims.second);
 
         // Create editor background image
-        Image background_image{ "GameAssets/jle_default_bg.jpg" };
-        editor_background_image = std::make_unique<EditorBackgroundImage>(background_image, *texture_creator, *renderingFactory);
+        editor_background_image = std::make_unique<EditorBackgroundImage>(*background_image, *texture_creator, *renderingFactory);
 
         auto menu = std::make_shared<EditorWindowsPanel>("Menu");
         AddImGuiWindow(menu);

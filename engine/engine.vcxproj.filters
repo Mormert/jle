@@ -165,9 +165,6 @@
     <ClCompile Include="TextureCreator_OpenGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EditorBackgroundImage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EditorWindowsPanel.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
@@ -175,6 +172,9 @@
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
     <ClCompile Include="ConsoleEditorWindow.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorBackgroundImage.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
   </ItemGroup>
@@ -342,6 +342,9 @@
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
     <ClInclude Include="EditorGameControllerWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JLE_ENGINE_CONFIG.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

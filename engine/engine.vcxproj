@@ -76,6 +76,7 @@
     <ClInclude Include="jleEditor.h" />
     <ClInclude Include="jleGame.h" />
     <ClInclude Include="iTextureCreator.h" />
+    <ClInclude Include="JLE_ENGINE_CONFIG.h" />
     <ClInclude Include="TextureCreator_OpenGL.h" />
     <ClInclude Include="WindowInitializer_GLFW_OpenGL.h" />
     <ClInclude Include="WindowFactory_GLFW.h" />

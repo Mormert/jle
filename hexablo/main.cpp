@@ -6,7 +6,12 @@
 int main()
 {
 
+#ifdef NDEBUG
 	auto gameSettings = std::make_shared<jle::GameSettings>();
+#else
+	auto gameSettings = std::make_shared<jle::EditorSettings>();
+#endif
+	
 		
 	gameSettings->windowSettings.WindowTitle = "Hexablo";
 	gameSettings->framebufferSettings.fixedAxis = jle::FIXED_AXIS::height;
