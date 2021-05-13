@@ -127,7 +127,7 @@ namespace jle
 
 		framebufferOut.BindToFramebuffer();
 
-		glClearColor(1.f, 0.f, 0.f, 1.0f); // red
+		glClearColor(0.f, 0.f, 0.f, 1.0f); // Make everything black
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 
