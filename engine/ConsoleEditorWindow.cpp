@@ -4,6 +4,7 @@
 
 #include <locale>
 #include <codecvt>
+#include <algorithm>
 
 namespace jle
 {
@@ -367,11 +368,19 @@ namespace jle
         woss << PLOG_NSTR("<") << plog::severityToString(record.getSeverity()) << PLOG_NSTR("> ") << record.getFunc() << PLOG_NSTR("@") << record.getLine() << PLOG_NSTR(": ") << record.getMessage() << PLOG_NSTR("\n");
         auto wstr = woss.str();
         
+        // DEPRECATED C++ 14 CODE BELOW
         // Conversion from wstring to string is required
-        using convert_type = std::codecvt_utf8<wchar_t>;
-        static std::wstring_convert<convert_type, wchar_t> converter;
+        //  using convert_type = std::codecvt_utf8<wchar_t>;
+        //  static std::wstring_convert<convert_type, wchar_t> converter;
+        //  std::string converted_str = converter.to_bytes(wstr);
 
-        std::string converted_str = converter.to_bytes(wstr);
+        // C++ 17 VERSION:
+
+        std::string converted_str(wstr.length(), 0);
+        std::transform(wstr.begin(), wstr.end(), converted_str.begin(), [](wchar_t c) {
+                return (char)c;
+            });
+
         AddLog(converted_str.c_str());
     }
 }
