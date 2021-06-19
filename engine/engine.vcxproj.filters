@@ -177,6 +177,15 @@
     <ClCompile Include="EditorBackgroundImage.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
+    <ClCompile Include="jleScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jleObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jleComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\imgui_impl_glfw.h">
@@ -345,6 +354,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JLE_ENGINE_CONFIG.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jleScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jleObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jleComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -126,6 +126,7 @@ namespace jle
 		if (!gameHalted && game)
 		{
 			game->Update(dt);
+			game->UpdateActiveScenes(dt);
 		}
 	}
 
