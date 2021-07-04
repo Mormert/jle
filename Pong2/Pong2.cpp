@@ -5,8 +5,6 @@
 
 #include "oPlayerRacket.h"
 
-
-
 Pong2::~Pong2()
 {
 
@@ -15,7 +13,7 @@ Pong2::~Pong2()
 void Pong2::Start()
 {
 
-	jle::jleObjectTypeUtils::RegisterObject<oPlayerRacket>();
+	//jle::jleObjectTypeUtils::RegisterObject<oPlayerRacket>();
 
 	auto scene = CreateScene<jle::jleScene>();
 

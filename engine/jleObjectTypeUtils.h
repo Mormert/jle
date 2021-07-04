@@ -1,6 +1,6 @@
 #pragma once
 
-#include "jleObject.h"
+//#include "jleObject.h"
 
 #include <string>
 #include <map>
@@ -9,8 +9,14 @@
 #include <cassert>
 
 
+#define JLE_REGISTER_OBJECT_TYPE(object_name)							\
+static const std::string_view GetObjectName(){ return #object_name;}	\
+static inline const jle::jleObjectTypeRegistrator<object_name> object_name_Reg{ #object_name };
+
 namespace jle
 {
+	class jleObject;
+
 	class jleObjectTypeUtils
 	{
 	public:
@@ -25,44 +31,48 @@ namespace jle
 				return std::make_shared<T>();
 			};
 
-			mRegisteredObjects.insert(std::make_pair(oName, oCreationFunc));
+			GetRegisteredObjectsRef().insert(std::make_pair(oName, oCreationFunc));
 		}
 
 		static std::shared_ptr<jleObject> InstantiateObjectByString(const std::string& str)
 		{
-			auto it = mRegisteredObjects.find(str);
-			if (it == mRegisteredObjects.end())
+			auto it = GetRegisteredObjectsRef().find(str);
+			if (it == GetRegisteredObjectsRef().end())
 			{
 				return nullptr;
 			}
 			return it->second();
 		}
 
-	protected:
-		/*static std::map<std::string, std::function<std::shared_ptr<jleObject>()>>* GetRegisteredObjects()
-		{
-			if (!mRegisteredObjects)
-			{
-				mRegisteredObjects = std::make_unique<std::map<std::string, std::function<std::shared_ptr<jleObject>()>>>();
-			}
-			return mRegisteredObjects.get();
-		}*/
-
 	private:
-		static std::map<std::string, std::function<std::shared_ptr<jleObject>()>> mRegisteredObjects;
+		template <typename T>
+		friend class jleObjectTypeRegistrator;
+
+		static std::map<std::string, std::function<std::shared_ptr<jleObject>()>>& GetRegisteredObjectsRef()
+		{
+			if (!mRegisteredObjectsPtr)
+			{
+				mRegisteredObjectsPtr = std::make_unique<std::map<std::string, std::function<std::shared_ptr<jleObject>()>>>();
+			}
+			return *mRegisteredObjectsPtr;
+		}
+
+		// Should always be accessed via GetRegisteredObjectsRef()
+		static std::unique_ptr<std::map<std::string, std::function<std::shared_ptr<jleObject>()>>> mRegisteredObjectsPtr;
 	};
 
-	/*template <typename T>
-	class jleObjectTypeUtilsRegistrator : public jleObjectTypeUtils
+	template <typename T>
+	class jleObjectTypeRegistrator
 	{
 	public:
-		jleObjectTypeUtilsRegistrator(const std::string& oName)
+		jleObjectTypeRegistrator(const std::string& oName)
 		{
 			std::function<std::shared_ptr<T>()> oCreationFunc = []()
 			{
 				return std::make_shared<T>();
 			};
-			GetRegisteredObjects->insert(std::make_pair(oName, oCreationFunc));
+
+			jleObjectTypeUtils::GetRegisteredObjectsRef().insert(std::make_pair(oName, oCreationFunc));
 		}
-	};*/
+	};
 }

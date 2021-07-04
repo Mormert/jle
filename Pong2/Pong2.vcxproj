@@ -162,6 +162,9 @@
       <Project>{d56f0fd5-df44-4f83-b56e-2b6ea3bda655}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

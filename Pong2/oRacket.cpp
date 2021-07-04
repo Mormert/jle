@@ -4,6 +4,8 @@
 
 #include "jleCore.h"
 
+#include <iostream>
+
 oRacket::oRacket()
 {
 	transform = AddComponent<cTransform>();
@@ -16,6 +18,8 @@ void oRacket::Start()
 	sprite->CreateAndSetTextureFromPath("pong_texture_atlas.png");
 	sprite->SetTextureBeginCoordinates(11, 14);
 	sprite->SetRectangleDimensions(1, 1);
+
+	std::cout << myInt << "\n";
 }
 
 void oRacket::Update(float dt)

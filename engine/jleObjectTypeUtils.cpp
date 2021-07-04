@@ -2,5 +2,5 @@
 
 namespace jle
 {
-	std::map<std::string, std::function<std::shared_ptr<jleObject>()>> jleObjectTypeUtils::mRegisteredObjects {};
+	std::unique_ptr<std::map<std::string, std::function<std::shared_ptr<jleObject>()>>> jleObjectTypeUtils::mRegisteredObjectsPtr { nullptr };
 }

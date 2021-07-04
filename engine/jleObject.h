@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 
+#include "jleObjectTypeUtils.h"
 #include "jleComponent.h"
 
 namespace jle

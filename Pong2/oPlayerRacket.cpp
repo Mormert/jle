@@ -19,5 +19,3 @@ void oPlayerRacket::Update(float dt)
 		transform->AddPosition(0, -2 * dt);
 	}
 }
-
-//jle::jleObjectTypeUtilsRegistrator<oPlayerRacket> oPlayerRacket::reg{ "oPlayerRacket" };
