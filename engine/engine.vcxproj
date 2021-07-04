@@ -37,6 +37,7 @@
     <ClCompile Include="jleEditor.cpp" />
     <ClCompile Include="jleGame.cpp" />
     <ClCompile Include="jleObject.cpp" />
+    <ClCompile Include="jleObjectTypeUtils.cpp" />
     <ClCompile Include="jleScene.cpp" />
     <ClCompile Include="TextureCreator_OpenGL.cpp" />
     <ClCompile Include="WindowInitializer_GLFW_OpenGL.cpp" />
@@ -81,6 +82,7 @@
     <ClInclude Include="jleGame.h" />
     <ClInclude Include="iTextureCreator.h" />
     <ClInclude Include="jleObject.h" />
+    <ClInclude Include="jleObjectTypeUtils.h" />
     <ClInclude Include="jleScene.h" />
     <ClInclude Include="JLE_ENGINE_CONFIG.h" />
     <ClInclude Include="TextureCreator_OpenGL.h" />
@@ -192,6 +194,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -208,6 +211,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

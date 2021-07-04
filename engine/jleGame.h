@@ -30,6 +30,6 @@ namespace jle
 		}
 
 	protected:
-		std::vector<std::unique_ptr<jleScene>> mActiveScenes;
+		std::vector<std::shared_ptr<jleScene>> mActiveScenes;
 	};
 }

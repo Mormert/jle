@@ -16,6 +16,7 @@ namespace jle
 		virtual void Start() {}
 		virtual void Update(float dt) {}
 
+        jleObject() = default;
         virtual ~jleObject() {}
 
         template <typename T>
@@ -32,7 +33,7 @@ namespace jle
             }
 
             std::shared_ptr<T> newComponent = std::make_shared<T>(this, mContainedInScene);
-            components.push_back(newComponent);
+            mComponents.push_back(newComponent);
 
             return newComponent;
         };
@@ -55,6 +56,11 @@ namespace jle
 
         void DestroyObject();
 
+        static const std::string_view GetObjectName()
+        {
+            return "jleObject"; 
+        };
+
     private:
         friend class jleScene;
 
@@ -68,6 +74,6 @@ namespace jle
 	protected:
 		std::vector<std::shared_ptr<jleComponent>> mComponents;
 
-        const jleScene* mContainedInScene;
+        jleScene* mContainedInScene = nullptr;
 	};
 }

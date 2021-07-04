@@ -5,7 +5,7 @@ namespace jle
 {
 	void jleGame::UpdateActiveScenes(float dt)
 	{
-		for (auto i = mActiveScenes.size() - 1; i >= 0; i--)
+		for (int i = mActiveScenes.size() - 1; i >= 0; i--)
 		{
 			if (mActiveScenes[i]->bPendingSceneDestruction)
 			{

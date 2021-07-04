@@ -2,7 +2,7 @@
 
 void jle::jleScene::UpdateSceneObjects(float dt)
 {
-	for (auto i = mSceneObjects.size() - 1; i >= 0; i--)
+	for (int i = mSceneObjects.size() - 1; i >= 0; i--)
 	{
 		if (mSceneObjects[i]->bPendingKill)
 		{
