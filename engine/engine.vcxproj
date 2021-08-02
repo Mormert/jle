@@ -62,6 +62,7 @@
     <ClInclude Include="3rdparty\glad\glad.h" />
     <ClInclude Include="3rdparty\imgui_impl_glfw.h" />
     <ClInclude Include="3rdparty\imgui_impl_opengl3.h" />
+    <ClInclude Include="3rdparty\json.hpp" />
     <ClInclude Include="3rdparty\KHR\khrplatform.h" />
     <ClInclude Include="3rdparty\stb_image.h" />
     <ClInclude Include="Camera2d.h" />

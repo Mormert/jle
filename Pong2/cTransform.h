@@ -2,6 +2,8 @@
 
 #include "jleComponent.h"
 
+#include "3rdparty/json.hpp"
+
 class cTransform : public jle::jleComponent
 {
 public:
@@ -15,3 +17,6 @@ public:
 
 	virtual const std::string_view GetComponentName() const override;
 };
+
+void to_json(nlohmann::json& j, const cTransform t);
+void from_json(const nlohmann::json& j, cTransform& t);

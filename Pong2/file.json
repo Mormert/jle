@@ -1,0 +1,28 @@
+{
+    "objects": [
+        {
+            "obj_name": "oPlayerRacket",
+            "some_int": 3,
+            "transform": {
+                "x": 25.0,
+                "y": 35.0
+            }
+        },
+        {
+            "obj_name": "oPlayerRacket",
+            "some_int": 3,
+            "transform": {
+                "x": 15.0,
+                "y": 17.0
+            }
+        },
+        {
+            "obj_name": "oPlayerRacket",
+            "some_int": 3,
+            "transform": {
+                "x": 27.0,
+                "y": 12.0
+            }
+        }
+    ]
+}

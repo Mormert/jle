@@ -6,6 +6,8 @@
 #include "jleObjectTypeUtils.h"
 #include "jleComponent.h"
 
+#include "3rdparty/json.hpp"
+
 namespace jle
 {
     class jleScene;
@@ -62,6 +64,14 @@ namespace jle
             return "jleObject"; 
         };
 
+        virtual std::string_view GetObjectNameVirtual()
+        {
+            return "jleObject";
+        }
+
+        virtual void ToJson(nlohmann::json& j_out)          {}
+        virtual void FromJson(const nlohmann::json& j_in)   {}
+
     private:
         friend class jleScene;
 
@@ -76,5 +86,11 @@ namespace jle
 		std::vector<std::shared_ptr<jleComponent>> mComponents;
 
         jleScene* mContainedInScene = nullptr;
+
+        friend void to_json(nlohmann::json& j, const std::shared_ptr<jleObject> o);
+        friend void from_json(const nlohmann::json& j, std::shared_ptr<jleObject>& o);
 	};
+
+    void to_json(nlohmann::json& j, const std::shared_ptr<jleObject> o);
+    void from_json(const nlohmann::json& j, std::shared_ptr<jleObject>& o);
 }

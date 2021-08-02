@@ -26,3 +26,17 @@ void jle::jleObject::UpdateComponents(float dt)
 		mComponents[i]->Update(dt);
 	}
 }
+
+void jle::to_json(nlohmann::json& j, const std::shared_ptr<jleObject> o)
+{
+	j = nlohmann::json{
+		{"obj_name", o->GetObjectNameVirtual()}
+	};
+
+	o->ToJson(j);
+}
+
+void jle::from_json(const nlohmann::json& j, std::shared_ptr<jleObject>& o)
+{
+
+}

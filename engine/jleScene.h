@@ -1,10 +1,38 @@
 #pragma once
 
+#include "jleObject.h"
+#include "jleObjectTypeUtils.h"
+
 #include <vector>
 #include <memory>
 
-#include "jleObject.h"
-#include "jleObjectTypeUtils.h"
+#include "3rdparty/json.hpp"
+
+/*namespace nlohmann {
+	template <typename T>
+	struct adl_serializer<std::unique_ptr<T>> {
+		static void to_json(json& j, const std::unique_ptr<T>& opt) {
+			if (opt.get()) {
+				j = *opt;
+			}
+			else {
+				j = nullptr;
+			}
+		}
+	};
+
+	template <typename T>
+	struct adl_serializer<std::shared_ptr<T>> {
+		static void to_json(json& j, const std::shared_ptr<T>& opt) {
+			if (opt.get()) {
+				j = *opt;
+			}
+			else {
+				j = nullptr;
+			}
+		}
+	};
+}*/
 
 namespace jle
 {
@@ -49,5 +77,12 @@ namespace jle
 	protected:
 		std::vector<std::shared_ptr<jleObject>> mSceneObjects;
 		std::vector<std::shared_ptr<jleObject>> mNewSceneObjects;
+
+		friend void to_json(nlohmann::json& j, const jleScene s);
+		friend void from_json(const nlohmann::json& j, jleScene& s);
 	};
+
+
+	void to_json(nlohmann::json& j, const jleScene s);
+	void from_json(const nlohmann::json& j, jleScene& s);
 }

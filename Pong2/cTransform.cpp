@@ -20,3 +20,17 @@ const std::string_view cTransform::GetComponentName() const
 {
 	return "cTransform";
 }
+
+void to_json(nlohmann::json& j, const cTransform t)
+{
+	j = nlohmann::json{
+		{"x", t.x},
+		{"y", t.y}
+	};
+}
+
+void from_json(const nlohmann::json& j, cTransform& t)
+{
+	t.x = j.at("x");
+	t.y = j.at("y");
+}
