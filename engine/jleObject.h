@@ -83,9 +83,11 @@ namespace jle
         bool bPendingKill = false;
 
 	protected:
-		std::vector<std::shared_ptr<jleComponent>> mComponents;
+        std::vector<std::shared_ptr<jleComponent>> mComponents {};
 
         jleScene* mContainedInScene = nullptr;
+
+        virtual void SetupDefaultObject() {}
 
         friend void to_json(nlohmann::json& j, const std::shared_ptr<jleObject> o);
         friend void from_json(const nlohmann::json& j, std::shared_ptr<jleObject>& o);

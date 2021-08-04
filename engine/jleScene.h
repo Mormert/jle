@@ -49,6 +49,8 @@ namespace jle
 
 			auto newSceneObject = std::make_shared<T>();
 			newSceneObject->mContainedInScene = this;
+			newSceneObject->SetupDefaultObject();
+
 			mNewSceneObjects.push_back(newSceneObject);
 
 			return newSceneObject;
@@ -58,6 +60,7 @@ namespace jle
 		{
 			auto newSceneObject = jleObjectTypeUtils::InstantiateObjectByString(objName);
 			newSceneObject->mContainedInScene = this;
+			newSceneObject->SetupDefaultObject();
 
 			mNewSceneObjects.push_back(newSceneObject);
 

@@ -3,6 +3,16 @@
         {
             "obj_name": "oPlayerRacket",
             "some_int": 3,
+            "sprite": {
+                "depth": 0.0,
+                "height": 1,
+                "path": "pong_texture_atlas.png",
+                "textureX": 11,
+                "textureY": 14,
+                "width": 1,
+                "x": 25.0,
+                "y": 35.0
+            },
             "transform": {
                 "x": 25.0,
                 "y": 35.0
@@ -11,17 +21,19 @@
         {
             "obj_name": "oPlayerRacket",
             "some_int": 3,
-            "transform": {
+            "sprite": {
+                "depth": 0.0,
+                "height": 16,
+                "path": "pong_texture_atlas.png",
+                "textureX": 0,
+                "textureY": 0,
+                "width": 16,
                 "x": 15.0,
                 "y": 17.0
-            }
-        },
-        {
-            "obj_name": "oPlayerRacket",
-            "some_int": 3,
+            },
             "transform": {
-                "x": 27.0,
-                "y": 12.0
+                "x": 2.0,
+                "y": 2.0
             }
         }
     ]

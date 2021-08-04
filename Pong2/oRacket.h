@@ -15,9 +15,10 @@ class oRacket : public jle::jleObject
 	JLE_REGISTER_OBJECT_TYPE(oRacket)
 public:
 
-	oRacket();
 
 	JLE_VAR_DECL(int, myInt = 5)
+
+	virtual void SetupDefaultObject() override;
 
 	virtual void Start() override;
 	virtual void Update(float dt) override;
@@ -28,14 +29,22 @@ public:
 
 	virtual void ToJson(nlohmann::json& j_out) override {
 
-		j_out["transform"] = *transform;
+		transform->ToJson(j_out["transform"]);
+		sprite->ToJson(j_out["sprite"]);
+
+		//j_out["transform"] = *transform;
+		//j_out["sprite"] = *sprite;
 
 		j_out["some_int"] = 3;
 	}
 
 	virtual void FromJson(const nlohmann::json& j_in) override {
 
-		*transform = j_in.at("transform");
+		transform->FromJson(j_in.at("transform"));
+		sprite->FromJson(j_in.at("sprite"));
+
+		//*transform = j_in.at("transform");
+		//*sprite = j_in.at("sprite");
 
 		int a = j_in.at("some_int");
 		myInt = a;
@@ -44,5 +53,4 @@ public:
 protected:
 	std::shared_ptr<cTransform> transform;
 	std::shared_ptr<cSprite> sprite;
-
 };

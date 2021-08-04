@@ -24,9 +24,18 @@ public:
 
 	virtual const std::string_view GetComponentName() const override;
 
+	virtual void ToJson(nlohmann::json& j_out) override;
+	virtual void FromJson(const nlohmann::json& j_in) override;
+
 private:
+	std::string texturePath = "";
+
 	TexturedQuad quad;
 	std::shared_ptr<cTransform> transform;
 
+	//friend void to_json(nlohmann::json& j, const cSprite s);
+	//friend void from_json(const nlohmann::json& j, cSprite& s);
 };
 
+//void to_json(nlohmann::json& j, const cSprite s);
+//void from_json(const nlohmann::json& j, cSprite& s);
