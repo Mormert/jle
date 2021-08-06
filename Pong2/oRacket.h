@@ -7,6 +7,11 @@
 
 #include <memory>
 
+
+
+
+#include <iostream>
+
 #define JLE_VAR_DECL(VARTYPE, VARNAME) VARTYPE VARNAME;
 
 
@@ -40,8 +45,14 @@ public:
 
 	virtual void FromJson(const nlohmann::json& j_in) override {
 
-		transform->FromJson(j_in.at("transform"));
-		sprite->FromJson(j_in.at("sprite"));
+		try {
+			transform->FromJson(j_in.at("transform"));
+			sprite->FromJson(j_in.at("sprite"));
+		}
+		catch(std::exception e){
+			std::cout << e.what();
+		}
+
 
 		//*transform = j_in.at("transform");
 		//*sprite = j_in.at("sprite");

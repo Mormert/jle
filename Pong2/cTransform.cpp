@@ -1,5 +1,7 @@
 #include "cTransform.h"
 
+#include "jleJson.h"
+
 cTransform::cTransform(jle::jleObject* owner, jle::jleScene* scene) : jleComponent{owner, scene}
 {
 }
@@ -31,8 +33,8 @@ void cTransform::ToJson(nlohmann::json& j_out)
 
 void cTransform::FromJson(const nlohmann::json& j_in)
 {
-	x = j_in.at("x");
-	y = j_in.at("y");
+	JLE_FROM_JSON_DEFAULT(j_in, x, "x", 0.f);
+	JLE_FROM_JSON_DEFAULT(j_in, y, "y", 0.f);
 }
 /*
 void to_json(nlohmann::json& j, const cTransform t)

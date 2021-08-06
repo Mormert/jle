@@ -6,13 +6,14 @@
 #include "jleObjectTypeUtils.h"
 #include "jleComponent.h"
 
+#include "jleJson.h"
 #include "3rdparty/json.hpp"
 
 namespace jle
 {
     class jleScene;
 
-	class jleObject
+	class jleObject : public jleJsonInterface<nlohmann::json>
 	{
 	public:
 

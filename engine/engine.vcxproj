@@ -82,6 +82,7 @@
     <ClInclude Include="jleEditor.h" />
     <ClInclude Include="jleGame.h" />
     <ClInclude Include="iTextureCreator.h" />
+    <ClInclude Include="jleJson.h" />
     <ClInclude Include="jleObject.h" />
     <ClInclude Include="jleObjectTypeUtils.h" />
     <ClInclude Include="jleScene.h" />

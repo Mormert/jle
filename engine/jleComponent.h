@@ -2,6 +2,7 @@
 
 #include <string_view>
 
+#include "jleJson.h"
 #include "3rdparty/json.hpp"
 
 namespace jle
@@ -9,7 +10,7 @@ namespace jle
 	class jleObject;
 	class jleScene;
 
-	class jleComponent
+	class jleComponent : public jleJsonInterface<nlohmann::json>
 	{
 	public:
 		jleComponent(jleObject* owner = nullptr, jleScene* scene = nullptr);

@@ -374,5 +374,8 @@
     <ClInclude Include="3rdparty\json.hpp">
       <Filter>3rdparty</Filter>
     </ClInclude>
+    <ClInclude Include="jleJson.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
