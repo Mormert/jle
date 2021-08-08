@@ -2,6 +2,20 @@
 
 #include <iostream>
 
+int jle::jleScene::mScenesCreatedCount{ 0 };
+
+jle::jleScene::jleScene()
+{
+	mSceneName = "Scene_" + std::to_string(mScenesCreatedCount);
+	mScenesCreatedCount++;
+}
+
+jle::jleScene::jleScene(std::string sceneName)
+{
+	this->mSceneName = sceneName;
+	mScenesCreatedCount++;
+}
+
 void jle::jleScene::UpdateSceneObjects(float dt)
 {
 	for (int i = mSceneObjects.size() - 1; i >= 0; i--)

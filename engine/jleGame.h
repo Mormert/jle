@@ -29,6 +29,8 @@ namespace jle
 			return newScene;
 		}
 
+		std::vector<std::shared_ptr<jleScene>>& GetActiveScenesRef();
+
 	protected:
 		std::vector<std::shared_ptr<jleScene>> mActiveScenes;
 	};

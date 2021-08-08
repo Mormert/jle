@@ -58,6 +58,8 @@ namespace jle
 	void jleGameEngine::KillGame()
 	{
 		game.reset();
+		StartGame();
+		HaltGame();
 	}
 
 	void jleGameEngine::HaltGame()

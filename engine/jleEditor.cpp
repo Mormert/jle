@@ -16,6 +16,7 @@
 #include "GameEditorWindow.h"
 #include "ConsoleEditorWindow.h"
 #include "EditorGameControllerWindow.h"
+#include "EditorSceneObjectsWindow.h"
 
 #include "iQuadRenderingInternal.h"
 
@@ -62,6 +63,10 @@ namespace jle
         auto gameController = std::make_shared<EditorGameControllerWindow>("Game Controller");
         AddImGuiWindow(gameController);
         menu->AddWindow(gameController);
+
+        auto editorSceneObjects = std::make_shared<EditorSceneObjectsWindow>("Scene Objects");
+        AddImGuiWindow(editorSceneObjects);
+        menu->AddWindow(editorSceneObjects);
 
         LOG_INFO << "Starting the game engine in editor mode";
 

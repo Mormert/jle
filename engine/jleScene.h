@@ -40,6 +40,8 @@ namespace jle
 	{
 	public:
 
+		jleScene();
+		jleScene(std::string sceneName);
 		virtual ~jleScene() {}
 
 		template <typename T>
@@ -77,12 +79,22 @@ namespace jle
 		void DestroyScene();
 		bool bPendingSceneDestruction = false;
 
+		std::vector<std::shared_ptr<jleObject>>& GetSceneObjects()
+		{
+			return mSceneObjects;
+		}
+
+		std::string mSceneName;
+
 	protected:
 		std::vector<std::shared_ptr<jleObject>> mSceneObjects;
 		std::vector<std::shared_ptr<jleObject>> mNewSceneObjects;
 
 		friend void to_json(nlohmann::json& j, const jleScene s);
 		friend void from_json(const nlohmann::json& j, jleScene& s);
+
+	private:
+		static int mScenesCreatedCount;
 	};
 
 

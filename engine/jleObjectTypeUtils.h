@@ -44,9 +44,9 @@ namespace jle
 			return it->second();
 		}
 
-	private:
-		template <typename T>
-		friend class jleObjectTypeRegistrator;
+	//private:
+	//	template <typename T>
+	//	friend class jleObjectTypeRegistrator;
 
 		static std::map<std::string, std::function<std::shared_ptr<jleObject>()>>& GetRegisteredObjectsRef()
 		{

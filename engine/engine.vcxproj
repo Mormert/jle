@@ -26,6 +26,7 @@
     <ClCompile Include="ConsoleEditorWindow.cpp" />
     <ClCompile Include="EditorBackgroundImage.cpp" />
     <ClCompile Include="EditorGameControllerWindow.cpp" />
+    <ClCompile Include="EditorSceneObjectsWindow.cpp" />
     <ClCompile Include="EditorWindowsPanel.cpp" />
     <ClCompile Include="GameAssets.cpp" />
     <ClCompile Include="GameEditorWindow.cpp" />
@@ -69,6 +70,7 @@
     <ClInclude Include="ConsoleEditorWindow.h" />
     <ClInclude Include="EditorBackgroundImage.h" />
     <ClInclude Include="EditorGameControllerWindow.h" />
+    <ClInclude Include="EditorSceneObjectsWindow.h" />
     <ClInclude Include="EditorWindowsPanel.h" />
     <ClInclude Include="GameAssets.h" />
     <ClInclude Include="GameEditorWindow.h" />

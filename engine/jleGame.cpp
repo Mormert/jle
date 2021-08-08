@@ -18,4 +18,8 @@ namespace jle
 			mActiveScenes[i]->UpdateSceneObjects(dt);
 		}
 	}
+	std::vector<std::shared_ptr<jleScene>>& jleGame::GetActiveScenesRef()
+	{
+		return mActiveScenes;
+	}
 }

@@ -189,6 +189,9 @@
     <ClCompile Include="jleObjectTypeUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EditorSceneObjectsWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\imgui_impl_glfw.h">
@@ -353,9 +356,6 @@
     <ClInclude Include="EditorWindowsPanel.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
-    <ClInclude Include="EditorGameControllerWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="JLE_ENGINE_CONFIG.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -375,6 +375,12 @@
       <Filter>3rdparty</Filter>
     </ClInclude>
     <ClInclude Include="jleJson.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorGameControllerWindow.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorSceneObjectsWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
