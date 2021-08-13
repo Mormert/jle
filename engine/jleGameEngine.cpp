@@ -55,11 +55,15 @@ namespace jle
 		game->Start();
 	}
 
-	void jleGameEngine::KillGame()
+	void jleGameEngine::RestartGame()
 	{
 		game.reset();
 		StartGame();
-		HaltGame();
+	}
+
+	void jleGameEngine::KillGame()
+	{
+		game.reset();
 	}
 
 	void jleGameEngine::HaltGame()

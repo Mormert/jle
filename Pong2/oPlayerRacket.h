@@ -7,6 +7,11 @@ class oPlayerRacket : public oRacket
 
 public:
 	oPlayerRacket();
+
+	virtual ~oPlayerRacket() {
+
+	}
+
 	virtual void Update(float dt) override;
 
 	virtual std::string_view GetObjectNameVirtual() override

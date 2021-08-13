@@ -49,6 +49,10 @@ void jle::jleScene::ProcessNewSceneObjects()
 void jle::jleScene::DestroyScene()
 {
 	bPendingSceneDestruction = true;
+
+	mSceneObjects.clear();
+	mNewSceneObjects.clear();
+
 	OnSceneDestruction();
 }
 

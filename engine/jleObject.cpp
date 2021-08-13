@@ -2,6 +2,14 @@
 
 #include "jleScene.h"
 
+int jle::jleObject::mObjectsCreatedCount{ 0 };
+
+jle::jleObject::jleObject()
+{
+	mInstanceName =  "jleObject_" + std::to_string(mObjectsCreatedCount);
+	mObjectsCreatedCount++;
+}
+
 void jle::jleObject::DestroyObject()
 {
 	bPendingKill = true;

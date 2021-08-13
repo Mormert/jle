@@ -26,11 +26,12 @@ void Pong2::Start()
 
 	scene = CreateScene<jle::jleScene>();
 	jle::from_json(j, *scene);
-	//scene->SpawnObject("oPlayerRacket");
+	scene->SpawnObject("oPlayerRacket");
+	scene->SpawnObject("oRacket");
 
-	//scene->SpawnObject("oRacket");
-
-	//scene->SpawnObject<oPlayerRacket>();
+	scene2 = CreateScene<jle::jleScene>();
+	scene2->SpawnObject("oRacket");
+	scene2->SpawnObject<oPlayerRacket>();
 }
 
 void Pong2::Update(float dt)

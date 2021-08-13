@@ -13,6 +13,7 @@ public:
 
 private:
 	std::shared_ptr<jle::jleScene> scene;
+	std::shared_ptr<jle::jleScene> scene2;
 	int i = 0;
 };
 

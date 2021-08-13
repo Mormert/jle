@@ -16,11 +16,12 @@ namespace jle
 	class jleObject : public jleJsonInterface<nlohmann::json>
 	{
 	public:
+        std::string mInstanceName;
 
 		virtual void Start() {}
 		virtual void Update(float dt) {}
 
-        jleObject() = default;
+        jleObject();
         virtual ~jleObject() {}
 
         template <typename T>
@@ -82,6 +83,8 @@ namespace jle
         void UpdateComponents(float dt);
 
         bool bPendingKill = false;
+
+        static int mObjectsCreatedCount;
 
 	protected:
         std::vector<std::shared_ptr<jleComponent>> mComponents {};

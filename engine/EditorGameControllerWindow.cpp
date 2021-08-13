@@ -33,9 +33,9 @@ namespace jle
 			}
 			else
 			{
-				if (ImGui::Button("Kill Game", { 100, 25 }))
+				if (ImGui::Button("Restart Game", { 100, 25 }))
 				{
-					ge.KillGame();
+					ge.RestartGame();
 				}
 			}
 

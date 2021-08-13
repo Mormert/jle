@@ -49,11 +49,8 @@ namespace jle
 		{
 			static_assert(std::is_base_of<jleObject, T>::value, "T must derive from jleObject");
 
-			auto newSceneObject = std::make_shared<T>();
-			newSceneObject->mContainedInScene = this;
-			newSceneObject->SetupDefaultObject();
-
-			mNewSceneObjects.push_back(newSceneObject);
+			std::shared_ptr<T> newSceneObject = std::make_shared<T>();
+			ConfigurateSpawnedObject(newSceneObject);
 
 			return newSceneObject;
 		}
@@ -61,10 +58,7 @@ namespace jle
 		std::shared_ptr<jleObject> SpawnObject(const std::string& objName)
 		{
 			auto newSceneObject = jleObjectTypeUtils::InstantiateObjectByString(objName);
-			newSceneObject->mContainedInScene = this;
-			newSceneObject->SetupDefaultObject();
-
-			mNewSceneObjects.push_back(newSceneObject);
+			ConfigurateSpawnedObject(newSceneObject);
 
 			return newSceneObject;
 		}
@@ -95,6 +89,15 @@ namespace jle
 
 	private:
 		static int mScenesCreatedCount;
+
+		inline void ConfigurateSpawnedObject(std::shared_ptr<jleObject> obj)
+		{
+			obj->mContainedInScene = this;
+			obj->SetupDefaultObject();
+			obj->mInstanceName = std::string{ obj->GetObjectNameVirtual() } + "_" + std::to_string(obj->mObjectsCreatedCount);
+
+			mNewSceneObjects.push_back(obj);
+		}
 	};
 
 

@@ -42,6 +42,7 @@ namespace jle
 		std::pair<unsigned int, unsigned int> GetFramebufferDimensions(unsigned int windowWidth, unsigned int windowHeight);
 
 		void StartGame();
+		void RestartGame();
 		void KillGame();
 		void HaltGame();
 		void UnhaltGame();

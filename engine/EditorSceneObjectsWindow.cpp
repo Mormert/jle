@@ -7,6 +7,7 @@
 #include "3rdparty/imgui_impl_glfw.h"
 #include "3rdparty/imgui_impl_opengl3.h"
 
+#include <sstream>
 
 jle::EditorSceneObjectsWindow::EditorSceneObjectsWindow(const std::string& window_name)
 : iEditorImGuiWindow { window_name }
@@ -43,12 +44,24 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
             {
                 selectedScene = scene;
             }
+
+            if (selectedScene.lock() == scene)
+            {
+                if (ImGui::Button("Destroy Scene", ImVec2(138, 0)))
+                {
+                    scene->DestroyScene();
+                }
+            }
         }
 
+        
         ImGui::EndChild();
         ImGui::EndGroup();
 
         ImGui::SameLine();
+
+        // Using a static weak_ptr here so that it won't impact deletion
+        static std::weak_ptr<jleObject> selectedObject;
 
         ImGui::BeginGroup();
         ImGui::Text("Object");
@@ -58,9 +71,17 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
         {
             for (auto object : selectedSceneSafePtr->GetSceneObjects())
             {
-                if (ImGui::Selectable(std::string{ object->GetObjectNameVirtual() }.c_str(), false))
+                if (ImGui::Selectable(object->mInstanceName.c_str(), selectedObject.lock() == object))
                 {
+                    selectedObject = object;
+                }
 
+                if (selectedObject.lock() == object)
+                {
+                    if (ImGui::Button("Destroy Object", ImVec2(138, 0)))
+                    {
+                        object->DestroyObject();
+                    }
                 }
             }
         }
@@ -68,59 +89,71 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
         ImGui::EndChild();
         ImGui::EndGroup();
 
-            /*for (int i = 0; i < 100; i++)
-            {
-                // FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
-                char label[128];
-                sprintf_s(label, "MyObject %d", i);
-                if (ImGui::Selectable(("Object " + std::to_string(i)).c_str(), selected == i))
-                {
-                    selected = i;
-                }       
-            }
-            ImGui::EndChild();*/
-       // }
-        /*ImGui::SameLine();
-
-        ImGui::BeginChild("object pane", ImVec2(150, 0), true);
-        for (int i = 0; i < 100; i++)
-        {
-            // FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
-            char label[128];
-            sprintf_s(label, "MyObject %d", i);
-            if (ImGui::Selectable(("Object " + std::to_string(i)).c_str(), selected == i))
-            {
-                selected = i;
-            }
-        }
-        ImGui::EndChild();*/
-        // }
         ImGui::SameLine();
 
         // Right
         {
             ImGui::BeginGroup();
-            ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-            ImGui::Text("MyObject: 1");
-            ImGui::Separator();
-            if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+            ImGui::BeginChild("selected object view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+            bool hasAnObjectSelected = false;
+            std::shared_ptr<jleObject> selectedObjectSafePtr;
+            if (selectedObjectSafePtr = selectedObject.lock())
             {
-                if (ImGui::BeginTabItem("Description"))
-                {
-                    ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
-                    ImGui::EndTabItem();
-                }
-                if (ImGui::BeginTabItem("Details"))
-                {
-                    ImGui::Text("ID: 0123456789");
-                    ImGui::EndTabItem();
-                }
-                ImGui::EndTabBar();
+                ImGui::Text(selectedObjectSafePtr->mInstanceName.c_str());
+                hasAnObjectSelected = true;
             }
+            else
+            {
+                ImGui::Text("No object selected");
+            }
+
+            if (hasAnObjectSelected)
+            {
+                ImGui::Separator();
+                if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+                {
+                    if (ImGui::BeginTabItem("Object Properties"))
+                    {
+                        nlohmann::json j_test;
+                        selectedObjectSafePtr->ToJson(j_test);
+                        if (j_test.is_object())
+                        {
+                            auto obj = j_test.get<nlohmann::json::object_t>();
+                            for (auto& kvp : obj)
+                            {
+                                ImGui::TextWrapped(kvp.first.c_str());
+                                ImGui::SameLine();
+
+                                std::ostringstream oss;
+                                oss << kvp.second;
+                                ImGui::TextWrapped(oss.str().c_str());
+                            }
+                        }
+                        
+                        ImGui::EndTabItem();
+                    }
+                    if (ImGui::BeginTabItem("Details"))
+                    {
+                        ImGui::Text("ID: 0123456789");
+                        ImGui::EndTabItem();
+                    }
+                    ImGui::EndTabBar();
+                }
+            }
+
             ImGui::EndChild();
-            if (ImGui::Button("Revert")) {}
-            ImGui::SameLine();
-            if (ImGui::Button("Save")) {}
+            if (hasAnObjectSelected)
+            {
+                if (ImGui::Button("Refresh Object"))
+                {
+
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Push Object Changes"))
+                {
+
+                }
+            }
             ImGui::EndGroup();
         }
     }
