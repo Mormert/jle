@@ -16,21 +16,46 @@ jle::EditorSceneObjectsWindow::EditorSceneObjectsWindow(const std::string& windo
 
 void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
 {
+    if (!isOpened)
+    {
+        return;
+    }
+
+    // Using a static weak_ptr here so that it won't impact deletion
+    static std::weak_ptr<jleScene> selectedScene;
+
     ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
     if (ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_MenuBar))
     {
         if (ImGui::BeginMenuBar())
         {
-            if (ImGui::BeginMenu("File"))
+            if (ImGui::BeginMenu("Create Scene"))
             {
-                if (ImGui::MenuItem("Close")) isOpened = false;
+                if (ImGui::MenuItem("jleScene"))
+                {
+                    ge.GetGameRef().CreateScene<jleScene>();
+                }
+
                 ImGui::EndMenu();
             }
+
+            if (selectedScene.lock() && !selectedScene.lock()->bPendingSceneDestruction)
+            {
+                if (ImGui::BeginMenu("Create Object"))
+                {
+                    for (auto objectType : jleObjectTypeUtils::GetRegisteredObjectsRef())
+                    {
+                        if (ImGui::MenuItem(objectType.first.c_str()))
+                        {
+                            selectedScene.lock()->SpawnObject(objectType.first.c_str());
+                        }
+                    }
+                    ImGui::EndMenu();
+                }
+            }
+            
             ImGui::EndMenuBar();
         }
-
-        // Using a static weak_ptr here so that it won't impact deletion
-        static std::weak_ptr<jleScene> selectedScene;
 
         ImGui::BeginGroup();
         ImGui::Text("Scene");
