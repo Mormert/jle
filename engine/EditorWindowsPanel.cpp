@@ -37,7 +37,7 @@ namespace jle
 				ImGui::EndMenu();
 			}
 
-			ImGui::Text("FPS: %d ", ge.status->GetFPS());
+			ImGui::Text("FPS: %4d, DT: %4f, Time: %4f", ge.status->GetFPS(), ge.status->GetDeltaFrameTime(), ge.status->GetCurrentFrameTime());
 
 			ImGui::EndMainMenuBar();
 		}
