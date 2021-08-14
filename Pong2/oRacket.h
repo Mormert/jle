@@ -40,7 +40,7 @@ public:
 		//j_out["transform"] = *transform;
 		//j_out["sprite"] = *sprite;
 
-		j_out["some_int"] = 3;
+		j_out["some_int"] = myInt;
 	}
 
 	virtual void FromJson(const nlohmann::json& j_in) override {

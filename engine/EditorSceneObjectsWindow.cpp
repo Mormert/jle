@@ -10,7 +10,7 @@
 #include <sstream>
 
 jle::EditorSceneObjectsWindow::EditorSceneObjectsWindow(const std::string& window_name)
-: iEditorImGuiWindow { window_name }
+    : iEditorImGuiWindow{ window_name }
 {
 }
 
@@ -53,14 +53,14 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
                     ImGui::EndMenu();
                 }
             }
-            
+
             ImGui::EndMenuBar();
         }
 
         ImGui::BeginGroup();
         ImGui::Text("Scene");
         ImGui::BeginChild("scene pane", ImVec2(150, 0), true);
-        
+
         auto& activeScenes = ((jleGameEngine*)jleCore::core)->GetGameRef().GetActiveScenesRef();
 
         for (auto scene : activeScenes)
@@ -79,7 +79,7 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
             }
         }
 
-        
+
         ImGui::EndChild();
         ImGui::EndGroup();
 
@@ -91,7 +91,7 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
         ImGui::BeginGroup();
         ImGui::Text("Object");
         ImGui::BeginChild("objects pane", ImVec2(150, 0), true);
-        
+
         if (auto selectedSceneSafePtr = selectedScene.lock())
         {
             for (auto object : selectedSceneSafePtr->GetSceneObjects())
@@ -110,7 +110,7 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
                 }
             }
         }
-        
+
         ImGui::EndChild();
         ImGui::EndGroup();
 
@@ -132,6 +132,9 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
                 ImGui::Text("No object selected");
             }
 
+            static nlohmann::json selectedObjectJson;
+            static char textFields[128][2][1024];
+            static int usedTextFields = 0;
             if (hasAnObjectSelected)
             {
                 ImGui::Separator();
@@ -139,27 +142,41 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
                 {
                     if (ImGui::BeginTabItem("Object Properties"))
                     {
-                        nlohmann::json j_test;
-                        selectedObjectSafePtr->ToJson(j_test);
-                        if (j_test.is_object())
+                        static std::weak_ptr<jleObject> lastSelectedObject;
+                        if (selectedObjectSafePtr != lastSelectedObject.lock())
                         {
-                            auto obj = j_test.get<nlohmann::json::object_t>();
-                            for (auto& kvp : obj)
-                            {
-                                ImGui::TextWrapped(kvp.first.c_str());
-                                ImGui::SameLine();
+                            selectedObjectSafePtr->ToJson(selectedObjectJson);
+                            lastSelectedObject = selectedObjectSafePtr;
 
-                                std::ostringstream oss;
-                                oss << kvp.second;
-                                ImGui::TextWrapped(oss.str().c_str());
+                            if (selectedObjectJson.is_object())
+                            {
+                                auto obj = selectedObjectJson.get<nlohmann::json::object_t>();
+                                usedTextFields = 0;
+                                for (auto& kvp : obj)
+                                {
+                                    strcpy_s(textFields[usedTextFields][0], kvp.first.c_str());
+
+                                    std::ostringstream oss;
+                                    oss << kvp.second.dump(4);
+                                    strcpy_s(textFields[usedTextFields][1], oss.str().c_str());
+                                    usedTextFields++;
+                                }
                             }
+
                         }
-                        
+
+                        for (int i = 0; i < usedTextFields; i++)
+                        {
+                            ImGui::InputTextMultiline(textFields[i][0], textFields[i][1], 1024);
+                        }
+
                         ImGui::EndTabItem();
                     }
                     if (ImGui::BeginTabItem("Details"))
                     {
-                        ImGui::Text("ID: 0123456789");
+                        
+                        ImGui::Text("Object type   : %s", selectedObjectSafePtr->GetObjectNameVirtual());
+                        ImGui::Text("Instance name : %s", selectedObjectSafePtr->mInstanceName.c_str());
                         ImGui::EndTabItem();
                     }
                     ImGui::EndTabBar();
@@ -171,12 +188,18 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
             {
                 if (ImGui::Button("Refresh Object"))
                 {
-
+                    selectedObjectSafePtr->ToJson(selectedObjectJson);
                 }
                 ImGui::SameLine();
                 if (ImGui::Button("Push Object Changes"))
                 {
+                    nlohmann::json pushedObjectJson;
+                    for (int i = 0; i < usedTextFields; i++)
+                    {
+                        pushedObjectJson[textFields[i][0]] = nlohmann::json::parse(textFields[i][1]);
+                    }
 
+                    selectedObjectSafePtr->FromJson(pushedObjectJson);
                 }
             }
             ImGui::EndGroup();
