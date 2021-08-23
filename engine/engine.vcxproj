@@ -40,6 +40,7 @@
     <ClCompile Include="jleObject.cpp" />
     <ClCompile Include="jleObjectTypeUtils.cpp" />
     <ClCompile Include="jleScene.cpp" />
+    <ClCompile Include="ProfilerWindow.cpp" />
     <ClCompile Include="TextureCreator_OpenGL.cpp" />
     <ClCompile Include="WindowInitializer_GLFW_OpenGL.cpp" />
     <ClCompile Include="WindowFactory_GLFW.cpp" />
@@ -77,6 +78,7 @@
     <ClInclude Include="GLState.h" />
     <ClInclude Include="iEditorImGuiWindow.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="ImGuiProfilerRenderer.h" />
     <ClInclude Include="iTexture.h" />
     <ClInclude Include="jleComponent.h" />
     <ClInclude Include="jleCore.h" />
@@ -89,6 +91,7 @@
     <ClInclude Include="jleObjectTypeUtils.h" />
     <ClInclude Include="jleScene.h" />
     <ClInclude Include="JLE_ENGINE_CONFIG.h" />
+    <ClInclude Include="ProfilerWindow.h" />
     <ClInclude Include="TextureCreator_OpenGL.h" />
     <ClInclude Include="WindowInitializer_GLFW_OpenGL.h" />
     <ClInclude Include="WindowFactory_GLFW.h" />
