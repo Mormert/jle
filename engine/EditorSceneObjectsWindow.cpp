@@ -135,6 +135,7 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
             static nlohmann::json selectedObjectJson;
             static char textFields[128][2][1024];
             static int usedTextFields = 0;
+            static std::weak_ptr<jleObject> lastSelectedObject;
             if (hasAnObjectSelected)
             {
                 ImGui::Separator();
@@ -142,7 +143,6 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
                 {
                     if (ImGui::BeginTabItem("Object Properties"))
                     {
-                        static std::weak_ptr<jleObject> lastSelectedObject;
                         if (selectedObjectSafePtr != lastSelectedObject.lock())
                         {
                             selectedObjectSafePtr->ToJson(selectedObjectJson);
@@ -188,7 +188,7 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
             {
                 if (ImGui::Button("Refresh Object"))
                 {
-                    selectedObjectSafePtr->ToJson(selectedObjectJson);
+                    lastSelectedObject.reset();
                 }
                 ImGui::SameLine();
                 if (ImGui::Button("Push Object Changes"))
