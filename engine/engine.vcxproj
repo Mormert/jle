@@ -73,6 +73,7 @@
     <ClInclude Include="EditorGameControllerWindow.h" />
     <ClInclude Include="EditorSceneObjectsWindow.h" />
     <ClInclude Include="EditorWindowsPanel.h" />
+    <ClInclude Include="FileLoadInterface.h" />
     <ClInclude Include="GameAssets.h" />
     <ClInclude Include="GameEditorWindow.h" />
     <ClInclude Include="GLState.h" />
@@ -89,6 +90,7 @@
     <ClInclude Include="jleJson.h" />
     <ClInclude Include="jleObject.h" />
     <ClInclude Include="jleObjectTypeUtils.h" />
+    <ClInclude Include="jleResourceHolder.h" />
     <ClInclude Include="jleScene.h" />
     <ClInclude Include="JLE_ENGINE_CONFIG.h" />
     <ClInclude Include="ProfilerWindow.h" />

@@ -392,5 +392,11 @@
     <ClInclude Include="ImGuiProfilerRenderer.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
+    <ClInclude Include="jleResourceHolder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileLoadInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

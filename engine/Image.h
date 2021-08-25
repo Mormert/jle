@@ -1,14 +1,19 @@
 #pragma once
 
+#include "FileLoadInterface.h"
+
 #include <string>
 
 namespace jle
 {
-	class Image
+	class Image : FileLoadInterface
 	{
 	public:
+		Image() = default;
 		Image(const std::string& path);
 		
+		virtual bool LoadFromFile(const std::string& path) override;
+
 		Image(const Image& i);
 		Image& operator= (const Image& i);
 		Image(Image&& i) noexcept;
@@ -25,6 +30,6 @@ namespace jle
 
 	private:
 		unsigned char* image_data { nullptr };
-		int w, h, nr_channels;
+		int w = 0, h = 0, nr_channels = 0;
 	};
 }

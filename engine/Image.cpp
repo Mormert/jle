@@ -2,14 +2,29 @@
 
 #include "3rdparty/stb_image.h"
 
+#include "plog/Log.h"
+
 #include <algorithm>
+#include <iostream>
 
 namespace jle
 {
-	Image::Image(const std::string& path)
+
+	bool Image::LoadFromFile(const std::string& path)
 	{
 		stbi_set_flip_vertically_on_load(false);
 		image_data = stbi_load(path.c_str(), &w, &h, &nr_channels, 0);
+
+		if (image_data)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	Image::Image(const std::string& path)
+	{
+		LoadFromFile(path);
 	}
 
 	Image::Image(const Image& i)
@@ -68,6 +83,12 @@ namespace jle
 	Image::~Image()
 	{
 		if (image_data) { stbi_image_free(image_data); }
+
+		PLOG_VERBOSE << "Destroyed image [" << w << ", " << h << "].\n";
+
+#ifndef NDEBUG 
+		std::cout << "Destroyed image [" << w << ", " << h << "].\n";
+#endif
 	}
 
 	unsigned int Image::GetImageHeight() const

@@ -9,7 +9,7 @@
 
 namespace jle
 {
-	std::unique_ptr<iTexture> jle::TextureCreator_OpenGL::CreateTextureFromImage(const Image& image)
+	std::unique_ptr<iTexture> TextureCreator_OpenGL::CreateTextureFromImage(const Image& image)
 	{
 		auto texture_opengl = std::make_unique<Texture>();
 
