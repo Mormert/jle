@@ -25,6 +25,10 @@ namespace jle
 		jle::gfx::Shader_OpenGL quadShader;
 		unsigned int quadVBO, quadVAO;
 
+		// Instanced version
+		jle::gfx::Shader_OpenGL quadShaderInstanced;
+		unsigned int quadVBO_Instanced, quadVAO_Instanced, instanceVBO;
+
 		std::vector<TexturedQuad> texturedQuads;
 	};
 }

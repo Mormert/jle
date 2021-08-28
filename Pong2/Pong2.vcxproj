@@ -152,6 +152,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="oPlayerRacket.cpp" />
     <ClCompile Include="oRacket.cpp" />
+    <ClCompile Include="oStaticSprite.cpp" />
     <ClCompile Include="Pong2.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +160,7 @@
     <ClInclude Include="cTransform.h" />
     <ClInclude Include="oPlayerRacket.h" />
     <ClInclude Include="oRacket.h" />
+    <ClInclude Include="oStaticSprite.h" />
     <ClInclude Include="Pong2.h" />
   </ItemGroup>
   <ItemGroup>

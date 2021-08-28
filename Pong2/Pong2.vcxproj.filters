@@ -33,6 +33,9 @@
     <ClCompile Include="oPlayerRacket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="oStaticSprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Pong2.h">
@@ -48,6 +51,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="oPlayerRacket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="oStaticSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,6 +4,7 @@
 #include "jleObjectTypeUtils.h"
 
 #include "oPlayerRacket.h"
+#include "oStaticSprite.h"
 
 
 
@@ -32,6 +33,15 @@ void Pong2::Start()
 	scene2 = CreateScene<jle::jleScene>();
 	scene2->SpawnObject("oRacket");
 	scene2->SpawnObject<oPlayerRacket>();
+
+	for (int i = 0; i < 25; i++)
+	{
+		for (int j = 0; j < 25; j++)
+		{
+			auto fruit = scene2->SpawnObject<oStaticSprite>();
+			fruit->transform->AddPosition(0 + (std::rand() % (64 - 0 + 1)), 0 + (std::rand() % (64 - 0 + 1)));
+		}
+	}
 }
 
 void Pong2::Update(float dt)
