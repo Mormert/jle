@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdparty\glad.c" />
+    <ClCompile Include="3rdparty\gltext.c" />
     <ClCompile Include="3rdparty\imgui_impl_glfw.cpp" />
     <ClCompile Include="3rdparty\imgui_impl_opengl3.cpp" />
     <ClCompile Include="3rdparty\stb_image.cpp" />
@@ -41,6 +42,7 @@
     <ClCompile Include="jleObjectTypeUtils.cpp" />
     <ClCompile Include="jleScene.cpp" />
     <ClCompile Include="ProfilerWindow.cpp" />
+    <ClCompile Include="TextRendering_OpenGL.cpp" />
     <ClCompile Include="TextureCreator_OpenGL.cpp" />
     <ClCompile Include="WindowInitializer_GLFW_OpenGL.cpp" />
     <ClCompile Include="WindowFactory_GLFW.cpp" />
@@ -62,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\glad\glad.h" />
+    <ClInclude Include="3rdparty\gltext.h" />
     <ClInclude Include="3rdparty\imgui_impl_glfw.h" />
     <ClInclude Include="3rdparty\imgui_impl_opengl3.h" />
     <ClInclude Include="3rdparty\json.hpp" />
@@ -80,6 +83,8 @@
     <ClInclude Include="iEditorImGuiWindow.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="ImGuiProfilerRenderer.h" />
+    <ClInclude Include="iTextRendering.h" />
+    <ClInclude Include="iTextRenderingInternal.h" />
     <ClInclude Include="iTexture.h" />
     <ClInclude Include="jleComponent.h" />
     <ClInclude Include="jleCore.h" />
@@ -94,6 +99,7 @@
     <ClInclude Include="jleScene.h" />
     <ClInclude Include="JLE_ENGINE_CONFIG.h" />
     <ClInclude Include="ProfilerWindow.h" />
+    <ClInclude Include="TextRendering_OpenGL.h" />
     <ClInclude Include="TextureCreator_OpenGL.h" />
     <ClInclude Include="WindowInitializer_GLFW_OpenGL.h" />
     <ClInclude Include="WindowFactory_GLFW.h" />

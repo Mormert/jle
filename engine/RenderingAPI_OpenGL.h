@@ -13,7 +13,7 @@ namespace jle
 	public:
 		~RenderingAPI_OpenGL() {}
 
-		virtual void Setup(std::unique_ptr<iQuadRendering> quads) override;
+		virtual void Setup(const iRenderingFactory& renderFactory) override;
 
 		virtual void SetViewportDimensions(int x, int y, unsigned int width, unsigned int height) override;
 		virtual void Render(iFramebuffer& framebufferOut) override;

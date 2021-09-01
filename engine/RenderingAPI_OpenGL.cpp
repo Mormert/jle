@@ -3,6 +3,7 @@
 #include "3rdparty/glad/glad.h"
 
 #include "iQuadRenderingInternal.h"
+#include "iTextRenderingInternal.h"
 
 namespace jle
 {
@@ -14,11 +15,13 @@ namespace jle
 	void RenderingAPI_OpenGL::Render(iFramebuffer& framebufferOut)
 	{
 		((iQuadRenderingInternal*)quads.get())->Render(framebufferOut);
+		((iTextRenderingInternal*)texts.get())->Render(framebufferOut);
 	}
 
-	void RenderingAPI_OpenGL::Setup(std::unique_ptr<iQuadRendering> quads)
+	void RenderingAPI_OpenGL::Setup(const iRenderingFactory& renderFactory)
 	{
-		this->quads = std::move(quads);
+		this->quads = renderFactory.CreateQuadRendering();
+		this->texts = renderFactory.CreateTextRendering();
 	}
 }
 

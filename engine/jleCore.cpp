@@ -146,7 +146,7 @@ namespace jle
 		core = this;
 
 		coreImpl->window_internal->InitWindow(*window_initializer, coreImpl->rendering_internal);
-		coreImpl->rendering_internal->Setup(renderingFactory->CreateQuadRendering());
+		coreImpl->rendering_internal->Setup(*renderingFactory);
 
 		running = true;
 		Start();

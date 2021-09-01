@@ -195,6 +195,12 @@
     <ClCompile Include="ProfilerWindow.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
+    <ClCompile Include="3rdparty\gltext.c">
+      <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="TextRendering_OpenGL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\imgui_impl_glfw.h">
@@ -397,6 +403,18 @@
     </ClInclude>
     <ClInclude Include="FileLoadInterface.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\gltext.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="iTextRendering.h">
+      <Filter>Header Files\Core\Rendering\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="iTextRenderingInternal.h">
+      <Filter>Header Files\Core\Rendering\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="TextRendering_OpenGL.h">
+      <Filter>Header Files\Core\Rendering\OpenGL_GLFW</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

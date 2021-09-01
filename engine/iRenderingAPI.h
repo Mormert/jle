@@ -1,6 +1,7 @@
 #pragma once
 
 #include "iQuadRendering.h"
+#include "iTextRendering.h"
 
 #include <memory>
 
@@ -12,5 +13,6 @@ namespace jle
 		virtual ~iRenderingAPI() {};
 
 		std::unique_ptr<iQuadRendering> quads;
+		std::unique_ptr<iTextRendering> texts;
 	};
 }
