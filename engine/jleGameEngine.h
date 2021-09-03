@@ -13,7 +13,7 @@ namespace jle
 
 	struct GameSettings : public CoreSettings
 	{
-		struct 
+		struct jleFramebufferSettings
 		{
 			FIXED_AXIS fixedAxis{ FIXED_AXIS::same_as_window };
 			unsigned int fixedAxisPixels{ 0 };
@@ -22,6 +22,37 @@ namespace jle
 		virtual ~GameSettings() {}
 	};
 
+#pragma region jleFramebufferSettings to/from json 
+	using json = nlohmann::json;
+	inline void to_json(nlohmann::json& j, const GameSettings::jleFramebufferSettings& fs)
+	{
+		j = json{
+			{"fixed_axis_enum", fs.fixedAxis},
+			{"fixed_axis_pixels", fs.fixedAxisPixels}
+		};
+	}
+
+	inline void from_json(const nlohmann::json& j, GameSettings::jleFramebufferSettings& fs)
+	{
+		j.at("fixed_axis_enum").get_to(fs.fixedAxis);
+		j.at("fixed_axis_pixels").get_to(fs.fixedAxisPixels);
+	}
+#pragma endregion
+
+#pragma region GameSettings to/from json
+	inline void to_json(nlohmann::json& j, const GameSettings& gs)
+	{
+		j = (CoreSettings&)gs;
+		j["framebuffer_settings"] = gs.framebufferSettings;
+	}
+
+	inline void from_json(const nlohmann::json& j, GameSettings& gs)
+	{
+		from_json(j, (CoreSettings&)gs);
+		j.at("framebuffer_settings").get_to(gs.framebufferSettings);
+	}
+#pragma endregion
+	
 	class jleGameEngine : public jle::jleCore
 	{
 	public:

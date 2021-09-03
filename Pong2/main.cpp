@@ -1,10 +1,12 @@
 
-#include <memory>
-
 #include "jleGameEngine.h"
 #include "jleEditor.h"
 
 #include "Pong2.h"
+
+#include <memory>
+#include <fstream>
+#include <ostream>
 
 int main()
 {
@@ -19,10 +21,20 @@ int main()
 
 	gameSettings->windowSettings.WindowTitle = "Pong";
 	gameSettings->framebufferSettings.fixedAxis = jle::FIXED_AXIS::height;
-	gameSettings->framebufferSettings.fixedAxisPixels = 50;
+	gameSettings->framebufferSettings.fixedAxisPixels = 300;
 
 	gameSettings->windowSettings.windowHeight = 720;
 	gameSettings->windowSettings.windowWidth = 1280;
+
+	std::ifstream i("jle_config.json");
+	if (i.good())
+	{
+		nlohmann::json j;
+		i >> j;
+
+		jle::from_json(j, *gameSettings);
+	}
+
 
 	//gameSettings->windowSettings.iconPath = "GameAssets/game_icon.png";
 
@@ -34,6 +46,12 @@ int main()
 	auto gameEngine = std::make_unique<jle::jleEditor>(gameSettings);
 #endif
 	gameEngine->SetGame<Pong2>();
+
+	nlohmann::json gsjson = *gameSettings;
+
+	std::cout << gsjson.dump(4);
+	std::ofstream o{ "jle_config.json" };
+	o << gsjson.dump(4);
 
 	gameEngine->Run();
 

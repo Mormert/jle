@@ -1,13 +1,7 @@
 #pragma once
 
 #include "no_copy_no_move.h"
-
-#include <memory>
-
-//#include "Window.h"
 #include "iWindowAPI.h"
-//#include "Camera2D.h"
-//#include "DebugRenderer.h"
 #include "InputAPI.h"
 #include "iRenderingAPI.h"
 #include "iFramebuffer.h"
@@ -15,6 +9,10 @@
 #include "iRenderingFactory.h"
 #include "iWindowFactory.h"
 #include "iWindowInitializer.h"
+
+#include "3rdparty/json.hpp"
+
+#include <memory>
 
 namespace jle
 {
@@ -42,6 +40,34 @@ namespace jle
 
 		virtual ~CoreSettings() {}
 	};
+
+#pragma region EngineInternalAPIs to/from json 
+	using json = nlohmann::json;
+	inline void to_json(nlohmann::json& j, const EngineInternalAPIs& ei)
+	{
+		j = json{ {"rendering_api",ei.renderingAPI}, {"windowing_api", ei.windowingAPI } };
+	}
+
+	inline void from_json(const nlohmann::json& j, EngineInternalAPIs& ei)
+	{
+		j.at("rendering_api").get_to(ei.renderingAPI);
+		j.at("windowing_api").get_to(ei.windowingAPI);
+	}
+#pragma endregion
+
+#pragma region CoreSettings to/from json 
+	using json = nlohmann::json;
+	inline void to_json(nlohmann::json& j, const CoreSettings& cs)
+	{
+		j = json{ {"window_settings", cs.windowSettings}, {"engine_abstractions", cs.engineAPIs} };
+	}
+
+	inline void from_json(const nlohmann::json& j, CoreSettings& cs)
+	{
+		j.at("window_settings").get_to(cs.windowSettings);
+		j.at("engine_abstractions").get_to(cs.engineAPIs);
+	}
+#pragma endregion
 
 	// Core part of the jle engine
 	class jleCore
