@@ -1,5 +1,6 @@
 #pragma once
 
+// This is so gooood!!! 
 struct Camera2d
 {
 	/*enum class AspectDependance{ width, height } aspect;
