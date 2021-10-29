@@ -3,16 +3,24 @@
 #include <vector>
 #include <memory>
 
+#include "jleGameSettings.h"
+#include "jleEditorSettings.h"
 #include "jleScene.h"
+
+#include <iostream>
 
 namespace jle
 {
+
 	class jleGame
 	{
 	public:
 		virtual ~jleGame() {}
 		virtual void Update(float dt) {}
 		virtual void Start() {}
+
+		static void OverrideGameSettings(jleGameSettings& gs) {}
+		static void OverrideGameEditorSettings(jleEditorSettings& gs) {}
 
 		void UpdateActiveScenes(float dt);
 

@@ -17,6 +17,7 @@
 #include "ConsoleEditorWindow.h"
 #include "EditorGameControllerWindow.h"
 #include "EditorSceneObjectsWindow.h"
+#include "EngineSettingsWindow.h"
 
 #include "iQuadRenderingInternal.h"
 
@@ -28,9 +29,10 @@
 
 namespace jle
 {
-	jleEditor::jleEditor(std::shared_ptr<EditorSettings> es) : jleGameEngine{ es }
+	jleEditor::jleEditor(std::shared_ptr<jleEditorSettings> es) : jleGameEngine{ es }
 	{
         background_image = std::make_unique<Image>(es->editorBackgroundImage);
+        editor_settings = es;
 	}
 
 	void jleEditor::StartEditor()
@@ -59,6 +61,10 @@ namespace jle
         plog::get<0>()->addAppender(&*console);
         AddImGuiWindow(console);
         menu->AddWindow(console);
+
+        auto settingsWindow = std::make_shared<EngineSettingsWindow>("Engine Settings", editor_settings);
+        AddImGuiWindow(settingsWindow);
+        menu->AddWindow(settingsWindow);
 
         auto gameController = std::make_shared<EditorGameControllerWindow>("Game Controller");
         AddImGuiWindow(gameController);

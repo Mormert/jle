@@ -201,6 +201,9 @@
     <ClCompile Include="TextRendering_OpenGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EngineSettingsWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\imgui_impl_glfw.h">
@@ -415,6 +418,27 @@
     </ClInclude>
     <ClInclude Include="TextRendering_OpenGL.h">
       <Filter>Header Files\Core\Rendering\OpenGL_GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineSettingsWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jleGameSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jleCoreSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jleWindowSettings.h">
+      <Filter>Header Files\Core\Windowing\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="jleEngineInternalAPIs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jleKickStarter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jleEditorSettings.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

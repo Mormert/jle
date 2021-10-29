@@ -40,7 +40,7 @@ namespace jle
 		std::shared_ptr<CoreStatus_Internal> status_internal;
 	};
 
-	struct CoreStatus_Internal : CoreStatus
+	struct CoreStatus_Internal : jleCoreStatus
 	{
 	public:
 		virtual int GetFPS() override
@@ -77,11 +77,11 @@ namespace jle
 		float lastFrame = 0;
 	};
 
-	std::unique_ptr<iRenderingFactory> CreateRenderingFactory(EngineInternalAPIs& eia)
+	std::unique_ptr<iRenderingFactory> CreateRenderingFactory(jleEngineInternalAPISettings& eia)
 	{
 		switch (eia.renderingAPI)
 		{
-		case EngineInternalAPIs::RenderingAPI::OPENGL_33:
+		case jleEngineInternalAPISettings::RenderingAPI::OPENGL_33:
 			return std::make_unique<RenderingFactory_OpenGL>();
 		default:
 			std::cerr << "Setting rendering API failed!\n";
@@ -90,11 +90,11 @@ namespace jle
 		}
 	}
 
-	std::unique_ptr<iWindowFactory> CreateWindowFactory(EngineInternalAPIs& eia)
+	std::unique_ptr<iWindowFactory> CreateWindowFactory(jleEngineInternalAPISettings& eia)
 	{
 		switch (eia.windowingAPI)
 		{
-		case EngineInternalAPIs::WindowAPI::GLFW:
+		case jleEngineInternalAPISettings::WindowAPI::GLFW:
 			return std::make_unique<WindowFactory_GLFW>();
 		default:
 			std::cerr << "Setting window API failed!\n";
@@ -105,7 +105,7 @@ namespace jle
 
 
 
-	jleCore::jleCore(std::shared_ptr<CoreSettings> cs) :
+	jleCore::jleCore(std::shared_ptr<jleCoreSettings> cs) :
 		renderingFactory { CreateRenderingFactory(cs->engineAPIs) },
 		windowFactory { CreateWindowFactory(cs->engineAPIs) },
 		window {windowFactory->CreateWindow()},

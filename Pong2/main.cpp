@@ -1,4 +1,14 @@
 
+
+#include "jleKickStarter.h"
+#include "Pong2.h"
+
+int main()
+{
+	jle::KickStart<Pong2>();
+}
+
+/*
 #include "jleGameEngine.h"
 #include "jleEditor.h"
 
@@ -11,11 +21,19 @@
 int main()
 {
 
-#ifdef NDEBUG
-	auto gameSettings = std::make_shared<jle::GameSettings>();
+
+#ifdef EDITOR
+	int a = 3;
 #else
-	auto gameSettings = std::make_shared<jle::EditorSettings>();
-	//gameSettings->editorBackgroundImage
+	int b = 5;
+#endif
+
+
+
+#ifdef NDEBUG
+	auto gameSettings = std::make_shared<jle::jleGameSettings>();
+#else
+	auto gameSettings = std::make_shared<jle::jleEditorSettings>();
 #endif
 
 
@@ -36,24 +54,16 @@ int main()
 	}
 
 
-	//gameSettings->windowSettings.iconPath = "GameAssets/game_icon.png";
-
 #ifdef NDEBUG 
 	auto gameEngine = std::make_unique<jle::jleGameEngine>(gameSettings);
 #else
 	gameSettings->windowSettings.WindowTitle = "Pong - jle editor";
-	//gameSettings->windowSettings.iconPath = "GameAssets/game_icon_editor_mode.png";
 	auto gameEngine = std::make_unique<jle::jleEditor>(gameSettings);
 #endif
+
 	gameEngine->SetGame<Pong2>();
-
-	nlohmann::json gsjson = *gameSettings;
-
-	std::cout << gsjson.dump(4);
-	std::ofstream o{ "jle_config.json" };
-	o << gsjson.dump(4);
 
 	gameEngine->Run();
 
 	return 0;
-}
+}*/

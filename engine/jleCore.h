@@ -9,65 +9,21 @@
 #include "iRenderingFactory.h"
 #include "iWindowFactory.h"
 #include "iWindowInitializer.h"
-
-#include "3rdparty/json.hpp"
+#include "jleCoreSettings.h"
 
 #include <memory>
 
 namespace jle
 {
 
-	struct CoreStatus
+	struct jleCoreStatus
 	{
-		virtual ~CoreStatus() {}
+		virtual ~jleCoreStatus() {}
 		virtual int GetFPS() = 0;
 		virtual float GetDeltaFrameTime() = 0;
 		virtual float GetCurrentFrameTime() = 0;
 		virtual float GetLastFrameTime() = 0;
 	};
-
-
-	struct EngineInternalAPIs
-	{
-		enum class RenderingAPI{ OPENGL_33 } renderingAPI = RenderingAPI::OPENGL_33;
-		enum class WindowAPI{ GLFW } windowingAPI = WindowAPI::GLFW;
-	};
-
-	struct CoreSettings
-	{
-		WindowSettings windowSettings;
-		EngineInternalAPIs engineAPIs;
-
-		virtual ~CoreSettings() {}
-	};
-
-#pragma region EngineInternalAPIs to/from json 
-	using json = nlohmann::json;
-	inline void to_json(nlohmann::json& j, const EngineInternalAPIs& ei)
-	{
-		j = json{ {"rendering_api",ei.renderingAPI}, {"windowing_api", ei.windowingAPI } };
-	}
-
-	inline void from_json(const nlohmann::json& j, EngineInternalAPIs& ei)
-	{
-		j.at("rendering_api").get_to(ei.renderingAPI);
-		j.at("windowing_api").get_to(ei.windowingAPI);
-	}
-#pragma endregion
-
-#pragma region CoreSettings to/from json 
-	using json = nlohmann::json;
-	inline void to_json(nlohmann::json& j, const CoreSettings& cs)
-	{
-		j = json{ {"window_settings", cs.windowSettings}, {"engine_abstractions", cs.engineAPIs} };
-	}
-
-	inline void from_json(const nlohmann::json& j, CoreSettings& cs)
-	{
-		j.at("window_settings").get_to(cs.windowSettings);
-		j.at("engine_abstractions").get_to(cs.engineAPIs);
-	}
-#pragma endregion
 
 	// Core part of the jle engine
 	class jleCore
@@ -75,7 +31,7 @@ namespace jle
 	public:
 		NO_COPY_NO_MOVE(jleCore)
 
-		jleCore(std::shared_ptr<CoreSettings> cs);
+		jleCore(std::shared_ptr<jleCoreSettings> cs);
 		virtual ~jleCore();
 
 		void Run();
@@ -99,7 +55,7 @@ namespace jle
 		const std::shared_ptr<iTextureCreator> texture_creator;
 
 		// Entry point for a user to get core status
-		const std::shared_ptr<CoreStatus> status;
+		const std::shared_ptr<jleCoreStatus> status;
 
 	private:
 		void Loop();
@@ -119,6 +75,6 @@ namespace jle
 		virtual void Render() {}
 		virtual void Exiting() {}
 
-		std::shared_ptr<CoreSettings> core_settings;
+		std::shared_ptr<jleCoreSettings> core_settings;
 	};
 }
