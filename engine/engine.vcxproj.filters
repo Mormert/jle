@@ -440,5 +440,8 @@
     <ClInclude Include="jleEditorSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="jleConfigUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

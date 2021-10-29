@@ -97,6 +97,7 @@
     <ClInclude Include="FileLoadInterface.h" />
     <ClInclude Include="GameAssets.h" />
     <ClInclude Include="GameEditorWindow.h" />
+    <ClInclude Include="jleConfigUtils.h" />
     <ClInclude Include="jleEditorSettings.h" />
     <ClInclude Include="jleGameSettings.h" />
     <ClInclude Include="GLState.h" />

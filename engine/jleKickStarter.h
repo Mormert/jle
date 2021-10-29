@@ -2,15 +2,21 @@
 
 #include "jleGameEngine.h"
 #include "jleEditor.h"
+#include "jleConfigUtils.h"
+
 
 namespace jle
 {
+
 	template <typename T>
 	void KickStartGame()
 	{
 		static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
 
 		auto gameSettings = std::make_shared<jleGameSettings>();
+
+		cfg::LoadEngineConfig<jleGameSettings>(cfg::GameSettingsName, *gameSettings);
+
 		T::OverrideGameSettings(*gameSettings);
 
 		auto gameEngine = std::make_unique<jleGameEngine>(gameSettings);
@@ -23,11 +29,17 @@ namespace jle
 	{
 		static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
 
+		auto gameSettings = std::make_shared<jleGameSettings>();
 		auto gameEditorSettings = std::make_shared<jleEditorSettings>();
-		T::OverrideGameSettings(*gameEditorSettings);
-		T::OverrideGameEditorSettings(*gameEditorSettings);
 
-		auto gameEngineInEditor = std::make_unique<jleEditor>(gameEditorSettings);
+
+		cfg::LoadEngineConfig<jleGameSettings>(cfg::GameSettingsName, *gameSettings);
+		cfg::LoadEngineConfig<jleEditorSettings>(cfg::EngineSettingsName, *gameEditorSettings);
+
+		T::OverrideGameSettings(*gameSettings);
+		T::OverrideGameEditorSettings(*gameSettings, *gameEditorSettings);
+
+		auto gameEngineInEditor = std::make_unique<jleEditor>(gameSettings, gameEditorSettings);
 		gameEngineInEditor->SetGame<T>();
 		gameEngineInEditor->Run();
 	}

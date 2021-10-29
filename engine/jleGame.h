@@ -20,7 +20,7 @@ namespace jle
 		virtual void Start() {}
 
 		static void OverrideGameSettings(jleGameSettings& gs) {}
-		static void OverrideGameEditorSettings(jleEditorSettings& gs) {}
+		static void OverrideGameEditorSettings(jleGameSettings& gs, jleEditorSettings& es) {}
 
 		void UpdateActiveScenes(float dt);
 

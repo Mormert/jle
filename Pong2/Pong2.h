@@ -16,9 +16,9 @@ public:
 		gs.windowSettings.windowWidth = 1280;
 	}
 
-	static void OverrideGameEditorSettings(jle::jleEditorSettings& es)
+	static void OverrideGameEditorSettings(jle::jleGameSettings& gs, jle::jleEditorSettings& es)
 	{
-		es.windowSettings.WindowTitle = "Pong - jle editor";
+		gs.windowSettings.WindowTitle = "Pong - jle editor";
 	}
 
 	virtual ~Pong2();

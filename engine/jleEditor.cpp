@@ -29,10 +29,10 @@
 
 namespace jle
 {
-	jleEditor::jleEditor(std::shared_ptr<jleEditorSettings> es) : jleGameEngine{ es }
+	jleEditor::jleEditor(std::shared_ptr<jleGameSettings> gs, std::shared_ptr<jleEditorSettings> es)
+        : jleGameEngine{ gs }, editor_settings{ es }
 	{
         background_image = std::make_unique<Image>(es->editorBackgroundImage);
-        editor_settings = es;
 	}
 
 	void jleEditor::StartEditor()

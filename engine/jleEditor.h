@@ -34,7 +34,7 @@ namespace jle
 	{
 	public:
 
-		jleEditor(std::shared_ptr<jleEditorSettings>);
+		jleEditor(std::shared_ptr<jleGameSettings>, std::shared_ptr<jleEditorSettings>);
 
 		void StartEditor();
 
