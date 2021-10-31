@@ -19,7 +19,8 @@ namespace jle
 	private:
 		std::shared_ptr<jleGameSettings> gameSettings;
 		std::shared_ptr<jleEditorSettings> editorSettings;
-		EditorJsonToImgui mJsonToImgui;
+		EditorJsonToImgui mJsonToImguiGS;
+		EditorJsonToImgui mJsonToImguiES;
 	};
 
 }

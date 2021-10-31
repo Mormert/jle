@@ -11,8 +11,11 @@ jle::EngineSettingsWindow::EngineSettingsWindow(const std::string& window_name,
 	std::shared_ptr<jleEditorSettings> es) :
 	iEditorImGuiWindow{ window_name }, editorSettings{ es }
 {
-	nlohmann::json j = *gs;
-	mJsonToImgui.JsonToImgui(j);
+	nlohmann::json j_gs = *gs;
+	mJsonToImguiGS.JsonToImgui(j_gs);
+
+	nlohmann::json j_es = *es;
+	mJsonToImguiES.JsonToImgui(j_es);
 }
 
 void jle::EngineSettingsWindow::Update(jleGameEngine& ge)
@@ -26,12 +29,16 @@ void jle::EngineSettingsWindow::Update(jleGameEngine& ge)
 
 	ImGui::Begin(window_name.c_str(), &isOpened, flags);
 
-	mJsonToImgui.DrawAndGetInput();
+	mJsonToImguiGS.DrawAndGetInput();
+	mJsonToImguiES.DrawAndGetInput();
 
 	if (ImGui::Button("Save Settings"))
 	{
-		auto json = mJsonToImgui.ImGuiToJson();
-		cfg::SaveEngineConfig(cfg::GameSettingsName, json);
+		auto jsonGS = mJsonToImguiGS.ImGuiToJson();
+		cfg::SaveEngineConfig(cfg::GameSettingsName, jsonGS);
+
+		auto jsonES = mJsonToImguiES.ImGuiToJson();
+		cfg::SaveEngineConfig(cfg::EngineSettingsName, jsonES);
 	}
 
 	ImGui::End();
