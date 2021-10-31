@@ -133,8 +133,6 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
             }
 
             static nlohmann::json selectedObjectJson;
-            static char textFields[128][2][1024];
-            static int usedTextFields = 0;
             static std::weak_ptr<jleObject> lastSelectedObject;
             if (hasAnObjectSelected)
             {
@@ -143,32 +141,17 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
                 {
                     if (ImGui::BeginTabItem("Object Properties"))
                     {
+                        // Check to see if a new object has been selected
                         if (selectedObjectSafePtr != lastSelectedObject.lock())
                         {
                             selectedObjectSafePtr->ToJson(selectedObjectJson);
                             lastSelectedObject = selectedObjectSafePtr;
 
-                            if (selectedObjectJson.is_object())
-                            {
-                                auto obj = selectedObjectJson.get<nlohmann::json::object_t>();
-                                usedTextFields = 0;
-                                for (auto& kvp : obj)
-                                {
-                                    strcpy_s(textFields[usedTextFields][0], kvp.first.c_str());
-
-                                    std::ostringstream oss;
-                                    oss << kvp.second.dump(4);
-                                    strcpy_s(textFields[usedTextFields][1], oss.str().c_str());
-                                    usedTextFields++;
-                                }
-                            }
-
+                            mJsonToImgui.JsonToImgui(selectedObjectJson);
                         }
 
-                        for (int i = 0; i < usedTextFields; i++)
-                        {
-                            ImGui::InputTextMultiline(textFields[i][0], textFields[i][1], 1024);
-                        }
+                        // This does calls to ImGui:: to draw the editable object properties
+                        mJsonToImgui.DrawAndGetInput();
 
                         ImGui::EndTabItem();
                     }
@@ -193,12 +176,7 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
                 ImGui::SameLine();
                 if (ImGui::Button("Push Object Changes"))
                 {
-                    nlohmann::json pushedObjectJson;
-                    for (int i = 0; i < usedTextFields; i++)
-                    {
-                        pushedObjectJson[textFields[i][0]] = nlohmann::json::parse(textFields[i][1]);
-                    }
-
+                    auto pushedObjectJson = mJsonToImgui.ImGuiToJson();
                     selectedObjectSafePtr->FromJson(pushedObjectJson);
                 }
             }

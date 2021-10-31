@@ -43,6 +43,7 @@
     <ClCompile Include="ConsoleEditorWindow.cpp" />
     <ClCompile Include="EditorBackgroundImage.cpp" />
     <ClCompile Include="EditorGameControllerWindow.cpp" />
+    <ClCompile Include="EditorJsonToImgui.cpp" />
     <ClCompile Include="EditorSceneObjectsWindow.cpp" />
     <ClCompile Include="EditorWindowsPanel.cpp" />
     <ClCompile Include="EngineSettingsWindow.cpp" />
@@ -91,6 +92,7 @@
     <ClInclude Include="ConsoleEditorWindow.h" />
     <ClInclude Include="EditorBackgroundImage.h" />
     <ClInclude Include="EditorGameControllerWindow.h" />
+    <ClInclude Include="EditorJsonToImgui.h" />
     <ClInclude Include="EditorSceneObjectsWindow.h" />
     <ClInclude Include="EditorWindowsPanel.h" />
     <ClInclude Include="EngineSettingsWindow.h" />

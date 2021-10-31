@@ -204,6 +204,9 @@
     <ClCompile Include="EngineSettingsWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EditorJsonToImgui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\imgui_impl_glfw.h">
@@ -392,9 +395,6 @@
     <ClInclude Include="EditorGameControllerWindow.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
-    <ClInclude Include="EditorSceneObjectsWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ProfilerWindow.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
@@ -419,9 +419,6 @@
     <ClInclude Include="TextRendering_OpenGL.h">
       <Filter>Header Files\Core\Rendering\OpenGL_GLFW</Filter>
     </ClInclude>
-    <ClInclude Include="EngineSettingsWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="jleGameSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -441,6 +438,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="jleConfigUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorSceneObjectsWindow.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineSettingsWindow.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorJsonToImgui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

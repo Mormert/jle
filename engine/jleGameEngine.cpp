@@ -9,7 +9,7 @@
 namespace jle
 {
 
-	jleGameEngine::jleGameEngine(std::shared_ptr<jleGameSettings> gs) : jleCore{ gs }
+	jleGameEngine::jleGameEngine(std::shared_ptr<jleGameSettings> gs) : gameSettings{ gs }, jleCore { gs }
 	{
 		SetGameDimsPixels(gs->framebufferSettings.fixedAxis, gs->framebufferSettings.fixedAxisPixels);
 	}

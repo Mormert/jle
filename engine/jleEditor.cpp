@@ -62,7 +62,7 @@ namespace jle
         AddImGuiWindow(console);
         menu->AddWindow(console);
 
-        auto settingsWindow = std::make_shared<EngineSettingsWindow>("Engine Settings", editor_settings);
+        auto settingsWindow = std::make_shared<EngineSettingsWindow>("Engine Settings", gameSettings, editor_settings);
         AddImGuiWindow(settingsWindow);
         menu->AddWindow(settingsWindow);
 

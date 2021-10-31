@@ -6,11 +6,11 @@ namespace jle
 {
 	namespace cfg
 	{
-		const std::string GameSettingsName = "jle_gs_config.json";
-		const std::string EngineSettingsName = "jle_es_config.json";
+		inline const std::string GameSettingsName = "jle_gs_config.json";
+		inline const std::string EngineSettingsName = "jle_es_config.json";
 
 		template <typename T>
-		void LoadEngineConfig(const std::string& cfgName, T& cfgJson)
+		inline void LoadEngineConfig(const std::string& cfgName, T& cfgJson)
 		{
 			std::ifstream i(cfgName);
 			if (i.good())
@@ -22,7 +22,7 @@ namespace jle
 			}
 		}
 
-		void SaveEngineConfig(const std::string& cfgName, nlohmann::json& j)
+		inline void SaveEngineConfig(const std::string& cfgName, nlohmann::json& j)
 		{
 			std::ofstream i(cfgName);
 			if (i.good())

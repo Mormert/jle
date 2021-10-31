@@ -75,6 +75,8 @@ namespace jle
 		// Game dimensions in pixels, along axis specified by fixed_axis.
 		unsigned int gameDimsPixels;
 
+		std::shared_ptr<jleGameSettings> gameSettings;
+
 		std::unique_ptr<jleGame> game;
 		bool gameHalted = false;
 	};
