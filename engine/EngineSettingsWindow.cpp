@@ -12,10 +12,10 @@ jle::EngineSettingsWindow::EngineSettingsWindow(const std::string& window_name,
 	iEditorImGuiWindow{ window_name }, editorSettings{ es }
 {
 	nlohmann::json j_gs = *gs;
-	mJsonToImguiGS.JsonToImgui(j_gs);
+	mJsonToImguiGS.JsonToImgui(j_gs, "Game Settings");
 
 	nlohmann::json j_es = *es;
-	mJsonToImguiES.JsonToImgui(j_es);
+	mJsonToImguiES.JsonToImgui(j_es, "Editor Settings");
 }
 
 void jle::EngineSettingsWindow::Update(jleGameEngine& ge)
@@ -29,8 +29,12 @@ void jle::EngineSettingsWindow::Update(jleGameEngine& ge)
 
 	ImGui::Begin(window_name.c_str(), &isOpened, flags);
 
-	mJsonToImguiGS.DrawAndGetInput();
-	mJsonToImguiES.DrawAndGetInput();
+	ImGui::BeginChild("settings hierarchy view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+
+		mJsonToImguiGS.DrawAndGetInput();
+		mJsonToImguiES.DrawAndGetInput();
+
+	ImGui::EndChild();
 
 	if (ImGui::Button("Save Settings"))
 	{
@@ -40,6 +44,9 @@ void jle::EngineSettingsWindow::Update(jleGameEngine& ge)
 		auto jsonES = mJsonToImguiES.ImGuiToJson();
 		cfg::SaveEngineConfig(cfg::EngineSettingsName, jsonES);
 	}
+
+	ImGui::SameLine();
+	ImGui::Text("Restart required for settings to take effect.");
 
 	ImGui::End();
 }

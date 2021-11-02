@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <sstream>
+#include <vector>
 
 #include "imgui.h" // uses vcpkg
 #include "3rdparty/imgui_impl_glfw.h"
@@ -9,47 +10,183 @@
 
 #include "3rdparty/json.hpp"
 
-
 class EditorJsonToImgui
 {
 public:
+
 	void DrawAndGetInput()
 	{
-		for (int i = 0; i < mUsedTextFields; i++)
-		{
-			ImGui::InputTextMultiline(mTextfields[i][0], mTextfields[i][1], 1024);
-		}
+		mRootNode.RecursiveDraw();
 	}
 
-	void JsonToImgui(nlohmann::json& j)
+	void JsonToImgui(nlohmann::json& j, const std::string& objectName)
 	{
-		if (j.is_object())
-		{
-			auto obj = j.get<nlohmann::json::object_t>();
-			mUsedTextFields = 0;
-			for (auto& kvp : obj)
-			{
-				strcpy_s(mTextfields[mUsedTextFields][0], kvp.first.c_str());
-
-				std::ostringstream oss;
-				oss << kvp.second.dump(4);
-				strcpy_s(mTextfields[mUsedTextFields][1], oss.str().c_str());
-				mUsedTextFields++;
-			}
-		}
+		mRootNode.mNodes.clear();
+		mRootNode.mName = objectName;
+		mRootNode.RecursivelyConstructTree(j);
 	}
 
 	nlohmann::json ImGuiToJson()
 	{
 		nlohmann::json j;
-		for (int i = 0; i < mUsedTextFields; i++)
-		{
-			j[mTextfields[i][0]] = nlohmann::json::parse(mTextfields[i][1]);
-		}
+		mRootNode.ConstructJson(j);
 		return j;
 	}
 
 private:
-	char mTextfields[128][2][1024];
-	int mUsedTextFields = 0;
+
+	struct _iNode
+	{
+		std::string mName = "root";
+		std::vector<std::shared_ptr<_iNode>> mNodes;
+
+		virtual ~_iNode(){}
+
+		// Takes a json object, and depending on what the json object is (float, int, or another json object),
+		// use recursion to construct nodes of the json object children, or 
+		void RecursivelyConstructTree(nlohmann::json& j) {
+			if (j.is_object()) // root needs to be json object
+			{
+				auto objHead = j.get<nlohmann::json::object_t>();
+				for (auto& objChildren : objHead)
+				{
+					if (objChildren.second.is_object())
+					{
+						auto oNode = std::make_shared<_iNode>();
+						oNode->mName = objChildren.first.c_str();
+						mNodes.push_back(oNode);
+
+						// Use recursion if child is a json object
+						oNode->RecursivelyConstructTree(objChildren.second);
+					}
+					else if (objChildren.second.is_number_float())
+					{
+						auto jvalue = objChildren.second.get<nlohmann::json::number_float_t>();
+						auto node = std::make_shared<_NodeFloat>(static_cast<float_t>(jvalue));
+						node->mName = objChildren.first.c_str();
+						mNodes.push_back(node);
+					}
+					else if (objChildren.second.is_number_integer())
+					{
+						auto jvalue = objChildren.second.get<nlohmann::json::number_integer_t>();
+						auto node = std::make_shared<_NodeInt>(static_cast<int32_t>(jvalue));
+						node->mName = objChildren.first.c_str();
+						mNodes.push_back(node);
+					}
+					else if (objChildren.second.is_string())
+					{
+						auto jvalue = objChildren.second.get<nlohmann::json::string_t>();
+						auto node = std::make_shared<_NodeString>(jvalue);
+						node->mName = objChildren.first.c_str();
+						mNodes.push_back(node);
+					}
+					else if (objChildren.second.is_boolean())
+					{
+						auto jvalue = objChildren.second.get<nlohmann::json::boolean_t>();
+						auto node = std::make_shared<_NodeBool>(jvalue);
+						node->mName = objChildren.first.c_str();
+						mNodes.push_back(node);
+					}
+				}
+			}
+		}
+
+		// Uses recursion to draw the nodes with ImGui
+		// It's a ImGui::TreeNode for json objects, and ImGui::DragInt for ints, etc.
+		virtual void RecursiveDraw()
+		{
+			if (ImGui::TreeNode(mName.c_str()))
+			{
+				for (auto& nodeChildren : mNodes)
+				{
+					nodeChildren->RecursiveDraw();
+				}
+
+				ImGui::TreePop();
+			}
+		}
+
+		// Recursively goes through all children and constructs a json object
+		virtual void ConstructJson(nlohmann::json& j_out)
+		{
+			for (auto& childNode : mNodes)
+			{
+				nlohmann::json j_inner;
+				childNode->ConstructJson(j_inner);
+				j_out[childNode->mName] = j_inner;
+			}
+		}
+	};
+
+	struct _NodeFloat : _iNode
+	{
+		_NodeFloat(float f) : value{ f } {}
+		float value;
+
+		virtual void RecursiveDraw() override
+		{
+			ImGui::PushItemWidth(100);
+			ImGui::DragFloat(mName.c_str(), &value, 0.02f, -FLT_MAX, FLT_MAX, "%.2f", 2.0f);
+		}
+
+		virtual void ConstructJson(nlohmann::json& j_out)
+		{
+			j_out = value;
+		}
+	};
+
+	struct _NodeInt : _iNode
+	{
+		_NodeInt(int i) : value{ i } {}
+		int value;
+
+		virtual void RecursiveDraw() override
+		{
+			ImGui::PushItemWidth(100);
+			ImGui::DragInt(mName.c_str(), &value, 0.02f, INT_MIN, INT_MAX, "%.2f");
+		}
+
+		virtual void ConstructJson(nlohmann::json& j_out)
+		{
+			j_out = value;
+		}
+	};
+
+	struct _NodeBool : _iNode
+	{
+		_NodeBool(bool b) : value{ b } {}
+		bool value;
+
+		virtual void RecursiveDraw() override
+		{
+			ImGui::PushItemWidth(100);
+			ImGui::Checkbox(mName.c_str(), &value);
+		}
+
+		virtual void ConstructJson(nlohmann::json& j_out)
+		{
+			j_out = value;
+		}
+	};
+
+	struct _NodeString : _iNode
+	{
+		// TODO: Use ImGui callback on buffer resize for the string instead of a hard-coded cap with reserve().
+		_NodeString(const std::string& s) : str{ s } { str.reserve(1024); }
+		std::string str;
+
+		virtual void RecursiveDraw() override
+		{
+			ImGui::PushItemWidth(250);
+			ImGui::InputText(mName.c_str(), (char*)str.c_str(), str.capacity() + 1);
+		}
+
+		virtual void ConstructJson(nlohmann::json& j_out)
+		{
+			j_out = str;
+		}
+	};
+
+	_iNode mRootNode;
+
 };

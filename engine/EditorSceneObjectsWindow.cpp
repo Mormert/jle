@@ -147,7 +147,7 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
                             selectedObjectSafePtr->ToJson(selectedObjectJson);
                             lastSelectedObject = selectedObjectSafePtr;
 
-                            mJsonToImgui.JsonToImgui(selectedObjectJson);
+                            mJsonToImgui.JsonToImgui( selectedObjectJson, { std::string{ selectedObjectSafePtr->GetObjectNameVirtual() } } );
                         }
 
                         // This does calls to ImGui:: to draw the editable object properties
