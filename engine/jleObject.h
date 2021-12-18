@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 
-#include "jleObjectTypeUtils.h"
+#include "jleTypeReflectionUtils.h"
 #include "jleComponent.h"
 
 #include "jleJson.h"
@@ -15,6 +15,7 @@ namespace jle
 
 	class jleObject : public jleJsonInterface<nlohmann::json>
 	{
+        JLE_REGISTER_OBJECT_TYPE(jleObject)
 	public:
         std::string mInstanceName;
 
@@ -60,11 +61,6 @@ namespace jle
 
 
         void DestroyObject();
-
-        static const std::string_view GetObjectName()
-        {
-            return "jleObject"; 
-        };
 
         virtual std::string_view GetObjectNameVirtual()
         {

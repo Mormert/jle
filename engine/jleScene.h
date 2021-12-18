@@ -1,7 +1,7 @@
 #pragma once
 
 #include "jleObject.h"
-#include "jleObjectTypeUtils.h"
+#include "jleTypeReflectionUtils.h"
 
 #include <vector>
 #include <memory>
@@ -57,7 +57,7 @@ namespace jle
 
 		std::shared_ptr<jleObject> SpawnObject(const std::string& objName)
 		{
-			auto newSceneObject = jleObjectTypeUtils::InstantiateObjectByString(objName);
+			auto newSceneObject = jleTypeReflectionUtils::InstantiateObjectByString(objName);
 			ConfigurateSpawnedObject(newSceneObject);
 
 			return newSceneObject;

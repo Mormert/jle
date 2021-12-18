@@ -11,6 +11,7 @@
 
 class cSprite : public jle::jleComponent
 {
+	JLE_REGISTER_COMPONENT_TYPE(cSprite)
 public:
 	cSprite(jle::jleObject* owner = nullptr, jle::jleScene* scene = nullptr);
 

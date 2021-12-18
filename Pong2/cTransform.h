@@ -2,10 +2,9 @@
 
 #include "jleComponent.h"
 
-#include "3rdparty/json.hpp"
-
 class cTransform : public jle::jleComponent
 {
+	JLE_REGISTER_COMPONENT_TYPE(cTransform)
 public:
 
 	cTransform(jle::jleObject* owner = nullptr, jle::jleScene* scene = nullptr);

@@ -1,7 +1,6 @@
 #include "EditorSceneObjectsWindow.h"
 
-#include "jleObjectTypeUtils.h"
-
+#include "jleTypeReflectionUtils.h"
 
 #include "imgui.h" // uses vcpkg
 #include "3rdparty/imgui_impl_glfw.h"
@@ -43,7 +42,7 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
             {
                 if (ImGui::BeginMenu("Create Object"))
                 {
-                    for (auto objectType : jleObjectTypeUtils::GetRegisteredObjectsRef())
+                    for (auto objectType : jleTypeReflectionUtils::GetRegisteredObjectsRef())
                     {
                         if (ImGui::MenuItem(objectType.first.c_str()))
                         {

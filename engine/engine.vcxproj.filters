@@ -186,9 +186,6 @@
     <ClCompile Include="jleComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="jleObjectTypeUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EditorSceneObjectsWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -383,7 +380,7 @@
     <ClInclude Include="jleComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="jleObjectTypeUtils.h">
+    <ClInclude Include="jleTypeReflectionUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="3rdparty\json.hpp">

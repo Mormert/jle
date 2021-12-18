@@ -57,7 +57,6 @@
     <ClCompile Include="jleEditor.cpp" />
     <ClCompile Include="jleGame.cpp" />
     <ClCompile Include="jleObject.cpp" />
-    <ClCompile Include="jleObjectTypeUtils.cpp" />
     <ClCompile Include="jleScene.cpp" />
     <ClCompile Include="ProfilerWindow.cpp" />
     <ClCompile Include="TextRendering_OpenGL.cpp" />
