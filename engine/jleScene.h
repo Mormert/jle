@@ -84,7 +84,7 @@ namespace jle
 		std::vector<std::shared_ptr<jleObject>> mSceneObjects;
 		std::vector<std::shared_ptr<jleObject>> mNewSceneObjects;
 
-		friend void to_json(nlohmann::json& j, const jleScene s);
+		friend void to_json(nlohmann::json& j, const jleScene& s);
 		friend void from_json(const nlohmann::json& j, jleScene& s);
 
 	private:
@@ -101,6 +101,6 @@ namespace jle
 	};
 
 
-	void to_json(nlohmann::json& j, const jleScene s);
+	void to_json(nlohmann::json& j, const jleScene& s);
 	void from_json(const nlohmann::json& j, jleScene& s);
 }

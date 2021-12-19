@@ -56,7 +56,7 @@ void jle::jleScene::DestroyScene()
 	OnSceneDestruction();
 }
 
-void jle::to_json(nlohmann::json& j, const jleScene s)
+void jle::to_json(nlohmann::json& j, const jleScene& s)
 {
 	j = nlohmann::json{
 		{"objects", s.mSceneObjects}
@@ -68,10 +68,11 @@ void jle::from_json(const nlohmann::json& j, jleScene& s)
 	for (auto object_json : j.at("objects"))
 	{
 		std::string objectsName;
-		object_json.at("obj_name").get_to(objectsName);
+		object_json.at("__obj_name").get_to(objectsName);
 		std::cout << objectsName;
 
 		auto spawnedObjFromJson = s.SpawnObject(objectsName);
+		jle::from_json(object_json, spawnedObjFromJson);
 		spawnedObjFromJson->FromJson(object_json);
 
 	}

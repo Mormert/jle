@@ -44,6 +44,25 @@ namespace jle
             return newComponent;
         };
 
+	    std::shared_ptr<jleComponent> AddComponent(const std::string& component_name)
+	    {
+	        auto newComponent = jleTypeReflectionUtils::InstantiateComponentByString(component_name);
+	    	newComponent->mAttachedToObject = this;
+	    	newComponent->mContainedInScene = mContainedInScene;
+	    	
+	        mComponents.push_back(newComponent);
+
+	        return  newComponent;
+	    }
+
+	    std::shared_ptr<jleComponent> AddCustomComponent(const std::string& component_name)
+	    {
+	    	auto newCustomComponent = AddComponent(component_name);
+	    	mDynamicCustomComponents.push_back(newCustomComponent);
+
+	    	return newCustomComponent;
+	    }
+
         template <typename T> std::shared_ptr<T> GetComponent()
         {
             static_assert(std::is_base_of<jleComponent, T>::value, "T must derive from jleComponent");
@@ -84,6 +103,10 @@ namespace jle
 
 	protected:
         std::vector<std::shared_ptr<jleComponent>> mComponents {};
+
+	    // Dynamic Custom Components is a subset of mComponents, containing components
+	    // That can be added/removed dynamically, and saved on object instances in a scene.
+	    std::vector<std::shared_ptr<jleComponent>> mDynamicCustomComponents {};
 
         jleScene* mContainedInScene = nullptr;
 

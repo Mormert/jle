@@ -16,7 +16,7 @@ namespace jle
 	{
 	public:
 		jleComponent(jleObject* owner = nullptr, jleScene* scene = nullptr);
-
+				
 		virtual void Start() {};
 		virtual void Update(float dt) {};
 
@@ -25,7 +25,11 @@ namespace jle
 		virtual void ToJson(nlohmann::json& j_out)			{}
 		virtual void FromJson(const nlohmann::json& j_in)	{}
 
+		friend void to_json(nlohmann::json& j, const std::shared_ptr<jleComponent> c);
+		friend void from_json(const nlohmann::json& j, std::shared_ptr<jleComponent>& c);
+		
 	protected:
+		friend class jleObject;
 		jleObject* mAttachedToObject;
 		jleScene* mContainedInScene;
 	};
