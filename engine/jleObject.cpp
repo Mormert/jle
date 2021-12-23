@@ -2,6 +2,8 @@
 
 #include "jleScene.h"
 
+#include <optional>
+
 int jle::jleObject::mObjectsCreatedCount{0};
 
 jle::jleObject::jleObject()
@@ -13,6 +15,11 @@ jle::jleObject::jleObject()
 void jle::jleObject::DestroyObject()
 {
     bPendingKill = true;
+}
+
+std::vector<std::shared_ptr<jle::jleComponent>>& jle::jleObject::GetCustomComponents()
+{
+    return mDynamicCustomComponents;
 }
 
 jle::jleObject::jleObject(jleScene* scene) : mContainedInScene{scene}
@@ -47,12 +54,28 @@ void jle::to_json(nlohmann::json& j, const std::shared_ptr<jleObject> o)
 
 void jle::from_json(const nlohmann::json& j, std::shared_ptr<jleObject>& o)
 {
-    for (auto custom_components_json : j.at("_custom_components"))
+    for (auto&& custom_components_json : j.at("_custom_components"))
     {
         std::string componentName;
         custom_components_json.at("_comp_name").get_to(componentName);
 
-        auto component = o->AddCustomComponent(componentName);
-        component->FromJson(custom_components_json);
+        std::optional<std::shared_ptr<jleComponent>> existingComponent;
+        for(auto&& existing_component : o->GetCustomComponents())
+        {
+            if(existing_component->GetComponentName() == componentName)
+            {
+                existingComponent = existing_component;
+            }
+        }
+
+        if(existingComponent.has_value())
+        {
+            existingComponent->get()->FromJson(custom_components_json);
+        }
+        else
+        {
+            auto component = o->AddCustomComponent(componentName);
+            component->FromJson(custom_components_json);
+        }        
     }
 }

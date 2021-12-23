@@ -9,6 +9,7 @@
 #include "3rdparty/imgui_impl_opengl3.h"
 
 #include "3rdparty/json.hpp"
+#include <plog/Log.h>
 
 class EditorJsonToImgui
 {
@@ -21,6 +22,7 @@ public:
 
 	void JsonToImgui(nlohmann::json& j, const std::string& objectName)
 	{
+		PLOG_VERBOSE << j.dump(4);
 		mRootNode.mNodes.clear();
 		mRootNode.mName = objectName;
 		mRootNode.RecursivelyConstructTree(j);
@@ -30,6 +32,7 @@ public:
 	{
 		nlohmann::json j;
 		mRootNode.ConstructJson(j);
+		PLOG_VERBOSE << j.dump(4);
 		return j;
 	}
 
@@ -58,6 +61,22 @@ private:
 
 						// Use recursion if child is a json object
 						oNode->RecursivelyConstructTree(objChildren.second);
+					}
+					else if(objChildren.second.is_array())
+					{
+						auto arrayNode = std::make_shared<_NodeArray>();
+						arrayNode->mName = objChildren.first.c_str();
+						mNodes.push_back(arrayNode);
+						
+						int arrayIndex = 0;
+						auto&& json_array = objChildren.second.get<nlohmann::json::array_t>();
+						for(auto&& json_element_in_array : json_array)
+						{
+							auto arrayChild = std::make_shared<_iNode>();
+							arrayChild->RecursivelyConstructTree(json_element_in_array);
+							arrayChild->mName = std::to_string(arrayIndex++);
+							arrayNode->mNodes.push_back(arrayChild);
+						}
 					}
 					else if (objChildren.second.is_number_float())
 					{
@@ -117,7 +136,35 @@ private:
 			}
 		}
 	};
+	
+	struct _NodeArray : _iNode
+    {
+    	_NodeArray() = default;
+		
+    	virtual void RecursiveDraw() override
+    	{
+    		if (ImGui::TreeNode((mName + " [" + std::to_string(mNodes.size()) + "]").c_str()))
+    		{
+    			for (auto&& nodeChildren : mNodes)
+    			{
+    				nodeChildren->RecursiveDraw();
+    			}
+    			ImGui::TreePop();
+    		}
+    	}
 
+    	virtual void ConstructJson(nlohmann::json& j_out) override
+    	{
+    		j_out = nlohmann::json::array();
+    		for (auto& childNode : mNodes)
+    		{
+    			nlohmann::json j_inner;
+    			childNode->ConstructJson(j_inner);
+    			j_out.push_back(j_inner);
+    		}
+    	}
+    };
+	
 	struct _NodeFloat : _iNode
 	{
 		_NodeFloat(float f) : value{ f } {}

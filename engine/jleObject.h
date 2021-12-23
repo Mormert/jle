@@ -54,7 +54,7 @@ namespace jle
 
 	        return  newComponent;
 	    }
-
+		
 	    std::shared_ptr<jleComponent> AddCustomComponent(const std::string& component_name)
 	    {
 	    	auto newCustomComponent = AddComponent(component_name);
@@ -86,6 +86,8 @@ namespace jle
             return "jleObject";
         }
 
+		std::vector<std::shared_ptr<jleComponent>> &GetCustomComponents();
+		
         virtual void ToJson(nlohmann::json& j_out)          {}
         virtual void FromJson(const nlohmann::json& j_in)   {}
 

@@ -131,7 +131,6 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
                 ImGui::Text("No object selected");
             }
 
-            static nlohmann::json selectedObjectJson;
             static std::weak_ptr<jleObject> lastSelectedObject;
             if (hasAnObjectSelected)
             {
@@ -143,7 +142,11 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
                         // Check to see if a new object has been selected
                         if (selectedObjectSafePtr != lastSelectedObject.lock())
                         {
+                            nlohmann::json selectedObjectJson;
                             selectedObjectSafePtr->ToJson(selectedObjectJson);
+
+                            selectedObjectJson["_custom_components"] = selectedObjectSafePtr->GetCustomComponents();
+                                                        
                             lastSelectedObject = selectedObjectSafePtr;
 
                             mJsonToImgui.JsonToImgui( selectedObjectJson, { std::string{ selectedObjectSafePtr->GetObjectNameVirtual() } } );
@@ -176,7 +179,9 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
                 if (ImGui::Button("Push Object Changes"))
                 {
                     auto pushedObjectJson = mJsonToImgui.ImGuiToJson();
+                    jle::from_json(pushedObjectJson, selectedObjectSafePtr);
                     selectedObjectSafePtr->FromJson(pushedObjectJson);
+                    
                 }
             }
             ImGui::EndGroup();
