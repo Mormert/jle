@@ -38,7 +38,7 @@ void cSprite::Start()
 	transform = mAttachedToObject->GetComponent<cTransform>();
 	if (!transform)
 	{
-		transform = mAttachedToObject->AddComponent<cTransform>();
+		transform = mAttachedToObject->AddCustomComponent<cTransform>();
 	}
 
 	if (texturePath != "")
@@ -52,9 +52,12 @@ void cSprite::Update(float dt)
 {
 	quad.x = transform->x;
 	quad.y = transform->y;
-
-	jle::jleCore::core->rendering->quads->SendTexturedQuad(*&quad, RenderingMethod::Dynamic);
-
+	
+	if(quad.texture.get())
+	{
+		jle::jleCore::core->rendering->quads->SendTexturedQuad(*&quad, RenderingMethod::Dynamic);
+	}
+	
 	jle::jleCore::core->rendering->texts->SendSimpleText("Hello, World", 5.f, 5.f, 1.f, 1.f, 0.7f, 1.f, 1.f);
 }
 
@@ -87,32 +90,6 @@ void cSprite::FromJson(const nlohmann::json& j_in)
 	quad.width = j_in.at("width");
 	quad.textureX = j_in.at("textureX");
 	quad.textureY = j_in.at("textureY");
-}
 
-/*
-void to_json(nlohmann::json& j, const cSprite s)
-{
-	j = nlohmann::json{
-		{"path", s.texturePath},
-		{"x", s.quad.x},
-		{"y", s.quad.y},
-		{"depth", s.quad.depth},
-		{"height", s.quad.height},
-		{"width", s.quad.width},
-		{"textureX", s.quad.textureX},
-		{"textureY", s.quad.textureY}
-	};
+	CreateAndSetTextureFromPath(texturePath);
 }
-
-void from_json(const nlohmann::json& j, cSprite& s)
-{
-	s.texturePath = j.at("path");
-	s.quad.x = j.at("x");
-	s.quad.y = j.at("y");
-	s.quad.depth = j.at("depth");
-	s.quad.height = j.at("height");
-	s.quad.width = j.at("width");
-	s.quad.textureX = j.at("textureX");
-	s.quad.textureY = j.at("textureY");
-}
-*/

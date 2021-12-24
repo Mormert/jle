@@ -12,9 +12,32 @@ jle::jleObject::jleObject()
     mObjectsCreatedCount++;
 }
 
+void jle::jleObject::DestroyComponent(jleComponent* component)
+{
+    for(int i = mComponents.size() - 1; i >= 0; i--)
+    {
+        if(mComponents[i].get() == component)
+        {
+            mComponents.erase(mComponents.begin() + i);
+        }
+    }
+    for(int i = mDynamicCustomComponents.size() - 1; i >= 0; i--)
+    {
+        if(mDynamicCustomComponents[i].get() == component)
+        {
+            mDynamicCustomComponents.erase(mDynamicCustomComponents.begin() + i);
+        }
+    }
+}
+
 void jle::jleObject::DestroyObject()
 {
     bPendingKill = true;
+}
+
+int jle::jleObject::GetComponentCount()
+{
+    return mComponents.size();
 }
 
 std::vector<std::shared_ptr<jle::jleComponent>>& jle::jleObject::GetCustomComponents()

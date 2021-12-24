@@ -42,11 +42,11 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
             {
                 if (ImGui::BeginMenu("Create Object"))
                 {
-                    for (auto objectType : jleTypeReflectionUtils::GetRegisteredObjectsRef())
+                    for (auto&& objectType : jleTypeReflectionUtils::GetRegisteredObjectsRef())
                     {
                         if (ImGui::MenuItem(objectType.first.c_str()))
                         {
-                            selectedScene.lock()->SpawnObject(objectType.first.c_str());
+                            selectedScene.lock()->SpawnObject(objectType.first);
                         }
                     }
                     ImGui::EndMenu();
@@ -93,7 +93,7 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
 
         if (auto selectedSceneSafePtr = selectedScene.lock())
         {
-            for (auto object : selectedSceneSafePtr->GetSceneObjects())
+            for (auto&& object : selectedSceneSafePtr->GetSceneObjects())
             {
                 if (ImGui::Selectable(object->mInstanceName.c_str(), selectedObject.lock() == object))
                 {
@@ -157,11 +157,45 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
 
                         ImGui::EndTabItem();
                     }
+                    if (ImGui::BeginTabItem("Custom Components"))
+                    {
+                        if (ImGui::BeginMenu("Add Custom Component"))
+                        {
+                            for (auto&& componentType : jleTypeReflectionUtils::GetRegisteredComponentsRef())
+                            {
+                                if (ImGui::MenuItem(componentType.first.c_str()))
+                                {
+                                    selectedObjectSafePtr->AddCustomComponent(componentType.first, true);
+                                    lastSelectedObject.reset(); // refresh
+                                }
+                            }
+                            ImGui::EndMenu();
+                        }
+
+                        auto&& customComponents = selectedObjectSafePtr->GetCustomComponents();
+                        if(customComponents.size() > 0)
+                        {
+                            if (ImGui::BeginMenu("Remove Custom Component"))
+                            {
+                                for(int i = customComponents.size() - 1; i >= 0; i--)
+                                {
+                                    if (ImGui::MenuItem(customComponents[i]->GetComponentName().data()))
+                                    {
+                                        customComponents[i]->Destroy();
+                                        lastSelectedObject.reset(); // refresh
+                                    }
+                                }
+                                ImGui::EndMenu();
+                            }
+                        }
+                        
+                        ImGui::EndTabItem();
+                    }
                     if (ImGui::BeginTabItem("Details"))
                     {
-                        
                         ImGui::Text("Object type   : %s", selectedObjectSafePtr->GetObjectNameVirtual());
                         ImGui::Text("Instance name : %s", selectedObjectSafePtr->mInstanceName.c_str());
+                        ImGui::Text("Components attached count: %d", selectedObjectSafePtr->GetComponentCount());
                         ImGui::EndTabItem();
                     }
                     ImGui::EndTabBar();

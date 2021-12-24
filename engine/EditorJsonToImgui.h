@@ -230,7 +230,8 @@ private:
 
 		virtual void ConstructJson(nlohmann::json& j_out)
 		{
-			j_out = str;
+			// TODO: Watch out for buffer overflow here
+			j_out = str.data();
 		}
 	};
 

@@ -20,6 +20,8 @@ namespace jle
 		virtual void Start() {};
 		virtual void Update(float dt) {};
 
+		void Destroy();
+
 		virtual const std::string_view GetComponentName() const = 0;
 
 		virtual void ToJson(nlohmann::json& j_out)			{}

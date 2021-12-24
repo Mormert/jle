@@ -6,6 +6,11 @@ jle::jleComponent::jleComponent(jleObject* owner, jleScene* scene) : mAttachedTo
 {
 }
 
+void jle::jleComponent::Destroy()
+{
+    mAttachedToObject->DestroyComponent(this);
+}
+
 void jle::to_json(nlohmann::json& j, const std::shared_ptr<jleComponent> c)
 {
     c->ToJson(j);

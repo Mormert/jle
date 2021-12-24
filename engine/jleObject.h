@@ -44,6 +44,22 @@ namespace jle
             return newComponent;
         };
 
+		template <typename T>
+		std::shared_ptr<T> AddCustomComponent(bool start_immediate = false)
+		{
+			static_assert(std::is_base_of<jleComponent, T>::value, "T must derive from jleComponent");
+			
+			std::shared_ptr<T> newCustomComponent = AddComponent<T>();
+			mDynamicCustomComponents.push_back(newCustomComponent);
+
+			if(start_immediate)
+			{
+				newCustomComponent->Start();
+			}
+			
+			return newCustomComponent;
+		};
+
 	    std::shared_ptr<jleComponent> AddComponent(const std::string& component_name)
 	    {
 	        auto newComponent = jleTypeReflectionUtils::InstantiateComponentByString(component_name);
@@ -52,14 +68,19 @@ namespace jle
 	    	
 	        mComponents.push_back(newComponent);
 
-	        return  newComponent;
+	        return newComponent;
 	    }
 		
-	    std::shared_ptr<jleComponent> AddCustomComponent(const std::string& component_name)
+	    std::shared_ptr<jleComponent> AddCustomComponent(const std::string& component_name, bool start_immediate = false)
 	    {
 	    	auto newCustomComponent = AddComponent(component_name);
 	    	mDynamicCustomComponents.push_back(newCustomComponent);
 
+			if(start_immediate)
+			{
+				newCustomComponent->Start();
+			}
+	    	
 	    	return newCustomComponent;
 	    }
 
@@ -78,9 +99,13 @@ namespace jle
             return nullptr;
         };
 
+		// Called from components
+		void DestroyComponent(jleComponent* component);
 
         void DestroyObject();
 
+		int GetComponentCount();
+		
         virtual std::string_view GetObjectNameVirtual()
         {
             return "jleObject";
