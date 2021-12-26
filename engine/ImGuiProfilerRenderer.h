@@ -8,6 +8,7 @@
 #include <array>
 #include <chrono>
 #include <algorithm>
+#include <sstream>
 
 // Class modified and based on https://github.com/Raikiri/LegitProfiler
 
