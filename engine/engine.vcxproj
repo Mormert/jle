@@ -64,7 +64,6 @@
     <ClCompile Include="WindowInitializer_GLFW_OpenGL.cpp" />
     <ClCompile Include="WindowFactory_GLFW.cpp" />
     <ClCompile Include="GLState.cpp" />
-    <ClCompile Include="iQuadRendering.h" />
     <ClCompile Include="jleGameEngine.cpp" />
     <ClCompile Include="KeyboardInputInternal.cpp" />
     <ClCompile Include="MouseInputInternal.cpp" />
@@ -98,6 +97,7 @@
     <ClInclude Include="FileLoadInterface.h" />
     <ClInclude Include="GameAssets.h" />
     <ClInclude Include="GameEditorWindow.h" />
+    <ClInclude Include="iQuadRendering.h" />
     <ClInclude Include="jleConfigUtils.h" />
     <ClInclude Include="jleEditorSettings.h" />
     <ClInclude Include="jleGameSettings.h" />

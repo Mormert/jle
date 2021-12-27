@@ -141,9 +141,6 @@
     <ClCompile Include="GLState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="iQuadRendering.h">
-      <Filter>Header Files\Core\Rendering\Interfaces</Filter>
-    </ClCompile>
     <ClCompile Include="jleGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -380,9 +377,6 @@
     <ClInclude Include="jleComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="jleTypeReflectionUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="3rdparty\json.hpp">
       <Filter>3rdparty</Filter>
     </ClInclude>
@@ -445,6 +439,12 @@
     </ClInclude>
     <ClInclude Include="EditorJsonToImgui.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jleObjectTypeUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iQuadRendering.h">
+      <Filter>Header Files\Core\Rendering\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
