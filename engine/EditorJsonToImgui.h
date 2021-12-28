@@ -3,6 +3,7 @@
 #include <memory>
 #include <sstream>
 #include <vector>
+#include <climits>
 
 #include "3rdparty/ImGui/imgui.h"
 #include "3rdparty/ImGui/imgui_impl_glfw.h"

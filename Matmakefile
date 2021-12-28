@@ -1,0 +1,28 @@
+
+glad
+  out = glad
+  src =
+    engine/3rdparty/glad.c
+  command = [static]
+
+jle
+  out = jle
+  in = @glad
+  src =
+    engine/*.cpp
+	engine/3rdparty/*.cpp
+  command = [so]
+
+pong2
+  out = pong2
+  in = @jle
+  src = Pong2/*.cpp
+  command = [exe]
+
+all
+  in = @pong2
+  includes =
+     engine
+	 engine/3rdparty
+	 engine/3rdparty/plog/include
+  config = c++17

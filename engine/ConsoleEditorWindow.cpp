@@ -1,6 +1,7 @@
 #include "ConsoleEditorWindow.h"
 
 #include <plog/Formatters/FuncMessageFormatter.h>
+#include <ImGui/imgui.h>
 
 #include <locale>
 #include <codecvt>
@@ -59,7 +60,7 @@ namespace jle
 		Items.clear();
 	}
 
-	void ConsoleEditorWindow::AddLog(const char* fmt, ...) IM_FMTARGS(2)
+	void ConsoleEditorWindow::AddLog(const char* fmt, ...)
 	{
 		// FIXME-OPT
 		char buf[1024];
@@ -244,7 +245,7 @@ namespace jle
             if (s[0])
                 ExecCommand(s);
             //strcpy(s, "");
-            strcpy_s(s, InputBufSize, "");
+            std::fill(s, s + InputBufSize, 0);
             reclaim_focus = true;
         }
 
@@ -381,6 +382,6 @@ namespace jle
                 return (char)c;
             });
 
-        AddLog(converted_str.c_str());
+        AddLog("%s", converted_str.c_str());
     }
 }

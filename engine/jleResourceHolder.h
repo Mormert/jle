@@ -9,6 +9,7 @@
 #include <thread>
 #include <chrono>
 #include <iostream>
+#include <vector>
 
 template<typename T>
 class jleResourceHolder {

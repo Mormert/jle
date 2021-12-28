@@ -4,6 +4,7 @@
 #include "no_copy_no_move.h"
 
 #include <string>
+#include <climits>
 
 namespace jle
 {
