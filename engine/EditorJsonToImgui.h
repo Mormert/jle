@@ -4,9 +4,9 @@
 #include <sstream>
 #include <vector>
 
-#include "imgui.h" // uses vcpkg
-#include "3rdparty/imgui_impl_glfw.h"
-#include "3rdparty/imgui_impl_opengl3.h"
+#include "3rdparty/ImGui/imgui.h"
+#include "3rdparty/ImGui/imgui_impl_glfw.h"
+#include "3rdparty/ImGui/imgui_impl_opengl3.h"
 
 #include "3rdparty/json.hpp"
 #include <plog/Log.h>
@@ -173,7 +173,7 @@ private:
 		virtual void RecursiveDraw() override
 		{
 			ImGui::PushItemWidth(100);
-			ImGui::DragFloat(mName.c_str(), &value, 0.02f, -FLT_MAX, FLT_MAX, "%.2f", 2.0f);
+			ImGui::DragFloat(mName.c_str(), &value, 0.02f, -FLT_MAX, FLT_MAX, "%.2f");
 		}
 
 		virtual void ConstructJson(nlohmann::json& j_out)

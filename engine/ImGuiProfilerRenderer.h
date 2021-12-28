@@ -1,6 +1,6 @@
 #pragma once
 
-#include <imgui.h>
+#include "3rdparty/ImGui/imgui.h"
 #include <glm/glm.hpp>
 
 #include <map>

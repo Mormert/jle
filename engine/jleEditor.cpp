@@ -2,9 +2,9 @@
 
 #include "JLE_ENGINE_CONFIG.h"
 
-#include "imgui.h" // uses vcpkg
-#include "3rdparty/imgui_impl_glfw.h"
-#include "3rdparty/imgui_impl_opengl3.h"
+#include "3rdparty/ImGui/imgui.h"
+#include "3rdparty/ImGui/imgui_impl_glfw.h"
+#include "3rdparty/ImGui/imgui_impl_opengl3.h"
 
 #include "GLState.h"
 #include <glad/glad.h>
@@ -142,7 +142,7 @@ namespace jle
         style.Colors[ImGuiCol_Text] = TEXT(0.78f);
         style.Colors[ImGuiCol_TextDisabled] = TEXT(0.28f);
         style.Colors[ImGuiCol_WindowBg] = ImVec4(0.13f, 0.14f, 0.17f, 1.00f);
-        style.Colors[ImGuiCol_ChildWindowBg] = BG(0.58f);
+        //style.Colors[ImGuiCol_ChildWindowBg] = BG(0.58f);
         style.Colors[ImGuiCol_PopupBg] = BG(0.9f);
         style.Colors[ImGuiCol_Border] = ImVec4(0.31f, 0.31f, 1.00f, 0.00f);
         style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
@@ -178,7 +178,7 @@ namespace jle
         style.Colors[ImGuiCol_PlotHistogramHovered] = MED(1.00f);
         style.Colors[ImGuiCol_TextSelectedBg] = MED(0.43f);
         // [...]
-        style.Colors[ImGuiCol_ModalWindowDarkening] = BG(0.73f);
+        //style.Colors[ImGuiCol_ModalWindowDarkening] = BG(0.73f);
 
         style.WindowPadding = ImVec2(6, 4);
         style.WindowRounding = 0.0f;

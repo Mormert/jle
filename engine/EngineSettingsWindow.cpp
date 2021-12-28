@@ -1,9 +1,9 @@
 #include "EngineSettingsWindow.h"
 #include "jleConfigUtils.h"
 
-#include "imgui.h" // uses vcpkg
-#include "3rdparty/imgui_impl_glfw.h"
-#include "3rdparty/imgui_impl_opengl3.h"
+#include "3rdparty/ImGui/imgui.h"
+#include "3rdparty/ImGui/imgui_impl_glfw.h"
+#include "3rdparty/ImGui/imgui_impl_opengl3.h"
 
 
 jle::EngineSettingsWindow::EngineSettingsWindow(const std::string& window_name,

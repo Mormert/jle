@@ -4,7 +4,7 @@
 
 #include "iEditorImGuiWindow.h"
 
-#include "imgui.h"
+#include "3rdparty/ImGui/imgui.h"
 
 #include <plog/Appenders/IAppender.h>
 
