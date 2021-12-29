@@ -49,7 +49,9 @@ add_library (engine STATIC
 )
 
 find_package(glm CONFIG REQUIRED)
-target_link_libraries(engine PUBLIC glm)
+target_link_libraries(engine PUBLIC glm::glm)
+
+target_link_libraries(engine PUBLIC ${CMAKE_DL_LIBS})
 
 find_package(glfw3 CONFIG REQUIRED)
 target_link_libraries(engine PUBLIC glfw)
