@@ -49,20 +49,16 @@ add_library (engine STATIC
 )
 
 find_package(glm CONFIG REQUIRED)
-target_link_libraries(engine PUBLIC glm)
+target_link_libraries(engine PUBLIC glm::glm)
+
+target_link_libraries(engine PUBLIC ${CMAKE_DL_LIBS})
 
 find_package(glfw3 CONFIG REQUIRED)
 target_link_libraries(engine PUBLIC glfw)
 
-find_path(PLOG_INCLUDE_DIRS "plog/Appenders/AndroidAppender.h")
-target_include_directories(engine PUBLIC ${PLOG_INCLUDE_DIRS})
-
-find_package(glad CONFIG REQUIRED)
-target_link_libraries(engine PUBLIC glad::glad)
-
-find_path(STB_INCLUDE_DIRS "stb.h")
-target_include_directories(engine PUBLIC ${STB_INCLUDE_DIRS})
-
-
+target_include_directories(engine SYSTEM PUBLIC
+    "${PROJECT_SOURCE_DIR}/engine/3rdparty"
+    "${PROJECT_SOURCE_DIR}/engine/3rdparty/plog/include"
+    )
 
 target_include_directories (engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

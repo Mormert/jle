@@ -20,7 +20,7 @@ namespace jle
 		virtual unsigned int GetWidth() override;
 		virtual unsigned int GetHeight() override;
 
-		virtual void* GetTexture() override;
+        virtual unsigned int GetTexture() override;
 
 	private:
 		unsigned int width, height;

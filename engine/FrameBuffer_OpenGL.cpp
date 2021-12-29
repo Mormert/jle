@@ -100,9 +100,9 @@ namespace jle
 		return height;
 	}
 
-	void* Framebuffer_OpenGL::GetTexture()
+    unsigned int Framebuffer_OpenGL::GetTexture()
 	{
-		return (void*)texColorBuffer;
+        return texColorBuffer;
 	}
 
 

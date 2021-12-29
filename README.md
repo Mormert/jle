@@ -14,3 +14,7 @@ The engine jle (pronounced as "jile") is written in C++, uses OpenGL 3.3 and hol
 * stb_image
 * Dear ImGui
 * OpenGL Mathematics (GLM)
+
+## Install dependencies on Ubuntu 
+sudo apt install libglfw3-dev libglm-dev
+

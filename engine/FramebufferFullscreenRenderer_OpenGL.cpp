@@ -75,7 +75,7 @@ namespace jle
 
 		glViewport(0, 0, screenWidth, screenHeight);
 
-		const unsigned int framebufferTexture = (unsigned int)framebuffer.GetTexture();
+        const auto framebufferTexture = framebuffer.GetTexture();
 
 		quadScreenShader.Use();
 		glBindVertexArray(quadVAO);

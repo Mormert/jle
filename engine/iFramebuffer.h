@@ -16,7 +16,7 @@ namespace jle
 		virtual unsigned int GetWidth() = 0;
 		virtual unsigned int GetHeight() = 0;
 
-		virtual void* GetTexture() = 0;
+        virtual unsigned int GetTexture() = 0;
 	};
 }
 

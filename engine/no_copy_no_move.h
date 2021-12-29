@@ -13,3 +13,4 @@
 #define NO_MOVE(Class) \
   Class(Class&& e) = delete; \
   Class& operator=(Class&& e) = delete;
+
