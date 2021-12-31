@@ -7,7 +7,7 @@
                     "_comp_name": "cSprite",
                     "depth": 0.0,
                     "height": 1,
-                    "path": "pong_texture_atlas.png",
+                    "path": "GameResources/pong_texture_atlas.png",
                     "textureX": 11,
                     "textureY": 14,
                     "width": 1,

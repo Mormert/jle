@@ -1,6 +1,6 @@
 add_library (engine STATIC
-    "3rdparty/glad.c"
-    "3rdparty/gltext.c"
+    "3rdparty/glad/glad.c"
+    "3rdparty/gltext/gltext.c"
     "3rdparty/ImGui/imgui.cpp"
     "3rdparty/ImGui/imgui_demo.cpp"
     "3rdparty/ImGui/imgui_draw.cpp"
@@ -48,17 +48,21 @@ add_library (engine STATIC
     "Window_GLFW_OpenGL.cpp"
 )
 
-find_package(glm CONFIG REQUIRED)
-target_link_libraries(engine PUBLIC glm::glm)
-
 target_link_libraries(engine PUBLIC ${CMAKE_DL_LIBS})
 
-find_package(glfw3 CONFIG REQUIRED)
+# Remove GLFW tests, examples and docs from build
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+add_subdirectory(3rdparty/git_submodules/glfw)
 target_link_libraries(engine PUBLIC glfw)
 
 target_include_directories(engine SYSTEM PUBLIC
-    "${PROJECT_SOURCE_DIR}/engine/3rdparty"
-    "${PROJECT_SOURCE_DIR}/engine/3rdparty/plog/include"
-    )
+    "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty"
+    "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/plog/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/glm")
 
 target_include_directories (engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+FILE(COPY EditorResources DESTINATION ${PROJECT_BINARY_DIR}/${JLE_GAME_BUILD})

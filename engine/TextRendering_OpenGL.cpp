@@ -2,7 +2,7 @@
 
 #include "glad/glad.h"
 #define GLT_IMPLEMENTATION
-#include "3rdparty/gltext.h"
+#include "3rdparty/gltext/gltext.h"
 
 jle::TextRendering_OpenGL::TextRendering_OpenGL()
 {

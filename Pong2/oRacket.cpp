@@ -11,7 +11,7 @@ void oRacket::SetupDefaultObject()
 	transform = AddComponent<cTransform>();
 	sprite = AddComponent<cSprite>();
 
-	sprite->CreateAndSetTextureFromPath("pong_texture_atlas.png");
+	sprite->CreateAndSetTextureFromPath("GameResources/pong_texture_atlas.png");
 	sprite->SetTextureBeginCoordinates(11, 14);
 	sprite->SetRectangleDimensions(1, 1);
 }

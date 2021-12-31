@@ -5,7 +5,7 @@ void oStaticSprite::SetupDefaultObject()
 	transform = AddComponent<cTransform>();
 	sprite = AddComponent<cSprite>();
 
-	sprite->CreateAndSetTextureFromPath("Fruit+.png");
+	sprite->CreateAndSetTextureFromPath("GameResources/Fruit+.png");
 
 	beginX += 16;
 	if (beginX > 608)

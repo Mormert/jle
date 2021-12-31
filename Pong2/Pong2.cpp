@@ -22,7 +22,7 @@ void Pong2::Start()
 
 	//jle::jleObjectTypeUtils::RegisterObject<oPlayerRacket>();
 
-	std::ifstream i("file.json");
+	std::ifstream i("GameResources/file.json");
 	nlohmann::json j;
 	i >> j;
 

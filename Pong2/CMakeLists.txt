@@ -11,3 +11,5 @@ add_executable (Pong2
 
 
 target_link_libraries (Pong2 LINK_PUBLIC engine)
+
+FILE(COPY GameResources DESTINATION ../Pong2)
