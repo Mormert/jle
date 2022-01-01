@@ -33,5 +33,9 @@ namespace jle
 		glActiveTexture(GL_TEXTURE0);
 		glStaticState.globalActiveTexture = texture_id;
 	}
-	
+
+    unsigned int Texture::GetTextureID() {
+        return texture_id;
+    }
+
 }

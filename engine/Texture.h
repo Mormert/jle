@@ -21,6 +21,8 @@ namespace jle
 		// Set this Texture to be the globally active texture
 		virtual void SetToActiveTexture() override;
 
+        virtual unsigned int GetTextureID() override;
+
 	private:
 		friend class TextureCreator_OpenGL;
 

@@ -20,6 +20,8 @@ namespace jle
 		virtual int GetHeight();
 		virtual int GetNrChannels();
 
+        virtual unsigned int GetTextureID() = 0;
+
 	protected:
 		int width = 0, height = 0, nr_channels = 0;
 	};
