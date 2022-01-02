@@ -1,5 +1,7 @@
 #include "EditorWindowsPanel.h"
 
+#include "GameEditorWindow.h"
+
 #include "3rdparty/ImGui/imgui.h"
 #include "3rdparty/ImGui/imgui_impl_glfw.h"
 #include "3rdparty/ImGui/imgui_impl_opengl3.h"
@@ -34,8 +36,13 @@ namespace jle
 						}
 					}
 				}
+
+                ImGui::Checkbox("Game Fullscreen", &GameEditorWindow::IsFullscreen);
+
 				ImGui::EndMenu();
 			}
+
+
 
 			ImGui::Text("FPS: %4d, DT: %4f, Time: %4f", ge.status->GetFPS(), ge.status->GetDeltaFrameTime(), ge.status->GetCurrentFrameTime());
 

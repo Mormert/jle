@@ -21,7 +21,19 @@ namespace jle
 			return;
 		}
 
-		ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
+        ImGuiWindowFlags flags;
+
+        if(IsFullscreen)
+        {
+            flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
+            const ImGuiViewport* viewport = ImGui::GetMainViewport();
+            ImGui::SetNextWindowPos(viewport->WorkPos);
+            ImGui::SetNextWindowSize(viewport->WorkSize);
+        }
+        else
+        {
+            flags = ImGuiWindowFlags_NoCollapse;
+        }
 
 		ImGui::Begin(window_name.c_str(), &isOpened, flags);
 
@@ -35,15 +47,6 @@ namespace jle
 			auto dims = ge.GetFramebufferDimensions(ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
 			ge.framebuffer_main->ResizeFramebuffer(dims.first, dims.second);
 		}
-
-		//ImGui::Text("%f , %f", ImGui::GetCursorStartPos().x, ImGui::GetCursorStartPos().y);
-		//ImGui::Text("%f , %f", ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y);
-
-
-		//std::cout << ImGui::GetWindowHeight() << '\n';
-
-		//ImGui::Text("pointer = %p", (intptr_t)framebuffer_main->GetTexture());
-		//ImGui::Text("size = %d x %d", framebuffer_main->GetWidth(), framebuffer_main->GetHeight());
 
 		// Get the texture from the framebuffer
 		glBindTexture(GL_TEXTURE_2D, (unsigned int)ge.framebuffer_main->GetTexture());
