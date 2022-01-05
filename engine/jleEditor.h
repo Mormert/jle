@@ -32,6 +32,8 @@ namespace jle
 
 		void AddImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window);
 
+        void MainEditorWindowResized(int w, int h);
+
 		std::vector<std::shared_ptr<iEditorImGuiWindow>> ImGuiWindows;
 
 		std::unique_ptr<Image> background_image;

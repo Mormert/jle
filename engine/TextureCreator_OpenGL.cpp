@@ -62,7 +62,7 @@ namespace jle
 			PLOG_ERROR << "Failed to generate OpenGL texture " << texture_opengl->texture_id;
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
-		glStaticState.globalActiveTexture = 0;
+        jle::GLState::globalActiveTexture = 0;
 
 		return texture_opengl;
 	}

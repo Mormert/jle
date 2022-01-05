@@ -89,7 +89,7 @@ namespace jle
 
 		// Get the texture from the framebuffer
         glBindTexture(GL_TEXTURE_2D,framebuffer.GetTexture());
-        glStaticState.globalActiveTexture = framebuffer.GetTexture();
+        jle::GLState::globalActiveTexture = framebuffer.GetTexture();
 
 		// Draw quad with framebuffer's texture over the entire screen
 		glDrawArrays(GL_TRIANGLES, 0, 6);

@@ -4,15 +4,11 @@
 
 namespace jle
 {
-	class EditorGameControllerWindow : public iEditorImGuiWindow
+	class EditorGameControllerWidget : public iEditorImGuiWindow
 	{
 	public:
-		EditorGameControllerWindow(const std::string& window_name);
+		EditorGameControllerWidget(const std::string& window_name);
 		virtual void Update(jleGameEngine& ge) override;
-
-		inline void StartGame();
-		inline void StopGame();
-		inline void PauseGame();
 
         std::shared_ptr<iTexture> mPlayGameIcon;
         std::shared_ptr<iTexture> mRestartGameIcon;

@@ -7,6 +7,4 @@ namespace jle
 	{
 		static unsigned int globalActiveTexture;
 	};
-
-	static GLState glStaticState;
 }

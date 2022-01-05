@@ -35,22 +35,24 @@ namespace jle
             flags = ImGuiWindowFlags_NoCollapse;
         }
 
+        ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
 		ImGui::Begin(window_name.c_str(), &isOpened, flags);
 
-		constexpr int negYOffset = 6;
-		constexpr int negXOffset = 6;
-		if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset == lastGameWindowWidth && ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset == lastGameWindowHeight))
+		constexpr float negYOffset = 6;
+		constexpr float negXOffset = 6;
+
+        if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset == lastGameWindowWidth && ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset == lastGameWindowHeight))
 		{
 			lastGameWindowWidth = ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset;
 			lastGameWindowHeight = ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset;
 
-			auto dims = ge.GetFramebufferDimensions(ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
+			auto dims = ge.GetFramebufferDimensions(static_cast<unsigned int>(ImGui::GetWindowWidth()), static_cast<unsigned int>(ImGui::GetWindowHeight()));
 			ge.framebuffer_main->ResizeFramebuffer(dims.first, dims.second);
 		}
 
 		// Get the texture from the framebuffer
 		glBindTexture(GL_TEXTURE_2D, (unsigned int)ge.framebuffer_main->GetTexture());
-		glStaticState.globalActiveTexture = (unsigned int)ge.framebuffer_main->GetTexture();
+		jle::GLState::globalActiveTexture = (unsigned int)ge.framebuffer_main->GetTexture();
 		ImGui::Image((void*)(intptr_t)ge.framebuffer_main->GetTexture(), ImVec2(lastGameWindowWidth, lastGameWindowHeight), ImVec2(0, 1), ImVec2(1, 0));
 
 		if (ImGui::IsWindowFocused() != wasFocused)

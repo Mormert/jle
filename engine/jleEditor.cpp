@@ -15,11 +15,13 @@
 #include "EditorWindowsPanel.h"
 #include "GameEditorWindow.h"
 #include "ConsoleEditorWindow.h"
-#include "EditorGameControllerWindow.h"
+#include "EditorGameControllerWidget.h"
 #include "EditorSceneObjectsWindow.h"
+#include "EditorContentBrowser.h"
 #include "EngineSettingsWindow.h"
 
 #include "iQuadRenderingInternal.h"
+
 
 #include <iostream>
 
@@ -66,13 +68,19 @@ namespace jle
         AddImGuiWindow(settingsWindow);
         menu->AddWindow(settingsWindow);
 
-        auto gameController = std::make_shared<EditorGameControllerWindow>("Game Controller");
-        AddImGuiWindow(gameController);
-        menu->AddWindow(gameController);
+        //auto gameController = std::make_shared<EditorGameControllerWidget>("Controller");
+        //AddImGuiWindow(gameController);
+        //menu->AddWindow(gameController);
 
         auto editorSceneObjects = std::make_shared<EditorSceneObjectsWindow>("Scene Objects");
         AddImGuiWindow(editorSceneObjects);
         menu->AddWindow(editorSceneObjects);
+
+        auto contentBrowser = std::make_shared<EditorContentBrowser>("Content Browser");
+        AddImGuiWindow(contentBrowser);
+        menu->AddWindow(contentBrowser);
+
+        jleCore::window->AddWindowResizeCallback(std::bind(&jleEditor::MainEditorWindowResized, this, std::placeholders::_1, std::placeholders::_2));
 
         LOG_INFO << "Starting the game engine in editor mode";
 
@@ -122,6 +130,13 @@ namespace jle
         // Setup Platform/Renderer bindings
         ImGui_ImplGlfw_InitForOpenGL(std::static_pointer_cast<Window_GLFW_OpenGL>(window)->GetGLFWWindow(), true);
         ImGui_ImplOpenGL3_Init("#version 330 core");
+
+        ImFontConfig config;
+        config.OversampleH = 3;
+        config.OversampleV = 2;
+        config.GlyphExtraSpacing.x = 1.0f;
+
+        io.Fonts->AddFontFromFileTTF("EditorResources/fonts/Roboto-Regular.ttf", 18, &config);
 
         // Setup Dear ImGui style
         SetImguiTheme();
@@ -203,6 +218,12 @@ namespace jle
     void jleEditor::AddImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window)
     {
         ImGuiWindows.push_back(window);
+    }
+
+    void jleEditor::MainEditorWindowResized(int w, int h)
+    {
+        auto&& io = ImGui::GetIO();
+        io.FontGlobalScale = w / 1920.f;
     }
 
 }

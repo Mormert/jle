@@ -1,6 +1,7 @@
 #pragma once
 
 #include "iEditorImGuiWindow.h"
+#include "EditorGameControllerWidget.h"
 
 namespace jle
 {
@@ -14,5 +15,7 @@ namespace jle
 
 	private:
 		std::vector<std::shared_ptr<iEditorImGuiWindow>> windows;
+
+        EditorGameControllerWidget mGameController;
 	};
 }

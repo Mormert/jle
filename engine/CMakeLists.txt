@@ -11,7 +11,7 @@ add_library (engine STATIC
     "3rdparty/stb_image.cpp"
     "ConsoleEditorWindow.cpp"
     "EditorBackgroundImage.cpp"
-    "EditorGameControllerWindow.cpp"
+    "EditorGameControllerWidget.cpp"
     "EditorJsonToImgui.cpp"
     "EditorSceneObjectsWindow.cpp"
     "EditorWindowsPanel.cpp"
@@ -46,7 +46,7 @@ add_library (engine STATIC
     "Texture.cpp"
     "Viewport.cpp"
     "Window_GLFW_OpenGL.cpp"
-)
+    "EditorContentBrowser.cpp")
 
 target_link_libraries(engine PUBLIC ${CMAKE_DL_LIBS})
 

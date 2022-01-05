@@ -24,14 +24,14 @@ namespace jle
 
 	bool Texture::IsActive()
 	{
-		return glStaticState.globalActiveTexture == texture_id;
+		return jle::GLState::globalActiveTexture == texture_id;
 	}
 
 	void Texture::SetToActiveTexture()
 	{
 		glBindTexture(GL_TEXTURE_2D, texture_id);
 		glActiveTexture(GL_TEXTURE0);
-		glStaticState.globalActiveTexture = texture_id;
+        jle::GLState::globalActiveTexture = texture_id;
 	}
 
     unsigned int Texture::GetTextureID() {

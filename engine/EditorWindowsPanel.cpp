@@ -9,7 +9,7 @@
 namespace jle
 {
 	EditorWindowsPanel::EditorWindowsPanel(const std::string& window_name) :
-		iEditorImGuiWindow{ window_name }
+		iEditorImGuiWindow{ window_name }, mGameController{"Game Controller"}
 	{
 	}
 
@@ -43,7 +43,13 @@ namespace jle
 			}
 
 
+            auto windowWidth = ImGui::GetWindowSize().x;
+            ImGui::SetCursorPosX((windowWidth) * 0.5f);
 
+            mGameController.Update(ge);
+
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetColumnWidth() - ImGui::CalcTextSize("FPS: XXXX, DT: XXXXXXXX, Time: XXXXX").x
+                                 - ImGui::GetScrollX() - 2 * ImGui::GetStyle().ItemSpacing.x);
 			ImGui::Text("FPS: %4d, DT: %4f, Time: %4f", ge.status->GetFPS(), ge.status->GetDeltaFrameTime(), ge.status->GetCurrentFrameTime());
 
 			ImGui::EndMainMenuBar();

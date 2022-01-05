@@ -13,7 +13,7 @@ namespace jle
 		virtual void Update(jleGameEngine& ge) override;
 
 	private:
-		unsigned int lastGameWindowWidth = 0, lastGameWindowHeight = 0;
+		float lastGameWindowWidth = 0.f, lastGameWindowHeight = 0.f;
 		bool wasFocused = false;
 
     public:

@@ -81,7 +81,7 @@ namespace jle
 		glBindVertexArray(quadVAO);
 		glDisable(GL_DEPTH_TEST);
 		glBindTexture(GL_TEXTURE_2D, framebufferTexture);
-		jle::glStaticState.globalActiveTexture = framebufferTexture;
+        jle::GLState::globalActiveTexture= framebufferTexture;
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 }

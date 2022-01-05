@@ -3,6 +3,7 @@
 #include "3rdparty/glad/glad.h"
 
 #include "GLState.h"
+#include "plog/Log.h"
 
 #include <iostream>
 
@@ -63,14 +64,14 @@ namespace jle
 	void Framebuffer_OpenGL::ResizeFramebuffer(unsigned int width, unsigned int height)
 	{
 
-		std::cout << "Resized Framebuffer " << framebuffer << ": " << width << ", " << height << '\n';
+        LOG_VERBOSE << "Resized Framebuffer " << framebuffer << ": " << width << ", " << height << '\n';
 
 		this->width = width;
 		this->height = height;
 
 		// resize texture
 		glBindTexture(GL_TEXTURE_2D, texColorBuffer);
-		glStaticState.globalActiveTexture = texColorBuffer;
+        jle::GLState::globalActiveTexture = texColorBuffer;
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
