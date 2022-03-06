@@ -21,19 +21,7 @@ namespace jle
 			return;
 		}
 
-        ImGuiWindowFlags flags;
-
-        if(IsFullscreen)
-        {
-            flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
-            const ImGuiViewport* viewport = ImGui::GetMainViewport();
-            ImGui::SetNextWindowPos(viewport->WorkPos);
-            ImGui::SetNextWindowSize(viewport->WorkSize);
-        }
-        else
-        {
-            flags = ImGuiWindowFlags_NoCollapse;
-        }
+        ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
 
         ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
 		ImGui::Begin(window_name.c_str(), &isOpened, flags);

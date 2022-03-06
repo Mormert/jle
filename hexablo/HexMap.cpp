@@ -21,7 +21,7 @@ void HexMap::RenderHexagons()
 	}
 }
 
-jle::graphics::Texture myTexture8{ "GameAssets/HexagonDiabloConcept.png" };
+jle::graphics::Texture myTexture8{ "GameResources/HexagonDiabloConcept.png" };
 jle::graphics::Sprite mySprite8(myTexture8, 8, 88, 15, 13);
 jle::graphics::Sprite mySprite9(myTexture8, 24, 88, 15, 13);
 

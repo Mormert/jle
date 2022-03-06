@@ -22,7 +22,6 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine& ge)
 
     // Using a static weak_ptr here so that it won't impact deletion
     static std::weak_ptr<jleScene> selectedScene;
-
     ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
     if (ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_MenuBar))
     {

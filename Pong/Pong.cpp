@@ -8,7 +8,7 @@ Pong::~Pong()
 
 void Pong::Start()
 {
-	game_texture = jle::jleCore::core->texture_creator->CreateTextureFromImage(jle::Image{"GameAssets/pong_texture_atlas.png"});
+	game_texture = jle::jleCore::core->texture_creator->CreateTextureFromImage(jle::Image{"GameResources/pong_texture_atlas.png"});
 
 	player = std::make_unique<PlayerRacketController>(std::make_unique<Racket>(15, 25, game_texture));
 	ai = std::make_unique<AIRacketController>(std::make_unique<Racket>(65, 25, game_texture));

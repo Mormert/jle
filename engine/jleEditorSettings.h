@@ -1,6 +1,6 @@
 #pragma once
 
-#include "JLE_ENGINE_CONFIG.h"
+#include "jlePathDefines.h"
 #include <string>
 
 namespace jle

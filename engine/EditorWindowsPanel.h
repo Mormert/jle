@@ -13,6 +13,9 @@ namespace jle
 
 		void AddWindow(std::shared_ptr<iEditorImGuiWindow> window);
 
+        inline void MenuButtonsUpdate(jleGameEngine& ge);
+        inline void DockspaceUpdate(jleGameEngine& ge);
+
 	private:
 		std::vector<std::shared_ptr<iEditorImGuiWindow>> windows;
 

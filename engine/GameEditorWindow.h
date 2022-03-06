@@ -15,9 +15,5 @@ namespace jle
 	private:
 		float lastGameWindowWidth = 0.f, lastGameWindowHeight = 0.f;
 		bool wasFocused = false;
-
-    public:
-        static inline bool IsFullscreen = false;
 	};
-
 }

@@ -1,6 +1,6 @@
 #include "jleEditor.h"
 
-#include "JLE_ENGINE_CONFIG.h"
+#include "jlePathDefines.h"
 
 #include "3rdparty/ImGui/imgui.h"
 #include "3rdparty/ImGui/imgui_impl_glfw.h"
@@ -52,6 +52,7 @@ namespace jle
         // Create editor background image
         editor_background_image = std::make_unique<EditorBackgroundImage>(*background_image, *texture_creator, *renderingFactory);
 
+        // Note: Important that menu comes first here, since the others are dependent on the menu's dockspace.
         auto menu = std::make_shared<EditorWindowsPanel>("Menu");
         AddImGuiWindow(menu);
 
@@ -116,9 +117,17 @@ namespace jle
             window->Update(*this);
         }
 
-
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        auto&& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
 	}
 
     void jleEditor::InitImgui()
@@ -126,7 +135,13 @@ namespace jle
         ImGui::DebugCheckVersionAndDataLayout(IMGUI_VERSION, sizeof(ImGuiIO), sizeof(ImGuiStyle), sizeof(ImVec2), sizeof(ImVec4), sizeof(ImDrawVert), sizeof(ImDrawIdx));
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
         io.ConfigWindowsMoveFromTitleBarOnly = true;
+
+        static const std::string iniFile = GAME_RESOURCES_DIRECTORY + "/imgui.ini";
+        io.IniFilename = iniFile.c_str();
+
         // Setup Platform/Renderer bindings
         ImGui_ImplGlfw_InitForOpenGL(std::static_pointer_cast<Window_GLFW_OpenGL>(window)->GetGLFWWindow(), true);
         ImGui_ImplOpenGL3_Init("#version 330 core");

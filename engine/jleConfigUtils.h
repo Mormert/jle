@@ -6,8 +6,8 @@ namespace jle
 {
 	namespace cfg
 	{
-		inline const std::string GameSettingsName = "jle_gs_config.json";
-		inline const std::string EngineSettingsName = "jle_es_config.json";
+		inline const std::string GameSettingsName = GAME_RESOURCES_DIRECTORY + "/jle_gs_config.json";
+		inline const std::string EngineSettingsName = GAME_RESOURCES_DIRECTORY + "/jle_es_config.json";
 
 		template <typename T>
 		inline void LoadEngineConfig(const std::string& cfgName, T& cfgJson)

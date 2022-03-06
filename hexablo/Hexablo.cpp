@@ -14,8 +14,8 @@
 
 #include <iostream>
 
-std::shared_ptr<jle::iTexture> myTexture;//{ jle::Image("GameAssets/HexagonDiabloConcept.png") };
-std::shared_ptr<jle::iTexture> myTexture2;//{ "GameAssets/FullScene.png" };
+std::shared_ptr<jle::iTexture> myTexture;//{ jle::Image("GameResources/HexagonDiabloConcept.png") };
+std::shared_ptr<jle::iTexture> myTexture2;//{ "GameResources/FullScene.png" };
 
 float posx = -200;
 float posy = 25;
@@ -51,8 +51,8 @@ Hexablo::~Hexablo()
 
 void Hexablo::Start()
 {
-	myTexture = jle::jleCore::core->texture_creator->CreateTextureFromImage(jle::Image{"GameAssets/HexagonDiabloConcept.png"});
-	myTexture2 = jle::jleCore::core->texture_creator->CreateTextureFromImage(jle::Image{ "GameAssets/FullScene.png" });
+	myTexture = jle::jleCore::core->texture_creator->CreateTextureFromImage(jle::Image{"GameResources/HexagonDiabloConcept.png"});
+	myTexture2 = jle::jleCore::core->texture_creator->CreateTextureFromImage(jle::Image{ "GameResources/FullScene.png" });
 	posx = -200;
 	posy = 25;
 	y = 134;
@@ -61,7 +61,7 @@ void Hexablo::Start()
 
 void Hexablo::Update(float dt)
 {
-
+    
 	auto core = jle::jleCore::core;
 
 	if (core->input->keyboard->GetKeyDown('A'))
