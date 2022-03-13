@@ -2,7 +2,7 @@
 
 #include "iRenderingInternalAPI.h"
 
-#include <iostream>
+#include "jleExplicitInclude.h"
 
 #include <plog/Log.h>
 

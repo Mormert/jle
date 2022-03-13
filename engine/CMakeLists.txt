@@ -46,7 +46,10 @@ add_library (engine STATIC
     "Texture.cpp"
     "Viewport.cpp"
     "Window_GLFW_OpenGL.cpp"
-    "EditorContentBrowser.cpp")
+    "EditorContentBrowser.cpp"
+    "cSprite.cpp"
+    "cTransform.cpp"
+    "oStaticSprite.cpp")
 
 target_link_libraries(engine PUBLIC ${CMAKE_DL_LIBS})
 

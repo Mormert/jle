@@ -6,6 +6,8 @@
 #include <memory>
 #include <cassert>
 
+#include <iostream>
+
 #define JLE_REGISTER_OBJECT_TYPE(object_name)							\
 static const std::string_view GetObjectName(){ return #object_name;}	\
 static inline const jle::jleObjectTypeRegistrator<object_name> object_name_Reg{ #object_name };
@@ -101,6 +103,9 @@ namespace jle
 	public:
 		jleObjectTypeRegistrator(const std::string& oName)
 		{
+#ifndef NDEBUG
+            std::cout << oName << " object registered.\n";
+#endif
 			std::function<std::shared_ptr<T>()> oCreationFunc = []()
 			{
 				return std::make_shared<T>();
@@ -116,6 +121,9 @@ namespace jle
 	public:
 		jleComponentTypeRegistrator(const std::string& cName)
 		{
+#ifndef NDEBUG
+            std::cout << cName << " component registered.\n";
+#endif
 			std::function<std::shared_ptr<T>()> cCreationFunc = []()
 			{
 				return std::make_shared<T>();
