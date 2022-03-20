@@ -6,6 +6,7 @@
 #include <climits>
 
 #include "3rdparty/ImGui/imgui.h"
+#include "3rdparty/ImGui/imgui_stdlib.h"
 #include "3rdparty/ImGui/imgui_impl_glfw.h"
 #include "3rdparty/ImGui/imgui_impl_opengl3.h"
 
@@ -219,14 +220,13 @@ private:
 
 	struct _NodeString : _iNode
 	{
-		// TODO: Use ImGui callback on buffer resize for the string instead of a hard-coded cap with reserve().
-		_NodeString(const std::string& s) : str{ s } { str.reserve(1024); }
+		_NodeString(const std::string& s) : str{ s } {}
 		std::string str;
 
 		virtual void RecursiveDraw() override
 		{
 			ImGui::PushItemWidth(250);
-			ImGui::InputText(mName.c_str(), (char*)str.c_str(), str.capacity() + 1);
+			ImGui::InputText(mName.c_str(), &str);
 		}
 
 		virtual void ConstructJson(nlohmann::json& j_out)

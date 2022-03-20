@@ -8,6 +8,7 @@ add_library (engine STATIC
     "3rdparty/ImGui/imgui_impl_opengl3.cpp"
     "3rdparty/ImGui/imgui_tables.cpp"
     "3rdparty/ImGui/imgui_widgets.cpp"
+    "3rdparty/ImGui/imgui_stdlib.cpp"
     "3rdparty/stb_image.cpp"
     "ConsoleEditorWindow.cpp"
     "EditorBackgroundImage.cpp"

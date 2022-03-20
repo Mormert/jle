@@ -69,6 +69,7 @@ void jle::to_json(nlohmann::json& j, const std::shared_ptr<jleObject> o)
 {
     j = nlohmann::json{
         {"__obj_name", o->GetObjectNameVirtual()},
+        {"_instance_name", o->mInstanceName},
         {"_custom_components", o->mDynamicCustomComponents}
     };
 
