@@ -1,7 +1,11 @@
 #include "EditorContentBrowser.h"
 #include "ImGui/imgui.h"
+#include "ImGui/imgui_stdlib.h"
 #include "plog/Log.h"
 
+#include "jleGame.h"
+
+#include <fstream>
 #include <string>
 
 jle::EditorContentBrowser::EditorContentBrowser(const std::string &window_name) : iEditorImGuiWindow(window_name) {
@@ -11,6 +15,15 @@ jle::EditorContentBrowser::EditorContentBrowser(const std::string &window_name) 
             JLE_ENGINE_PATH + "/EditorResources/icons/files.png");
     mBackDirectoryIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath(
             JLE_ENGINE_PATH + "/EditorResources/icons/back_directory.png");
+
+    mSceneFileIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath(
+            JLE_ENGINE_PATH + "/EditorResources/icons/scene.png");
+
+    mImageFileIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath(
+            JLE_ENGINE_PATH + "/EditorResources/icons/image.png");
+
+    mJsonFileIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath(
+            JLE_ENGINE_PATH + "/EditorResources/icons/json.png");
 
     mSelectedDirectory = GAME_RESOURCES_DIRECTORY;
 }
@@ -145,13 +158,15 @@ void jle::EditorContentBrowser::ContentBrowser() {
     if (!mSelectedDirectory.empty()) {
 
         int columns = ImGui::GetWindowContentRegionWidth() / fileSize.x - 1;
-        if(columns <= 0)
-        {
+        if (columns <= 0) {
             columns = 1;
         }
 
         ImGui::Columns(columns, nullptr, false);
         ImGui::Separator();
+
+        int buttonID = 1;
+        bool isFileSelected = false;
 
         for (auto const &dir_entry: std::filesystem::directory_iterator(mSelectedDirectory)) {
             if (!(dir_entry.is_regular_file() || dir_entry.is_directory())) {
@@ -162,11 +177,32 @@ void jle::EditorContentBrowser::ContentBrowser() {
                 ImGui::BeginGroup();
 
                 if (dir_entry.is_regular_file()) {
-                    ImGui::ImageButton(reinterpret_cast<ImTextureID>(mFileIcon->GetTextureID()), fileSize);
+                    ImGui::PushID(buttonID++);
+
+                    std::shared_ptr<iTexture> iconTexture;
+                    if (dir_entry.path().extension() == ".scn") {
+                        iconTexture = mSceneFileIcon;
+                    }
+                    else if (dir_entry.path().extension() == ".png") {
+                        iconTexture = mImageFileIcon;
+                    }
+                    else if (dir_entry.path().extension() == ".json") {
+                        iconTexture = mJsonFileIcon;
+                    } else {
+                        iconTexture = mFileIcon;
+                    }
+
+                    if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(iconTexture->GetTextureID()), fileSize)) {
+                        mFileSelected = dir_entry;
+                        isFileSelected = true;
+                    }
+                    ImGui::PopID();
                 } else if (dir_entry.is_directory()) {
+                    ImGui::PushID(buttonID++);
                     if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(mDirectoryIcon->GetTextureID()), fileSize)) {
                         mSelectedDirectory = dir_entry.path();
                     }
+                    ImGui::PopID();
                 }
 
                 ImGui::Text("%s", dir_entry.path().filename().string().c_str());
@@ -177,6 +213,16 @@ void jle::EditorContentBrowser::ContentBrowser() {
             }
 
             ImGui::NextColumn();
+        }
+
+        if (isFileSelected) {
+            ImGui::OpenPopup("selected_file_popup");
+        }
+
+        if (!mFileSelected.empty() && ImGui::BeginPopup("selected_file_popup")) {
+
+            SelectedFilePopup(mFileSelected);
+            ImGui::EndPopup();
         }
 
         ImGui::Columns(1);
@@ -192,4 +238,141 @@ void jle::EditorContentBrowser::ContentBrowser() {
 
 
     ImGui::End();
+}
+
+void jle::EditorContentBrowser::SelectedFilePopup(std::filesystem::path &file) {
+
+    const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
+    ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
+
+    const auto fileExtension = file.extension();
+
+    ImGui::Text("%s", file.filename().string().c_str());
+
+    const auto popupWidth = ImGui::GetWindowContentRegionWidth();
+    if (popupWidth > size.x)
+    {
+        size.x = popupWidth;
+    }
+
+    if (fileExtension == ".scn") {
+        SelectedFilePopupScene(file);
+    }
+
+    { // Delete File
+        static bool opened = false;
+        if (ImGui::Button("Delete", size)) {
+            opened = true;
+            ImGui::OpenPopup("Confirm File Deletion");
+        }
+
+        if (ImGui::BeginPopupModal("Confirm File Deletion", &opened, 0)) {
+            if (ImGui::Button("Delete")) {
+                try {
+                    std::filesystem::remove(file);
+                    LOGV << "Deleted file: " << file.string();
+                } catch (std::exception e) {
+                    LOGE << "Could not delete file: " << file.string();
+                }
+                file = std::filesystem::path();
+                opened = false;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel")) {
+                opened = false;
+            }
+            ImGui::EndPopup();
+        }
+    }
+
+    { // Rename File
+        static bool opened = false;
+        static std::string buf;
+        if (ImGui::Button("Rename", size)) {
+            opened = true;
+            buf = std::string{file.filename().string()};
+            ImGui::OpenPopup("Rename File");
+        }
+
+        if (ImGui::BeginPopupModal("Rename File", &opened, 0)) {
+            ImGui::InputText("New Name", &buf);
+            if (ImGui::Button("Confirm")) {
+                std::filesystem::path newFile = file;
+                newFile.remove_filename();
+                newFile.append(std::string{buf});
+                if (!exists(newFile)) {
+                    std::filesystem::rename(file, newFile);
+                    LOGV << "Renamed file: " << file.string() << " to: " << newFile.string();
+                } else {
+                    LOGE << "File with name: " << newFile.filename().string() << " already exists.";
+                }
+
+                file = std::filesystem::path();
+
+                opened = false;
+            }
+            ImGui::EndPopup();
+        }
+    }
+
+    { // Duplicate File
+        static bool opened = false;
+        static std::string buf;
+        if (ImGui::Button("Duplicate", size)) {
+            opened = true;
+            buf = std::string{file.filename().string() + "2"};
+            ImGui::OpenPopup("Duplicate File");
+        }
+
+        if (ImGui::BeginPopupModal("Duplicate File", &opened, 0)) {
+            ImGui::InputText("New Name", &buf);
+            if (ImGui::Button("Confirm")) {
+                std::filesystem::path newFile = file;
+                newFile.remove_filename();
+                newFile.append(std::string{buf});
+                try {
+                    std::filesystem::copy(file, newFile);
+                    LOGV << "Copied file: " << file.string() << " to: " << newFile.string();
+                } catch (std::exception e) {
+                    LOGE << "File with name: " << newFile.filename().string() << " already exists.";
+                }
+                file = std::filesystem::path();
+                opened = false;
+            }
+            ImGui::EndPopup();
+        }
+    }
+}
+
+void jle::EditorContentBrowser::SelectedFilePopupScene(std::filesystem::path &file) {
+
+    const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
+    const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
+
+    if (ImGui::Button("Load Scene", size)) {
+
+        std::string sceneName = file.filename().string();
+        int dot = sceneName.rfind(file.extension().string());
+        if (dot != std::string::npos) {
+            sceneName.resize(dot);
+        }
+
+        auto &game = ((jleGameEngine *) jleCore::core)->GetGameRef();
+
+        if (!game.CheckSceneIsActive(sceneName)) {
+            auto scene = game.CreateScene<jle::jleScene>();
+
+            scene->mSceneName = sceneName;
+
+            std::ifstream i(file);
+            nlohmann::json j;
+            i >> j;
+
+            jle::from_json(j, *scene);
+        } else {
+            LOGE << "Scene with name " << sceneName << " is already active.";
+        }
+
+
+    }
 }

@@ -102,7 +102,7 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
                 { // Save Scene
                     if (ImGui::Button("Save Scene", ImVec2(138 * globalImguiScale, 0))) {
                         std::filesystem::create_directories(GAME_RESOURCES_DIRECTORY + "/scenes");
-                        std::ofstream sceneSave{GAME_RESOURCES_DIRECTORY + "/scenes/" + scene->mSceneName + ".json"};
+                        std::ofstream sceneSave{GAME_RESOURCES_DIRECTORY + "/scenes/" + scene->mSceneName + ".scn"};
                         nlohmann::json j;
                         jle::to_json(j, *scene);
                         sceneSave << j.dump(4);

@@ -24,6 +24,8 @@ namespace jle
 
 		void UpdateActiveScenes(float dt);
 
+        bool CheckSceneIsActive(const std::string& sceneName);
+
 		template <typename T>
 		std::shared_ptr<T> CreateScene()
 		{
