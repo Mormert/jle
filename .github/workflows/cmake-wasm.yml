@@ -1,0 +1,47 @@
+name: CMake-Wasm
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    name: Wasm_Release
+
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Update Git Submodules
+        run: git submodule update --init --recursive
+
+      - name: Setup Emscripten SDK
+        uses: mymindstorm/setup-emsdk@v11
+        with:
+          version: 3.1.9
+
+      - name: Configure CMake with Emscripten SDK
+        run: emcmake cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -DBUILD_EMSCRIPTEN=ON
+
+      - name: Build
+        run:
+          emmake make -C ${{github.workspace}}/build -j2
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Wasm_Release
+          path: |
+            build/**/*.exe
+            build/**/*.html
+            build/**/*.js
+            build/**/*.wasm
+            build/**/*.data
+            build/**/EngineResources
+            build/**/EditorResources
+            build/**/GameResources
+            !build/**/CMakeFiles
