@@ -1,0 +1,84 @@
+<!doctype html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
+    <title>jle game</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: lightslategray;
+        }
+
+        .emscripten {
+            position: fixed;
+            top: 0;
+            left: 0;
+            margin: 0;
+            border: 0;
+            overflow: hidden;
+            display: block;
+            box-sizing: border-box;
+            image-rendering: optimizeSpeed;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -o-crisp-edges;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: optimize-contrast;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+            -ms-interpolation-mode: nearest-neighbor;
+        }
+    </style>
+    <meta name="description" content="">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+
+</head>
+<body>
+<canvas class="emscripten" id="canvas"></canvas>
+
+<script src="https://cdn.socket.io/4.4.1/socket.io.min.js"
+        integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H"
+        crossorigin="anonymous"></script>
+<script type="text/javascript">
+    var canvas = document.getElementById("canvas");
+
+    var Module = {
+        onRuntimeInitialized: function () {
+            resize_canvas_js = Module.cwrap('resize_canvas_js ', 'number', ['number', 'number']);
+
+            // Haxx: Wait a while until the C++ code has initialized everything, then we resize the
+            // window according to the window size.
+            setTimeout(() => {
+                var window_size_w = document.documentElement.clientWidth;
+                var window_size_h = document.documentElement.clientHeight;
+
+                _resize_canvas_js(window_size_w, window_size_h);
+
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }, 1500)
+        },
+    };
+
+    // Show Emscripten environment where the canvas is
+    Module.canvas = canvas;
+
+    function window_size_changed() {
+        var window_size_w = document.documentElement.clientWidth;
+        var window_size_h = document.documentElement.clientHeight;
+
+        _resize_canvas_js(window_size_w, window_size_h);
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        console.log("window_size_w: " + window_size_w + ", window_size_h: " + window_size_h);
+    }
+
+    window.addEventListener('resize', window_size_changed);
+</script>
+
+{{{ SCRIPT }}}
+
+</body>
+</html>

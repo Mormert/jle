@@ -3,7 +3,14 @@
 #include "Texture.h"
 #include "GLState.h"
 
-#include "3rdparty/glad/glad.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <GLES3/gl3.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#else
+#include <glad/glad.h>
+#endif
 
 #include "plog/Log.h"
 
@@ -59,7 +66,7 @@ namespace jle
 		}
 		else
 		{
-			PLOG_ERROR << "Failed to generate OpenGL texture " << texture_opengl->texture_id;
+			PLOG_ERROR << "Failed to generate OpenGL texture " << texture_opengl->texture_id << " with path: " << image.GetPath();
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
         jle::GLState::globalActiveTexture = 0;

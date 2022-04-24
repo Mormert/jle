@@ -28,8 +28,12 @@ namespace jle
 
 		unsigned char* GetImageData() const;
 
+        const std::string& GetPath() const;
+
 	private:
 		unsigned char* image_data { nullptr };
 		int w = 0, h = 0, nr_channels = 0;
+
+        std::string path;
 	};
 }

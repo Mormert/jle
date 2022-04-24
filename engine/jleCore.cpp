@@ -15,15 +15,11 @@
 #include "RenderingFactory_OpenGL.h"
 #include "WindowFactory_GLFW.h"
 
-
-// Plog logging library
 #include <plog/Log.h>
-#include <plog/Init.h>
-#include <plog/Formatters/TxtFormatter.h>
-#include <plog/Appenders/ColorConsoleAppender.h>
-#include <plog/Appenders/RollingFileAppender.h>
 
-
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 #include <iostream>
 
@@ -117,11 +113,6 @@ namespace jle
 		status {std::make_shared<CoreStatus_Internal>()}
 
 	{
-		// Initialize plog
-		static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("jle_log.plog", 1000, 5);	// Log to txt files
-		static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;						// Log to command window
-		plog::init<0>(plog::verbose, &fileAppender).addAppender(&consoleAppender);
-
 		PLOG_INFO << "Starting the core";
 
 		coreImpl = std::make_unique<jleCoreInternalImpl>();
@@ -145,28 +136,41 @@ namespace jle
 		}
 		core = this;
 
+        PLOG_INFO << "Initializing the window";
 		coreImpl->window_internal->InitWindow(*window_initializer, coreImpl->rendering_internal);
+
+        PLOG_INFO << "Setting up rendering internals";
 		coreImpl->rendering_internal->Setup(*renderingFactory);
+
+        PLOG_INFO << "Starting the game loop";
 
 		running = true;
 		Start();
-		Loop();
+#ifdef __EMSCRIPTEN__
+        emscripten_set_main_loop(main_loop, 0, true);
+#else
+        Loop();
+#endif
 	}
 
 	void jleCore::Loop()
 	{
 		while (running)
 		{
-			coreImpl->status_internal->Refresh();
-
-			Update(status->GetDeltaFrameTime());
-
-			Render();
-
-			((iWindowInternalAPI*)window.get())->UpdateWindow();
-
-			running = !((iWindowInternalAPI*)window.get())->WindowShouldClose();
+            MainLoop();
 		}
 		Exiting();
 	}
+
+    void jleCore::MainLoop() {
+        coreImpl->status_internal->Refresh();
+
+        Update(status->GetDeltaFrameTime());
+
+        Render();
+
+        ((iWindowInternalAPI*)window.get())->UpdateWindow();
+
+        running = !((iWindowInternalAPI*)window.get())->WindowShouldClose();
+    }
 }

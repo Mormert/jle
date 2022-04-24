@@ -6,9 +6,6 @@ namespace jle
 {
 	namespace cfg
 	{
-		inline const std::string GameSettingsName = GAME_RESOURCES_DIRECTORY + "/jle_gs_config.json";
-		inline const std::string EngineSettingsName = GAME_RESOURCES_DIRECTORY + "/jle_es_config.json";
-
 		template <typename T>
 		inline void LoadEngineConfig(const std::string& cfgName, T& cfgJson)
 		{
@@ -19,7 +16,10 @@ namespace jle
 				i >> j;
 
 				jle::from_json(j, cfgJson);
-			}
+			}else
+            {
+                LOG_ERROR << "Could not load engine config: " << cfgName;
+            }
 		}
 
 		inline void SaveEngineConfig(const std::string& cfgName, nlohmann::json& j)
@@ -28,7 +28,10 @@ namespace jle
 			if (i.good())
 			{
 				i << j.dump(4);
-			}
+			}else
+            {
+                LOG_ERROR << "Could not save engine config: " << cfgName;
+            }
 		}
 	}
 

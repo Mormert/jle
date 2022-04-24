@@ -64,6 +64,8 @@ void Hexablo::Update(float dt)
     
 	auto core = jle::jleCore::core;
 
+    core->rendering->texts->SendSimpleText("SomeText", 25,25);
+
 	if (core->input->keyboard->GetKeyDown('A'))
 	{
 		x -= dt * 25.f;

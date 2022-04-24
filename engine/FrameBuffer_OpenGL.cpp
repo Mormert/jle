@@ -1,6 +1,13 @@
 #include "FrameBuffer_OpenGL.h"
 
-#include "3rdparty/glad/glad.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <GLES3/gl3.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#else
+#include <glad/glad.h>
+#endif
 
 #include "GLState.h"
 #include "plog/Log.h"
@@ -51,11 +58,11 @@ namespace jle
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		{
-			std::cerr << "Error: Framebuffer is not complete!\n";
+			LOG_ERROR << "Framebuffer is not complete!";
 		}
 		else
 		{
-			std::cout << "Created Framebuffer with id " << framebuffer << "!\n";
+			LOG_VERBOSE << "Created Framebuffer with id " << framebuffer << "!";
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

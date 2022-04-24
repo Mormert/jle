@@ -7,7 +7,13 @@
 #include "3rdparty/ImGui/imgui_impl_opengl3.h"
 
 #include "GLState.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#else
 #include <glad/glad.h>
+#endif
 
 #include "Window_GLFW_OpenGL.h"
 #include <GLFW/glfw3.h>
@@ -43,6 +49,8 @@ namespace jle
 
 	void jleEditor::Start()
 	{
+
+        LOG_INFO << "Starting the editor";
 
         InitImgui();
 
@@ -83,7 +91,7 @@ namespace jle
 
         jleCore::window->AddWindowResizeCallback(std::bind(&jleEditor::MainEditorWindowResized, this, std::placeholders::_1, std::placeholders::_2));
 
-        LOG_INFO << "Starting the game engine in editor mode";
+        LOG_INFO << "Starting the game in editor mode";
 
         StartGame();
 
@@ -144,7 +152,7 @@ namespace jle
 
         // Setup Platform/Renderer bindings
         ImGui_ImplGlfw_InitForOpenGL(std::static_pointer_cast<Window_GLFW_OpenGL>(window)->GetGLFWWindow(), true);
-        ImGui_ImplOpenGL3_Init("#version 330 core");
+        ImGui_ImplOpenGL3_Init("#version 300 es");
 
         ImFontConfig config;
         config.OversampleH = 3;

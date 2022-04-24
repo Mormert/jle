@@ -2,39 +2,10 @@
 
 #include "3rdparty/glad/glad.h"
 #include "GLState.h"
+#include "jlePathDefines.h"
 
 namespace jle
 {
-	const std::string quadScreenShaderVertexSource =
-		R"(
-	#version 330 core
-	layout (location = 0) in vec2 aPos;
-	layout (location = 1) in vec2 aTexCoords;
-
-	out vec2 TexCoords;
-
-	void main()
-	{
-		gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0); 
-		TexCoords = aTexCoords;
-	}
-)";
-
-	const std::string quadScreenShaderFragSource =
-		R"(
-	#version 330 core
-	out vec4 FragColor;
-  
-	in vec2 TexCoords;
-
-	uniform sampler2D screenTexture;
-
-	void main()
-	{ 
-		FragColor = texture(screenTexture, TexCoords);
-	}
-)";
-
 	constexpr float quadVertices[] = { // Vertex attributes for a quad that fills the entire screen in NDC
 		// positions   // texCoords
 		-1.0f,  1.0f,  0.0f, 1.0f,
@@ -53,7 +24,7 @@ namespace jle
 	}
 
 	FramebufferFullscreenRenderer_OpenGL::FramebufferFullscreenRenderer_OpenGL() :
-		quadScreenShader{ quadScreenShaderVertexSource, quadScreenShaderFragSource }
+		quadScreenShader{ std::string{JLE_ENGINE_PATH + "EngineResources/quadScreen.vert"}.c_str(), std::string{JLE_ENGINE_PATH + "EngineResources/quadScreen.frag"}.c_str() }
 	{
 		// Configure screen quad
 		glGenVertexArrays(1, &quadVAO);

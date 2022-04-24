@@ -1,5 +1,5 @@
 
-add_executable (hexablo
+add_executable(hexablo
         "GameObject.cpp"
         "Hexablo.cpp"
         "main.cpp"
@@ -8,6 +8,6 @@ add_executable (hexablo
         )
 
 
-target_link_libraries (hexablo LINK_PUBLIC engine)
+target_link_libraries(${JLE_GAME_BUILD} LINK_PUBLIC engine)
 
-FILE(COPY GameResources DESTINATION ../hexablo)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../engine/cmake/game.cmake)

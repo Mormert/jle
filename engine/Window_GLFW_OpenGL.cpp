@@ -1,5 +1,12 @@
 #include "Window_GLFW_OpenGL.h"
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#else
+#include <glad/glad.h>
+#endif
 #include <GLFW/glfw3.h>
 
 #include <iostream>
@@ -35,11 +42,29 @@ namespace jle
 		activeWindow->windowSettings.windowHeight = static_cast<unsigned int>(height);
 
 		// Call all subscribed callbacks
-		for (const auto &callback : activeWindow->windowResizedCallbacks)
-		{
-			callback.second(width, height);
-		}
+        activeWindow->ExecuteResizeCallbacks(width, height);
+
 	}
+
+
+#ifdef __EMSCRIPTEN__
+extern "C" {
+    EMSCRIPTEN_KEEPALIVE
+    int resize_canvas_js(int width, int height) {
+
+        glViewport(0, 0, width, height);
+
+        printf("Change window size: %d, %d", width, height);
+
+        const auto& window = Window_GLFW_OpenGL::activeWindow;
+
+        Window_GLFW_OpenGL::framebuffer_size_callback(nullptr, width, height);
+
+        return 1;
+    }
+}
+#endif
+
 
 	float Window_GLFW_OpenGL::GetTime()
 	{
@@ -133,7 +158,11 @@ namespace jle
 
 		DisplayCursor(windowSettings.windowDisplayCursor);
 
+#ifdef __EMSCRIPTEN__
+        glfwSwapInterval(1);
+#else
 		glfwSwapInterval(0);
+#endif
 
 		int w, h;
 		glfwGetFramebufferSize(nativeWindow, &w, &h);
@@ -147,7 +176,7 @@ namespace jle
 			stbi_image_free(images[0].pixels);
 		}
 
-		
+
 
 	}
 
@@ -190,5 +219,12 @@ namespace jle
 	{
 		windowResizedCallbacks.erase(callback_id);
 	}
+
+    void Window_GLFW_OpenGL::ExecuteResizeCallbacks(int w, int h) {
+        for (const auto &callback : activeWindow->windowResizedCallbacks)
+        {
+            callback.second(w, h);
+        }
+    }
 
 }

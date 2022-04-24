@@ -32,6 +32,8 @@ namespace jle
 		virtual unsigned int AddWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback) override;
 		virtual void RemoveWindowResizeCallback(unsigned int callback_id) override;
 
+        virtual void ExecuteResizeCallbacks(int w, int h) override;
+
 		virtual void UpdateWindow() override;
 
 		virtual bool WindowShouldClose() override;

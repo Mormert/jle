@@ -14,10 +14,10 @@ namespace jle
 			unsigned int ID;
 
 			// Create shader from file
-			explicit Shader_OpenGL(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr);
+			Shader_OpenGL(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr);
 
 			// Create shader from string containing the shader code
-			explicit Shader_OpenGL(std::string vertexCode, std::string fragmentCode, std::string geometryCode = "");
+			//explicit Shader_OpenGL(std::string vertexCode, std::string fragmentCode, std::string geometryCode = "");
 
 			~Shader_OpenGL();
 
@@ -49,6 +49,9 @@ namespace jle
 
 		private:
 			void CheckCompileErrors(unsigned int shader, std::string type);
+
+            std::string vertexCode;
+            std::string fragCode;
 		};
 	}
 }

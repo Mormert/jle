@@ -43,7 +43,7 @@
 extern "C" {
 #endif
 
-#if !defined(__gl_h_) && !defined(__glcorearb_h_)
+#if !defined(__gl3_h_) && !defined(__glcorearb_h_)
 #	error OpenGL header must be included prior to including glText header
 #endif
 
@@ -830,7 +830,7 @@ extern "C" {
 	}
 
 	static const GLchar* _gltText2DVertexShaderSource =
-		"#version 330 core\n"
+		"#version 300 es\n"
 		"\n"
 		"in vec2 position;\n"
 		"in vec2 texCoord;\n"
@@ -847,19 +847,19 @@ extern "C" {
 		"}\n";
 
 	static const GLchar* _gltText2DFragmentShaderSource =
-		"#version 330 core\n"
-		"\n"
-		"out vec4 fragColor;\n"
+		"#version 300 es\n"
+		"precision mediump float;\n"
+		"out vec4 FragColor;\n"
 		"\n"
 		"uniform sampler2D diffuse;\n"
 		"\n"
-		"uniform vec4 color = vec4(1.0, 1.0, 1.0, 1.0);\n"
+		"uniform vec4 color;// = vec4(1.0, 1.0, 1.0, 1.0);\n"
 		"\n"
 		"in vec2 fTexCoord;\n"
 		"\n"
 		"void main()\n"
 		"{\n"
-		"	fragColor = texture(diffuse, fTexCoord) * color;\n"
+		"	FragColor = texture(diffuse, fTexCoord) * color;\n"
 		"}\n";
 
 	GLT_API GLboolean _gltCreateText2DShader(void)
@@ -956,7 +956,7 @@ extern "C" {
 		glBindAttribLocation(_gltText2DShader, _GLT_TEXT2D_POSITION_LOCATION, "position");
 		glBindAttribLocation(_gltText2DShader, _GLT_TEXT2D_TEXCOORD_LOCATION, "texCoord");
 
-		glBindFragDataLocation(_gltText2DShader, 0, "fragColor");
+        // glBindFragDataLocation(_gltText2DShader, 0, "fragColor"); // Not supported in OpenGL ES 3.0
 
 		glLinkProgram(_gltText2DShader);
 

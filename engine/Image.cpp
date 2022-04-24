@@ -12,6 +12,7 @@ namespace jle
 
 	bool Image::LoadFromFile(const std::string& path)
 	{
+        this->path = path;
 		stbi_set_flip_vertically_on_load(false);
 		image_data = stbi_load(path.c_str(), &w, &h, &nr_channels, 0);
 
@@ -24,6 +25,7 @@ namespace jle
 
 	Image::Image(const std::string& path)
 	{
+        this->path = path;
 		LoadFromFile(path);
 	}
 
@@ -84,7 +86,7 @@ namespace jle
 	{
 		if (image_data) { stbi_image_free(image_data); }
 
-		PLOG_VERBOSE << "Destroyed image [" << w << ", " << h << "].\n";
+		PLOG_VERBOSE << "Destroyed image [" << w << ", " << h << "].";
 
 #ifndef NDEBUG 
 		std::cout << "Destroyed image [" << w << ", " << h << "].\n";
@@ -110,4 +112,8 @@ namespace jle
 	{
 		return w;
 	}
+
+    const std::string &Image::GetPath() const {
+        return path;
+    }
 }

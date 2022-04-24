@@ -1,6 +1,15 @@
 #include "QuadRendering_OpenGL.h"
+#include "jlePathDefines.h"
+#include "plog/Log.h"
 
-#include "3rdparty/glad/glad.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <GLES3/gl3.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#else
+#include <glad/glad.h>
+#endif
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -17,115 +26,13 @@ namespace jle
 		float tex_x, tex_y, tex_w, tex_h;
 	};
 
-	const std::string quadVertexShaderSrc =
-		R"(
-	#version 330 core
-
-	uniform mat4 camera;
-
-	uniform vec2 textureDims;
-
-	uniform vec3 position; // world position (x, y, depth)
-	uniform vec4 uv; // Coords on texture (x, y, width, height)
-
-
-	layout (location = 0) in vec2 aPos;
-	layout (location = 1) in vec2 aTexCoords;
-
-	out vec4 uvs;
-	out vec2 texCoords;
-	out vec2 texDims;
-
-	void main()
-	{
-		gl_Position = camera * vec4(aPos * uv.zw + position.xy, position.z, 1.0);
-
-		texCoords = aTexCoords;
-		uvs = uv;
-		texDims = textureDims;
-	}
-)";
-
-	const std::string quadFragShaderSrc =
-		R"(
-	#version 330 core
-
-	uniform sampler2D texture0;
-
-	out vec4 FragColor;
-
-	in vec2 texCoords;	
-	in vec4 uvs;		// Texture coords (x, y, width, height)
-	in vec2 texDims;	
-
-	void main()
-	{
-		vec4 col = texture(texture0, texCoords * vec2( uvs.z/texDims.x, uvs.w/texDims.y) + vec2(uvs.x/texDims.x,uvs.y/texDims.y)); 
-
-		if(col.a < 0.1)
-			discard;
-		FragColor = col;
-	}
-)";
-
-	const std::string quadVertexShaderSrcInstanced =
-		R"(
-	#version 330 core
-	layout (location = 0) in vec2 aPos;
-	layout (location = 1) in vec2 aTexCoords;
-
-	layout (location = 2) in vec3 position;		// world position		(x, y, depth)
-	layout (location = 3) in vec4 uv;			// Coords on texture	(tex_x, tex_y, tex_width, tex_height)
-
-	uniform mat4 camera;
-	uniform vec2 textureDims;
-
-	//out vec3 fColor;
-
-	out vec4 uvs;
-	out vec2 texCoords;
-	out vec2 texDims;
-
-	void main()
-	{
-		gl_Position = camera * vec4(aPos * uv.zw + position.xy, position.z, 1.0);
-
-		texCoords = aTexCoords;
-		uvs = uv;
-		texDims = textureDims;
-	}
-)";
-
-	const std::string quadFragShaderSrcInstanced =
-		R"(
-	#version 330 core
-
-	uniform sampler2D texture0;
-
-	out vec4 FragColor;
-
-	in vec2 texCoords;	
-	in vec4 uvs;		// Texture coords (x, y, width, height)
-	in vec2 texDims;	
-
-	void main()
-	{
-		vec4 col = texture(texture0, texCoords * vec2( uvs.z/texDims.x, uvs.w/texDims.y) + vec2(uvs.x/texDims.x,uvs.y/texDims.y)); 
-
-		if(col.a < 0.1)
-			discard;
-		FragColor = col;
-	}
-)";
-
-	const unsigned char quadIndices[] = { 0,1,2, // first triangle (bottom left - top left - top right)
-										0,2,3 }; // second triangle (bottom left - top right - bottom right)
-
 
 	QuadRendering_OpenGL::QuadRendering_OpenGL()
-		:	quadShader{ quadVertexShaderSrc, quadFragShaderSrc },
-			quadShaderInstanced{ quadVertexShaderSrcInstanced, quadFragShaderSrcInstanced }
+		:	quadShader{ std::string{JLE_ENGINE_PATH + "EngineResources/shaders/quad.vert"}.c_str(), std::string{JLE_ENGINE_PATH + "EngineResources/shaders/quad.frag"}.c_str() },
+			quadShaderInstanced{ std::string{JLE_ENGINE_PATH + "EngineResources/shaders/quadInstanced.vert"}.c_str(), std::string{JLE_ENGINE_PATH + "EngineResources/shaders/quadInstanced.frag"}.c_str() }
 	{
+
+        LOG_VERBOSE << "Constructing OpenGL Quad Rendering";
 
 		glGenVertexArrays(1, &quadVAO);
 		glGenBuffers(1, &quadVBO);
@@ -241,7 +148,7 @@ namespace jle
 
 		framebufferOut.BindToFramebuffer();
 
-		glClearColor(0.f, 0.f, 0.f, 1.0f); // Make everything black
+		glClearColor(0.f, 0.2f, 0.f, 1.0f); // Make everything black
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 
@@ -286,24 +193,18 @@ namespace jle
 
 			glBindVertexArray(quadVAO_Instanced);
 
-			quadShader.SetMat4("camera", view);
-			quadShader.SetInt("texture0", 0);
+            quadShaderInstanced.SetMat4("camera", view);
+            quadShaderInstanced.SetInt("texture0", 0);
 
-			//glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 10);
-			glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, quadIndices, key.second.size());
+            glDrawArraysInstanced(GL_TRIANGLES, 0, 6, key.second.size());
 			glBindVertexArray(0);
 		}
-
-
-
 
 		texturedQuads.clear();
 
 		framebufferOut.BindToDefaultFramebuffer();
 
-		return;
-
-		quadShader.Use();
+		/*quadShader.Use();
 
 		for (const auto& t : texturedQuads)
 		{
@@ -330,8 +231,9 @@ namespace jle
 		texturedQuads.clear();
 
 		framebufferOut.BindToDefaultFramebuffer();
-
+*/
 	}
+
 }
 
 

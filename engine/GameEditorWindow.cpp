@@ -5,7 +5,14 @@
 #include "3rdparty/ImGui/imgui_impl_opengl3.h"
 
 #include "GLState.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <GLES3/gl3.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#else
 #include <glad/glad.h>
+#endif
 
 namespace jle
 {

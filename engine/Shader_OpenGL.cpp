@@ -1,6 +1,14 @@
 #include "Shader_OpenGL.h"
+#include "plog/Log.h"
 
-#include "3rdparty/glad/glad.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <GLES3/gl3.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#else
+#include <glad/glad.h>
+#endif
 
 #include <string>
 #include <fstream>
@@ -15,6 +23,11 @@ namespace jle
 	{
 		Shader_OpenGL::Shader_OpenGL(const char* vertexPath, const char* fragmentPath, const char* geometryPath)
 		{
+
+            LOG_VERBOSE << "Compiling shader: " << vertexPath << " , " << fragmentPath;
+
+            this->vertexCode = vertexPath;
+            this->fragCode = fragmentPath;
 
 			std::string vertexCode;
 			std::string fragmentCode;
@@ -69,36 +82,40 @@ namespace jle
 			glShaderSource(fragment, 1, &fShaderCode, NULL);
 			glCompileShader(fragment);
 			CheckCompileErrors(fragment, "FRAGMENT");
-			// if geometry shader is given, compile geometry shader
-			unsigned int geometry;
-			if (geometryPath != nullptr)
-			{
-				const char* gShaderCode = geometryCode.c_str();
-				geometry = glCreateShader(GL_GEOMETRY_SHADER);
-				glShaderSource(geometry, 1, &gShaderCode, NULL);
-				glCompileShader(geometry);
-				CheckCompileErrors(geometry, "GEOMETRY");
-			}
+			// if geometry shader is given, compile geometry shader - Not supported in OpenGL ES 3.0
+			// unsigned int geometry;
+			// if (geometryPath != nullptr)
+			// {
+			// 	const char* gShaderCode = geometryCode.c_str();
+			// 	geometry = glCreateShader(GL_GEOMETRY_SHADER);
+			// 	glShaderSource(geometry, 1, &gShaderCode, NULL);
+			// 	glCompileShader(geometry);
+			// 	CheckCompileErrors(geometry, "GEOMETRY");
+			// }
 			// shader Program
 			ID = glCreateProgram();
 			glAttachShader(ID, vertex);
 			glAttachShader(ID, fragment);
-			if (geometryPath != nullptr)
-				glAttachShader(ID, geometry);
+			// if (geometryPath != nullptr)
+			// 	glAttachShader(ID, geometry);
 			glLinkProgram(ID);
 			CheckCompileErrors(ID, "PROGRAM");
 			// delete the shaders as they're linked into our program now and no longer necessery
 			glDeleteShader(vertex);
 			glDeleteShader(fragment);
-			if (geometryPath != nullptr)
-				glDeleteShader(geometry);
+			// if (geometryPath != nullptr)
+			// 	glDeleteShader(geometry);
+
+            LOG_VERBOSE << "Compiled shader, ID: " << ID;
 
 		}
 
-		Shader_OpenGL::Shader_OpenGL(std::string vertexCode, std::string fragmentCode, std::string geometryCode)
+		/*Shader_OpenGL::Shader_OpenGL(std::string vertexCode, std::string fragmentCode, std::string geometryCode)
 		{
 			const char* vShaderCode = vertexCode.c_str();
 			const char* fShaderCode = fragmentCode.c_str();
+            this->vertexCode = vertexCode;
+            this->fragCode = fragmentCode;
 
 			unsigned int vertex, fragment;
 
@@ -111,30 +128,30 @@ namespace jle
 			glShaderSource(fragment, 1, &fShaderCode, NULL);
 			glCompileShader(fragment);
 			CheckCompileErrors(fragment, "FRAGMENT");
-			// if geometry shader is given, compile geometry shader
-			unsigned int geometry{ 0 };
-			if (geometryCode != "")
-			{
-				const char* gShaderCode = geometryCode.c_str();
-				geometry = glCreateShader(GL_GEOMETRY_SHADER);
-				glShaderSource(geometry, 1, &gShaderCode, NULL);
-				glCompileShader(geometry);
-				CheckCompileErrors(geometry, "GEOMETRY");
-			}
+			// if geometry shader is given, compile geometry shader, geometry not supported in OpenGL ES 3.0
+			// unsigned int geometry{ 0 };
+			// if (geometryCode != "")
+			// {
+			// 	const char* gShaderCode = geometryCode.c_str();
+			// 	geometry = glCreateShader(GL_GEOMETRY_SHADER);
+			// 	glShaderSource(geometry, 1, &gShaderCode, NULL);
+			// 	glCompileShader(geometry);
+			// 	CheckCompileErrors(geometry, "GEOMETRY");
+			// }
 			// shader Program
 			ID = glCreateProgram();
 			glAttachShader(ID, vertex);
 			glAttachShader(ID, fragment);
-			if (geometryCode != "")
-				glAttachShader(ID, geometry);
+			// if (geometryCode != "")
+			// 	glAttachShader(ID, geometry);
 			glLinkProgram(ID);
 			CheckCompileErrors(ID, "PROGRAM");
 			// delete the shaders as they're linked into our program now and no longer necessery
 			glDeleteShader(vertex);
 			glDeleteShader(fragment);
-			if (geometryCode != "")
-				glDeleteShader(geometry);
-		}
+			// if (geometryCode != "")
+			// 	glDeleteShader(geometry);
+		}*/
 
 		Shader_OpenGL::~Shader_OpenGL()
 		{
@@ -217,6 +234,7 @@ namespace jle
 				if (!success)
 				{
 					glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+                    LOG_ERROR << "Error in shader: " << vertexCode << '\n' << fragCode << '\n';
 					std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
 				}
 			}
@@ -226,6 +244,7 @@ namespace jle
 				if (!success)
 				{
 					glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+                    LOG_ERROR << "Error in shader: " << vertexCode << '\n' << fragCode << '\n';
 					std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
 				}
 			}

@@ -6,6 +6,7 @@
 #include "TextRendering_OpenGL.h"
 #include "RenderingAPI_OpenGL.h"
 #include "FullscreenRendering_OpenGL.h"
+#include "plog/Log.h"
 
 #include <memory>
 
@@ -18,6 +19,7 @@ namespace jle
 
     std::unique_ptr<iQuadRendering> RenderingFactory_OpenGL::CreateQuadRendering() const
     {
+        LOG_VERBOSE << "Factory creating quad rendering";
         return std::make_unique<QuadRendering_OpenGL>();
     }
 

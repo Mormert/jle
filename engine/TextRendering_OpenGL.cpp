@@ -1,8 +1,17 @@
 #include "TextRendering_OpenGL.h"
 
-#include "glad/glad.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <GLES3/gl3.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#define __gl3_h_
+#else
+#include <glad/glad.h>
+#endif
+
 #define GLT_IMPLEMENTATION
-#include "3rdparty/gltext/gltext.h"
+#include <gltext/gltext.h>
 
 jle::TextRendering_OpenGL::TextRendering_OpenGL()
 {

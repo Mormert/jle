@@ -1,9 +1,17 @@
 #include "RenderingAPI_OpenGL.h"
 
-#include "3rdparty/glad/glad.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <GLES3/gl3.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#else
+#include <glad/glad.h>
+#endif
 
 #include "iQuadRenderingInternal.h"
 #include "iTextRenderingInternal.h"
+#include "plog/Log.h"
 
 namespace jle
 {
@@ -20,8 +28,11 @@ namespace jle
 
 	void RenderingAPI_OpenGL::Setup(const iRenderingFactory& renderFactory)
 	{
+        LOG_VERBOSE << "Creating text rendering";
+        this->texts = renderFactory.CreateTextRendering();
+        LOG_VERBOSE << "Creating quad rendering";
 		this->quads = renderFactory.CreateQuadRendering();
-		this->texts = renderFactory.CreateTextRendering();
+
 	}
 }
 

@@ -1,8 +1,10 @@
 #pragma once
 
+#include <iostream>
 #include "3rdparty/json.hpp"
 
 #include "jleCoreSettings.h"
+#include "plog/Log.h"
 
 namespace jle
 {
@@ -48,7 +50,7 @@ namespace jle
 	{
 		from_json(j, (jleCoreSettings&)gs);
 		j.at("framebuffer_settings").get_to(gs.framebufferSettings);
-	}
+    }
 #pragma endregion
 
 }

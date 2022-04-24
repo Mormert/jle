@@ -39,10 +39,10 @@ void jle::EngineSettingsWindow::Update(jleGameEngine& ge)
 	if (ImGui::Button("Save Settings"))
 	{
 		auto jsonGS = mJsonToImguiGS.ImGuiToJson();
-		cfg::SaveEngineConfig(cfg::GameSettingsName, jsonGS);
+		cfg::SaveEngineConfig(GAME_RESOURCES_DIRECTORY + "/jle_gs_config.json", jsonGS);
 
 		auto jsonES = mJsonToImguiES.ImGuiToJson();
-		cfg::SaveEngineConfig(cfg::EngineSettingsName, jsonES);
+		cfg::SaveEngineConfig(GAME_RESOURCES_DIRECTORY + "/jle_es_config.json", jsonES);
 	}
 
 	ImGui::SameLine();

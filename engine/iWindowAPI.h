@@ -22,6 +22,8 @@ namespace jle
 		// Removes a resize callback with the id retrieved from the add callback method
 		virtual void RemoveWindowResizeCallback(unsigned int callback_id) = 0;
 
+        virtual void ExecuteResizeCallbacks(int w, int h) = 0;
+
 
 		virtual void DisplayCursor(bool enable) = 0;
 		virtual bool IsCursorDisplayed() = 0;

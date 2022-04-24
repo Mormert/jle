@@ -1,6 +1,12 @@
 #include "WindowInitializer_GLFW_OpenGL.h"
 
-#include "3rdparty/glad/glad.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#else
+#include <glad/glad.h>
+#endif
 #include <GLFW/glfw3.h>
 
 #include <iostream>
@@ -9,10 +15,11 @@
 InterfaceWindowPtr WindowInitializer_GLFW_OpenGL::InitWindow(int width, int height, const char* title)
 {
 
-	// Runs on OpenGL 3.3
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    // Runs on OpenGL ES 3.0
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// To Enable MSAA
 	//glfwWindowHint(GLFW_SAMPLES, 4);
@@ -31,11 +38,13 @@ InterfaceWindowPtr WindowInitializer_GLFW_OpenGL::InitWindow(int width, int heig
 	}
 
 	glfwMakeContextCurrent(glfwWindow);
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cerr << "ERROR: Failed to initialize GLAD\n";
-		exit(1);
-	}
+#ifdef __EMSCRIPTEN__
+#else
+    if (!gladLoadGLES2Loader((GLADloadproc) glfwGetProcAddress)) {
+        std::cerr << "ERROR: Failed to initialize GLAD\n";
+        exit(1);
+    }
+#endif
 
 	return glfwWindow;
 }

@@ -35,7 +35,6 @@ namespace jle
 		virtual ~jleCore();
 
 		void Run();
-
 		const std::unique_ptr<iRenderingFactory> renderingFactory;
 		const std::unique_ptr<iWindowFactory> windowFactory;
 
@@ -59,7 +58,13 @@ namespace jle
 
 	private:
 		void Loop();
+        void MainLoop();
 		bool running{ false };
+
+        static void main_loop()
+        {
+            jleCore::core->MainLoop();
+        }
 
 		const std::unique_ptr<iWindowInitializer> window_initializer;
 
