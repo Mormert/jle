@@ -8,10 +8,11 @@ Hexablo is a work-in-progress game inspired by the Diablo game franchise, develo
 [![CMake-Linux](https://github.com/Mormert/hexablo/actions/workflows/cmake-linux.yml/badge.svg)](https://github.com/Mormert/hexablo/actions/workflows/cmake-linux.yml)
 [![CMake-MacOS](https://github.com/Mormert/hexablo/actions/workflows/cmake-macos.yml/badge.svg)](https://github.com/Mormert/hexablo/actions/workflows/cmake-macos.yml)
 [![CMake-Windows](https://github.com/Mormert/hexablo/actions/workflows/cmake-windows.yml/badge.svg)](https://github.com/Mormert/hexablo/actions/workflows/cmake-windows.yml)
+[![CMake-Wasm](https://github.com/Mormert/hexablo/actions/workflows/cmake-wasm.yml/badge.svg)](https://github.com/Mormert/hexablo/actions/workflows/cmake-wasm.yml)
 
 # Engine (jle)
 
-The engine jle (pronounced as "jile") is written in C++, uses OpenGL 3.3 and holds the ability to build games for Windows, Mac and Linux. It's primarily thought to be used for games with low resolution graphics, where the pixels are clearly visible.
+The game engine 'jle' is written in C++, uses OpenGL ES 3.0 and holds the ability to deploy games targeting Windows, Mac and Linux, as well as browsers using WebAssembly via Emscripten. It's primarily thought to be used for games with low resolution graphics, where the pixels are clearly visible.
 
 ## Libraries used
 * GLFW3
