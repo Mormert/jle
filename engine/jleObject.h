@@ -99,6 +99,19 @@ namespace jle
             return nullptr;
         };
 
+        template<typename T>
+        std::shared_ptr<T> AddDependencyComponent(const jleComponent* component)
+        {
+            static_assert(std::is_base_of<jleComponent, T>::value, "T must derive from jleComponent");
+
+            auto& c = component->mAttachedToObject->GetComponent<T>();
+            if (!c) {
+                c = component->mAttachedToObject->AddCustomComponent<T>();
+            }
+
+            return c;
+        }
+
 		// Called from components
 		void DestroyComponent(jleComponent* component);
 

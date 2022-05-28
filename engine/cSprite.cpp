@@ -35,11 +35,7 @@ void cSprite::SetTextureBeginCoordinates(int x, int y)
 
 void cSprite::Start()
 {
-	transform = mAttachedToObject->GetComponent<cTransform>();
-	if (!transform)
-	{
-		transform = mAttachedToObject->AddCustomComponent<cTransform>();
-	}
+    transform = mAttachedToObject->AddDependencyComponent<cTransform>(this);
 
 	if (texturePath != "")
 	{

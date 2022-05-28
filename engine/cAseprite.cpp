@@ -8,10 +8,7 @@
 namespace jle {
 
     void cAseprite::Start() {
-        mTransform = mAttachedToObject->GetComponent<cTransform>();
-        if (!mTransform) {
-            mTransform = mAttachedToObject->AddCustomComponent<cTransform>();
-        }
+        mTransform = mAttachedToObject->AddDependencyComponent<cTransform>(this);
     }
 
     void cAseprite::Update(float dt) {
