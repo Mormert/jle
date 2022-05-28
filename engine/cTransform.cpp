@@ -33,6 +33,6 @@ void cTransform::ToJson(nlohmann::json& j_out)
 
 void cTransform::FromJson(const nlohmann::json& j_in)
 {
-	JLE_FROM_JSON_DEFAULT(j_in, x, "x", 0.f);
-	JLE_FROM_JSON_DEFAULT(j_in, y, "y", 0.f);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, x, "x", 0.f);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, y, "y", 0.f);
 }
