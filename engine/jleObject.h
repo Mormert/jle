@@ -104,7 +104,7 @@ namespace jle
         {
             static_assert(std::is_base_of<jleComponent, T>::value, "T must derive from jleComponent");
 
-            auto& c = component->mAttachedToObject->GetComponent<T>();
+            std::shared_ptr<T> c = component->mAttachedToObject->GetComponent<T>();
             if (!c) {
                 c = component->mAttachedToObject->AddCustomComponent<T>();
             }
