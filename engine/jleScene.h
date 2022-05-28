@@ -41,8 +41,8 @@ namespace jle
 	public:
 
 		jleScene();
-		jleScene(std::string sceneName);
-		virtual ~jleScene() {}
+		explicit jleScene(const std::string& sceneName);
+		virtual ~jleScene() = default;
 
 		template <typename T>
 		std::shared_ptr<T> SpawnObject()

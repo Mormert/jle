@@ -78,6 +78,9 @@ void jle::to_json(nlohmann::json& j, const std::shared_ptr<jleObject> o)
 
 void jle::from_json(const nlohmann::json& j, std::shared_ptr<jleObject>& o)
 {
+
+    JLE_FROM_JSON_IF_EXISTS(j,o->mInstanceName, "_instance_name")
+
     for (auto&& custom_components_json : j.at("_custom_components"))
     {
         std::string componentName;

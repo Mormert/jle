@@ -10,7 +10,7 @@ jle::jleScene::jleScene()
 	mScenesCreatedCount++;
 }
 
-jle::jleScene::jleScene(std::string sceneName)
+jle::jleScene::jleScene(const std::string& sceneName)
 {
 	this->mSceneName = sceneName;
 	mScenesCreatedCount++;
@@ -18,7 +18,7 @@ jle::jleScene::jleScene(std::string sceneName)
 
 void jle::jleScene::UpdateSceneObjects(float dt)
 {
-	for (int i = mSceneObjects.size() - 1; i >= 0; i--)
+	for (int32_t i = mSceneObjects.size() - 1; i >= 0; i--)
 	{
 		if (mSceneObjects[i]->bPendingKill)
 		{
@@ -33,7 +33,7 @@ void jle::jleScene::UpdateSceneObjects(float dt)
 
 void jle::jleScene::ProcessNewSceneObjects()
 {
-	if (mNewSceneObjects.size() > 0)
+	if (!mNewSceneObjects.empty())
 	{
 		for (const auto& newObject : mNewSceneObjects)
 		{
@@ -59,12 +59,16 @@ void jle::jleScene::DestroyScene()
 void jle::to_json(nlohmann::json& j, const jleScene& s)
 {
 	j = nlohmann::json{
-		{"objects", s.mSceneObjects}
+		{"objects", s.mSceneObjects},
+        {"sceneName", s.mSceneName}
 	};
 }
 
 void jle::from_json(const nlohmann::json& j, jleScene& s)
 {
+    JLE_FROM_JSON_IF_EXISTS(j, s.mSceneName, "sceneName");
+    JLE_FROM_JSON_IF_EXISTS(j, s.mSceneName, "sceneName");
+
 	for (auto object_json : j.at("objects"))
 	{
 		std::string objectsName;
@@ -76,7 +80,4 @@ void jle::from_json(const nlohmann::json& j, jleScene& s)
 		spawnedObjFromJson->FromJson(object_json);
 
 	}
-
-	//j.at("objects")
-	//j.at("objects").get_to(s.mSceneObjects);
 }
