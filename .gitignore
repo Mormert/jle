@@ -345,7 +345,11 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 cmake-build-debug/
+cmake-build-debugeditor/
+cmake-build-debuggame/
 cmake-build-release/
+cmake-build-releaseeditor/
+cmake-build-releasegame/
 
 build/
 
