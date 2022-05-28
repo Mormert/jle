@@ -3,6 +3,7 @@
 #include "Texture.h"
 
 #include <memory>
+#include <utility>
 
 enum class RenderingMethod { Dynamic, Static };
 
@@ -14,9 +15,11 @@ struct Quad
 
 struct TexturedQuad : public Quad
 {
-	TexturedQuad(std::shared_ptr<jle::iTexture> t) : texture{ t } {}
+	explicit TexturedQuad(std::shared_ptr<jle::iTexture> t) : texture{std::move( t )} {}
 
-	std::shared_ptr<jle::iTexture> texture;
+    TexturedQuad() = default;
+
+	std::shared_ptr<jle::iTexture> texture {nullptr};
 
 	// Coordinates on the texture
 	int textureX = 0, textureY = 0;
@@ -27,13 +30,13 @@ struct TexturedQuad : public Quad
 
 struct ColoredQuad : public Quad
 {
-	unsigned char r, g, b, a;
+	unsigned char r{}, g{}, b{}, a{};
 };
 
 class iQuadRendering
 {
 public:
-	virtual ~iQuadRendering(){}
+	virtual ~iQuadRendering() = default;
 
 	virtual void SendTexturedQuad(TexturedQuad& texturedQuad, RenderingMethod renderingMethod) = 0;
 	virtual void SendColoredQuad(ColoredQuad& coloredQuad, RenderingMethod renderingMethod) = 0;

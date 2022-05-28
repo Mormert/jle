@@ -12,6 +12,7 @@
 static const std::string_view GetObjectName(){ return #object_name;}	\
 static inline const jle::jleObjectTypeRegistrator<object_name> object_name_Reg{ #object_name };
 
+// TODO: Also include "std::string_view GetComponentName()"
 #define JLE_REGISTER_COMPONENT_TYPE(component_name)						\
 static const std::string_view GetObjectName(){ return #component_name;}	\
 static inline const jle::jleComponentTypeRegistrator<component_name> object_name_Reg{ #component_name };

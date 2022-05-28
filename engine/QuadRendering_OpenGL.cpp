@@ -60,7 +60,7 @@ namespace jle
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
-		
+
 		// Setup instanced rendering
 		QuadData quadDatas[100][100];
 		for (int i = 0; i < 100; i++)
@@ -75,7 +75,7 @@ namespace jle
 				quadDatas[i][j].tex_y = 0.f;
 				quadDatas[i][j].depth = 0.f;
 			}
-			
+
 		}
 		glGenBuffers(1, &instanceVBO);
 		glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
@@ -111,7 +111,15 @@ namespace jle
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glVertexAttribDivisor(2, 1); // tell OpenGL this is an instanced vertex attribute.
 		glVertexAttribDivisor(3, 1);
-		
+
+        constexpr unsigned char quadIndices[] = { 0,1,2, // first triangle (bottom left - top left - top right)
+                                              0,2,3 }; // second triangle (bottom left - top right - bottom right)
+        glGenBuffers(1, &elementbuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(uint32_t), quadIndices, GL_STATIC_DRAW);
+
+        glBindVertexArray(0);
+
 	}
 
 	QuadRendering_OpenGL::~QuadRendering_OpenGL()
@@ -120,6 +128,7 @@ namespace jle
 		glDeleteVertexArrays(1, &quadVAO);
 
 		glDeleteBuffers(1, &quadVBO_Instanced);
+        glDeleteBuffers(1, &elementbuffer);
 		glDeleteVertexArrays(1, &quadVAO_Instanced);
 	}
 
@@ -157,7 +166,7 @@ namespace jle
 
 
 		std::unordered_map<std::shared_ptr<iTexture>, std::vector<QuadData>> quadDataMap;
-		
+
 
 		for (auto&& quad : texturedQuads)
 		{
@@ -175,7 +184,7 @@ namespace jle
 
 		for (auto&& key : quadDataMap)
 		{
-			
+
 			glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(QuadData) * key.second.size(), &key.second[0], GL_STATIC_DRAW);
 			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
@@ -196,7 +205,8 @@ namespace jle
             quadShaderInstanced.SetMat4("camera", view);
             quadShaderInstanced.SetInt("texture0", 0);
 
-            glDrawArraysInstanced(GL_TRIANGLES, 0, 6, key.second.size());
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+            glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (void*)0, key.second.size());
 			glBindVertexArray(0);
 		}
 

@@ -5,7 +5,7 @@
     },
     "framebuffer_settings": {
         "fixed_axis_enum": 1,
-        "fixed_axis_pixels": 150
+        "fixed_axis_pixels": 320
     },
     "window_settings": {
         "window_display_cursor": true,

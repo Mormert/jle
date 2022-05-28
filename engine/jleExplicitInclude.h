@@ -5,4 +5,5 @@
 #include "oStaticSprite.h"
 
 #include "cSprite.h"
+#include "cAseprite.h"
 #include "cTransform.h"

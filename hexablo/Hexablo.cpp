@@ -1,6 +1,7 @@
 #include "Hexablo.h"
 
 #include "jleCore.h"
+#include "jleGameEngine.h"
 
 //#include "Input.h"
 #include "EngineStatus.h"
@@ -16,9 +17,6 @@
 
 std::shared_ptr<jle::iTexture> myTexture;//{ jle::Image("GameResources/HexagonDiabloConcept.png") };
 std::shared_ptr<jle::iTexture> myTexture2;//{ "GameResources/FullScene.png" };
-
-float posx = -200;
-float posy = 25;
 
 //jle::graphics::Sprite mySprite(myTexture ,39, 48, 11, 26);
 
@@ -53,10 +51,12 @@ void Hexablo::Start()
 {
 	myTexture = jle::jleCore::core->texture_creator->CreateTextureFromImage(jle::Image{"GameResources/HexagonDiabloConcept.png"});
 	myTexture2 = jle::jleCore::core->texture_creator->CreateTextureFromImage(jle::Image{ "GameResources/FullScene.png" });
-	posx = -200;
-	posy = 25;
-	y = 134;
-	x = 40;
+	y = 25;
+	x = 25;
+
+    auto &game = ((jle::jleGameEngine *) jle::jleCore::core)->GetGameRef();
+    game.LoadScene(GAME_RESOURCES_DIRECTORY + "/scenes/Scene_0.scn");
+
 }
 
 void Hexablo::Update(float dt)
@@ -64,7 +64,7 @@ void Hexablo::Update(float dt)
     
 	auto core = jle::jleCore::core;
 
-    core->rendering->texts->SendSimpleText("SomeText", 25,25);
+    //core->rendering->texts->SendSimpleText("SomeText", 25,25);
 
 	if (core->input->keyboard->GetKeyDown('A'))
 	{
@@ -85,18 +85,15 @@ void Hexablo::Update(float dt)
 
 	TexturedQuad tq{ myTexture };
 
-	tq.textureX = 15;
-	tq.textureY = 15;
-	tq.width = 15;
-	tq.height = 15;
+	tq.textureX = 0;
+	tq.textureY = 0;
+	tq.width = 256;
+	tq.height = 256;
 	tq.x = static_cast<int>(x);
 	tq.y = static_cast<int>(y);
 
 	int iposx = static_cast<int>(x);
 	int iposy = static_cast<int>(y);
-
-	posx += dt * 500.f;
-	tq.x = static_cast<int>(posx);
 
 	core->rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
 
@@ -110,7 +107,7 @@ void Hexablo::Update(float dt)
 		}
 	}*/
 
-	for (int i = -250; i < 250; i += 15)
+	/*for (int i = -250; i < 250; i += 15)
 	{
 		//tq.x += i;
 		for (int j = -250; j < 250; j+=15)
@@ -121,7 +118,7 @@ void Hexablo::Update(float dt)
 		}
 
 		//rendering->quads->SendTexturedQuad(tq, RenderingMethod::Dynamic);
-	}
+	}*/
 
 	
 	

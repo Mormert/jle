@@ -1,4 +1,5 @@
 #include "jleGame.h"
+#include <fstream>
 
 namespace jle {
     void jleGame::UpdateActiveScenes(float dt) {
@@ -19,14 +20,33 @@ namespace jle {
     }
 
     bool jleGame::CheckSceneIsActive(const std::string &sceneName) {
-        for(auto&& scene : mActiveScenes)
-        {
-            if(sceneName == scene->mSceneName)
-            {
+        for (auto &&scene: mActiveScenes) {
+            if (sceneName == scene->mSceneName) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    std::shared_ptr<jleScene> jleGame::LoadScene(const std::string &scenePath) {
+
+        if (CheckSceneIsActive(scenePath)) {
+            LOG_WARNING << "Loaded scene is already loaded";
+            return nullptr;
+        }
+
+        std::ifstream i(scenePath);
+        if (i.good()) {
+            std::shared_ptr<jleScene> scene = CreateScene<jle::jleScene>();
+            nlohmann::json j;
+            i >> j;
+
+            jle::from_json(j, *scene);
+            return scene;
+        } else {
+            LOG_ERROR << "Could not load scene with path: " << scenePath;
+            return nullptr;
+        }
     }
 }

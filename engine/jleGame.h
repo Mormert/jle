@@ -15,7 +15,7 @@ namespace jle
 	class jleGame
 	{
 	public:
-		virtual ~jleGame() {}
+		virtual ~jleGame() = default;
 		virtual void Update(float dt) {}
 		virtual void Start() {}
 
@@ -38,6 +38,8 @@ namespace jle
 
 			return newScene;
 		}
+
+        std::shared_ptr<jleScene> LoadScene(const std::string& scenePath);
 
 		std::vector<std::shared_ptr<jleScene>>& GetActiveScenesRef();
 

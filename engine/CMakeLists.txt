@@ -26,6 +26,7 @@ add_library(engine STATIC
         "jleEditor.cpp"
         "jleGame.cpp"
         "jleObject.cpp"
+        "jleAseprite.cpp"
         "jleScene.cpp"
         "ProfilerWindow.cpp"
         "TextRendering_OpenGL.cpp"
@@ -49,7 +50,8 @@ add_library(engine STATIC
         "EditorContentBrowser.cpp"
         "cSprite.cpp"
         "cTransform.cpp"
-        "oStaticSprite.cpp")
+        "oStaticSprite.cpp"
+        "cAseprite.cpp")
 
 
 if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()

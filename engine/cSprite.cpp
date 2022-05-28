@@ -58,7 +58,7 @@ void cSprite::Update(float dt)
 		jle::jleCore::core->rendering->quads->SendTexturedQuad(*&quad, RenderingMethod::Dynamic);
 	}
 	
-	jle::jleCore::core->rendering->texts->SendSimpleText("Hello, World", 5.f, 5.f, 1.f, 1.f, 0.7f, 1.f, 1.f);
+	//jle::jleCore::core->rendering->texts->SendSimpleText("Hello, World", 5.f, 5.f, 1.f, 1.f, 0.7f, 1.f, 1.f);
 }
 
 const std::string_view cSprite::GetComponentName() const
