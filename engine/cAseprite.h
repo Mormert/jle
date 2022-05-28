@@ -15,8 +15,6 @@ namespace jle {
 
         void Update(float dt) override;
 
-        const std::string_view GetComponentName() const override;
-
         void ToJson(nlohmann::json &j_out) override;
 
         void FromJson(const nlohmann::json &j_in) override;

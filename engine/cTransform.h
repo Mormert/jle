@@ -14,8 +14,6 @@ public:
 
 	float x = 0.f, y = 0.f;
 
-	virtual const std::string_view GetComponentName() const override;
-
 	virtual void ToJson(nlohmann::json& j_out) override;
 	virtual void FromJson(const nlohmann::json& j_in) override;
 };

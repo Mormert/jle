@@ -18,11 +18,6 @@ void cTransform::AddPosition(float x, float y)
 	this->y += y;
 }
 
-const std::string_view cTransform::GetComponentName() const
-{
-	return "cTransform";
-}
-
 void cTransform::ToJson(nlohmann::json& j_out)
 {
 	j_out = nlohmann::json{

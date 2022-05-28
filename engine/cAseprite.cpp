@@ -50,10 +50,6 @@ namespace jle {
         }
     }
 
-    const std::string_view cAseprite::GetComponentName() const {
-        return "cAseprite";
-    }
-
     void cAseprite::ToJson(nlohmann::json &j_out) {
         j_out = nlohmann::json{
                 {"asepritePath", mAsepritePath},
