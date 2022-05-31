@@ -82,7 +82,7 @@ namespace jle
 		auto gameHaltedTemp = gameHalted;
 		gameHalted = false;
 		Update(status->GetDeltaFrameTime());
-		((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get());
+		((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main, GetGameRef().mMainCamera);
 		gameHalted = gameHaltedTemp;
 	}
 
@@ -140,7 +140,8 @@ namespace jle
 	{
 		if (!gameHalted && game)
 		{
-			((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get());
+			((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get(), GetGameRef().mMainCamera);
+            ((iRenderingInternalAPI*)rendering.get())->ClearBuffersForNextFrame();
 			fullscreen_renderer->RenderFramebufferFullscreen(*framebuffer_main.get(), window->GetWindowWidth(), window->GetWindowHeight());
 		}
 		

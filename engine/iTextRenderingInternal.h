@@ -1,7 +1,7 @@
 #pragma once
 
 #include "iTextRendering.h"
-
+#include "jleCamera.h"
 #include "iFramebuffer.h"
 
 namespace jle
@@ -12,6 +12,7 @@ namespace jle
 		virtual ~iTextRenderingInternal() {}
 
 		// Renders to an output framebuffer
-		virtual void Render(iFramebuffer& framebufferOut) = 0;
+		virtual void Render(iFramebuffer& framebufferOut, const jleCamera& camera) = 0;
+        virtual void ClearBuffersForNextFrame() = 0;
 	};
 }

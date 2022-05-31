@@ -1,0 +1,52 @@
+{
+    "objects": [
+        {
+            "__obj_name": "jleObject",
+            "_custom_components": [
+                {
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "asepritePath": "GR:rottenapple.json",
+                    "depth": 1.0,
+                    "height": 0,
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "x": -1.340000033378601,
+                    "y": -100.0
+                },
+                {
+                    "_comp_name": "cCamera",
+                    "offsetX": -23.760000228881836,
+                    "offsetY": 0.0
+                }
+            ],
+            "_instance_name": "apple"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_custom_components": [
+                {
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "asepritePath": "GR:character_animation.json",
+                    "depth": 0.0,
+                    "height": 0,
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            ],
+            "_instance_name": "characterAnims"
+        }
+    ],
+    "sceneName": "HexabloMain"
+}

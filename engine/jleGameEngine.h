@@ -39,7 +39,6 @@ namespace jle
 		bool IsGameHalted();
 
 		jleGame& GetGameRef();
-
 	private:
 
 		class iGameCreator

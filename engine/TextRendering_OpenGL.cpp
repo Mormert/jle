@@ -31,9 +31,9 @@ void jle::TextRendering_OpenGL::SendSimpleText(const std::string& text, float x,
 	mTextDatas.push_back(td);
 }
 
-void jle::TextRendering_OpenGL::Render(iFramebuffer& framebufferOut)
+void jle::TextRendering_OpenGL::Render(iFramebuffer& framebufferOut, const jleCamera& camera)
 {
-	if (mTextDatas.size() == 0)
+	if (mTextDatas.empty())
 	{
 		return;
 	}
@@ -50,12 +50,14 @@ void jle::TextRendering_OpenGL::Render(iFramebuffer& framebufferOut)
 
 	gltEndDraw();
 
-	// Clean up after rendering this frame
-	for (auto&& textData : mTextDatas)
-	{
-		gltDeleteText(textData.gltextPtr);
-	}
-	mTextDatas.clear();
-
 	framebufferOut.BindToDefaultFramebuffer();
+}
+
+void jle::TextRendering_OpenGL::ClearBuffersForNextFrame() {
+    // Clean up after rendering this frame
+    for (auto&& textData : mTextDatas)
+    {
+        gltDeleteText(textData.gltextPtr);
+    }
+    mTextDatas.clear();
 }

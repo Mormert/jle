@@ -142,7 +142,7 @@ namespace jle
 
 	}
 
-	void QuadRendering_OpenGL::Render(iFramebuffer& framebufferOut)
+	void QuadRendering_OpenGL::Render(iFramebuffer& framebufferOut, const jleCamera& camera)
 	{
 		const int viewportWidth = framebufferOut.GetWidth();
 		const int viewportHeight = framebufferOut.GetHeight();
@@ -150,10 +150,10 @@ namespace jle
 		//std::cout << "framebuffer: " << viewportWidth << ", " << viewportHeight << '\n';
 
 		glm::mat4 view{ 1.f };
-		view =  glm::ortho(static_cast<float>(0.f),
-			static_cast<float>(viewportWidth),
-			static_cast<float>(viewportHeight),
-			static_cast<float>(0.f), -1.f, 1.f);
+		view =  glm::ortho(static_cast<float>(camera.mX),
+			static_cast<float>(camera.mX + viewportWidth),
+			static_cast<float>(camera.mY + viewportHeight),
+			static_cast<float>(camera.mY), -1.f, 1.f);
 
 		framebufferOut.BindToFramebuffer();
 
@@ -210,40 +210,12 @@ namespace jle
 			glBindVertexArray(0);
 		}
 
-		texturedQuads.clear();
-
 		framebufferOut.BindToDefaultFramebuffer();
 
-		/*quadShader.Use();
-
-		for (const auto& t : texturedQuads)
-		{
-
-			if (!t.texture->IsActive())
-			{
-				t.texture->SetToActiveTexture();
-				quadShader.SetVec2("textureDims", glm::vec2{ float(t.texture->GetWidth()), float(t.texture->GetHeight()) });
-			}
-
-			glBindVertexArray(quadVAO);
-
-			glm::vec4 uv{ t.textureX, t.textureY, t.width, t.height };
-			glm::vec3 position{ t.x, t.y, t.depth };
-
-			quadShader.SetVec4("uv", uv);
-			quadShader.SetVec3("position", position);
-			quadShader.SetMat4("camera", view);
-			quadShader.SetInt("texture0", 0);
-
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, quadIndices);
-		}
-
-		texturedQuads.clear();
-
-		framebufferOut.BindToDefaultFramebuffer();
-*/
 	}
 
+    void QuadRendering_OpenGL::ClearBuffersForNextFrame() {
+        texturedQuads.clear();
+    }
+
 }
-
-

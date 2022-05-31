@@ -7,3 +7,4 @@
 #include "cSprite.h"
 #include "cAseprite.h"
 #include "cTransform.h"
+#include "cCamera.h"

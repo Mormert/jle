@@ -51,7 +51,9 @@ add_library(engine STATIC
         "cSprite.cpp"
         "cTransform.cpp"
         "oStaticSprite.cpp"
-        "cAseprite.cpp")
+        "cAseprite.cpp"
+        "cCamera.cpp"
+        "SceneEditorWindow.cpp")
 
 
 if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()

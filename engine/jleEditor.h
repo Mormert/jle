@@ -25,6 +25,10 @@ namespace jle
 		virtual void Start() override;
 		virtual void Render() override;
 
+        std::shared_ptr<iFramebuffer> mEditorFramebuffer;
+
+        jleCamera mEditorCamera{};
+
 	private:
 		
 		void InitImgui();

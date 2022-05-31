@@ -27,6 +27,7 @@
 #include "EngineSettingsWindow.h"
 
 #include "iQuadRenderingInternal.h"
+#include "SceneEditorWindow.h"
 
 
 #include <iostream>
@@ -57,12 +58,18 @@ namespace jle
 		auto dims = GetFramebufferDimensions(core_settings->windowSettings.windowWidth, core_settings->windowSettings.windowHeight);
 		framebuffer_main = renderingFactory->CreateFramebuffer(dims.first, dims.second);
 
+        mEditorFramebuffer = renderingFactory->CreateFramebuffer(dims.first, dims.second);
+
         // Create editor background image
         editor_background_image = std::make_unique<EditorBackgroundImage>(*background_image, *texture_creator, *renderingFactory);
 
         // Note: Important that menu comes first here, since the others are dependent on the menu's dockspace.
         auto menu = std::make_shared<EditorWindowsPanel>("Menu");
         AddImGuiWindow(menu);
+
+        auto sceneWindow = std::make_shared<SceneEditorWindow>("Scene Window", mEditorFramebuffer);
+        AddImGuiWindow(sceneWindow);
+        menu->AddWindow(sceneWindow);
 
         auto gameWindow = std::make_shared<GameEditorWindow>("Game Window");
         AddImGuiWindow(gameWindow);
@@ -101,9 +108,15 @@ namespace jle
 	{
         if (!gameHalted && game)
         {
-            ((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main.get());
+            // Render to game view
+            ((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main, game->mMainCamera);
         }
-		
+
+        // Render to editor scene view
+        ((iRenderingInternalAPI*)rendering.get())->Render(*mEditorFramebuffer, mEditorCamera);
+
+        ((iRenderingInternalAPI*)rendering.get())->ClearBuffersForNextFrame();
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		glClearColor(0.f, 0.f, 0.f, 1.f);

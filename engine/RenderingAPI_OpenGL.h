@@ -16,6 +16,7 @@ namespace jle
 		virtual void Setup(const iRenderingFactory& renderFactory) override;
 
 		virtual void SetViewportDimensions(int x, int y, unsigned int width, unsigned int height) override;
-		virtual void Render(iFramebuffer& framebufferOut) override;
+		virtual void Render(iFramebuffer& framebufferOut, const jleCamera& camera) override;
+        virtual void ClearBuffersForNextFrame() override;
 	};
 }

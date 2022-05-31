@@ -20,10 +20,10 @@ namespace jle
 		glViewport(x, y, static_cast<int>(width), static_cast<int>(height));
 	}
 
-	void RenderingAPI_OpenGL::Render(iFramebuffer& framebufferOut)
+	void RenderingAPI_OpenGL::Render(iFramebuffer& framebufferOut, const jleCamera& camera)
 	{
-		((iQuadRenderingInternal*)quads.get())->Render(framebufferOut);
-		((iTextRenderingInternal*)texts.get())->Render(framebufferOut);
+		((iQuadRenderingInternal*)quads.get())->Render(framebufferOut, camera);
+		((iTextRenderingInternal*)texts.get())->Render(framebufferOut, camera);
 	}
 
 	void RenderingAPI_OpenGL::Setup(const iRenderingFactory& renderFactory)
@@ -34,6 +34,11 @@ namespace jle
 		this->quads = renderFactory.CreateQuadRendering();
 
 	}
+
+    void RenderingAPI_OpenGL::ClearBuffersForNextFrame() {
+        ((iQuadRenderingInternal*)quads.get())->ClearBuffersForNextFrame();
+        ((iTextRenderingInternal*)texts.get())->ClearBuffersForNextFrame();
+    }
 }
 
 

@@ -17,8 +17,9 @@ namespace jle
 	public:
 		jleComponent(jleObject* owner = nullptr, jleScene* scene = nullptr);
 
-		virtual void Start() {};
-		virtual void Update(float dt) {};
+		virtual void Start() {}
+		virtual void Update(float dt) {}
+        [[maybe_unused]] virtual void EditorUpdate(float dt) {}
 
 		void Destroy();
 

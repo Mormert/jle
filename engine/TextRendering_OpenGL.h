@@ -17,7 +17,8 @@ namespace jle
 		virtual ~TextRendering_OpenGL();
 
 		virtual void SendSimpleText(const std::string& text, float x, float y, float scale, float r, float g, float b, float a) override;
-		virtual void Render(iFramebuffer& framebufferOut) override;
+		virtual void Render(iFramebuffer& framebufferOut, const jleCamera& camera) override;
+        virtual void ClearBuffersForNextFrame();
 
 	private:
 		struct TextData

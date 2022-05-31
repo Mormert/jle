@@ -6,6 +6,7 @@
 #include "jleGameSettings.h"
 #include "jleEditorSettings.h"
 #include "jleScene.h"
+#include "jleCamera.h"
 
 #include <iostream>
 
@@ -42,6 +43,8 @@ namespace jle
         std::shared_ptr<jleScene> LoadScene(const std::string& scenePath);
 
 		std::vector<std::shared_ptr<jleScene>>& GetActiveScenesRef();
+
+        jleCamera mMainCamera;
 
 	protected:
 		std::vector<std::shared_ptr<jleScene>> mActiveScenes;
