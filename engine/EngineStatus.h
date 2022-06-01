@@ -1,22 +1,24 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
-namespace jle
-{
-	class EngineStatus
-	{
-	public:
-		static int GetFps();
-		static double GetDeltaTime();
-		static double GetTime();
+namespace jle {
+    class EngineStatus {
+    public:
+        static int GetFps();
 
-	private:
-		static int fps;
-		static double deltaTime;
-		static double currentFrame;
-		static double lastFrame;
+        static double GetDeltaTime();
 
-		static void UpdateEngineStatus();
+        static double GetTime();
 
-		friend class jleCore;
-	};
+    private:
+        static int fps;
+        static double deltaTime;
+        static double currentFrame;
+        static double lastFrame;
+
+        static void UpdateEngineStatus();
+
+        friend class jleCore;
+    };
 }

@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #include "jleGame.h"
 #include <fstream>
 

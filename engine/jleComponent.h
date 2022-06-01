@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include "jleTypeReflectionUtils.h"
@@ -7,37 +9,40 @@
 
 #include <string_view>
 
-namespace jle
-{
-	class jleObject;
-	class jleScene;
+namespace jle {
+    class jleObject;
 
-	class jleComponent : public jleJsonInterface<nlohmann::json>
-	{
-	public:
-		jleComponent(jleObject* owner = nullptr, jleScene* scene = nullptr);
+    class jleScene;
 
-		virtual void Start() {}
-		virtual void Update(float dt) {}
+    class jleComponent : public jleJsonInterface<nlohmann::json> {
+    public:
+        jleComponent(jleObject *owner = nullptr, jleScene *scene = nullptr);
+
+        virtual void Start() {}
+
+        virtual void Update(float dt) {}
+
         [[maybe_unused]] virtual void EditorUpdate(float dt) {}
 
-		void Destroy();
+        void Destroy();
 
-		virtual const std::string_view GetComponentName() const = 0;
+        virtual const std::string_view GetComponentName() const = 0;
 
-		virtual void ToJson(nlohmann::json& j_out)			{}
-		virtual void FromJson(const nlohmann::json& j_in)	{}
+        virtual void ToJson(nlohmann::json &j_out) {}
 
-		friend void to_json(nlohmann::json& j, const std::shared_ptr<jleComponent> c);
-		friend void from_json(const nlohmann::json& j, std::shared_ptr<jleComponent>& c);
+        virtual void FromJson(const nlohmann::json &j_in) {}
 
-	protected:
-		friend class jleObject;
+        friend void to_json(nlohmann::json &j, const std::shared_ptr<jleComponent> c);
+
+        friend void from_json(const nlohmann::json &j, std::shared_ptr<jleComponent> &c);
+
+    protected:
+        friend class jleObject;
 
         // The object that owns this component
-		jleObject *mAttachedToObject;
+        jleObject *mAttachedToObject;
 
         // The scene in which this component's object lives
-		jleScene *mContainedInScene;
-	};
+        jleScene *mContainedInScene;
+    };
 }

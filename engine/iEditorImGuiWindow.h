@@ -1,31 +1,35 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include <string>
 
 #include "jleGameEngine.h"
 
+#include <utility>
 #include <vector>
 #include <memory>
 
-namespace jle
-{
-	class iEditorImGuiWindow
-	{
-	public:
+namespace jle {
+    class iEditorImGuiWindow {
+    public:
 
-		iEditorImGuiWindow(const std::string& window_name) : window_name{window_name} {}
-		virtual ~iEditorImGuiWindow() {};
+        explicit iEditorImGuiWindow(std::string window_name) : window_name{std::move(window_name)} {}
 
-		virtual void Update(jleGameEngine& ge) = 0;
+        virtual ~iEditorImGuiWindow() = default;;
 
-		virtual void OpenWindow()  { isOpened = true; }
-		virtual void CloseWindow() { isOpened = false; }
-		bool GetOpened() { return isOpened; }
+        virtual void Update(jleGameEngine &ge) = 0;
 
-		const std::string& GetWindowName() { return window_name; }
+        virtual void OpenWindow() { isOpened = true; }
 
-	protected:
-		std::string window_name;
-		bool isOpened = true;
-	};
+        virtual void CloseWindow() { isOpened = false; }
+
+        bool GetOpened() const { return isOpened; }
+
+        const std::string &GetWindowName() { return window_name; }
+
+    protected:
+        std::string window_name;
+        bool isOpened = true;
+    };
 }

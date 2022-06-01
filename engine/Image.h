@@ -1,39 +1,44 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include "FileLoadInterface.h"
 
 #include <string>
 
-namespace jle
-{
-	class Image : FileLoadInterface
-	{
-	public:
-		Image() = default;
-		Image(const std::string& path);
-		
-		virtual bool LoadFromFile(const std::string& path) override;
+namespace jle {
+    class Image : FileLoadInterface {
+    public:
+        Image() = default;
 
-		Image(const Image& i);
-		Image& operator= (const Image& i);
-		Image(Image&& i) noexcept;
-		Image& operator=(Image&& i) noexcept;
+        explicit Image(const std::string &path);
 
-		~Image();
+        bool LoadFromFile(const std::string &path) override;
 
-		unsigned int GetImageWidth() const;
-		unsigned int GetImageHeight() const;
+        Image(const Image &i);
 
-		unsigned int GetImageNrChannels() const;
+        Image &operator=(const Image &i);
 
-		unsigned char* GetImageData() const;
+        Image(Image &&i) noexcept;
 
-        const std::string& GetPath() const;
+        Image &operator=(Image &&i) noexcept;
 
-	private:
-		unsigned char* image_data { nullptr };
-		int w = 0, h = 0, nr_channels = 0;
+        ~Image() override;
+
+        [[nodiscard]] unsigned int GetImageWidth() const;
+
+        [[nodiscard]] unsigned int GetImageHeight() const;
+
+        [[nodiscard]] unsigned int GetImageNrChannels() const;
+
+        [[nodiscard]] unsigned char *GetImageData() const;
+
+        [[nodiscard]] const std::string &GetPath() const;
+
+    private:
+        unsigned char *image_data{nullptr};
+        int w = 0, h = 0, nr_channels = 0;
 
         std::string path;
-	};
+    };
 }

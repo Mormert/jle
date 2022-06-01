@@ -1,11 +1,12 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
-using InterfaceWindowPtr = void*;
+using InterfaceWindowPtr = void *;
 
-class iWindowInitializer
-{
+class iWindowInitializer {
 public:
-	virtual ~iWindowInitializer() {};
+    virtual ~iWindowInitializer() = default;;
 
-	virtual InterfaceWindowPtr InitWindow(int width, int height, const char* title) = 0;
+    virtual InterfaceWindowPtr InitWindow(int width, int height, const char *title) = 0;
 };

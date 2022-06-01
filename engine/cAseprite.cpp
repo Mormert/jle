@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #include "cAseprite.h"
 #include "jleResourceHolder.h"
 #include "jlePathDefines.h"
@@ -28,7 +30,7 @@ namespace jle {
             }
         }
 
-        const auto& frame = mAseprite->mFrames.at(mCurrentFrame);
+        const auto &frame = mAseprite->mFrames.at(mCurrentFrame);
 
         auto &texture = mAseprite->mImageTexture;
         if (texture != nullptr) {

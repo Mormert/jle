@@ -1,26 +1,26 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include "iKeyboardInput.h"
 #include "iWindowLinkable.h"
 #include "iWindowInternalAPI.h"
 
-namespace jle
-{
-	class KeyboardInputInternal : public iKeyboardInput, public iWindowLinkable
-	{
-	public:
-		KeyboardInputInternal(std::shared_ptr<iWindowInternalAPI> windowInternal);
+namespace jle {
+    class KeyboardInputInternal : public iKeyboardInput, public iWindowLinkable {
+    public:
+        explicit KeyboardInputInternal(std::shared_ptr<iWindowInternalAPI> windowInternal);
 
-		void LinkWindow(std::shared_ptr<iWindowInternalAPI> windowInternal) override;
+        void LinkWindow(std::shared_ptr<iWindowInternalAPI> windowInternal) override;
 
-		bool GetKeyPressed(char key) override;
+        bool GetKeyPressed(char key) override;
 
-		bool GetKeyReleased(char key) override;
+        bool GetKeyReleased(char key) override;
 
-		bool GetKeyDown(char key) override;
+        bool GetKeyDown(char key) override;
 
-	private:
-		std::shared_ptr<iWindowInternalAPI> windowInternal;
-	};
+    private:
+        std::shared_ptr<iWindowInternalAPI> windowInternal;
+    };
 }
 

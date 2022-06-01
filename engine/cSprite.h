@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include "jleComponent.h"
@@ -9,31 +11,35 @@
 #include <memory>
 #include <string>
 
-class cSprite : public jle::jleComponent
-{
-	JLE_REGISTER_COMPONENT_TYPE(cSprite)
+class cSprite : public jle::jleComponent {
+    JLE_REGISTER_COMPONENT_TYPE(cSprite)
 public:
-	cSprite(jle::jleObject* owner = nullptr, jle::jleScene* scene = nullptr);
+    cSprite(jle::jleObject *owner = nullptr, jle::jleScene *scene = nullptr);
 
-	void CreateAndSetTextureFromPath(const std::string& path);
-	void SetTexture(std::shared_ptr<jle::iTexture> texture);
-	void SetRectangleDimensions(int width, int height);
-	void SetTextureBeginCoordinates(int x, int y);
+    void CreateAndSetTextureFromPath(const std::string &path);
 
-	virtual void Start() override;
-	virtual void Update(float dt) override;
-    
-	virtual void ToJson(nlohmann::json& j_out) override;
-	virtual void FromJson(const nlohmann::json& j_in) override;
+    void SetTexture(std::shared_ptr<jle::iTexture> texture);
+
+    void SetRectangleDimensions(int width, int height);
+
+    void SetTextureBeginCoordinates(int x, int y);
+
+    virtual void Start() override;
+
+    virtual void Update(float dt) override;
+
+    virtual void ToJson(nlohmann::json &j_out) override;
+
+    virtual void FromJson(const nlohmann::json &j_in) override;
 
 private:
-	std::string texturePath = "";
+    std::string texturePath = "";
 
-	TexturedQuad quad;
-	std::shared_ptr<cTransform> transform;
+    TexturedQuad quad;
+    std::shared_ptr<cTransform> transform;
 
-	//friend void to_json(nlohmann::json& j, const cSprite s);
-	//friend void from_json(const nlohmann::json& j, cSprite& s);
+    //friend void to_json(nlohmann::json& j, const cSprite s);
+    //friend void from_json(const nlohmann::json& j, cSprite& s);
 };
 
 //void to_json(nlohmann::json& j, const cSprite s);

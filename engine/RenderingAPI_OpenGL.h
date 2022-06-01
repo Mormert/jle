@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include "FrameBuffer_OpenGL.h"
@@ -6,17 +8,17 @@
 
 #include "FullscreenRendering_OpenGL.h"
 
-namespace jle
-{
-	class RenderingAPI_OpenGL : public iRenderingInternalAPI
-	{
-	public:
-		~RenderingAPI_OpenGL() {}
+namespace jle {
+    class RenderingAPI_OpenGL : public iRenderingInternalAPI {
+    public:
+        ~RenderingAPI_OpenGL() override = default;
 
-		virtual void Setup(const iRenderingFactory& renderFactory) override;
+        void Setup(const iRenderingFactory &renderFactory) override;
 
-		virtual void SetViewportDimensions(int x, int y, unsigned int width, unsigned int height) override;
-		virtual void Render(iFramebuffer& framebufferOut, const jleCamera& camera) override;
-        virtual void ClearBuffersForNextFrame() override;
-	};
+        void SetViewportDimensions(int x, int y, unsigned int width, unsigned int height) override;
+
+        void Render(iFramebuffer &framebufferOut, const jleCamera &camera) override;
+
+        void ClearBuffersForNextFrame() override;
+    };
 }

@@ -1,21 +1,21 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include <string>
 
-namespace jle
-{
-	class GameAssets
-	{
+namespace jle {
+    class GameAssets {
 
-	public:
-		static void SetGameAssetsPath(const std::string& path);
+    public:
+        static void SetGameAssetsPath(const std::string &path);
 
-		//static Image GetImage(char* image_name);
+        //static Image GetImage(char* image_name);
 
 
-	private:
-		static std::string gameAssetsPath;
+    private:
+        static std::string gameAssetsPath;
 
-	};
+    };
 
 }

@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include "iWindowInternalAPI.h"
@@ -7,63 +9,72 @@
 #include <memory>
 #include <map>
 
-namespace jle
-{
-	class Window_GLFW_OpenGL : public iWindowInternalAPI
-	{
-	public:
-		~Window_GLFW_OpenGL();
+namespace jle {
+    class Window_GLFW_OpenGL : public iWindowInternalAPI {
+    public:
+        ~Window_GLFW_OpenGL() override;
 
-		static void error_callback(int error, const char* description);
-		static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-		static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-		static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+        static void error_callback(int error, const char *description);
 
-		virtual void SetWindowSettings(WindowSettings& windowSettings) override;
+        static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
-		virtual void DisplayCursor(bool enable) override;
-		virtual bool IsCursorDisplayed() override;
+        static void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
-		virtual unsigned int GetWindowHeight() override;
-		virtual unsigned int GetWindowWidth() override;
+        static void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
-		virtual void InitWindow(iWindowInitializer& windowInitializer, std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI) override;
+        void SetWindowSettings(WindowSettings &windowSettings) override;
 
-		virtual unsigned int AddWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback) override;
-		virtual void RemoveWindowResizeCallback(unsigned int callback_id) override;
+        void DisplayCursor(bool enable) override;
 
-        virtual void ExecuteResizeCallbacks(int w, int h) override;
+        bool IsCursorDisplayed() override;
 
-		virtual void UpdateWindow() override;
+        unsigned int GetWindowHeight() override;
 
-		virtual bool WindowShouldClose() override;
+        unsigned int GetWindowWidth() override;
 
-		virtual float GetTime() override;
-		virtual bool GetKey(char key) override;
-		virtual float GetScrollX() override;
-		virtual float GetScrollY() override;
-		virtual std::pair<int, int> GetCursor() override;
+        void InitWindow(iWindowInitializer &windowInitializer,
+                        std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI) override;
 
-		static Window_GLFW_OpenGL* activeWindow;
+        unsigned int AddWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback) override;
 
-		GLFWwindow* GetGLFWWindow(){ return nativeWindow; }
+        void RemoveWindowResizeCallback(unsigned int callback_id) override;
 
-	protected:
-		// Native handle to GLFW window
-		GLFWwindow* nativeWindow;
+        void ExecuteResizeCallbacks(int w, int h) override;
 
-		WindowSettings windowSettings;
+        void UpdateWindow() override;
 
-		float currentScrollX;
-		float currentScrollY;
+        bool WindowShouldClose() override;
 
-		bool cursorVisible{ false };
+        float GetTime() override;
 
-	private:
-		
-		std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI;
+        bool GetKey(char key) override;
 
-		std::map<unsigned int, std::function<void(unsigned int, unsigned int)>> windowResizedCallbacks;
-	};
+        float GetScrollX() override;
+
+        float GetScrollY() override;
+
+        std::pair<int, int> GetCursor() override;
+
+        static Window_GLFW_OpenGL *activeWindow;
+
+        GLFWwindow *GetGLFWWindow() { return nativeWindow; }
+
+    protected:
+        // Native handle to GLFW window
+        GLFWwindow *nativeWindow;
+
+        WindowSettings windowSettings;
+
+        float currentScrollX;
+        float currentScrollY;
+
+        bool cursorVisible{false};
+
+    private:
+
+        std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI;
+
+        std::map<unsigned int, std::function<void(unsigned int, unsigned int)>> windowResizedCallbacks;
+    };
 }
 

@@ -1,22 +1,25 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
-namespace jle
-{
-	class iFramebuffer
-	{
-	public:
-		virtual ~iFramebuffer() {}
+namespace jle {
+    class iFramebuffer {
+    public:
+        virtual ~iFramebuffer() = default;
 
-		virtual void CreateFramebuffer(unsigned int width, unsigned int height) = 0;
-		virtual void ResizeFramebuffer(unsigned int width, unsigned int height) = 0;
+        virtual void CreateFramebuffer(unsigned int width, unsigned int height) = 0;
 
-		virtual void BindToFramebuffer() = 0;
-		virtual void BindToDefaultFramebuffer() = 0;
+        virtual void ResizeFramebuffer(unsigned int width, unsigned int height) = 0;
 
-		virtual unsigned int GetWidth() = 0;
-		virtual unsigned int GetHeight() = 0;
+        virtual void BindToFramebuffer() = 0;
+
+        virtual void BindToDefaultFramebuffer() = 0;
+
+        virtual unsigned int GetWidth() = 0;
+
+        virtual unsigned int GetHeight() = 0;
 
         virtual unsigned int GetTexture() = 0;
-	};
+    };
 }
 

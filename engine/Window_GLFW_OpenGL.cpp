@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #include "Window_GLFW_OpenGL.h"
 
 #ifdef __EMSCRIPTEN__
@@ -5,222 +7,200 @@
 #define GL_GLEXT_PROTOTYPES
 #define EGL_EGLEXT_PROTOTYPES
 #endif
+
 #include <GLFW/glfw3.h>
 
 #include <iostream>
 
 #include "3rdparty/stb_image.h"
 
-namespace jle
-{
-	Window_GLFW_OpenGL* Window_GLFW_OpenGL::activeWindow{ nullptr };
+namespace jle {
+    Window_GLFW_OpenGL *Window_GLFW_OpenGL::activeWindow{nullptr};
 
-	void Window_GLFW_OpenGL::error_callback(int error, const char* description)
-	{
-		std::cerr << "GLFW ERROR: " << description << '\n';
-	}
+    void Window_GLFW_OpenGL::error_callback(int error, const char *description) {
+        std::cerr << "GLFW ERROR: " << description << '\n';
+    }
 
-	void Window_GLFW_OpenGL::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-	{
-		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-			glfwSetWindowShouldClose(window, GLFW_TRUE);
-	}
+    void Window_GLFW_OpenGL::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
 
-	void Window_GLFW_OpenGL::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-	{
-		activeWindow->currentScrollX = static_cast<float>(xoffset);
-		activeWindow->currentScrollY = static_cast<float>(yoffset);
-	}
+    void Window_GLFW_OpenGL::scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
+        activeWindow->currentScrollX = static_cast<float>(xoffset);
+        activeWindow->currentScrollY = static_cast<float>(yoffset);
+    }
 
-	void Window_GLFW_OpenGL::framebuffer_size_callback(GLFWwindow* window, int width, int height)
-	{
-		activeWindow->internalRenderingAPI->SetViewportDimensions(0, 0, static_cast<unsigned int>(width), static_cast<unsigned int>(height));
+    void Window_GLFW_OpenGL::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+        activeWindow->internalRenderingAPI->SetViewportDimensions(0, 0, static_cast<unsigned int>(width),
+                                                                  static_cast<unsigned int>(height));
 
-		activeWindow->windowSettings.windowWidth = static_cast<unsigned int>(width);
-		activeWindow->windowSettings.windowHeight = static_cast<unsigned int>(height);
+        activeWindow->windowSettings.windowWidth = static_cast<unsigned int>(width);
+        activeWindow->windowSettings.windowHeight = static_cast<unsigned int>(height);
 
-		// Call all subscribed callbacks
+        // Call all subscribed callbacks
         activeWindow->ExecuteResizeCallbacks(width, height);
 
-	}
+    }
 
 
 #ifdef __EMSCRIPTEN__
-extern "C" {
-    EMSCRIPTEN_KEEPALIVE
-    int resize_canvas_js(int width, int height) {
+    extern "C" {
+        EMSCRIPTEN_KEEPALIVE
+        int resize_canvas_js(int width, int height) {
 
-        glViewport(0, 0, width, height);
+            glViewport(0, 0, width, height);
 
-        printf("Change window size: %d, %d", width, height);
+            printf("Change window size: %d, %d", width, height);
 
-        const auto& window = Window_GLFW_OpenGL::activeWindow;
+            const auto& window = Window_GLFW_OpenGL::activeWindow;
 
-        Window_GLFW_OpenGL::framebuffer_size_callback(nullptr, width, height);
+            Window_GLFW_OpenGL::framebuffer_size_callback(nullptr, width, height);
 
-        return 1;
+            return 1;
+        }
     }
-}
 #endif
 
 
-	float Window_GLFW_OpenGL::GetTime()
-	{
-		return static_cast<float>(glfwGetTime());
-	}
+    float Window_GLFW_OpenGL::GetTime() {
+        return static_cast<float>(glfwGetTime());
+    }
 
-	float Window_GLFW_OpenGL::GetScrollX()
-	{
-		return 0;
-	}
+    float Window_GLFW_OpenGL::GetScrollX() {
+        return 0;
+    }
 
-	float Window_GLFW_OpenGL::GetScrollY()
-	{
-		return 0;
-	}
+    float Window_GLFW_OpenGL::GetScrollY() {
+        return 0;
+    }
 
-	Window_GLFW_OpenGL::~Window_GLFW_OpenGL()
-	{
-		glfwDestroyWindow(nativeWindow);
-		glfwTerminate();
-	}
+    Window_GLFW_OpenGL::~Window_GLFW_OpenGL() {
+        glfwDestroyWindow(nativeWindow);
+        glfwTerminate();
+    }
 
-	void Window_GLFW_OpenGL::SetWindowSettings(WindowSettings& windowSettings)
-	{
-		this->windowSettings = windowSettings;
-	}
+    void Window_GLFW_OpenGL::SetWindowSettings(WindowSettings &windowSettings) {
+        this->windowSettings = windowSettings;
+    }
 
-	void Window_GLFW_OpenGL::DisplayCursor(bool enable)
-	{
-		if (enable)
-		{
-			glfwSetInputMode(nativeWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		}
-		else
-		{
-			glfwSetInputMode(nativeWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		}
-		cursorVisible = enable;
-	}
+    void Window_GLFW_OpenGL::DisplayCursor(bool enable) {
+        if (enable) {
+            glfwSetInputMode(nativeWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        } else {
+            glfwSetInputMode(nativeWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        }
+        cursorVisible = enable;
+    }
 
-	bool Window_GLFW_OpenGL::IsCursorDisplayed()
-	{
-		return cursorVisible;
-	}
+    bool Window_GLFW_OpenGL::IsCursorDisplayed() {
+        return cursorVisible;
+    }
 
-	unsigned int Window_GLFW_OpenGL::GetWindowHeight()
-	{
-		return windowSettings.windowHeight;
-	}
-	unsigned int Window_GLFW_OpenGL::GetWindowWidth()
-	{
-		return windowSettings.windowWidth;
-	}
+    unsigned int Window_GLFW_OpenGL::GetWindowHeight() {
+        return windowSettings.windowHeight;
+    }
 
-	void Window_GLFW_OpenGL::InitWindow(iWindowInitializer& windowInitializer, std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI)
-	{
-		if (!internalRenderingAPI)
-		{
-			std::cerr << "Rendering API is null!\n";
-			exit(1);
-		}
+    unsigned int Window_GLFW_OpenGL::GetWindowWidth() {
+        return windowSettings.windowWidth;
+    }
 
-		this->internalRenderingAPI = internalRenderingAPI;
+    void Window_GLFW_OpenGL::InitWindow(iWindowInitializer &windowInitializer,
+                                        std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI) {
+        if (!internalRenderingAPI) {
+            std::cerr << "Rendering API is null!\n";
+            exit(1);
+        }
 
-		activeWindow = this;
-		glfwSetErrorCallback(error_callback);
+        this->internalRenderingAPI = internalRenderingAPI;
+
+        activeWindow = this;
+        glfwSetErrorCallback(error_callback);
 
 
-		if (!glfwInit())
-		{
-			std::cerr << "GLFW ERROR: COULD NOT INITIALIZE";
-			exit(1);
-		}
+        if (!glfwInit()) {
+            std::cerr << "GLFW ERROR: COULD NOT INITIALIZE";
+            exit(1);
+        }
 
-		if (windowSettings.windowIsRezisable)
-		{
-			glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-		}
-		else
-		{
-			glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-		}
+        if (windowSettings.windowIsRezisable) {
+            glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        } else {
+            glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        }
 
-		nativeWindow = static_cast<GLFWwindow*>(windowInitializer.InitWindow(windowSettings.windowWidth, windowSettings.windowHeight, windowSettings.WindowTitle.c_str()));
+        nativeWindow = static_cast<GLFWwindow *>(windowInitializer.InitWindow(windowSettings.windowWidth,
+                                                                              windowSettings.windowHeight,
+                                                                              windowSettings.WindowTitle.c_str()));
 
-		glfwSetKeyCallback(nativeWindow, key_callback);
-		glfwSetScrollCallback(nativeWindow, scroll_callback);
-		glfwSetFramebufferSizeCallback(nativeWindow, framebuffer_size_callback);
+        glfwSetKeyCallback(nativeWindow, key_callback);
+        glfwSetScrollCallback(nativeWindow, scroll_callback);
+        glfwSetFramebufferSizeCallback(nativeWindow, framebuffer_size_callback);
 
-		glfwSetWindowSizeLimits(nativeWindow, windowSettings.windowWidthMin, windowSettings.windowHeightMin, GLFW_DONT_CARE, GLFW_DONT_CARE);
+        glfwSetWindowSizeLimits(nativeWindow, windowSettings.windowWidthMin, windowSettings.windowHeightMin,
+                                GLFW_DONT_CARE, GLFW_DONT_CARE);
 
-		DisplayCursor(windowSettings.windowDisplayCursor);
+        DisplayCursor(windowSettings.windowDisplayCursor);
 
 #ifdef __EMSCRIPTEN__
         glfwSwapInterval(1);
 #else
-		glfwSwapInterval(0);
+        glfwSwapInterval(0);
 #endif
 
-		int w, h;
-		glfwGetFramebufferSize(nativeWindow, &w, &h);
-		internalRenderingAPI->SetViewportDimensions(0, 0, static_cast<unsigned int>(w), static_cast<unsigned int>(h));
+        int w, h;
+        glfwGetFramebufferSize(nativeWindow, &w, &h);
+        internalRenderingAPI->SetViewportDimensions(0, 0, static_cast<unsigned int>(w), static_cast<unsigned int>(h));
 
-		if (windowSettings.iconPath != "")
-		{
-			GLFWimage images[1];
-			images[0].pixels = stbi_load(windowSettings.iconPath.c_str(), &images[0].width, &images[0].height, 0, 4);
-			glfwSetWindowIcon(nativeWindow, 1, images);
-			stbi_image_free(images[0].pixels);
-		}
+        if (!windowSettings.iconPath.empty()) {
+            GLFWimage images[1];
+            images[0].pixels = stbi_load(windowSettings.iconPath.c_str(), &images[0].width, &images[0].height, nullptr,
+                                         4);
+            glfwSetWindowIcon(nativeWindow, 1, images);
+            stbi_image_free(images[0].pixels);
+        }
 
 
+    }
 
-	}
+    void Window_GLFW_OpenGL::UpdateWindow() {
+        glfwPollEvents();
+        glfwSwapBuffers(nativeWindow);
+    }
 
-	void Window_GLFW_OpenGL::UpdateWindow()
-	{
-		glfwPollEvents();
-		glfwSwapBuffers(nativeWindow);
-	}
+    bool Window_GLFW_OpenGL::WindowShouldClose() {
+        return glfwWindowShouldClose(nativeWindow);
+    }
 
-	bool Window_GLFW_OpenGL::WindowShouldClose()
-	{
-		return glfwWindowShouldClose(nativeWindow);
-	}
+    bool Window_GLFW_OpenGL::GetKey(char key) {
+        return glfwGetKey(nativeWindow, key);
+    }
 
-	bool Window_GLFW_OpenGL::GetKey(char key)
-	{
-		return glfwGetKey(nativeWindow, key);
-	}
-	std::pair<int, int> Window_GLFW_OpenGL::GetCursor()
-	{
-		double x, y;
-		glfwGetCursorPos(nativeWindow, &x, &y);
-		return std::pair<int, int>(static_cast<int>(x), static_cast<int>(y));
-	}
+    std::pair<int, int> Window_GLFW_OpenGL::GetCursor() {
+        double x, y;
+        glfwGetCursorPos(nativeWindow, &x, &y);
+        return std::pair<int, int>(static_cast<int>(x), static_cast<int>(y));
+    }
 
-	unsigned int Window_GLFW_OpenGL::AddWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback)
-	{
-		unsigned int i = 0;
+    unsigned int Window_GLFW_OpenGL::AddWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback) {
+        unsigned int i = 0;
 
-		// Find first available callback id
-		for (auto it = windowResizedCallbacks.cbegin(), end = windowResizedCallbacks.cend();
-			it != end && i == it->first; ++it, ++i) {}
+        // Find first available callback id
+        for (auto it = windowResizedCallbacks.cbegin(), end = windowResizedCallbacks.cend();
+             it != end && i == it->first; ++it, ++i) {}
 
-		windowResizedCallbacks.insert(std::make_pair(i, std::bind(callback, std::placeholders::_1, std::placeholders::_2)));
+        windowResizedCallbacks.insert(
+                std::make_pair(i, std::bind(callback, std::placeholders::_1, std::placeholders::_2)));
 
-		return i;
-	}
+        return i;
+    }
 
-	void Window_GLFW_OpenGL::RemoveWindowResizeCallback(unsigned int callback_id)
-	{
-		windowResizedCallbacks.erase(callback_id);
-	}
+    void Window_GLFW_OpenGL::RemoveWindowResizeCallback(unsigned int callback_id) {
+        windowResizedCallbacks.erase(callback_id);
+    }
 
     void Window_GLFW_OpenGL::ExecuteResizeCallbacks(int w, int h) {
-        for (const auto &callback : activeWindow->windowResizedCallbacks)
-        {
+        for (const auto &callback: activeWindow->windowResizedCallbacks) {
             callback.second(w, h);
         }
     }

@@ -1,10 +1,10 @@
+// Copyright (c) 2022. Johan Lind
+
 #include "EditorWindowsPanel.h"
 
 #include "GameEditorWindow.h"
 
 #include "3rdparty/ImGui/imgui.h"
-#include "3rdparty/ImGui/imgui_impl_glfw.h"
-#include "3rdparty/ImGui/imgui_impl_opengl3.h"
 #include "plog/Log.h"
 
 namespace jle {

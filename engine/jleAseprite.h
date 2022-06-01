@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include "iTexture.h"
@@ -44,12 +46,13 @@ namespace jle {
     struct jleAseprite : FileLoadInterface {
 
         jleAseprite() = default;
-        jleAseprite(const std::string& path);
+
+        explicit jleAseprite(const std::string &path);
 
         // Finds and sets the image resource reference for this jleAseprite
         void LoadImage();
 
-        virtual bool LoadFromFile(const std::string &path) override;
+        bool LoadFromFile(const std::string &path) override;
 
         // This format expects Aseprite exporting to use 'Array' and not 'Hash'
         std::vector<jleAsepriteFrame> mFrames;

@@ -1,13 +1,12 @@
+// Copyright (c) 2022. Johan Lind
+
 #include "EditorSceneObjectsWindow.h"
 
 #include "jleTypeReflectionUtils.h"
 
 #include "3rdparty/ImGui/imgui.h"
 #include "3rdparty/ImGui/imgui_stdlib.h"
-#include "3rdparty/ImGui/imgui_impl_glfw.h"
-#include "3rdparty/ImGui/imgui_impl_opengl3.h"
 
-#include <sstream>
 #include <fstream>
 #include <filesystem>
 
@@ -172,8 +171,8 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
                         }
                     }
 
-                   // if (ImGui::Button("Destroy Object", ImVec2(138 * globalImguiScale, 0))) {
-                   //     object->DestroyObject();
+                    // if (ImGui::Button("Destroy Object", ImVec2(138 * globalImguiScale, 0))) {
+                    //     object->DestroyObject();
                     //}
                 }
             }

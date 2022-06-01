@@ -1,6 +1,8 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
-#define NO_COPY_NO_MOVE( Class ) \
+#define NO_COPY_NO_MOVE(Class) \
   Class(const Class &) = delete;        \
   Class &operator=(const Class &) = delete; \
   Class(Class&& e) = delete; \

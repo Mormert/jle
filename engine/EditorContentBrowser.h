@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include "iEditorImGuiWindow.h"
@@ -9,7 +11,7 @@ namespace jle {
     public:
         explicit EditorContentBrowser(const std::string &window_name);
 
-        virtual void Update(jleGameEngine &ge) override;
+        void Update(jleGameEngine &ge) override;
 
     private:
         std::shared_ptr<iTexture> mFileIcon;
@@ -25,14 +27,15 @@ namespace jle {
         // File selected for File Popup
         std::filesystem::path mFileSelected;
 
-        std::pair<bool, uint32_t> DirectoryTreeViewRecursive(const std::filesystem::path& path, uint32_t* count, int* selection_mask);
+        std::pair<bool, uint32_t>
+        DirectoryTreeViewRecursive(const std::filesystem::path &path, uint32_t *count, int *selection_mask);
 
-        void ContentHierarchy(std::string directoryPath, const std::string& folderName);
+        void ContentHierarchy(std::string directoryPath, const std::string &folderName);
 
         void ContentBrowser();
 
-        void SelectedFilePopup(std::filesystem::path& file);
+        void SelectedFilePopup(std::filesystem::path &file);
 
-        void SelectedFilePopupScene(std::filesystem::path& file);
+        void SelectedFilePopupScene(std::filesystem::path &file);
     };
 }

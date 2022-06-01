@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include "jleObject.h"
@@ -34,73 +36,76 @@
 	};
 }*/
 
-namespace jle
-{
-	class jleScene
-	{
-	public:
+namespace jle {
+    class jleScene {
+    public:
 
-		jleScene();
-		explicit jleScene(const std::string& sceneName);
-		virtual ~jleScene() = default;
+        jleScene();
 
-		template <typename T>
-		std::shared_ptr<T> SpawnObject()
-		{
-			static_assert(std::is_base_of<jleObject, T>::value, "T must derive from jleObject");
+        explicit jleScene(const std::string &sceneName);
 
-			std::shared_ptr<T> newSceneObject = std::make_shared<T>();
-			ConfigurateSpawnedObject(newSceneObject);
+        virtual ~jleScene() = default;
 
-			return newSceneObject;
-		}
+        template<typename T>
+        std::shared_ptr<T> SpawnObject() {
+            static_assert(std::is_base_of<jleObject, T>::value, "T must derive from jleObject");
 
-		std::shared_ptr<jleObject> SpawnObject(const std::string& objName)
-		{
-			auto newSceneObject = jleTypeReflectionUtils::InstantiateObjectByString(objName);
-			ConfigurateSpawnedObject(newSceneObject);
+            std::shared_ptr<T> newSceneObject = std::make_shared<T>();
+            ConfigurateSpawnedObject(newSceneObject);
 
-			return newSceneObject;
-		}
+            return newSceneObject;
+        }
 
-		void UpdateSceneObjects(float dt);
-		void ProcessNewSceneObjects();
+        std::shared_ptr<jleObject> SpawnObject(const std::string &objName) {
+            auto newSceneObject = jleTypeReflectionUtils::InstantiateObjectByString(objName);
+            ConfigurateSpawnedObject(newSceneObject);
 
-		virtual void SceneUpdate() {}
-		virtual void OnSceneCreation() {}
-		virtual void OnSceneDestruction() {}
+            return newSceneObject;
+        }
 
-		void DestroyScene();
-		bool bPendingSceneDestruction = false;
+        void UpdateSceneObjects(float dt);
 
-		std::vector<std::shared_ptr<jleObject>>& GetSceneObjects()
-		{
-			return mSceneObjects;
-		}
+        void ProcessNewSceneObjects();
 
-		std::string mSceneName;
+        virtual void SceneUpdate() {}
 
-	protected:
-		std::vector<std::shared_ptr<jleObject>> mSceneObjects;
-		std::vector<std::shared_ptr<jleObject>> mNewSceneObjects;
+        virtual void OnSceneCreation() {}
 
-		friend void to_json(nlohmann::json& j, const jleScene& s);
-		friend void from_json(const nlohmann::json& j, jleScene& s);
+        virtual void OnSceneDestruction() {}
 
-	private:
-		static int mScenesCreatedCount;
+        void DestroyScene();
 
-		inline void ConfigurateSpawnedObject(std::shared_ptr<jleObject> obj)
-		{
-			obj->mContainedInScene = this;
-			obj->SetupDefaultObject();
-			obj->mInstanceName = std::string{ obj->GetObjectNameVirtual() } + "_" + std::to_string(obj->mObjectsCreatedCount);
+        bool bPendingSceneDestruction = false;
 
-			mNewSceneObjects.push_back(obj);
-		}
-	};
+        std::vector<std::shared_ptr<jleObject>> &GetSceneObjects() {
+            return mSceneObjects;
+        }
+
+        std::string mSceneName;
+
+    protected:
+        std::vector<std::shared_ptr<jleObject>> mSceneObjects;
+        std::vector<std::shared_ptr<jleObject>> mNewSceneObjects;
+
+        friend void to_json(nlohmann::json &j, const jleScene &s);
+
+        friend void from_json(const nlohmann::json &j, jleScene &s);
+
+    private:
+        static int mScenesCreatedCount;
+
+        inline void ConfigurateSpawnedObject(std::shared_ptr<jleObject> obj) {
+            obj->mContainedInScene = this;
+            obj->SetupDefaultObject();
+            obj->mInstanceName =
+                    std::string{obj->GetObjectNameVirtual()} + "_" + std::to_string(obj->mObjectsCreatedCount);
+
+            mNewSceneObjects.push_back(obj);
+        }
+    };
 
 
-	void to_json(nlohmann::json& j, const jleScene& s);
-	void from_json(const nlohmann::json& j, jleScene& s);
+    void to_json(nlohmann::json &j, const jleScene &s);
+
+    void from_json(const nlohmann::json &j, jleScene &s);
 }

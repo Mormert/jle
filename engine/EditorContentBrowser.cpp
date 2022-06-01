@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #include "EditorContentBrowser.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_stdlib.h"
@@ -56,7 +58,7 @@ jle::EditorContentBrowser::DirectoryTreeViewRecursive(const std::filesystem::pat
         if (entryIsFile)
             node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
-        bool node_open = ImGui::TreeNodeEx((void *) (intptr_t) (*count), node_flags, name.c_str());
+        bool node_open = ImGui::TreeNodeEx((void *) (intptr_t) (*count), node_flags, "%s", name.c_str());
 
         if (ImGui::IsItemClicked()) {
             node_clicked = *count;
@@ -182,11 +184,9 @@ void jle::EditorContentBrowser::ContentBrowser() {
                     std::shared_ptr<iTexture> iconTexture;
                     if (dir_entry.path().extension() == ".scn") {
                         iconTexture = mSceneFileIcon;
-                    }
-                    else if (dir_entry.path().extension() == ".png") {
+                    } else if (dir_entry.path().extension() == ".png") {
                         iconTexture = mImageFileIcon;
-                    }
-                    else if (dir_entry.path().extension() == ".json") {
+                    } else if (dir_entry.path().extension() == ".json") {
                         iconTexture = mJsonFileIcon;
                     } else {
                         iconTexture = mFileIcon;
@@ -250,8 +250,7 @@ void jle::EditorContentBrowser::SelectedFilePopup(std::filesystem::path &file) {
     ImGui::Text("%s", file.filename().string().c_str());
 
     const auto popupWidth = ImGui::GetWindowContentRegionWidth();
-    if (popupWidth > size.x)
-    {
+    if (popupWidth > size.x) {
         size.x = popupWidth;
     }
 

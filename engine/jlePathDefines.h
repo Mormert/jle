@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include <string>
@@ -32,7 +34,7 @@ namespace jle {
     static std::string FindTrueResourcePath(jleRootFolder rootFolder, std::string path) {
 
         std::string rootFolderStr;
-        std::string* resourcesDirectory;
+        std::string *resourcesDirectory;
         switch (rootFolder) {
             case jleRootFolder::EngineResources:
                 rootFolderStr = ENGINE_RESOURCES_PREFIX;

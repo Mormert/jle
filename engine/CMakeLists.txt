@@ -1,3 +1,5 @@
+# Copyright (c) 2022. Johan Lind
+
 add_library(engine STATIC
         "3rdparty/gltext/gltext.c"
         "3rdparty/ImGui/imgui.cpp"

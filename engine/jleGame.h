@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include <vector>
@@ -10,43 +12,43 @@
 
 #include <iostream>
 
-namespace jle
-{
+namespace jle {
 
-	class jleGame
-	{
-	public:
-		virtual ~jleGame() = default;
-		virtual void Update(float dt) {}
-		virtual void Start() {}
+    class jleGame {
+    public:
+        virtual ~jleGame() = default;
 
-		static void OverrideGameSettings(jleGameSettings& gs) {}
-		static void OverrideGameEditorSettings(jleGameSettings& gs, jleEditorSettings& es) {}
+        virtual void Update(float dt) {}
 
-		void UpdateActiveScenes(float dt);
+        virtual void Start() {}
 
-        bool CheckSceneIsActive(const std::string& sceneName);
+        static void OverrideGameSettings(jleGameSettings &gs) {}
 
-		template <typename T>
-		std::shared_ptr<T> CreateScene()
-		{
-			static_assert(std::is_base_of<jleScene, T>::value, "T must derive from jleScene");
+        static void OverrideGameEditorSettings(jleGameSettings &gs, jleEditorSettings &es) {}
 
-			std::shared_ptr<jleScene> newScene = std::make_shared<T>();
-			mActiveScenes.push_back(newScene);
+        void UpdateActiveScenes(float dt);
 
-			newScene->OnSceneCreation();
+        bool CheckSceneIsActive(const std::string &sceneName);
 
-			return newScene;
-		}
+        template<typename T>
+        std::shared_ptr<T> CreateScene() {
+            static_assert(std::is_base_of<jleScene, T>::value, "T must derive from jleScene");
 
-        std::shared_ptr<jleScene> LoadScene(const std::string& scenePath);
+            std::shared_ptr<jleScene> newScene = std::make_shared<T>();
+            mActiveScenes.push_back(newScene);
 
-		std::vector<std::shared_ptr<jleScene>>& GetActiveScenesRef();
+            newScene->OnSceneCreation();
+
+            return newScene;
+        }
+
+        std::shared_ptr<jleScene> LoadScene(const std::string &scenePath);
+
+        std::vector<std::shared_ptr<jleScene>> &GetActiveScenesRef();
 
         jleCamera mMainCamera;
 
-	protected:
-		std::vector<std::shared_ptr<jleScene>> mActiveScenes;
-	};
+    protected:
+        std::vector<std::shared_ptr<jleScene>> mActiveScenes;
+    };
 }

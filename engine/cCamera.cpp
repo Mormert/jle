@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #include "cCamera.h"
 #include "jleObject.h"
 #include "jleGameEngine.h"
@@ -6,8 +8,7 @@ void jle::cCamera::Start() {
     mTransform = mAttachedToObject->AddDependencyComponent<cTransform>(this);
     sInstanceCounter++;
 
-    if(sInstanceCounter > 1)
-    {
+    if (sInstanceCounter > 1) {
         LOG_ERROR << "More than one camera detected!";
     }
 }
@@ -31,7 +32,7 @@ void jle::cCamera::FromJson(const nlohmann::json &j_in) {
     mOffsetY = j_in.at("offsetY");
 }
 
-jle::cCamera::cCamera(jle::jleObject *owner, jle::jleScene *scene) : jleComponent(owner, scene) { }
+jle::cCamera::cCamera(jle::jleObject *owner, jle::jleScene *scene) : jleComponent(owner, scene) {}
 
 jle::cCamera::~cCamera() {
     sInstanceCounter--;

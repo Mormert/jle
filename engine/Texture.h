@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include "iTexture.h"
@@ -6,28 +8,29 @@
 #include <string>
 #include <climits>
 
-namespace jle
-{
-	class Texture : public iTexture
-	{
-		NO_COPY_NO_MOVE(Texture)
-	public:
+namespace jle {
+    class Texture : public iTexture {
+        NO_COPY_NO_MOVE(Texture)
 
-		Texture() = default;
-		virtual ~Texture();
+    public:
 
-		// Returns true if this Texture is the globally active texture
-		virtual bool IsActive() override;
-		// Set this Texture to be the globally active texture
-		virtual void SetToActiveTexture() override;
+        Texture() = default;
 
-        virtual unsigned int GetTextureID() override;
+        ~Texture() override;
 
-	private:
-		friend class TextureCreator_OpenGL;
+        // Returns true if this Texture is the globally active texture
+        bool IsActive() override;
 
-		unsigned int texture_id = UINT_MAX; // OpenGL Texture ID
+        // Set this Texture to be the globally active texture
+        void SetToActiveTexture() override;
 
-	};
+        unsigned int GetTextureID() override;
+
+    private:
+        friend class TextureCreator_OpenGL;
+
+        unsigned int texture_id = UINT_MAX; // OpenGL Texture ID
+
+    };
 
 }

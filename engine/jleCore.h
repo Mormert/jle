@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include "no_copy_no_move.h"
@@ -13,73 +15,80 @@
 
 #include <memory>
 
-namespace jle
-{
+namespace jle {
 
-	struct jleCoreStatus
-	{
-		virtual ~jleCoreStatus() {}
-		virtual int GetFPS() = 0;
-		virtual float GetDeltaFrameTime() = 0;
-		virtual float GetCurrentFrameTime() = 0;
-		virtual float GetLastFrameTime() = 0;
-	};
+    struct jleCoreStatus {
+        virtual ~jleCoreStatus() = default;
 
-	// Core part of the jle engine
-	class jleCore
-	{
-	public:
-		NO_COPY_NO_MOVE(jleCore)
+        virtual int GetFPS() = 0;
 
-		jleCore(std::shared_ptr<jleCoreSettings> cs);
-		virtual ~jleCore();
+        virtual float GetDeltaFrameTime() = 0;
 
-		void Run();
-		const std::unique_ptr<iRenderingFactory> renderingFactory;
-		const std::unique_ptr<iWindowFactory> windowFactory;
+        virtual float GetCurrentFrameTime() = 0;
 
-		// Singleton
-		static jleCore* core;
+        virtual float GetLastFrameTime() = 0;
+    };
 
-		// Entry point for a user to access the windowing API
-		const std::shared_ptr<iWindowAPI> window;
+    // Core part of the jle engine
+    class jleCore {
+    public:
+        NO_COPY_NO_MOVE(jleCore)
 
-		// Entry point for a user to access the input API
-		const std::shared_ptr<InputAPI> input;
+        explicit jleCore(const std::shared_ptr<jleCoreSettings> &cs);
 
-		// Entry point for a user to do fundamental rendering
-		const std::shared_ptr<iRenderingAPI> rendering;
+        virtual ~jleCore();
 
-		// Entry point for a user to create textures of different kinds
-		const std::shared_ptr<iTextureCreator> texture_creator;
+        void Run();
 
-		// Entry point for a user to get core status
-		const std::shared_ptr<jleCoreStatus> status;
+        const std::unique_ptr<iRenderingFactory> renderingFactory;
+        const std::unique_ptr<iWindowFactory> windowFactory;
 
-	private:
-		void Loop();
+        // Singleton
+        static jleCore *core;
+
+        // Entry point for a user to access the windowing API
+        const std::shared_ptr<iWindowAPI> window;
+
+        // Entry point for a user to access the input API
+        const std::shared_ptr<InputAPI> input;
+
+        // Entry point for a user to do fundamental rendering
+        const std::shared_ptr<iRenderingAPI> rendering;
+
+        // Entry point for a user to create textures of different kinds
+        const std::shared_ptr<iTextureCreator> texture_creator;
+
+        // Entry point for a user to get core status
+        const std::shared_ptr<jleCoreStatus> status;
+
+    private:
+        void Loop();
+
         void MainLoop();
-		bool running{ false };
 
-        static void main_loop()
-        {
+        bool running{false};
+
+        static void main_loop() {
             jleCore::core->MainLoop();
         }
 
-		const std::unique_ptr<iWindowInitializer> window_initializer;
+        const std::unique_ptr<iWindowInitializer> window_initializer;
 
-		// Internal impl data
-		struct jleCoreInternalImpl;
-		std::unique_ptr<jleCoreInternalImpl> coreImpl;
+        // Internal impl data
+        struct jleCoreInternalImpl;
+        std::unique_ptr<jleCoreInternalImpl> coreImpl;
 
-		friend struct CoreStatus_Internal;
+        friend struct CoreStatus_Internal;
 
-	protected:
-		virtual void Start() {}
-		virtual void Update(float dt) {}
-		virtual void Render() {}
-		virtual void Exiting() {}
+    protected:
+        virtual void Start() {}
 
-		std::shared_ptr<jleCoreSettings> core_settings;
-	};
+        virtual void Update(float dt) {}
+
+        virtual void Render() {}
+
+        virtual void Exiting() {}
+
+        std::shared_ptr<jleCoreSettings> core_settings;
+    };
 }

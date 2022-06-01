@@ -1,24 +1,26 @@
+// Copyright (c) 2022. Johan Lind
+
 #pragma once
 
 #include "iEditorImGuiWindow.h"
 #include "EditorGameControllerWidget.h"
 
-namespace jle
-{
-	class EditorWindowsPanel : public iEditorImGuiWindow
-	{
-	public:
-		EditorWindowsPanel(const std::string& window_name);
-		virtual void Update(jleGameEngine& ge) override;
+namespace jle {
+    class EditorWindowsPanel : public iEditorImGuiWindow {
+    public:
+        explicit EditorWindowsPanel(const std::string &window_name);
 
-		void AddWindow(std::shared_ptr<iEditorImGuiWindow> window);
+        void Update(jleGameEngine &ge) override;
 
-        inline void MenuButtonsUpdate(jleGameEngine& ge);
-        inline void DockspaceUpdate(jleGameEngine& ge);
+        void AddWindow(std::shared_ptr<iEditorImGuiWindow> window);
 
-	private:
-		std::vector<std::shared_ptr<iEditorImGuiWindow>> windows;
+        inline void MenuButtonsUpdate(jleGameEngine &ge);
+
+        inline void DockspaceUpdate(jleGameEngine &ge);
+
+    private:
+        std::vector<std::shared_ptr<iEditorImGuiWindow>> windows;
 
         EditorGameControllerWidget mGameController;
-	};
+    };
 }

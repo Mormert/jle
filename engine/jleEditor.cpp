@@ -1,3 +1,5 @@
+// Copyright (c) 2022. Johan Lind
+
 #include "jleEditor.h"
 
 #include "jlePathDefines.h"
@@ -6,13 +8,14 @@
 #include "3rdparty/ImGui/imgui_impl_glfw.h"
 #include "3rdparty/ImGui/imgui_impl_opengl3.h"
 
-#include "GLState.h"
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #define GL_GLEXT_PROTOTYPES
 #define EGL_EGLEXT_PROTOTYPES
 #else
+
 #include <glad/glad.h>
+
 #endif
 
 #include "Window_GLFW_OpenGL.h"
@@ -30,38 +33,33 @@
 #include "SceneEditorWindow.h"
 
 
-#include <iostream>
-
 #include <plog/Log.h>
 
 
-
-namespace jle
-{
-	jleEditor::jleEditor(std::shared_ptr<jleGameSettings> gs, std::shared_ptr<jleEditorSettings> es)
-        : jleGameEngine{ gs }, editor_settings{ es }
-	{
+namespace jle {
+    jleEditor::jleEditor(std::shared_ptr<jleGameSettings> gs, std::shared_ptr<jleEditorSettings> es)
+            : jleGameEngine{gs}, editor_settings{es} {
         background_image = std::make_unique<Image>(es->editorBackgroundImage);
-	}
+    }
 
-	void jleEditor::StartEditor()
-	{
-	}
+    void jleEditor::StartEditor() {
+    }
 
-	void jleEditor::Start()
-	{
+    void jleEditor::Start() {
 
         LOG_INFO << "Starting the editor";
 
         InitImgui();
 
-		auto dims = GetFramebufferDimensions(core_settings->windowSettings.windowWidth, core_settings->windowSettings.windowHeight);
-		framebuffer_main = renderingFactory->CreateFramebuffer(dims.first, dims.second);
+        auto dims = GetFramebufferDimensions(core_settings->windowSettings.windowWidth,
+                                             core_settings->windowSettings.windowHeight);
+        framebuffer_main = renderingFactory->CreateFramebuffer(dims.first, dims.second);
 
         mEditorFramebuffer = renderingFactory->CreateFramebuffer(dims.first, dims.second);
 
         // Create editor background image
-        editor_background_image = std::make_unique<EditorBackgroundImage>(*background_image, *texture_creator, *renderingFactory);
+        editor_background_image = std::make_unique<EditorBackgroundImage>(*background_image, *texture_creator,
+                                                                          *renderingFactory);
 
         // Note: Important that menu comes first here, since the others are dependent on the menu's dockspace.
         auto menu = std::make_shared<EditorWindowsPanel>("Menu");
@@ -96,66 +94,64 @@ namespace jle
         AddImGuiWindow(contentBrowser);
         menu->AddWindow(contentBrowser);
 
-        jleCore::window->AddWindowResizeCallback(std::bind(&jleEditor::MainEditorWindowResized, this, std::placeholders::_1, std::placeholders::_2));
+        jleCore::window->AddWindowResizeCallback(
+                std::bind(&jleEditor::MainEditorWindowResized, this, std::placeholders::_1, std::placeholders::_2));
 
         LOG_INFO << "Starting the game in editor mode";
 
         StartGame();
 
-	}
+    }
 
-	void jleEditor::Render()
-	{
-        if (!gameHalted && game)
-        {
+    void jleEditor::Render() {
+        if (!gameHalted && game) {
             // Render to game view
-            ((iRenderingInternalAPI*)rendering.get())->Render(*framebuffer_main, game->mMainCamera);
+            ((iRenderingInternalAPI *) rendering.get())->Render(*framebuffer_main, game->mMainCamera);
         }
 
         // Render to editor scene view
-        ((iRenderingInternalAPI*)rendering.get())->Render(*mEditorFramebuffer, mEditorCamera);
+        ((iRenderingInternalAPI *) rendering.get())->Render(*mEditorFramebuffer, mEditorCamera);
 
-        ((iRenderingInternalAPI*)rendering.get())->ClearBuffersForNextFrame();
+        ((iRenderingInternalAPI *) rendering.get())->ClearBuffersForNextFrame();
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		glClearColor(0.f, 0.f, 0.f, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0.f, 0.f, 0.f, 1.f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Set viewport to cover the entire screen
-		glViewport(0, 0, window->GetWindowWidth(), window->GetWindowHeight());
+        // Set viewport to cover the entire screen
+        glViewport(0, 0, window->GetWindowWidth(), window->GetWindowHeight());
 
         // Render editor background image
-        editor_background_image->Render(*static_cast<iQuadRenderingInternal*>(rendering->quads.get()), window->GetWindowWidth(), window->GetWindowHeight());
+        editor_background_image->Render(*static_cast<iQuadRenderingInternal *>(rendering->quads.get()),
+                                        window->GetWindowWidth(), window->GetWindowHeight());
 
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
 
         // Update loop for all ImGui windows
-        for (auto window : ImGuiWindows)
-        {
+        for (auto window: ImGuiWindows) {
             window->Update(*this);
         }
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        auto&& io = ImGui::GetIO();
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
-            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+        auto &&io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+            GLFWwindow *backup_current_context = glfwGetCurrentContext();
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault();
             glfwMakeContextCurrent(backup_current_context);
         }
-	}
+    }
 
-    void jleEditor::InitImgui()
-    {
-        ImGui::DebugCheckVersionAndDataLayout(IMGUI_VERSION, sizeof(ImGuiIO), sizeof(ImGuiStyle), sizeof(ImVec2), sizeof(ImVec4), sizeof(ImDrawVert), sizeof(ImDrawIdx));
+    void jleEditor::InitImgui() {
+        ImGui::DebugCheckVersionAndDataLayout(IMGUI_VERSION, sizeof(ImGuiIO), sizeof(ImGuiStyle), sizeof(ImVec2),
+                                              sizeof(ImVec4), sizeof(ImDrawVert), sizeof(ImDrawIdx));
         ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO();
+        ImGuiIO &io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
         io.ConfigWindowsMoveFromTitleBarOnly = true;
@@ -178,18 +174,17 @@ namespace jle
         SetImguiTheme();
     }
 
-    void jleEditor::SetImguiTheme()
-	{
+    void jleEditor::SetImguiTheme() {
         // cherry colors, 3 intensities
-        #define HI(v)   ImVec4(0.502f, 0.075f, 0.256f, v)
-        #define MED(v)  ImVec4(0.455f, 0.198f, 0.301f, v)
-        #define LOW(v)  ImVec4(0.232f, 0.201f, 0.271f, v)
+#define HI(v)   ImVec4(0.502f, 0.075f, 0.256f, v)
+#define MED(v)  ImVec4(0.455f, 0.198f, 0.301f, v)
+#define LOW(v)  ImVec4(0.232f, 0.201f, 0.271f, v)
         // backgrounds (@todo: complete with BG_MED, BG_LOW)
-        #define BG(v)   ImVec4(0.200f, 0.220f, 0.270f, v)
+#define BG(v)   ImVec4(0.200f, 0.220f, 0.270f, v)
         // text
-        #define TEXT(v) ImVec4(0.860f, 0.930f, 0.890f, v)
+#define TEXT(v) ImVec4(0.860f, 0.930f, 0.890f, v)
 
-        auto& style = ImGui::GetStyle();
+        auto &style = ImGui::GetStyle();
         style.Colors[ImGuiCol_Text] = TEXT(0.78f);
         style.Colors[ImGuiCol_TextDisabled] = TEXT(0.28f);
         style.Colors[ImGuiCol_WindowBg] = ImVec4(0.13f, 0.14f, 0.17f, 1.00f);
@@ -249,16 +244,14 @@ namespace jle
         style.Colors[ImGuiCol_Border] = ImVec4(0.539f, 0.479f, 0.255f, 0.162f);
         style.FrameBorderSize = 0.0f;
         style.WindowBorderSize = 1.0f;
-	}
+    }
 
-    void jleEditor::AddImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window)
-    {
+    void jleEditor::AddImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window) {
         ImGuiWindows.push_back(window);
     }
 
-    void jleEditor::MainEditorWindowResized(int w, int h)
-    {
-        auto&& io = ImGui::GetIO();
+    void jleEditor::MainEditorWindowResized(int w, int h) {
+        auto &&io = ImGui::GetIO();
         io.FontGlobalScale = w / 1920.f;
     }
 

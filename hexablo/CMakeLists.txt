@@ -1,10 +1,8 @@
+# Copyright (c) 2022. Johan Lind
 
 add_executable(hexablo
-        "GameObject.cpp"
         "Hexablo.cpp"
         "main.cpp"
-        "HexMap.cpp"
-        "ObjectManager.cpp"
         )
 
 
