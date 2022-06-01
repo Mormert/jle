@@ -68,11 +68,11 @@ namespace jle {
     }
 
     float Window_GLFW_OpenGL::GetScrollX() {
-        return 0;
+        return activeWindow->currentScrollX;
     }
 
     float Window_GLFW_OpenGL::GetScrollY() {
-        return 0;
+        return activeWindow->currentScrollY;
     }
 
     Window_GLFW_OpenGL::~Window_GLFW_OpenGL() {
@@ -164,6 +164,9 @@ namespace jle {
     }
 
     void Window_GLFW_OpenGL::UpdateWindow() {
+        activeWindow->currentScrollX = 0.f;
+        activeWindow->currentScrollY = 0.f;
+
         glfwPollEvents();
         glfwSwapBuffers(nativeWindow);
     }

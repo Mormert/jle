@@ -54,14 +54,14 @@ private:
                 for (auto &objChildren: objHead) {
                     if (objChildren.second.is_object()) {
                         auto oNode = std::make_shared<_iNode>();
-                        oNode->mName = objChildren.first.c_str();
+                        oNode->mName = objChildren.first;
                         mNodes.push_back(oNode);
 
                         // Use recursion if child is a json object
                         oNode->RecursivelyConstructTree(objChildren.second);
                     } else if (objChildren.second.is_array()) {
                         auto arrayNode = std::make_shared<_NodeArray>();
-                        arrayNode->mName = objChildren.first.c_str();
+                        arrayNode->mName = objChildren.first;
                         mNodes.push_back(arrayNode);
 
                         int arrayIndex = 0;
@@ -75,22 +75,22 @@ private:
                     } else if (objChildren.second.is_number_float()) {
                         auto jvalue = objChildren.second.get<nlohmann::json::number_float_t>();
                         auto node = std::make_shared<_NodeFloat>(static_cast<float_t>(jvalue));
-                        node->mName = objChildren.first.c_str();
+                        node->mName = objChildren.first;
                         mNodes.push_back(node);
                     } else if (objChildren.second.is_number_integer()) {
                         auto jvalue = objChildren.second.get<nlohmann::json::number_integer_t>();
                         auto node = std::make_shared<_NodeInt>(static_cast<int32_t>(jvalue));
-                        node->mName = objChildren.first.c_str();
+                        node->mName = objChildren.first;
                         mNodes.push_back(node);
                     } else if (objChildren.second.is_string()) {
                         auto jvalue = objChildren.second.get<nlohmann::json::string_t>();
                         auto node = std::make_shared<_NodeString>(jvalue);
-                        node->mName = objChildren.first.c_str();
+                        node->mName = objChildren.first;
                         mNodes.push_back(node);
                     } else if (objChildren.second.is_boolean()) {
                         auto jvalue = objChildren.second.get<nlohmann::json::boolean_t>();
                         auto node = std::make_shared<_NodeBool>(jvalue);
-                        node->mName = objChildren.first.c_str();
+                        node->mName = objChildren.first;
                         mNodes.push_back(node);
                     }
                 }

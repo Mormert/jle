@@ -67,7 +67,7 @@ namespace jle {
 
     void Framebuffer_OpenGL::ResizeFramebuffer(unsigned int width, unsigned int height) {
 
-        LOG_VERBOSE << "Resized Framebuffer " << framebuffer << ": " << width << ", " << height;
+        // LOG_VERBOSE << "Resized Framebuffer " << framebuffer << ": " << width << ", " << height;
 
         this->width = width;
         this->height = height;

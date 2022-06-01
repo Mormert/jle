@@ -34,10 +34,10 @@ namespace jle {
     }
 
     float MouseInputInternal::GetScrollX() {
-        return 0;
+        return windowInternal->GetScrollX();
     }
 
     float MouseInputInternal::GetScrollY() {
-        return 0;
+        return windowInternal->GetScrollY();
     }
 }
