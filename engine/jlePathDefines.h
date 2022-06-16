@@ -14,6 +14,12 @@ static std::string JLE_ENGINE_PATH{_JLE_ENGINE_PATH};
 #endif
 
 
+#ifdef BUILD_GLES3
+static std::string JLE_ENGINE_PATH_SHADERS{JLE_ENGINE_PATH + "EngineResources/shaders/es"};
+#else
+static std::string JLE_ENGINE_PATH_SHADERS{JLE_ENGINE_PATH + "EngineResources/shaders/core"};
+#endif
+
 #ifdef BUILD_EDITOR
 static std::string GAME_RESOURCES_DIRECTORY{_GAME_RESOURCES_DIRECTORY};
 #else

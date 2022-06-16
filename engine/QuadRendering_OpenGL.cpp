@@ -30,10 +30,10 @@ namespace jle {
 
 
     QuadRendering_OpenGL::QuadRendering_OpenGL()
-            : quadShader{std::string{JLE_ENGINE_PATH + "EngineResources/shaders/quad.vert"}.c_str(),
-                         std::string{JLE_ENGINE_PATH + "EngineResources/shaders/quad.frag"}.c_str()},
-              quadShaderInstanced{std::string{JLE_ENGINE_PATH + "EngineResources/shaders/quadInstanced.vert"}.c_str(),
-                                  std::string{JLE_ENGINE_PATH + "EngineResources/shaders/quadInstanced.frag"}.c_str()} {
+            : quadShader{std::string{JLE_ENGINE_PATH_SHADERS + "/quad.vert"}.c_str(),
+                         std::string{JLE_ENGINE_PATH_SHADERS + "/quad.frag"}.c_str()},
+              quadShaderInstanced{std::string{JLE_ENGINE_PATH_SHADERS + "/quadInstanced.vert"}.c_str(),
+                                  std::string{JLE_ENGINE_PATH_SHADERS + "/quadInstanced.frag"}.c_str()} {
 
         LOG_VERBOSE << "Constructing OpenGL Quad Rendering";
 

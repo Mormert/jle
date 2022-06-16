@@ -17,7 +17,6 @@
 #define EGL_EGLEXT_PROTOTYPES
 #else
 
-#include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
 #endif

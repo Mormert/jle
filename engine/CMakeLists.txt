@@ -40,7 +40,6 @@ add_library(engine STATIC
         "KeyboardInputInternal.cpp"
         "MouseInputInternal.cpp"
         "FrameBuffer_OpenGL.cpp"
-        "FramebufferFullscreenRenderer_OpenGL.cpp"
         "FullscreenRendering_OpenGL.cpp"
         "QuadRendering_OpenGL.cpp"
         "RenderingAPI_OpenGL.cpp"

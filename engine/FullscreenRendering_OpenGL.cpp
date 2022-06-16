@@ -32,8 +32,8 @@ namespace jle {
     };
 
     FullscreenRendering_OpenGL::FullscreenRendering_OpenGL()
-            : quadScreenShader{std::string{JLE_ENGINE_PATH + "EngineResources/shaders/quadScreen.vert"}.c_str(),
-                               std::string{JLE_ENGINE_PATH + "EngineResources/shaders/quadScreen.frag"}.c_str()} {
+            : quadScreenShader{std::string{JLE_ENGINE_PATH_SHADERS + "/quadScreen.vert"}.c_str(),
+                               std::string{JLE_ENGINE_PATH_SHADERS + "/quadScreen.frag"}.c_str()} {
         // Configure screen quad
         glGenVertexArrays(1, &quadVAO);
         glGenBuffers(1, &quadVBO);

@@ -19,10 +19,17 @@
 
 InterfaceWindowPtr WindowInitializer_GLFW_OpenGL::InitWindow(int width, int height, const char *title) {
 
+#ifdef BUILD_GLES3
     // Runs on OpenGL ES 3.0
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+#else
+    // Runs on OpenGL Core 3.3
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#endif
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // To Enable MSAA
