@@ -141,20 +141,18 @@ namespace jle {
     }
 
     void QuadRendering_OpenGL::Render(iFramebuffer &framebufferOut, const jleCamera &camera) {
-        const int viewportWidth = framebufferOut.GetWidth();
-        const int viewportHeight = framebufferOut.GetHeight();
-
-        //std::cout << "framebuffer: " << viewportWidth << ", " << viewportHeight << '\n';
+        const uint32_t viewportWidth = framebufferOut.GetWidth();
+        const uint32_t viewportHeight = framebufferOut.GetHeight();
 
         glm::mat4 view{1.f};
-        view = glm::ortho(static_cast<float>(camera.mX),
-                          static_cast<float>(camera.mX + viewportWidth),
-                          static_cast<float>(camera.mY + viewportHeight),
-                          static_cast<float>(camera.mY), -1.f, 1.f);
+        view = glm::ortho(static_cast<float>(camera.GetIntX()),
+                          static_cast<float>(camera.GetIntX() + viewportWidth),
+                          static_cast<float>(camera.GetIntY() + viewportHeight),
+                          static_cast<float>(camera.GetIntY()), -1.f, 1.f);
 
         framebufferOut.BindToFramebuffer();
 
-        glClearColor(0.f, 0.2f, 0.f, 1.0f); // Make everything black
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Make everything black
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
 

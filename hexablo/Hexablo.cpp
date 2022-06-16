@@ -13,5 +13,4 @@ void Hexablo::Start()
 void Hexablo::Update(float dt)
 {
     const auto engine = jle::jleGameEngine::gEngine;
-    LOG_VERBOSE << jle::jleCore::core->input->mouse->GetPixelatedMouseX();
 }
