@@ -19,5 +19,7 @@ namespace jle {
         bool mWasFocused = false;
 
         std::shared_ptr<iFramebuffer> mFramebuffer;
+        std::shared_ptr<iTexture> mTransformMarkerTexture;
+        TexturedQuad mTexturedQuad;
     };
 }

@@ -1,5 +1,9 @@
 #include "Hexablo.h"
-
+#include "jleCore.h"
+#include "iMouseInput.h"
+#include "iInput.h"
+#include "jleGameEngine.h"
+#include "jleGame.h"
 
 void Hexablo::Start()
 {
@@ -8,5 +12,6 @@ void Hexablo::Start()
 
 void Hexablo::Update(float dt)
 {
-
+    const auto engine = jle::jleGameEngine::gEngine;
+    LOG_VERBOSE << jle::jleCore::core->input->mouse->GetPixelatedMouseX();
 }

@@ -11,10 +11,12 @@
 namespace jle {
 
     jleGameEngine::jleGameEngine(std::shared_ptr<jleGameSettings> gs) : gameSettings{gs}, jleCore{gs} {
+        gEngine = this;
         SetGameDimsPixels(gs->framebufferSettings.fixedAxis, gs->framebufferSettings.fixedAxisPixels);
     }
 
     jleGameEngine::~jleGameEngine() {
+        gEngine = nullptr;
     }
 
     void jleGameEngine::SetGameDimsPixels(FIXED_AXIS fa, unsigned int pixels) {

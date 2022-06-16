@@ -9,12 +9,20 @@
 namespace jle {
     class GameEditorWindow : public iEditorImGuiWindow {
     public:
-        GameEditorWindow(const std::string &window_name);
+        explicit GameEditorWindow(const std::string &window_name);
 
-        virtual void Update(jleGameEngine &ge) override;
+        void Update(jleGameEngine &ge) override;
+
+        static inline GameEditorWindow* gGameEditorWindow;
+
+        int GetWindowWidth() const;
+        int GetWindowHeight() const;
+        int GetWindowPosX() const;
+        int GetWindowPosY() const;
 
     private:
-        float lastGameWindowWidth = 0.f, lastGameWindowHeight = 0.f;
-        bool wasFocused = false;
+        float mLastGameWindowWidth = 0.f, mLastGameWindowHeight = 0.f;
+        int mWindowPositionX, mWindowPositionY;
+        bool mWasFocused = false;
     };
 }

@@ -12,7 +12,13 @@ namespace jle {
 
         void Update(jleGameEngine &ge) override;
 
+        static std::weak_ptr<jleObject>& GetSelectedObject();
+
     private:
         EditorJsonToImgui mJsonToImgui;
+
+        // Using a static weak_ptr here so that it won't impact deletion
+        static inline std::weak_ptr<jleObject> selectedObject;
+
     };
 }

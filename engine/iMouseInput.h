@@ -3,6 +3,7 @@
 #pragma once
 
 #include "iInput.h"
+#include <plog/Log.h>
 
 class iMouseInput : public iInput {
 public:
@@ -25,4 +26,8 @@ public:
 
     // Returns a float != 0 if scroll detected, value depend on scroll
     virtual float GetScrollY() = 0;
+
+    virtual int GetPixelatedMouseX() = 0;
+    virtual int GetPixelatedMouseY() = 0;
+
 };

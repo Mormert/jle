@@ -25,7 +25,18 @@ namespace jle {
 
         float GetScrollY() override;
 
+        int GetPixelatedMouseX() override;
+        int GetPixelatedMouseY() override;
+
+        void SetScreenBeginCoords(int x, int y);
+        void SetScreenSize(int width, int height);
+        void SetPixelatedScreenSize(int width, int height);
+
     private:
         std::shared_ptr<iWindowInternalAPI> windowInternal;
+
+        int mScreenBeginX{0}, mScreenBeginY{0};
+        int mScreenWidth, mScreenHeight;
+        int mPixelatedScreenWidth, mPixelatedScreenHeight;
     };
 }

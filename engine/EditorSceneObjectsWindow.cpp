@@ -14,6 +14,11 @@ jle::EditorSceneObjectsWindow::EditorSceneObjectsWindow(const std::string &windo
         : iEditorImGuiWindow{window_name} {
 }
 
+
+std::weak_ptr<jle::jleObject> &jle::EditorSceneObjectsWindow::GetSelectedObject() {
+    return selectedObject;
+}
+
 void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
     if (!isOpened) {
         return;
@@ -117,9 +122,6 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
         ImGui::EndGroup();
 
         ImGui::SameLine();
-
-        // Using a static weak_ptr here so that it won't impact deletion
-        static std::weak_ptr<jleObject> selectedObject;
 
         ImGui::BeginGroup();
         ImGui::Text("Object");
@@ -274,3 +276,5 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
     }
     ImGui::End();
 }
+
+

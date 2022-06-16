@@ -5,6 +5,7 @@
 #include "3rdparty/ImGui/imgui.h"
 
 #include "GLState.h"
+#include "MouseInputInternal.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -20,6 +21,7 @@
 namespace jle {
     GameEditorWindow::GameEditorWindow(const std::string &window_name) :
             iEditorImGuiWindow{window_name} {
+        gGameEditorWindow = this;
     }
 
     void GameEditorWindow::Update(jleGameEngine &ge) {
@@ -35,10 +37,16 @@ namespace jle {
         constexpr float negYOffset = 6;
         constexpr float negXOffset = 6;
 
-        if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset == lastGameWindowWidth &&
-              ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset == lastGameWindowHeight)) {
-            lastGameWindowWidth = ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset;
-            lastGameWindowHeight = ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset;
+        const auto cursorScreenPos = ImGui::GetCursorScreenPos();
+        mWindowPositionX = cursorScreenPos.x;
+        mWindowPositionY = cursorScreenPos.y;
+
+        std::static_pointer_cast<MouseInputInternal>(jle::jleCore::core->input->mouse)->SetScreenBeginCoords(mWindowPositionX, mWindowPositionY);
+
+        if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset == mLastGameWindowWidth &&
+              ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset == mLastGameWindowHeight)) {
+            mLastGameWindowWidth = ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset;
+            mLastGameWindowHeight = ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset;
 
             auto dims = ge.GetFramebufferDimensions(static_cast<unsigned int>(ImGui::GetWindowWidth()),
                                                     static_cast<unsigned int>(ImGui::GetWindowHeight()));
@@ -49,14 +57,30 @@ namespace jle {
         glBindTexture(GL_TEXTURE_2D, (unsigned int) ge.framebuffer_main->GetTexture());
         jle::GLState::globalActiveTexture = (unsigned int) ge.framebuffer_main->GetTexture();
         ImGui::Image((void *) (intptr_t) ge.framebuffer_main->GetTexture(),
-                     ImVec2(lastGameWindowWidth, lastGameWindowHeight), ImVec2(0, 1), ImVec2(1, 0));
+                     ImVec2(mLastGameWindowWidth, mLastGameWindowHeight), ImVec2(0, 1), ImVec2(1, 0));
 
-        if (ImGui::IsWindowFocused() != wasFocused) {
-            wasFocused = ImGui::IsWindowFocused();
-            ge.input->SetInputEnabled(wasFocused);
+        if (ImGui::IsWindowFocused() != mWasFocused) {
+            mWasFocused = ImGui::IsWindowFocused();
+            ge.input->SetInputEnabled(mWasFocused);
         }
 
         ImGui::End();
+    }
+
+    int GameEditorWindow::GetWindowWidth() const {
+        return int(mLastGameWindowWidth);
+    }
+
+    int GameEditorWindow::GetWindowHeight() const {
+        return int(mLastGameWindowHeight);
+    }
+
+    int GameEditorWindow::GetWindowPosX() const {
+        return mWindowPositionX;
+    }
+
+    int GameEditorWindow::GetWindowPosY() const {
+        return mWindowPositionY;
     }
 
 }

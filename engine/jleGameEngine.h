@@ -48,6 +48,8 @@ namespace jle {
 
         jleGame &GetGameRef();
 
+        static inline jleGameEngine* gEngine;
+
     private:
 
         class iGameCreator {
