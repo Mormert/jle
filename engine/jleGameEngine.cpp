@@ -5,6 +5,7 @@
 #include "iRenderingInternalAPI.h"
 
 #include "jleExplicitInclude.h"
+#include "MouseInputInternal.h"
 
 #include <plog/Log.h>
 
@@ -111,6 +112,10 @@ namespace jle {
     void jleGameEngine::FramebufferResizeEvent(unsigned int width, unsigned int height) {
         auto dims = GetFramebufferDimensions(width, height);
         framebuffer_main->ResizeFramebuffer(dims.first, dims.second);
+
+        const auto& internalInputMouse = std::static_pointer_cast<MouseInputInternal>(jle::jleCore::core->input->mouse);
+        internalInputMouse->SetPixelatedScreenSize(dims.first, dims.second);
+        internalInputMouse->SetScreenSize(width, height);
     }
 
     void jleGameEngine::Update(float dt) {

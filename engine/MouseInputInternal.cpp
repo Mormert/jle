@@ -14,25 +14,19 @@ namespace jle {
     }
 
     int MouseInputInternal::GetMouseX() {
-        if (input_enabled) {
 #ifdef BUILD_EDITOR
-            return windowInternal->GetCursor().first - mScreenBeginX;
+        return windowInternal->GetCursor().first - mScreenBeginX;
 #else
-            return windowInternal->GetCursor().first;
+        return windowInternal->GetCursor().first;
 #endif
-        }
-        return 0;
     }
 
     int MouseInputInternal::GetMouseY() {
-        if (input_enabled) {
 #ifdef BUILD_EDITOR
-            return windowInternal->GetCursor().second - mScreenBeginY;
+        return windowInternal->GetCursor().second - mScreenBeginY;
 #else
-            return windowInternal->GetCursor().second;
+        return windowInternal->GetCursor().second;
 #endif
-        }
-        return 0;
     }
 
     float MouseInputInternal::GetMouseXDelta() {

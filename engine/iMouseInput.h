@@ -27,7 +27,10 @@ public:
     // Returns a float != 0 if scroll detected, value depend on scroll
     virtual float GetScrollY() = 0;
 
+    // Returns the X coordinate on the main pixelated framebuffer
     virtual int GetPixelatedMouseX() = 0;
+
+    // Returns the Y coordinate on the main pixelated framebuffer
     virtual int GetPixelatedMouseY() = 0;
 
 };

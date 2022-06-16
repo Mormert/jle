@@ -37,11 +37,15 @@ namespace jle {
         constexpr float negYOffset = 6;
         constexpr float negXOffset = 6;
 
-        const auto cursorScreenPos = ImGui::GetCursorScreenPos();
-        mWindowPositionX = cursorScreenPos.x;
-        mWindowPositionY = cursorScreenPos.y;
+        const auto& cursorScreenPos = ImGui::GetCursorScreenPos();
+        const auto viewport = ImGui::GetMainViewport();
+        mWindowPositionX = cursorScreenPos.x - viewport->Pos.x;
+        mWindowPositionY = cursorScreenPos.y - viewport->Pos.y;
 
-        std::static_pointer_cast<MouseInputInternal>(jle::jleCore::core->input->mouse)->SetScreenBeginCoords(mWindowPositionX, mWindowPositionY);
+        const auto& internalInputMouse = std::static_pointer_cast<MouseInputInternal>(jle::jleCore::core->input->mouse);
+        const auto& engineFramebufferMain = jle::jleGameEngine::gEngine->framebuffer_main;
+        internalInputMouse->SetScreenBeginCoords(mWindowPositionX, mWindowPositionY);
+        internalInputMouse->SetScreenSize(GetWindowWidth(), GetWindowHeight());
 
         if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset == mLastGameWindowWidth &&
               ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset == mLastGameWindowHeight)) {
@@ -51,6 +55,7 @@ namespace jle {
             auto dims = ge.GetFramebufferDimensions(static_cast<unsigned int>(ImGui::GetWindowWidth()),
                                                     static_cast<unsigned int>(ImGui::GetWindowHeight()));
             ge.framebuffer_main->ResizeFramebuffer(dims.first, dims.second);
+            internalInputMouse->SetPixelatedScreenSize(dims.first, dims.second);
         }
 
         // Get the texture from the framebuffer

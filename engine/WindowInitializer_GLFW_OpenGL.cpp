@@ -37,6 +37,9 @@ InterfaceWindowPtr WindowInitializer_GLFW_OpenGL::InitWindow(int width, int heig
 
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+    // Avoid retina display scaling factor issues
+    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GL_FALSE);
 #endif
 
     GLFWwindow *glfwWindow = glfwCreateWindow(width, height, title, nullptr, nullptr);
