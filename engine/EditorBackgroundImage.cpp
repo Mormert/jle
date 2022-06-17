@@ -14,7 +14,7 @@ namespace jle {
 
     void EditorBackgroundImage::Render(iQuadRenderingInternal &quadRenderer, unsigned int width, unsigned int height) {
         quadRenderer.SendTexturedQuad(background_quad, RenderingMethod::Dynamic);
-        quadRenderer.Render(*background_framebuffer, jleCamera{});
+        quadRenderer.QueueRender(*background_framebuffer, jleCamera{});
         quadRenderer.ClearBuffersForNextFrame();
 
         background_fullscreen_renderer->RenderFramebufferFullscreen(*background_framebuffer, width, height);

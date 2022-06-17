@@ -21,7 +21,9 @@ namespace jle {
 
         void SendColoredQuad(ColoredQuad &coloredQuad, RenderingMethod renderingMethod) override;
 
-        void Render(iFramebuffer &framebufferOut, const jleCamera &camera) override;
+        void QueueRender(iFramebuffer &framebufferOut, const jleCamera &camera) override;
+
+        void Render(iFramebuffer &framebufferOut, const jleCamera &camera, const std::vector<TexturedQuad>& texturedQuads, bool clearDepthColor) override;
 
         void ClearBuffersForNextFrame() override;
 
@@ -33,7 +35,7 @@ namespace jle {
         jle::gfx::Shader_OpenGL quadShaderInstanced;
         unsigned int quadVBO_Instanced, quadVAO_Instanced, instanceVBO, elementbuffer;
 
-        std::vector<TexturedQuad> texturedQuads;
+        std::vector<TexturedQuad> mQueuedTexturedQuads;
     };
 }
 

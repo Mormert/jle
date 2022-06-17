@@ -133,14 +133,23 @@ namespace jle {
     }
 
     void QuadRendering_OpenGL::SendTexturedQuad(TexturedQuad &texturedQuad, RenderingMethod renderingMethod) {
-        texturedQuads.push_back(texturedQuad);
+        mQueuedTexturedQuads.push_back(texturedQuad);
     }
 
     void QuadRendering_OpenGL::SendColoredQuad(ColoredQuad &coloredQuad, RenderingMethod renderingMethod) {
 
     }
 
-    void QuadRendering_OpenGL::Render(iFramebuffer &framebufferOut, const jleCamera &camera) {
+    void QuadRendering_OpenGL::QueueRender(iFramebuffer &framebufferOut, const jleCamera &camera) {
+        Render(framebufferOut, camera, mQueuedTexturedQuads, true);
+    }
+
+    void QuadRendering_OpenGL::ClearBuffersForNextFrame() {
+        mQueuedTexturedQuads.clear();
+    }
+
+    void QuadRendering_OpenGL::Render(iFramebuffer &framebufferOut, const jleCamera &camera,
+                                      const std::vector<TexturedQuad> &texturedQuads, bool clearDepthColor) {
         const uint32_t viewportWidth = framebufferOut.GetWidth();
         const uint32_t viewportHeight = framebufferOut.GetHeight();
 
@@ -152,8 +161,11 @@ namespace jle {
 
         framebufferOut.BindToFramebuffer();
 
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Make everything black
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        if(clearDepthColor){
+            glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Make everything black
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        }
+
         glEnable(GL_DEPTH_TEST);
 
         // Change viewport dimensions to match framebuffer's dimensions
@@ -204,11 +216,6 @@ namespace jle {
         }
 
         framebufferOut.BindToDefaultFramebuffer();
-
-    }
-
-    void QuadRendering_OpenGL::ClearBuffersForNextFrame() {
-        texturedQuads.clear();
     }
 
 }

@@ -10,6 +10,7 @@
 #include "glm/common.hpp"
 #include "cTransform.h"
 #include "iWindowInternalAPI.h"
+#include "iQuadRenderingInternal.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -66,21 +67,25 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
         mFramebuffer->ResizeFramebuffer(dims.first * zoomValue, dims.second * zoomValue);
     }
 
-    // Get the texture from the framebuffer
-    glBindTexture(GL_TEXTURE_2D, (unsigned int) mFramebuffer->GetTexture());
-    jle::GLState::globalActiveTexture = (unsigned int) mFramebuffer->GetTexture();
-    ImGui::Image((void *) (intptr_t) mFramebuffer->GetTexture(), ImVec2(mLastGameWindowWidth, mLastGameWindowHeight),
-                 ImVec2(0, 1), ImVec2(1, 0));
-
     const auto &selectedObject = EditorSceneObjectsWindow::GetSelectedObject();
+
+    // Render the transform marker only in the editor window
     if (auto object = selectedObject.lock()) {
         if (auto transform = object->GetComponent<cTransform>()) {
             mTexturedQuad.x = transform->x - 64.f;
             mTexturedQuad.y = transform->y - 64.f;
-            jle::jleCore::core->rendering->quads->SendTexturedQuad(mTexturedQuad, RenderingMethod::Dynamic);
+            std::vector<TexturedQuad> texturedQuads {mTexturedQuad};
+            auto quadRenderer = ((iQuadRenderingInternal *) (jleCore::core->rendering->quads.get()));
+            quadRenderer->Render(*mFramebuffer, jleEditor::mEditorCamera, texturedQuads, false);
         }
     }
 
+    glBindTexture(GL_TEXTURE_2D, (unsigned int) mFramebuffer->GetTexture());
+    jle::GLState::globalActiveTexture = (unsigned int) mFramebuffer->GetTexture();
+
+    // Render the framebuffer as an image
+    ImGui::Image((void *) (intptr_t) mFramebuffer->GetTexture(), ImVec2(mLastGameWindowWidth, mLastGameWindowHeight),
+                 ImVec2(0, 1), ImVec2(1, 0));
 
     if (ImGui::IsWindowHovered()) {
         auto dragDelta = ImGui::GetMouseDragDelta(1);

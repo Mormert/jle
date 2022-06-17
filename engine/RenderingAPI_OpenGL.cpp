@@ -23,7 +23,7 @@ namespace jle {
     }
 
     void RenderingAPI_OpenGL::Render(iFramebuffer &framebufferOut, const jleCamera &camera) {
-        ((iQuadRenderingInternal *) quads.get())->Render(framebufferOut, camera);
+        ((iQuadRenderingInternal *) quads.get())->QueueRender(framebufferOut, camera);
         ((iTextRenderingInternal *) texts.get())->Render(framebufferOut, camera);
     }
 
