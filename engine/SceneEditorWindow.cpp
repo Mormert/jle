@@ -9,6 +9,7 @@
 #include "GLState.h"
 #include "glm/common.hpp"
 #include "cTransform.h"
+#include "iWindowInternalAPI.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -47,6 +48,11 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
 
     constexpr float negYOffset = 6;
     constexpr float negXOffset = 6;
+
+    const auto& cursorScreenPos = ImGui::GetCursorScreenPos();
+    const auto viewport = ImGui::GetMainViewport();
+    const int32_t windowPositionX = int32_t(cursorScreenPos.x) - viewport->Pos.x;
+    const int32_t windowPositionY = int32_t(cursorScreenPos.y) - viewport->Pos.y;
 
     static float zoomValue = 1.f;
 
@@ -91,12 +97,13 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
             mFramebuffer->ResizeFramebuffer(dims.first * zoomValue, dims.second * zoomValue);
         }
 
+        // Select closest object from mouse click
         if(ImGui::IsMouseClicked(0))
         {
             auto &game = ((jleGameEngine *) jleCore::core)->GetGameRef();
             const auto& scenes = game.GetActiveScenesRef();
 
-            std::vector<std::shared_ptr<cTransform>> transformsVector;
+            std::unordered_map<std::shared_ptr<cTransform>, std::shared_ptr<jleObject>> transformsMap;
             for(auto& scene : scenes)
             {
                 for(auto& object : scene->GetSceneObjects())
@@ -104,11 +111,47 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
                     auto objectsTransform = object->GetComponent<cTransform>();
                     if(objectsTransform)
                     {
-                        transformsVector.push_back(objectsTransform);
+                        transformsMap.insert(std::make_pair(objectsTransform, object));
                     }
                 }
             }
 
+            const auto& mouseScreenCoordinates =  std::static_pointer_cast<iWindowInternalAPI>(jleCore::core->window)->GetCursor();
+            const int mouseX = mouseScreenCoordinates.first;
+            const int mouseY = mouseScreenCoordinates.second;
+
+            const auto getPixelatedMousePosX = [&]()-> int32_t {
+                const float ratio = float(mFramebuffer->GetWidth()) / float(mLastGameWindowWidth);
+                return int(ratio * float(mouseX - windowPositionX));
+            };
+
+            const auto getPixelatedMousePosY = [&]()-> int32_t {
+                const float ratio = float(mFramebuffer->GetHeight()) / float(mLastGameWindowHeight);
+                return int(ratio * float(mouseY - windowPositionY));
+            };
+
+            const auto mouseCoordinateX = getPixelatedMousePosX() + jleEditor::mEditorCamera.GetIntX();
+            const auto mouseCoordinateY = getPixelatedMousePosY() + jleEditor::mEditorCamera.GetIntY();
+
+            std::shared_ptr<cTransform> closestTransform = nullptr;
+            std::shared_ptr<jleObject> selectedObject = nullptr;
+            for(auto& transformPair : transformsMap){
+                const auto& transform = transformPair.first;
+                const auto& object = transformPair.second;
+                if(closestTransform == nullptr) {
+                    closestTransform = transform;
+                    selectedObject = object;
+                }
+                else if((pow(transform->x - mouseCoordinateX, 2) + pow(transform->y - mouseCoordinateY, 2)) <
+                        (pow(closestTransform->x - mouseCoordinateX, 2)) + pow(closestTransform->y - mouseCoordinateY, 2)){
+                    closestTransform = transform;
+                    selectedObject = object;
+                }
+            }
+
+            if(selectedObject){
+                EditorSceneObjectsWindow::SetSelectedObject(selectedObject);
+            }
         }
     }
 

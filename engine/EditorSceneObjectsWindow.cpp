@@ -277,4 +277,8 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
     ImGui::End();
 }
 
+void jle::EditorSceneObjectsWindow::SetSelectedObject(std::shared_ptr<jleObject> object) {
+    selectedObject = object;
+}
+
 
