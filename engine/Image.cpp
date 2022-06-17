@@ -99,4 +99,27 @@ namespace jle {
     const std::string &Image::GetPath() const {
         return path;
     }
+
+    std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> Image::GetPixelAtLocation(uint32_t x, uint32_t y) const {
+        if(x >= w){
+            LOGW << "x was outside bounds: " << x << ", can't be larger than or equal to " << w;
+            return std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>{0,0,0,0};
+        }
+
+        if(y >= h){
+            LOGW << "y was outside bounds: " << y << ", can't be larger than or equal to " << h;
+            return std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>{0,0,0,0};
+        }
+
+        int32_t bytesPerPixel = nr_channels;
+        const uint8_t* pixelOffset = image_data + (x + w * y) * bytesPerPixel;
+        const uint8_t r = pixelOffset[0];
+        const uint8_t g = pixelOffset[1];
+        const uint8_t b = pixelOffset[2];
+        const uint8_t a = nr_channels >= 4 ? pixelOffset[3] : 0;
+
+        LOGV << int(r) << " " << int(g) << " " << int(b) << " " << int(a);
+
+        return std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>{r,g,b,a};
+    }
 }

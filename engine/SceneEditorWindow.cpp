@@ -24,10 +24,9 @@
 #endif
 
 jle::SceneEditorWindow::SceneEditorWindow(const std::string &window_name, std::shared_ptr<iFramebuffer> &framebuffer)
-        : iEditorImGuiWindow(window_name) {
+        : iEditorImGuiWindow(window_name), mTransformMarkerImage("EditorResources/icons/transform_marker.png") {
     mFramebuffer = framebuffer;
-    mTransformMarkerTexture = jle::jleCore::core->texture_creator->LoadTextureFromPath(
-            "EditorResources/icons/transform_marker.png");
+    mTransformMarkerTexture = jle::jleCore::core->texture_creator->CreateTextureFromImage(mTransformMarkerImage);
 
     mTexturedQuad.texture = mTransformMarkerTexture;
     mTexturedQuad.width = 128;
@@ -55,6 +54,26 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
     const int32_t windowPositionX = int32_t(cursorScreenPos.x) - viewport->Pos.x;
     const int32_t windowPositionY = int32_t(cursorScreenPos.y) - viewport->Pos.y;
 
+    const auto previousFrameCursorPos = mLastCursorPos;
+    mLastCursorPos =  std::static_pointer_cast<iWindowInternalAPI>(jleCore::core->window)->GetCursor();
+    const int32_t mouseX = mLastCursorPos.first;
+    const int32_t mouseY = mLastCursorPos.second;
+    const int32_t mouseDeltaX = mouseX - previousFrameCursorPos.first;
+    const int32_t mouseDeltaY = mouseY - previousFrameCursorPos.second;
+
+    const auto getPixelatedMousePosX = [&]()-> int32_t {
+        const float ratio = float(mFramebuffer->GetWidth()) / float(mLastGameWindowWidth);
+        return int(ratio * float(mouseX - windowPositionX));
+    };
+
+    const auto getPixelatedMousePosY = [&]()-> int32_t {
+        const float ratio = float(mFramebuffer->GetHeight()) / float(mLastGameWindowHeight);
+        return int(ratio * float(mouseY - windowPositionY));
+    };
+
+    const auto mouseCoordinateX = getPixelatedMousePosX() + jleEditor::mEditorCamera.GetIntX();
+    const auto mouseCoordinateY = getPixelatedMousePosY() + jleEditor::mEditorCamera.GetIntY();
+
     static float zoomValue = 1.f;
 
     if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset == mLastGameWindowWidth &&
@@ -68,10 +87,12 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
     }
 
     const auto &selectedObject = EditorSceneObjectsWindow::GetSelectedObject();
+    std::shared_ptr<cTransform> transform{nullptr};
 
     // Render the transform marker only in the editor window
     if (auto object = selectedObject.lock()) {
-        if (auto transform = object->GetComponent<cTransform>()) {
+        transform = object->GetComponent<cTransform>();
+        if (transform) {
             mTexturedQuad.x = transform->x - 64.f;
             mTexturedQuad.y = transform->y - 64.f;
             std::vector<TexturedQuad> texturedQuads {mTexturedQuad};
@@ -102,9 +123,48 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
             mFramebuffer->ResizeFramebuffer(dims.first * zoomValue, dims.second * zoomValue);
         }
 
-        // Select closest object from mouse click
-        if(ImGui::IsMouseClicked(0))
+        static int draggingTransformMarker = 0;
+        if(ImGui::IsMouseClicked(0)){
+            if((mouseCoordinateX >= mTexturedQuad.x && mouseCoordinateX <= mTexturedQuad.x + 128)
+               && (mouseCoordinateY >= mTexturedQuad.y && mouseCoordinateY <= mTexturedQuad.y + 128)){
+                LOGV << "Inside AABB " << mouseCoordinateX - mTexturedQuad.x << ' ' << mouseCoordinateY - mTexturedQuad.y;
+
+                constexpr std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> redPart = {217,87,99,255};
+                constexpr std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> greenPart = {153,229,80,255};
+                constexpr std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> bluePart = {99,155,255,255};
+
+                const auto pixels = mTransformMarkerImage.GetPixelAtLocation(
+                        mouseCoordinateX - mTexturedQuad.x,
+                        mouseCoordinateY - mTexturedQuad.y);
+
+                if(pixels == redPart){
+                    draggingTransformMarker = 1;
+                }else if(pixels == greenPart){
+                    draggingTransformMarker = 2;
+                }else if(pixels == bluePart){
+                    draggingTransformMarker = 3;
+                }
+            }
+        }
+
+        if(ImGui::IsMouseReleased(0) && draggingTransformMarker){
+            draggingTransformMarker = 0;
+        }
+
+        if(ImGui::IsMouseDragging(0)){
+            if(draggingTransformMarker == 1){
+                transform->x = float(mouseCoordinateX);
+                transform->y = float(mouseCoordinateY);
+            }else if(draggingTransformMarker == 2){
+                transform->x = float(mouseCoordinateX);
+            }else if(draggingTransformMarker == 3){
+                transform->y = float(mouseCoordinateY);
+            }
+        }
+
+        if(!draggingTransformMarker && ImGui::IsMouseClicked(0))
         {
+            // Select closest object from mouse click
             auto &game = ((jleGameEngine *) jleCore::core)->GetGameRef();
             const auto& scenes = game.GetActiveScenesRef();
 
@@ -120,23 +180,6 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
                     }
                 }
             }
-
-            const auto& mouseScreenCoordinates =  std::static_pointer_cast<iWindowInternalAPI>(jleCore::core->window)->GetCursor();
-            const int mouseX = mouseScreenCoordinates.first;
-            const int mouseY = mouseScreenCoordinates.second;
-
-            const auto getPixelatedMousePosX = [&]()-> int32_t {
-                const float ratio = float(mFramebuffer->GetWidth()) / float(mLastGameWindowWidth);
-                return int(ratio * float(mouseX - windowPositionX));
-            };
-
-            const auto getPixelatedMousePosY = [&]()-> int32_t {
-                const float ratio = float(mFramebuffer->GetHeight()) / float(mLastGameWindowHeight);
-                return int(ratio * float(mouseY - windowPositionY));
-            };
-
-            const auto mouseCoordinateX = getPixelatedMousePosX() + jleEditor::mEditorCamera.GetIntX();
-            const auto mouseCoordinateY = getPixelatedMousePosY() + jleEditor::mEditorCamera.GetIntY();
 
             std::shared_ptr<cTransform> closestTransform = nullptr;
             std::shared_ptr<jleObject> selectedObject = nullptr;

@@ -33,6 +33,8 @@ namespace jle {
 
         [[nodiscard]] unsigned char *GetImageData() const;
 
+        [[nodiscard]] std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> GetPixelAtLocation(uint32_t x, uint32_t y) const;
+
         [[nodiscard]] const std::string &GetPath() const;
 
     private:

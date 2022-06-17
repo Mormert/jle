@@ -16,9 +16,11 @@ namespace jle {
 
     private:
         float mLastGameWindowWidth = 0.f, mLastGameWindowHeight = 0.f;
+        std::pair<int32_t, int32_t> mLastCursorPos;
         bool mWasFocused = false;
 
         std::shared_ptr<iFramebuffer> mFramebuffer;
+        Image mTransformMarkerImage;
         std::shared_ptr<iTexture> mTransformMarkerTexture;
         TexturedQuad mTexturedQuad;
     };
