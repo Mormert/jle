@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jleCore.h"
-
+#include "jleSoLoud.h"
 
 #include "KeyboardInputInternal.h"
 #include "MouseInputInternal.h"
@@ -104,10 +104,16 @@ namespace jle {
 
         coreImpl->window_internal->SetWindowSettings(cs->windowSettings);
 
+        jleSoLoud::Init();
+        //jleSoLoud::GetSoLoud().init();
+        //jleSoLoud::gSoLoud.init();
+
         core_settings = cs;
     }
 
-    jleCore::~jleCore() = default;
+    jleCore::~jleCore(){
+        jleSoLoud::DeInit();
+    }
 
     void jleCore::Run() {
         if (core != nullptr) {

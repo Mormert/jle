@@ -53,9 +53,8 @@ namespace jle {
         static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
 
         // Initialize plog when kickstarting, so logging is enabled everywhere after the kickstart
-        static plog::RollingFileAppender<plog::TxtFormatter> fileAppender("jle_log.plog", 1000,
-                                                                          5);    // Log to txt files
-        static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;                                                    // Log to command window
+        plog::RollingFileAppender<plog::TxtFormatter> fileAppender("jle_log.plog", 1000,5);
+        plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;     // Log to command window
         plog::init<0>(plog::verbose, &fileAppender).addAppender(&consoleAppender);
 
 #ifdef BUILD_EDITOR

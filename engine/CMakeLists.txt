@@ -54,7 +54,8 @@ add_library(engine STATIC
         "oStaticSprite.cpp"
         "cAseprite.cpp"
         "cCamera.cpp"
-        "SceneEditorWindow.cpp")
+        "SceneEditorWindow.cpp"
+        "jleSoLoud.cpp")
 
 
 if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()
@@ -74,6 +75,8 @@ if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded lib
 
 endif ()
 
+add_subdirectory(3rdparty/SoLoud)
+target_link_libraries(engine PUBLIC SoLoud)
 
 target_include_directories(engine SYSTEM PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty"
