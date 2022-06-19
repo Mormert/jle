@@ -6,7 +6,7 @@
 #include "WindowInitializer_GLFW_OpenGL.h"
 
 namespace jle {
-    std::unique_ptr<iWindowAPI> WindowFactory_GLFW::CreateWindow() {
+    std::unique_ptr<iWindowAPI> WindowFactory_GLFW::CreateWin() {
         return std::make_unique<Window_GLFW_OpenGL>();
     }
 

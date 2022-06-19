@@ -6,6 +6,8 @@
 #include "jleCamera.h"
 #include "iFramebuffer.h"
 
+#include <vector>
+
 namespace jle {
     class iQuadRenderingInternal : public iQuadRendering {
 

@@ -87,7 +87,7 @@ namespace jle {
     jleCore::jleCore(const std::shared_ptr<jleCoreSettings> &cs) :
             renderingFactory{CreateRenderingFactory(cs->engineAPIs)},
             windowFactory{CreateWindowFactory(cs->engineAPIs)},
-            window{windowFactory->CreateWindow()},
+            window{windowFactory->CreateWin()},
             rendering{renderingFactory->CreateRenderingAPI()},
             input{std::make_shared<InputAPI>(
                     std::make_shared<KeyboardInputInternal>(std::static_pointer_cast<iWindowInternalAPI>(window)),

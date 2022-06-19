@@ -13,7 +13,7 @@ namespace jle {
     public:
         virtual ~iWindowFactory() = default;
 
-        virtual std::unique_ptr<iWindowAPI> CreateWindow() = 0;
+        virtual std::unique_ptr<iWindowAPI> CreateWin() = 0;
 
         virtual std::unique_ptr<iWindowInitializer> CreateWindowInitializer() = 0;
     };
