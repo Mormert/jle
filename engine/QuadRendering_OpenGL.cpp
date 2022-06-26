@@ -150,8 +150,8 @@ namespace jle {
 
     void QuadRendering_OpenGL::Render(iFramebuffer &framebufferOut, const jleCamera &camera,
                                       const std::vector<TexturedQuad> &texturedQuads, bool clearDepthColor) {
-        const uint32_t viewportWidth = framebufferOut.GetWidth();
-        const uint32_t viewportHeight = framebufferOut.GetHeight();
+        const int viewportWidth = framebufferOut.GetWidth();
+        const int viewportHeight = framebufferOut.GetHeight();
 
         glm::mat4 view{1.f};
         view = glm::ortho(static_cast<float>(camera.GetIntX()),
