@@ -10,3 +10,4 @@
 #include "cAseprite.h"
 #include "cTransform.h"
 #include "cCamera.h"
+#include "cText.h"

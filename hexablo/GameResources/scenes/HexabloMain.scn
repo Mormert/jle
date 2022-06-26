@@ -41,11 +41,33 @@
                 },
                 {
                     "_comp_name": "cTransform",
-                    "x": 0.0,
-                    "y": 0.0
+                    "x": 59.0,
+                    "y": 144.0
                 }
             ],
             "_instance_name": "characterAnims"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_custom_components": [
+                {
+                    "_comp_name": "cText",
+                    "colorA": 1.0,
+                    "colorB": 1.0,
+                    "colorG": 1.0,
+                    "colorR": 1.0,
+                    "depth": 0.5,
+                    "fontPath": "ER:fonts/PokemonClassic.ttf",
+                    "fontSize": 8,
+                    "text": "hello world text :D"
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "x": 77.0,
+                    "y": 127.0
+                }
+            ],
+            "_instance_name": "helloworldtext"
         }
     ],
     "sceneName": "HexabloMain"

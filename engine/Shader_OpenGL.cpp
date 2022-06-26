@@ -2,6 +2,7 @@
 
 #include "Shader_OpenGL.h"
 #include "plog/Log.h"
+#include "jleStaticOpenGLState.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -23,6 +24,8 @@
 namespace jle {
     namespace gfx {
         Shader_OpenGL::Shader_OpenGL(const char *vertexPath, const char *fragmentPath, const char *geometryPath) {
+
+            assert(jleStaticOpenGLState::globalOpenGLInitialized == true);
 
             LOG_VERBOSE << "Compiling shader: " << vertexPath << " , " << fragmentPath;
 

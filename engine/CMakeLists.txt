@@ -35,7 +35,7 @@ add_library(engine STATIC
         "TextureCreator_OpenGL.cpp"
         "WindowInitializer_GLFW_OpenGL.cpp"
         "WindowFactory_GLFW.cpp"
-        "GLState.cpp"
+        "jleStaticOpenGLState.cpp"
         "jleGameEngine.cpp"
         "KeyboardInputInternal.cpp"
         "MouseInputInternal.cpp"
@@ -55,7 +55,8 @@ add_library(engine STATIC
         "cAseprite.cpp"
         "cCamera.cpp"
         "SceneEditorWindow.cpp"
-        "jleSoLoud.cpp")
+        "jleSoLoud.cpp"
+        "jleFont.cpp" cText.cpp cText.h)
 
 
 if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()
@@ -77,6 +78,11 @@ endif ()
 
 add_subdirectory(3rdparty/SoLoud)
 target_link_libraries(engine PUBLIC SoLoud)
+
+# Disable HarfBuzz Dependency
+set(FT_DISABLE_HARFBUZZ ON)
+add_subdirectory(3rdparty/freetype)
+target_link_libraries(engine PUBLIC freetype)
 
 target_include_directories(engine SYSTEM PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty"

@@ -162,7 +162,7 @@ namespace jle {
         // Setup Platform/Renderer bindings
         ImGui_ImplGlfw_InitForOpenGL(std::static_pointer_cast<Window_GLFW_OpenGL>(window)->GetGLFWWindow(), true);
 
-#ifdef BUILD_GLES3
+#ifdef BUILD_OPENGLES30
         ImGui_ImplOpenGL3_Init("#version 300 es");
 #else
         ImGui_ImplOpenGL3_Init("#version 330 core");

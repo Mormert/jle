@@ -4,7 +4,7 @@
 
 #include "3rdparty/ImGui/imgui.h"
 
-#include "GLState.h"
+#include "jleStaticOpenGLState.h"
 #include "MouseInputInternal.h"
 
 #ifdef __EMSCRIPTEN__
@@ -60,7 +60,7 @@ namespace jle {
 
         // Get the texture from the framebuffer
         glBindTexture(GL_TEXTURE_2D, (unsigned int) ge.framebuffer_main->GetTexture());
-        jle::GLState::globalActiveTexture = (unsigned int) ge.framebuffer_main->GetTexture();
+        jle::jleStaticOpenGLState::globalActiveTexture = (unsigned int) ge.framebuffer_main->GetTexture();
         ImGui::Image((void *) (intptr_t) ge.framebuffer_main->GetTexture(),
                      ImVec2(mLastGameWindowWidth, mLastGameWindowHeight), ImVec2(0, 1), ImVec2(1, 0));
 

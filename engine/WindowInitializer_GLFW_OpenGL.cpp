@@ -1,6 +1,7 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "WindowInitializer_GLFW_OpenGL.h"
+#include "jleStaticOpenGLState.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -19,7 +20,7 @@
 
 InterfaceWindowPtr WindowInitializer_GLFW_OpenGL::InitWindow(int width, int height, const char *title) {
 
-#ifdef BUILD_GLES3
+#ifdef BUILD_OPENGLES30
     // Runs on OpenGL ES 3.0
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -58,6 +59,8 @@ InterfaceWindowPtr WindowInitializer_GLFW_OpenGL::InitWindow(int width, int heig
         exit(1);
     }
 #endif
+
+    jle::jleStaticOpenGLState::globalOpenGLInitialized = true;
 
     return glfwWindow;
 }

@@ -13,7 +13,7 @@
 
 #endif
 
-#include "GLState.h"
+#include "jleStaticOpenGLState.h"
 #include "jlePathDefines.h"
 
 #include <string>
@@ -70,7 +70,7 @@ namespace jle {
 
         // Get the texture from the framebuffer
         glBindTexture(GL_TEXTURE_2D, framebuffer.GetTexture());
-        jle::GLState::globalActiveTexture = framebuffer.GetTexture();
+        jle::jleStaticOpenGLState::globalActiveTexture = framebuffer.GetTexture();
 
         // Draw quad with framebuffer's texture over the entire screen
         glDrawArrays(GL_TRIANGLES, 0, 6);

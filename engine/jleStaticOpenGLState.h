@@ -4,7 +4,8 @@
 
 namespace jle {
     // Contains global data corresponding to the OpenGL State
-    struct GLState {
+    struct jleStaticOpenGLState {
+        static bool globalOpenGLInitialized;
         static unsigned int globalActiveTexture;
     };
 }

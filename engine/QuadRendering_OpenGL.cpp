@@ -161,7 +161,7 @@ namespace jle {
 
         framebufferOut.BindToFramebuffer();
 
-        if(clearDepthColor){
+        if (clearDepthColor) {
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Make everything black
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         }
@@ -214,7 +214,6 @@ namespace jle {
             glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (void *) 0, key.second.size());
             glBindVertexArray(0);
         }
-
         framebufferOut.BindToDefaultFramebuffer();
     }
 

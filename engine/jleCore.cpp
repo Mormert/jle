@@ -9,6 +9,8 @@
 #include "TextureCreator_OpenGL.h"
 #include "RenderingFactory_OpenGL.h"
 #include "WindowFactory_GLFW.h"
+#include "jleFont.h"
+#include "jleStaticOpenGLState.h"
 
 #include <plog/Log.h>
 
@@ -96,7 +98,6 @@ namespace jle {
             texture_creator{std::make_shared<TextureCreator_OpenGL>()},
             status{std::make_shared<CoreStatus_Internal>()} {
         PLOG_INFO << "Starting the core";
-
         coreImpl = std::make_unique<jleCoreInternalImpl>();
         coreImpl->rendering_internal = std::static_pointer_cast<iRenderingInternalAPI>(rendering);
         coreImpl->window_internal = std::static_pointer_cast<iWindowInternalAPI>(window);
@@ -105,14 +106,13 @@ namespace jle {
         coreImpl->window_internal->SetWindowSettings(cs->windowSettings);
 
         jleSoLoud::Init();
-        //jleSoLoud::GetSoLoud().init();
-        //jleSoLoud::gSoLoud.init();
 
         core_settings = cs;
     }
 
     jleCore::~jleCore(){
         jleSoLoud::DeInit();
+        jleFont::DeInit();
     }
 
     void jleCore::Run() {
@@ -124,6 +124,9 @@ namespace jle {
 
         PLOG_INFO << "Initializing the window";
         coreImpl->window_internal->InitWindow(*window_initializer, coreImpl->rendering_internal);
+
+
+        jleFont::Init();
 
         PLOG_INFO << "Setting up rendering internals";
         coreImpl->rendering_internal->Setup(*renderingFactory);
@@ -152,7 +155,6 @@ namespace jle {
         Update(status->GetDeltaFrameTime());
 
         Render();
-
         ((iWindowInternalAPI *) window.get())->UpdateWindow();
 
         running = !((iWindowInternalAPI *) window.get())->WindowShouldClose();

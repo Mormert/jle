@@ -6,7 +6,7 @@
 
 #include "ImGui/imgui.h"
 
-#include "GLState.h"
+#include "jleStaticOpenGLState.h"
 #include "glm/common.hpp"
 #include "cTransform.h"
 #include "iWindowInternalAPI.h"
@@ -93,8 +93,8 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
     if (auto object = selectedObject.lock()) {
         transform = object->GetComponent<cTransform>();
         if (transform) {
-            mTexturedQuad.x = transform->x - 64.f;
-            mTexturedQuad.y = transform->y - 64.f;
+            mTexturedQuad.x = transform->GetX() - 64.f;
+            mTexturedQuad.y = transform->GetY() - 64.f;
             std::vector<TexturedQuad> texturedQuads {mTexturedQuad};
             auto quadRenderer = ((iQuadRenderingInternal *) (jleCore::core->rendering->quads.get()));
             quadRenderer->Render(*mFramebuffer, jleEditor::mEditorCamera, texturedQuads, false);
@@ -102,7 +102,7 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
     }
 
     glBindTexture(GL_TEXTURE_2D, (unsigned int) mFramebuffer->GetTexture());
-    jle::GLState::globalActiveTexture = (unsigned int) mFramebuffer->GetTexture();
+    jle::jleStaticOpenGLState::globalActiveTexture = (unsigned int) mFramebuffer->GetTexture();
 
     // Render the framebuffer as an image
     ImGui::Image((void *) (intptr_t) mFramebuffer->GetTexture(), ImVec2(mLastGameWindowWidth, mLastGameWindowHeight),
@@ -153,12 +153,11 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
 
         if(ImGui::IsMouseDragging(0)){
             if(draggingTransformMarker == 1){
-                transform->x = float(mouseCoordinateX);
-                transform->y = float(mouseCoordinateY);
+                transform->SetPosition(mouseCoordinateX, mouseCoordinateY);
             }else if(draggingTransformMarker == 2){
-                transform->x = float(mouseCoordinateX);
+                transform->SetPositionX(mouseCoordinateX);
             }else if(draggingTransformMarker == 3){
-                transform->y = float(mouseCoordinateY);
+                transform->SetPositionY(mouseCoordinateY);
             }
         }
 
@@ -190,8 +189,8 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
                     closestTransform = transform;
                     selectedObject = object;
                 }
-                else if((pow(transform->x - mouseCoordinateX, 2) + pow(transform->y - mouseCoordinateY, 2)) <
-                        (pow(closestTransform->x - mouseCoordinateX, 2)) + pow(closestTransform->y - mouseCoordinateY, 2)){
+                else if((pow(transform->GetX() - mouseCoordinateX, 2) + pow(transform->GetY() - mouseCoordinateY, 2)) <
+                        (pow(closestTransform->GetX() - mouseCoordinateX, 2)) + pow(closestTransform->GetY() - mouseCoordinateY, 2)){
                     closestTransform = transform;
                     selectedObject = object;
                 }

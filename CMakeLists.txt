@@ -4,16 +4,16 @@ set(CMAKE_CXX_STANDARD 17)
 
 option(BUILD_EDITOR "Build the game in the editor" ON)
 option(BUILD_EMSCRIPTEN "Build with Emscripten targeting WebAssembly" OFF)
-option(BUILD_GLES3 "Use OpenGL ES 3.0 instead of desktop core 3.3" ON)
+option(BUILD_OPENGLES30 "Use OpenGL ES 3.0 instead of desktop core 3.3" ON)
 
 # Mac OS doesn't support GLES 3.0
 if(APPLE)
-    set(BUILD_GLES3 OFF)
+    set(BUILD_OPENGLES30 OFF)
 endif ()
 
 if (BUILD_EMSCRIPTEN)
     set(BUILD_EDITOR OFF)
-    set(BUILD_GLES3 ON)
+    set(BUILD_OPENGLES30 ON)
 endif ()
 
 # Set the game to build here
@@ -26,6 +26,10 @@ add_compile_definitions(_GAME_RESOURCES_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}/$
 
 if (BUILD_EDITOR)
     add_definitions(-DBUILD_EDITOR)
+endif ()
+
+if (BUILD_OPENGLES30)
+    add_definitions(-DBUILD_OPENGLES30)
 endif ()
 
 if (BUILD_EMSCRIPTEN)

@@ -35,8 +35,8 @@ namespace jle {
         auto &texture = mAseprite->mImageTexture;
         if (texture != nullptr) {
             TexturedQuad quad{texture};
-            quad.x = mTransform->x;
-            quad.y = mTransform->y;
+            quad.x = mTransform->GetX();
+            quad.y = mTransform->GetY();
             quad.height = frame.mFrame.mH;
             quad.width = frame.mFrame.mW;
             quad.textureX = frame.mFrame.mX;
@@ -70,7 +70,7 @@ namespace jle {
         mTextureY = j_in.at("textureY");
         mAnimating = j_in.at("animating");
 
-        const auto truePath = jle::FindTrueResourcePath(jleRootFolder::GameResources, mAsepritePath);
+        const auto truePath = jle::FindTrueResourcePath(mAsepritePath);
         mAseprite = jleResourceHolder<jleAseprite>::LoadResourceFromFile(truePath);
     }
 

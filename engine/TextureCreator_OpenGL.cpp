@@ -3,7 +3,7 @@
 #include "TextureCreator_OpenGL.h"
 
 #include "Texture.h"
-#include "GLState.h"
+#include "jleStaticOpenGLState.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -68,7 +68,7 @@ namespace jle {
                        << image.GetPath();
         }
         glBindTexture(GL_TEXTURE_2D, 0);
-        jle::GLState::globalActiveTexture = 0;
+        jle::jleStaticOpenGLState::globalActiveTexture = 0;
 
         return texture_opengl;
     }

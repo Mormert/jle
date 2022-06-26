@@ -13,7 +13,7 @@
 
 #endif
 
-#include "GLState.h"
+#include "jleStaticOpenGLState.h"
 #include "plog/Log.h"
 
 #include <iostream>
@@ -74,7 +74,7 @@ namespace jle {
 
         // resize texture
         glBindTexture(GL_TEXTURE_2D, texColorBuffer);
-        jle::GLState::globalActiveTexture = texColorBuffer;
+        jle::jleStaticOpenGLState::globalActiveTexture = texColorBuffer;
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
         glBindTexture(GL_TEXTURE_2D, 0);
 

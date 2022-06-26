@@ -10,16 +10,31 @@ public:
 
     explicit cTransform(jle::jleObject *owner = nullptr, jle::jleScene *scene = nullptr);
 
-    void SetPosition(float x, float y);
+    inline void SetPosition(float x, float y, float depth = 0.f) {
+        mX = x, mY = y;
+        mDepth = depth;
+    }
 
-    void AddPosition(float x, float y);
+    inline void AddPosition(float x, float y, float depth = 0.f) {
+        mX += x;
+        mY += y;
+        mDepth += depth;
+    }
 
-    float x = 0.f, y = 0.f;
+    inline void SetPositionX(float x) { mX = x; }
+
+    inline void SetPositionY(float y) { mY = y; }
+
+    [[nodiscard]] inline float GetX() const { return mX; }
+
+    [[nodiscard]] inline float GetY() const { return mY; }
+
+    [[nodiscard]] inline float GetDepth() const { return mDepth; }
 
     void ToJson(nlohmann::json &j_out) override;
 
     void FromJson(const nlohmann::json &j_in) override;
-};
 
-//void to_json(nlohmann::json& j, const cTransform t);
-//void from_json(const nlohmann::json& j, cTransform& t);
+private:
+    float mX = 0.f, mY = 0.f, mDepth = 0.f;
+};

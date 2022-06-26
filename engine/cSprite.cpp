@@ -39,14 +39,12 @@ void cSprite::Start() {
 }
 
 void cSprite::Update(float dt) {
-    quad.x = transform->x;
-    quad.y = transform->y;
+    quad.x = transform->GetX();
+    quad.y = transform->GetY();
 
     if (quad.texture.get()) {
         jle::jleCore::core->rendering->quads->SendTexturedQuad(*&quad, RenderingMethod::Dynamic);
     }
-
-    //jle::jleCore::core->rendering->texts->SendSimpleText("Hello, World", 5.f, 5.f, 1.f, 1.f, 0.7f, 1.f, 1.f);
 }
 
 void cSprite::ToJson(nlohmann::json &j_out) {
