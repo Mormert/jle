@@ -6,7 +6,16 @@
 #include "jlePathDefines.h"
 #include "glm/ext/matrix_clip_space.hpp"
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <GLES3/gl3.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#else
+
 #include <glad/glad.h>
+
+#endif
 
 #include <plog/Log.h>
 
@@ -164,17 +173,6 @@ void jle::jleFont::AddFontSizePixels(uint32_t sizePixels) {
     // Disable byte alignment in OpenGL
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    const auto flipGlyphImageData = [](GLubyte *pixels, int pixelbuffersize) {
-        // basically rewrites from bottom up...
-        std::vector<GLubyte> flipped_pixels(pixels, pixels + pixelbuffersize);
-        auto count = flipped_pixels.size();
-        std::reverse(flipped_pixels.begin(), flipped_pixels.end());
-
-        GLubyte *buff = (reinterpret_cast<GLubyte *>(&flipped_pixels[0]));
-        const void *pnewdata = (const void *) buff;
-        memcpy(pixels, pnewdata, count);
-    };
-
     for (unsigned char c = 0; c < 128; c++) {
         // load character glyph
         if (FT_Load_Char(mFace, c, FT_LOAD_RENDER)) {
@@ -186,7 +184,6 @@ void jle::jleFont::AddFontSizePixels(uint32_t sizePixels) {
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
         jleStaticOpenGLState::globalActiveTexture = texture;
-        // flipGlyphImageData(&mFace->glyph->bitmap.pixel_mode, mFace->glyph->bitmap.width * mFace->glyph->bitmap.rows*4);
 
         glTexImage2D(
                 GL_TEXTURE_2D,
