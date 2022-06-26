@@ -41,7 +41,7 @@ namespace jle {
             quad.width = frame.mFrame.mW;
             quad.textureX = frame.mFrame.mX;
             quad.textureY = frame.mFrame.mY;
-            quad.depth = mDepth;
+            quad.depth =  mTransform->GetDepth();
 
             if (quad.texture.get()) {
                 jle::jleCore::core->rendering->quads->SendTexturedQuad(quad, RenderingMethod::Dynamic);
@@ -52,7 +52,6 @@ namespace jle {
     void cAseprite::ToJson(nlohmann::json &j_out) {
         j_out = nlohmann::json{
                 {"asepritePath", mAsepritePath},
-                {"depth",        mDepth},
                 {"height",       mHeight},
                 {"width",        mWidth},
                 {"textureX",     mTextureX},
@@ -63,7 +62,6 @@ namespace jle {
 
     void cAseprite::FromJson(const nlohmann::json &j_in) {
         mAsepritePath = j_in.at("asepritePath");
-        mDepth = j_in.at("depth");
         mHeight = j_in.at("height");
         mWidth = j_in.at("width");
         mTextureX = j_in.at("textureX");

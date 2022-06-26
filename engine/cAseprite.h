@@ -23,7 +23,6 @@ namespace jle {
 
         std::string mAsepritePath;
 
-        float mDepth{};
         uint32_t mWidth{}, mHeight{}, mTextureX{}, mTextureY{};
 
         bool mAnimating = false;

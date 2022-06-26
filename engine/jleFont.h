@@ -30,7 +30,6 @@ namespace jle
         bool LoadFromFile(const std::string &path) override;
 
         // TODO: Move rendering to Text Rendering engine subsystem
-        // TODO: Fix such that depth works
         // TODO: Add scale as param
         void RenderText(const std::string& text, uint32_t fontSize, float x, float y, float depth, glm::vec3 color, const jle::jleCamera& camera);
 
