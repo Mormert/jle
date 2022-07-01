@@ -38,9 +38,7 @@
 
 namespace jle {
     jleEditor::jleEditor(std::shared_ptr<jleGameSettings> gs, std::shared_ptr<jleEditorSettings> es)
-            : jleGameEngine{gs}, editor_settings{es} {
-        background_image = std::make_unique<Image>(es->editorBackgroundImage);
-    }
+            : jleGameEngine{gs}, editor_settings{es} {}
 
     void jleEditor::StartEditor() {
     }
@@ -56,10 +54,6 @@ namespace jle {
         framebuffer_main = renderingFactory->CreateFramebuffer(dims.first, dims.second);
 
         mEditorFramebuffer = renderingFactory->CreateFramebuffer(dims.first, dims.second);
-
-        // Create editor background image
-        editor_background_image = std::make_unique<EditorBackgroundImage>(*background_image, *texture_creator,
-                                                                          *renderingFactory);
 
         // Note: Important that menu comes first here, since the others are dependent on the menu's dockspace.
         auto menu = std::make_shared<EditorWindowsPanel>("Menu");
@@ -122,13 +116,11 @@ namespace jle {
         // Set viewport to cover the entire screen
         glViewport(0, 0, window->GetWindowWidth(), window->GetWindowHeight());
 
-        // Render editor background image
-        editor_background_image->Render(*static_cast<iQuadRenderingInternal *>(rendering->quads.get()),
-                                        window->GetWindowWidth(), window->GetWindowHeight());
-
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+
+        ImGui::ShowDemoWindow();
 
         // Update loop for all ImGui windows
         for (auto window: ImGuiWindows) {

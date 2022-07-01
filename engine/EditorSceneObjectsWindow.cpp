@@ -210,6 +210,7 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
                             selectedObjectSafePtr->ToJson(selectedObjectJson);
 
                             selectedObjectJson["_custom_components"] = selectedObjectSafePtr->GetCustomComponents();
+                            selectedObjectJson["_childObjects"] = selectedObjectSafePtr->GetChildObjects();
 
                             lastSelectedObject = selectedObjectSafePtr;
 

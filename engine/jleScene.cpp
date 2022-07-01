@@ -1,6 +1,7 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jleScene.h"
+#include "jleObject.h"
 
 #include <iostream>
 
@@ -18,13 +19,14 @@ jle::jleScene::jleScene(const std::string &sceneName) {
 
 void jle::jleScene::UpdateSceneObjects(float dt) {
     for (int32_t i = mSceneObjects.size() - 1; i >= 0; i--) {
-        if (mSceneObjects[i]->bPendingKill) {
+        if (mSceneObjects[i]->mPendingKill) {
             mSceneObjects.erase(mSceneObjects.begin() + i);
             continue;
         }
 
         mSceneObjects[i]->Update(dt);
         mSceneObjects[i]->UpdateComponents(dt);
+        mSceneObjects[i]->UpdateChildren(dt);
     }
 }
 
@@ -33,9 +35,16 @@ void jle::jleScene::ProcessNewSceneObjects() {
         for (const auto &newObject: mNewSceneObjects) {
             newObject->Start();
             newObject->StartComponents();
+            newObject->mIsStarted = true;
+
+            // Only push back objects existing directly in the scene into scene objects
+            // The object can be placed as a child object in another object, and thus
+            // no longer existing directly in the scene
+            if (newObject->mParentObject == nullptr) {
+                mSceneObjects.push_back(newObject);
+            }
         }
 
-        mSceneObjects.insert(std::end(mSceneObjects), std::begin(mNewSceneObjects), std::end(mNewSceneObjects));
         mNewSceneObjects.clear();
     }
 }
@@ -70,4 +79,12 @@ void jle::from_json(const nlohmann::json &j, jleScene &s) {
         spawnedObjFromJson->FromJson(object_json);
 
     }
+}
+
+void jle::jleScene::ConfigurateSpawnedObject(std::shared_ptr<jleObject> obj) {
+    obj->mContainedInScene = this;
+    obj->SetupDefaultObject();
+    obj->mInstanceName = std::string{obj->GetObjectNameVirtual()} + "_" + std::to_string(obj->mObjectsCreatedCount);
+
+    mNewSceneObjects.push_back(obj);
 }

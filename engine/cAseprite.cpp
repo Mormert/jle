@@ -11,6 +11,11 @@ namespace jle {
 
     void cAseprite::Start() {
         mTransform = mAttachedToObject->AddDependencyComponent<cTransform>(this);
+        if(!mAsepritePath.empty())
+        {
+            const auto truePath = jle::FindTrueResourcePath(mAsepritePath);
+            mAseprite = jleResourceHolder<jleAseprite>::LoadResourceFromFile(truePath);
+        }
     }
 
     void cAseprite::Update(float dt) {
@@ -68,8 +73,12 @@ namespace jle {
         mTextureY = j_in.at("textureY");
         mAnimating = j_in.at("animating");
 
-        const auto truePath = jle::FindTrueResourcePath(mAsepritePath);
-        mAseprite = jleResourceHolder<jleAseprite>::LoadResourceFromFile(truePath);
+        // Make sure to reset current frame to not cause out of bounds crash
+        mCurrentFrame = 0;
+        mCurrentFrameTimeSpent = 0.f;
+
+       const auto truePath = jle::FindTrueResourcePath(mAsepritePath);
+       mAseprite = jleResourceHolder<jleAseprite>::LoadResourceFromFile(truePath);
     }
 
     cAseprite::cAseprite(jle::jleObject *owner, jle::jleScene *scene) : jleComponent(owner, scene) {}

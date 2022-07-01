@@ -131,6 +131,7 @@ void jle::jleFont::RenderText(const std::string &text, uint32_t fontSize,
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
+    jle::jleStaticOpenGLState::globalActiveTexture = 0;
 }
 
 void jle::jleFont::SetRenderTargetDimensions(int width, int height, const jleCamera &camera) {

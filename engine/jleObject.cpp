@@ -27,7 +27,7 @@ void jle::jleObject::DestroyComponent(jleComponent *component) {
 }
 
 void jle::jleObject::DestroyObject() {
-    bPendingKill = true;
+    mPendingKill = true;
 }
 
 int jle::jleObject::GetComponentCount() {
@@ -36,6 +36,35 @@ int jle::jleObject::GetComponentCount() {
 
 std::vector<std::shared_ptr<jle::jleComponent>> &jle::jleObject::GetCustomComponents() {
     return mDynamicCustomComponents;
+}
+
+std::vector<std::shared_ptr<jle::jleObject>> &jle::jleObject::GetChildObjects() {
+    return mChildObjects;
+}
+
+void jle::jleObject::AttachChildObject(std::shared_ptr<jleObject> object) {
+    // The objects must live in the same scene
+    assert(object->mContainedInScene == mContainedInScene);
+
+    if (object->mParentObject) {
+        // Remove the object from previous parent, if any
+        auto it = std::find(object->mParentObject->mChildObjects.begin(),
+                            object->mParentObject->mChildObjects.end(), object);
+        object->mParentObject->mChildObjects.erase(it);
+    } else {
+        // Else the object is directly in the scene
+        // Remove the object from existing directly in the scene, and instead as a node under this object
+        if (object->mIsStarted) {
+            auto it = std::find(mContainedInScene->mSceneObjects.begin(), mContainedInScene->mSceneObjects.end(),
+                                object);
+            if (it != mContainedInScene->mSceneObjects.end()) {
+                mContainedInScene->mSceneObjects.erase(it);
+            }
+        }
+    }
+
+    object->mParentObject = this;
+    mChildObjects.push_back(object);
 }
 
 jle::jleObject::jleObject(jleScene *scene) : mContainedInScene{scene} {
@@ -53,11 +82,27 @@ void jle::jleObject::UpdateComponents(float dt) {
     }
 }
 
+void jle::jleObject::UpdateChildren(float dt) {
+    for (int32_t i = mChildObjects.size() - 1; i >= 0; i--) {
+        if (mChildObjects[i]->mPendingKill) {
+            mChildObjects.erase(mChildObjects.begin() + i);
+            continue;
+        }
+
+        mChildObjects[i]->Update(dt);
+        mChildObjects[i]->UpdateComponents(dt);
+
+        // Recursively update children after this object has updated
+        mChildObjects[i]->UpdateChildren(dt);
+    }
+}
+
 void jle::to_json(nlohmann::json &j, const std::shared_ptr<jleObject> &o) {
     j = nlohmann::json{
             {"__obj_name",         o->GetObjectNameVirtual()},
             {"_instance_name",     o->mInstanceName},
-            {"_custom_components", o->mDynamicCustomComponents}
+            {"_custom_components", o->mDynamicCustomComponents},
+            {"_childObjects",      o->mChildObjects}
     };
 
     o->ToJson(j);
@@ -75,6 +120,7 @@ void jle::from_json(const nlohmann::json &j, std::shared_ptr<jleObject> &o) {
         for (auto &&existing_component: o->GetCustomComponents()) {
             if (existing_component->GetComponentName() == componentName) {
                 existingComponent = existing_component;
+                break;
             }
         }
 
@@ -83,6 +129,32 @@ void jle::from_json(const nlohmann::json &j, std::shared_ptr<jleObject> &o) {
         } else {
             auto component = o->AddCustomComponent(componentName);
             component->FromJson(custom_components_json);
+        }
+    }
+
+    if (j.find("_childObjects") != j.end()) {
+        for (auto object_json: j.at("_childObjects")) {
+            std::string objectsName, instanceName;
+            object_json.at("__obj_name").get_to(objectsName);
+            object_json.at("_instance_name").get_to(instanceName);
+
+            std::optional<std::shared_ptr<jleObject>> existingObject;
+            for (auto &&existing_object: o->GetChildObjects()) {
+                if (existing_object->mInstanceName == instanceName) {
+                    existingObject = existing_object;
+                    break;
+                }
+            }
+
+            if(existingObject.has_value())
+            {
+                existingObject->get()->FromJson(object_json);
+            }else
+            {
+                auto spawnedChildObj = o->SpawnChildObject(objectsName);
+                jle::from_json(object_json, spawnedChildObj);
+                spawnedChildObj->FromJson(object_json);
+            }
         }
     }
 }

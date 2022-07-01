@@ -10,10 +10,7 @@
 #include <string_view>
 
 namespace jle {
-    class jleObject;
-
     class jleScene;
-
     class jleComponent : public jleJsonInterface<nlohmann::json> {
     public:
         jleComponent(jleObject *owner = nullptr, jleScene *scene = nullptr);
@@ -45,4 +42,8 @@ namespace jle {
         // The scene in which this component's object lives
         jleScene *mContainedInScene;
     };
+
+    void to_json(nlohmann::json &j, const std::shared_ptr<jleComponent> c);
+
+    void from_json(const nlohmann::json &j, std::shared_ptr<jleComponent> &c);
 }

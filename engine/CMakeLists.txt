@@ -12,7 +12,6 @@ add_library(engine STATIC
         "3rdparty/ImGui/imgui_stdlib.cpp"
         "3rdparty/stb_image.cpp"
         "ConsoleEditorWindow.cpp"
-        "EditorBackgroundImage.cpp"
         "EditorGameControllerWidget.cpp"
         "EditorJsonToImgui.cpp"
         "EditorSceneObjectsWindow.cpp"
