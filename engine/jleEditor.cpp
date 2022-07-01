@@ -120,8 +120,6 @@ namespace jle {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::ShowDemoWindow();
-
         // Update loop for all ImGui windows
         for (auto window: ImGuiWindows) {
             window->Update(*this);

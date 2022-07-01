@@ -12,6 +12,8 @@
 #include "3rdparty/json.hpp"
 
 namespace jle {
+    class jleScene;
+
     class jleObject : public jleJsonInterface<nlohmann::json> {
         JLE_REGISTER_OBJECT_TYPE(jleObject)
     public:
