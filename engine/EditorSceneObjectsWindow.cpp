@@ -128,54 +128,10 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
         ImGui::BeginChild("objects pane", ImVec2(150 * globalImguiScale, 0), true);
 
         if (auto selectedSceneSafePtr = selectedScene.lock()) {
-            for (auto &&object: selectedSceneSafePtr->GetSceneObjects()) {
-                if (ImGui::Selectable(object->mInstanceName.c_str(), selectedObject.lock() == object)) {
-                    selectedObject = object;
-                }
-
-                if (selectedObject.lock() == object) {
-
-                    { // Destroy Object
-                        static bool opened = false;
-                        if (ImGui::Button("Destroy Object", ImVec2(138 * globalImguiScale, 0))) {
-                            opened = true;
-                            ImGui::OpenPopup("Confirm Object Destruction");
-                        }
-
-                        if (ImGui::BeginPopupModal("Confirm Object Destruction", &opened, 0)) {
-                            if (ImGui::Button("Destroy")) {
-                                object->DestroyObject();
-                            }
-                            ImGui::SameLine();
-                            if (ImGui::Button("Cancel")) {
-                                opened = false;
-                            }
-                            ImGui::EndPopup();
-                        }
-                    }
-
-                    { // Rename Object
-                        static bool opened = false;
-                        static std::string buf;
-                        if (ImGui::Button("Rename Object", ImVec2(138 * globalImguiScale, 0))) {
-                            opened = true;
-                            buf = std::string{object->mInstanceName};
-                            ImGui::OpenPopup("Rename Object");
-                        }
-
-                        if (ImGui::BeginPopupModal("Rename Object", &opened, 0)) {
-                            ImGui::InputText("Object Name", &buf);
-                            if (ImGui::Button("Confirm")) {
-                                object->mInstanceName = std::string{buf};
-                                opened = false;
-                            }
-                            ImGui::EndPopup();
-                        }
-                    }
-
-                    // if (ImGui::Button("Destroy Object", ImVec2(138 * globalImguiScale, 0))) {
-                    //     object->DestroyObject();
-                    //}
+            auto &sceneObjectsRef = selectedSceneSafePtr->GetSceneObjects();
+            for (int32_t i = sceneObjectsRef.size() - 1; i >= 0; i--) {
+                if (sceneObjectsRef[i]) {
+                    ObjectTreeRecursive(sceneObjectsRef[i]);
                 }
             }
         }
@@ -280,6 +236,98 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
 
 void jle::EditorSceneObjectsWindow::SetSelectedObject(std::shared_ptr<jleObject> object) {
     selectedObject = object;
+}
+
+void jle::EditorSceneObjectsWindow::ObjectTreeRecursive(std::shared_ptr<jleObject> object) {
+    const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 5));
+    bool open = ImGui::TreeNodeEx(object->mInstanceName.c_str(),
+                                  ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_DefaultOpen |
+                                  (selectedObject.lock() == object ? ImGuiTreeNodeFlags_Selected : 0) |
+                                  (object->GetChildObjects().empty() ? ImGuiTreeNodeFlags_Leaf : 0),
+                                  "%s", object->mInstanceName.c_str());
+    ImGui::PopStyleVar();
+
+    ImGui::PushID(object->mInstanceName.c_str());
+    if (ImGui::BeginPopupContextItem()) {
+        if (ImGui::Button("Destroy Object", ImVec2(138 * globalImguiScale, 0))) {
+            object->DestroyObject();
+        }
+
+        { // Rename Object
+            static bool opened = false;
+            static std::string buf;
+            if (ImGui::Button("Rename Object", ImVec2(138 * globalImguiScale, 0))) {
+                opened = true;
+                buf = std::string{object->mInstanceName};
+                ImGui::OpenPopup("Rename Object");
+            }
+
+            if (ImGui::BeginPopupModal("Rename Object", &opened, 0)) {
+                ImGui::InputText("Object Name", &buf);
+                if (ImGui::Button("Confirm")) {
+                    object->mInstanceName = std::string{buf};
+                    opened = false;
+                }
+                ImGui::EndPopup();
+            }
+        }
+
+        if (object->GetParent()) {
+            if (ImGui::Button("Detach Object", ImVec2(138 * globalImguiScale, 0))) {
+                object->DetachObjectFromParent();
+            }
+        }
+
+        ImGui::EndPopup();
+    }
+    ImGui::PopID();
+
+    if (ImGui::IsItemClicked()) {
+        selectedObject = object;
+    }
+
+    if (ImGui::BeginDragDropTarget()) {
+        ImGuiDragDropFlags target_flags = 0;
+        if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("JLE_OBJECT", target_flags)) {
+            auto moveFrom = *(std::shared_ptr<jleObject> *) payload->Data;
+
+            // We check if the object is the owner of the object that it is being attached to
+            // If that's the case, we first detach the object from it's parent, and then attach it
+            // to the target object
+            bool canAttachDirectly = true;
+            jleObject *o = object->GetParent();
+            while (o) {
+                if (moveFrom.get() == o) {
+                    canAttachDirectly = false;
+                    break;
+                }
+                o = o->GetParent();
+            }
+            if (canAttachDirectly) {
+                object->AttachChildObject(moveFrom);
+            } else {
+                object->DetachObjectFromParent();
+                object->AttachChildObject(moveFrom);
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
+
+    if (ImGui::BeginDragDropSource()) {
+        ImGui::Text("Moving object: %s", object->mInstanceName.c_str());
+        ImGui::SetDragDropPayload("JLE_OBJECT", &object, sizeof(std::shared_ptr<jleObject>));
+        ImGui::EndDragDropSource();
+    }
+
+    if (open) {
+        auto &childObjectsRef = object->GetChildObjects();
+        for (int32_t i = childObjectsRef.size() - 1; i >= 0; i--) {
+            ObjectTreeRecursive(childObjectsRef[i]);
+        }
+        ImGui::TreePop();
+    }
 }
 
 

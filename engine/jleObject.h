@@ -62,13 +62,17 @@ namespace jle {
 
         std::vector<std::shared_ptr<jleComponent>> &GetCustomComponents();
 
-        void AttachChildObject(std::shared_ptr<jleObject> object);
+        void AttachChildObject(const std::shared_ptr<jleObject>& object);
+
+        void DetachObjectFromParent();
 
         std::vector<std::shared_ptr<jleObject>> &GetChildObjects();
 
         void ToJson(nlohmann::json &j_out) override {}
 
         void FromJson(const nlohmann::json &j_in) override {}
+
+        jleObject* GetParent();
 
     private:
         friend class jleScene;

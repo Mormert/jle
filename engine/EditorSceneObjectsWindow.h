@@ -18,8 +18,11 @@ namespace jle {
     private:
         EditorJsonToImgui mJsonToImgui;
 
+        void ObjectTreeRecursive(std::shared_ptr<jleObject> object);
+
         // Using a static weak_ptr here so that it won't impact deletion
         static inline std::weak_ptr<jleObject> selectedObject;
+        static inline std::weak_ptr<jleObject> movingObject;
 
     };
 }

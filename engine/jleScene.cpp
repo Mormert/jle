@@ -33,9 +33,12 @@ void jle::jleScene::UpdateSceneObjects(float dt) {
 void jle::jleScene::ProcessNewSceneObjects() {
     if (!mNewSceneObjects.empty()) {
         for (const auto &newObject: mNewSceneObjects) {
-            newObject->Start();
-            newObject->StartComponents();
-            newObject->mIsStarted = true;
+            if(!newObject->mIsStarted)
+            {
+                newObject->Start();
+                newObject->StartComponents();
+                newObject->mIsStarted = true;
+            }
 
             // Only push back objects existing directly in the scene into scene objects
             // The object can be placed as a child object in another object, and thus

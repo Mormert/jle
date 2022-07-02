@@ -42,7 +42,7 @@ std::vector<std::shared_ptr<jle::jleObject>> &jle::jleObject::GetChildObjects() 
     return mChildObjects;
 }
 
-void jle::jleObject::AttachChildObject(std::shared_ptr<jleObject> object) {
+void jle::jleObject::AttachChildObject(const std::shared_ptr<jleObject> &object) {
     // The objects must live in the same scene
     assert(object->mContainedInScene == mContainedInScene);
 
@@ -65,6 +65,25 @@ void jle::jleObject::AttachChildObject(std::shared_ptr<jleObject> object) {
 
     object->mParentObject = this;
     mChildObjects.push_back(object);
+}
+
+void jle::jleObject::DetachObjectFromParent() {
+    if (mParentObject) {
+        int i = 0;
+        std::shared_ptr<jleObject> thiz;
+        for (auto &&o: mParentObject->mChildObjects) {
+            if (o.get() == this) {
+                thiz = o;
+                mParentObject->mChildObjects.erase(mParentObject->mChildObjects.begin() + i);
+                break;
+            }
+            i++;
+        }
+        // Insert this object to be contained directly in the scene
+        mContainedInScene->mSceneObjects.push_back(thiz);
+    }
+
+    mParentObject = nullptr;
 }
 
 jle::jleObject::jleObject(jleScene *scene) : mContainedInScene{scene} {
@@ -96,6 +115,11 @@ void jle::jleObject::UpdateChildren(float dt) {
         mChildObjects[i]->UpdateChildren(dt);
     }
 }
+
+jle::jleObject *jle::jleObject::GetParent() {
+    return mParentObject;
+}
+
 
 void jle::to_json(nlohmann::json &j, const std::shared_ptr<jleObject> &o) {
     j = nlohmann::json{
@@ -146,11 +170,9 @@ void jle::from_json(const nlohmann::json &j, std::shared_ptr<jleObject> &o) {
                 }
             }
 
-            if(existingObject.has_value())
-            {
+            if (existingObject.has_value()) {
                 existingObject->get()->FromJson(object_json);
-            }else
-            {
+            } else {
                 auto spawnedChildObj = o->SpawnChildObject(objectsName);
                 jle::from_json(object_json, spawnedChildObj);
                 spawnedChildObj->FromJson(object_json);
