@@ -93,8 +93,8 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
     if (auto object = selectedObject.lock()) {
         transform = object->GetComponent<cTransform>();
         if (transform) {
-            mTexturedQuad.x = transform->GetX() - 64.f;
-            mTexturedQuad.y = transform->GetY() - 64.f;
+            mTexturedQuad.x = transform->GetWorldX() - 64.f;
+            mTexturedQuad.y = transform->GetWorldY() - 64.f;
             std::vector<TexturedQuad> texturedQuads {mTexturedQuad};
             auto quadRenderer = ((iQuadRenderingInternal *) (jleCore::core->rendering->quads.get()));
             quadRenderer->Render(*mFramebuffer, jleEditor::mEditorCamera, texturedQuads, false);
@@ -153,11 +153,11 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
 
         if(ImGui::IsMouseDragging(0)){
             if(draggingTransformMarker == 1){
-                transform->SetPosition(mouseCoordinateX, mouseCoordinateY);
+                transform->SetWorldPosition(mouseCoordinateX, mouseCoordinateY);
             }else if(draggingTransformMarker == 2){
-                transform->SetPositionX(mouseCoordinateX);
+                transform->SetWorldPositionX(mouseCoordinateX);
             }else if(draggingTransformMarker == 3){
-                transform->SetPositionY(mouseCoordinateY);
+                transform->SetWorldPositionY(mouseCoordinateY);
             }
         }
 
@@ -189,8 +189,9 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
                     closestTransform = transform;
                     selectedObject = object;
                 }
-                else if((pow(transform->GetX() - mouseCoordinateX, 2) + pow(transform->GetY() - mouseCoordinateY, 2)) <
-                        (pow(closestTransform->GetX() - mouseCoordinateX, 2)) + pow(closestTransform->GetY() - mouseCoordinateY, 2)){
+                else if((pow(transform->GetWorldX() - mouseCoordinateX, 2) + pow(transform->GetWorldY() - mouseCoordinateY, 2)) <
+                        (pow(closestTransform->GetWorldX() - mouseCoordinateX, 2)) + pow(
+                                closestTransform->GetWorldY() - mouseCoordinateY, 2)){
                     closestTransform = transform;
                     selectedObject = object;
                 }

@@ -40,13 +40,13 @@ namespace jle {
         auto &texture = mAseprite->mImageTexture;
         if (texture != nullptr) {
             TexturedQuad quad{texture};
-            quad.x = mTransform->GetX();
-            quad.y = mTransform->GetY();
+            quad.x = mTransform->GetWorldX();
+            quad.y = mTransform->GetWorldY();
             quad.height = frame.mFrame.mH;
             quad.width = frame.mFrame.mW;
             quad.textureX = frame.mFrame.mX;
             quad.textureY = frame.mFrame.mY;
-            quad.depth =  mTransform->GetDepth();
+            quad.depth = mTransform->GetWorldDepth();
 
             if (quad.texture.get()) {
                 jle::jleCore::core->rendering->quads->SendTexturedQuad(quad, RenderingMethod::Dynamic);

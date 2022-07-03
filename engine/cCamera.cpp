@@ -16,8 +16,8 @@ void jle::cCamera::Start() {
 void jle::cCamera::Update(float dt) {
     auto &game = ((jleGameEngine *) jleCore::core)->GetGameRef();
 
-    game.mMainCamera.mX = mTransform->GetX() + mOffsetX;
-    game.mMainCamera.mY = mTransform->GetY() + mOffsetY;
+    game.mMainCamera.mX = mTransform->GetWorldX() + mOffsetX;
+    game.mMainCamera.mY = mTransform->GetWorldY() + mOffsetY;
 }
 
 void jle::cCamera::ToJson(nlohmann::json &j_out) {

@@ -125,7 +125,7 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
 
         ImGui::BeginGroup();
         ImGui::Text("Object");
-        ImGui::BeginChild("objects pane", ImVec2(150 * globalImguiScale, 0), true);
+        ImGui::BeginChild("objects pane", ImVec2(280 * globalImguiScale, 0), true);
 
         if (auto selectedSceneSafePtr = selectedScene.lock()) {
             auto &sceneObjectsRef = selectedSceneSafePtr->GetSceneObjects();
@@ -166,7 +166,7 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
                             selectedObjectSafePtr->ToJson(selectedObjectJson);
 
                             selectedObjectJson["_custom_components"] = selectedObjectSafePtr->GetCustomComponents();
-                            selectedObjectJson["_childObjects"] = selectedObjectSafePtr->GetChildObjects();
+                            //selectedObjectJson["_childObjects"] = selectedObjectSafePtr->GetChildObjects();
 
                             lastSelectedObject = selectedObjectSafePtr;
 
@@ -251,6 +251,16 @@ void jle::EditorSceneObjectsWindow::ObjectTreeRecursive(std::shared_ptr<jleObjec
 
     ImGui::PushID(object->mInstanceName.c_str());
     if (ImGui::BeginPopupContextItem()) {
+
+        if (ImGui::BeginMenu("Create Object")) {
+            for (auto &&objectType: jleTypeReflectionUtils::GetRegisteredObjectsRef()) {
+                if (ImGui::MenuItem(objectType.first.c_str())) {
+                    object->SpawnChildObject(objectType.first);
+                }
+            }
+            ImGui::EndMenu();
+        }
+
         if (ImGui::Button("Destroy Object", ImVec2(138 * globalImguiScale, 0))) {
             object->DestroyObject();
         }

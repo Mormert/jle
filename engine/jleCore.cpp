@@ -153,7 +153,6 @@ namespace jle {
         coreImpl->status_internal->Refresh();
 
         Update(status->GetDeltaFrameTime());
-        std::cout << status->GetFPS() <<'\n';
 
         Render();
         ((iWindowInternalAPI *) window.get())->UpdateWindow();

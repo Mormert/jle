@@ -3,6 +3,7 @@
 #include "jleObject.h"
 
 #include "jleScene.h"
+#include "cTransform.h"
 
 #include <optional>
 
@@ -45,7 +46,6 @@ std::vector<std::shared_ptr<jle::jleObject>> &jle::jleObject::GetChildObjects() 
 void jle::jleObject::AttachChildObject(const std::shared_ptr<jleObject> &object) {
     // The objects must live in the same scene
     assert(object->mContainedInScene == mContainedInScene);
-
     if (object->mParentObject) {
         // Remove the object from previous parent, if any
         auto it = std::find(object->mParentObject->mChildObjects.begin(),
@@ -65,6 +65,10 @@ void jle::jleObject::AttachChildObject(const std::shared_ptr<jleObject> &object)
 
     object->mParentObject = this;
     mChildObjects.push_back(object);
+
+    if (auto t = object->GetComponent<cTransform>()) {
+        t->SetDirty();
+    }
 }
 
 void jle::jleObject::DetachObjectFromParent() {

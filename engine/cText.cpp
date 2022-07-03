@@ -45,7 +45,8 @@ void jle::cText::Update(float dt) {
     }
 
     jle::jleCore::core->rendering->texts->SendFontText(mFont.get(), mText, mFontSize,
-                                                       mTransform->GetX(), mTransform->GetY(), mTransform->GetDepth(),
+                                                       mTransform->GetWorldX(), mTransform->GetWorldY(),
+                                                       mTransform->GetWorldDepth(),
                                                        mColorR, mColorG, mColorB, mColorA);
 }
 

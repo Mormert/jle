@@ -39,8 +39,8 @@ void cSprite::Start() {
 }
 
 void cSprite::Update(float dt) {
-    quad.x = transform->GetX();
-    quad.y = transform->GetY();
+    quad.x = transform->GetWorldX();
+    quad.y = transform->GetWorldY();
 
     if (quad.texture.get()) {
         jle::jleCore::core->rendering->quads->SendTexturedQuad(*&quad, RenderingMethod::Dynamic);
