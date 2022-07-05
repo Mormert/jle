@@ -2,12 +2,12 @@
     "objects": [
         {
             "__obj_name": "jleObject",
+            "_childObjects": [],
             "_custom_components": [
                 {
                     "_comp_name": "cAseprite",
                     "animating": true,
                     "asepritePath": "GR:rottenapple.json",
-                    "depth": 1.0,
                     "height": 0,
                     "textureX": 0,
                     "textureY": 0,
@@ -15,12 +15,13 @@
                 },
                 {
                     "_comp_name": "cTransform",
-                    "x": -1.340000033378601,
-                    "y": -100.0
+                    "depth": 0.0,
+                    "x": 13.0,
+                    "y": -54.0
                 },
                 {
                     "_comp_name": "cCamera",
-                    "offsetX": -23.760000228881836,
+                    "offsetX": -5.619999885559082,
                     "offsetY": 0.0
                 }
             ],
@@ -28,12 +29,12 @@
         },
         {
             "__obj_name": "jleObject",
+            "_childObjects": [],
             "_custom_components": [
                 {
                     "_comp_name": "cAseprite",
                     "animating": true,
                     "asepritePath": "GR:character_animation.json",
-                    "depth": 0.0,
                     "height": 0,
                     "textureX": 0,
                     "textureY": 0,
@@ -41,14 +42,16 @@
                 },
                 {
                     "_comp_name": "cTransform",
-                    "x": 59.0,
-                    "y": 144.0
+                    "depth": 0.0,
+                    "x": -139.0,
+                    "y": -16.0
                 }
             ],
             "_instance_name": "characterAnims"
         },
         {
             "__obj_name": "jleObject",
+            "_childObjects": [],
             "_custom_components": [
                 {
                     "_comp_name": "cText",
@@ -56,18 +59,174 @@
                     "colorB": 1.0,
                     "colorG": 1.0,
                     "colorR": 1.0,
-                    "depth": 0.5,
                     "fontPath": "ER:fonts/PokemonClassic.ttf",
                     "fontSize": 8,
-                    "text": "hello world text :D"
+                    "text": "some random text"
                 },
                 {
                     "_comp_name": "cTransform",
+                    "depth": 0.0,
                     "x": 77.0,
-                    "y": 127.0
+                    "y": 67.0
                 }
             ],
             "_instance_name": "helloworldtext"
+        },
+        {
+            "__obj_name": "oStaticSprite",
+            "_childObjects": [
+                {
+                    "__obj_name": "jleObject",
+                    "_childObjects": [],
+                    "_custom_components": [
+                        {
+                            "_comp_name": "cTransform",
+                            "depth": 0.0,
+                            "x": 131.0,
+                            "y": 66.0
+                        },
+                        {
+                            "_comp_name": "cAseprite",
+                            "animating": true,
+                            "asepritePath": "GR:rottenapple.json",
+                            "height": 12,
+                            "textureX": 0,
+                            "textureY": 0,
+                            "width": 12
+                        }
+                    ],
+                    "_instance_name": "jleObject_5"
+                },
+                {
+                    "__obj_name": "jleObject",
+                    "_childObjects": [],
+                    "_custom_components": [
+                        {
+                            "_comp_name": "cTransform",
+                            "depth": 0.0,
+                            "x": 131.0,
+                            "y": 66.0
+                        },
+                        {
+                            "_comp_name": "cAseprite",
+                            "animating": true,
+                            "asepritePath": "GR:rottenapple.json",
+                            "height": 12,
+                            "textureX": 0,
+                            "textureY": 0,
+                            "width": 12
+                        }
+                    ],
+                    "_instance_name": "jleObject_66"
+                },
+                {
+                    "__obj_name": "jleObject",
+                    "_childObjects": [],
+                    "_custom_components": [
+                        {
+                            "_comp_name": "cTransform",
+                            "depth": 0.0,
+                            "x": 131.0,
+                            "y": 66.0
+                        },
+                        {
+                            "_comp_name": "cAseprite",
+                            "animating": true,
+                            "asepritePath": "GR:rottenapple.json",
+                            "height": 12,
+                            "textureX": 0,
+                            "textureY": 0,
+                            "width": 12
+                        }
+                    ],
+                    "_instance_name": "jleObject_26"
+                },
+                {
+                    "__obj_name": "jleObject",
+                    "_childObjects": [],
+                    "_custom_components": [
+                        {
+                            "_comp_name": "cTransform",
+                            "depth": 0.0,
+                            "x": 131.0,
+                            "y": 66.0
+                        },
+                        {
+                            "_comp_name": "cAseprite",
+                            "animating": true,
+                            "asepritePath": "GR:rottenapple.json",
+                            "height": 12,
+                            "textureX": 0,
+                            "textureY": 0,
+                            "width": 12
+                        }
+                    ],
+                    "_instance_name": "jleObject_6"
+                }
+            ],
+            "_custom_components": [],
+            "_instance_name": "oStaticSprite_5",
+            "sprite": {
+                "depth": 0.0,
+                "height": 16,
+                "path": "GameResources/Fruit+.png",
+                "textureX": 16,
+                "textureY": 16,
+                "width": 16,
+                "x": 169.0,
+                "y": 42.0
+            },
+            "transform": {
+                "depth": 0.0,
+                "x": 169.0,
+                "y": 42.0
+            }
+        },
+        {
+            "__obj_name": "oWorld",
+            "_childObjects": [],
+            "_custom_components": [],
+            "_instance_name": "oWorld_10",
+            "mHexSizeX": 14,
+            "mHexSizeY": 9,
+            "mHexagonTiles": [
+                {
+                    "mDepth": -0.5,
+                    "mHeight": 13,
+                    "mTextureX": 1,
+                    "mTextureY": 1,
+                    "mWidth": 15
+                },
+                {
+                    "mDepth": 0.0,
+                    "mHeight": 0,
+                    "mTextureX": 0,
+                    "mTextureY": 0,
+                    "mWidth": 0
+                },
+                {
+                    "mDepth": 0.0,
+                    "mHeight": 0,
+                    "mTextureX": 0,
+                    "mTextureY": 0,
+                    "mWidth": 0
+                },
+                {
+                    "mDepth": 0.0,
+                    "mHeight": 0,
+                    "mTextureX": 0,
+                    "mTextureY": 0,
+                    "mWidth": 0
+                },
+                {
+                    "mDepth": 0.0,
+                    "mHeight": 0,
+                    "mTextureX": 0,
+                    "mTextureY": 0,
+                    "mWidth": 0
+                }
+            ],
+            "mWorldHexTilesPath": "GR:worldHexTiles.png"
         }
     ],
     "sceneName": "HexabloMain"

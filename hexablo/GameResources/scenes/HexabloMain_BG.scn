@@ -1,0 +1,51 @@
+{
+    "objects": [
+        {
+            "__obj_name": "oWorld",
+            "_childObjects": [],
+            "_custom_components": [],
+            "_instance_name": "oWorldMain",
+            "mHexSizeX": 14,
+            "mHexSizeY": 9,
+            "mHexagonTiles": [
+                {
+                    "mDepth": -0.5,
+                    "mHeight": 13,
+                    "mTextureX": 1,
+                    "mTextureY": 1,
+                    "mWidth": 15
+                },
+                {
+                    "mDepth": -0.5,
+                    "mHeight": 13,
+                    "mTextureX": 17,
+                    "mTextureY": 1,
+                    "mWidth": 15
+                },
+                {
+                    "mDepth": 0.0,
+                    "mHeight": 0,
+                    "mTextureX": 0,
+                    "mTextureY": 0,
+                    "mWidth": 0
+                },
+                {
+                    "mDepth": 0.0,
+                    "mHeight": 0,
+                    "mTextureX": 0,
+                    "mTextureY": 0,
+                    "mWidth": 0
+                },
+                {
+                    "mDepth": 0.0,
+                    "mHeight": 0,
+                    "mTextureX": 0,
+                    "mTextureY": 0,
+                    "mWidth": 0
+                }
+            ],
+            "mWorldHexTilesPath": "GR:worldHexTiles.png"
+        }
+    ],
+    "sceneName": "HexabloMain_BG"
+}

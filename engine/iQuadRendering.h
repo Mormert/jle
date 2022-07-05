@@ -19,6 +19,9 @@ struct Quad {
 struct TexturedQuad : public Quad {
     explicit TexturedQuad(std::shared_ptr<jle::iTexture> t) : texture{std::move(t)} {}
 
+    explicit TexturedQuad(std::shared_ptr<jle::iTexture> t, int texX, int texY, unsigned int w, unsigned int h)
+    : texture{std::move(t)}, textureX{texX}, textureY{texY}, width{w}, height{h} {}
+
     TexturedQuad() = default;
 
     std::shared_ptr<jle::iTexture> texture{nullptr};

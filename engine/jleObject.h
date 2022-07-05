@@ -56,10 +56,6 @@ namespace jle {
 
         int GetComponentCount();
 
-        virtual std::string_view GetObjectNameVirtual() {
-            return "jleObject";
-        }
-
         std::vector<std::shared_ptr<jleComponent>> &GetCustomComponents();
 
         void AttachChildObject(const std::shared_ptr<jleObject>& object);

@@ -8,9 +8,9 @@
 void Hexablo::Start()
 {
     LoadScene(GAME_RESOURCES_DIRECTORY + "/scenes/HexabloMain.scn");
+    LoadScene(GAME_RESOURCES_DIRECTORY + "/scenes/HexabloMain_BG.scn");
 }
 
-void Hexablo::Update(float dt)
-{
+void Hexablo::Update(float dt) {
     const auto engine = jle::jleGameEngine::gEngine;
 }

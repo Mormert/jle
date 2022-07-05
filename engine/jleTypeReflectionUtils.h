@@ -12,8 +12,9 @@
 #include <iostream>
 
 #define JLE_REGISTER_OBJECT_TYPE(object_name)                            \
-static const std::string_view GetObjectName(){ return #object_name;}    \
-static inline const jle::jleObjectTypeRegistrator<object_name> object_name_Reg{ #object_name };
+static const std::string_view GetObjectName(){ return #object_name;};    \
+static inline const jle::jleObjectTypeRegistrator<object_name> object_name_Reg{ #object_name };  \
+public: virtual std::string_view GetObjectNameVirtual() {return #object_name;} private:
 
 #define JLE_REGISTER_COMPONENT_TYPE(component_name)                                        \
 const std::string_view GetComponentName() const override { return #component_name;}        \
