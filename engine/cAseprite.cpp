@@ -23,6 +23,11 @@ namespace jle {
             return;
         }
 
+        if(mAseprite->mFrames.empty())
+        {
+            return;
+        }
+
         if (mAnimating) {
             mCurrentFrameTimeSpent += dt * 1000.f;
             if (mCurrentFrameTimeSpent >= mCurrentFrameDurationMs) {
@@ -40,12 +45,12 @@ namespace jle {
         auto &texture = mAseprite->mImageTexture;
         if (texture != nullptr) {
             TexturedQuad quad{texture};
-            quad.x = mTransform->GetWorldX();
-            quad.y = mTransform->GetWorldY();
-            quad.height = frame.mFrame.mH;
-            quad.width = frame.mFrame.mW;
-            quad.textureX = frame.mFrame.mX;
-            quad.textureY = frame.mFrame.mY;
+            quad.x = mTransform->GetWorldX() + mOffsetX;
+            quad.y = mTransform->GetWorldY() + mOffsetY;
+            quad.height = mHeight;
+            quad.width = mWidth;
+            quad.textureX = frame.mFrame.mX + mTextureX;
+            quad.textureY = frame.mFrame.mY + mTextureY;
             quad.depth = mTransform->GetWorldDepth();
 
             if (quad.texture.get()) {
@@ -61,6 +66,8 @@ namespace jle {
                 {"width",        mWidth},
                 {"textureX",     mTextureX},
                 {"textureY",     mTextureY},
+                {"offsetX",     mOffsetX},
+                {"offsetY",     mOffsetY},
                 {"animating",    mAnimating}
         };
     }
@@ -71,6 +78,8 @@ namespace jle {
         mWidth = j_in.at("width");
         mTextureX = j_in.at("textureX");
         mTextureY = j_in.at("textureY");
+        mOffsetX = j_in.at("offsetX");
+        mOffsetY = j_in.at("offsetY");
         mAnimating = j_in.at("animating");
 
         // Make sure to reset current frame to not cause out of bounds crash

@@ -9,6 +9,8 @@
                     "animating": true,
                     "asepritePath": "GR:rottenapple.json",
                     "height": 0,
+                    "offsetX": 0,
+                    "offsetY": 0,
                     "textureX": 0,
                     "textureY": 0,
                     "width": 0
@@ -16,13 +18,8 @@
                 {
                     "_comp_name": "cTransform",
                     "depth": 0.0,
-                    "x": 13.0,
-                    "y": -54.0
-                },
-                {
-                    "_comp_name": "cCamera",
-                    "offsetX": -5.619999885559082,
-                    "offsetY": 0.0
+                    "x": 6.0,
+                    "y": -86.0
                 }
             ],
             "_instance_name": "apple"
@@ -36,6 +33,8 @@
                     "animating": true,
                     "asepritePath": "GR:character_animation.json",
                     "height": 0,
+                    "offsetX": 0,
+                    "offsetY": 0,
                     "textureX": 0,
                     "textureY": 0,
                     "width": 0
@@ -43,8 +42,8 @@
                 {
                     "_comp_name": "cTransform",
                     "depth": 0.0,
-                    "x": -139.0,
-                    "y": -16.0
+                    "x": 89.0,
+                    "y": 18.0
                 }
             ],
             "_instance_name": "characterAnims"
@@ -66,167 +65,136 @@
                 {
                     "_comp_name": "cTransform",
                     "depth": 0.0,
-                    "x": 77.0,
-                    "y": 67.0
+                    "x": 3.0,
+                    "y": 207.0
                 }
             ],
             "_instance_name": "helloworldtext"
         },
         {
-            "__obj_name": "oStaticSprite",
-            "_childObjects": [
+            "__obj_name": "oCharacter",
+            "_childObjects": [],
+            "_custom_components": [
                 {
-                    "__obj_name": "jleObject",
-                    "_childObjects": [],
-                    "_custom_components": [
-                        {
-                            "_comp_name": "cTransform",
-                            "depth": 0.0,
-                            "x": 131.0,
-                            "y": 66.0
-                        },
-                        {
-                            "_comp_name": "cAseprite",
-                            "animating": true,
-                            "asepritePath": "GR:rottenapple.json",
-                            "height": 12,
-                            "textureX": 0,
-                            "textureY": 0,
-                            "width": 12
-                        }
-                    ],
-                    "_instance_name": "jleObject_5"
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 162.0,
+                    "y": 95.0
                 },
                 {
-                    "__obj_name": "jleObject",
-                    "_childObjects": [],
-                    "_custom_components": [
-                        {
-                            "_comp_name": "cTransform",
-                            "depth": 0.0,
-                            "x": 131.0,
-                            "y": 66.0
-                        },
-                        {
-                            "_comp_name": "cAseprite",
-                            "animating": true,
-                            "asepritePath": "GR:rottenapple.json",
-                            "height": 12,
-                            "textureX": 0,
-                            "textureY": 0,
-                            "width": 12
-                        }
-                    ],
-                    "_instance_name": "jleObject_66"
-                },
-                {
-                    "__obj_name": "jleObject",
-                    "_childObjects": [],
-                    "_custom_components": [
-                        {
-                            "_comp_name": "cTransform",
-                            "depth": 0.0,
-                            "x": 131.0,
-                            "y": 66.0
-                        },
-                        {
-                            "_comp_name": "cAseprite",
-                            "animating": true,
-                            "asepritePath": "GR:rottenapple.json",
-                            "height": 12,
-                            "textureX": 0,
-                            "textureY": 0,
-                            "width": 12
-                        }
-                    ],
-                    "_instance_name": "jleObject_26"
-                },
-                {
-                    "__obj_name": "jleObject",
-                    "_childObjects": [],
-                    "_custom_components": [
-                        {
-                            "_comp_name": "cTransform",
-                            "depth": 0.0,
-                            "x": 131.0,
-                            "y": 66.0
-                        },
-                        {
-                            "_comp_name": "cAseprite",
-                            "animating": true,
-                            "asepritePath": "GR:rottenapple.json",
-                            "height": 12,
-                            "textureX": 0,
-                            "textureY": 0,
-                            "width": 12
-                        }
-                    ],
-                    "_instance_name": "jleObject_6"
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "asepritePath": "GR:character_anim_idle.json",
+                    "height": 32,
+                    "offsetX": -16,
+                    "offsetY": -28,
+                    "textureX": 128,
+                    "textureY": 0,
+                    "width": 32
                 }
             ],
-            "_custom_components": [],
-            "_instance_name": "oStaticSprite_5",
-            "sprite": {
-                "depth": 0.0,
-                "height": 16,
-                "path": "GameResources/Fruit+.png",
-                "textureX": 16,
-                "textureY": 16,
-                "width": 16,
-                "x": 169.0,
-                "y": 42.0
-            },
-            "transform": {
-                "depth": 0.0,
-                "x": 169.0,
-                "y": 42.0
-            }
+            "_instance_name": "oCharacter_12",
+            "mEastTextureX": 128,
+            "mEastTextureY": 0,
+            "mNorthTextureX": 64,
+            "mNorthTextureY": 0,
+            "mNortheastTextureX": 96,
+            "mNortheastTextureY": 0,
+            "mNorthwestTextureX": 32,
+            "mNorthwestTextureY": 0,
+            "mSouthTextureX": 192,
+            "mSouthTextureY": 0,
+            "mSoutheastTextureX": 160,
+            "mSoutheastTextureY": 0,
+            "mSouthwestTextureX": 224,
+            "mSouthwestTextureY": 0,
+            "mWestTextureX": 0,
+            "mWestTextureY": 0
         },
         {
-            "__obj_name": "oWorld",
+            "__obj_name": "oCharacter",
             "_childObjects": [],
-            "_custom_components": [],
-            "_instance_name": "oWorld_10",
-            "mHexSizeX": 14,
-            "mHexSizeY": 9,
-            "mHexagonTiles": [
+            "_custom_components": [
                 {
-                    "mDepth": -0.5,
-                    "mHeight": 13,
-                    "mTextureX": 1,
-                    "mTextureY": 1,
-                    "mWidth": 15
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 111.0,
+                    "y": 42.0
                 },
                 {
-                    "mDepth": 0.0,
-                    "mHeight": 0,
-                    "mTextureX": 0,
-                    "mTextureY": 0,
-                    "mWidth": 0
-                },
-                {
-                    "mDepth": 0.0,
-                    "mHeight": 0,
-                    "mTextureX": 0,
-                    "mTextureY": 0,
-                    "mWidth": 0
-                },
-                {
-                    "mDepth": 0.0,
-                    "mHeight": 0,
-                    "mTextureX": 0,
-                    "mTextureY": 0,
-                    "mWidth": 0
-                },
-                {
-                    "mDepth": 0.0,
-                    "mHeight": 0,
-                    "mTextureX": 0,
-                    "mTextureY": 0,
-                    "mWidth": 0
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "asepritePath": "GR:character_anim_idle.json",
+                    "height": 32,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 32
                 }
             ],
-            "mWorldHexTilesPath": "GR:worldHexTiles.png"
+            "_instance_name": "oCharacter_11",
+            "mEastTextureX": 128,
+            "mEastTextureY": 0,
+            "mNorthTextureX": 64,
+            "mNorthTextureY": 0,
+            "mNortheastTextureX": 96,
+            "mNortheastTextureY": 0,
+            "mNorthwestTextureX": 32,
+            "mNorthwestTextureY": 0,
+            "mSouthTextureX": 192,
+            "mSouthTextureY": 0,
+            "mSoutheastTextureX": 160,
+            "mSoutheastTextureY": 0,
+            "mSouthwestTextureX": 224,
+            "mSouthwestTextureY": 0,
+            "mWestTextureX": 0,
+            "mWestTextureY": 0
+        },
+        {
+            "__obj_name": "oMyPlayer",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 28.0,
+                    "y": 54.0
+                },
+                {
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "asepritePath": "GR:character_anim_idle.json",
+                    "height": 32,
+                    "offsetX": -16,
+                    "offsetY": -29,
+                    "textureX": 96,
+                    "textureY": 0,
+                    "width": 32
+                },
+                {
+                    "_comp_name": "cCamera",
+                    "offsetX": -160.0,
+                    "offsetY": -85.0
+                }
+            ],
+            "_instance_name": "oMyPlayer_12",
+            "mEastTextureX": 128,
+            "mEastTextureY": 0,
+            "mNorthTextureX": 64,
+            "mNorthTextureY": 0,
+            "mNortheastTextureX": 96,
+            "mNortheastTextureY": 0,
+            "mNorthwestTextureX": 32,
+            "mNorthwestTextureY": 0,
+            "mSouthTextureX": 192,
+            "mSouthTextureY": 0,
+            "mSoutheastTextureX": 160,
+            "mSoutheastTextureY": 0,
+            "mSouthwestTextureX": 224,
+            "mSouthwestTextureY": 0,
+            "mWestTextureX": 0,
+            "mWestTextureY": 0
         }
     ],
     "sceneName": "HexabloMain"

@@ -12,6 +12,8 @@ class oWorld : public jle::jleObject {
     JLE_REGISTER_OBJECT_TYPE(oWorld)
 public:
 
+    oWorld();
+
     void SetupDefaultObject() override;
 
     void Start() override;
@@ -21,6 +23,11 @@ public:
     void ToJson(nlohmann::json &j_out) override;
 
     void FromJson(const nlohmann::json &j_in) override;
+
+    // access the one and only world globally
+    inline static oWorld* sWorld;
+
+    int mHexSizeX, mHexSizeY;
 
 private:
     void LoadTilesTexture();
@@ -40,7 +47,6 @@ private:
 
     std::vector<HexagonTile> mHexagonTiles{5};
 
-    int mHexSizeX, mHexSizeY;
     float mHexSizeX_inverse, mHexSizeY_inverse;
 };
 

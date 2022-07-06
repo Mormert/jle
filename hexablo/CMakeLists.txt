@@ -3,11 +3,11 @@
 add_executable(hexablo
         "Hexablo.cpp"
         "main.cpp"
-        oWorld.cpp
-        oWorld.h
-        hexHexagonFunctions.cpp
-        hexHelperFunctions.cpp
-        )
+        "oWorld.cpp"
+        "hexHexagonFunctions.cpp"
+        "hexHelperFunctions.cpp"
+        "oCharacter.cpp"
+        "oMyPlayer.cpp")
 
 
 target_link_libraries(${JLE_GAME_BUILD} LINK_PUBLIC engine)

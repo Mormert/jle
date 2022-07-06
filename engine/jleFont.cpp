@@ -74,6 +74,11 @@ void jle::jleFont::RenderText(const std::string &text, uint32_t fontSize,
                               float x, float y, float depth, glm::vec3 color,
                               const jle::jleCamera &camera) {
 
+    if(!mFontLoaded)
+    {
+        return;
+    }
+
     // TODO: Add scale as param
     constexpr float scale = 1.f;
 

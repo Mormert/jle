@@ -24,6 +24,7 @@ namespace jle {
         std::string mAsepritePath;
 
         uint32_t mWidth{}, mHeight{}, mTextureX{}, mTextureY{};
+        int32_t mOffsetX{}, mOffsetY{};
 
         bool mAnimating = false;
 

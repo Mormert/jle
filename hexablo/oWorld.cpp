@@ -114,3 +114,7 @@ void to_json(nlohmann::json &j, const oWorld::HexagonTile &w) {
             {"mHeight",   w.mHeight}
     };
 }
+
+oWorld::oWorld() {
+    sWorld = this;
+}

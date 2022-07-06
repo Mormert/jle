@@ -20,10 +20,6 @@ public:
 
     void Update(float dt) override;
 
-    std::string_view GetObjectNameVirtual() override {
-        return "oStaticSprite";
-    }
-
     void ToJson(nlohmann::json &j_out) override {
 
         transform->ToJson(j_out["transform"]);
