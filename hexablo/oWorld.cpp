@@ -5,7 +5,6 @@
 #include "cTransform.h"
 #include "cSprite.h"
 #include "hexHexagonFunctions.h"
-#include "hexHelperFunctions.h"
 
 #include "3rdparty/FastNoiseLite/FastNoiseLite.h"
 
@@ -13,7 +12,7 @@ void oWorld::SetupDefaultObject() {
 }
 
 void oWorld::Start() {
-    if (!mWorldHexTilesTexture) {
+    if (mAseprite.mFrames.empty()) {
         LoadTilesTexture();
     }
     mQuadRenderingPtr = jle::jleCore::core->rendering->quads.get();
@@ -23,7 +22,7 @@ void oWorld::Start() {
 
 void oWorld::Update(float dt) {
 
-    RenderVisualWorld();
+    RenderVisualWorld(dt);
 
     /*for (int i = 0; i < 25; i++) {
         for (int j = 0; j < 25; j++) {
@@ -50,7 +49,7 @@ void oWorld::Update(float dt) {
 }
 
 void oWorld::ToJson(nlohmann::json &j_out) {
-    j_out["mWorldHexTilesPath"] = mWorldHexTilesPath;
+    j_out["mWorldHexTilesAsepritePath"] = mWorldHexTilesAsepritePath;
     j_out["mHexagonTiles"] = mHexagonTiles;
     j_out["mHexSizeX"] = mHexSizeX;
     j_out["mHexSizeY"] = mHexSizeY;
@@ -58,22 +57,23 @@ void oWorld::ToJson(nlohmann::json &j_out) {
 
 
 void oWorld::FromJson(const nlohmann::json &j_in) {
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mWorldHexTilesPath, "mWorldHexTilesPath", "");
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, mWorldHexTilesAsepritePath, "mWorldHexTilesAsepritePath", "");
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mHexSizeX, "mHexSizeX", 8);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mHexSizeY, "mHexSizeY", 6);
     const auto tiles = j_in.find("mHexagonTiles");
     if (tiles != j_in.end()) {
         mHexagonTiles = j_in.at("mHexagonTiles").get<std::vector<HexagonTile>>();
     }
-    if (!mWorldHexTilesTexture) {
+    if (mAseprite.mFrames.empty()) {
         LoadTilesTexture();
     }
 }
 
 void oWorld::LoadTilesTexture() {
-    const auto &truePath = jle::FindTrueResourcePath(mWorldHexTilesPath);
+    const auto &truePath = jle::FindTrueResourcePath(mWorldHexTilesAsepritePath);
     if (!truePath.empty()) {
-        mWorldHexTilesTexture = jle::jleCore::core->texture_creator->LoadTextureFromPath(truePath);
+        mAseprite.LoadFromFile(truePath);
+        //mWorldHexTilesTexture = jle::jleCore::core->texture_creator->LoadTextureFromPath(truePath);
     }
 }
 
@@ -167,16 +167,29 @@ void oWorld::GenerateVisualWorld() {
     }
 }
 
-void oWorld::RenderVisualWorld() {
-    if (!mWorldHexTilesTexture) {
-        return;
+void oWorld::RenderVisualWorld(float dt) {
+
+    static int currentFrame = mAseprite.mFrames.size();
+    static float currentFrameTimeSpent = 0;
+    static float currentFrameDurationMs = 0;
+
+    currentFrameTimeSpent += dt * 1000.f;
+    if (currentFrameTimeSpent >= currentFrameDurationMs) {
+        currentFrame++;
+        if (currentFrame >= mAseprite.mFrames.size()) {
+            currentFrame = 0;
+        }
+        currentFrameTimeSpent = 0;
+        currentFrameDurationMs = mAseprite.mFrames.at(currentFrame).mDuration;
     }
 
     for (int i = 0; i < mWorldHexagons.size(); i++) {
         for (int j = 0; j < mWorldHexagons[i].size(); j++) {
             const auto &hexagonTile = mHexagonTiles[mWorldHexagons[i][j]];
 
-            TexturedQuad quad{mWorldHexTilesTexture, hexagonTile.mTextureX, hexagonTile.mTextureY,
+            const auto &frame = mAseprite.mFrames.at(currentFrame);
+
+            TexturedQuad quad{mAseprite.mImageTexture, frame.mFrame.mX + hexagonTile.mTextureX, frame.mFrame.mY+ hexagonTile.mTextureY,
                               static_cast<unsigned int>(hexagonTile.mWidth),
                               static_cast<unsigned int>(hexagonTile.mHeight)};
 

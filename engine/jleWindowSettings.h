@@ -19,6 +19,7 @@ namespace jle {
 
         bool windowIsRezisable = true;
         bool windowDisplayCursor = true;
+        bool windowCappedFps = false;
     };
 
     using json = nlohmann::json;
@@ -32,7 +33,8 @@ namespace jle {
                 {"window_height_min",     ws.windowHeightMin},
                 {"window_icon_path",      ws.iconPath},
                 {"window_is_rezisable",   ws.windowIsRezisable},
-                {"window_display_cursor", ws.windowDisplayCursor}
+                {"window_display_cursor", ws.windowDisplayCursor},
+                {"windowCappedFps", ws.windowCappedFps}
         };
     }
 
@@ -45,5 +47,7 @@ namespace jle {
         j.at("window_icon_path").get_to(ws.iconPath);
         j.at("window_is_rezisable").get_to(ws.windowIsRezisable);
         j.at("window_display_cursor").get_to(ws.windowDisplayCursor);
+        j.at("window_display_cursor").get_to(ws.windowDisplayCursor);
+        j.at("windowCappedFps").get_to(ws.windowCappedFps);
     }
 }

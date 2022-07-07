@@ -7,6 +7,7 @@
 #include "iTexture.h"
 #include "iQuadRendering.h"
 #include "hexHexagonItem.h"
+#include "jleAseprite.h"
 #include <glm/glm.hpp>
 
 #include <set>
@@ -27,16 +28,16 @@ public:
 
     void FromJson(const nlohmann::json &j_in) override;
 
-    hexHexagonItem* GetHexItemAt(int q, int r);
+    hexHexagonItem *GetHexItemAt(int q, int r);
 
     void RemoveHexItemAt(int q, int r);
 
-    void PlaceHexItemAt(hexHexagonItem* item, int q, int r);
+    void PlaceHexItemAt(hexHexagonItem *item, int q, int r);
 
     bool IsHexagonWalkable(int q, int r);
 
     // access the one and only world globally
-    inline static oWorld* sWorld;
+    inline static oWorld *sWorld;
 
     int mHexSizeX{}, mHexSizeY{};
 
@@ -45,11 +46,11 @@ private:
 
     void GenerateVisualWorld();
 
-    void RenderVisualWorld();
+    void RenderVisualWorld(float dt);
 
     struct pair_hash {
-        template <class T1, class T2>
-        std::size_t operator () (const std::pair<T1,T2> &p) const {
+        template<class T1, class T2>
+        std::size_t operator()(const std::pair<T1, T2> &p) const {
             auto h1 = std::hash<T1>{}(p.first);
             auto h2 = std::hash<T2>{}(p.second);
 
@@ -63,19 +64,19 @@ private:
     // In debug mode we also use this mHexagonItems_debug to assure that mHexagonItems
     // for our purposes hashes correctly. Using double maps are obviously slower since 2 lookups
     // are required, and we only use it in debug mode.
-    std::unordered_map<int, std::unordered_map<int, hexHexagonItem*>> mHexagonItems_debug;
+    std::unordered_map<int, std::unordered_map<int, hexHexagonItem *>> mHexagonItems_debug;
 #endif
 
-    std::unordered_map<std::pair<int,int>, hexHexagonItem*, pair_hash> mHexagonItems;
+    std::unordered_map<std::pair<int, int>, hexHexagonItem *, pair_hash> mHexagonItems;
 
-    std::array<std::array<int,50>,50> mWorldHexagons;
+    std::array<std::array<int, 50>, 50> mWorldHexagons;
 
-    std::set<std::pair<int,int>> mStaticallyNotWalkableHexagons;
+    std::set<std::pair<int, int>> mStaticallyNotWalkableHexagons;
 
-    std::shared_ptr<jle::iTexture> mWorldHexTilesTexture{nullptr};
-    std::string mWorldHexTilesPath;
+    std::string mWorldHexTilesAsepritePath;
+    jle::jleAseprite mAseprite;
 
-    iQuadRendering* mQuadRenderingPtr{nullptr};
+    iQuadRendering *mQuadRenderingPtr{nullptr};
 
     struct HexagonTile {
         float mDepth;
@@ -83,14 +84,15 @@ private:
     };
 
     friend void from_json(const nlohmann::json &j, oWorld::HexagonTile &w);
+
     friend void to_json(nlohmann::json &j, const oWorld::HexagonTile &w);
 
     std::vector<HexagonTile> mHexagonTiles{5};
 };
 
 void from_json(const nlohmann::json &j, oWorld::HexagonTile &w);
-void to_json(nlohmann::json &j, const oWorld::HexagonTile &w);
 
+void to_json(nlohmann::json &j, const oWorld::HexagonTile &w);
 
 
 #endif //HEXABLO_OWORLD_H

@@ -1,12 +1,21 @@
 { "frames": [
    {
-    "filename": "worldHexTiles.aseprite",
+    "filename": "worldHexTiles 0.aseprite",
     "frame": { "x": 0, "y": 0, "w": 128, "h": 128 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 128, "h": 128 },
     "sourceSize": { "w": 128, "h": 128 },
-    "duration": 100
+    "duration": 500
+   },
+   {
+    "filename": "worldHexTiles 1.aseprite",
+    "frame": { "x": 128, "y": 0, "w": 128, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 128, "h": 128 },
+    "sourceSize": { "w": 128, "h": 128 },
+    "duration": 500
    }
  ],
  "meta": {
@@ -14,7 +23,7 @@
   "version": "1.2.35-x64",
   "image": "worldHexTiles.png",
   "format": "RGBA8888",
-  "size": { "w": 128, "h": 128 },
+  "size": { "w": 256, "h": 128 },
   "scale": "1",
   "frameTags": [
   ],

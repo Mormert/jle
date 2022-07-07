@@ -44,7 +44,7 @@
                     "mWidth": 15
                 }
             ],
-            "mWorldHexTilesPath": "GR:worldHexTiles.png"
+            "mWorldHexTilesAsepritePath": "GR:worldHexTiles.json"
         }
     ],
     "sceneName": "HexabloMain_BG"

@@ -145,7 +145,11 @@ namespace jle {
 #ifdef __EMSCRIPTEN__
         glfwSwapInterval(1);
 #else
-        glfwSwapInterval(0);
+        if (windowSettings.windowCappedFps) {
+            glfwSwapInterval(1);
+        } else {
+            glfwSwapInterval(0);
+        }
 #endif
 
         int w, h;

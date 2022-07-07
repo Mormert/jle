@@ -32,7 +32,7 @@ namespace jle {
             mCurrentFrameTimeSpent += dt * 1000.f;
             if (mCurrentFrameTimeSpent >= mCurrentFrameDurationMs) {
                 mCurrentFrame++;
-                if (mCurrentFrame == mAseprite->mFrames.size()) {
+                if (mCurrentFrame >= mAseprite->mFrames.size()) {
                     mCurrentFrame = 0;
                 }
                 mCurrentFrameTimeSpent = 0;
