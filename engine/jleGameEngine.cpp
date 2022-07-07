@@ -97,6 +97,10 @@ namespace jle {
                                              core_settings->windowSettings.windowHeight);
         framebuffer_main = renderingFactory->CreateFramebuffer(dims.first, dims.second);
 
+        const auto& internalInputMouse = std::static_pointer_cast<MouseInputInternal>(jle::jleCore::core->input->mouse);
+        internalInputMouse->SetPixelatedScreenSize(dims.first, dims.second);
+        internalInputMouse->SetScreenSize(core_settings->windowSettings.windowWidth, core_settings->windowSettings.windowHeight);
+
         fullscreen_renderer = renderingFactory->CreateFullscreenRendering();
 
         window->AddWindowResizeCallback(

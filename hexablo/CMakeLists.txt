@@ -7,7 +7,8 @@ add_executable(hexablo
         "hexHexagonFunctions.cpp"
         "hexHelperFunctions.cpp"
         "oCharacter.cpp"
-        "oMyPlayer.cpp")
+        "oMyPlayer.cpp"
+        "hexHexagonItem.cpp")
 
 
 target_link_libraries(${JLE_GAME_BUILD} LINK_PUBLIC engine)

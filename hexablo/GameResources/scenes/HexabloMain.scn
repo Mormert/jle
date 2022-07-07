@@ -94,6 +94,8 @@
                 }
             ],
             "_instance_name": "oCharacter_12",
+            "hexagonPlacementQ": 0,
+            "hexagonPlacementR": 0,
             "mEastTextureX": 128,
             "mEastTextureY": 0,
             "mNorthTextureX": 64,
@@ -108,7 +110,7 @@
             "mSoutheastTextureY": 0,
             "mSouthwestTextureX": 224,
             "mSouthwestTextureY": 0,
-            "mWestTextureX": 0,
+            "mWestTextureX": 3,
             "mWestTextureY": 0
         },
         {
@@ -118,8 +120,8 @@
                 {
                     "_comp_name": "cTransform",
                     "depth": 0.0,
-                    "x": 111.0,
-                    "y": 42.0
+                    "x": 0.0,
+                    "y": 0.0
                 },
                 {
                     "_comp_name": "cAseprite",
@@ -134,6 +136,8 @@
                 }
             ],
             "_instance_name": "oCharacter_11",
+            "hexagonPlacementQ": 0,
+            "hexagonPlacementR": 0,
             "mEastTextureX": 128,
             "mEastTextureY": 0,
             "mNorthTextureX": 64,
@@ -148,7 +152,7 @@
             "mSoutheastTextureY": 0,
             "mSouthwestTextureX": 224,
             "mSouthwestTextureY": 0,
-            "mWestTextureX": 0,
+            "mWestTextureX": 7,
             "mWestTextureY": 0
         },
         {
@@ -158,8 +162,8 @@
                 {
                     "_comp_name": "cTransform",
                     "depth": 0.0,
-                    "x": 28.0,
-                    "y": 54.0
+                    "x": 0.0,
+                    "y": 0.0
                 },
                 {
                     "_comp_name": "cAseprite",
@@ -179,6 +183,8 @@
                 }
             ],
             "_instance_name": "oMyPlayer_12",
+            "hexagonPlacementQ": 0,
+            "hexagonPlacementR": 0,
             "mEastTextureX": 128,
             "mEastTextureY": 0,
             "mNorthTextureX": 64,

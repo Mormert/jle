@@ -8,22 +8,6 @@
 #include "hexHelperFunctions.h"
 
 void oWorld::SetupDefaultObject() {
-    /* for (int i = -20; i < 20; i++) {
-         for (int j = -30; j < 30; j++) {
-             auto child = SpawnChildObject<jle::jleObject>();
-             auto t = child->AddCustomComponent<cTransform>();
-             const auto realCoords = HexToPixel(i, j, 8, 6);
-             t->SetLocalPosition((int) realCoords.x, (int) realCoords.y);
-
-             auto s = child->AddCustomComponent<cSprite>();
-             s->SetTextureBeginCoordinates(1, 1);
-             s->SetRectangleDimensions(15, 13);
-             s->CreateAndSetTextureFromPath("GR:worldHexTiles.png");
-
-             // mQuadRenderingPtr->SendTexturedQuad(quad, RenderingMethod::Dynamic);
-         }
-     }*/
-
 }
 
 void oWorld::Start() {
@@ -117,4 +101,41 @@ void to_json(nlohmann::json &j, const oWorld::HexagonTile &w) {
 
 oWorld::oWorld() {
     sWorld = this;
+}
+
+hexHexagonItem* oWorld::GetHexItemAt(int q, int r) {
+
+#ifndef NDEBUG
+
+    auto item1 = mHexagonItems[{q,r}];
+    auto item2 = mHexagonItems_debug[q][r];
+
+    if(item1 != item2)
+    {
+        LOGE << "Hash functions did not find the same element. Consider using better hash.";
+        std::exit(EXIT_FAILURE);
+    }
+
+    return item1;
+
+#else
+    return mHexagonItems[{q,r}];
+#endif
+
+}
+
+void oWorld::RemoveHexItemAt(int q, int r) {
+    mHexagonItems.erase({q,r});
+
+#ifndef NDEBUG
+    mHexagonItems_debug[q].erase(r);
+#endif
+}
+
+void oWorld::PlaceHexItemAt(hexHexagonItem *item, int q, int r) {
+    mHexagonItems[{q,r}] = item;
+
+#ifndef NDEBUG
+    mHexagonItems_debug[q][r] = item;
+#endif
 }

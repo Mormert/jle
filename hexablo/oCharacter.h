@@ -7,11 +7,12 @@
 #include "cTransform.h"
 #include "cSprite.h"
 #include "cAseprite.h"
+#include "hexHexagonItem.h"
 
 #include <memory>
 #include <iostream>
 
-class oCharacter : public jle::jleObject {
+class oCharacter : public jle::jleObject, public hexHexagonItem {
     JLE_REGISTER_OBJECT_TYPE(oCharacter)
 public:
 
@@ -47,7 +48,7 @@ public:
 
 protected:
 
-    int mHexagonQ{10}, mHexagonR{10}, mHexagonPixelX{}, mHexagonPixelY{};
+    int mHexagonPixelX{}, mHexagonPixelY{};
 
     float mInterpingX{}, mInterpingY{};
     float mInterpingAlpha{0.f};

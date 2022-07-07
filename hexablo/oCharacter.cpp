@@ -10,6 +10,8 @@ void oCharacter::SetupDefaultObject() {
 }
 
 void oCharacter::Start() {
+    const auto &&placement = GetHexagonItemPlacement();
+    SetHexagonPlacementTeleport(placement.x, placement.y);
 }
 
 void oCharacter::Update(float dt) {
@@ -78,8 +80,10 @@ void oCharacter::SetCharacterDirection(oCharacterDirection direction) {
 
 
 void oCharacter::SetHexagonPlacementTeleport(int q, int r) {
-    mHexagonQ = q;
-    mHexagonR = r;
+    if (!TryUpdateHexagonItemPlacement(q, r)) {
+        return;
+    }
+
 
     const auto *world = oWorld::sWorld;
     auto p = hexHexagonFunctions::HexToPixel(q, r, world->mHexSizeX, world->mHexSizeY);
@@ -92,8 +96,9 @@ void oCharacter::SetHexagonPlacementTeleport(int q, int r) {
 }
 
 void oCharacter::SetHexagonPlacementInterp(int q, int r) {
-    mHexagonQ = q;
-    mHexagonR = r;
+    if (!TryUpdateHexagonItemPlacement(q, r)) {
+        return;
+    }
 
     const auto *world = oWorld::sWorld;
     auto p = hexHexagonFunctions::HexToPixel(q, r, world->mHexSizeX, world->mHexSizeY);
@@ -110,6 +115,9 @@ void oCharacter::SetHexagonPlacementInterp(int q, int r) {
 
 
 void oCharacter::ToJson(nlohmann::json &j_out) {
+    const auto &&hexagonPlacement = GetHexagonItemPlacement();
+    j_out["hexagonPlacementQ"] = hexagonPlacement.x;
+    j_out["hexagonPlacementR"] = hexagonPlacement.y;
     j_out["mWestTextureX"] = mWestTextureX;
     j_out["mWestTextureY"] = mWestTextureY;
     j_out["mNorthwestTextureX"] = mNorthwestTextureX;
@@ -145,8 +153,9 @@ void oCharacter::FromJson(const nlohmann::json &j_in) {
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mSouthTextureY, "mSouthTextureY", 0);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mSouthwestTextureX, "mSouthwestTextureX", 224);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mSouthwestTextureY, "mSouthwestTextureY", 0);
+
+    int hexagonPlacementQ = 0, hexagonPlacementR = 0;
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, mWestTextureX, "hexagonPlacementQ", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, mWestTextureX, "hexagonPlacementR", 0);
+    SetHexagonItemPlacement(hexagonPlacementQ, hexagonPlacementR);
 }
-
-
-
-

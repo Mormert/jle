@@ -5,6 +5,7 @@
 #include "jleCore.h"
 
 #include "plog/Log.h"
+#include "oWorld.h"
 
 #include <glm/glm.hpp>
 
@@ -14,7 +15,8 @@ void oMyPlayer::SetupDefaultObject() {
 }
 
 void oMyPlayer::Start() {
-    SetHexagonPlacementTeleport(mHexagonQ, mHexagonR);
+    auto hexagonCoords = GetHexagonItemPlacement();
+    SetHexagonPlacementTeleport(hexagonCoords.x, hexagonCoords.y);
 }
 
 void oMyPlayer::Update(float dt) {
@@ -108,69 +110,92 @@ void oMyPlayer::Movement(float dt) {
 
     static bool verticalSide = true;
 
-    if (w && d) {
-        if (mHexagonR % 2 == 0) {
-            SetHexagonPlacementInterp(mHexagonQ, mHexagonR - 1);
+    auto &&hexagonCoords = GetHexagonItemPlacement();
+    const int hexagonQ = hexagonCoords.x;
+    const int hexagonR = hexagonCoords.y;
+
+    auto *world = oWorld::sWorld;
+    const auto TryMoveTo = [&](int q, int r) {
+        if (!world->GetHexItemAt(q, r)) {
+            SetHexagonPlacementInterp(q, r);
+            canMove = false;
+            lastMovement = jle::jleCore::core->status->GetCurrentFrameTime();
+            currentMoveTime = defaultMoveTime;
+            return true;
         } else {
-            SetHexagonPlacementInterp(mHexagonQ + 1, mHexagonR - 1);
+            return false;
         }
-        canMove = false;
-        lastMovement = jle::jleCore::core->status->GetCurrentFrameTime();
-        currentMoveTime = defaultMoveTime;
+    };
+
+    if (w && d) {
+        if (hexagonR % 2 == 0) {
+            if (TryMoveTo(hexagonQ, hexagonR - 1)) { return; }
+        } else {
+            if (TryMoveTo(hexagonQ + 1, hexagonR - 1)) { return; }
+        }
         return;
     } else if (w && a) {
-        if (mHexagonR % 2 == 0) {
-            SetHexagonPlacementInterp(mHexagonQ - 1, mHexagonR - 1);
+        if (hexagonR % 2 == 0) {
+            if (TryMoveTo(hexagonQ - 1, hexagonR - 1)) { return; }
         } else {
-            SetHexagonPlacementInterp(mHexagonQ, mHexagonR - 1);
+            if (TryMoveTo(hexagonQ, hexagonR - 1)) { return; }
         }
-        canMove = false;
-        lastMovement = jle::jleCore::core->status->GetCurrentFrameTime();
-        currentMoveTime = defaultMoveTime;
         return;
     } else if (a && s) {
-        if (mHexagonR % 2 == 0) {
-            SetHexagonPlacementInterp(mHexagonQ - 1, mHexagonR + 1);
+        if (hexagonR % 2 == 0) {
+            if (TryMoveTo(hexagonQ - 1, hexagonR + 1)) { return; }
         } else {
-            SetHexagonPlacementInterp(mHexagonQ, mHexagonR + 1);
+            if (TryMoveTo(hexagonQ, hexagonR + 1)) { return; }
         }
-        canMove = false;
-        lastMovement = jle::jleCore::core->status->GetCurrentFrameTime();
-        currentMoveTime = defaultMoveTime;
         return;
     } else if (s && d) {
-        if (mHexagonR % 2 == 0) {
-            SetHexagonPlacementInterp(mHexagonQ, mHexagonR + 1);
+        if (hexagonR % 2 == 0) {
+            if (TryMoveTo(hexagonQ, hexagonR + 1)) { return; }
         } else {
-            SetHexagonPlacementInterp(mHexagonQ + 1, mHexagonR + 1);
+            if (TryMoveTo(hexagonQ + 1, hexagonR + 1)) { return; }
         }
-        canMove = false;
-        lastMovement = jle::jleCore::core->status->GetCurrentFrameTime();
-        currentMoveTime = defaultMoveTime;
         return;
     } else if (a) {
-        SetHexagonPlacementInterp(mHexagonQ - 1, mHexagonR);
-        canMove = false;
-        lastMovement = jle::jleCore::core->status->GetCurrentFrameTime();
-        currentMoveTime = defaultMoveTime;
+        if (TryMoveTo(hexagonQ - 1, hexagonR)) { return; }
         return;
     } else if (d) {
-        SetHexagonPlacementInterp(mHexagonQ + 1, mHexagonR);
-        canMove = false;
-        lastMovement = jle::jleCore::core->status->GetCurrentFrameTime();
-        currentMoveTime = defaultMoveTime;
+        if (TryMoveTo(hexagonQ + 1, hexagonR)) { return; }
         return;
     } else if (w) {
-        SetHexagonPlacementInterp(mHexagonQ, mHexagonR - 2);
-        canMove = false;
-        lastMovement = jle::jleCore::core->status->GetCurrentFrameTime();
-        currentMoveTime = defaultMoveTime;
+        if (!TryMoveTo(hexagonQ, hexagonR - 2)) {
+            bool moved = false;
+            if (hexagonR % 2 == 0) { // try move like W+A
+                moved = TryMoveTo(hexagonQ - 1, hexagonR - 1);
+            } else {
+                moved = TryMoveTo(hexagonQ, hexagonR - 1);
+            }
+
+            if (!moved) { // try move like W+D
+                if (hexagonR % 2 == 0) {
+                    TryMoveTo(hexagonQ, hexagonR - 1);
+                } else {
+                    TryMoveTo(hexagonQ + 1, hexagonR - 1);
+                }
+            }
+        }
         return;
     } else if (s) {
-        SetHexagonPlacementInterp(mHexagonQ, mHexagonR + 2);
-        canMove = false;
-        lastMovement = jle::jleCore::core->status->GetCurrentFrameTime();
-        currentMoveTime = defaultMoveTime;
+        if (!TryMoveTo(hexagonQ, hexagonR + 2)) {
+            bool moved = false;
+            if (hexagonR % 2 == 0) {  // try move like A+S
+                moved = TryMoveTo(hexagonQ - 1, hexagonR + 1);
+            } else {
+                moved = TryMoveTo(hexagonQ, hexagonR + 1);
+            }
+
+            if (!moved) { // try move like W+D
+                if (hexagonR % 2 == 0) {
+                    TryMoveTo(hexagonQ, hexagonR + 1);
+                } else {
+                    TryMoveTo(hexagonQ + 1, hexagonR + 1);
+                }
+            }
+        }
         return;
     }
 
