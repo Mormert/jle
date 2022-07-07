@@ -7,7 +7,7 @@
 #include "hexHexagonFunctions.h"
 #include "hexHelperFunctions.h"
 
-#include <FastNoise/FastNoise.h>
+#include "3rdparty/FastNoiseLite/FastNoiseLite.h"
 
 void oWorld::SetupDefaultObject() {
 }
@@ -114,7 +114,7 @@ hexHexagonItem *oWorld::GetHexItemAt(int q, int r) {
     return item1;
 
 #else
-    return mHexagonItems[{q,r}];
+    return mHexagonItems[{q, r}];
 #endif
 
 }
@@ -150,20 +150,17 @@ bool oWorld::IsHexagonWalkable(int q, int r) {
 
 void oWorld::GenerateVisualWorld() {
 
-    auto fnSimplex = FastNoise::New<FastNoise::Simplex>();
-
-    std::vector<float> noiseOutput(50*50);
-    fnSimplex->GenUniformGrid2D(noiseOutput.data(), 0, 0, 50, 50, 0.2f, 1337);
+    FastNoiseLite noise;
+    noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
 
     int index = 0;
     for (int i = 0; i < mWorldHexagons.size(); i++) {
         for (int j = 0; j < mWorldHexagons[i].size(); j++) {
-            const int hexagonID = (noiseOutput[index++] + 1.f) * 2.f;
+            const int hexagonID = (noise.GetNoise(((float) i) * 10.f, ((float) j) * 10.f) + 1.f) * 2.f;
             mWorldHexagons[i][j] = hexagonID;
 
-            if(hexagonID == 3)
-            {
-                mStaticallyNotWalkableHexagons.insert({i,j});
+            if (hexagonID == 3) {
+                mStaticallyNotWalkableHexagons.insert({i, j});
             }
 
         }
