@@ -5,7 +5,7 @@
 
 bool hexHexagonItem::TryUpdateHexagonItemPlacement(int q, int r) {
 
-    if(auto alreadyPlacedItem = oWorld::sWorld->GetHexItemAt(q,r))
+    if(!oWorld::sWorld->IsHexagonWalkable(q,r))
     {
         return false;
     }
@@ -39,4 +39,15 @@ hexHexagonItem::~hexHexagonItem() {
 void hexHexagonItem::SetHexagonItemPlacement(int q, int r) {
     mHexagonQ = q;
     mHexagonR = r;
+}
+
+void to_json(nlohmann::json &j, const hexHexagonItem &h)
+{
+    j["mHexagonQ"] = h.mHexagonQ;
+    j["mHexagonR"] = h.mHexagonR;
+}
+
+void from_json(const nlohmann::json &j, hexHexagonItem &h) {
+    JLE_FROM_JSON_WITH_DEFAULT(j, h.mHexagonQ, "mHexagonQ", 0.f);
+    JLE_FROM_JSON_WITH_DEFAULT(j, h.mHexagonR, "mHexagonR", 0.f);
 }

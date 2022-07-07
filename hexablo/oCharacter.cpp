@@ -2,7 +2,9 @@
 
 #include "oCharacter.h"
 #include "hexHexagonFunctions.h"
+#include "hexHelperFunctions.h"
 #include "oWorld.h"
+#include "jleCore.h"
 
 void oCharacter::SetupDefaultObject() {
     mTransform = AddCustomComponent<cTransform>();
@@ -10,11 +12,15 @@ void oCharacter::SetupDefaultObject() {
 }
 
 void oCharacter::Start() {
-    const auto &&placement = GetHexagonItemPlacement();
+    const auto &&placement = mHexagonItem.GetHexagonItemPlacement();
     SetHexagonPlacementTeleport(placement.x, placement.y);
 }
 
 void oCharacter::Update(float dt) {
+
+    if (jle::jleCore::core->input->keyboard->GetKeyDown('T')) {
+        SetHexagonPlacementInterp(hexHelperFunctions::GetRandInt(0,10), hexHelperFunctions::GetRandInt(0,10));
+    }
 
     const auto lerpVec2 = [](const glm::vec2 &a, const glm::vec2 &b, float alpha) {
         return a * alpha + b * (1.f - alpha);
@@ -29,7 +35,7 @@ void oCharacter::Update(float dt) {
         mInterpingY = pos.y;
         mTransform->SetWorldPosition((int) mInterpingX, (int) mInterpingY);
 
-        mInterpingAlpha += dt;
+        mInterpingAlpha += mInterpBetweenHexasSpeed * dt;
         if (mInterpingAlpha >= 1.f) {
             mInterpingAlpha = 1.f;
             mInterpingPosition = false;
@@ -80,7 +86,7 @@ void oCharacter::SetCharacterDirection(oCharacterDirection direction) {
 
 
 void oCharacter::SetHexagonPlacementTeleport(int q, int r) {
-    if (!TryUpdateHexagonItemPlacement(q, r)) {
+    if (!mHexagonItem.TryUpdateHexagonItemPlacement(q, r)) {
         return;
     }
 
@@ -96,7 +102,7 @@ void oCharacter::SetHexagonPlacementTeleport(int q, int r) {
 }
 
 void oCharacter::SetHexagonPlacementInterp(int q, int r) {
-    if (!TryUpdateHexagonItemPlacement(q, r)) {
+    if (!mHexagonItem.TryUpdateHexagonItemPlacement(q, r)) {
         return;
     }
 
@@ -115,9 +121,10 @@ void oCharacter::SetHexagonPlacementInterp(int q, int r) {
 
 
 void oCharacter::ToJson(nlohmann::json &j_out) {
-    const auto &&hexagonPlacement = GetHexagonItemPlacement();
-    j_out["hexagonPlacementQ"] = hexagonPlacement.x;
-    j_out["hexagonPlacementR"] = hexagonPlacement.y;
+    j_out["mHexagonItem"] = mHexagonItem;
+
+    j_out["mInterpBetweenHexasSpeed"] = mInterpBetweenHexasSpeed;
+
     j_out["mWestTextureX"] = mWestTextureX;
     j_out["mWestTextureY"] = mWestTextureY;
     j_out["mNorthwestTextureX"] = mNorthwestTextureX;
@@ -137,6 +144,10 @@ void oCharacter::ToJson(nlohmann::json &j_out) {
 }
 
 void oCharacter::FromJson(const nlohmann::json &j_in) {
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, mHexagonItem, "mHexagonItem", {});
+
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, mInterpBetweenHexasSpeed, "mInterpBetweenHexasSpeed", 1.f);
+
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mWestTextureX, "mWestTextureX", 0);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mWestTextureY, "mWestTextureY", 0);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mNorthwestTextureX, "mNorthwestTextureX", 32);
@@ -153,9 +164,4 @@ void oCharacter::FromJson(const nlohmann::json &j_in) {
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mSouthTextureY, "mSouthTextureY", 0);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mSouthwestTextureX, "mSouthwestTextureX", 224);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mSouthwestTextureY, "mSouthwestTextureY", 0);
-
-    int hexagonPlacementQ = 0, hexagonPlacementR = 0;
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mWestTextureX, "hexagonPlacementQ", 0);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mWestTextureX, "hexagonPlacementR", 0);
-    SetHexagonItemPlacement(hexagonPlacementQ, hexagonPlacementR);
 }

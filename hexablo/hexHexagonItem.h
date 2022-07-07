@@ -4,6 +4,7 @@
 #define HEXABLO_HEXHEXAGONITEM_H
 
 #include <glm/glm.hpp>
+#include "json.hpp"
 
 class hexHexagonItem {
 public:
@@ -19,7 +20,14 @@ public:
 private:
     int mHexagonQ{0}, mHexagonR{0};
     bool mIsPlacedOnWorld{false};
+
+    friend void to_json(nlohmann::json &j, const hexHexagonItem &h);
+    friend void from_json(const nlohmann::json &j, hexHexagonItem &h);
+
 };
+
+void to_json(nlohmann::json &j, const hexHexagonItem &h);
+void from_json(const nlohmann::json &j, hexHexagonItem &h);
 
 
 #endif //HEXABLO_HEXHEXAGONITEM_H

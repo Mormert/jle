@@ -15,8 +15,7 @@ void oMyPlayer::SetupDefaultObject() {
 }
 
 void oMyPlayer::Start() {
-    auto hexagonCoords = GetHexagonItemPlacement();
-    SetHexagonPlacementTeleport(hexagonCoords.x, hexagonCoords.y);
+    oCharacter::Start();
 }
 
 void oMyPlayer::Update(float dt) {
@@ -26,14 +25,6 @@ void oMyPlayer::Update(float dt) {
     LookAtMouse();
 
     Movement(dt);
-
-    if (jle::jleCore::core->input->keyboard->GetKeyDown('T')) {
-        SetHexagonPlacementTeleport(5, 3);
-    }
-
-    if (jle::jleCore::core->input->keyboard->GetKeyDown('G')) {
-        SetHexagonPlacementTeleport(2, 6);
-    }
 
 }
 
@@ -89,7 +80,7 @@ void oMyPlayer::Movement(float dt) {
 
     static bool canMove = true;
     static float lastMovement = 0.f;
-    constexpr float defaultMoveTime = 0.15f;
+    constexpr float defaultMoveTime = 0.10f;
     static float currentMoveTime = defaultMoveTime;
 
     if (!canMove) {
@@ -110,13 +101,13 @@ void oMyPlayer::Movement(float dt) {
 
     static bool verticalSide = true;
 
-    auto &&hexagonCoords = GetHexagonItemPlacement();
+    auto &&hexagonCoords = mHexagonItem.GetHexagonItemPlacement();
     const int hexagonQ = hexagonCoords.x;
     const int hexagonR = hexagonCoords.y;
 
     auto *world = oWorld::sWorld;
     const auto TryMoveTo = [&](int q, int r) {
-        if (!world->GetHexItemAt(q, r)) {
+        if (world->IsHexagonWalkable(q, r)) {
             SetHexagonPlacementInterp(q, r);
             canMove = false;
             lastMovement = jle::jleCore::core->status->GetCurrentFrameTime();

@@ -12,7 +12,7 @@
 #include <memory>
 #include <iostream>
 
-class oCharacter : public jle::jleObject, public hexHexagonItem {
+class oCharacter : public jle::jleObject {
     JLE_REGISTER_OBJECT_TYPE(oCharacter)
 public:
 
@@ -47,6 +47,8 @@ public:
     std::shared_ptr<jle::cAseprite> mAseprite{nullptr};
 
 protected:
+
+    hexHexagonItem mHexagonItem;
 
     int mHexagonPixelX{}, mHexagonPixelY{};
 

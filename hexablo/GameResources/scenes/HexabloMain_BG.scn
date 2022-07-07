@@ -23,25 +23,25 @@
                     "mWidth": 15
                 },
                 {
-                    "mDepth": 0.0,
-                    "mHeight": 0,
-                    "mTextureX": 0,
-                    "mTextureY": 0,
-                    "mWidth": 0
+                    "mDepth": -0.4000000059604645,
+                    "mHeight": 13,
+                    "mTextureX": 33,
+                    "mTextureY": 1,
+                    "mWidth": 15
                 },
                 {
-                    "mDepth": 0.0,
-                    "mHeight": 0,
-                    "mTextureX": 0,
-                    "mTextureY": 0,
-                    "mWidth": 0
+                    "mDepth": -0.30000001192092896,
+                    "mHeight": 13,
+                    "mTextureX": 49,
+                    "mTextureY": 1,
+                    "mWidth": 15
                 },
                 {
-                    "mDepth": 0.0,
-                    "mHeight": 0,
-                    "mTextureX": 0,
-                    "mTextureY": 0,
-                    "mWidth": 0
+                    "mDepth": -0.5,
+                    "mHeight": 13,
+                    "mTextureX": 65,
+                    "mTextureY": 1,
+                    "mWidth": 15
                 }
             ],
             "mWorldHexTilesPath": "GR:worldHexTiles.png"

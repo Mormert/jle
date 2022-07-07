@@ -9,6 +9,8 @@
 #include "hexHexagonItem.h"
 #include <glm/glm.hpp>
 
+#include <set>
+
 class oWorld : public jle::jleObject {
     JLE_REGISTER_OBJECT_TYPE(oWorld)
 public:
@@ -31,6 +33,8 @@ public:
 
     void PlaceHexItemAt(hexHexagonItem* item, int q, int r);
 
+    bool IsHexagonWalkable(int q, int r);
+
     // access the one and only world globally
     inline static oWorld* sWorld;
 
@@ -38,6 +42,10 @@ public:
 
 private:
     void LoadTilesTexture();
+
+    void GenerateVisualWorld();
+
+    void RenderVisualWorld();
 
     struct pair_hash {
         template <class T1, class T2>
@@ -60,6 +68,10 @@ private:
 
     std::unordered_map<std::pair<int,int>, hexHexagonItem*, pair_hash> mHexagonItems;
 
+    std::array<std::array<int,50>,50> mWorldHexagons;
+
+    std::set<std::pair<int,int>> mStaticallyNotWalkableHexagons;
+
     std::shared_ptr<jle::iTexture> mWorldHexTilesTexture{nullptr};
     std::string mWorldHexTilesPath;
 
@@ -74,8 +86,6 @@ private:
     friend void to_json(nlohmann::json &j, const oWorld::HexagonTile &w);
 
     std::vector<HexagonTile> mHexagonTiles{5};
-
-    float mHexSizeX_inverse{}, mHexSizeY_inverse{};
 };
 
 void from_json(const nlohmann::json &j, oWorld::HexagonTile &w);
