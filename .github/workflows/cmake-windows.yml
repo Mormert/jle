@@ -42,5 +42,6 @@ jobs:
         path: |
           build/**/*.exe
           build/**/EditorResources
+          build/**/EngineResources
           build/**/GameResources
           !build/**/CMakeFiles

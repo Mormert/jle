@@ -7,7 +7,7 @@
 
 // Wrappers for paths defined in CMakeLists
 
-#ifdef __EMSCRIPTEN__
+#ifndef BUILD_EDITOR
 static std::string JLE_ENGINE_PATH { "" };
 #else
 static std::string JLE_ENGINE_PATH{_JLE_ENGINE_PATH};
