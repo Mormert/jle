@@ -57,6 +57,8 @@ namespace jle {
         // This format expects Aseprite exporting to use 'Array' and not 'Hash'
         std::vector<jleAsepriteFrame> mFrames;
 
+        int GetTotalAnimationTimeMs();
+
         jleAsepriteMeta mMeta;
 
         std::shared_ptr<jle::iTexture> mImageTexture;

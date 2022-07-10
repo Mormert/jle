@@ -7,8 +7,8 @@
                 {
                     "_comp_name": "cAseprite",
                     "animating": true,
-                    "asepritePath": "GR:rottenapple.json",
                     "height": 0,
+                    "mAsepritePaths_STRVEC": [],
                     "offsetX": 0,
                     "offsetY": 0,
                     "textureX": 0,
@@ -31,8 +31,8 @@
                 {
                     "_comp_name": "cAseprite",
                     "animating": true,
-                    "asepritePath": "GR:character_animation.json",
                     "height": 0,
+                    "mAsepritePaths_STRVEC": [],
                     "offsetX": 0,
                     "offsetY": 0,
                     "textureX": 0,
@@ -72,110 +72,27 @@
             "_instance_name": "helloworldtext"
         },
         {
-            "__obj_name": "oCharacter",
-            "_childObjects": [],
-            "_custom_components": [
-                {
-                    "_comp_name": "cTransform",
-                    "depth": 0.0,
-                    "x": 112.0,
-                    "y": 90.0
-                },
-                {
-                    "_comp_name": "cAseprite",
-                    "animating": true,
-                    "asepritePath": "GR:character_anim_idle.json",
-                    "height": 32,
-                    "offsetX": -16,
-                    "offsetY": -28,
-                    "textureX": 128,
-                    "textureY": 0,
-                    "width": 32
-                }
-            ],
-            "_instance_name": "oCharacter_12",
-            "mEastTextureX": 128,
-            "mEastTextureY": 0,
-            "mHexagonItem": {
-                "mHexagonQ": 8,
-                "mHexagonR": 10
-            },
-            "mInterpBetweenHexasSpeed": 1.0,
-            "mNorthTextureX": 64,
-            "mNorthTextureY": 0,
-            "mNortheastTextureX": 96,
-            "mNortheastTextureY": 0,
-            "mNorthwestTextureX": 32,
-            "mNorthwestTextureY": 0,
-            "mSouthTextureX": 192,
-            "mSouthTextureY": 0,
-            "mSoutheastTextureX": 160,
-            "mSoutheastTextureY": 0,
-            "mSouthwestTextureX": 224,
-            "mSouthwestTextureY": 0,
-            "mWestTextureX": 3,
-            "mWestTextureY": 0
-        },
-        {
-            "__obj_name": "oCharacter",
-            "_childObjects": [],
-            "_custom_components": [
-                {
-                    "_comp_name": "cTransform",
-                    "depth": 0.0,
-                    "x": 49.0,
-                    "y": 27.0
-                },
-                {
-                    "_comp_name": "cAseprite",
-                    "animating": true,
-                    "asepritePath": "GR:character_anim_idle.json",
-                    "height": 32,
-                    "offsetX": -16,
-                    "offsetY": -29,
-                    "textureX": 32,
-                    "textureY": 0,
-                    "width": 32
-                }
-            ],
-            "_instance_name": "oCharacter_11",
-            "mEastTextureX": 128,
-            "mEastTextureY": 0,
-            "mHexagonItem": {
-                "mHexagonQ": 3,
-                "mHexagonR": 3
-            },
-            "mInterpBetweenHexasSpeed": 1.0,
-            "mNorthTextureX": 64,
-            "mNorthTextureY": 0,
-            "mNortheastTextureX": 96,
-            "mNortheastTextureY": 0,
-            "mNorthwestTextureX": 32,
-            "mNorthwestTextureY": 0,
-            "mSouthTextureX": 192,
-            "mSouthTextureY": 0,
-            "mSoutheastTextureX": 160,
-            "mSoutheastTextureY": 0,
-            "mSouthwestTextureX": 224,
-            "mSouthwestTextureY": 0,
-            "mWestTextureX": 7,
-            "mWestTextureY": 0
-        },
-        {
             "__obj_name": "oMyPlayer",
             "_childObjects": [],
             "_custom_components": [
                 {
                     "_comp_name": "cTransform",
                     "depth": 0.0,
-                    "x": 98.0,
-                    "y": 90.0
+                    "x": 105.0,
+                    "y": 63.0
                 },
                 {
                     "_comp_name": "cAseprite",
                     "animating": true,
-                    "asepritePath": "GR:character_anim_idle.json",
                     "height": 32,
+                    "mAsepritePaths_STRVEC": [
+                        {
+                            "mString": "GR:character_anim_idle.json"
+                        },
+                        {
+                            "mString": "GR:character_anim_attack.json"
+                        }
+                    ],
                     "offsetX": -16,
                     "offsetY": -29,
                     "textureX": 96,
@@ -189,11 +106,12 @@
                 }
             ],
             "_instance_name": "oMyPlayer_12",
+            "mAttackCooldownAfterAnimationMs": 3000.0,
             "mEastTextureX": 128,
             "mEastTextureY": 0,
             "mHexagonItem": {
                 "mHexagonQ": 7,
-                "mHexagonR": 10
+                "mHexagonR": 7
             },
             "mInterpBetweenHexasSpeed": 1.0,
             "mNorthTextureX": 64,

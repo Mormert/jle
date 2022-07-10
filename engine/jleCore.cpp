@@ -110,7 +110,7 @@ namespace jle {
         core_settings = cs;
     }
 
-    jleCore::~jleCore(){
+    jleCore::~jleCore() {
         jleSoLoud::DeInit();
         jleFont::DeInit();
     }
@@ -152,11 +152,17 @@ namespace jle {
     void jleCore::MainLoop() {
         coreImpl->status_internal->Refresh();
 
+        mTimerManager.Process();
+
         Update(status->GetDeltaFrameTime());
 
         Render();
         ((iWindowInternalAPI *) window.get())->UpdateWindow();
 
         running = !((iWindowInternalAPI *) window.get())->WindowShouldClose();
+    }
+
+    jleTimerManager &jleCore::GetTimerManager() {
+        return mTimerManager;
     }
 }

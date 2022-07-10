@@ -30,16 +30,5 @@ namespace jle {
             mouse->SetInputEnabled(enabled);
         }
 
-        /*// Gets the X mouse position
-        virtual int GetMouseX() noexcept;
-        // Gets the X mouse position
-        virtual int GetMouseY() noexcept;
-
-        // Gets the X position in the world where the mouse hovers over
-        virtual int GetMouseWorldX() noexcept;
-        // Gets the Y position in the world where the mouse hovers over
-        virtual int GetMouseWorldY() noexcept;*/
-
-
     };
 }

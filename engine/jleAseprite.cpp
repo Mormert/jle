@@ -81,3 +81,11 @@ void jle::jleAseprite::LoadImage() {
     p.remove_filename();
     mImageTexture = jleCore::core->texture_creator->LoadTextureFromPath(p.string() + mMeta.mImage);
 }
+
+int jle::jleAseprite::GetTotalAnimationTimeMs() {
+    int res = 0;
+    for (auto &&frame: mFrames) {
+        res += frame.mDuration;
+    }
+    return res;
+}

@@ -18,8 +18,8 @@ void oCharacter::Start() {
 
 void oCharacter::Update(float dt) {
 
-    if (jle::jleCore::core->input->keyboard->GetKeyDown('T')) {
-        SetHexagonPlacementInterp(hexHelperFunctions::GetRandInt(0,10), hexHelperFunctions::GetRandInt(0,10));
+    if (jle::jleCore::core->input->keyboard->GetKeyPressed('T')) {
+        SetHexagonPlacementInterp(hexHelperFunctions::GetRandInt(0, 10), hexHelperFunctions::GetRandInt(0, 10));
     }
 
     const auto lerpVec2 = [](const glm::vec2 &a, const glm::vec2 &b, float alpha) {
@@ -125,6 +125,8 @@ void oCharacter::ToJson(nlohmann::json &j_out) {
 
     j_out["mInterpBetweenHexasSpeed"] = mInterpBetweenHexasSpeed;
 
+    j_out["mAttackCooldownAfterAnimationMs"] = mAttackCooldownAfterAnimationMs;
+
     j_out["mWestTextureX"] = mWestTextureX;
     j_out["mWestTextureY"] = mWestTextureY;
     j_out["mNorthwestTextureX"] = mNorthwestTextureX;
@@ -148,6 +150,8 @@ void oCharacter::FromJson(const nlohmann::json &j_in) {
 
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mInterpBetweenHexasSpeed, "mInterpBetweenHexasSpeed", 1.f);
 
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, mAttackCooldownAfterAnimationMs, "mAttackCooldownAfterAnimationMs", 0.f);
+
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mWestTextureX, "mWestTextureX", 0);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mWestTextureY, "mWestTextureY", 0);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mNorthwestTextureX, "mNorthwestTextureX", 32);
@@ -164,4 +168,37 @@ void oCharacter::FromJson(const nlohmann::json &j_in) {
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mSouthTextureY, "mSouthTextureY", 0);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mSouthwestTextureX, "mSouthwestTextureX", 224);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mSouthwestTextureY, "mSouthwestTextureY", 0);
+}
+
+void oCharacter::Attack(oCharacter::oCharacterDirection) {
+
+    if (!mCanAttack) {
+        return;
+    }
+
+    mAseprite->SetCurrentAseprite(mAttackAsepriteIndex);
+    mAseprite->SetCurrentAsepriteFrame(0);
+
+    const double animationTimeMs = mAseprite->GetActiveAsepriteRef().GetTotalAnimationTimeMs();
+
+    const auto futureFunc = [](std::weak_ptr<void> data) {
+        auto safeThis = std::static_pointer_cast<oCharacter>(data.lock());
+        safeThis->mAseprite->SetCurrentAseprite(0);
+        safeThis->mAseprite->SetCurrentAsepriteFrame(0);
+    };
+
+    // Go back to the default animation
+    jle::jleCore::core->GetTimerManager().
+            ExecuteFuncInSecondsWeakData(animationTimeMs * 0.001, futureFunc, GetWeakPtrToThis());
+
+    // Can not attack again for the animation time + some additional time
+    jle::jleCore::core->GetTimerManager().
+            ExecuteFuncInSecondsWeakData(
+            (animationTimeMs + mAttackCooldownAfterAnimationMs) * 0.001, [](std::weak_ptr<void> data) {
+                auto safeThis = std::static_pointer_cast<oCharacter>(data.lock());
+                safeThis->mCanAttack = true;
+            }, GetWeakPtrToThis());
+
+    mCanAttack = false;
+
 }

@@ -21,7 +21,17 @@ namespace jle {
 
         void FromJson(const nlohmann::json &j_in) override;
 
-        std::string mAsepritePath;
+        int AddAsepritePath(const std::string &path);
+
+        void SetCurrentAseprite(unsigned int index);
+
+        void SetCurrentAsepriteFrame(unsigned int index);
+
+        [[nodiscard]] unsigned int GetCurrentAsepriteIndex() const;
+
+        [[nodiscard]] jleAseprite &GetActiveAsepriteRef();
+
+        std::vector<jleJsonString> mAsepritePaths;
 
         uint32_t mWidth{}, mHeight{}, mTextureX{}, mTextureY{};
         int32_t mOffsetX{}, mOffsetY{};
@@ -29,7 +39,8 @@ namespace jle {
         bool mAnimating = false;
 
     private:
-        std::shared_ptr<jleAseprite> mAseprite{nullptr};
+        unsigned int mCurrentlyActiveAseprite{0};
+        std::vector<std::shared_ptr<jleAseprite>> mAseprites{};
 
         std::shared_ptr<cTransform> mTransform{nullptr};
 

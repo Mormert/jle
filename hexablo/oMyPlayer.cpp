@@ -26,6 +26,11 @@ void oMyPlayer::Update(float dt) {
 
     Movement(dt);
 
+    if(jle::jleCore::core->input->keyboard->GetKeyPressed('Y'))
+    {
+        Attack(mCharacterDirection);
+    }
+
 }
 
 void oMyPlayer::ToJson(nlohmann::json &j_out) {

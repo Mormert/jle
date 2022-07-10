@@ -13,7 +13,6 @@ add_library(engine STATIC
         "3rdparty/stb_image.cpp"
         "ConsoleEditorWindow.cpp"
         "EditorGameControllerWidget.cpp"
-        "EditorJsonToImgui.cpp"
         "EditorSceneObjectsWindow.cpp"
         "EditorWindowsPanel.cpp"
         "EngineSettingsWindow.cpp"
@@ -55,7 +54,9 @@ add_library(engine STATIC
         "cCamera.cpp"
         "SceneEditorWindow.cpp"
         "jleSoLoud.cpp"
-        "jleFont.cpp" cText.cpp cText.h)
+        "jleFont.cpp"
+        "cText.cpp"
+        jleTimerManager.cpp jleTimerManager.h)
 
 
 if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()

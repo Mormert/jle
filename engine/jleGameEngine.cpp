@@ -53,18 +53,22 @@ namespace jle {
 
     void jleGameEngine::RestartGame() {
         game.reset();
+        mTimerManager.ClearTimers();
         StartGame();
     }
 
     void jleGameEngine::KillGame() {
+        mTimerManager.ClearTimers();
         game.reset();
     }
 
     void jleGameEngine::HaltGame() {
+        // TODO: Halt timers
         gameHalted = true;
     }
 
     void jleGameEngine::UnhaltGame() {
+        // TODO: Unhalt timers
         gameHalted = false;
     }
 

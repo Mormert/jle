@@ -24,6 +24,16 @@ namespace jle {
     void Window_GLFW_OpenGL::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
             glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+        if(action == GLFW_PRESS)
+        {
+            sPressedKeys[key] = true;
+        }
+
+        if(action == GLFW_RELEASE)
+        {
+            sReleasedKeys[key] = true;
+        }
     }
 
     void Window_GLFW_OpenGL::scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
@@ -171,6 +181,8 @@ namespace jle {
         activeWindow->currentScrollX = 0.f;
         activeWindow->currentScrollY = 0.f;
 
+        std::memset(sPressedKeys, 0, sizeof(sPressedKeys));
+        std::memset(sReleasedKeys, 0, sizeof(sPressedKeys));
         glfwPollEvents();
         glfwSwapBuffers(nativeWindow);
     }
@@ -181,6 +193,14 @@ namespace jle {
 
     bool Window_GLFW_OpenGL::GetKey(char key) {
         return glfwGetKey(nativeWindow, key);
+    }
+
+    bool Window_GLFW_OpenGL::GetKeyPressed(char key) {
+        return sPressedKeys[key];
+    }
+
+    bool Window_GLFW_OpenGL::GetKeyReleased(char key) {
+        return sReleasedKeys[key];
     }
 
     std::pair<int, int> Window_GLFW_OpenGL::GetCursor() {

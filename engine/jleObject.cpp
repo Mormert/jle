@@ -124,6 +124,9 @@ jle::jleObject *jle::jleObject::GetParent() {
     return mParentObject;
 }
 
+std::weak_ptr<jle::jleObject> jle::jleObject::GetWeakPtrToThis() {
+    return weak_from_this();
+}
 
 void jle::to_json(nlohmann::json &j, const std::shared_ptr<jleObject> &o) {
     j = nlohmann::json{

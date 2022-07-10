@@ -27,6 +27,8 @@ public:
         southwest
     };
 
+    void Attack(oCharacterDirection direction);
+
     void SetCharacterDirection(oCharacterDirection direction);
 
     void SetHexagonPlacementTeleport(int q, int r);
@@ -58,6 +60,13 @@ protected:
     float mInterpBetweenHexasSpeed = 1.f;
 
     oCharacterDirection mCharacterDirection{};
+
+    unsigned int mIdleAsepriteIndex{0};
+    unsigned int mAttackAsepriteIndex{1};
+
+    float mAttackCooldownAfterAnimationMs{0};
+
+    bool mCanAttack = true;
 
     int mWestTextureX{};
     int mWestTextureY{};

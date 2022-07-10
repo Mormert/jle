@@ -12,6 +12,7 @@
 #include "iWindowFactory.h"
 #include "iWindowInitializer.h"
 #include "jleCoreSettings.h"
+#include "jleTimerManager.h"
 
 #include <memory>
 
@@ -61,6 +62,8 @@ namespace jle {
         // Entry point for a user to get core status
         const std::shared_ptr<jleCoreStatus> status;
 
+        jleTimerManager& GetTimerManager();
+
     private:
         void Loop();
 
@@ -90,5 +93,7 @@ namespace jle {
         virtual void Exiting() {}
 
         std::shared_ptr<jleCoreSettings> core_settings;
+
+        jleTimerManager mTimerManager;
     };
 }

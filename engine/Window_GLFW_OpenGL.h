@@ -49,6 +49,10 @@ namespace jle {
 
         bool GetKey(char key) override;
 
+        bool GetKeyPressed(char key) override;
+
+        bool GetKeyReleased(char key) override;
+
         float GetScrollX() override;
 
         float GetScrollY() override;
@@ -71,6 +75,9 @@ namespace jle {
         bool cursorVisible{false};
 
     private:
+
+        inline static bool sPressedKeys[256];
+        inline static bool sReleasedKeys[256];
 
         std::shared_ptr<iRenderingInternalAPI> internalRenderingAPI;
 

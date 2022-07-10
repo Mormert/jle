@@ -27,7 +27,7 @@ void oStaticSprite::SetupDefaultObject() {
 
     auto t = spawnedObject->AddCustomComponent<cTransform>();
     auto c = spawnedObject->AddCustomComponent<jle::cAseprite>();
-    c->mAsepritePath = "GR:rottenapple.json";
+    c->AddAsepritePath("GR:rottenapple.json");
     c->mAnimating = true;
     c->mHeight = 12;
     c->mWidth = 12;
@@ -45,7 +45,7 @@ void oStaticSprite::Update(float dt) {
 
         auto t = spawnedObject->AddCustomComponent<cTransform>();
         auto c = spawnedObject->AddCustomComponent<jle::cAseprite>();
-        c->mAsepritePath = "GR:rottenapple.json";
+        c->AddAsepritePath("GR:rottenapple.json");
         c->mAnimating = true;
         c->mHeight = 12;
         c->mWidth = 12;

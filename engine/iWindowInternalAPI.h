@@ -25,6 +25,10 @@ namespace jle {
 
         virtual bool GetKey(char key) = 0;
 
+        virtual bool GetKeyPressed(char key) = 0;
+
+        virtual bool GetKeyReleased(char key) = 0;
+
         virtual float GetScrollX() = 0;
 
         virtual float GetScrollY() = 0;

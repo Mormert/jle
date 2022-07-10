@@ -45,54 +45,65 @@ private:
 
         virtual ~_iNode() = default;
 
+        void ConstructChildObject(const std::string &objName, const nlohmann::json &jsonObject) {
+            if (jsonObject.is_object()) {
+                auto oNode = std::make_shared<_iNode>();
+                oNode->mName = objName;
+                mNodes.push_back(oNode);
+
+                // Use recursion if child is a json object
+                oNode->RecursivelyConstructTree(jsonObject);
+            } else if (jsonObject.is_array()) {
+                auto arrayNode = std::make_shared<_NodeArray>();
+                arrayNode->mName = objName;
+                mNodes.push_back(arrayNode);
+
+                int arrayIndex = 0;
+                auto &&json_array = jsonObject.get<nlohmann::json::array_t>();
+
+                if (!json_array.empty()) {
+                    // store the value type as the first element
+                    // it could however contain different types in the array!
+                    arrayNode->value_type = json_array[0].type();
+                }
+
+                for (auto &&json_element_in_array: json_array) {
+                    auto arrayChild = std::make_shared<_iNode>();
+                    arrayChild->RecursivelyConstructTree(json_element_in_array);
+                    arrayChild->mName = std::to_string(arrayIndex++);
+                    arrayNode->mNodes.push_back(arrayChild);
+                }
+            } else if (jsonObject.is_number_float()) {
+                auto jvalue = jsonObject.get<nlohmann::json::number_float_t>();
+                auto node = std::make_shared<_NodeFloat>(static_cast<float_t>(jvalue));
+                node->mName = objName;
+                mNodes.push_back(node);
+            } else if (jsonObject.is_number_integer()) {
+                auto jvalue = jsonObject.get<nlohmann::json::number_integer_t>();
+                auto node = std::make_shared<_NodeInt>(static_cast<int32_t>(jvalue));
+                node->mName = objName;
+                mNodes.push_back(node);
+            } else if (jsonObject.is_string()) {
+                auto jvalue = jsonObject.get<nlohmann::json::string_t>();
+                auto node = std::make_shared<_NodeString>(jvalue);
+                node->mName = objName;
+                mNodes.push_back(node);
+            } else if (jsonObject.is_boolean()) {
+                auto jvalue = jsonObject.get<nlohmann::json::boolean_t>();
+                auto node = std::make_shared<_NodeBool>(jvalue);
+                node->mName = objName;
+                mNodes.push_back(node);
+            }
+        }
+
         // Takes a json object, and depending on what the json object is (float, int, or another json object),
         // use recursion to construct nodes of the json object children, or
-        void RecursivelyConstructTree(nlohmann::json &j) {
+        void RecursivelyConstructTree(const nlohmann::json &j) {
             if (j.is_object()) // root needs to be json object
             {
                 auto objHead = j.get<nlohmann::json::object_t>();
                 for (auto &objChildren: objHead) {
-                    if (objChildren.second.is_object()) {
-                        auto oNode = std::make_shared<_iNode>();
-                        oNode->mName = objChildren.first;
-                        mNodes.push_back(oNode);
-
-                        // Use recursion if child is a json object
-                        oNode->RecursivelyConstructTree(objChildren.second);
-                    } else if (objChildren.second.is_array()) {
-                        auto arrayNode = std::make_shared<_NodeArray>();
-                        arrayNode->mName = objChildren.first;
-                        mNodes.push_back(arrayNode);
-
-                        int arrayIndex = 0;
-                        auto &&json_array = objChildren.second.get<nlohmann::json::array_t>();
-                        for (auto &&json_element_in_array: json_array) {
-                            auto arrayChild = std::make_shared<_iNode>();
-                            arrayChild->RecursivelyConstructTree(json_element_in_array);
-                            arrayChild->mName = std::to_string(arrayIndex++);
-                            arrayNode->mNodes.push_back(arrayChild);
-                        }
-                    } else if (objChildren.second.is_number_float()) {
-                        auto jvalue = objChildren.second.get<nlohmann::json::number_float_t>();
-                        auto node = std::make_shared<_NodeFloat>(static_cast<float_t>(jvalue));
-                        node->mName = objChildren.first;
-                        mNodes.push_back(node);
-                    } else if (objChildren.second.is_number_integer()) {
-                        auto jvalue = objChildren.second.get<nlohmann::json::number_integer_t>();
-                        auto node = std::make_shared<_NodeInt>(static_cast<int32_t>(jvalue));
-                        node->mName = objChildren.first;
-                        mNodes.push_back(node);
-                    } else if (objChildren.second.is_string()) {
-                        auto jvalue = objChildren.second.get<nlohmann::json::string_t>();
-                        auto node = std::make_shared<_NodeString>(jvalue);
-                        node->mName = objChildren.first;
-                        mNodes.push_back(node);
-                    } else if (objChildren.second.is_boolean()) {
-                        auto jvalue = objChildren.second.get<nlohmann::json::boolean_t>();
-                        auto node = std::make_shared<_NodeBool>(jvalue);
-                        node->mName = objChildren.first;
-                        mNodes.push_back(node);
-                    }
+                    ConstructChildObject(objChildren.first, objChildren.second);
                 }
             }
         }
@@ -122,11 +133,78 @@ private:
     struct _NodeArray : _iNode {
         _NodeArray() = default;
 
+        nlohmann::detail::value_t value_type;
+
         void RecursiveDraw() override {
             if (ImGui::TreeNode((mName + " [" + std::to_string(mNodes.size()) + "]").c_str())) {
-                for (auto &&nodeChildren: mNodes) {
-                    nodeChildren->RecursiveDraw();
+                const auto endsWith = [](const std::string &mainStr, const std::string &toMatch) {
+                    if (mainStr.size() >= toMatch.size() &&
+                        mainStr.compare(mainStr.size() - toMatch.size(), toMatch.size(), toMatch) == 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                };
+
+                if (endsWith(mName, "_STRVEC")) {
+                    ImGui::SameLine();
+                    if (ImGui::Button("+")) {
+                        auto newNode = std::make_shared<_iNode>();
+                        newNode->mName = std::to_string(mNodes.size());
+
+                        auto stringNode = std::make_shared<_NodeString>("");
+                        stringNode->mName = "mString";
+
+                        newNode->mNodes.push_back(stringNode);
+                        mNodes.push_back(newNode);
+                    }
+                } else if (endsWith(mName, "_INTVEC")) {
+                    ImGui::SameLine();
+                    if (ImGui::Button("+")) {
+                        auto newNode = std::make_shared<_iNode>();
+                        newNode->mName = std::to_string(mNodes.size());
+
+                        auto intNode = std::make_shared<_NodeInt>(0);
+                        intNode->mName = "mInt";
+
+                        newNode->mNodes.push_back(intNode);
+                        mNodes.push_back(newNode);
+                    }
+                } else if (endsWith(mName, "_FLOATVEC")) {
+                    ImGui::SameLine();
+                    if (ImGui::Button("+")) {
+                        auto newNode = std::make_shared<_iNode>();
+                        newNode->mName = std::to_string(mNodes.size());
+
+                        auto floatNode = std::make_shared<_NodeFloat>(0.f);
+                        floatNode->mName = "mFloat";
+
+                        newNode->mNodes.push_back(floatNode);
+                        mNodes.push_back(newNode);
+                    }
                 }
+
+                std::vector<int> nodesToRemove;
+                int index = 0;
+                for (auto &&nodeChildren: mNodes) {
+
+                    nodeChildren->RecursiveDraw();
+                    ImGui::SameLine();
+                    ImGui::PushID(index);
+                    if (ImGui::Button("-")) {
+                        nodesToRemove.push_back(index);
+                    }
+                    ImGui::PopID();
+                    index++;
+                }
+
+                if (!nodesToRemove.empty()) {
+                    for (auto &&node: nodesToRemove) {
+                        mNodes.erase(mNodes.begin() + node);
+                    }
+                }
+
+
                 ImGui::TreePop();
             }
         }

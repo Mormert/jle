@@ -14,7 +14,7 @@
 namespace jle {
     class jleScene;
 
-    class jleObject : public jleJsonInterface<nlohmann::json> {
+class jleObject : public jleJsonInterface<nlohmann::json>, public std::enable_shared_from_this<jleObject> {
         JLE_REGISTER_OBJECT_TYPE(jleObject)
     public:
         std::string mInstanceName;
@@ -69,6 +69,8 @@ namespace jle {
         void FromJson(const nlohmann::json &j_in) override {}
 
         jleObject* GetParent();
+
+        [[nodiscard]] std::weak_ptr<jleObject> GetWeakPtrToThis();
 
     private:
         friend class jleScene;

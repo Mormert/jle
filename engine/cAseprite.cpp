@@ -11,20 +11,22 @@ namespace jle {
 
     void cAseprite::Start() {
         mTransform = mAttachedToObject->AddDependencyComponent<cTransform>(this);
-        if(!mAsepritePath.empty())
-        {
-            const auto truePath = jle::FindTrueResourcePath(mAsepritePath);
-            mAseprite = jleResourceHolder<jleAseprite>::LoadResourceFromFile(truePath);
+
+        mAseprites.clear();
+        for (auto &&path: mAsepritePaths) {
+            const auto truePath = jle::FindTrueResourcePath(path.mString);
+            mAseprites.push_back(jleResourceHolder<jleAseprite>::LoadResourceFromFile(truePath));
         }
     }
 
     void cAseprite::Update(float dt) {
-        if (!mAseprite) {
+        if (mAseprites.empty() || mCurrentlyActiveAseprite + 1 > mAseprites.size()) {
             return;
         }
 
-        if(mAseprite->mFrames.empty())
-        {
+        auto &&aseprite = mAseprites[mCurrentlyActiveAseprite];
+
+        if (aseprite->mFrames.empty()) {
             return;
         }
 
@@ -32,17 +34,17 @@ namespace jle {
             mCurrentFrameTimeSpent += dt * 1000.f;
             if (mCurrentFrameTimeSpent >= mCurrentFrameDurationMs) {
                 mCurrentFrame++;
-                if (mCurrentFrame >= mAseprite->mFrames.size()) {
+                if (mCurrentFrame >= aseprite->mFrames.size()) {
                     mCurrentFrame = 0;
                 }
                 mCurrentFrameTimeSpent = 0;
-                mCurrentFrameDurationMs = mAseprite->mFrames.at(mCurrentFrame).mDuration;
+                mCurrentFrameDurationMs = aseprite->mFrames.at(mCurrentFrame).mDuration;
             }
         }
 
-        const auto &frame = mAseprite->mFrames.at(mCurrentFrame);
+        const auto &frame = aseprite->mFrames.at(mCurrentFrame);
 
-        auto &texture = mAseprite->mImageTexture;
+        auto &texture = aseprite->mImageTexture;
         if (texture != nullptr) {
             TexturedQuad quad{texture};
             quad.x = mTransform->GetWorldX() + mOffsetX;
@@ -61,19 +63,25 @@ namespace jle {
 
     void cAseprite::ToJson(nlohmann::json &j_out) {
         j_out = nlohmann::json{
-                {"asepritePath", mAsepritePath},
-                {"height",       mHeight},
-                {"width",        mWidth},
-                {"textureX",     mTextureX},
-                {"textureY",     mTextureY},
-                {"offsetX",     mOffsetX},
-                {"offsetY",     mOffsetY},
-                {"animating",    mAnimating}
+                {"mAsepritePaths_STRVEC", mAsepritePaths},
+                {"height",                mHeight},
+                {"width",                 mWidth},
+                {"textureX",              mTextureX},
+                {"textureY",              mTextureY},
+                {"offsetX",               mOffsetX},
+                {"offsetY",               mOffsetY},
+                {"animating",             mAnimating}
         };
     }
 
     void cAseprite::FromJson(const nlohmann::json &j_in) {
-        mAsepritePath = j_in.at("asepritePath");
+
+
+        const auto asepritePaths = j_in.find("mAsepritePaths_STRVEC");
+        if (asepritePaths != j_in.end()) {
+            mAsepritePaths = j_in.at("mAsepritePaths_STRVEC").get<std::vector<jleJsonString>>();
+        }
+
         mHeight = j_in.at("height");
         mWidth = j_in.at("width");
         mTextureX = j_in.at("textureX");
@@ -85,11 +93,54 @@ namespace jle {
         // Make sure to reset current frame to not cause out of bounds crash
         mCurrentFrame = 0;
         mCurrentFrameTimeSpent = 0.f;
+        mCurrentlyActiveAseprite = 0;
 
-       const auto truePath = jle::FindTrueResourcePath(mAsepritePath);
-       mAseprite = jleResourceHolder<jleAseprite>::LoadResourceFromFile(truePath);
+        mAseprites.clear();
+        for (auto &&path: mAsepritePaths) {
+            const auto truePath = jle::FindTrueResourcePath(path.mString);
+            mAseprites.push_back(jleResourceHolder<jleAseprite>::LoadResourceFromFile(truePath));
+        }
     }
 
     cAseprite::cAseprite(jle::jleObject *owner, jle::jleScene *scene) : jleComponent(owner, scene) {}
+
+    void cAseprite::SetCurrentAseprite(unsigned int index) {
+        if (index < mAseprites.size()) {
+            mCurrentlyActiveAseprite = index;
+            return;
+        }
+        LOGE << "Trying to set active aseprite animation outside bounds!";
+    }
+
+    unsigned int cAseprite::GetCurrentAsepriteIndex() const {
+        return mCurrentlyActiveAseprite;
+    }
+
+    int cAseprite::AddAsepritePath(const std::string &path) {
+        mAsepritePaths.push_back({path});
+        const auto truePath = jle::FindTrueResourcePath(path);
+        mAseprites.push_back(jleResourceHolder<jleAseprite>::LoadResourceFromFile(truePath));
+        return (int) mAseprites.size() - 1;
+    }
+
+    jleAseprite &cAseprite::GetActiveAsepriteRef() {
+        return *mAseprites[mCurrentlyActiveAseprite];
+    }
+
+    void cAseprite::SetCurrentAsepriteFrame(unsigned int index) {
+        if(mAseprites.empty())
+        {
+            LOGE << "No found aseprites on this object";
+            return;
+        }
+
+        const auto frames = mAseprites[mCurrentlyActiveAseprite]->mFrames.size();
+        if (index < frames) {
+            mCurrentFrameDurationMs = 0;
+            mCurrentFrame = index;
+            return;
+        }
+        LOGE << "Trying to set current frame outside bounds!";
+    }
 
 }
