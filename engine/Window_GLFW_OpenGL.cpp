@@ -1,6 +1,7 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "Window_GLFW_OpenGL.h"
+#include "jlePathDefines.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -25,13 +26,11 @@ namespace jle {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
             glfwSetWindowShouldClose(window, GLFW_TRUE);
 
-        if(action == GLFW_PRESS)
-        {
+        if (action == GLFW_PRESS) {
             sPressedKeys[key] = true;
         }
 
-        if(action == GLFW_RELEASE)
-        {
+        if (action == GLFW_RELEASE) {
             sReleasedKeys[key] = true;
         }
     }
@@ -168,8 +167,8 @@ namespace jle {
 
         if (!windowSettings.iconPath.empty()) {
             GLFWimage images[1];
-            images[0].pixels = stbi_load(windowSettings.iconPath.c_str(), &images[0].width, &images[0].height, nullptr,
-                                         4);
+            images[0].pixels = stbi_load(FindTrueResourcePath(windowSettings.iconPath).c_str(), &images[0].width,
+                                         &images[0].height, nullptr, 4);
             glfwSetWindowIcon(nativeWindow, 1, images);
             stbi_image_free(images[0].pixels);
         }

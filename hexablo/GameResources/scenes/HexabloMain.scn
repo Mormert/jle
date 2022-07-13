@@ -73,7 +73,12 @@
         },
         {
             "__obj_name": "oMyPlayer",
-            "_childObjects": [],
+            "_childObjects": [
+                {
+                    "_instance_name": "oCharacterHealthBar",
+                    "_otemp": "GR:otemps/oCharacterHealthBar.tmpl"
+                }
+            ],
             "_custom_components": [
                 {
                     "_comp_name": "cTransform",
@@ -87,10 +92,10 @@
                     "height": 32,
                     "mAsepritePaths_STRVEC": [
                         {
-                            "mString": "GR:character_anim_idle.json"
+                            "mString": "GR:gfx/character/character_anim_idle.json"
                         },
                         {
-                            "mString": "GR:character_anim_attack.json"
+                            "mString": "GR:gfx/character/character_anim_attack.json"
                         }
                     ],
                     "offsetX": -16,

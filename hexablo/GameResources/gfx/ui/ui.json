@@ -1,20 +1,20 @@
 { "frames": [
    {
-    "filename": "hp.png",
-    "frame": { "x": 0, "y": 0, "w": 16, "h": 16 },
+    "filename": "ui.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 256, "h": 256 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 256 },
+    "sourceSize": { "w": 256, "h": 256 },
     "duration": 100
    }
  ],
  "meta": {
   "app": "https://www.aseprite.org/",
   "version": "1.2.35-x64",
-  "image": "hp-sheet.png",
+  "image": "ui.png",
   "format": "RGBA8888",
-  "size": { "w": 16, "h": 16 },
+  "size": { "w": 256, "h": 256 },
   "scale": "1",
   "frameTags": [
   ],

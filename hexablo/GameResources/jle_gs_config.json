@@ -12,7 +12,7 @@
         "window_display_cursor": true,
         "window_height": 1080,
         "window_height_min": 720,
-        "window_icon_path": "GameResources/game_icon.png",
+        "window_icon_path": "GR:gfx/icons/game_icon.png",
         "window_is_rezisable": true,
         "window_title": "Hexablo",
         "window_width": 1920,
