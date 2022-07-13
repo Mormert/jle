@@ -1,6 +1,7 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "EditorContentBrowser.h"
+#include "EditorSceneObjectsWindow.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_stdlib.h"
 #include "plog/Log.h"
@@ -258,6 +259,11 @@ void jle::EditorContentBrowser::SelectedFilePopup(std::filesystem::path &file) {
         SelectedFilePopupScene(file);
     }
 
+    if(fileExtension == ".tmpl")
+    {
+        SelectedFilePopupObjectTemplate(file);
+    }
+
     { // Delete File
         static bool opened = false;
         if (ImGui::Button("Delete", size)) {
@@ -373,5 +379,24 @@ void jle::EditorContentBrowser::SelectedFilePopupScene(std::filesystem::path &fi
         }
 
 
+    }
+}
+
+void jle::EditorContentBrowser::SelectedFilePopupObjectTemplate(std::filesystem::path &file) {
+    const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
+    const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
+
+    if (ImGui::Button("Spawn Template", size)) {
+
+        std::string objectName = file.filename().string();
+        int dot = objectName.rfind(file.extension().string());
+        if (dot != std::string::npos) {
+            objectName.resize(dot);
+        }
+
+        if(auto&& scene = EditorSceneObjectsWindow::GetSelectedScene().lock())
+        {
+            scene->SpawnTemplateObject(GenerateTrueResourcePathFromAbsolute(file.string()));
+        }
     }
 }

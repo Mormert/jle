@@ -47,6 +47,8 @@ namespace jle {
 
         float GetTime() override;
 
+        bool GetMouseClick(int button) override;
+
         bool GetKey(char key) override;
 
         bool GetKeyPressed(char key) override;

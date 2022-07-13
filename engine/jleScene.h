@@ -26,6 +26,8 @@ namespace jle {
 
         std::shared_ptr<jleObject> SpawnObject(const std::string &objName);
 
+        std::shared_ptr<jleObject> SpawnTemplateObject(const std::string& templatePath);
+
         void UpdateSceneObjects(float dt);
 
         void ProcessNewSceneObjects();
@@ -57,7 +59,7 @@ namespace jle {
     private:
         static int mScenesCreatedCount;
 
-        void ConfigurateSpawnedObject(std::shared_ptr<jleObject> obj);
+        void ConfigurateSpawnedObject(const std::shared_ptr<jleObject>& obj);
     };
 
     void to_json(nlohmann::json &j, const jleScene &s);

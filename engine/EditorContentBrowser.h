@@ -37,5 +37,7 @@ namespace jle {
         void SelectedFilePopup(std::filesystem::path &file);
 
         void SelectedFilePopupScene(std::filesystem::path &file);
+
+        void SelectedFilePopupObjectTemplate(std::filesystem::path &file);
     };
 }

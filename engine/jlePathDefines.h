@@ -75,4 +75,30 @@ namespace jle {
 
         return *resourcesDirectory + '/' + path;
     }
+
+    static std::string GenerateTrueResourcePathFromAbsolute(std::string path)
+    {
+        const std::string gameResourcesStr {"GameResources"};
+
+        int gameResoures = path.find(gameResourcesStr);
+        if(gameResoures >= 0)
+        {
+            path.erase(0, gameResoures + gameResourcesStr.length());
+            const std::string retpath = "GR:" + path;
+            return retpath;
+        }
+
+        const std::string engineResourcesStr {"EngineResources"};
+        int engineResoures = path.find(engineResourcesStr);
+        if(engineResoures >= 0)
+        {
+            path.erase(0, engineResoures + engineResourcesStr.length());
+            const std::string retpath = "ER:" + path;
+            return retpath;
+        }
+
+        LOGE << "Could not generate true resource path from absolute path for " << path;
+        return path;
+
+    }
 }

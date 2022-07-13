@@ -23,6 +23,8 @@ namespace jle {
 
         virtual float GetTime() = 0;
 
+        virtual bool GetMouseClick(int button) = 0;
+
         virtual bool GetKey(char key) = 0;
 
         virtual bool GetKeyPressed(char key) = 0;

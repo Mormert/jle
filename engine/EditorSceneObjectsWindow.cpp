@@ -24,8 +24,6 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
         return;
     }
 
-    // Using a static weak_ptr here so that it won't impact deletion
-    static std::weak_ptr<jleScene> selectedScene;
     ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
     if (ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_MenuBar)) {
         if (ImGui::BeginMenuBar()) {
@@ -160,6 +158,13 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
                 ImGui::Separator();
                 if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None)) {
                     if (ImGui::BeginTabItem("Object Properties")) {
+
+                        // If this is an object template
+                        if (selectedObjectSafePtr->mTemplatePath.has_value()) {
+                            ImGui::Text("Object template: %s", selectedObjectSafePtr->mTemplatePath->c_str());
+                            ImGui::NewLine();
+                        }
+
                         // Check to see if a new object has been selected
                         if (selectedObjectSafePtr != lastSelectedObject.lock()) {
                             nlohmann::json selectedObjectJson;
@@ -217,17 +222,53 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
 
             ImGui::EndChild();
             if (hasAnObjectSelected) {
-                if (ImGui::Button("Refresh Object")) {
-                    lastSelectedObject.reset();
-                }
-                ImGui::SameLine();
-                if (ImGui::Button("Push Object Changes")) {
-                    auto pushedObjectJson = mJsonToImgui.ImGuiToJson();
-                    jle::from_json(pushedObjectJson, selectedObjectSafePtr);
-                    selectedObjectSafePtr->FromJson(pushedObjectJson);
+                if (selectedObjectSafePtr->mTemplatePath.has_value()) {
+                    if (ImGui::Button("Update Template")) {
+                        auto pushedObjectJson = mJsonToImgui.ImGuiToJson();
+                        jle::from_json(pushedObjectJson, selectedObjectSafePtr);
+                        selectedObjectSafePtr->FromJson(pushedObjectJson);
 
+                        // Haxx: remove the template field, and add it back again after :>
+                        const auto templatePathTempSave = selectedObjectSafePtr->mTemplatePath.value();
+                        selectedObjectSafePtr->mTemplatePath.reset();
+                        selectedObjectSafePtr->SaveObjectTemplate(templatePathTempSave);
+                        selectedObjectSafePtr->mTemplatePath = templatePathTempSave;
+                    }
+                    ImGui::SameLine();
+
+                    { // Unlink Template
+                        static bool opened = false;
+                        if (ImGui::Button("Unlink Template", ImVec2(138 * globalImguiScale, 0))) {
+                            opened = true;
+                            ImGui::OpenPopup("Confirm Template Unlinking");
+                        }
+
+                        if (ImGui::BeginPopupModal("Confirm Template Unlinking", &opened, 0)) {
+                            if (ImGui::Button("Unlink")) {
+                                selectedObjectSafePtr->mTemplatePath.reset();
+                            }
+                            ImGui::SameLine();
+                            if (ImGui::Button("Cancel")) {
+                                opened = false;
+                            }
+                            ImGui::EndPopup();
+                        }
+                    }
+                } else {
+
+                    if (ImGui::Button("Refresh Object")) {
+                        lastSelectedObject.reset();
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button("Push Object Changes")) {
+                        auto pushedObjectJson = mJsonToImgui.ImGuiToJson();
+                        jle::from_json(pushedObjectJson, selectedObjectSafePtr);
+                        selectedObjectSafePtr->FromJson(pushedObjectJson);
+
+                    }
                 }
             }
+
             ImGui::EndGroup();
         }
     }
@@ -241,13 +282,21 @@ void jle::EditorSceneObjectsWindow::SetSelectedObject(std::shared_ptr<jleObject>
 void jle::EditorSceneObjectsWindow::ObjectTreeRecursive(std::shared_ptr<jleObject> object) {
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
 
+    std::string instanceDisplayName = object->mInstanceName;
+    if (object->mTemplatePath.has_value()) {
+        instanceDisplayName += " [T]";
+    }
+
+    ImGui::PushID(object->GetInstanceID()); // push instance id
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 5));
     bool open = ImGui::TreeNodeEx(object->mInstanceName.c_str(),
                                   ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_DefaultOpen |
                                   (selectedObject.lock() == object ? ImGuiTreeNodeFlags_Selected : 0) |
                                   (object->GetChildObjects().empty() ? ImGuiTreeNodeFlags_Leaf : 0),
-                                  "%s", object->mInstanceName.c_str());
+                                  "%s", instanceDisplayName.c_str());
     ImGui::PopStyleVar();
+    ImGui::PopID(); // pop instance id
+
 
     ImGui::PushID(object->mInstanceName.c_str());
     if (ImGui::BeginPopupContextItem()) {
@@ -263,6 +312,10 @@ void jle::EditorSceneObjectsWindow::ObjectTreeRecursive(std::shared_ptr<jleObjec
 
         if (ImGui::Button("Destroy Object", ImVec2(138 * globalImguiScale, 0))) {
             object->DestroyObject();
+        }
+
+        if (ImGui::Button("Save Template", ImVec2(138 * globalImguiScale, 0))) {
+            object->SaveObjectTemplate();
         }
 
         { // Rename Object
@@ -338,6 +391,10 @@ void jle::EditorSceneObjectsWindow::ObjectTreeRecursive(std::shared_ptr<jleObjec
         }
         ImGui::TreePop();
     }
+}
+
+std::weak_ptr<jle::jleScene> &jle::EditorSceneObjectsWindow::GetSelectedScene() {
+    return selectedScene;
 }
 
 

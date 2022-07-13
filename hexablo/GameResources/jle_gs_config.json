@@ -5,7 +5,7 @@
     },
     "framebuffer_settings": {
         "fixed_axis_enum": 1,
-        "fixed_axis_pixels": 320
+        "fixed_axis_pixels": 480
     },
     "window_settings": {
         "windowCappedFps": false,

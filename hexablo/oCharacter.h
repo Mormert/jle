@@ -7,6 +7,7 @@
 #include "cTransform.h"
 #include "cSprite.h"
 #include "cAseprite.h"
+#include "oCharacterHealthBar.h"
 #include "hexHexagonItem.h"
 
 #include <memory>
@@ -28,6 +29,8 @@ public:
     };
 
     void Attack(oCharacterDirection direction);
+
+    void SetHP(int hp);
 
     void SetCharacterDirection(oCharacterDirection direction);
 
@@ -65,6 +68,14 @@ protected:
     unsigned int mAttackAsepriteIndex{1};
 
     float mAttackCooldownAfterAnimationMs{0};
+
+    bool mShowHpBar = true;
+    std::shared_ptr<oCharacterHealthBar> mHealthBarObjPtr{};
+
+    int mMaxHP{};
+    int mCurrentHP{};
+
+    std::string mHealthBarObjectTemplatePath;
 
     bool mCanAttack = true;
 

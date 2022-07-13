@@ -232,4 +232,8 @@ namespace jle {
         }
     }
 
+    bool Window_GLFW_OpenGL::GetMouseClick(int button) {
+        return glfwGetMouseButton(nativeWindow, button);
+    }
+
 }

@@ -33,4 +33,6 @@ public:
     // Returns the Y coordinate on the main pixelated framebuffer
     virtual int GetPixelatedMouseY() = 0;
 
+    virtual bool GetMouseClick(int button) = 0;
+
 };

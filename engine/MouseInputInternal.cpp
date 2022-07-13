@@ -2,6 +2,7 @@
 
 #include "MouseInputInternal.h"
 
+#include <GLFW/glfw3.h>
 #include <utility>
 
 namespace jle {
@@ -68,5 +69,13 @@ namespace jle {
     int MouseInputInternal::GetPixelatedMouseY() {
         const float ratio = float(mPixelatedScreenHeight) / float(mScreenHeight);
         return int(ratio * float(GetMouseY()));
+    }
+
+    bool MouseInputInternal::GetMouseClick(int button) {
+        if(input_enabled)
+        {
+            return windowInternal->GetMouseClick(button);
+        }
+        return false;
     }
 }

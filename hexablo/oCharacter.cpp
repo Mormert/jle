@@ -9,11 +9,20 @@
 void oCharacter::SetupDefaultObject() {
     mTransform = AddCustomComponent<cTransform>();
     mAseprite = AddCustomComponent<jle::cAseprite>();
+
+    mHealthBarObjPtr = std::static_pointer_cast<oCharacterHealthBar>(SpawnChildObjectFromTemplate("GR:otemps/oCharacterHealthBar.tmpl"));
 }
 
 void oCharacter::Start() {
     const auto &&placement = mHexagonItem.GetHexagonItemPlacement();
     SetHexagonPlacementTeleport(placement.x, placement.y);
+
+    mCurrentHP = mMaxHP;
+
+    if(!mShowHpBar)
+    {
+        mHealthBarObjPtr->DestroyObject();
+    }
 }
 
 void oCharacter::Update(float dt) {
@@ -21,7 +30,6 @@ void oCharacter::Update(float dt) {
     if (jle::jleCore::core->input->keyboard->GetKeyPressed('T')) {
         SetHexagonPlacementInterp(hexHelperFunctions::GetRandInt(0, 10), hexHelperFunctions::GetRandInt(0, 10));
     }
-
     const auto lerpVec2 = [](const glm::vec2 &a, const glm::vec2 &b, float alpha) {
         return a * alpha + b * (1.f - alpha);
     };
@@ -127,6 +135,11 @@ void oCharacter::ToJson(nlohmann::json &j_out) {
 
     j_out["mAttackCooldownAfterAnimationMs"] = mAttackCooldownAfterAnimationMs;
 
+    j_out["mMaxHP"] = mMaxHP;
+    j_out["mShowHpBar"] = mShowHpBar;
+
+    j_out["mHealthBarObjectTemplatePath"] = mHealthBarObjectTemplatePath;
+
     j_out["mWestTextureX"] = mWestTextureX;
     j_out["mWestTextureY"] = mWestTextureY;
     j_out["mNorthwestTextureX"] = mNorthwestTextureX;
@@ -151,6 +164,11 @@ void oCharacter::FromJson(const nlohmann::json &j_in) {
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mInterpBetweenHexasSpeed, "mInterpBetweenHexasSpeed", 1.f);
 
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mAttackCooldownAfterAnimationMs, "mAttackCooldownAfterAnimationMs", 0.f);
+
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, mHealthBarObjectTemplatePath, "mHealthBarObjectTemplatePath", "");
+
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, mMaxHP, "mMaxHP", 50);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, mShowHpBar, "mShowHpBar", true);
 
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mWestTextureX, "mWestTextureX", 0);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mWestTextureY, "mWestTextureY", 0);
@@ -201,4 +219,14 @@ void oCharacter::Attack(oCharacter::oCharacterDirection) {
 
     mCanAttack = false;
 
+}
+
+void oCharacter::SetHP(int hp) {
+    if (hp > mMaxHP) {
+        hp = mMaxHP;
+    }
+
+    if (mHealthBarObjPtr) {
+        mHealthBarObjPtr->SetHP(mMaxHP, hp);
+    }
 }

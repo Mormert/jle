@@ -28,6 +28,8 @@ namespace jle {
         int GetPixelatedMouseX() override;
         int GetPixelatedMouseY() override;
 
+        bool GetMouseClick(int button) override;
+
         void SetScreenBeginCoords(int x, int y);
         void SetScreenSize(int width, int height);
         void SetPixelatedScreenSize(int width, int height);

@@ -26,8 +26,7 @@ void oMyPlayer::Update(float dt) {
 
     Movement(dt);
 
-    if(jle::jleCore::core->input->keyboard->GetKeyPressed('Y'))
-    {
+    if (jle::jleCore::core->input->mouse->GetMouseClick(0)) {
         Attack(mCharacterDirection);
     }
 

@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <memory>
+#include <optional>
 
 #include "jleTypeReflectionUtils.h"
 
@@ -14,7 +15,7 @@
 namespace jle {
     class jleScene;
 
-class jleObject : public jleJsonInterface<nlohmann::json>, public std::enable_shared_from_this<jleObject> {
+    class jleObject : public jleJsonInterface<nlohmann::json>, public std::enable_shared_from_this<jleObject> {
         JLE_REGISTER_OBJECT_TYPE(jleObject)
     public:
         std::string mInstanceName;
@@ -49,6 +50,12 @@ class jleObject : public jleJsonInterface<nlohmann::json>, public std::enable_sh
 
         std::shared_ptr<jleObject> SpawnChildObject(const std::string &objName);
 
+        void SaveObjectTemplate(const std::string& path = "");
+
+        std::shared_ptr<jleObject> SpawnChildObjectFromTemplate(const std::string &path);
+
+        void InjectTemplate(const nlohmann::json& json);
+
         // Called from components
         void DestroyComponent(jleComponent *component);
 
@@ -58,7 +65,7 @@ class jleObject : public jleJsonInterface<nlohmann::json>, public std::enable_sh
 
         std::vector<std::shared_ptr<jleComponent>> &GetCustomComponents();
 
-        void AttachChildObject(const std::shared_ptr<jleObject>& object);
+        void AttachChildObject(const std::shared_ptr<jleObject> &object);
 
         void DetachObjectFromParent();
 
@@ -68,9 +75,20 @@ class jleObject : public jleJsonInterface<nlohmann::json>, public std::enable_sh
 
         void FromJson(const nlohmann::json &j_in) override {}
 
-        jleObject* GetParent();
+        jleObject *GetParent();
 
         [[nodiscard]] std::weak_ptr<jleObject> GetWeakPtrToThis();
+
+        static void ProcessJsonData(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
+
+        static std::shared_ptr<jleObject> ProcessChildJsonData(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
+
+        static nlohmann::json GetObjectTemplateJson(const std::string &path);
+
+        // If this object is based on a template
+        std::optional<std::string> mTemplatePath{};
+
+        int GetInstanceID() const;
 
     private:
         friend class jleScene;
@@ -87,7 +105,9 @@ class jleObject : public jleJsonInterface<nlohmann::json>, public std::enable_sh
 
         bool mIsStarted = false;
 
-        static int mObjectsCreatedCount;
+        int mInstanceID;
+
+        static inline int sObjectsCreatedCount{0};
 
     protected:
         std::vector<std::shared_ptr<jleComponent>> mComponents{};
