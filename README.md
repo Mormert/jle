@@ -2,7 +2,7 @@
 
 Hexablo is a work-in-progress game inspired by the Diablo game franchise, developed together with the jle engine.
 
-![Game Showcase](https://mormert.com/eajdtho89a375kajdhfjh388835ihujage/FullScene.png)
+![Game Showcase](https://mormert.com/hexablo-press/prototype.png)
 
 ## Build status
 [![CMake-Linux](https://github.com/Mormert/hexablo/actions/workflows/cmake-linux.yml/badge.svg)](https://github.com/Mormert/hexablo/actions/workflows/cmake-linux.yml)
@@ -10,20 +10,64 @@ Hexablo is a work-in-progress game inspired by the Diablo game franchise, develo
 [![CMake-Windows](https://github.com/Mormert/hexablo/actions/workflows/cmake-windows.yml/badge.svg)](https://github.com/Mormert/hexablo/actions/workflows/cmake-windows.yml)
 [![CMake-Wasm](https://github.com/Mormert/hexablo/actions/workflows/cmake-wasm.yml/badge.svg)](https://github.com/Mormert/hexablo/actions/workflows/cmake-wasm.yml)
 
-# Engine (jle)
+# Engine: "jle"
 
-The game engine 'jle' is written in C++, uses OpenGL ES 3.0 and holds the ability to deploy games targeting Windows, Mac and Linux, as well as browsers using WebAssembly via Emscripten. It's primarily thought to be used for games with low resolution graphics, where the pixels are clearly visible.
+The game engine 'jle' is written in C++, uses OpenGL ES 3.0 or OpenGL Core 3.3. It has the ability to deploy games targeting Windows, Mac and Linux, as well as browsers using WebAssembly via Emscripten and WebGL 2. It's primarily thought to be used for games with low resolution graphics, where the pixels are clearly visible.
 
-## Libraries used
+### Feature overview
+- Runs on Windows, Linux, Mac and WebGL enabled browsers
+- Pixel perfect 2D rendering
+- Pixel perfect font rendering
+- C++ Scripting for objects & components
+- Resource management
+- Included audio engine
+- Runs seamlessly in the editor
+
+## The Editor
+
+Games made with jle can be started as standalone programs, or in the jle editor. In the editor, the user can compose scenes, object hierarchies, create object templates, modify data on objects and components in the scene. All of this can be done during the runtime of the game. 
+
+![Editor Showcase](https://mormert.com/hexablo-press/jle_editor.png)
+
+### Feature overview
+- Edit any object or component in runtime
+- Construct scenes with object hierarchies
+- Object templates (similar to Unity prefabs)
+- Content browser with all game resources
+- Game and engine settings
+
+# Third Party
+Everything is included, and used by jle:
 * GLFW3
 * GLAD
 * stb_image
-* Dear ImGui
+* JSON for Modern C++
+* SoLoud Audio Engine
+* Plog logging library
+* Dear ImGui (docking branch)
+* FreeType 2
 * OpenGL Mathematics (GLM)
 
-## Install dependencies on Ubuntu
+# Development
+CMake 3.20+ is used as the build system.
+Supported compilers are MSVC, GCC and Clang.
+
+## Linux Dependencies
 ```shell
 sudo apt update
-sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev wayland-protocols
-sudo apt install libwayland-dev libxkbcommon-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev
+sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev wayland-protocols libwayland-dev libxkbcommon-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev
+```
+
+## Fetching the Source
+No external dependencies needed, everything is included.
+```shell
+git clone https://github.com/Mormert/hexablo.git --recurse-submodules
+```
+
+## Building with CMake
+```shell
+mkdir build
+cd build
+cmake .. -DBUILD_EDITOR=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build .
 ```
