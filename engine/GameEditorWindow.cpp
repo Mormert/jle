@@ -56,6 +56,10 @@ namespace jle {
                                                     static_cast<unsigned int>(ImGui::GetWindowHeight()));
             ge.framebuffer_main->ResizeFramebuffer(dims.first, dims.second);
             internalInputMouse->SetPixelatedScreenSize(dims.first, dims.second);
+
+            auto &game = ((jleGameEngine *) jleCore::core)->GetGameRef();
+            game.mMainCamera.mCameraWidth = dims.first;
+            game.mMainCamera.mCameraHeight = dims.second;
         }
 
         // Get the texture from the framebuffer

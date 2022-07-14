@@ -77,14 +77,18 @@
                 {
                     "_instance_name": "oCharacterHealthBar",
                     "_otemp": "GR:otemps/oCharacterHealthBar.tmpl"
+                },
+                {
+                    "_instance_name": "UserInterface",
+                    "_otemp": "GR:\\otemps\\UserInterface.tmpl"
                 }
             ],
             "_custom_components": [
                 {
                     "_comp_name": "cTransform",
                     "depth": 0.0,
-                    "x": 133.0,
-                    "y": 99.0
+                    "x": 266.0,
+                    "y": 306.0
                 },
                 {
                     "_comp_name": "cAseprite",
@@ -116,8 +120,8 @@
             "mEastTextureY": 0,
             "mHealthBarObjectTemplatePath": "GR:otemps/oCharacterHealthBar.tmpl",
             "mHexagonItem": {
-                "mHexagonQ": 9,
-                "mHexagonR": 11
+                "mHexagonQ": 19,
+                "mHexagonR": 34
             },
             "mInterpBetweenHexasSpeed": 1.0,
             "mMaxHP": 50,

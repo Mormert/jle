@@ -49,6 +49,9 @@ namespace jle {
         }
         game = gameCreator->CreateGame();
         game->Start();
+
+        game->mMainCamera.mCameraWidth = framebuffer_main->GetWidth();
+        game->mMainCamera.mCameraHeight = framebuffer_main->GetHeight();
     }
 
     void jleGameEngine::RestartGame() {
@@ -124,6 +127,9 @@ namespace jle {
         const auto& internalInputMouse = std::static_pointer_cast<MouseInputInternal>(jle::jleCore::core->input->mouse);
         internalInputMouse->SetPixelatedScreenSize(dims.first, dims.second);
         internalInputMouse->SetScreenSize(width, height);
+
+        game->mMainCamera.mCameraWidth = dims.first;
+        game->mMainCamera.mCameraHeight = dims.second;
     }
 
     void jleGameEngine::Update(float dt) {

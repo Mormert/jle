@@ -177,6 +177,6 @@ private:
 
     float mX = 0.f, mY = 0.f, mDepth = 0.f;
 
-    float mWorldX, mWorldY, mWorldDepth;
+    float mWorldX{}, mWorldY{}, mWorldDepth{};
     bool mDirty = true;
 };

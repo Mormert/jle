@@ -24,6 +24,9 @@ namespace jle {
 
         void Update(float dt) override;
 
+        float GetOffsetX();
+        float GetOffsetY();
+
     private:
         std::shared_ptr<cTransform> mTransform{nullptr};
         float mOffsetX{};

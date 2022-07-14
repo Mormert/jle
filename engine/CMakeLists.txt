@@ -56,7 +56,7 @@ add_library(engine STATIC
         "jleSoLoud.cpp"
         "jleFont.cpp"
         "cText.cpp"
-        jleTimerManager.cpp jleTimerManager.h)
+        jleTimerManager.cpp jleTimerManager.h cUITransformUpdater.cpp cUITransformUpdater.h)
 
 
 if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()

@@ -11,3 +11,4 @@
 #include "cTransform.h"
 #include "cCamera.h"
 #include "cText.h"
+#include "cUITransformUpdater.h"
