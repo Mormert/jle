@@ -9,6 +9,7 @@ void Hexablo::Start()
 {
     LoadScene(GAME_RESOURCES_DIRECTORY + "/scenes/HexabloMain.scn");
     LoadScene(GAME_RESOURCES_DIRECTORY + "/scenes/HexabloMain_BG.scn");
+    LoadScene(GAME_RESOURCES_DIRECTORY + "/scenes/HexabloStatics.scn");
 }
 
 void Hexablo::Update(float dt) {

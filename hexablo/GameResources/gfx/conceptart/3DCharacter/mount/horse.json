@@ -1,0 +1,36 @@
+{ "frames": [
+   {
+    "filename": "horse 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 70, "h": 70 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 70, "h": 70 },
+    "sourceSize": { "w": 70, "h": 70 },
+    "duration": 300
+   },
+   {
+    "filename": "horse 1.aseprite",
+    "frame": { "x": 70, "y": 0, "w": 70, "h": 70 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 70, "h": 70 },
+    "sourceSize": { "w": 70, "h": 70 },
+    "duration": 300
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.2.35-x64",
+  "image": "horse.png",
+  "format": "RGBA8888",
+  "size": { "w": 140, "h": 70 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Layer", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

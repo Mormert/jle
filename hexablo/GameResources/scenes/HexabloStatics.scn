@@ -1,0 +1,178 @@
+{
+    "objects": [
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSprite",
+                    "depth": -0.5,
+                    "height": 512,
+                    "path": "GR:gfx/conceptart/3DObjects/objects.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 512,
+                    "x": 192.0,
+                    "y": -349.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 192.0,
+                    "y": -349.0
+                }
+            ],
+            "_instance_name": "jleObject_52"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSprite",
+                    "depth": -0.6000000238418579,
+                    "height": 256,
+                    "path": "GR:gfx/conceptart/3DObjects/ground.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 256,
+                    "x": 184.0,
+                    "y": -345.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 184.0,
+                    "y": -345.0
+                }
+            ],
+            "_instance_name": "ground"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSprite",
+                    "depth": -0.6000000238418579,
+                    "height": 256,
+                    "path": "GR:gfx/conceptart/3DObjects/ground.png",
+                    "textureX": 189,
+                    "textureY": 150,
+                    "width": 256,
+                    "x": 440.0,
+                    "y": -345.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 440.0,
+                    "y": -345.0
+                }
+            ],
+            "_instance_name": "jleObject_53"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [
+                {
+                    "__obj_name": "jleObject",
+                    "_childObjects": [],
+                    "_custom_components": [
+                        {
+                            "_comp_name": "cSprite",
+                            "depth": -0.4000000059604645,
+                            "height": 67,
+                            "path": "GR:gfx/conceptart/3DObjects/objects.png",
+                            "textureX": 189,
+                            "textureY": 114,
+                            "width": 100,
+                            "x": 895.0,
+                            "y": -262.0
+                        },
+                        {
+                            "_comp_name": "cTransform",
+                            "depth": 0.0,
+                            "x": 0.0,
+                            "y": 30.0
+                        }
+                    ],
+                    "_instance_name": "jleObject_54"
+                }
+            ],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSprite",
+                    "depth": 0.5,
+                    "height": 30,
+                    "path": "GR:gfx/conceptart/3DObjects/objects.png",
+                    "textureX": 189,
+                    "textureY": 84,
+                    "width": 102,
+                    "x": 895.0,
+                    "y": -292.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 895.0,
+                    "y": -292.0
+                }
+            ],
+            "_instance_name": "depthTest01"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSprite",
+                    "depth": -0.9900000095367432,
+                    "height": 256,
+                    "path": "GR:gfx/conceptart/3DObjects/ground.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 256,
+                    "x": 0.0,
+                    "y": 0.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            ],
+            "_instance_name": "jleObject_55"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "height": 70,
+                    "mAsepritePaths_STRVEC": [
+                        {
+                            "mString": "GR:gfx/conceptart/3DCharacter/mount/horse.json"
+                        }
+                    ],
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 70
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 708.0,
+                    "y": -268.0
+                }
+            ],
+            "_instance_name": "horse"
+        }
+    ],
+    "sceneName": "HexabloStatics"
+}

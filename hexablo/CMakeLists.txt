@@ -10,7 +10,7 @@ add_executable(hexablo
         "oMyPlayer.cpp"
         "hexHexagonItem.cpp"
         "oCharacterHealthBar.cpp"
-        )
+        "oMonster.cpp")
 
 
 target_link_libraries(${JLE_GAME_BUILD} LINK_PUBLIC engine)

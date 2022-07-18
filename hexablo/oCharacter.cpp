@@ -10,7 +10,8 @@ void oCharacter::SetupDefaultObject() {
     mTransform = AddCustomComponent<cTransform>();
     mAseprite = AddCustomComponent<jle::cAseprite>();
 
-    mHealthBarObjPtr = std::static_pointer_cast<oCharacterHealthBar>(SpawnChildObjectFromTemplate("GR:otemps/oCharacterHealthBar.tmpl"));
+    mHealthBarObjPtr = std::static_pointer_cast<oCharacterHealthBar>(
+            SpawnChildObjectFromTemplate("GR:otemps/oCharacterHealthBar.tmpl"));
 }
 
 void oCharacter::Start() {
@@ -19,8 +20,7 @@ void oCharacter::Start() {
 
     mCurrentHP = mMaxHP;
 
-    if(!mShowHpBar)
-    {
+    if (!mShowHpBar) {
         mHealthBarObjPtr->DestroyObject();
     }
 }
@@ -35,6 +35,9 @@ void oCharacter::Update(float dt) {
     };
 
     if (mInterpingPosition) {
+
+        mAseprite->SetCurrentAseprite(mWalkAsepriteIndex);
+
         auto pos = lerpVec2(
                 {mHexagonPixelX, mHexagonPixelY},
                 {mInterpingX, mInterpingY}, mInterpingAlpha);
@@ -47,6 +50,7 @@ void oCharacter::Update(float dt) {
         if (mInterpingAlpha >= 1.f) {
             mInterpingAlpha = 1.f;
             mInterpingPosition = false;
+            mAseprite->SetCurrentAseprite(mIdleAsepriteIndex);
         }
     }
 
@@ -228,5 +232,42 @@ void oCharacter::SetHP(int hp) {
 
     if (mHealthBarObjPtr) {
         mHealthBarObjPtr->SetHP(mMaxHP, hp);
+    }
+}
+
+void oCharacter::LookAtPosition(int x, int y) {
+    constexpr int smallXAdjustment = -2;
+
+    glm::vec2 target = {x, y};
+    glm::vec2 origin = {mTransform->GetWorldX() + smallXAdjustment, mTransform->GetWorldY()};
+
+    glm::vec2 vector2 = target - origin;
+    glm::vec2 vector1{0, 1};
+
+    const double angleRad = atan2(vector2.y, vector2.x) - atan2(vector1.y, vector1.x);
+    const double angleDeg = glm::degrees(angleRad);
+
+    if (angleDeg > -240.0 && angleDeg < -180) {
+        SetCharacterDirection(oCharacterDirection::northwest);
+    }
+
+    if (angleDeg > -180 && angleDeg < -120) {
+        SetCharacterDirection(oCharacterDirection::northeast);
+    }
+
+    if (angleDeg > -120 && angleDeg < -60) {
+        SetCharacterDirection(oCharacterDirection::east);
+    }
+
+    if (angleDeg > -60 && angleDeg < 0) {
+        SetCharacterDirection(oCharacterDirection::southeast);
+    }
+
+    if (angleDeg > 0 && angleDeg < 60) {
+        SetCharacterDirection(oCharacterDirection::southwest);
+    }
+
+    if (angleDeg > 60 && angleDeg < 240) {
+        SetCharacterDirection(oCharacterDirection::west);
     }
 }

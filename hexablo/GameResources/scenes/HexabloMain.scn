@@ -87,26 +87,29 @@
                 {
                     "_comp_name": "cTransform",
                     "depth": 0.0,
-                    "x": 266.0,
-                    "y": 306.0
+                    "x": 791.0,
+                    "y": -225.0
                 },
                 {
                     "_comp_name": "cAseprite",
                     "animating": true,
-                    "height": 32,
+                    "height": 48,
                     "mAsepritePaths_STRVEC": [
                         {
-                            "mString": "GR:gfx/character/character_anim_idle.json"
+                            "mString": "GR:gfx/conceptart/3DCharacter/spritesheet.json"
                         },
                         {
-                            "mString": "GR:gfx/character/character_anim_attack.json"
+                            "mString": "GR:gfx/conceptart/3DCharacter/spritesheet_attack.json"
+                        },
+                        {
+                            "mString": "GR:gfx/conceptart/3DCharacter/walk/walk.json"
                         }
                     ],
-                    "offsetX": -16,
-                    "offsetY": -29,
-                    "textureX": 96,
+                    "offsetX": -32,
+                    "offsetY": -40,
+                    "textureX": 144,
                     "textureY": 0,
-                    "width": 32
+                    "width": 48
                 },
                 {
                     "_comp_name": "cCamera",
@@ -116,30 +119,348 @@
             ],
             "_instance_name": "oMyPlayer_12",
             "mAttackCooldownAfterAnimationMs": 250.0,
-            "mEastTextureX": 128,
+            "mEastTextureX": 288,
             "mEastTextureY": 0,
             "mHealthBarObjectTemplatePath": "GR:otemps/oCharacterHealthBar.tmpl",
             "mHexagonItem": {
-                "mHexagonQ": 19,
-                "mHexagonR": 34
+                "mHexagonQ": 56,
+                "mHexagonR": -25
             },
-            "mInterpBetweenHexasSpeed": 1.0,
+            "mInterpBetweenHexasSpeed": 4.0,
             "mMaxHP": 50,
             "mNorthTextureX": 64,
             "mNorthTextureY": 0,
-            "mNortheastTextureX": 96,
+            "mNortheastTextureX": 144,
             "mNortheastTextureY": 0,
-            "mNorthwestTextureX": 32,
+            "mNorthwestTextureX": 48,
             "mNorthwestTextureY": 0,
             "mShowHpBar": true,
             "mSouthTextureX": 192,
             "mSouthTextureY": 0,
-            "mSoutheastTextureX": 160,
+            "mSoutheastTextureX": 192,
             "mSoutheastTextureY": 0,
-            "mSouthwestTextureX": 224,
+            "mSouthwestTextureX": 240,
             "mSouthwestTextureY": 0,
-            "mWestTextureX": 0,
+            "mWestTextureX": 336,
             "mWestTextureY": 0
+        },
+        {
+            "__obj_name": "oMonster",
+            "_childObjects": [
+                {
+                    "_instance_name": "oCharacterHealthBar",
+                    "_otemp": "GR:otemps/oCharacterHealthBar.tmpl"
+                }
+            ],
+            "_custom_components": [
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 140.0,
+                    "y": 72.0
+                },
+                {
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "height": 86,
+                    "mAsepritePaths_STRVEC": [
+                        {
+                            "mString": "GR:/gfx/conceptart/Monster/raptor.json"
+                        }
+                    ],
+                    "offsetX": -48,
+                    "offsetY": -48,
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 86
+                }
+            ],
+            "_instance_name": "oCharacter_Raptor",
+            "mAttackCooldownAfterAnimationMs": 0.0,
+            "mEastTextureX": 0,
+            "mEastTextureY": 0,
+            "mHealthBarObjectTemplatePath": "",
+            "mHexagonItem": {
+                "mHexagonQ": 10,
+                "mHexagonR": 8
+            },
+            "mInterpBetweenHexasSpeed": 1.0,
+            "mMaxHP": 0,
+            "mNorthTextureX": 64,
+            "mNorthTextureY": 0,
+            "mNortheastTextureX": 86,
+            "mNortheastTextureY": 0,
+            "mNorthwestTextureX": 172,
+            "mNorthwestTextureY": 0,
+            "mShowHpBar": true,
+            "mSouthTextureX": 192,
+            "mSouthTextureY": 0,
+            "mSoutheastTextureX": 258,
+            "mSoutheastTextureY": 0,
+            "mSouthwestTextureX": 344,
+            "mSouthwestTextureY": 0,
+            "mWestTextureX": 429,
+            "mWestTextureY": 0
+        },
+        {
+            "_instance_name": "oCharacter_Raptor",
+            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
+        },
+        {
+            "_instance_name": "oCharacter_Raptor",
+            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
+        },
+        {
+            "__obj_name": "oMonster",
+            "_childObjects": [
+                {
+                    "_instance_name": "oCharacterHealthBar",
+                    "_otemp": "GR:otemps/oCharacterHealthBar.tmpl"
+                },
+                {
+                    "__obj_name": "oMonster",
+                    "_childObjects": [
+                        {
+                            "_instance_name": "oCharacterHealthBar",
+                            "_otemp": "GR:otemps/oCharacterHealthBar.tmpl"
+                        }
+                    ],
+                    "_custom_components": [
+                        {
+                            "_comp_name": "cTransform",
+                            "depth": 0.0,
+                            "x": -745.0,
+                            "y": 278.0
+                        },
+                        {
+                            "_comp_name": "cAseprite",
+                            "animating": false,
+                            "height": 0,
+                            "mAsepritePaths_STRVEC": [],
+                            "offsetX": 0,
+                            "offsetY": 0,
+                            "textureX": 128,
+                            "textureY": 0,
+                            "width": 0
+                        }
+                    ],
+                    "_instance_name": "oMonster_59",
+                    "mAttackCooldownAfterAnimationMs": 0.0,
+                    "mEastTextureX": 128,
+                    "mEastTextureY": 0,
+                    "mHealthBarObjectTemplatePath": "",
+                    "mHexagonItem": {
+                        "mHexagonQ": 0,
+                        "mHexagonR": 0
+                    },
+                    "mInterpBetweenHexasSpeed": 1.0,
+                    "mMaxHP": 0,
+                    "mNorthTextureX": 64,
+                    "mNorthTextureY": 0,
+                    "mNortheastTextureX": 96,
+                    "mNortheastTextureY": 0,
+                    "mNorthwestTextureX": 32,
+                    "mNorthwestTextureY": 0,
+                    "mShowHpBar": true,
+                    "mSouthTextureX": 192,
+                    "mSouthTextureY": 0,
+                    "mSoutheastTextureX": 160,
+                    "mSoutheastTextureY": 0,
+                    "mSouthwestTextureX": 224,
+                    "mSouthwestTextureY": 0,
+                    "mWestTextureX": 0,
+                    "mWestTextureY": 0
+                }
+            ],
+            "_custom_components": [
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 745.0,
+                    "y": -278.0
+                },
+                {
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "height": 86,
+                    "mAsepritePaths_STRVEC": [
+                        {
+                            "mString": "GR:/gfx/conceptart/Monster/raptor.json"
+                        }
+                    ],
+                    "offsetX": -48,
+                    "offsetY": -48,
+                    "textureX": 258,
+                    "textureY": 0,
+                    "width": 86
+                }
+            ],
+            "_instance_name": "oCharacter_Raptor",
+            "mAttackCooldownAfterAnimationMs": 0.0,
+            "mEastTextureX": 0,
+            "mEastTextureY": 0,
+            "mHealthBarObjectTemplatePath": "",
+            "mHexagonItem": {
+                "mHexagonQ": 35,
+                "mHexagonR": 19
+            },
+            "mInterpBetweenHexasSpeed": 1.0,
+            "mMaxHP": 0,
+            "mNorthTextureX": 64,
+            "mNorthTextureY": 0,
+            "mNortheastTextureX": 86,
+            "mNortheastTextureY": 0,
+            "mNorthwestTextureX": 172,
+            "mNorthwestTextureY": 0,
+            "mShowHpBar": true,
+            "mSouthTextureX": 192,
+            "mSouthTextureY": 0,
+            "mSoutheastTextureX": 258,
+            "mSoutheastTextureY": 0,
+            "mSouthwestTextureX": 344,
+            "mSouthwestTextureY": 0,
+            "mWestTextureX": 429,
+            "mWestTextureY": 0
+        },
+        {
+            "_instance_name": "oCharacter_Raptor",
+            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
+        },
+        {
+            "_instance_name": "oCharacter_Raptor",
+            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
+        },
+        {
+            "_instance_name": "oCharacter_Raptor",
+            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
+        },
+        {
+            "__obj_name": "oMonster",
+            "_childObjects": [
+                {
+                    "_instance_name": "oCharacterHealthBar",
+                    "_otemp": "GR:otemps/oCharacterHealthBar.tmpl"
+                }
+            ],
+            "_custom_components": [
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 839.0,
+                    "y": -286.0
+                },
+                {
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "height": 86,
+                    "mAsepritePaths_STRVEC": [
+                        {
+                            "mString": "GR:/gfx/conceptart/Monster/raptor.json"
+                        }
+                    ],
+                    "offsetX": -48,
+                    "offsetY": -48,
+                    "textureX": 344,
+                    "textureY": 0,
+                    "width": 86
+                }
+            ],
+            "_instance_name": "oCharacter_Raptor",
+            "mAttackCooldownAfterAnimationMs": 0.0,
+            "mEastTextureX": 0,
+            "mEastTextureY": 0,
+            "mHealthBarObjectTemplatePath": "",
+            "mHexagonItem": {
+                "mHexagonQ": 35,
+                "mHexagonR": 19
+            },
+            "mInterpBetweenHexasSpeed": 1.0,
+            "mMaxHP": 0,
+            "mNorthTextureX": 64,
+            "mNorthTextureY": 0,
+            "mNortheastTextureX": 86,
+            "mNortheastTextureY": 0,
+            "mNorthwestTextureX": 172,
+            "mNorthwestTextureY": 0,
+            "mShowHpBar": true,
+            "mSouthTextureX": 192,
+            "mSouthTextureY": 0,
+            "mSoutheastTextureX": 258,
+            "mSoutheastTextureY": 0,
+            "mSouthwestTextureX": 344,
+            "mSouthwestTextureY": 0,
+            "mWestTextureX": 429,
+            "mWestTextureY": 0
+        },
+        {
+            "_instance_name": "oCharacter_Raptor",
+            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
+        },
+        {
+            "_instance_name": "oCharacter_Raptor",
+            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
+        },
+        {
+            "__obj_name": "oMonster",
+            "_childObjects": [
+                {
+                    "_instance_name": "oCharacterHealthBar",
+                    "_otemp": "GR:otemps/oCharacterHealthBar.tmpl"
+                }
+            ],
+            "_custom_components": [
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 863.0,
+                    "y": -188.0
+                },
+                {
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "height": 86,
+                    "mAsepritePaths_STRVEC": [
+                        {
+                            "mString": "GR:/gfx/conceptart/Monster/raptor.json"
+                        }
+                    ],
+                    "offsetX": -48,
+                    "offsetY": -48,
+                    "textureX": 172,
+                    "textureY": 0,
+                    "width": 86
+                }
+            ],
+            "_instance_name": "oCharacter_Raptor",
+            "mAttackCooldownAfterAnimationMs": 0.0,
+            "mEastTextureX": 0,
+            "mEastTextureY": 0,
+            "mHealthBarObjectTemplatePath": "",
+            "mHexagonItem": {
+                "mHexagonQ": 35,
+                "mHexagonR": 19
+            },
+            "mInterpBetweenHexasSpeed": 1.0,
+            "mMaxHP": 0,
+            "mNorthTextureX": 64,
+            "mNorthTextureY": 0,
+            "mNortheastTextureX": 86,
+            "mNortheastTextureY": 0,
+            "mNorthwestTextureX": 172,
+            "mNorthwestTextureY": 0,
+            "mShowHpBar": true,
+            "mSouthTextureX": 192,
+            "mSouthTextureY": 0,
+            "mSoutheastTextureX": 258,
+            "mSoutheastTextureY": 0,
+            "mSouthwestTextureX": 344,
+            "mSouthwestTextureY": 0,
+            "mWestTextureX": 429,
+            "mWestTextureY": 0
+        },
+        {
+            "_instance_name": "oCharacter_Raptor",
+            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
         }
     ],
     "sceneName": "HexabloMain"

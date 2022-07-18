@@ -11,9 +11,6 @@ cSprite::cSprite(jle::jleObject *owner, jle::jleScene *scene) : jleComponent{own
 }
 
 void cSprite::CreateAndSetTextureFromPath(const std::string &path) {
-    quad.texture = jle::jleCore::core->texture_creator->LoadTextureFromPath(path);
-    texturePath = path;
-
     const auto truePath = jle::FindTrueResourcePath(path);
     quad.texture = jle::jleCore::core->texture_creator->LoadTextureFromPath(truePath);
 }

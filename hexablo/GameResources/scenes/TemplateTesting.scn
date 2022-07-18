@@ -1,0 +1,38 @@
+{
+    "objects": [
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [],
+            "_instance_name": "myObject"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cText",
+                    "colorA": 1.0,
+                    "colorB": 1.0,
+                    "colorG": 1.0,
+                    "colorR": 1.0,
+                    "fontPath": "ER:fonts/PokemonClassic.ttf",
+                    "fontSize": 16,
+                    "text": "same text.gg"
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": -168.0,
+                    "y": 23.0
+                }
+            ],
+            "_instance_name": "gdgdccc"
+        },
+        {
+            "_instance_name": "adgaedgggg",
+            "_otemp": "GR:\\otemps\\jleObject_8.tmpl"
+        }
+    ],
+    "sceneName": "TemplateTesting"
+}

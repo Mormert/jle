@@ -1,0 +1,36 @@
+{ "frames": [
+   {
+    "filename": "spritesheet 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 380, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 380, "h": 48 },
+    "sourceSize": { "w": 380, "h": 48 },
+    "duration": 250
+   },
+   {
+    "filename": "spritesheet 1.aseprite",
+    "frame": { "x": 380, "y": 0, "w": 380, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 380, "h": 48 },
+    "sourceSize": { "w": 380, "h": 48 },
+    "duration": 250
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.2.35-x64",
+  "image": "spritesheet.png",
+  "format": "RGBA8888",
+  "size": { "w": 760, "h": 48 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

@@ -23,9 +23,12 @@ public:
 
     void FromJson(const nlohmann::json &j_in) override;
 
+    static inline std::weak_ptr<oMyPlayer> sMyPlayerPtr;
+
 private:
     void LookAtMouse();
 
+    void Movement_v1(float dt);
     void Movement(float dt);
 
 };

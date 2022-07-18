@@ -53,6 +53,8 @@ public:
 
 protected:
 
+    void LookAtPosition(int x, int y);
+
     hexHexagonItem mHexagonItem;
 
     int mHexagonPixelX{}, mHexagonPixelY{};
@@ -66,6 +68,7 @@ protected:
 
     unsigned int mIdleAsepriteIndex{0};
     unsigned int mAttackAsepriteIndex{1};
+    unsigned int mWalkAsepriteIndex{2};
 
     float mAttackCooldownAfterAnimationMs{0};
 

@@ -42,6 +42,10 @@ namespace jle {
             }
         }
 
+        if(mCurrentFrame >= aseprite->mFrames.size())
+        {
+            mCurrentFrame = aseprite->mFrames.size() - 1;
+        }
         const auto &frame = aseprite->mFrames.at(mCurrentFrame);
 
         auto &texture = aseprite->mImageTexture;
