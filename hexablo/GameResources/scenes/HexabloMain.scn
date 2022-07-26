@@ -1,5 +1,5 @@
 {
-    "objects": [
+    "_objects": [
         {
             "__obj_name": "jleObject",
             "_childObjects": [],
@@ -80,15 +80,15 @@
                 },
                 {
                     "_instance_name": "UserInterface",
-                    "_otemp": "GR:\\otemps\\UserInterface.tmpl"
+                    "_otemp": "GR:otemps/UserInterface.tmpl"
                 }
             ],
             "_custom_components": [
                 {
                     "_comp_name": "cTransform",
                     "depth": 0.0,
-                    "x": 791.0,
-                    "y": -225.0
+                    "x": 777.0,
+                    "y": -243.0
                 },
                 {
                     "_comp_name": "cAseprite",
@@ -107,7 +107,7 @@
                     ],
                     "offsetX": -32,
                     "offsetY": -40,
-                    "textureX": 144,
+                    "textureX": 288,
                     "textureY": 0,
                     "width": 48
                 },
@@ -123,8 +123,8 @@
             "mEastTextureY": 0,
             "mHealthBarObjectTemplatePath": "GR:otemps/oCharacterHealthBar.tmpl",
             "mHexagonItem": {
-                "mHexagonQ": 56,
-                "mHexagonR": -25
+                "mHexagonQ": 55,
+                "mHexagonR": -27
             },
             "mInterpBetweenHexasSpeed": 4.0,
             "mMaxHP": 50,
@@ -203,14 +203,6 @@
             "mWestTextureY": 0
         },
         {
-            "_instance_name": "oCharacter_Raptor",
-            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
-        },
-        {
-            "_instance_name": "oCharacter_Raptor",
-            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
-        },
-        {
             "__obj_name": "oMonster",
             "_childObjects": [
                 {
@@ -229,8 +221,8 @@
                         {
                             "_comp_name": "cTransform",
                             "depth": 0.0,
-                            "x": -745.0,
-                            "y": 278.0
+                            "x": -497.0,
+                            "y": -171.0
                         },
                         {
                             "_comp_name": "cAseprite",
@@ -276,8 +268,8 @@
                 {
                     "_comp_name": "cTransform",
                     "depth": 0.0,
-                    "x": 745.0,
-                    "y": -278.0
+                    "x": 497.0,
+                    "y": 171.0
                 },
                 {
                     "_comp_name": "cAseprite",
@@ -290,7 +282,7 @@
                     ],
                     "offsetX": -48,
                     "offsetY": -48,
-                    "textureX": 258,
+                    "textureX": 86,
                     "textureY": 0,
                     "width": 86
                 }
@@ -321,18 +313,6 @@
             "mSouthwestTextureY": 0,
             "mWestTextureX": 429,
             "mWestTextureY": 0
-        },
-        {
-            "_instance_name": "oCharacter_Raptor",
-            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
-        },
-        {
-            "_instance_name": "oCharacter_Raptor",
-            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
-        },
-        {
-            "_instance_name": "oCharacter_Raptor",
-            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
         },
         {
             "__obj_name": "oMonster",
@@ -393,14 +373,6 @@
             "mWestTextureY": 0
         },
         {
-            "_instance_name": "oCharacter_Raptor",
-            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
-        },
-        {
-            "_instance_name": "oCharacter_Raptor",
-            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
-        },
-        {
             "__obj_name": "oMonster",
             "_childObjects": [
                 {
@@ -457,11 +429,7 @@
             "mSouthwestTextureY": 0,
             "mWestTextureX": 429,
             "mWestTextureY": 0
-        },
-        {
-            "_instance_name": "oCharacter_Raptor",
-            "_otemp": "GR:\\otemps\\oCharacter_Raptor.tmpl"
         }
     ],
-    "sceneName": "HexabloMain"
+    "_sceneName": "HexabloMain"
 }

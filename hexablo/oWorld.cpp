@@ -99,6 +99,10 @@ oWorld::oWorld() {
     sWorld = this;
 }
 
+oWorld::~oWorld() {
+    sWorld = nullptr;
+}
+
 hexHexagonItem *oWorld::GetHexItemAt(int q, int r) {
 
 #ifndef NDEBUG

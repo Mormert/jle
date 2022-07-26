@@ -3,7 +3,7 @@
 #include "EditorSceneObjectsWindow.h"
 
 #include "jleTypeReflectionUtils.h"
-
+#include "jleNetScene.h"
 #include "3rdparty/ImGui/imgui.h"
 #include "3rdparty/ImGui/imgui_stdlib.h"
 
@@ -30,6 +30,9 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
             if (ImGui::BeginMenu("Create Scene")) {
                 if (ImGui::MenuItem("jleScene")) {
                     ge.GetGameRef().CreateScene<jleScene>();
+                }
+                if (ImGui::MenuItem("jleNetScene")) {
+                    ge.GetGameRef().CreateScene<jleNetScene>();
                 }
 
                 ImGui::EndMenu();

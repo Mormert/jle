@@ -74,18 +74,31 @@ std::shared_ptr<jle::jleObject> jle::jleScene::SpawnTemplateObject(const std::st
     return spawnedObjFromJson;
 }
 
-void jle::to_json(nlohmann::json &j, const jleScene &s) {
-    j = nlohmann::json{
-            {"objects",   s.mSceneObjects},
-            {"sceneName", s.mSceneName}
-    };
+void jle::to_json(nlohmann::json &j, jleScene &s) {
+    s.ToJson(j);
 }
 
 void jle::from_json(const nlohmann::json &j, jleScene &s) {
-    JLE_FROM_JSON_IF_EXISTS(j, s.mSceneName, "sceneName");
-    JLE_FROM_JSON_IF_EXISTS(j, s.mSceneName, "sceneName");
+    s.FromJson(j);
+}
 
-    for (auto object_json: j.at("objects")) {
+void jle::jleScene::ConfigurateSpawnedObject(const std::shared_ptr<jleObject> &obj) {
+    obj->mContainedInScene = this;
+    obj->SetupDefaultObject();
+    obj->mInstanceName = std::string{obj->GetObjectNameVirtual()} + "_" + std::to_string(obj->sObjectsCreatedCount);
+
+    mNewSceneObjects.push_back(obj);
+}
+
+void jle::jleScene::ToJson(nlohmann::json &j_out) {
+    j_out["_objects"] = mSceneObjects;
+    j_out["_sceneName"] = mSceneName;
+}
+
+void jle::jleScene::FromJson(const nlohmann::json &j_in) {
+    JLE_FROM_JSON_IF_EXISTS(j_in, mSceneName, "_sceneName");
+
+    for (auto object_json: j_in.at("_objects")) {
 
         std::optional<std::string> objectTemplatePath{};
         // Is this object based on a template?
@@ -101,18 +114,10 @@ void jle::from_json(const nlohmann::json &j, jleScene &s) {
         std::string objectsName;
         object_json.at("__obj_name").get_to(objectsName);
 
-        auto spawnedObjFromJson = s.SpawnObject(objectsName);
+        auto spawnedObjFromJson = SpawnObject(objectsName);
         spawnedObjFromJson->mTemplatePath = objectTemplatePath;
         jle::from_json(object_json, spawnedObjFromJson);
         spawnedObjFromJson->FromJson(object_json);
 
     }
-}
-
-void jle::jleScene::ConfigurateSpawnedObject(const std::shared_ptr<jleObject>& obj) {
-    obj->mContainedInScene = this;
-    obj->SetupDefaultObject();
-    obj->mInstanceName = std::string{obj->GetObjectNameVirtual()} + "_" + std::to_string(obj->sObjectsCreatedCount);
-
-    mNewSceneObjects.push_back(obj);
 }

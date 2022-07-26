@@ -10,7 +10,7 @@ bool hexHexagonItem::TryUpdateHexagonItemPlacement(int q, int r) {
         return false;
     }
 
-    if(mIsPlacedOnWorld)
+    if(mIsPlacedOnWorld && oWorld::sWorld)
     {
         // remove the old world placement
         oWorld::sWorld->RemoveHexItemAt(mHexagonQ,mHexagonR);
@@ -30,7 +30,7 @@ glm::ivec2 hexHexagonItem::GetHexagonItemPlacement() const {
 }
 
 hexHexagonItem::~hexHexagonItem() {
-    if(mIsPlacedOnWorld)
+    if(mIsPlacedOnWorld && oWorld::sWorld)
     {
         oWorld::sWorld->RemoveHexItemAt(mHexagonQ, mHexagonR);
     }

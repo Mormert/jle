@@ -1,0 +1,29 @@
+{
+    "_objects": [
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cText",
+                    "colorA": 1.0,
+                    "colorB": 1.0,
+                    "colorG": 1.0,
+                    "colorR": 1.0,
+                    "fontPath": "ER:fonts/PokemonClassic.ttf",
+                    "fontSize": 16,
+                    "text": "heyyoooo"
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 720.0,
+                    "y": -172.0
+                }
+            ],
+            "_instance_name": "jleObject_36"
+        }
+    ],
+    "_sceneName": "HexabloNetScene",
+    "mConnectAddress": ""
+}

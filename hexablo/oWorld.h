@@ -16,6 +16,8 @@ class oWorld : public jle::jleObject {
     JLE_REGISTER_OBJECT_TYPE(oWorld)
 public:
 
+    ~oWorld() override;
+
     oWorld();
 
     void SetupDefaultObject() override;

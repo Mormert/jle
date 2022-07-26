@@ -13,6 +13,7 @@
 #include "iWindowInitializer.h"
 #include "jleCoreSettings.h"
 #include "jleTimerManager.h"
+#include "jleNetworking.h"
 
 #include <memory>
 

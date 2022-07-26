@@ -1,5 +1,5 @@
 {
-    "objects": [
+    "_objects": [
         {
             "__obj_name": "oWorld",
             "_childObjects": [],
@@ -47,5 +47,5 @@
             "mWorldHexTilesAsepritePath": "GR:gfx/world/worldHexTiles.json"
         }
     ],
-    "sceneName": "HexabloMain_BG"
+    "_sceneName": "HexabloMain_BG"
 }

@@ -1,5 +1,5 @@
 {
-    "objects": [
+    "_objects": [
         {
             "__obj_name": "jleObject",
             "_childObjects": [],
@@ -174,5 +174,5 @@
             "_instance_name": "horse"
         }
     ],
-    "sceneName": "HexabloStatics"
+    "_sceneName": "HexabloStatics"
 }

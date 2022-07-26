@@ -6,13 +6,14 @@
 #include <vector>
 #include <memory>
 
-#include "3rdparty/json.hpp"
+#include "jleJson.h"
+#include <json.hpp>
 
 namespace jle {
 
     class jleObject;
 
-    class jleScene {
+    class jleScene : public jleJsonInterface<nlohmann::json> {
     public:
 
         jleScene();
@@ -26,7 +27,7 @@ namespace jle {
 
         std::shared_ptr<jleObject> SpawnObject(const std::string &objName);
 
-        std::shared_ptr<jleObject> SpawnTemplateObject(const std::string& templatePath);
+        std::shared_ptr<jleObject> SpawnTemplateObject(const std::string &templatePath);
 
         void UpdateSceneObjects(float dt);
 
@@ -40,11 +41,16 @@ namespace jle {
 
         void DestroyScene();
 
+        void ToJson(nlohmann::json &j_out) override;
+
+        void FromJson(const nlohmann::json &j_in) override;
+
         bool bPendingSceneDestruction = false;
 
         std::vector<std::shared_ptr<jleObject>> &GetSceneObjects();
 
         std::string mSceneName;
+
 
     protected:
         friend class jleObject;
@@ -52,17 +58,17 @@ namespace jle {
         std::vector<std::shared_ptr<jleObject>> mSceneObjects;
         std::vector<std::shared_ptr<jleObject>> mNewSceneObjects;
 
-        friend void to_json(nlohmann::json &j, const jleScene &s);
+        friend void to_json(nlohmann::json &j, jleScene &s);
 
         friend void from_json(const nlohmann::json &j, jleScene &s);
 
     private:
         static int mScenesCreatedCount;
 
-        void ConfigurateSpawnedObject(const std::shared_ptr<jleObject>& obj);
+        void ConfigurateSpawnedObject(const std::shared_ptr<jleObject> &obj);
     };
 
-    void to_json(nlohmann::json &j, const jleScene &s);
+    void to_json(nlohmann::json &j, jleScene &s);
 
     void from_json(const nlohmann::json &j, jleScene &s);
 }

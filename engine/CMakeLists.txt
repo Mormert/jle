@@ -56,7 +56,12 @@ add_library(engine STATIC
         "jleSoLoud.cpp"
         "jleFont.cpp"
         "cText.cpp"
-        jleTimerManager.cpp jleTimerManager.h cUITransformUpdater.cpp cUITransformUpdater.h)
+        "jleTimerManager.cpp"
+        "cUITransformUpdater.cpp"
+        "jleNetworking.cpp"
+        "jleNetworkingNative.cpp"
+        "jleNetworkingJS.cpp"
+        "jleNetScene.cpp")
 
 
 if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()
@@ -73,6 +78,11 @@ if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded lib
 
     add_subdirectory(3rdparty/git_submodules/glfw)
     target_link_libraries(engine PUBLIC glfw)
+
+    add_subdirectory(3rdparty/git_submodules/socket.io-client-cpp)
+    target_link_libraries(engine PUBLIC sioclient)
+    target_include_directories(engine SYSTEM PUBLIC
+            "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/socket.io-cpp/src")
 
 endif ()
 

@@ -78,6 +78,10 @@ void oMyPlayer::Movement(float dt) {
     const auto TryMoveTo = [&](int q, int r) {
         if (world->IsHexagonWalkable(q, r)) {
             SetHexagonPlacementInterp(q, r);
+            jleNetworking::TryEmitJsonData(
+                    "player_pos", {{"q", q},
+                                   {"r", r},
+                                   {"d", mCharacterDirection}});
             canMove = false;
             lastMovement = jle::jleCore::core->status->GetCurrentFrameTime();
             currentMoveTime = defaultMoveTime;
