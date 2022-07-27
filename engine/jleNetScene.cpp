@@ -86,13 +86,11 @@ void jle::jleNetScene::ProcessNetMessage(const std::string &event,
         nlohmann::json j;
         ToJson(j);
         mNetworking.EmitJsonData("SceneSync", j, sender);
-        return;
     }
 
     if (event == "player_dconnect") {
         const std::string playerId = message["id"];
         LOGV << "player dconnect: " << playerId;
-        return;
     }
 }
 

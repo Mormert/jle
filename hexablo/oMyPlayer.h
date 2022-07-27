@@ -25,6 +25,8 @@ public:
 
     static inline std::weak_ptr<oMyPlayer> sMyPlayerPtr;
 
+    void Attack(oCharacterDirection direction) override;
+
 private:
     void LookAtMouse();
 

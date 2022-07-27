@@ -28,7 +28,7 @@ public:
         southwest
     };
 
-    void Attack(oCharacterDirection direction);
+    virtual void Attack(oCharacterDirection direction);
 
     void SetHP(int hp);
 

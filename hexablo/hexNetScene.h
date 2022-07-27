@@ -17,7 +17,12 @@ public:
 
     void ProcessNetMessage(const std::string &event, const nlohmann::json &message, const std::string &sender) override;
 
+
+private:
+    std::weak_ptr<jle::jleObject> GetPlayerFromId(const std::string& id);
+
     std::map<std::string, std::weak_ptr<jle::jleObject>> mPlayers;
+
 
 };
 

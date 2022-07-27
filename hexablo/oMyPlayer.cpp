@@ -33,6 +33,21 @@ void oMyPlayer::Update(float dt) {
 
 }
 
+void oMyPlayer::Attack(oCharacter::oCharacterDirection direction) {
+    if(!mCanAttack)
+    {
+        return;
+    }
+
+    oCharacter::Attack(direction);
+
+    auto pos = mHexagonItem.GetHexagonItemPlacement();
+    jleNetworking::TryEmitJsonData(
+            "basic_attack", {{"q", pos.x},
+                             {"r", pos.y},
+                             {"d", mCharacterDirection}});
+}
+
 void oMyPlayer::ToJson(nlohmann::json &j_out) {
     oCharacter::ToJson(j_out);
 }

@@ -192,7 +192,9 @@ void oCharacter::FromJson(const nlohmann::json &j_in) {
     JLE_FROM_JSON_WITH_DEFAULT(j_in, mSouthwestTextureY, "mSouthwestTextureY", 0);
 }
 
-void oCharacter::Attack(oCharacter::oCharacterDirection) {
+void oCharacter::Attack(oCharacter::oCharacterDirection dir) {
+
+    SetCharacterDirection(dir);
 
     if (!mCanAttack) {
         return;
