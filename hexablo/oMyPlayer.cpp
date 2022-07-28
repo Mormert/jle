@@ -2,10 +2,12 @@
 
 #include "oMyPlayer.h"
 #include "hexHelperFunctions.h"
+#include "hexHexagonFunctions.h"
 #include "jleCore.h"
 
 #include "plog/Log.h"
 #include "oWorld.h"
+#include "oFireball.h"
 
 #include <glm/glm.hpp>
 
@@ -26,6 +28,8 @@ void oMyPlayer::Update(float dt) {
     LookAtMouse();
 
     Movement(dt);
+
+    Abilities();
 
     if (jle::jleCore::core->input->mouse->GetMouseClick(1)) {
         Attack(mCharacterDirection);
@@ -296,4 +300,31 @@ void oMyPlayer::Movement_v1(float dt) {
         return;
     }
 
+}
+
+void oMyPlayer::Abilities() {
+    bool q = jle::jleCore::core->input->keyboard->GetKeyDown('Q');
+    bool e = jle::jleCore::core->input->keyboard->GetKeyDown('E');
+
+    if(q)
+    {
+
+
+        auto t = mContainedInScene->SpawnTemplateObject("GR:otemps/FireballTempl.tmpl");
+        const auto fireball = std::static_pointer_cast<oFireball>(t);
+        auto mx = hexHelperFunctions::GetPixelatedMouseXWorldSpace();
+        auto my = hexHelperFunctions::GetPixelatedMouseYWorldSpace();
+
+        fireball->GetComponent<cTransform>()->SetWorldPositionX(mTransform->GetWorldX() - 20.f);
+        fireball->GetComponent<cTransform>()->SetWorldPositionY(mTransform->GetWorldY() - 10);
+
+
+        auto *world = oWorld::sWorld;
+        auto p = hexHexagonFunctions::PixelToHex(mx, my, world->mHexSizeX, world->mHexSizeY);
+
+        fireball->SetTarget(p.x, p.y);
+
+
+        return;
+    }
 }

@@ -27,6 +27,8 @@ public:
 
     void Attack(oCharacterDirection direction) override;
 
+    void Abilities();
+
 private:
     void LookAtMouse();
 

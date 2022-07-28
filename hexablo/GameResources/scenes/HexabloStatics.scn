@@ -126,30 +126,6 @@
             "_childObjects": [],
             "_custom_components": [
                 {
-                    "_comp_name": "cSprite",
-                    "depth": -0.9900000095367432,
-                    "height": 256,
-                    "path": "GR:gfx/conceptart/3DObjects/ground.png",
-                    "textureX": 0,
-                    "textureY": 0,
-                    "width": 256,
-                    "x": 0.0,
-                    "y": 0.0
-                },
-                {
-                    "_comp_name": "cTransform",
-                    "depth": 0.0,
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            ],
-            "_instance_name": "jleObject_55"
-        },
-        {
-            "__obj_name": "jleObject",
-            "_childObjects": [],
-            "_custom_components": [
-                {
                     "_comp_name": "cAseprite",
                     "animating": true,
                     "height": 70,

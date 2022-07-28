@@ -4,6 +4,7 @@
 #define HEXABLO_HEXNETSCENE_H
 
 #include "jleNetScene.h"
+#include "oFireball.h"
 
 class hexNetScene : public jle::jleNetScene {
 public:
@@ -22,6 +23,9 @@ private:
     std::weak_ptr<jle::jleObject> GetPlayerFromId(const std::string& id);
 
     std::map<std::string, std::weak_ptr<jle::jleObject>> mPlayers;
+
+    std::weak_ptr<oFireball> GetFireballFromId(const int id);
+    std::map<int, std::weak_ptr<oFireball>> mFireballs;
 
 
 };
