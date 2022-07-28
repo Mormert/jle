@@ -3,6 +3,7 @@
 #pragma once
 
 #include <string>
+#include <regex>
 #include "plog/Log.h"
 
 // Wrappers for paths defined in CMakeLists
@@ -40,6 +41,12 @@ namespace jle {
     // From a resource path containing for example the module "GR:" (game resource),
     // This function finds the true path to that resource
     static std::string FindTrueResourcePath(std::string path) {
+
+        // Correct the path's slashes
+        if(path.find("\\") != std::string::npos)
+        {
+            std::replace(path.begin(), path.end(), '\\', '/');
+        }
 
         jleRootFolder rootFolder = jleRootFolder::None;
         const auto &&prefixString = path.substr(0, 3);
