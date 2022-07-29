@@ -35,6 +35,8 @@ private:
     void Movement_v1(float dt);
     void Movement(float dt);
 
+    bool mCanThrowFireball = true;
+
 };
 
 #endif //HEXABLO_OMYPLAYER_H

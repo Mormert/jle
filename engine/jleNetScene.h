@@ -38,9 +38,10 @@ namespace jle {
 
         // TODO: Move this to more flexible solution
 #ifdef __EMSCRIPTEN__
-        std::string mConnectAddress{"localhost:314"};
+        std::string mConnectAddress{"hexablo.herokuapp.com"};
 #else
-        std::string mConnectAddress{"http://localhost:314"};
+        // std::string mConnectAddress{"http://localhost:314"};
+        std::string mConnectAddress{"http://hexablo.herokuapp.com"};
 #endif
 
         bool mIsHost = false;

@@ -11,9 +11,9 @@
  ],
  "meta": {
   "app": "https://www.aseprite.org/",
-  "version": "1.2.35-x64",
+  "version": "1.2.38-x64",
   "image": "ui.png",
-  "format": "RGBA8888",
+  "format": "I8",
   "size": { "w": 256, "h": 256 },
   "scale": "1",
   "frameTags": [

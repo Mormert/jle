@@ -306,7 +306,7 @@ void oMyPlayer::Abilities() {
     bool q = jle::jleCore::core->input->keyboard->GetKeyDown('Q');
     bool e = jle::jleCore::core->input->keyboard->GetKeyDown('E');
 
-    if(q)
+    if(q && mCanThrowFireball)
     {
 
 
@@ -324,6 +324,17 @@ void oMyPlayer::Abilities() {
 
         fireball->SetTarget(p.x, p.y);
 
+
+        mCanThrowFireball = false;
+
+        const auto futureFunc = [](std::weak_ptr<void> data) {
+            auto safeThis = std::static_pointer_cast<oMyPlayer>(data.lock());
+            safeThis->mCanThrowFireball = true;
+        };
+
+        // Can throw fireball again in x seconds
+        jle::jleCore::core->GetTimerManager().
+                ExecuteFuncInSecondsWeakData(0.2, futureFunc, GetWeakPtrToThis());
 
         return;
     }

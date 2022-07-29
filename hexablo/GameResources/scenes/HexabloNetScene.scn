@@ -12,7 +12,7 @@
                     "colorR": 1.0,
                     "fontPath": "ER:fonts/PokemonClassic.ttf",
                     "fontSize": 16,
-                    "text": "heyyoooo"
+                    "text": "update the text!"
                 },
                 {
                     "_comp_name": "cTransform",
@@ -45,15 +45,19 @@
                 {
                     "_comp_name": "cTransform",
                     "depth": 0.0,
-                    "x": 131.0,
-                    "y": 76.0
+                    "x": 881.0,
+                    "y": -333.0
                 }
             ],
             "_instance_name": "jleObject_38"
         },
         {
-            "_instance_name": "FireballTempl",
-            "_otemp": "GR:\\otemps\\FireballTempl.tmpl"
+            "_instance_name": "otherPlayer",
+            "_otemp": "GR:/otemps/otherPlayer.tmpl"
+        },
+        {
+            "_instance_name": "otherPlayer",
+            "_otemp": "GR:/otemps/otherPlayer.tmpl"
         }
     ],
     "_sceneName": "HexabloNetScene",
