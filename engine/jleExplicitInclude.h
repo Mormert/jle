@@ -12,3 +12,4 @@
 #include "cCamera.h"
 #include "cText.h"
 #include "cUITransformUpdater.h"
+#include "cSpritesheet.h"

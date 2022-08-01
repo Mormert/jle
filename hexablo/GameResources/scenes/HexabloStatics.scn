@@ -148,6 +148,24 @@
                 }
             ],
             "_instance_name": "horse"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpritesheet",
+                    "mSpriteName": "spritepacks/dir2/tower",
+                    "mSpritesheetPath": "GR:gfx/spritesheets/hdr/tower.json"
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 683.0,
+                    "y": -622.0
+                }
+            ],
+            "_instance_name": "jleObject_43"
         }
     ],
     "_sceneName": "HexabloStatics"

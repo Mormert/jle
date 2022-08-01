@@ -1,0 +1,35 @@
+{
+    "algorithm": "Rect",
+    "dataFormat": "json",
+    "destPath": "../spritesheets",
+    "encryptionKey": "",
+    "epsilon": 15,
+    "heuristicMask": false,
+    "imageFormat": "*.png",
+    "jpgQuality": 80,
+    "pixelFormat": "ARGB8888",
+    "pngOptLevel": 7,
+    "pngOptMode": "None",
+    "premultiplied": true,
+    "prependSmartFolderName": true,
+    "rotateSprites": false,
+    "scalingVariants": [
+        {
+            "forceSquared": false,
+            "maxTextureSize": 1024,
+            "name": "hdr/",
+            "pow2": false,
+            "scale": 1
+        }
+    ],
+    "spriteBorder": 2,
+    "spriteSheetName": "tower",
+    "srcList": [
+        "."
+    ],
+    "textureBorder": 0,
+    "trimMode": "Rect",
+    "trimSpriteNames": true,
+    "trimThreshold": 1,
+    "webpQuality": 80
+}

@@ -61,7 +61,9 @@ add_library(engine STATIC
         "jleNetworking.cpp"
         "jleNetworkingNative.cpp"
         "jleNetworkingJS.cpp"
-        "jleNetScene.cpp")
+        "jleNetScene.cpp"
+        "jleSpritesheet.cpp"
+        "cSpritesheet.cpp")
 
 
 if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()
