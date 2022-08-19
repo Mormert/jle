@@ -22,7 +22,7 @@ void oWorld::Start() {
 
 void oWorld::Update(float dt) {
 
-    RenderVisualWorld(dt);
+  //  RenderVisualWorld(dt);
 
     /*for (int i = 0; i < 25; i++) {
         for (int j = 0; j < 25; j++) {
@@ -70,9 +70,8 @@ void oWorld::FromJson(const nlohmann::json &j_in) {
 }
 
 void oWorld::LoadTilesTexture() {
-    const auto &truePath = jle::FindTrueResourcePath(mWorldHexTilesAsepritePath);
-    if (!truePath.empty()) {
-        mAseprite.LoadFromFile(truePath);
+    if (!mWorldHexTilesAsepritePath.empty()) {
+        mAseprite.LoadFromFile(jleRelativePath{mWorldHexTilesAsepritePath}.GetAbsolutePathStr());
         //mWorldHexTilesTexture = jle::jleCore::core->texture_creator->LoadTextureFromPath(truePath);
     }
 }

@@ -31,7 +31,7 @@ jle::SceneEditorWindow::SceneEditorWindow(const std::string &window_name, std::s
     mTexturedQuad.texture = mTransformMarkerTexture;
     mTexturedQuad.width = 128;
     mTexturedQuad.height = 128;
-    mTexturedQuad.depth = 1.f;
+    mTexturedQuad.depth = 1000.f;
     mTexturedQuad.textureX = 0;
     mTexturedQuad.textureY = 0;
 }
@@ -97,7 +97,7 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
             mTexturedQuad.y = transform->GetWorldY() - 64.f;
             std::vector<TexturedQuad> texturedQuads {mTexturedQuad};
             auto quadRenderer = ((iQuadRenderingInternal *) (jleCore::core->rendering->quads.get()));
-            quadRenderer->Render(*mFramebuffer, jleEditor::mEditorCamera, texturedQuads, false);
+            quadRenderer->Render(*mFramebuffer, jleEditor::mEditorCamera, texturedQuads, {}, false);
         }
     }
 
@@ -113,6 +113,9 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
         jleEditor::mEditorCamera.mX += dragDelta.x * 0.001f * zoomValue;
         jleEditor::mEditorCamera.mY += dragDelta.y * 0.001f * zoomValue;
 
+        jleEditor::mEditorCamera.mXNoOffset = jleEditor::mEditorCamera.mX + mFramebuffer->GetWidth()*.5;
+        jleEditor::mEditorCamera.mYNoOffset = jleEditor::mEditorCamera.mY + mFramebuffer->GetHeight()*.5;
+
         auto currentScroll = jle::jleCore::core->input->mouse->GetScrollY();
         if (currentScroll != 0.f) {
             zoomValue -= currentScroll * 0.1f;
@@ -120,6 +123,12 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
             auto dims = ge.GetFramebufferDimensions(static_cast<unsigned int>(ImGui::GetWindowWidth()),
                                                     static_cast<unsigned int>(ImGui::GetWindowHeight()));
 
+            const auto oldWidth = mFramebuffer->GetWidth();
+            const auto oldHeight = mFramebuffer->GetHeight();
+            const auto widthDiff = dims.first * zoomValue - oldWidth;
+            const auto heightDiff = dims.second * zoomValue - oldHeight;
+            jleEditor::mEditorCamera.mX -= widthDiff*.5f;
+            jleEditor::mEditorCamera.mY -= heightDiff*.5f;
             mFramebuffer->ResizeFramebuffer(dims.first * zoomValue, dims.second * zoomValue);
         }
 
@@ -153,7 +162,7 @@ void jle::SceneEditorWindow::Update(jle::jleGameEngine &ge) {
 
         if(ImGui::IsMouseDragging(0)){
             if(draggingTransformMarker == 1){
-                transform->SetWorldPosition(mouseCoordinateX, mouseCoordinateY);
+                transform->SetWorldPosition(mouseCoordinateX, mouseCoordinateY, transform->GetWorldDepth());
             }else if(draggingTransformMarker == 2){
                 transform->SetWorldPositionX(mouseCoordinateX);
             }else if(draggingTransformMarker == 3){

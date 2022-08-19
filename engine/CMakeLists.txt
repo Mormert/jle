@@ -48,6 +48,7 @@ add_library(engine STATIC
         "Window_GLFW_OpenGL.cpp"
         "EditorContentBrowser.cpp"
         "cSprite.cpp"
+        "cSpriteDepth.cpp"
         "cTransform.cpp"
         "oStaticSprite.cpp"
         "cAseprite.cpp"
@@ -63,7 +64,9 @@ add_library(engine STATIC
         "jleNetworkingJS.cpp"
         "jleNetScene.cpp"
         "jleSpritesheet.cpp"
-        "cSpritesheet.cpp")
+        "cSpritesheet.cpp"
+        "jlePath.cpp"
+        "EditorResourceViewer.cpp")
 
 
 if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()

@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jleSpritesheet.h"
-#include "jleCore.h"
+#include "jleGameEngine.h"
 
 #include <fstream>
 #include <filesystem>
@@ -23,7 +23,8 @@ void from_json(const nlohmann::json &j, jleSpritesheetEntity::jleSpritesheetEnti
 
 void jleSpritesheet::LoadImage() {
     std::string pngPath = mPathJson.substr(0, mPathJson.find(".", 0)) + ".png";
-    mImageTexture = jle::jleCore::core->texture_creator->LoadTextureFromPath(pngPath);
+
+    mImageTexture = jle::jleCore::core->texture_creator->LoadTextureFromPath(jleRelativePath{pngPath});
 }
 
 bool jleSpritesheet::LoadFromFile(const std::string &path) {

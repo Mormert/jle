@@ -11,7 +11,7 @@ void oCharacter::SetupDefaultObject() {
     mAseprite = AddCustomComponent<jle::cAseprite>();
 
     mHealthBarObjPtr = std::static_pointer_cast<oCharacterHealthBar>(
-            SpawnChildObjectFromTemplate("GR:otemps/oCharacterHealthBar.tmpl"));
+            SpawnChildObjectFromTemplate(jleRelativePath{"GR:otemps/oCharacterHealthBar.tmpl"}));
 }
 
 void oCharacter::Start() {
@@ -44,7 +44,7 @@ void oCharacter::Update(float dt) {
 
         mInterpingX = pos.x;
         mInterpingY = pos.y;
-        mTransform->SetWorldPosition((int) mInterpingX, (int) mInterpingY);
+        mTransform->SetWorldPositionXY((int) mInterpingX, (int) mInterpingY);
 
         mInterpingAlpha += mInterpBetweenHexasSpeed * dt;
         if (mInterpingAlpha >= 1.f) {
@@ -109,7 +109,7 @@ void oCharacter::SetHexagonPlacementTeleport(int q, int r) {
     mHexagonPixelX = p.x;
     mHexagonPixelY = p.y;
 
-    mTransform->SetWorldPosition(mHexagonPixelX, mHexagonPixelY);
+    mTransform->SetWorldPositionXY(mHexagonPixelX, mHexagonPixelY);
     mInterpingPosition = false;
 }
 

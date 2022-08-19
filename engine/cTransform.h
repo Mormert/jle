@@ -5,13 +5,15 @@
 #include "jleComponent.h"
 #include "jleObject.h"
 
+#include <glm/glm.hpp>
+
 class cTransform : public jle::jleComponent {
     JLE_REGISTER_COMPONENT_TYPE(cTransform)
 public:
 
     explicit cTransform(jle::jleObject *owner = nullptr, jle::jleScene *scene = nullptr);
 
-    inline void SetWorldPosition(float x, float y, float depth = 0.f) {
+    inline void SetWorldPosition(float x, float y, float depth) {
 
         mX = 0.f;
         mY = 0.f;
@@ -31,6 +33,28 @@ public:
         mX += x;
         mY += y;
         mDepth += depth;
+
+        SetDirty();
+
+    }
+
+    inline void SetWorldPositionXY(float x, float y) {
+
+        mX = 0.f;
+        mY = 0.f;
+
+        auto p = mAttachedToObject->GetParent();
+        while (p) {
+            if (auto &&t = p->GetComponent<cTransform>()) {
+                mX -= t->mX;
+                mY -= t->mY;
+            }
+
+            p = p->GetParent();
+        }
+
+        mX += x;
+        mY += y;
 
         SetDirty();
 
@@ -120,13 +144,13 @@ public:
         return mWorldDepth;
     }
 
-    [[nodiscard]] inline std::tuple<float,float,float> GetWorldXYDepth()
+    [[nodiscard]] inline glm::vec3 GetWorldXYDepth()
     {
         if (mDirty) {
             RefreshWorldCoordinates();
         }
 
-        return std::make_tuple(mX, mY, mDepth);
+        return {mX,mY,mDepth};
     }
 
     [[nodiscard]] inline float GetLocalX() const {

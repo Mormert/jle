@@ -5,14 +5,13 @@
 #include "jleObject.h"
 
 
-#include "jleCore.h"
+#include "jleGameEngine.h"
 
 cSprite::cSprite(jle::jleObject *owner, jle::jleScene *scene) : jleComponent{owner, scene}, quad{nullptr} {
 }
 
 void cSprite::CreateAndSetTextureFromPath(const std::string &path) {
-    const auto truePath = jle::FindTrueResourcePath(path);
-    quad.texture = jle::jleCore::core->texture_creator->LoadTextureFromPath(truePath);
+    quad.texture = jle::jleCore::core->texture_creator->LoadTextureFromPath(jleRelativePath{path});
 }
 
 void cSprite::SetTexture(std::shared_ptr<jle::iTexture> texture) {

@@ -17,8 +17,6 @@
 
 #include "jleStaticOpenGLState.h"
 
-#include "plog/Log.h"
-
 #include <iostream>
 
 namespace jle {
@@ -26,17 +24,16 @@ namespace jle {
         if (texture_id != UINT_MAX) {
             glDeleteTextures(1, &texture_id);
         }
-        PLOG_VERBOSE << "Destroyed texture " << texture_id << ".\n";
-        std::cout << "Destroyed texture\n";
+        std::cout << "Destroyed texture with id " << texture_id << '\n';
     }
 
     bool Texture::IsActive() {
         return jle::jleStaticOpenGLState::globalActiveTexture == texture_id;
     }
 
-    void Texture::SetToActiveTexture() {
+    void Texture::SetToActiveTexture(int texture_slot) {
+        glActiveTexture(GL_TEXTURE0 + texture_slot);
         glBindTexture(GL_TEXTURE_2D, texture_id);
-        glActiveTexture(GL_TEXTURE0);
         jle::jleStaticOpenGLState::globalActiveTexture = texture_id;
     }
 

@@ -234,7 +234,8 @@ void jle::EditorSceneObjectsWindow::Update(jleGameEngine &ge) {
                         // Haxx: remove the template field, and add it back again after :>
                         const auto templatePathTempSave = selectedObjectSafePtr->mTemplatePath.value();
                         selectedObjectSafePtr->mTemplatePath.reset();
-                        selectedObjectSafePtr->SaveObjectTemplate(templatePathTempSave);
+                        jleRelativePath relPath{templatePathTempSave};
+                        selectedObjectSafePtr->SaveObjectTemplate(relPath);
                         selectedObjectSafePtr->mTemplatePath = templatePathTempSave;
                     }
                     ImGui::SameLine();
@@ -318,7 +319,14 @@ void jle::EditorSceneObjectsWindow::ObjectTreeRecursive(std::shared_ptr<jleObjec
         }
 
         if (ImGui::Button("Save Template", ImVec2(138 * globalImguiScale, 0))) {
-            object->SaveObjectTemplate();
+            jleRelativePath p{""};
+            object->SaveObjectTemplate(p);
+        }
+
+        if (ImGui::Button("Duplicate", ImVec2(138 * globalImguiScale, 0))) {
+            jleRelativePath p{""};
+            nlohmann::json j;
+            object->DuplicateObject_Editor();
         }
 
         { // Rename Object

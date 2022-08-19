@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jleAseprite.h"
-#include "jleCore.h"
+#include "jleGameEngine.h"
 #include "plog/Log.h"
 
 #include <fstream>
@@ -79,7 +79,7 @@ jle::jleAseprite::jleAseprite(const std::string &path) {
 void jle::jleAseprite::LoadImage() {
     std::filesystem::path p{mPath};
     p.remove_filename();
-    mImageTexture = jleCore::core->texture_creator->LoadTextureFromPath(p.string() + mMeta.mImage);
+    mImageTexture = jleCore::core->texture_creator->LoadTextureFromPath(jleRelativePath{p.string() + mMeta.mImage});
 }
 
 int jle::jleAseprite::GetTotalAnimationTimeMs() {

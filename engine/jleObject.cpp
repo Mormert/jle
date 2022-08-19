@@ -95,10 +95,10 @@ void jle::jleObject::DetachObjectFromParent() {
 jle::jleObject::jleObject(jleScene *scene) : mContainedInScene{scene} {
 }
 
-void jle::jleObject::SaveObjectTemplate(const std::string &path) {
+void jle::jleObject::SaveObjectTemplate(jleRelativePath& path) {
     std::string sceneSavePath;
-    if (!path.empty()) {
-        sceneSavePath = FindTrueResourcePath(path);
+    if (!path.GetRelativePathStr().empty()) {
+        sceneSavePath = path.GetAbsolutePathStr();
     } else {
         sceneSavePath = GAME_RESOURCES_DIRECTORY + "/otemps/" + mInstanceName + ".tmpl";
     }
@@ -118,10 +118,8 @@ void jle::jleObject::InjectTemplate(const nlohmann::json& json) {
     FromJson(json);
 }
 
-std::shared_ptr<jle::jleObject> jle::jleObject::SpawnChildObjectFromTemplate(const std::string &path) {
-    const auto &&truePath = jle::FindTrueResourcePath(path);
-
-    std::ifstream i(truePath);
+std::shared_ptr<jle::jleObject> jle::jleObject::SpawnChildObjectFromTemplate(const jleRelativePath& path) {
+    std::ifstream i(path.GetAbsolutePathStr());
     if (i.good()) {
         nlohmann::json j;
         i >> j;
@@ -132,7 +130,7 @@ std::shared_ptr<jle::jleObject> jle::jleObject::SpawnChildObjectFromTemplate(con
 
         auto spawnedObjFromJson = SpawnChildObject(objectsName);
         spawnedObjFromJson->InjectTemplate(j);
-        spawnedObjFromJson->mTemplatePath = path;
+        spawnedObjFromJson->mTemplatePath = path.GetRelativePathStr();
 
         return spawnedObjFromJson;
 
@@ -221,6 +219,13 @@ std::shared_ptr<jle::jleObject> jle::jleObject::ProcessChildJsonData(const nlohm
     }
 }
 
+void jle::jleObject::DuplicateObject_Editor() {
+    nlohmann::json j;
+    to_json(j, GetWeakPtrToThis().lock());
+
+    mContainedInScene->SpawnObject(j);
+}
+
 void jle::jleObject::ProcessJsonData(const nlohmann::json &j, std::shared_ptr<jleObject> &o) {
     JLE_FROM_JSON_IF_EXISTS(j, o->mInstanceName, "_instance_name")
 
@@ -249,7 +254,7 @@ void jle::jleObject::ProcessJsonData(const nlohmann::json &j, std::shared_ptr<jl
             if (object_json.find("_otemp") != object_json.end()) {
                 const std::string objectTemplatePath = object_json.at("_otemp");
                 const std::string objectInstanceName = object_json.at("_instance_name");
-                auto templateJson = jleObject::GetObjectTemplateJson(objectTemplatePath);
+                auto templateJson = jleObject::GetObjectTemplateJson(jleRelativePath{objectTemplatePath});
                 templateJson["_instance_name"] = objectInstanceName;
                 auto newChildObject = ProcessChildJsonData(templateJson, o);
                 newChildObject->mTemplatePath = objectTemplatePath;
@@ -260,17 +265,16 @@ void jle::jleObject::ProcessJsonData(const nlohmann::json &j, std::shared_ptr<jl
     }
 }
 
-nlohmann::json jle::jleObject::GetObjectTemplateJson(const std::string &path) {
-    const auto &&truePath = jle::FindTrueResourcePath(path);
+nlohmann::json jle::jleObject::GetObjectTemplateJson(const jleRelativePath &path) {
 
     // TODO: use caching
-    std::ifstream i(truePath);
+    std::ifstream i(path.GetAbsolutePathStr());
     if (i.good()) {
         nlohmann::json templateJson;
         i >> templateJson;
         return templateJson;
     } else {
-        LOGE << "Failed loading JSON data with path " << truePath;
+        LOGE << "Failed loading JSON data with path " << path.GetAbsolutePathStr();
     }
 
     return {};
@@ -283,7 +287,7 @@ void jle::from_json(const nlohmann::json &json, std::shared_ptr<jleObject> &obje
     if (otemp_it != json.end()) {
         const std::string objectTemplatePath = json.at("_otemp");
         const std::string objectInstanceName = json.at("_instance_name");
-        const auto templateJson = jleObject::GetObjectTemplateJson(objectTemplatePath);
+        const auto templateJson = jleObject::GetObjectTemplateJson(jleRelativePath{objectTemplatePath});
         object->mTemplatePath = objectTemplatePath;
 
         jleObject::ProcessJsonData(templateJson, object);

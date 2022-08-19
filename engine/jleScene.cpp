@@ -60,16 +60,27 @@ void jle::jleScene::DestroyScene() {
     OnSceneDestruction();
 }
 
-std::shared_ptr<jle::jleObject> jle::jleScene::SpawnTemplateObject(const std::string &templatePath) {
+std::shared_ptr<jle::jleObject> jle::jleScene::SpawnTemplateObject(const jleRelativePath &templatePath) {
     auto j = jleObject::GetObjectTemplateJson(templatePath);
 
     std::string objectsName;
     j.at("__obj_name").get_to(objectsName);
 
     auto spawnedObjFromJson = SpawnObject(objectsName);
-    spawnedObjFromJson->mTemplatePath = templatePath;
+    spawnedObjFromJson->mTemplatePath = templatePath.GetRelativePathStr();
     jle::from_json(j, spawnedObjFromJson);
     spawnedObjFromJson->FromJson(j);
+
+    return spawnedObjFromJson;
+}
+
+std::shared_ptr<jle::jleObject> jle::jleScene::SpawnObject(const nlohmann::json &j_in) {
+    std::string objectsName;
+    j_in.at("__obj_name").get_to(objectsName);
+
+    auto spawnedObjFromJson = SpawnObject(objectsName);
+    jle::from_json(j_in, spawnedObjFromJson);
+    spawnedObjFromJson->FromJson(j_in);
 
     return spawnedObjFromJson;
 }
@@ -105,7 +116,7 @@ void jle::jleScene::FromJson(const nlohmann::json &j_in) {
         if (object_json.find("_otemp") != object_json.end()) {
             const std::string path = object_json.at("_otemp");
             const std::string objectInstanceName = object_json.at("_instance_name");
-            const auto templateJson = jleObject::GetObjectTemplateJson(path);
+            const auto templateJson = jleObject::GetObjectTemplateJson(jleRelativePath{path});
             object_json = templateJson; // replace with template object json instead
             object_json["_instance_name"] = objectInstanceName; // overwrite instance name
             objectTemplatePath = path;

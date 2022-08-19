@@ -17,7 +17,7 @@ namespace jle {
 
         virtual bool IsActive() = 0;
 
-        virtual void SetToActiveTexture() = 0;
+        virtual void SetToActiveTexture(int texture_slot = 0) = 0;
 
         virtual int GetWidth();
 

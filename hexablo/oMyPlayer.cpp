@@ -11,6 +11,8 @@
 
 #include <glm/glm.hpp>
 
+// TODO: Remove this include:
+#include "QuadRendering_OpenGL.h"
 
 void oMyPlayer::SetupDefaultObject() {
     oCharacter::SetupDefaultObject();
@@ -35,11 +37,36 @@ void oMyPlayer::Update(float dt) {
         Attack(mCharacterDirection);
     }
 
+    static float lightposz = 0.f;
+    if (jle::jleCore::core->input->keyboard->GetKeyDown('R')) {
+        lightposz += 1.f;
+    }
+    if (jle::jleCore::core->input->keyboard->GetKeyDown('F')) {
+        lightposz -= 1.f;
+    }
+
+    if(lightposz <= -200.f)
+    {
+        lightposz = -200.f;
+    }
+
+    static float depthRng = 127.f; // 127.f when pixelated
+    if (jle::jleCore::core->input->keyboard->GetKeyDown('Y')) {
+        depthRng += 0.1f;
+        LOGV << depthRng;
+    }
+    if (jle::jleCore::core->input->keyboard->GetKeyDown('H')) {
+        depthRng -= 0.1f;
+        LOGV << depthRng;
+    }
+
+    jle::QuadRendering_OpenGL::lightPos = mTransform->GetWorldXYDepth() + glm::vec3{0, 0, lightposz};
+    jle::QuadRendering_OpenGL::depthRange = depthRng;
+
 }
 
 void oMyPlayer::Attack(oCharacter::oCharacterDirection direction) {
-    if(!mCanAttack)
-    {
+    if (!mCanAttack) {
         return;
     }
 
@@ -306,11 +333,10 @@ void oMyPlayer::Abilities() {
     bool q = jle::jleCore::core->input->keyboard->GetKeyDown('Q');
     bool e = jle::jleCore::core->input->keyboard->GetKeyDown('E');
 
-    if(q && mCanThrowFireball)
-    {
+    if (q && mCanThrowFireball) {
 
 
-        auto t = mContainedInScene->SpawnTemplateObject("GR:otemps/FireballTempl.tmpl");
+        auto t = mContainedInScene->SpawnTemplateObject(jleRelativePath{"GR:otemps/FireballTempl.tmpl"});
         const auto fireball = std::static_pointer_cast<oFireball>(t);
         auto mx = hexHelperFunctions::GetPixelatedMouseXWorldSpace();
         auto my = hexHelperFunctions::GetPixelatedMouseYWorldSpace();

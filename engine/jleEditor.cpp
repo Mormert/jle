@@ -28,6 +28,7 @@
 #include "EditorSceneObjectsWindow.h"
 #include "EditorContentBrowser.h"
 #include "EngineSettingsWindow.h"
+#include "EditorResourceViewer.h"
 
 #include "iQuadRenderingInternal.h"
 #include "SceneEditorWindow.h"
@@ -87,6 +88,10 @@ namespace jle {
         auto contentBrowser = std::make_shared<EditorContentBrowser>("Content Browser");
         AddImGuiWindow(contentBrowser);
         menu->AddWindow(contentBrowser);
+
+        auto resourceViewer = std::make_shared<EditorResourceViewer>("Resource Viewer");
+        AddImGuiWindow(resourceViewer);
+        menu->AddWindow(resourceViewer);
 
         jleCore::window->AddWindowResizeCallback(
                 std::bind(&jleEditor::MainEditorWindowResized, this, std::placeholders::_1, std::placeholders::_2));

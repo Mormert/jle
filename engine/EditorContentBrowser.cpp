@@ -13,20 +13,20 @@
 
 jle::EditorContentBrowser::EditorContentBrowser(const std::string &window_name) : iEditorImGuiWindow(window_name) {
     mDirectoryIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath(
-            JLE_ENGINE_PATH + "/EditorResources/icons/directory.png");
+            jleRelativePath{"ED:/icons/directory.png"});
     mFileIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath(
-            JLE_ENGINE_PATH + "/EditorResources/icons/files.png");
+            jleRelativePath{"ED:/icons/files.png"});
     mBackDirectoryIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath(
-            JLE_ENGINE_PATH + "/EditorResources/icons/back_directory.png");
+            jleRelativePath{"ED:/icons/back_directory.png"});
 
     mSceneFileIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath(
-            JLE_ENGINE_PATH + "/EditorResources/icons/scene.png");
+            jleRelativePath{"ED:/icons/scene.png"});
 
     mImageFileIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath(
-            JLE_ENGINE_PATH + "/EditorResources/icons/image.png");
+            jleRelativePath{"ED:/icons/image.png"});
 
     mJsonFileIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath(
-            JLE_ENGINE_PATH + "/EditorResources/icons/json.png");
+            jleRelativePath{"ED:/icons/json.png"});
 
     mSelectedDirectory = GAME_RESOURCES_DIRECTORY;
 }
@@ -259,8 +259,7 @@ void jle::EditorContentBrowser::SelectedFilePopup(std::filesystem::path &file) {
         SelectedFilePopupScene(file);
     }
 
-    if(fileExtension == ".tmpl")
-    {
+    if (fileExtension == ".tmpl") {
         SelectedFilePopupObjectTemplate(file);
     }
 
@@ -394,9 +393,8 @@ void jle::EditorContentBrowser::SelectedFilePopupObjectTemplate(std::filesystem:
             objectName.resize(dot);
         }
 
-        if(auto&& scene = EditorSceneObjectsWindow::GetSelectedScene().lock())
-        {
-            scene->SpawnTemplateObject(GenerateTrueResourcePathFromAbsolute(file.string()));
+        if (auto &&scene = EditorSceneObjectsWindow::GetSelectedScene().lock()) {
+            scene->SpawnTemplateObject(jleRelativePath{jleAbsolutePath{file.string()}});
         }
     }
 }

@@ -7,6 +7,7 @@
 #include "oStaticSprite.h"
 
 #include "cSprite.h"
+#include "cSpriteDepth.h"
 #include "cAseprite.h"
 #include "cTransform.h"
 #include "cCamera.h"

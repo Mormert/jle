@@ -7,7 +7,7 @@
 
 namespace jle {
     struct jleEditorSettings {
-        std::string editorBackgroundImage{JLE_ENGINE_PATH + "/EditorResources/jle_default_bg.jpg"};
+        std::string editorBackgroundImage{"ED:/jle_default_bg.jpg"};
     };
 
 

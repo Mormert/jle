@@ -22,7 +22,7 @@ namespace jle {
         bool IsActive() override;
 
         // Set this Texture to be the globally active texture
-        void SetToActiveTexture() override;
+        void SetToActiveTexture(int texture_slot = 0) override;
 
         unsigned int GetTextureID() override;
 

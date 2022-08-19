@@ -11,6 +11,7 @@
 
 #include "jleJson.h"
 #include "3rdparty/json.hpp"
+#include "jlePath.h"
 
 namespace jle {
     class jleScene;
@@ -48,11 +49,14 @@ namespace jle {
         template<typename T>
         std::shared_ptr<T> SpawnChildObject();
 
+        // Has bad performance since it uses JSON, should only be used in the editor
+        void DuplicateObject_Editor();
+
         std::shared_ptr<jleObject> SpawnChildObject(const std::string &objName);
 
-        void SaveObjectTemplate(const std::string& path = "");
+        void SaveObjectTemplate(jleRelativePath& path);
 
-        std::shared_ptr<jleObject> SpawnChildObjectFromTemplate(const std::string &path);
+        std::shared_ptr<jleObject> SpawnChildObjectFromTemplate(const jleRelativePath& path);
 
         void InjectTemplate(const nlohmann::json& json);
 
@@ -83,7 +87,7 @@ namespace jle {
 
         static std::shared_ptr<jleObject> ProcessChildJsonData(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
 
-        static nlohmann::json GetObjectTemplateJson(const std::string &path);
+        static nlohmann::json GetObjectTemplateJson(const jleRelativePath &path);
 
         // If this object is based on a template
         std::optional<std::string> mTemplatePath{};

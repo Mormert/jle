@@ -11,14 +11,13 @@
 #include <memory>
 #include <string>
 
-class cSprite : public jle::jleComponent {
-    JLE_REGISTER_COMPONENT_TYPE(cSprite)
+class cSpriteDepth : public jle::jleComponent {
+    JLE_REGISTER_COMPONENT_TYPE(cSpriteDepth)
 public:
-    cSprite(jle::jleObject *owner = nullptr, jle::jleScene *scene = nullptr);
+    explicit cSpriteDepth(jle::jleObject *owner = nullptr, jle::jleScene *scene = nullptr);
 
-    void CreateAndSetTextureFromPath(const std::string &path);
-
-    void SetTexture(std::shared_ptr<jle::iTexture> texture);
+    void CreateAndSetTextureFromPath(const std::string &pathDiffuse, const std::string &pathHeight,
+                                     const std::string &pathNormal);
 
     void SetRectangleDimensions(int width, int height);
 
@@ -33,9 +32,11 @@ public:
     virtual void FromJson(const nlohmann::json &j_in) override;
 
 private:
-    std::string texturePath = "";
+    std::string texturePathDiffuse = "";
+    std::string texturePathHeight = "";
+    std::string texturePathNormal = "";
 
-    TexturedQuad quad;
+    TexturedHeightQuad quad;
     std::shared_ptr<cTransform> transform;
 
 };

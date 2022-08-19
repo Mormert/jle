@@ -2,6 +2,7 @@
 
 #include "Window_GLFW_OpenGL.h"
 #include "jlePathDefines.h"
+#include "jlePath.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -167,7 +168,7 @@ namespace jle {
 
         if (!windowSettings.iconPath.empty()) {
             GLFWimage images[1];
-            images[0].pixels = stbi_load(FindTrueResourcePath(windowSettings.iconPath).c_str(), &images[0].width,
+            images[0].pixels = stbi_load(jleAbsolutePath(windowSettings.iconPath).GetAbsolutePathStr().c_str(), &images[0].width,
                                          &images[0].height, nullptr, 4);
             glfwSetWindowIcon(nativeWindow, 1, images);
             stbi_image_free(images[0].pixels);

@@ -9,11 +9,14 @@
 namespace jle {
     EditorGameControllerWidget::EditorGameControllerWidget(const std::string &window_name) :
             iEditorImGuiWindow{window_name} {
-        mPlayGameIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath("EditorResources/icons/play.png");
-        mRestartGameIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath("EditorResources/icons/replay.png");
-        mPauseGameIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath("EditorResources/icons/pause.png");
+        mPlayGameIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath(
+                jleRelativePath{"ED:/icons/play.png"});
+        mRestartGameIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath(
+                jleRelativePath{"ED:/icons/replay.png"});
+        mPauseGameIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath(
+                jleRelativePath{"ED:/icons/pause.png"});
         mNextFrameIcon = jle::jleCore::core->texture_creator->LoadTextureFromPath(
-                "EditorResources/icons/next_frame.png");
+                jleRelativePath{"ED:/icons/next_frame.png"});
     }
 
     void EditorGameControllerWidget::Update(jleGameEngine &ge) {

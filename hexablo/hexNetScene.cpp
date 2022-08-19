@@ -38,7 +38,7 @@ hexNetScene::ProcessNetMessage(const std::string &event, const nlohmann::json &m
 
     if (event == "player_pos") {
         if (mPlayers.find(sender) == mPlayers.end()) {
-            std::weak_ptr<jle::jleObject> newPlayer = SpawnTemplateObject("GR:/otemps/otherPlayer.tmpl");
+            std::weak_ptr<jle::jleObject> newPlayer = SpawnTemplateObject(jleRelativePath{"GR:/otemps/otherPlayer.tmpl"});
             mPlayers[sender] = newPlayer;
         }
 
@@ -77,7 +77,7 @@ hexNetScene::ProcessNetMessage(const std::string &event, const nlohmann::json &m
 std::weak_ptr<jle::jleObject> hexNetScene::GetPlayerFromId(const std::string &id) {
     auto it = mPlayers.find(id);
     if (it == mPlayers.end() || (it != mPlayers.end() && it->second.expired())) {
-        std::weak_ptr<jle::jleObject> newPlayer = SpawnTemplateObject("GR:/otemps/otherPlayer.tmpl");
+        std::weak_ptr<jle::jleObject> newPlayer = SpawnTemplateObject(jleRelativePath{"GR:/otemps/otherPlayer.tmpl"});
         mPlayers[id] = newPlayer;
         return newPlayer;
     }
@@ -87,7 +87,7 @@ std::weak_ptr<jle::jleObject> hexNetScene::GetPlayerFromId(const std::string &id
 std::weak_ptr<oFireball> hexNetScene::GetFireballFromId(const int id) {
     auto it = mFireballs.find(id);
     if (it == mFireballs.end() || (it != mFireballs.end() && it->second.expired())) {
-        auto newFireball = std::static_pointer_cast<oFireball>(SpawnTemplateObject("GR:otemps/FireballTempl.tmpl"));
+        auto newFireball = std::static_pointer_cast<oFireball>(SpawnTemplateObject(jleRelativePath{"GR:otemps/FireballTempl.tmpl"}));
         mFireballs[id] = newFireball;
         return newFireball;
     }

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "jleJson.h"
+#include "jlePath.h"
 #include <json.hpp>
 
 namespace jle {
@@ -27,7 +28,9 @@ namespace jle {
 
         std::shared_ptr<jleObject> SpawnObject(const std::string &objName);
 
-        std::shared_ptr<jleObject> SpawnTemplateObject(const std::string &templatePath);
+        std::shared_ptr<jleObject> SpawnObject(const nlohmann::json& j_in);
+
+        std::shared_ptr<jleObject> SpawnTemplateObject(const jleRelativePath &templatePath);
 
         void UpdateSceneObjects(float dt);
 

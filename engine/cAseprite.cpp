@@ -3,9 +3,10 @@
 #include "cAseprite.h"
 #include "jleResourceHolder.h"
 #include "jlePathDefines.h"
+#include "jlePath.h"
 #include "jleObject.h"
 #include "iQuadRendering.h"
-#include "jleCore.h"
+#include "jleGameEngine.h"
 
 namespace jle {
 
@@ -14,8 +15,7 @@ namespace jle {
 
         mAseprites.clear();
         for (auto &&path: mAsepritePaths) {
-            const auto truePath = jle::FindTrueResourcePath(path.mString);
-            mAseprites.push_back(jleResourceHolder<jleAseprite>::LoadResourceFromFile(truePath));
+            mAseprites.push_back(jleResourceHolder::LoadResourceFromFile<jleAseprite>(jleRelativePath{path.mString}));
         }
     }
 
@@ -101,8 +101,7 @@ namespace jle {
 
         mAseprites.clear();
         for (auto &&path: mAsepritePaths) {
-            const auto truePath = jle::FindTrueResourcePath(path.mString);
-            mAseprites.push_back(jleResourceHolder<jleAseprite>::LoadResourceFromFile(truePath));
+            mAseprites.push_back(jleResourceHolder::LoadResourceFromFile<jleAseprite>(jleRelativePath{path.mString}));
         }
     }
 
@@ -122,8 +121,7 @@ namespace jle {
 
     int cAseprite::AddAsepritePath(const std::string &path) {
         mAsepritePaths.push_back({path});
-        const auto truePath = jle::FindTrueResourcePath(path);
-        mAseprites.push_back(jleResourceHolder<jleAseprite>::LoadResourceFromFile(truePath));
+        mAseprites.push_back(jleResourceHolder::LoadResourceFromFile<jleAseprite>(jleRelativePath{path}));
         return (int) mAseprites.size() - 1;
     }
 

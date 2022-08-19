@@ -6,6 +6,7 @@
 #include "jleResourceHolder.h"
 #include "iQuadRendering.h"
 #include "jleCore.h"
+#include "jleGameEngine.h"
 
 #include <plog/Log.h>
 
@@ -47,8 +48,7 @@ void cSpritesheet::ToJson(nlohmann::json &j_out) {
 void cSpritesheet::FromJson(const nlohmann::json &j_in) {
     mSpritesheetPath = j_in["mSpritesheetPath"];
     mSpriteName = j_in["mSpriteName"];
-    const auto truePath = jle::FindTrueResourcePath(mSpritesheetPath);
-    mSpritesheet = jleResourceHolder<jleSpritesheet>::LoadResourceFromFile(truePath);
+    mSpritesheet = jleResourceHolder::LoadResourceFromFile<jleSpritesheet>(jleRelativePath{mSpritesheetPath});
 
     const auto entity = mSpritesheet->mSpritesheetEntities.find(mSpriteName);
     if(entity != mSpritesheet->mSpritesheetEntities.end())

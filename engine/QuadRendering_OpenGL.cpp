@@ -33,7 +33,10 @@ namespace jle {
             : quadShader{std::string{JLE_ENGINE_PATH_SHADERS + "/quad.vert"}.c_str(),
                          std::string{JLE_ENGINE_PATH_SHADERS + "/quad.frag"}.c_str()},
               quadShaderInstanced{std::string{JLE_ENGINE_PATH_SHADERS + "/quadInstanced.vert"}.c_str(),
-                                  std::string{JLE_ENGINE_PATH_SHADERS + "/quadInstanced.frag"}.c_str()} {
+                                  std::string{JLE_ENGINE_PATH_SHADERS + "/quadInstanced.frag"}.c_str()},
+              quadHeightmapShaderInstanced{
+                      std::string{JLE_ENGINE_PATH_SHADERS + "/quadHeightmapInstanced.vert"}.c_str(),
+                      std::string{JLE_ENGINE_PATH_SHADERS + "/quadHeightmapInstanced.frag"}.c_str()} {
 
         LOG_VERBOSE << "Constructing OpenGL Quad Rendering";
 
@@ -83,17 +86,6 @@ namespace jle {
         glBufferData(GL_ARRAY_BUFFER, sizeof(QuadData) * 10000, &quadDatas[0], GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        /*float quadVertices[] = {
-            // positions     // colors
-            -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
-             0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
-            -0.05f, -0.05f,  0.0f, 0.0f, 1.0f,
-
-            -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
-             0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
-             0.05f,  0.05f,  0.0f, 1.0f, 1.0f
-        };*/
-
         glGenVertexArrays(1, &quadVAO_Instanced);
         glGenBuffers(1, &quadVBO_Instanced);
         glBindVertexArray(quadVAO_Instanced);
@@ -121,6 +113,8 @@ namespace jle {
 
         glBindVertexArray(0);
 
+        SetupShaders();
+
     }
 
     QuadRendering_OpenGL::~QuadRendering_OpenGL() {
@@ -136,20 +130,28 @@ namespace jle {
         mQueuedTexturedQuads.push_back(texturedQuad);
     }
 
+    void QuadRendering_OpenGL::SendTexturedHeightQuad(TexturedHeightQuad &texturedHeightQuad,
+                                                      RenderingMethod renderingMethod) {
+        mQueuedTexturedHeightQuads.push_back(texturedHeightQuad);
+    }
+
     void QuadRendering_OpenGL::SendColoredQuad(ColoredQuad &coloredQuad, RenderingMethod renderingMethod) {
 
     }
 
     void QuadRendering_OpenGL::QueueRender(iFramebuffer &framebufferOut, const jleCamera &camera) {
-        Render(framebufferOut, camera, mQueuedTexturedQuads, true);
+        Render(framebufferOut, camera, mQueuedTexturedQuads, mQueuedTexturedHeightQuads, true);
     }
 
     void QuadRendering_OpenGL::ClearBuffersForNextFrame() {
         mQueuedTexturedQuads.clear();
+        mQueuedTexturedHeightQuads.clear();
     }
 
     void QuadRendering_OpenGL::Render(iFramebuffer &framebufferOut, const jleCamera &camera,
-                                      const std::vector<TexturedQuad> &texturedQuads, bool clearDepthColor) {
+                                      const std::vector<TexturedQuad> &texturedQuads,
+                                      const std::vector<TexturedHeightQuad> &texturedHeightQuads,
+                                      bool clearDepthColor) {
         const int viewportWidth = framebufferOut.GetWidth();
         const int viewportHeight = framebufferOut.GetHeight();
 
@@ -157,7 +159,7 @@ namespace jle {
         view = glm::ortho(static_cast<float>(camera.GetIntX()),
                           static_cast<float>(camera.GetIntX() + viewportWidth),
                           static_cast<float>(camera.GetIntY() + viewportHeight),
-                          static_cast<float>(camera.GetIntY()), -1.f, 1.f);
+                          static_cast<float>(camera.GetIntY()), -1000.f, 1000.f);
 
         framebufferOut.BindToFramebuffer();
 
@@ -171,7 +173,13 @@ namespace jle {
         // Change viewport dimensions to match framebuffer's dimensions
         glViewport(0, 0, viewportWidth, viewportHeight);
 
+        ProcessTexturedQuads(texturedQuads, view);
+        ProcessTexturedHeightQuads(texturedHeightQuads, view, glm::vec3{camera.mXNoOffset, camera.mYNoOffset, 0.f});
 
+        framebufferOut.BindToDefaultFramebuffer();
+    }
+
+    void QuadRendering_OpenGL::ProcessTexturedQuads(const std::vector<TexturedQuad> &texturedQuads, glm::mat4 &view) {
         std::unordered_map<std::shared_ptr<iTexture>, std::vector<QuadData>> quadDataMap;
 
 
@@ -188,6 +196,10 @@ namespace jle {
             vec.push_back(qd);
         }
 
+        quadShaderInstanced.Use();
+        quadShaderInstanced.SetMat4("camera", view);
+
+
         for (auto &&key: quadDataMap) {
 
             glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
@@ -203,18 +215,110 @@ namespace jle {
                 key.first->SetToActiveTexture();
                 quadShaderInstanced.SetVec2("textureDims",
                                             glm::vec2{float(key.first->GetWidth()), float(key.first->GetHeight())});
+                quadShaderInstanced.SetInt("texture0", 0);
+
             }
 
             glBindVertexArray(quadVAO_Instanced);
-
-            quadShaderInstanced.SetMat4("camera", view);
-            quadShaderInstanced.SetInt("texture0", 0);
 
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
             glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (void *) 0, key.second.size());
             glBindVertexArray(0);
         }
-        framebufferOut.BindToDefaultFramebuffer();
+    }
+
+    void QuadRendering_OpenGL::ProcessTexturedHeightQuads(const std::vector<TexturedHeightQuad> &texturedHeightQuads,
+                                                          glm::mat4 &view, glm::vec3 viewPos) {
+        std::unordered_map<std::shared_ptr<TextureWithHeightmap>, std::vector<QuadData>> quadDataMap;
+
+        static const glm::vec3 cameraPositionPixels{0.f, 500.f, 500.f};
+        viewPos += cameraPositionPixels;
+
+        for (auto &&quad: texturedHeightQuads) {
+            QuadData qd;
+            qd.depth = quad.depth;
+            qd.tex_h = quad.height;
+            qd.tex_w = quad.width;
+            qd.tex_x = quad.textureX;
+            qd.tex_y = quad.textureY;
+            qd.x = quad.x;
+            qd.y = quad.y;
+            auto &vec = quadDataMap[quad.mtextureWithHeightmap];
+            vec.push_back(qd);
+        }
+
+        quadHeightmapShaderInstanced.Use();
+        quadHeightmapShaderInstanced.SetMat4("camera", view);
+        quadHeightmapShaderInstanced.SetVec3("viewPos", viewPos);
+        quadHeightmapShaderInstanced.SetVec3("light.position", lightPos);
+
+        for (auto &&key: quadDataMap) {
+
+            glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(QuadData) * key.second.size(), &key.second[0], GL_STATIC_DRAW);
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *) 0);
+            glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *) (3 * sizeof(float)));
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+            if (!key.first->texture->IsActive()) {
+                key.first->texture->SetToActiveTexture(0);
+                key.first->heightmap->SetToActiveTexture(1);
+                key.first->normalmap->SetToActiveTexture(2);
+                quadHeightmapShaderInstanced.SetVec2("textureDims",
+                                                     glm::vec2{float(key.first->texture->GetWidth()),
+                                                               float(key.first->texture->GetHeight())});
+
+                quadHeightmapShaderInstanced.SetInt("texture_albedo", 0);
+                quadHeightmapShaderInstanced.SetInt("texture_heightmap", 1);
+                quadHeightmapShaderInstanced.SetInt("texture_normal", 2);
+            }
+
+            glBindVertexArray(quadVAO_Instanced);
+
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+            glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (void *) 0, key.second.size());
+            glBindVertexArray(0);
+        }
+
+    }
+
+    void QuadRendering_OpenGL::SetupShaders() {
+
+        // Set up the angles on the "camera", as it was rendered in 3D software
+        static const float xyAngle = 0.f;
+        static const float zAngle = 90.f - 35.24f;
+        static const float cosXY = cos(xyAngle * glm::pi<float>() / 180.0);
+        static const float sinXY = sin(xyAngle * glm::pi<float>() / 180.0);
+        static const float cosZ = cos(zAngle * glm::pi<float>() / 180.0);
+        static const float sinZ = sin(zAngle * glm::pi<float>() / 180.0);
+
+        static const glm::mat3x3 cartToIso{cosXY, sinXY / sinZ, 0,
+                                           -sinXY, cosXY / sinZ, 0,
+                                           0, 0, 0};
+
+        static const glm::mat3x3 isoToCart{cosXY, -sinXY, 0,
+                                           sinXY * sinZ, cosXY * sinZ, -cosZ,
+                                           0, 0, 0};
+
+        // Magic Height Factor is calculated from essentially testing different values.
+        // It is used to find the height (z value) of a pixel from the height map texture.
+        // Different scaling on the 2.5D assets will impact this value, and it needs modifying.
+        static const float magicHeightFactor = 127.f;
+
+        quadHeightmapShaderInstanced.Use();
+
+        quadHeightmapShaderInstanced.SetFloat("sinZ", sinZ);
+        quadHeightmapShaderInstanced.SetFloat("sinZ_inverse", 1.f/sinZ);
+        quadHeightmapShaderInstanced.SetFloat("magicHeightFactor", magicHeightFactor);
+        quadHeightmapShaderInstanced.SetMat3("cartToIso", cartToIso);
+        quadHeightmapShaderInstanced.SetBool("gamma", true);
+
+        quadHeightmapShaderInstanced.SetVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+        quadHeightmapShaderInstanced.SetVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
+        quadHeightmapShaderInstanced.SetVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        quadHeightmapShaderInstanced.SetFloat("light.constant", 1.0f);
+        quadHeightmapShaderInstanced.SetFloat("light.linear", 0.0009f);
+        quadHeightmapShaderInstanced.SetFloat("light.quadratic", 0.00032f);
     }
 
 }
