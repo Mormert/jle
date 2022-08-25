@@ -3,9 +3,11 @@
 #include "jleTimerManager.h"
 #include <GLFW/glfw3.h>
 
+#include "jleProfiler.h"
+
 namespace jle {
     void jleTimerManager::Process() {
-
+        JLE_SCOPE_PROFILE(jleTimerManager::Process)
         const auto timeNow = glfwGetTime();
 
         if (!mFunctionsSharedData.empty()) {

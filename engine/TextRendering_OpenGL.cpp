@@ -1,6 +1,7 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "TextRendering_OpenGL.h"
+#include "jleProfiler.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -35,7 +36,7 @@ void jle::TextRendering_OpenGL::SendSimpleText(const std::string &text, float x,
 }
 
 void jle::TextRendering_OpenGL::Render(iFramebuffer &framebufferOut, const jleCamera &camera) {
-
+    JLE_SCOPE_PROFILE(TextRendering_OpenGL::Render)
     if (mSimpleTextDatas.empty() && mFontTextDatas.empty()) {
         return;
     }

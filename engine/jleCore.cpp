@@ -150,6 +150,9 @@ namespace jle {
     }
 
     void jleCore::MainLoop() {
+        jleProfiler::NewFrame();
+        JLE_SCOPE_PROFILE(MainLoop)
+
         coreImpl->status_internal->Refresh();
 
         mTimerManager.Process();

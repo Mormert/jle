@@ -133,6 +133,7 @@ namespace jle {
     }
 
     void jleGameEngine::Update(float dt) {
+        JLE_SCOPE_PROFILE(jleGameEngine::Update)
         if (!gameHalted && game) {
             game->Update(dt);
             game->UpdateActiveScenes(dt);
@@ -140,6 +141,7 @@ namespace jle {
     }
 
     void jleGameEngine::Render() {
+        JLE_SCOPE_PROFILE(jleGameEngine::Render)
         if (!gameHalted && game) {
             ((iRenderingInternalAPI *) rendering.get())->Render(*framebuffer_main.get(), GetGameRef().mMainCamera);
             ((iRenderingInternalAPI *) rendering.get())->ClearBuffersForNextFrame();

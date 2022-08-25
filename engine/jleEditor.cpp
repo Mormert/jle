@@ -29,6 +29,7 @@
 #include "EditorContentBrowser.h"
 #include "EngineSettingsWindow.h"
 #include "EditorResourceViewer.h"
+#include "EditorProfilerWindow.h"
 
 #include "iQuadRenderingInternal.h"
 #include "SceneEditorWindow.h"
@@ -93,6 +94,10 @@ namespace jle {
         AddImGuiWindow(resourceViewer);
         menu->AddWindow(resourceViewer);
 
+        auto profilerWindow = std::make_shared<EditorProfilerWindow>("Profiler");
+        AddImGuiWindow(profilerWindow);
+        menu->AddWindow(profilerWindow);
+
         jleCore::window->AddWindowResizeCallback(
                 std::bind(&jleEditor::MainEditorWindowResized, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -103,6 +108,7 @@ namespace jle {
     }
 
     void jleEditor::Render() {
+        JLE_SCOPE_PROFILE(jleEditor::Render)
         if (!gameHalted && game) {
             // Render to game view
             ((iRenderingInternalAPI *) rendering.get())->Render(*framebuffer_main, game->mMainCamera);
@@ -121,24 +127,28 @@ namespace jle {
         // Set viewport to cover the entire screen
         glViewport(0, 0, window->GetWindowWidth(), window->GetWindowHeight());
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+        {
+            JLE_SCOPE_PROFILE(ImGui::Render())
 
-        // Update loop for all ImGui windows
-        for (auto window: ImGuiWindows) {
-            window->Update(*this);
-        }
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
 
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+            // Update loop for all ImGui windows
+            for (auto window: ImGuiWindows) {
+                window->Update(*this);
+            }
 
-        auto &&io = ImGui::GetIO();
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-            GLFWwindow *backup_current_context = glfwGetCurrentContext();
-            ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault();
-            glfwMakeContextCurrent(backup_current_context);
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+            auto &&io = ImGui::GetIO();
+            if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+                GLFWwindow *backup_current_context = glfwGetCurrentContext();
+                ImGui::UpdatePlatformWindows();
+                ImGui::RenderPlatformWindowsDefault();
+                glfwMakeContextCurrent(backup_current_context);
+            }
         }
     }
 

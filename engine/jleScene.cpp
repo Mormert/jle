@@ -2,6 +2,7 @@
 
 #include "jleScene.h"
 #include "jleObject.h"
+#include "jleProfiler.h"
 
 #include <iostream>
 
@@ -18,6 +19,7 @@ jle::jleScene::jleScene(const std::string &sceneName) {
 }
 
 void jle::jleScene::UpdateSceneObjects(float dt) {
+    JLE_SCOPE_PROFILE(jleScene::UpdateSceneObjects)
     for (int32_t i = mSceneObjects.size() - 1; i >= 0; i--) {
         if (mSceneObjects[i]->mPendingKill) {
             mSceneObjects.erase(mSceneObjects.begin() + i);
@@ -31,6 +33,7 @@ void jle::jleScene::UpdateSceneObjects(float dt) {
 }
 
 void jle::jleScene::ProcessNewSceneObjects() {
+    JLE_SCOPE_PROFILE(jleScene::ProcessNewSceneObjects)
     if (!mNewSceneObjects.empty()) {
         for (const auto &newObject: mNewSceneObjects) {
             if (!newObject->mIsStarted) {

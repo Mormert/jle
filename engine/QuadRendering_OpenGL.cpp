@@ -3,6 +3,8 @@
 #include "QuadRendering_OpenGL.h"
 #include "jlePathDefines.h"
 #include "plog/Log.h"
+#include "jleProfiler.h"
+#include <thread>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -152,6 +154,9 @@ namespace jle {
                                       const std::vector<TexturedQuad> &texturedQuads,
                                       const std::vector<TexturedHeightQuad> &texturedHeightQuads,
                                       bool clearDepthColor) {
+
+        JLE_SCOPE_PROFILE(QuadRendering_OpenGL::Render)
+
         const int viewportWidth = framebufferOut.GetWidth();
         const int viewportHeight = framebufferOut.GetHeight();
 
@@ -180,6 +185,8 @@ namespace jle {
     }
 
     void QuadRendering_OpenGL::ProcessTexturedQuads(const std::vector<TexturedQuad> &texturedQuads, glm::mat4 &view) {
+        JLE_SCOPE_PROFILE(QuadRendering_OpenGL::ProcessTexturedQuads)
+
         std::unordered_map<std::shared_ptr<iTexture>, std::vector<QuadData>> quadDataMap;
 
 
@@ -229,6 +236,8 @@ namespace jle {
 
     void QuadRendering_OpenGL::ProcessTexturedHeightQuads(const std::vector<TexturedHeightQuad> &texturedHeightQuads,
                                                           glm::mat4 &view, glm::vec3 viewPos) {
+        JLE_SCOPE_PROFILE(QuadRendering_OpenGL::ProcessTexturedHeightQuads)
+
         std::unordered_map<std::shared_ptr<TextureWithHeightmap>, std::vector<QuadData>> quadDataMap;
 
         static const glm::vec3 cameraPositionPixels{0.f, 500.f, 500.f};
@@ -279,7 +288,6 @@ namespace jle {
             glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (void *) 0, key.second.size());
             glBindVertexArray(0);
         }
-
     }
 
     void QuadRendering_OpenGL::SetupShaders() {
@@ -308,7 +316,7 @@ namespace jle {
         quadHeightmapShaderInstanced.Use();
 
         quadHeightmapShaderInstanced.SetFloat("sinZ", sinZ);
-        quadHeightmapShaderInstanced.SetFloat("sinZ_inverse", 1.f/sinZ);
+        quadHeightmapShaderInstanced.SetFloat("sinZ_inverse", 1.f / sinZ);
         quadHeightmapShaderInstanced.SetFloat("magicHeightFactor", magicHeightFactor);
         quadHeightmapShaderInstanced.SetMat3("cartToIso", cartToIso);
         quadHeightmapShaderInstanced.SetBool("gamma", true);

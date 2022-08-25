@@ -9,6 +9,7 @@
 #include "jleEditorSettings.h"
 #include "jleScene.h"
 #include "jleCamera.h"
+#include "jleProfiler.h"
 
 #include <fstream>
 #include <iostream>

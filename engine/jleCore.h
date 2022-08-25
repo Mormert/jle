@@ -14,6 +14,7 @@
 #include "jleCoreSettings.h"
 #include "jleTimerManager.h"
 #include "jleNetworking.h"
+#include "jleProfiler.h"
 
 #include <memory>
 

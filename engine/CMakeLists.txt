@@ -66,7 +66,9 @@ add_library(engine STATIC
         "jleSpritesheet.cpp"
         "cSpritesheet.cpp"
         "jlePath.cpp"
-        "EditorResourceViewer.cpp")
+        "EditorResourceViewer.cpp"
+        "jleProfiler.cpp"
+        "EditorProfilerWindow.cpp")
 
 
 if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()

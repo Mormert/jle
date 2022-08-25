@@ -15,6 +15,7 @@
 
 #include "iQuadRenderingInternal.h"
 #include "iTextRenderingInternal.h"
+#include "jleProfiler.h"
 #include "plog/Log.h"
 
 namespace jle {
@@ -23,6 +24,7 @@ namespace jle {
     }
 
     void RenderingAPI_OpenGL::Render(iFramebuffer &framebufferOut, const jleCamera &camera) {
+        JLE_SCOPE_PROFILE(RenderingAPI_OpenGL::Render)
         ((iQuadRenderingInternal *) quads.get())->QueueRender(framebufferOut, camera);
         ((iTextRenderingInternal *) texts.get())->Render(framebufferOut, camera);
     }
