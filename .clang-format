@@ -1,0 +1,21 @@
+
+Language: Cpp
+BasedOnStyle: LLVM
+IndentWidth: 4
+SortIncludes: true
+AccessModifierOffset: -4
+AlwaysBreakTemplateDeclarations: true
+# AllowShortFunctionsOnASingleLine: None
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+  BeforeCatch: true
+  BeforeElse: true
+  
+AlwaysBreakAfterReturnType: None
+PenaltyReturnTypeOnItsOwnLine: 1000000
+
+ColumnLimit: 0 # (should be something, my recommendation is 80)
+NamespaceIndentation: All # I recommend that we remove this
+ReferenceAlignment: Left
