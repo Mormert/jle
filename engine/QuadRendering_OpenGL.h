@@ -5,7 +5,9 @@
 #include "iQuadRenderingInternal.h"
 
 #include "Shader_OpenGL.h"
+#include "glm/ext/scalar_constants.hpp"
 
+#include <glm/glm.hpp>
 #include <vector>
 
 namespace jle {
@@ -26,9 +28,9 @@ namespace jle {
 
         void SendColoredQuad(ColoredQuad &coloredQuad, RenderingMethod renderingMethod) override;
 
-        void QueueRender(iFramebuffer &framebufferOut, const jleCamera &camera) override;
+        void QueueRender(iFramebuffer &framebufferOut, jleCamera &camera) override;
 
-        void Render(iFramebuffer &framebufferOut, const jleCamera &camera, const std::vector<TexturedQuad>& texturedQuads, const std::vector<TexturedHeightQuad>& texturedHeightQuads, bool clearDepthColor) override;
+        void Render(iFramebuffer &framebufferOut, jleCamera &camera, const std::vector<TexturedQuad>& texturedQuads, const std::vector<TexturedHeightQuad>& texturedHeightQuads, bool clearDepthColor) override;
 
         void ClearBuffersForNextFrame() override;
 
@@ -41,6 +43,20 @@ namespace jle {
         void ProcessTexturedQuads(const std::vector<TexturedQuad>& texturedQuads, glm::mat4& view);
 
         void ProcessTexturedHeightQuads(const std::vector<TexturedHeightQuad>& texturedHeightQuads, glm::mat4& view, glm::vec3 viewPos);
+
+        float xyAngle = 0.f;
+        float zAngle = 90.f - 35.24f;
+        float cosXY = cos(xyAngle * glm::pi<float>() / 180.0);
+        const float sinXY = sin(xyAngle * glm::pi<float>() / 180.0);
+        const float cosZ = cos(zAngle * glm::pi<float>() / 180.0);
+        const float sinZ = sin(zAngle * glm::pi<float>() / 180.0);
+
+        // --- For shadow purposes only (WIP)
+        void RenderCube(glm::mat4& model, gfx::Shader_OpenGL& shader);
+        jle::gfx::Shader_OpenGL shadowMappingShader;
+        std::unique_ptr<iFramebuffer> shadowMapBuffer;
+        void RenderShadowCubes(glm::mat4 & view);
+        // ---
 
         // Instanced version
         jle::gfx::Shader_OpenGL quadShaderInstanced;

@@ -68,7 +68,8 @@ add_library(engine STATIC
         "jlePath.cpp"
         "EditorResourceViewer.cpp"
         "jleProfiler.cpp"
-        "EditorProfilerWindow.cpp")
+        "EditorProfilerWindow.cpp"
+        "jleCamera.cpp")
 
 
 if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()

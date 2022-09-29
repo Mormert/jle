@@ -1,10 +1,12 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "QuadRendering_OpenGL.h"
+#include "FrameBuffer_OpenGL.h"
 #include "jlePathDefines.h"
 #include "plog/Log.h"
 #include "jleProfiler.h"
 #include <thread>
+#include <random>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -38,7 +40,10 @@ namespace jle {
                                   std::string{JLE_ENGINE_PATH_SHADERS + "/quadInstanced.frag"}.c_str()},
               quadHeightmapShaderInstanced{
                       std::string{JLE_ENGINE_PATH_SHADERS + "/quadHeightmapInstanced.vert"}.c_str(),
-                      std::string{JLE_ENGINE_PATH_SHADERS + "/quadHeightmapInstanced.frag"}.c_str()} {
+                      std::string{JLE_ENGINE_PATH_SHADERS + "/quadHeightmapInstanced.frag"}.c_str()},
+              shadowMappingShader{
+                      std::string{JLE_ENGINE_PATH_SHADERS + "/shadowMapping.vert"}.c_str(),
+                      std::string{JLE_ENGINE_PATH_SHADERS + "/shadowMapping.frag"}.c_str()} {
 
         LOG_VERBOSE << "Constructing OpenGL Quad Rendering";
 
@@ -141,7 +146,7 @@ namespace jle {
 
     }
 
-    void QuadRendering_OpenGL::QueueRender(iFramebuffer &framebufferOut, const jleCamera &camera) {
+    void QuadRendering_OpenGL::QueueRender(iFramebuffer &framebufferOut, jleCamera &camera) {
         Render(framebufferOut, camera, mQueuedTexturedQuads, mQueuedTexturedHeightQuads, true);
     }
 
@@ -150,7 +155,7 @@ namespace jle {
         mQueuedTexturedHeightQuads.clear();
     }
 
-    void QuadRendering_OpenGL::Render(iFramebuffer &framebufferOut, const jleCamera &camera,
+    void QuadRendering_OpenGL::Render(iFramebuffer &framebufferOut, jleCamera &camera,
                                       const std::vector<TexturedQuad> &texturedQuads,
                                       const std::vector<TexturedHeightQuad> &texturedHeightQuads,
                                       bool clearDepthColor) {
@@ -160,11 +165,10 @@ namespace jle {
         const int viewportWidth = framebufferOut.GetWidth();
         const int viewportHeight = framebufferOut.GetHeight();
 
-        glm::mat4 view{1.f};
-        view = glm::ortho(static_cast<float>(camera.GetIntX()),
-                          static_cast<float>(camera.GetIntX() + viewportWidth),
-                          static_cast<float>(camera.GetIntY() + viewportHeight),
-                          static_cast<float>(camera.GetIntY()), -1000.f, 1000.f);
+        camera.mPosition = glm::vec3{-camera.mX, -camera.mY, 0.f};
+        camera.SetOrthographicProjection(viewportWidth, viewportHeight, -10000.f, 10000.f);
+
+        glm::mat4 view = camera.GetProjectionViewMatrix();
 
         framebufferOut.BindToFramebuffer();
 
@@ -329,4 +333,127 @@ namespace jle {
         quadHeightmapShaderInstanced.SetFloat("light.quadratic", 0.00032f);
     }
 
+    void QuadRendering_OpenGL::RenderCube(glm::mat4 &model, gfx::Shader_OpenGL &shader) {
+        static unsigned int cubeVAO = 0;
+        static unsigned int cubeVBO = 0;
+
+        // initialize (if necessary)
+        if (cubeVAO == 0) {
+            float vertices[] = {
+                    // back face
+                    -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+                    1.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, // top-right
+                    1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, // bottom-right
+                    1.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, // top-right
+                    -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+                    -1.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, // top-left
+                    // front face
+                    -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom-left
+                    1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, // bottom-right
+                    1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // top-right
+                    1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // top-right
+                    -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // top-left
+                    -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom-left
+                    // left face
+                    -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, // top-right
+                    -1.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top-left
+                    -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom-left
+                    -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom-left
+                    -1.0f, -1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom-right
+                    -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, // top-right
+                    // right face
+                    1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, // top-left
+                    1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom-right
+                    1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top-right
+                    1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom-right
+                    1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, // top-left
+                    1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom-left
+                    // bottom face
+                    -1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, // top-right
+                    1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f, // top-left
+                    1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, // bottom-left
+                    1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, // bottom-left
+                    -1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom-right
+                    -1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, // top-right
+                    // top face
+                    -1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // top-left
+                    1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom-right
+                    1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, // top-right
+                    1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom-right
+                    -1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // top-left
+                    -1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f  // bottom-left
+            };
+            glGenVertexArrays(1, &cubeVAO);
+            glGenBuffers(1, &cubeVBO);
+            // fill buffer
+            glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+            // link vertex attributes
+            glBindVertexArray(cubeVAO);
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glBindVertexArray(0);
+        }
+
+        shader.Use();
+        shader.SetMat4("model", model);
+
+        // render Cube
+        glBindVertexArray(cubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(0);
+
+    }
+
+    void QuadRendering_OpenGL::RenderShadowCubes(glm::mat4 &view) {
+
+        std::random_device rd; // obtain a random number from hardware
+        std::mt19937 gen(rd()); // seed the generator
+        std::uniform_int_distribution<> distr(-30.f, 30.f); // define the range
+
+        /* glm::mat4 lightProjection, lightView;
+         glm::mat4 lightSpaceMatrix;
+         float near_plane = 1.0f, far_plane = 7.5f;
+         lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+         lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+         lightSpaceMatrix = lightProjection * lightView;
+         // render scene from light's point of view*/
+
+        shadowMappingShader.Use();
+        shadowMappingShader.SetMat4("lightSpaceMatrix", view);
+
+        // static const float zAngle = 90.f - 35.24f;
+        // static const float sinZ = sin(zAngle * glm::pi<float>() / 180.0);
+
+        glm::mat4 model = glm::mat4(1.0f);
+        auto vec3 = lightPos;
+        //vec3.z = lightPos.y;
+        //model = glm::rotate(model, glm::radians(90-35.24f), glm::vec3{1.f, 0.f, 0.f});
+        model = glm::translate(model, vec3);
+        model = glm::rotate(model, glm::radians(45.f), glm::normalize(glm::vec3(0.0, 0.0, 1.0)));
+        model = glm::scale(model, glm::vec3(20.f));
+
+        RenderCube(model, shadowMappingShader);
+
+        static std::vector<glm::mat4> models;
+        static bool generatedModels = false;
+        if (!generatedModels) {
+            for (int i = 0; i < 45; i++) {
+                glm::mat4 model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3{distr(gen), distr(gen), distr(gen)});
+                model = glm::scale(model, glm::vec3(1.f));
+                models.push_back(model);
+                generatedModels = true;
+            }
+        }
+
+        for (auto &&model: models) {
+            RenderCube(model, shadowMappingShader);
+        }
+    }
 }

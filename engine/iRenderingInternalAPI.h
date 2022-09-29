@@ -15,7 +15,7 @@ namespace jle {
 
         virtual void Setup(const iRenderingFactory &renderFactory) = 0;
 
-        virtual void Render(iFramebuffer &framebufferOut, const jleCamera &camera) = 0;
+        virtual void Render(iFramebuffer &framebufferOut, jleCamera &camera) = 0;
 
         virtual void ClearBuffersForNextFrame() = 0;
     };

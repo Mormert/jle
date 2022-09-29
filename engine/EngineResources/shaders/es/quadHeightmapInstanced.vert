@@ -15,9 +15,20 @@ out vec2 texCoords;
 out vec2 texDims;
 out vec3 pos;
 
+mat4 BuildTranslation(vec3 delta)
+{
+    return mat4(
+    vec4(1.0, 0.0, 0.0, 0.0),
+    vec4(0.0, 1.0, 0.0, 0.0),
+    vec4(0.0, 0.0, 1.0, 0.0),
+    vec4(delta, 1.0));
+}
+
 void main()
 {
-    gl_Position = camera * vec4(aPos * uv.zw + position.xy, position.z, 1.0);
+
+    mat4 model = BuildTranslation(vec3(position.xy, 0.0));
+    gl_Position = camera * model * vec4(aPos * uv.zw, position.z, 1.0);
 
     texCoords = aTexCoords;
     uvs = uv;

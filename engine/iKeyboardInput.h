@@ -16,6 +16,6 @@ namespace jle {
         virtual bool GetKeyReleased(char key) = 0;
 
         // Returns true if a speicifed key is down
-        virtual bool GetKeyDown(char key) = 0;
+        virtual bool GetKeyDown(char key, bool ignoreInputEnabled = false) = 0;
     };
 }

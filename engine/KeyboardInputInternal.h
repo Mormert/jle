@@ -17,7 +17,7 @@ namespace jle {
 
         bool GetKeyReleased(char key) override;
 
-        bool GetKeyDown(char key) override;
+        bool GetKeyDown(char key, bool ignoreInputEnabled = false) override;
 
     private:
         std::shared_ptr<iWindowInternalAPI> windowInternal;

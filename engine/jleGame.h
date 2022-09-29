@@ -70,7 +70,7 @@ namespace jle {
 
         std::vector<std::shared_ptr<jleScene>> &GetActiveScenesRef();
 
-        jleCamera mMainCamera;
+        jleCamera mMainCamera{jleCameraProjection::Orthographic};
 
     protected:
         std::vector<std::shared_ptr<jleScene>> mActiveScenes;

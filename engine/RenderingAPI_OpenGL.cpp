@@ -23,7 +23,7 @@ namespace jle {
         glViewport(x, y, static_cast<int>(width), static_cast<int>(height));
     }
 
-    void RenderingAPI_OpenGL::Render(iFramebuffer &framebufferOut, const jleCamera &camera) {
+    void RenderingAPI_OpenGL::Render(iFramebuffer &framebufferOut, jleCamera &camera) {
         JLE_SCOPE_PROFILE(RenderingAPI_OpenGL::Render)
         ((iQuadRenderingInternal *) quads.get())->QueueRender(framebufferOut, camera);
         ((iTextRenderingInternal *) texts.get())->Render(framebufferOut, camera);

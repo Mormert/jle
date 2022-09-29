@@ -114,6 +114,9 @@ namespace jle {
             ((iRenderingInternalAPI *) rendering.get())->Render(*framebuffer_main, game->mMainCamera);
         }
 
+        //mEditorCamera.SetPerspectiveProjection(90.f, mEditorFramebuffer->GetWidth(), mEditorFramebuffer->GetHeight(), 50000.f, 0.1f);
+        mEditorCamera.SetOrthographicProjection(mEditorFramebuffer->GetWidth(), mEditorFramebuffer->GetHeight(),
+                                                10000.f, -10000.f);
         // Render to editor scene view
         ((iRenderingInternalAPI *) rendering.get())->Render(*mEditorFramebuffer, mEditorCamera);
 

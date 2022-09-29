@@ -27,7 +27,11 @@ namespace jle {
         return false;
     }
 
-    bool KeyboardInputInternal::GetKeyDown(char key) {
+    bool KeyboardInputInternal::GetKeyDown(char key, bool ignoreInputEnabled) {
+        if(ignoreInputEnabled)
+        {
+            return windowInternal->GetKey(key);
+        }
         if (input_enabled) {
             return windowInternal->GetKey(key);
         }

@@ -17,7 +17,7 @@ namespace jle {
 
         void SetViewportDimensions(int x, int y, unsigned int width, unsigned int height) override;
 
-        void Render(iFramebuffer &framebufferOut, const jleCamera &camera) override;
+        void Render(iFramebuffer &framebufferOut, jleCamera &camera) override;
 
         void ClearBuffersForNextFrame() override;
     };

@@ -8,11 +8,13 @@ namespace jle {
     class Framebuffer_OpenGL : public iFramebuffer {
     public:
 
-        Framebuffer_OpenGL(unsigned int width, unsigned int height);
+        Framebuffer_OpenGL(unsigned int width, unsigned int height, bool shadowBuffer = false);
 
         ~Framebuffer_OpenGL() override;
 
         void CreateFramebuffer(unsigned int width, unsigned int height) override;
+
+        void CreateShadowFramebuffer(unsigned int width, unsigned int height) override;
 
         void ResizeFramebuffer(unsigned int width, unsigned int height) override;
 

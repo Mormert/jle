@@ -27,7 +27,7 @@ namespace jle {
 
         std::shared_ptr<iFramebuffer> mEditorFramebuffer;
 
-        static inline jleCamera mEditorCamera{};
+        static inline jleCamera mEditorCamera{jleCameraProjection::Orthographic};
 
     private:
 

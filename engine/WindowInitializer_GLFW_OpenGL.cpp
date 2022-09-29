@@ -40,6 +40,7 @@ InterfaceWindowPtr WindowInitializer_GLFW_OpenGL::InitWindow(int width, int heig
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // Avoid retina display scaling factor issues
+    // TODO: Can setting this to false cause textures looking "off" and pixly?
     glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GL_FALSE);
 #endif
 
