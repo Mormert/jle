@@ -6,7 +6,8 @@
 #include "jleWindowInternalAPIInterface.h"
 #include "jleWindowLinkableInterface.h"
 
-class jleMouseInputInternal : public jleMouseInputInterface, public jleWindowLinkableInterface {
+class jleMouseInputInternal : public jleMouseInputInterface,
+                              public jleWindowLinkableInterface {
 public:
     explicit jleMouseInputInternal(
         std::shared_ptr<jleWindowInternalAPIInterface> windowInternal);

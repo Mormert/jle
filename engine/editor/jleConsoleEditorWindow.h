@@ -10,7 +10,8 @@
 
 #include "3rdparty/git_submodules/plog/include/plog/Appenders/IAppender.h"
 
-class jleConsoleEditorWindow : public iEditorImGuiWindow, public plog::IAppender {
+class jleConsoleEditorWindow : public iEditorImGuiWindow,
+                               public plog::IAppender {
 public:
     jleConsoleEditorWindow(const std::string& window_name);
 

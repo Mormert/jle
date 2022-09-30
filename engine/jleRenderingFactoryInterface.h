@@ -13,14 +13,17 @@ class jleRenderingFactoryInterface {
 public:
     virtual ~jleRenderingFactoryInterface() = default;
 
-    virtual std::unique_ptr<jleRenderingAPIInterface> CreateRenderingAPI() const = 0;
-
-    virtual std::unique_ptr<jleQuadRenderingInterface> CreateQuadRendering() const = 0;
-
-    virtual std::unique_ptr<jleTextRenderingInterface> CreateTextRendering() const = 0;
-
-    virtual std::unique_ptr<jleFullscreenRenderingInterface> CreateFullscreenRendering()
+    virtual std::unique_ptr<jleRenderingAPIInterface> CreateRenderingAPI()
         const = 0;
+
+    virtual std::unique_ptr<jleQuadRenderingInterface> CreateQuadRendering()
+        const = 0;
+
+    virtual std::unique_ptr<jleTextRenderingInterface> CreateTextRendering()
+        const = 0;
+
+    virtual std::unique_ptr<jleFullscreenRenderingInterface>
+    CreateFullscreenRendering() const = 0;
 
     virtual std::unique_ptr<jleFramebufferInterface> CreateFramebuffer(
         unsigned int width, unsigned int height) const = 0;

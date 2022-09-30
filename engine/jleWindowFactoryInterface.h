@@ -14,5 +14,6 @@ public:
 
     virtual std::unique_ptr<jleWindowAPIInterface> CreateWin() = 0;
 
-    virtual std::unique_ptr<jleWindowInitializerInterface> CreateWindowInitializer() = 0;
+    virtual std::unique_ptr<jleWindowInitializerInterface>
+    CreateWindowInitializer() = 0;
 };

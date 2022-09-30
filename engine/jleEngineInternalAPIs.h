@@ -11,7 +11,7 @@ struct jleEngineInternalAPISettings {
     enum class WindowAPI { GLFW } windowingAPI = WindowAPI::GLFW;
 };
 
-#pragma region EngineInternalAPIs to /from json
+#pragma region EngineInternalAPIs to / from json
 using json = nlohmann::json;
 
 inline void to_json(nlohmann::json& j, const jleEngineInternalAPISettings& ei) {

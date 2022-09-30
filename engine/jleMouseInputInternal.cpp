@@ -35,9 +35,13 @@ float jleMouseInputInternal::GetMouseXDelta() { return 0; }
 
 float jleMouseInputInternal::GetMouseYDelta() { return 0; }
 
-float jleMouseInputInternal::GetScrollX() { return windowInternal->GetScrollX(); }
+float jleMouseInputInternal::GetScrollX() {
+    return windowInternal->GetScrollX();
+}
 
-float jleMouseInputInternal::GetScrollY() { return windowInternal->GetScrollY(); }
+float jleMouseInputInternal::GetScrollY() {
+    return windowInternal->GetScrollY();
+}
 
 void jleMouseInputInternal::SetScreenBeginCoords(int x, int y) {
     mScreenBeginX = x;

@@ -12,7 +12,7 @@ struct jleCoreSettings {
     virtual ~jleCoreSettings() {}
 };
 
-#pragma region CoreSettings to /from json
+#pragma region CoreSettings to / from json
 using json = nlohmann::json;
 
 inline void to_json(nlohmann::json& j, const jleCoreSettings& cs) {

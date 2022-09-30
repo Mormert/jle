@@ -14,9 +14,9 @@ public:
     ~jleWindowInternalAPIInterface() override = default;
     ;
 
-    virtual void InitWindow(
-        jleWindowInitializerInterface& windowInitializer,
-        std::shared_ptr<jleRenderingInternalAPIInterface> internalRenderingAPI) = 0;
+    virtual void InitWindow(jleWindowInitializerInterface& windowInitializer,
+                            std::shared_ptr<jleRenderingInternalAPIInterface>
+                                internalRenderingAPI) = 0;
 
     virtual void UpdateWindow() = 0;
 

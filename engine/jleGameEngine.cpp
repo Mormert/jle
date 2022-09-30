@@ -156,7 +156,8 @@ void jleGameEngine::Render() {
     if (!gameHalted && game) {
         ((jleRenderingInternalAPIInterface *)rendering.get())
             ->Render(*framebuffer_main.get(), GetGameRef().mMainCamera);
-        ((jleRenderingInternalAPIInterface *)rendering.get())->ClearBuffersForNextFrame();
+        ((jleRenderingInternalAPIInterface *)rendering.get())
+            ->ClearBuffersForNextFrame();
         fullscreen_renderer->RenderFramebufferFullscreen(
             *framebuffer_main.get(),
             window->GetWindowWidth(),

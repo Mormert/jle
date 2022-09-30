@@ -18,8 +18,8 @@
 
 #include "plog/Log.h"
 
-std::unique_ptr<jleTextureInterface> jleTextureCreator_OpenGL::CreateTextureFromImage(
-    const jleImage& image) {
+std::unique_ptr<jleTextureInterface> jleTextureCreator_OpenGL::
+    CreateTextureFromImage(const jleImage& image) {
     auto texture_opengl = std::make_unique<jleTexture>();
 
     texture_opengl->width = image.GetImageWidth();

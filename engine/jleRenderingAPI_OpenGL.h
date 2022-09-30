@@ -19,7 +19,8 @@ public:
                                unsigned int width,
                                unsigned int height) override;
 
-    void Render(jleFramebufferInterface& framebufferOut, jleCamera& camera) override;
+    void Render(jleFramebufferInterface& framebufferOut,
+                jleCamera& camera) override;
 
     void ClearBuffersForNextFrame() override;
 };

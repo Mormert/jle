@@ -21,13 +21,16 @@ public:
     // Utilizes the resource holder such that only one copy of the resource will
     // exists, and if it does not exist, the program will construct it and store
     // it for later use
-    std::shared_ptr<jleTextureInterface> LoadTextureFromPath(const jleRelativePath& path) {
+    std::shared_ptr<jleTextureInterface> LoadTextureFromPath(
+        const jleRelativePath& path) {
         if (!jleResourceHolder::IsResourceLoaded(path)) {
 
-            std::shared_ptr<jleTextureInterface> texture = CreateTextureFromImage(
-                *jleResourceHolder::LoadResourceFromFile<jleImage>(path));
+            std::shared_ptr<jleTextureInterface> texture =
+                CreateTextureFromImage(
+                    *jleResourceHolder::LoadResourceFromFile<jleImage>(path));
 
-            jleResourceHolder::StoreResource<jleTextureInterface>(texture, path);
+            jleResourceHolder::StoreResource<jleTextureInterface>(texture,
+                                                                  path);
 
             return texture;
         }

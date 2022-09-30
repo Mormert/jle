@@ -62,8 +62,8 @@ void jleEditor::Start() {
     auto menu = std::make_shared<jleEditorWindowsPanel>("Menu");
     AddImGuiWindow(menu);
 
-    auto sceneWindow =
-        std::make_shared<jleSceneEditorWindow>("Scene Window", mEditorFramebuffer);
+    auto sceneWindow = std::make_shared<jleSceneEditorWindow>(
+        "Scene Window", mEditorFramebuffer);
     AddImGuiWindow(sceneWindow);
     menu->AddWindow(sceneWindow);
 
@@ -135,7 +135,8 @@ void jleEditor::Render() {
     ((jleRenderingInternalAPIInterface *)rendering.get())
         ->Render(*mEditorFramebuffer, mEditorCamera);
 
-    ((jleRenderingInternalAPIInterface *)rendering.get())->ClearBuffersForNextFrame();
+    ((jleRenderingInternalAPIInterface *)rendering.get())
+        ->ClearBuffersForNextFrame();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -189,7 +190,8 @@ void jleEditor::InitImgui() {
 
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(
-        std::static_pointer_cast<jleWindow_GLFW_OpenGL>(window)->GetGLFWWindow(),
+        std::static_pointer_cast<jleWindow_GLFW_OpenGL>(window)
+            ->GetGLFWWindow(),
         true);
 
 #ifdef BUILD_OPENGLES30

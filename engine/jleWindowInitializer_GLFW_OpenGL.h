@@ -4,7 +4,8 @@
 
 #include "jleWindowInitializerInterface.h"
 
-class jleWindowInitializer_GLFW_OpenGL final : public jleWindowInitializerInterface {
+class jleWindowInitializer_GLFW_OpenGL final
+    : public jleWindowInitializerInterface {
 public:
     ~jleWindowInitializer_GLFW_OpenGL() override = default;
 
