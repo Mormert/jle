@@ -12,8 +12,6 @@
 #include "jleStaticOpenGLState.h"
 #include "jleWindowInternalAPIInterface.h"
 
-#include "3rdparty/git_submodules/glfw/include/GLFW/glfw3.h"
-
 #ifdef __EMSCRIPTEN__
 #include <GLES3/gl3.h>
 #include <emscripten.h>
@@ -25,8 +23,12 @@
 
 #endif
 
-jleSceneEditorWindow::jleSceneEditorWindow(const std::string& window_name,
-                                     std::shared_ptr<jleFramebufferInterface>& framebuffer)
+// Needs to be included after glad.h include
+#include "3rdparty/git_submodules/glfw/include/GLFW/glfw3.h"
+
+jleSceneEditorWindow::jleSceneEditorWindow(
+    const std::string& window_name,
+    std::shared_ptr<jleFramebufferInterface>& framebuffer)
     : iEditorImGuiWindow(window_name),
       mTransformMarkerImage("EditorResources/icons/transform_marker.png") {
     mFramebuffer = framebuffer;
