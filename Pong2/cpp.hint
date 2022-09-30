@@ -1,7 +1,0 @@
-// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
-// such as names of functions and macros.
-// For more information see https://go.microsoft.com/fwlink/?linkid=865984
-#define JLE_REGISTER_OBJECT_TYPE(object_name) static const std::string_view GetObjectName(){ return #object_name;} \
-static inline const jleObjectTypeRegistrator<object_name> playerRacketReg{ #object_name };
-
-#define JLE_VAR_DECL(VARTYPE, VARNAME)
