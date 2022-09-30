@@ -18,13 +18,13 @@
 
 #include "plog/Log.h"
 
-std::unique_ptr<jleTextureInterface> jleTextureCreator_OpenGL::
-    CreateTextureFromImage(const jleImage& image) {
+std::unique_ptr<jleTexture> jleTextureCreator_OpenGL::
+CreateTextureFromImage(const jleImage &image) {
     auto texture_opengl = std::make_unique<jleTexture>();
 
     texture_opengl->width = image.GetImageWidth();
     texture_opengl->height = image.GetImageHeight();
-    texture_opengl->nr_channels = image.GetImageNrChannels();
+    texture_opengl->nrChannels = image.GetImageNrChannels();
 
     glGenTextures(1, &texture_opengl->texture_id);
     glBindTexture(GL_TEXTURE_2D, texture_opengl->texture_id);

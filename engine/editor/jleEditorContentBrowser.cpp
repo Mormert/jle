@@ -204,7 +204,7 @@ void jleEditorContentBrowser::ContentBrowser() {
                 if (dir_entry.is_regular_file()) {
                     ImGui::PushID(buttonID++);
 
-                    std::shared_ptr<jleTextureInterface> iconTexture;
+                    std::shared_ptr<jleTexture> iconTexture;
                     if (dir_entry.path().extension() == ".scn") {
                         iconTexture = mSceneFileIcon;
                     }

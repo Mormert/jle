@@ -14,7 +14,7 @@ void cSprite::CreateAndSetTextureFromPath(const std::string& path) {
         jleRelativePath{path});
 }
 
-void cSprite::SetTexture(std::shared_ptr<jleTextureInterface> texture) {
+void cSprite::SetTexture(std::shared_ptr<jleTexture> texture) {
     quad.texture = texture;
 }
 

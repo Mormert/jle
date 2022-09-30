@@ -6,12 +6,12 @@
 
 class jleEditorGameControllerWidget : public iEditorImGuiWindow {
 public:
-    explicit jleEditorGameControllerWidget(const std::string& window_name);
+    explicit jleEditorGameControllerWidget(const std::string &window_name);
 
-    void Update(jleGameEngine& ge) override;
+    void Update(jleGameEngine &ge) override;
 
-    std::shared_ptr<jleTextureInterface> mPlayGameIcon;
-    std::shared_ptr<jleTextureInterface> mRestartGameIcon;
-    std::shared_ptr<jleTextureInterface> mPauseGameIcon;
-    std::shared_ptr<jleTextureInterface> mNextFrameIcon;
+    std::shared_ptr<jleTexture> mPlayGameIcon;
+    std::shared_ptr<jleTexture> mRestartGameIcon;
+    std::shared_ptr<jleTexture> mPauseGameIcon;
+    std::shared_ptr<jleTexture> mNextFrameIcon;
 };

@@ -244,8 +244,8 @@ void jleQuadRendering_OpenGL::ProcessTexturedQuads(
     const std::vector<TexturedQuad>& texturedQuads, glm::mat4& view) {
     JLE_SCOPE_PROFILE(jleQuadRendering_OpenGL::ProcessTexturedQuads)
 
-    std::unordered_map<std::shared_ptr<jleTextureInterface>,
-                       std::vector<QuadData>>
+    std::unordered_map<std::shared_ptr<jleTexture>,
+            std::vector<QuadData>>
         quadDataMap;
 
     for (auto&& quad : texturedQuads) {

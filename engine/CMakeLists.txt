@@ -5,7 +5,6 @@ add_library(engine STATIC
         "3rdparty/stb_image.cpp"
         "jleEngineSettingsWindow.cpp"
         "jleImage.cpp"
-        "jleTextureInterface.cpp"
         "jleComponent.cpp"
         "jleCore.cpp"
         "jleEngineStatus.cpp"

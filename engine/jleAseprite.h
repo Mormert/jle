@@ -3,7 +3,7 @@
 #pragma once
 
 #include "jleFileLoadInterface.h"
-#include "jleTextureInterface.h"
+#include "jleTexture.h"
 
 #include "json.hpp"
 
@@ -58,7 +58,7 @@ struct jleAseprite : jleFileLoadInterface {
 
     jleAsepriteMeta mMeta;
 
-    std::shared_ptr<jleTextureInterface> mImageTexture;
+    std::shared_ptr<jleTexture> mImageTexture;
     std::string mPath;
 };
 

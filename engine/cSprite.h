@@ -6,7 +6,7 @@
 #include "jleComponent.h"
 
 #include "jleQuadRenderingInterface.h"
-#include "jleTextureInterface.h"
+#include "jleTexture.h"
 
 #include <memory>
 #include <string>
@@ -18,7 +18,7 @@ public:
 
     void CreateAndSetTextureFromPath(const std::string& path);
 
-    void SetTexture(std::shared_ptr<jleTextureInterface> texture);
+    void SetTexture(std::shared_ptr<jleTexture> texture);
 
     void SetRectangleDimensions(int width, int height);
 

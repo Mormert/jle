@@ -6,7 +6,7 @@
 #include "jleComponent.h"
 
 #include "jleQuadRenderingInterface.h"
-#include "jleTextureInterface.h"
+#include "jleTexture.h"
 
 #include <memory>
 #include <string>

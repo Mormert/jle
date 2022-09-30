@@ -4,7 +4,7 @@
 #define JLESPRITESHEET_H
 
 #include "jleFileLoadInterface.h"
-#include "jleTextureInterface.h"
+#include "jleTexture.h"
 
 #include "json.hpp"
 
@@ -29,7 +29,7 @@ struct jleSpritesheet : jleFileLoadInterface {
 
     std::unordered_map<std::string, jleSpritesheetEntity> mSpritesheetEntities;
 
-    std::shared_ptr<jleTextureInterface> mImageTexture;
+    std::shared_ptr<jleTexture> mImageTexture;
     std::string mPathJson;
 };
 

@@ -37,3 +37,11 @@ void jleTexture::SetToActiveTexture(int texture_slot) {
 }
 
 unsigned int jleTexture::GetTextureID() { return texture_id; }
+
+int32_t jleTexture::GetWidth() {
+    return width;
+}
+
+int32_t jleTexture::GetHeight() {
+    return height;
+}

@@ -21,6 +21,6 @@ private:
 
     std::shared_ptr<jleFramebufferInterface> mFramebuffer;
     jleImage mTransformMarkerImage;
-    std::shared_ptr<jleTextureInterface> mTransformMarkerTexture;
+    std::shared_ptr<jleTexture> mTransformMarkerTexture;
     TexturedQuad mTexturedQuad;
 };

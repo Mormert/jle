@@ -8,6 +8,6 @@ class jleTextureCreator_OpenGL final : public jleTextureCreatorInterface {
 public:
     ~jleTextureCreator_OpenGL() override = default;
 
-    std::unique_ptr<jleTextureInterface> CreateTextureFromImage(
-        const jleImage& image) override;
+    std::unique_ptr<jleTexture> CreateTextureFromImage(
+            const jleImage &image) override;
 };

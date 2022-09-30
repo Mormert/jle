@@ -15,20 +15,20 @@ struct Quad {
 };
 
 struct TexturedQuad : public Quad {
-    explicit TexturedQuad(std::shared_ptr<jleTextureInterface> t)
-        : texture{std::move(t)} {}
+    explicit TexturedQuad(std::shared_ptr<jleTexture> t)
+            : texture{std::move(t)} {}
 
-    explicit TexturedQuad(std::shared_ptr<jleTextureInterface> t,
+    explicit TexturedQuad(std::shared_ptr<jleTexture> t,
                           int texX,
                           int texY,
                           unsigned int w,
                           unsigned int h)
-        : texture{std::move(t)}, textureX{texX}, textureY{texY}, width{w},
-          height{h} {}
+            : texture{std::move(t)}, textureX{texX}, textureY{texY}, width{w},
+              height{h} {}
 
     TexturedQuad() = default;
 
-    std::shared_ptr<jleTextureInterface> texture{nullptr};
+    std::shared_ptr<jleTexture> texture{nullptr};
 
     // Coordinates on the texture
     int textureX = 0, textureY = 0;
@@ -38,9 +38,9 @@ struct TexturedQuad : public Quad {
 };
 
 struct TextureWithHeightmap {
-    std::shared_ptr<jleTextureInterface> texture{nullptr};
-    std::shared_ptr<jleTextureInterface> heightmap{nullptr};
-    std::shared_ptr<jleTextureInterface> normalmap{nullptr};
+    std::shared_ptr<jleTexture> texture{nullptr};
+    std::shared_ptr<jleTexture> heightmap{nullptr};
+    std::shared_ptr<jleTexture> normalmap{nullptr};
 };
 
 struct TexturedHeightQuad : public Quad {

@@ -7,7 +7,7 @@
 #include "jleAseprite.h"
 #include "jleObject.h"
 #include "jleQuadRenderingInterface.h"
-#include "jleTextureInterface.h"
+#include "jleTexture.h"
 #include <glm/glm.hpp>
 
 #include <set>
