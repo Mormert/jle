@@ -37,11 +37,12 @@ void jleCamera::SetOrthographicProjection(uint32_t screenWidth,
 }
 
 glm::mat4 jleCamera::GetProjectionViewMatrix() const {
-    if (mProjectionType == jleCameraProjection::Perspective) {
+    switch (mProjectionType) {
+    case jleCameraProjection::Perspective: {
         const glm::mat4 view = glm::lookAt(mPosition, mPosition + mFront, mUp);
         return mProjectionMatrix * view;
     }
-    else if (mProjectionType == jleCameraProjection::Orthographic) {
+    case jleCameraProjection::Orthographic: {
         glm::mat4 view{1.f};
         view = glm::translate(view, mPosition);
         // view = glm::rotate(view, glm::radians(mCameraRotationDegrees),
@@ -49,6 +50,9 @@ glm::mat4 jleCamera::GetProjectionViewMatrix() const {
         // TODO: Support camera rotation, zooming?
         return mProjectionMatrix * view;
     }
+    }
+
+    return glm::identity<glm::mat4>();
 }
 
 void jleCamera::SetPerspectiveMouseSensitivity(float sensitivity) {
