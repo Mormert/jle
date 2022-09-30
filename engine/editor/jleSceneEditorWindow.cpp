@@ -30,18 +30,18 @@ jleSceneEditorWindow::jleSceneEditorWindow(
     const std::string& window_name,
     std::shared_ptr<jleFramebufferInterface>& framebuffer)
     : iEditorImGuiWindow(window_name),
-      mTransformMarkerImage("EditorResources/icons/transform_marker.png") {
-    mFramebuffer = framebuffer;
-    mTransformMarkerTexture =
+      _transformMarkerImage("EditorResources/icons/transform_marker.png") {
+    _framebuffer = framebuffer;
+    _transformMarkerTexture =
         jleCore::core->texture_creator->CreateTextureFromImage(
-            mTransformMarkerImage);
+            _transformMarkerImage);
 
-    mTexturedQuad.texture = mTransformMarkerTexture;
-    mTexturedQuad.width = 128;
-    mTexturedQuad.height = 128;
-    mTexturedQuad.depth = 1000.f;
-    mTexturedQuad.textureX = 0;
-    mTexturedQuad.textureY = 0;
+    _texturedQuad.texture = _transformMarkerTexture;
+    _texturedQuad.width = 128;
+    _texturedQuad.height = 128;
+    _texturedQuad.depth = 1000.f;
+    _texturedQuad.textureX = 0;
+    _texturedQuad.textureY = 0;
 }
 
 void jleSceneEditorWindow::Update(jleGameEngine& ge) {
@@ -64,48 +64,48 @@ void jleSceneEditorWindow::Update(jleGameEngine& ge) {
     const int32_t windowPositionY =
         int32_t(cursorScreenPos.y) - viewport->Pos.y;
 
-    const auto previousFrameCursorPos = mLastCursorPos;
-    mLastCursorPos = std::static_pointer_cast<jleWindowInternalAPIInterface>(
+    const auto previousFrameCursorPos = _lastCursorPos;
+    _lastCursorPos = std::static_pointer_cast<jleWindowInternalAPIInterface>(
                          jleCore::core->window)
                          ->GetCursor();
-    const int32_t mouseX = mLastCursorPos.first;
-    const int32_t mouseY = mLastCursorPos.second;
+    const int32_t mouseX = _lastCursorPos.first;
+    const int32_t mouseY = _lastCursorPos.second;
     const int32_t mouseDeltaX = mouseX - previousFrameCursorPos.first;
     const int32_t mouseDeltaY = mouseY - previousFrameCursorPos.second;
 
     const auto getPixelatedMousePosX = [&]() -> int32_t {
         const float ratio =
-            float(mFramebuffer->GetWidth()) / float(mLastGameWindowWidth);
+            float(_framebuffer->GetWidth()) / float(_lastGameWindowWidth);
         return int(ratio * float(mouseX - windowPositionX));
     };
 
     const auto getPixelatedMousePosY = [&]() -> int32_t {
         const float ratio =
-            float(mFramebuffer->GetHeight()) / float(mLastGameWindowHeight);
+            float(_framebuffer->GetHeight()) / float(_lastGameWindowHeight);
         return int(ratio * float(mouseY - windowPositionY));
     };
 
     const auto mouseCoordinateX =
-        getPixelatedMousePosX() + jleEditor::mEditorCamera.GetIntX();
+        getPixelatedMousePosX() + jleEditor::_editorCamera.GetIntX();
     const auto mouseCoordinateY =
-        getPixelatedMousePosY() + jleEditor::mEditorCamera.GetIntY();
+        getPixelatedMousePosY() + jleEditor::_editorCamera.GetIntY();
 
     static float zoomValue = 1.f;
 
     if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset ==
-              mLastGameWindowWidth &&
+              _lastGameWindowWidth &&
           ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y -
                   negYOffset ==
-              mLastGameWindowHeight)) {
-        mLastGameWindowWidth =
+              _lastGameWindowHeight)) {
+        _lastGameWindowWidth =
             ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset;
-        mLastGameWindowHeight = ImGui::GetWindowHeight() -
+        _lastGameWindowHeight = ImGui::GetWindowHeight() -
                                 ImGui::GetCursorStartPos().y - negYOffset;
 
         auto dims = ge.GetFramebufferDimensions(
             static_cast<unsigned int>(ImGui::GetWindowWidth()),
             static_cast<unsigned int>(ImGui::GetWindowHeight()));
-        mFramebuffer->ResizeFramebuffer(dims.first * zoomValue,
+        _framebuffer->ResizeFramebuffer(dims.first * zoomValue,
                                         dims.second * zoomValue);
     }
 
@@ -117,65 +117,65 @@ void jleSceneEditorWindow::Update(jleGameEngine& ge) {
     if (auto object = selectedObject.lock()) {
         transform = object->GetComponent<cTransform>();
         if (transform) {
-            mTexturedQuad.x = transform->GetWorldX() - 64.f;
-            mTexturedQuad.y = transform->GetWorldY() - 64.f;
-            std::vector<TexturedQuad> texturedQuads{mTexturedQuad};
+            _texturedQuad.x = transform->GetWorldX() - 64.f;
+            _texturedQuad.y = transform->GetWorldY() - 64.f;
+            std::vector<TexturedQuad> texturedQuads{_texturedQuad};
             auto quadRenderer =
                 ((jleQuadRenderingInternalInterface *)(jleCore::core->rendering
                                                            ->quads.get()));
-            quadRenderer->Render(*mFramebuffer,
-                                 jleEditor::mEditorCamera,
+            quadRenderer->Render(*_framebuffer,
+                                 jleEditor::_editorCamera,
                                  texturedQuads,
                                  {},
                                  false);
         }
     }
 
-    glBindTexture(GL_TEXTURE_2D, (unsigned int)mFramebuffer->GetTexture());
+    glBindTexture(GL_TEXTURE_2D, (unsigned int)_framebuffer->GetTexture());
     jleStaticOpenGLState::globalActiveTexture =
-        (unsigned int)mFramebuffer->GetTexture();
+        (unsigned int)_framebuffer->GetTexture();
 
     // Render the framebuffer as an image
-    ImGui::Image((void *)(intptr_t)mFramebuffer->GetTexture(),
-                 ImVec2(mLastGameWindowWidth, mLastGameWindowHeight),
+    ImGui::Image((void *)(intptr_t)_framebuffer->GetTexture(),
+                 ImVec2(_lastGameWindowWidth, _lastGameWindowHeight),
                  ImVec2(0, 1),
                  ImVec2(1, 0));
 
     if (ImGui::IsWindowHovered()) {
         auto dragDelta = ImGui::GetMouseDragDelta(1);
-        jleEditor::mEditorCamera.mX += dragDelta.x * 0.001f * zoomValue;
-        jleEditor::mEditorCamera.mY += dragDelta.y * 0.001f * zoomValue;
+        jleEditor::_editorCamera._x += dragDelta.x * 0.001f * zoomValue;
+        jleEditor::_editorCamera._y += dragDelta.y * 0.001f * zoomValue;
 
-        jleEditor::mEditorCamera.mXNoOffset =
-            jleEditor::mEditorCamera.mX + mFramebuffer->GetWidth() * .5;
-        jleEditor::mEditorCamera.mYNoOffset =
-            jleEditor::mEditorCamera.mY + mFramebuffer->GetHeight() * .5;
+        jleEditor::_editorCamera._xNoOffset =
+            jleEditor::_editorCamera._x + _framebuffer->GetWidth() * .5;
+        jleEditor::_editorCamera._yNoOffset =
+            jleEditor::_editorCamera._y + _framebuffer->GetHeight() * .5;
 
-        jleEditor::mEditorCamera.ApplyPerspectiveMouseMovementDelta(
+        jleEditor::_editorCamera.ApplyPerspectiveMouseMovementDelta(
             glm::vec2{dragDelta.x, -dragDelta.y});
 
         if (ImGui::IsKeyDown(ImGuiKey_W)) {
-            jleEditor::mEditorCamera.MovePerspectiveForward(
+            jleEditor::_editorCamera.MovePerspectiveForward(
                 115.f * ge.status->GetDeltaFrameTime());
         }
         if (ImGui::IsKeyDown(ImGuiKey_S)) {
-            jleEditor::mEditorCamera.MovePerspectiveBackward(
+            jleEditor::_editorCamera.MovePerspectiveBackward(
                 115.f * ge.status->GetDeltaFrameTime());
         }
         if (ImGui::IsKeyDown(ImGuiKey_D)) {
-            jleEditor::mEditorCamera.MovePerspectiveRight(
+            jleEditor::_editorCamera.MovePerspectiveRight(
                 115.f * ge.status->GetDeltaFrameTime());
         }
         if (ImGui::IsKeyDown(ImGuiKey_A)) {
-            jleEditor::mEditorCamera.MovePerspectiveLeft(
+            jleEditor::_editorCamera.MovePerspectiveLeft(
                 115.f * ge.status->GetDeltaFrameTime());
         }
         if (ImGui::IsKeyDown(ImGuiKey_Space)) {
-            jleEditor::mEditorCamera.MovePerspectiveUp(
+            jleEditor::_editorCamera.MovePerspectiveUp(
                 115.f * ge.status->GetDeltaFrameTime());
         }
         if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl)) {
-            jleEditor::mEditorCamera.MovePerspectiveDown(
+            jleEditor::_editorCamera.MovePerspectiveDown(
                 115.f * ge.status->GetDeltaFrameTime());
         }
 
@@ -187,24 +187,24 @@ void jleSceneEditorWindow::Update(jleGameEngine& ge) {
                 static_cast<unsigned int>(ImGui::GetWindowWidth()),
                 static_cast<unsigned int>(ImGui::GetWindowHeight()));
 
-            const auto oldWidth = mFramebuffer->GetWidth();
-            const auto oldHeight = mFramebuffer->GetHeight();
+            const auto oldWidth = _framebuffer->GetWidth();
+            const auto oldHeight = _framebuffer->GetHeight();
             const auto widthDiff = dims.first * zoomValue - oldWidth;
             const auto heightDiff = dims.second * zoomValue - oldHeight;
-            jleEditor::mEditorCamera.mX -= widthDiff * .5f;
-            jleEditor::mEditorCamera.mY -= heightDiff * .5f;
-            mFramebuffer->ResizeFramebuffer(dims.first * zoomValue,
+            jleEditor::_editorCamera._x -= widthDiff * .5f;
+            jleEditor::_editorCamera._y -= heightDiff * .5f;
+            _framebuffer->ResizeFramebuffer(dims.first * zoomValue,
                                             dims.second * zoomValue);
         }
 
         static int draggingTransformMarker = 0;
         if (ImGui::IsMouseClicked(0)) {
-            if ((mouseCoordinateX >= mTexturedQuad.x &&
-                 mouseCoordinateX <= mTexturedQuad.x + 128) &&
-                (mouseCoordinateY >= mTexturedQuad.y &&
-                 mouseCoordinateY <= mTexturedQuad.y + 128)) {
-                LOGV << "Inside AABB " << mouseCoordinateX - mTexturedQuad.x
-                     << ' ' << mouseCoordinateY - mTexturedQuad.y;
+            if ((mouseCoordinateX >= _texturedQuad.x &&
+                 mouseCoordinateX <= _texturedQuad.x + 128) &&
+                (mouseCoordinateY >= _texturedQuad.y &&
+                 mouseCoordinateY <= _texturedQuad.y + 128)) {
+                LOGV << "Inside AABB " << mouseCoordinateX - _texturedQuad.x
+                     << ' ' << mouseCoordinateY - _texturedQuad.y;
 
                 constexpr std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>
                     redPart = {217, 87, 99, 255};
@@ -213,9 +213,9 @@ void jleSceneEditorWindow::Update(jleGameEngine& ge) {
                 constexpr std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>
                     bluePart = {99, 155, 255, 255};
 
-                const auto pixels = mTransformMarkerImage.GetPixelAtLocation(
-                    mouseCoordinateX - mTexturedQuad.x,
-                    mouseCoordinateY - mTexturedQuad.y);
+                const auto pixels = _transformMarkerImage.GetPixelAtLocation(
+                    mouseCoordinateX - _texturedQuad.x,
+                    mouseCoordinateY - _texturedQuad.y);
 
                 if (pixels == redPart) {
                     draggingTransformMarker = 1;

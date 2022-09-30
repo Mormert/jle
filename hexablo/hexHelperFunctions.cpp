@@ -7,13 +7,13 @@
 int hexHelperFunctions::GetPixelatedMouseXWorldSpace() {
     auto& game = ((jleGameEngine *)jleCore::core)->GetGameRef();
     return jleCore::core->input->mouse->GetPixelatedMouseX() +
-           game.mMainCamera.GetIntX();
+           game._mainCamera.GetIntX();
 }
 
 int hexHelperFunctions::GetPixelatedMouseYWorldSpace() {
     auto& game = ((jleGameEngine *)jleCore::core)->GetGameRef();
     return jleCore::core->input->mouse->GetPixelatedMouseY() +
-           game.mMainCamera.GetIntY();
+           game._mainCamera.GetIntY();
 }
 
 int hexHelperFunctions::GetRandInt(int min, int max) {

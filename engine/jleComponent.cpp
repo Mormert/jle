@@ -5,9 +5,9 @@
 #include "jleObject.h"
 
 jleComponent::jleComponent(jleObject *owner, jleScene *scene)
-    : mAttachedToObject{owner}, mContainedInScene{scene} {}
+    : _attachedToObject{owner}, _containedInScene{scene} {}
 
-void jleComponent::Destroy() { mAttachedToObject->DestroyComponent(this); }
+void jleComponent::Destroy() { _attachedToObject->DestroyComponent(this); }
 
 void to_json(nlohmann::json& j, const std::shared_ptr<jleComponent> c) {
     c->ToJson(j);

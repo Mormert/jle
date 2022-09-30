@@ -37,7 +37,7 @@ public:
                       "T must derive from jleScene");
 
         std::shared_ptr<T> newScene = std::make_shared<T>();
-        mActiveScenes.push_back(newScene);
+        _activeScenes.push_back(newScene);
 
         newScene->OnSceneCreation();
 
@@ -72,8 +72,8 @@ public:
 
     std::vector<std::shared_ptr<jleScene>>& GetActiveScenesRef();
 
-    jleCamera mMainCamera{jleCameraProjection::Orthographic};
+    jleCamera _mainCamera{jleCameraProjection::Orthographic};
 
 protected:
-    std::vector<std::shared_ptr<jleScene>> mActiveScenes;
+    std::vector<std::shared_ptr<jleScene>> _activeScenes;
 };

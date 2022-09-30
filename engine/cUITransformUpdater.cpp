@@ -5,18 +5,18 @@
 
 cUITransformUpdater::cUITransformUpdater(jleObject *owner, jleScene *scene)
     : jleComponent(owner, scene),
-      mGameRef{((jleGameEngine *)jleCore::core)->GetGameRef()} {}
+      _gameRef{((jleGameEngine *)jleCore::core)->GetGameRef()} {}
 
 cUITransformUpdater::~cUITransformUpdater() {}
 
 void cUITransformUpdater::Start() {
-    mTransform = mAttachedToObject->AddDependencyComponent<cTransform>(this);
+    _transform = _attachedToObject->AddDependencyComponent<cTransform>(this);
 
-    jleObject *parent = mAttachedToObject;
+    jleObject *parent = _attachedToObject;
     do {
 
         if (auto&& c = parent->GetComponent<cCamera>()) {
-            mCamera = c;
+            _camera = c;
             break;
         }
         parent = parent->GetParent();
@@ -25,21 +25,21 @@ void cUITransformUpdater::Start() {
 }
 
 void cUITransformUpdater::ToJson(nlohmann::json& j_out) {
-    j_out["mTop"] = mTop;
-    j_out["mBottom"] = mBottom;
-    j_out["mLeft"] = mLeft;
-    j_out["mRight"] = mRight;
-    j_out["mX"] = mX;
-    j_out["mY"] = mY;
+    j_out["_top"] = _top;
+    j_out["_bottom"] = _bottom;
+    j_out["_left"] = _left;
+    j_out["_right"] = _right;
+    j_out["_x"] = _x;
+    j_out["_y"] = _y;
 }
 
 void cUITransformUpdater::FromJson(const nlohmann::json& j_in) {
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mTop, "mTop", true);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mBottom, "mBottom", false);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mLeft, "mLeft", false);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mRight, "mRight", false);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mX, "mX", false);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mY, "mY", false);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _top, "_top", true);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _bottom, "_bottom", false);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _left, "_left", false);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _right, "_right", false);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _x, "_x", false);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _y, "_y", false);
 }
 
 void cUITransformUpdater::Update(float dt) {
@@ -47,27 +47,27 @@ void cUITransformUpdater::Update(float dt) {
     // since the UI gets dirty every frame now...
 
     int offsetX{0}, offsetY{0};
-    if (auto c = mCamera.lock()) {
+    if (auto c = _camera.lock()) {
         offsetX = (int)c->GetOffsetX();
         offsetY = (int)c->GetOffsetY();
     }
 
-    mTransform->SetLocalPositionX(mX);
-    mTransform->SetLocalPositionY(mY);
+    _transform->SetLocalPositionX(_x);
+    _transform->SetLocalPositionY(_y);
 
-    if (mTop) {
-        mTransform->SetLocalPositionY(mY + offsetY);
+    if (_top) {
+        _transform->SetLocalPositionY(_y + offsetY);
     }
-    else if (mBottom) {
-        mTransform->SetLocalPositionY(mGameRef.mMainCamera.mCameraHeight + mY +
+    else if (_bottom) {
+        _transform->SetLocalPositionY(_gameRef._mainCamera._cameraHeight + _y +
                                       offsetY);
     }
 
-    if (mLeft) {
-        mTransform->SetLocalPositionX(mX + offsetX);
+    if (_left) {
+        _transform->SetLocalPositionX(_x + offsetX);
     }
-    else if (mRight) {
-        mTransform->SetLocalPositionX(mGameRef.mMainCamera.mCameraWidth + mX +
+    else if (_right) {
+        _transform->SetLocalPositionX(_gameRef._mainCamera._cameraWidth + _x +
                                       offsetX);
     }
 }

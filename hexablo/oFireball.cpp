@@ -7,8 +7,8 @@
 #include <glm/glm.hpp>
 
 void oFireball::SetupDefaultObject() {
-    mTransform = AddCustomComponent<cTransform>();
-    mAseprite = AddCustomComponent<cAseprite>();
+    _transform = AddCustomComponent<cTransform>();
+    _aseprite = AddCustomComponent<cAseprite>();
 }
 
 void oFireball::Start() {}
@@ -20,86 +20,86 @@ void oFireball::Update(float dt) {
             return a * alpha + b * (1.f - alpha);
         };
 
-    if (mInterpingPosition) {
+    if (_interpingPosition) {
 
-        auto pos = lerpVec2({mHexagonPixelX, mHexagonPixelY},
-                            {mInterpingX, mInterpingY},
-                            mInterpingAlpha);
+        auto pos = lerpVec2({_hexagonPixelX, _hexagonPixelY},
+                            {_interpingX, _interpingY},
+                            _interpingAlpha);
 
-        mTransform->SetWorldPositionXY((int)pos.x, (int)pos.y);
+        _transform->SetWorldPositionXY((int)pos.x, (int)pos.y);
 
-        mInterpingAlpha += mInterpBetweenHexasSpeed * dt;
-        if (mInterpingAlpha >= 1.f) {
-            mInterpingAlpha = 1.f;
-            mInterpingPosition = false;
+        _interpingAlpha += _interpBetweenHexasSpeed * dt;
+        if (_interpingAlpha >= 1.f) {
+            _interpingAlpha = 1.f;
+            _interpingPosition = false;
             DestroyObject();
         }
     }
 }
 
 void oFireball::ToJson(nlohmann::json& j_out) {
-    j_out["mMovingTowardsR"] = mMovingTowardsR;
-    j_out["mMovingTowardsQ"] = mMovingTowardsQ;
+    j_out["_movingTowardsR"] = _movingTowardsR;
+    j_out["_movingTowardsQ"] = _movingTowardsQ;
 }
 
 void oFireball::FromJson(const nlohmann::json& j_in) {
-    JLE_FROM_JSON_IF_EXISTS(j_in, mMovingTowardsR, "mMovingTowardsR")
-    JLE_FROM_JSON_IF_EXISTS(j_in, mMovingTowardsQ, "mMovingTowardsQ")
+    JLE_FROM_JSON_IF_EXISTS(j_in, _movingTowardsR, "_movingTowardsR")
+    JLE_FROM_JSON_IF_EXISTS(j_in, _movingTowardsQ, "_movingTowardsQ")
 }
 
 void oFireball::FromNet(const nlohmann::json& j_in) {
 
-    JLE_FROM_JSON_IF_EXISTS(j_in, mMovingTowardsR, "r")
-    JLE_FROM_JSON_IF_EXISTS(j_in, mMovingTowardsQ, "q")
+    JLE_FROM_JSON_IF_EXISTS(j_in, _movingTowardsR, "r")
+    JLE_FROM_JSON_IF_EXISTS(j_in, _movingTowardsQ, "q")
 
     int x, y;
     JLE_FROM_JSON_WITH_DEFAULT(j_in, x, "x", 0);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, y, "y", 0);
 
-    mTransform->SetWorldPositionXY(x, y);
+    _transform->SetWorldPositionXY(x, y);
 
     const auto *world = oWorld::sWorld;
     auto p = hexHexagonFunctions::HexToPixel(
-        mMovingTowardsQ, mMovingTowardsR, world->mHexSizeX, world->mHexSizeY);
+        _movingTowardsQ, _movingTowardsR, world->_hexSizeX, world->_hexSizeY);
 
-    mHexagonPixelX = p.x;
-    mHexagonPixelY = p.y;
+    _hexagonPixelX = p.x;
+    _hexagonPixelY = p.y;
 
-    mInterpingX = mTransform->GetWorldX();
-    mInterpingY = mTransform->GetWorldY();
+    _interpingX = _transform->GetWorldX();
+    _interpingY = _transform->GetWorldY();
 
-    mInterpingPosition = true;
-    mInterpingAlpha = 0.f;
+    _interpingPosition = true;
+    _interpingAlpha = 0.f;
 }
 
 void oFireball::ToNet(nlohmann::json& j_out) {
-    j_out["r"] = mMovingTowardsR;
-    j_out["q"] = mMovingTowardsQ;
-    j_out["x"] = mTransform->GetWorldX();
-    j_out["y"] = mTransform->GetWorldY();
-    j_out["id"] = mId;
+    j_out["r"] = _movingTowardsR;
+    j_out["q"] = _movingTowardsQ;
+    j_out["x"] = _transform->GetWorldX();
+    j_out["y"] = _transform->GetWorldY();
+    j_out["id"] = _id;
 }
 
 void oFireball::SetTarget(int q, int r) {
-    mMovingTowardsR = r;
-    mMovingTowardsQ = q;
+    _movingTowardsR = r;
+    _movingTowardsQ = q;
 
     const auto *world = oWorld::sWorld;
     auto p = hexHexagonFunctions::HexToPixel(
-        mMovingTowardsQ, mMovingTowardsR, world->mHexSizeX, world->mHexSizeY);
+        _movingTowardsQ, _movingTowardsR, world->_hexSizeX, world->_hexSizeY);
 
-    mHexagonPixelX = p.x;
-    mHexagonPixelY = p.y;
+    _hexagonPixelX = p.x;
+    _hexagonPixelY = p.y;
 
-    mInterpingX = mTransform->GetWorldX();
-    mInterpingY = mTransform->GetWorldY();
+    _interpingX = _transform->GetWorldX();
+    _interpingY = _transform->GetWorldY();
 
-    mInterpingPosition = true;
-    mInterpingAlpha = 0.f;
+    _interpingPosition = true;
+    _interpingAlpha = 0.f;
 
     nlohmann::json j;
     ToNet(j);
     jleNetworking::TryEmitJsonData("oFireball", j);
 }
 
-oFireball::oFireball() { mId = std::rand(); }
+oFireball::oFireball() { _id = std::rand(); }

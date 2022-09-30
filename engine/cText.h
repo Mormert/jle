@@ -23,11 +23,11 @@ public:
     void SetText(const std::string& text);
 
 private:
-    std::shared_ptr<cTransform> mTransform{nullptr};
-    std::shared_ptr<jleFont> mFont{nullptr};
+    std::shared_ptr<cTransform> _transform{nullptr};
+    std::shared_ptr<jleFont> _font{nullptr};
 
-    std::string mFontPath;
-    std::string mText;
-    uint32_t mFontSize{16};
-    float mColorR{1.f}, mColorG{1.f}, mColorB{1.f}, mColorA{1.f};
+    std::string _fontPath;
+    std::string _text;
+    uint32_t _fontSize{16};
+    float _colorR{1.f}, _colorG{1.f}, _colorB{1.f}, _colorA{1.f};
 };

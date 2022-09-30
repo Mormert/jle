@@ -48,18 +48,18 @@ private:
     class jleFontSize {
     public:
         struct jleFontCharacter {
-            unsigned int mTextureID;
-            glm::ivec2 mSize;
-            glm::ivec2 mBearing;
-            unsigned int mAdvance;
+            unsigned int _textureID;
+            glm::ivec2 _size;
+            glm::ivec2 _bearing;
+            unsigned int _advance;
         };
 
-        std::map<char, jleFontCharacter> mCharacters;
+        std::map<char, jleFontCharacter> _characters;
     };
 
-    FT_Face mFace{};
-    bool mFontLoaded = false;
-    std::unordered_map<uint32_t, jleFontSize> mFontSizeLookup;
+    FT_Face _face{};
+    bool _fontLoaded = false;
+    std::unordered_map<uint32_t, jleFontSize> _fontSizeLookup;
 
     static inline unsigned int sVAO, sVBO;
     static inline std::unique_ptr<jleShader> sShader;

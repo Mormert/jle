@@ -92,5 +92,5 @@ protected:
 
     std::shared_ptr<jleCoreSettings> core_settings;
 
-    jleTimerManager mTimerManager;
+    jleTimerManager _timerManager;
 };

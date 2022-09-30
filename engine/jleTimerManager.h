@@ -31,20 +31,20 @@ private:
     void ClearTimers();
 
     struct jleTimerManagerFunctionSharedData {
-        void (*mFunction)(std::shared_ptr<void>);
+        void (*_function)(std::shared_ptr<void>);
 
-        std::shared_ptr<void> mData;
+        std::shared_ptr<void> _data;
     };
 
     struct jleTimerManagerFunctionWeakData {
-        void (*mFunction)(std::weak_ptr<void>);
+        void (*_function)(std::weak_ptr<void>);
 
-        std::weak_ptr<void> mData;
+        std::weak_ptr<void> _data;
     };
 
-    std::map<double, jleTimerManagerFunctionSharedData> mFunctionsSharedData;
+    std::map<double, jleTimerManagerFunctionSharedData> _functionsSharedData;
 
-    std::map<double, jleTimerManagerFunctionWeakData> mFunctionsWeakData;
+    std::map<double, jleTimerManagerFunctionWeakData> _functionsWeakData;
 };
 
 #endif // JLETIMERMANAGER_H

@@ -54,7 +54,7 @@ void jleEditor::Start() {
     framebuffer_main =
         renderingFactory->CreateFramebuffer(dims.first, dims.second);
 
-    mEditorFramebuffer =
+    _editorFramebuffer =
         renderingFactory->CreateFramebuffer(dims.first, dims.second);
 
     // Note: Important that menu comes first here, since the others are
@@ -63,7 +63,7 @@ void jleEditor::Start() {
     AddImGuiWindow(menu);
 
     auto sceneWindow = std::make_shared<jleSceneEditorWindow>(
-        "Scene Window", mEditorFramebuffer);
+        "Scene Window", _editorFramebuffer);
     AddImGuiWindow(sceneWindow);
     menu->AddWindow(sceneWindow);
 
@@ -121,19 +121,19 @@ void jleEditor::Render() {
     if (!gameHalted && game) {
         // Render to game view
         ((jleRenderingInternalAPIInterface *)rendering.get())
-            ->Render(*framebuffer_main, game->mMainCamera);
+            ->Render(*framebuffer_main, game->_mainCamera);
     }
 
-    // mEditorCamera.SetPerspectiveProjection(90.f,
-    // mEditorFramebuffer->GetWidth(), mEditorFramebuffer->GetHeight(), 50000.f,
+    // _editorCamera.SetPerspectiveProjection(90.f,
+    // _editorFramebuffer->GetWidth(), _editorFramebuffer->GetHeight(), 50000.f,
     // 0.1f);
-    mEditorCamera.SetOrthographicProjection(mEditorFramebuffer->GetWidth(),
-                                            mEditorFramebuffer->GetHeight(),
+    _editorCamera.SetOrthographicProjection(_editorFramebuffer->GetWidth(),
+                                            _editorFramebuffer->GetHeight(),
                                             10000.f,
                                             -10000.f);
     // Render to editor scene view
     ((jleRenderingInternalAPIInterface *)rendering.get())
-        ->Render(*mEditorFramebuffer, mEditorCamera);
+        ->Render(*_editorFramebuffer, _editorCamera);
 
     ((jleRenderingInternalAPIInterface *)rendering.get())
         ->ClearBuffersForNextFrame();

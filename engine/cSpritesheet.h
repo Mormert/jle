@@ -22,14 +22,14 @@ public:
     void FromJson(const nlohmann::json& j_in) override;
 
 private:
-    std::shared_ptr<cTransform> mTransform{nullptr};
-    std::shared_ptr<jleSpritesheet> mSpritesheet;
+    std::shared_ptr<cTransform> _transform{nullptr};
+    std::shared_ptr<jleSpritesheet> _spritesheet;
 
-    bool mHasEntity = false;
-    jleSpritesheetEntity mSpritesheetEntityCache;
+    bool _hasEntity = false;
+    jleSpritesheetEntity _spritesheetEntityCache;
 
-    std::string mSpritesheetPath;
-    std::string mSpriteName;
+    std::string _spritesheetPath;
+    std::string _spriteName;
 };
 
 #endif // JLE_CSPRITESHEET_H

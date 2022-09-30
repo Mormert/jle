@@ -8,7 +8,7 @@
 #include "plog/Log.h"
 
 jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string& window_name)
-    : iEditorImGuiWindow{window_name}, mGameController{"Game Controller"} {}
+    : iEditorImGuiWindow{window_name}, _gameController{"Game Controller"} {}
 
 void jleEditorWindowsPanel::Update(jleGameEngine& ge) { DockspaceUpdate(ge); }
 
@@ -103,7 +103,7 @@ void jleEditorWindowsPanel::MenuButtonsUpdate(jleGameEngine& ge) {
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Game Controller")) {
-            mGameController.Update(ge);
+            _gameController.Update(ge);
             ImGui::EndMenu();
         }
 

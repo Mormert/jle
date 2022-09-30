@@ -24,9 +24,9 @@ public:
 
     void Render() override;
 
-    std::shared_ptr<jleFramebufferInterface> mEditorFramebuffer;
+    std::shared_ptr<jleFramebufferInterface> _editorFramebuffer;
 
-    static inline jleCamera mEditorCamera{jleCameraProjection::Orthographic};
+    static inline jleCamera _editorCamera{jleCameraProjection::Orthographic};
 
 private:
     void InitImgui();

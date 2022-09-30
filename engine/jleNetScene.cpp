@@ -10,22 +10,22 @@ jleNetScene::jleNetScene(const std::string& sceneName) : jleScene(sceneName) {}
 
 void jleNetScene::ToJson(nlohmann::json& j_out) {
     jleScene::ToJson(j_out);
-    j_out["mConnectAddress"] = mConnectAddress;
+    j_out["_connectAddress"] = _connectAddress;
 
-    if (mIsHost) {
-        mNetworking.EmitJsonData("SceneSync", j_out);
+    if (_isHost) {
+        _networking.EmitJsonData("SceneSync", j_out);
     }
 }
 
 void jleNetScene::FromJson(const nlohmann::json& j_in) {
     jleScene::FromJson(j_in);
-    JLE_FROM_JSON_IF_EXISTS(j_in, mConnectAddress, "mConnectAddress");
+    JLE_FROM_JSON_IF_EXISTS(j_in, _connectAddress, "_connectAddress");
 }
 
 void jleNetScene::SceneUpdate() {
     nlohmann::json j;
     // Sync data back to game thread, and process the network message
-    if (mNetworking.TryReceiveMessagePack(j)) {
+    if (_networking.TryReceiveMessagePack(j)) {
         const auto event = j.find("e");
         if (event == j.end() || !event->is_string()) {
             return;
@@ -49,8 +49,8 @@ void jleNetScene::SceneUpdate() {
 }
 
 void jleNetScene::OnSceneCreation() {
-    mNetworking.Connect(
-        mConnectAddress,
+    _networking.Connect(
+        _connectAddress,
         [&]() { OnNetConnected(); },
         [&](int const& reason) {
             if (reason == 1) {
@@ -63,28 +63,28 @@ void jleNetScene::OnSceneCreation() {
         [&]() { OnNetFailed(); });
 }
 
-void jleNetScene::OnSceneDestruction() { mNetworking.Disconnect(); }
+void jleNetScene::OnSceneDestruction() { _networking.Disconnect(); }
 
 void jleNetScene::ProcessNetMessage(const std::string& event,
                                     const nlohmann::json& message,
                                     const std::string& sender) {
     if (event == "you_r_host") {
-        mIsHost = true;
+        _isHost = true;
         return;
     }
 
     if (event == "SceneSync") {
-        mSceneObjects.clear();
-        mNewSceneObjects.clear();
+        _sceneObjects.clear();
+        _newSceneObjects.clear();
 
         jleScene::FromJson(message);
         return;
     }
 
-    if (event == "player_connect" && mIsHost) {
+    if (event == "player_connect" && _isHost) {
         nlohmann::json j;
         ToJson(j);
-        mNetworking.EmitJsonData("SceneSync", j, sender);
+        _networking.EmitJsonData("SceneSync", j, sender);
     }
 
     if (event == "player_dconnect") {

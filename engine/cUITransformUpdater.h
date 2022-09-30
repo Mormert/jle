@@ -25,16 +25,16 @@ public:
     void Update(float dt) override;
 
 private:
-    std::shared_ptr<cTransform> mTransform{nullptr};
-    std::weak_ptr<cCamera> mCamera{};
+    std::shared_ptr<cTransform> _transform{nullptr};
+    std::weak_ptr<cCamera> _camera{};
 
-    bool mTop{true};
-    bool mBottom{false};
-    bool mLeft{false};
-    bool mRight{false};
+    bool _top{true};
+    bool _bottom{false};
+    bool _left{false};
+    bool _right{false};
 
-    int mX{}, mY{};
-    jleGame& mGameRef;
+    int _x{}, _y{};
+    jleGame& _gameRef;
 };
 
 #endif // HEXABLO_CUITRANSFORMUPDATER_H

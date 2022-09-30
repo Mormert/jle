@@ -9,41 +9,41 @@ bool hexHexagonItem::TryUpdateHexagonItemPlacement(int q, int r) {
         return false;
     }
 
-    if (mIsPlacedOnWorld && oWorld::sWorld) {
+    if (_isPlacedOnWorld && oWorld::sWorld) {
         // remove the old world placement
-        oWorld::sWorld->RemoveHexItemAt(mHexagonQ, mHexagonR);
+        oWorld::sWorld->RemoveHexItemAt(_hexagonQ, _hexagonR);
     }
 
-    mHexagonQ = q;
-    mHexagonR = r;
+    _hexagonQ = q;
+    _hexagonR = r;
 
     oWorld::sWorld->PlaceHexItemAt(this, q, r);
-    mIsPlacedOnWorld = true;
+    _isPlacedOnWorld = true;
 
     return true;
 }
 
 glm::ivec2 hexHexagonItem::GetHexagonItemPlacement() const {
-    return {mHexagonQ, mHexagonR};
+    return {_hexagonQ, _hexagonR};
 }
 
 hexHexagonItem::~hexHexagonItem() {
-    if (mIsPlacedOnWorld && oWorld::sWorld) {
-        oWorld::sWorld->RemoveHexItemAt(mHexagonQ, mHexagonR);
+    if (_isPlacedOnWorld && oWorld::sWorld) {
+        oWorld::sWorld->RemoveHexItemAt(_hexagonQ, _hexagonR);
     }
 }
 
 void hexHexagonItem::SetHexagonItemPlacement(int q, int r) {
-    mHexagonQ = q;
-    mHexagonR = r;
+    _hexagonQ = q;
+    _hexagonR = r;
 }
 
 void to_json(nlohmann::json& j, const hexHexagonItem& h) {
-    j["mHexagonQ"] = h.mHexagonQ;
-    j["mHexagonR"] = h.mHexagonR;
+    j["_hexagonQ"] = h._hexagonQ;
+    j["_hexagonR"] = h._hexagonR;
 }
 
 void from_json(const nlohmann::json& j, hexHexagonItem& h) {
-    JLE_FROM_JSON_WITH_DEFAULT(j, h.mHexagonQ, "mHexagonQ", 0.f);
-    JLE_FROM_JSON_WITH_DEFAULT(j, h.mHexagonR, "mHexagonR", 0.f);
+    JLE_FROM_JSON_WITH_DEFAULT(j, h._hexagonQ, "_hexagonQ", 0.f);
+    JLE_FROM_JSON_WITH_DEFAULT(j, h._hexagonR, "_hexagonR", 0.f);
 }

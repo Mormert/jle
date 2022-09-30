@@ -33,17 +33,17 @@ public:
     void FromJson(const nlohmann::json& j_in) override;
 
 protected:
-    jleNetworking mNetworking;
+    jleNetworking _networking;
 
     // TODO: Move this to more flexible solution
 #ifdef __EMSCRIPTEN__
-    std::string mConnectAddress{"hexablo.herokuapp.com"};
+    std::string _connectAddress{"hexablo.herokuapp.com"};
 #else
-    // std::string mConnectAddress{"http://localhost:314"};
-    std::string mConnectAddress{"http://hexablo.herokuapp.com"};
+    // std::string _connectAddress{"http://localhost:314"};
+    std::string _connectAddress{"http://hexablo.herokuapp.com"};
 #endif
 
-    bool mIsHost = false;
+    bool _isHost = false;
 };
 
 #endif // JLENETSCENE_H

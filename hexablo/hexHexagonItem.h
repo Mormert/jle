@@ -17,8 +17,8 @@ public:
     [[nodiscard]] glm::ivec2 GetHexagonItemPlacement() const;
 
 private:
-    int mHexagonQ{0}, mHexagonR{0};
-    bool mIsPlacedOnWorld{false};
+    int _hexagonQ{0}, _hexagonR{0};
+    bool _isPlacedOnWorld{false};
 
     friend void to_json(nlohmann::json& j, const hexHexagonItem& h);
     friend void from_json(const nlohmann::json& j, hexHexagonItem& h);

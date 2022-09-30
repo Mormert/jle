@@ -10,28 +10,28 @@
 #include <plog/Log.h>
 
 void cSpritesheet::Start() {
-    mTransform = mAttachedToObject->AddDependencyComponent<cTransform>(this);
+    _transform = _attachedToObject->AddDependencyComponent<cTransform>(this);
 }
 
 cSpritesheet::cSpritesheet(jleObject *owner, jleScene *scene)
     : jleComponent(owner, scene) {}
 
 void cSpritesheet::Update(float dt) {
-    if (!mSpritesheet) {
+    if (!_spritesheet) {
         return;
     }
 
-    auto& texture = mSpritesheet->mImageTexture;
-    if (texture != nullptr && mHasEntity) {
+    auto& texture = _spritesheet->_imageTexture;
+    if (texture != nullptr && _hasEntity) {
         TexturedQuad quad{texture};
-        quad.x = mTransform->GetWorldX();
-        quad.y = mTransform->GetWorldY();
+        quad.x = _transform->GetWorldX();
+        quad.y = _transform->GetWorldY();
 
-        quad.height = mSpritesheetEntityCache.mFrame.mHeight;
-        quad.width = mSpritesheetEntityCache.mFrame.mWidth;
-        quad.textureX = mSpritesheetEntityCache.mFrame.mX;
-        quad.textureY = mSpritesheetEntityCache.mFrame.mY;
-        quad.depth = mTransform->GetWorldDepth();
+        quad.height = _spritesheetEntityCache._frame._height;
+        quad.width = _spritesheetEntityCache._frame._width;
+        quad.textureX = _spritesheetEntityCache._frame._x;
+        quad.textureY = _spritesheetEntityCache._frame._y;
+        quad.depth = _transform->GetWorldDepth();
 
         if (quad.texture.get()) {
             jleCore::core->rendering->quads->SendTexturedQuad(
@@ -41,23 +41,23 @@ void cSpritesheet::Update(float dt) {
 }
 
 void cSpritesheet::ToJson(nlohmann::json& j_out) {
-    j_out["mSpritesheetPath"] = mSpritesheetPath;
-    j_out["mSpriteName"] = mSpriteName;
+    j_out["_spritesheetPath"] = _spritesheetPath;
+    j_out["_spriteName"] = _spriteName;
 }
 
 void cSpritesheet::FromJson(const nlohmann::json& j_in) {
-    mSpritesheetPath = j_in["mSpritesheetPath"];
-    mSpriteName = j_in["mSpriteName"];
-    mSpritesheet = jleResourceHolder::LoadResourceFromFile<jleSpritesheet>(
-        jleRelativePath{mSpritesheetPath});
+    _spritesheetPath = j_in["_spritesheetPath"];
+    _spriteName = j_in["_spriteName"];
+    _spritesheet = jleResourceHolder::LoadResourceFromFile<jleSpritesheet>(
+        jleRelativePath{_spritesheetPath});
 
-    const auto entity = mSpritesheet->mSpritesheetEntities.find(mSpriteName);
-    if (entity != mSpritesheet->mSpritesheetEntities.end()) {
-        mSpritesheetEntityCache = entity->second;
-        mHasEntity = true;
+    const auto entity = _spritesheet->_spritesheetEntities.find(_spriteName);
+    if (entity != _spritesheet->_spritesheetEntities.end()) {
+        _spritesheetEntityCache = entity->second;
+        _hasEntity = true;
     }
     else {
         LOGW << "Could not find sprite entity on the spritesheet: "
-             << mSpriteName;
+             << _spriteName;
     }
 }

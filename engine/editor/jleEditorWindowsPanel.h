@@ -20,5 +20,5 @@ public:
 private:
     std::vector<std::shared_ptr<iEditorImGuiWindow>> windows;
 
-    jleEditorGameControllerWidget mGameController;
+    jleEditorGameControllerWidget _gameController;
 };

@@ -11,33 +11,33 @@
 #include <vector>
 
 struct jleAsepriteXYWH {
-    int32_t mX, mY, mW, mH;
+    int32_t _x, _y, _w, _h;
 };
 
 struct jleAsepriteXY {
-    int32_t mW, mH;
+    int32_t _w, _h;
 };
 
 struct jleAsepriteFrame {
-    bool mRotated, mTrimmed;
-    int32_t mDuration;
-    jleAsepriteXYWH mFrame, mSpriteSourceSize;
-    jleAsepriteXY mSourceSize;
+    bool _rotated, _trimmed;
+    int32_t _duration;
+    jleAsepriteXYWH _frame, _spriteSourceSize;
+    jleAsepriteXY _sourceSize;
 };
 
 struct jleAsepriteMetaLayer {
-    std::string mName, mBlendmode;
-    int32_t mOpacity;
+    std::string _name, _blendmode;
+    int32_t _opacity;
 };
 
 struct jleAsepriteMeta {
-    std::string mApp;
-    std::string mVersion;
-    std::string mImage;
-    std::string mFormat;
-    std::vector<jleAsepriteMetaLayer> mLayers;
-    jleAsepriteXY mSize;
-    std::string mScale;
+    std::string _app;
+    std::string _version;
+    std::string _image;
+    std::string _format;
+    std::vector<jleAsepriteMetaLayer> _layers;
+    jleAsepriteXY _size;
+    std::string _scale;
 };
 
 struct jleAseprite : jleFileLoadInterface {
@@ -52,14 +52,14 @@ struct jleAseprite : jleFileLoadInterface {
     bool LoadFromFile(const std::string& path) override;
 
     // This format expects Aseprite exporting to use 'Array' and not 'Hash'
-    std::vector<jleAsepriteFrame> mFrames;
+    std::vector<jleAsepriteFrame> _frames;
 
     int GetTotalAnimationTimeMs();
 
-    jleAsepriteMeta mMeta;
+    jleAsepriteMeta _meta;
 
-    std::shared_ptr<jleTextureInterface> mImageTexture;
-    std::string mPath;
+    std::shared_ptr<jleTextureInterface> _imageTexture;
+    std::string _path;
 };
 
 void from_json(const nlohmann::json& j, jleAseprite& a);

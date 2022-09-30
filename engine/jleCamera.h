@@ -12,23 +12,23 @@ struct jleCamera {
 
     explicit jleCamera(jleCameraProjection projection);
 
-    jleCameraProjection mProjectionType = jleCameraProjection::Orthographic;
+    jleCameraProjection _projectionType = jleCameraProjection::Orthographic;
 
-    glm::vec3 mPosition{0.f, 24.f, 0.f};
+    glm::vec3 _position{0.f, 24.f, 0.f};
 
-    glm::mat4 mProjectionMatrix{};
+    glm::mat4 _projectionMatrix{};
 
     // For perspective projection
-    glm::vec3 mFront{0.0f, 0.0f, -1.0f};
-    glm::vec3 mUp{0.0f, 1.0f, 0.0f};
-    glm::vec3 mRight{};
-    const glm::vec3 mWorldUp{0.0f, 1.0f, 0.0f};
-    float mYaw{-90.f};
-    float mPitch{0.f};
-    float mMouseSensitivity{0.001f};
+    glm::vec3 _front{0.0f, 0.0f, -1.0f};
+    glm::vec3 _up{0.0f, 1.0f, 0.0f};
+    glm::vec3 _right{};
+    const glm::vec3 _worldUp{0.0f, 1.0f, 0.0f};
+    float _yaw{-90.f};
+    float _pitch{0.f};
+    float _mouseSensitivity{0.001f};
 
     // For orthographic projection
-    float mCameraRotationDegrees{};
+    float _cameraRotationDegrees{};
 
     void SetPerspectiveProjection(float fov,
                                   uint32_t screenWidth,
@@ -61,12 +61,12 @@ struct jleCamera {
 
     void MovePerspectiveDown(float speed);
 
-    float mX = 0.f, mY = 0.f;
-    float mXNoOffset = 0.f, mYNoOffset = 0.f;
+    float _x = 0.f, _y = 0.f;
+    float _xNoOffset = 0.f, _yNoOffset = 0.f;
 
-    int mCameraWidth{}, mCameraHeight{};
+    int _cameraWidth{}, _cameraHeight{};
 
-    [[nodiscard]] int32_t GetIntX() const { return int32_t(mX); }
+    [[nodiscard]] int32_t GetIntX() const { return int32_t(_x); }
 
-    [[nodiscard]] int32_t GetIntY() const { return int32_t(mY); }
+    [[nodiscard]] int32_t GetIntY() const { return int32_t(_y); }
 };

@@ -13,23 +13,23 @@
 
 jleEditorContentBrowser::jleEditorContentBrowser(const std::string& window_name)
     : iEditorImGuiWindow(window_name) {
-    mDirectoryIcon = jleCore::core->texture_creator->LoadTextureFromPath(
+    _directoryIcon = jleCore::core->texture_creator->LoadTextureFromPath(
         jleRelativePath{"ED:/icons/directory.png"});
-    mFileIcon = jleCore::core->texture_creator->LoadTextureFromPath(
+    _fileIcon = jleCore::core->texture_creator->LoadTextureFromPath(
         jleRelativePath{"ED:/icons/files.png"});
-    mBackDirectoryIcon = jleCore::core->texture_creator->LoadTextureFromPath(
+    _backDirectoryIcon = jleCore::core->texture_creator->LoadTextureFromPath(
         jleRelativePath{"ED:/icons/back_directory.png"});
 
-    mSceneFileIcon = jleCore::core->texture_creator->LoadTextureFromPath(
+    _sceneFileIcon = jleCore::core->texture_creator->LoadTextureFromPath(
         jleRelativePath{"ED:/icons/scene.png"});
 
-    mImageFileIcon = jleCore::core->texture_creator->LoadTextureFromPath(
+    _imageFileIcon = jleCore::core->texture_creator->LoadTextureFromPath(
         jleRelativePath{"ED:/icons/image.png"});
 
-    mJsonFileIcon = jleCore::core->texture_creator->LoadTextureFromPath(
+    _jsonFileIcon = jleCore::core->texture_creator->LoadTextureFromPath(
         jleRelativePath{"ED:/icons/json.png"});
 
-    mSelectedDirectory = GAME_RESOURCES_DIRECTORY;
+    _selectedDirectory = GAME_RESOURCES_DIRECTORY;
 }
 
 #define BIT(x) (1 << x)
@@ -67,10 +67,10 @@ std::pair<bool, uint32_t> jleEditorContentBrowser::DirectoryTreeViewRecursive(
             node_clicked = *count;
             any_node_clicked = true;
             if (!entry.is_directory()) {
-                mSelectedDirectory = entry.path().parent_path();
+                _selectedDirectory = entry.path().parent_path();
             }
             else if (entry.is_directory()) {
-                mSelectedDirectory = entry.path();
+                _selectedDirectory = entry.path();
             }
         }
 
@@ -158,19 +158,19 @@ void jleEditorContentBrowser::ContentBrowser() {
     const ImVec2 fileSize{92 * globalImguiScale * iconScaleSliderValue,
                           92 * globalImguiScale * iconScaleSliderValue};
 
-    if (mSelectedDirectory != GAME_RESOURCES_DIRECTORY &&
-        !mSelectedDirectory.empty()) {
+    if (_selectedDirectory != GAME_RESOURCES_DIRECTORY &&
+        !_selectedDirectory.empty()) {
         if (ImGui::ImageButton(
                 reinterpret_cast<ImTextureID>(
-                    mBackDirectoryIcon->GetTextureID()),
+                    _backDirectoryIcon->GetTextureID()),
                 ImVec2{19 * globalImguiScale, 16 * globalImguiScale})) {
-            mSelectedDirectory = mSelectedDirectory.parent_path();
+            _selectedDirectory = _selectedDirectory.parent_path();
         }
         ImGui::SameLine();
     }
 
     {
-        auto text = mSelectedDirectory.wstring();
+        auto text = _selectedDirectory.wstring();
         ImGui::Text("%.*ls", static_cast<int>(text.size()), text.data());
     }
 
@@ -179,7 +179,7 @@ void jleEditorContentBrowser::ContentBrowser() {
     ImGui::BeginChild(
         "Content", ImVec2{0, -ImGui::GetFrameHeightWithSpacing()}, true);
 
-    if (!mSelectedDirectory.empty()) {
+    if (!_selectedDirectory.empty()) {
 
         int columns = ImGui::GetWindowContentRegionWidth() / fileSize.x - 1;
         if (columns <= 0) {
@@ -193,7 +193,7 @@ void jleEditorContentBrowser::ContentBrowser() {
         bool isFileSelected = false;
 
         for (auto const& dir_entry :
-             std::filesystem::directory_iterator(mSelectedDirectory)) {
+             std::filesystem::directory_iterator(_selectedDirectory)) {
             if (!(dir_entry.is_regular_file() || dir_entry.is_directory())) {
                 continue;
             }
@@ -206,22 +206,22 @@ void jleEditorContentBrowser::ContentBrowser() {
 
                     std::shared_ptr<jleTextureInterface> iconTexture;
                     if (dir_entry.path().extension() == ".scn") {
-                        iconTexture = mSceneFileIcon;
+                        iconTexture = _sceneFileIcon;
                     }
                     else if (dir_entry.path().extension() == ".png") {
-                        iconTexture = mImageFileIcon;
+                        iconTexture = _imageFileIcon;
                     }
                     else if (dir_entry.path().extension() == ".json") {
-                        iconTexture = mJsonFileIcon;
+                        iconTexture = _jsonFileIcon;
                     }
                     else {
-                        iconTexture = mFileIcon;
+                        iconTexture = _fileIcon;
                     }
 
                     if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(
                                                iconTexture->GetTextureID()),
                                            fileSize)) {
-                        mFileSelected = dir_entry;
+                        _fileSelected = dir_entry;
                         isFileSelected = true;
                     }
                     ImGui::PopID();
@@ -229,9 +229,9 @@ void jleEditorContentBrowser::ContentBrowser() {
                 else if (dir_entry.is_directory()) {
                     ImGui::PushID(buttonID++);
                     if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(
-                                               mDirectoryIcon->GetTextureID()),
+                                               _directoryIcon->GetTextureID()),
                                            fileSize)) {
-                        mSelectedDirectory = dir_entry.path();
+                        _selectedDirectory = dir_entry.path();
                     }
                     ImGui::PopID();
                 }
@@ -250,10 +250,10 @@ void jleEditorContentBrowser::ContentBrowser() {
             ImGui::OpenPopup("selected_file_popup");
         }
 
-        if (!mFileSelected.empty() &&
+        if (!_fileSelected.empty() &&
             ImGui::BeginPopup("selected_file_popup")) {
 
-            SelectedFilePopup(mFileSelected);
+            SelectedFilePopup(_fileSelected);
             ImGui::EndPopup();
         }
 
@@ -404,7 +404,7 @@ void jleEditorContentBrowser::SelectedFilePopupScene(
         if (!game.CheckSceneIsActive(sceneName)) {
             auto scene = game.CreateScene<jleScene>();
 
-            scene->mSceneName = sceneName;
+            scene->_sceneName = sceneName;
 
             std::ifstream i(file);
             nlohmann::json j;

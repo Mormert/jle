@@ -15,17 +15,17 @@ public:
     void SetHP(int maxHP, int currentHP);
 
     void ToJson(nlohmann::json& j_out) override {
-        j_out["mMaxWidth"] = mMaxWidth;
+        j_out["_maxWidth"] = _maxWidth;
     }
 
     void FromJson(const nlohmann::json& j_in) override{
-        JLE_FROM_JSON_WITH_DEFAULT(j_in, mMaxWidth, "mMaxWidth", 16)}
+        JLE_FROM_JSON_WITH_DEFAULT(j_in, _maxWidth, "_maxWidth", 16)}
 
-    std::shared_ptr<cTransform> mTransform;
-    std::shared_ptr<cAseprite> mAseprite;
+    std::shared_ptr<cTransform> _transform;
+    std::shared_ptr<cAseprite> _aseprite;
 
 private:
-    int mMaxWidth{};
+    int _maxWidth{};
 };
 
 #endif // HEXABLO_OCHARACTERHEALTHBAR_H

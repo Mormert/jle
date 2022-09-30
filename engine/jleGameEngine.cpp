@@ -52,18 +52,18 @@ void jleGameEngine::StartGame() {
     game = gameCreator->CreateGame();
     game->Start();
 
-    game->mMainCamera.mCameraWidth = framebuffer_main->GetWidth();
-    game->mMainCamera.mCameraHeight = framebuffer_main->GetHeight();
+    game->_mainCamera._cameraWidth = framebuffer_main->GetWidth();
+    game->_mainCamera._cameraHeight = framebuffer_main->GetHeight();
 }
 
 void jleGameEngine::RestartGame() {
     game.reset();
-    mTimerManager.ClearTimers();
+    _timerManager.ClearTimers();
     StartGame();
 }
 
 void jleGameEngine::KillGame() {
-    mTimerManager.ClearTimers();
+    _timerManager.ClearTimers();
     game.reset();
 }
 
@@ -83,7 +83,7 @@ void jleGameEngine::ExecuteNextFrame() {
     gameHalted = false;
     Update(status->GetDeltaFrameTime());
     ((jleRenderingInternalAPIInterface *)rendering.get())
-        ->Render(*framebuffer_main, GetGameRef().mMainCamera);
+        ->Render(*framebuffer_main, GetGameRef()._mainCamera);
     gameHalted = gameHaltedTemp;
 }
 
@@ -139,8 +139,8 @@ void jleGameEngine::FramebufferResizeEvent(unsigned int width,
     internalInputMouse->SetPixelatedScreenSize(dims.first, dims.second);
     internalInputMouse->SetScreenSize(width, height);
 
-    game->mMainCamera.mCameraWidth = dims.first;
-    game->mMainCamera.mCameraHeight = dims.second;
+    game->_mainCamera._cameraWidth = dims.first;
+    game->_mainCamera._cameraHeight = dims.second;
 }
 
 void jleGameEngine::Update(float dt) {
@@ -155,7 +155,7 @@ void jleGameEngine::Render() {
     JLE_SCOPE_PROFILE(jleGameEngine::Render)
     if (!gameHalted && game) {
         ((jleRenderingInternalAPIInterface *)rendering.get())
-            ->Render(*framebuffer_main.get(), GetGameRef().mMainCamera);
+            ->Render(*framebuffer_main.get(), GetGameRef()._mainCamera);
         ((jleRenderingInternalAPIInterface *)rendering.get())
             ->ClearBuffersForNextFrame();
         fullscreen_renderer->RenderFramebufferFullscreen(

@@ -23,7 +23,7 @@ public:
     int GetWindowPosY() const;
 
 private:
-    float mLastGameWindowWidth = 0.f, mLastGameWindowHeight = 0.f;
-    int mWindowPositionX, mWindowPositionY;
-    bool mWasFocused = false;
+    float _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;
+    int _windowPositionX, _windowPositionY;
+    bool _wasFocused = false;
 };

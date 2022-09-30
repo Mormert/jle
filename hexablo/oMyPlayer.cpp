@@ -32,7 +32,7 @@ void oMyPlayer::Update(float dt) {
     Abilities();
 
     if (jleCore::core->input->mouse->GetMouseClick(1)) {
-        Attack(mCharacterDirection);
+        Attack(_characterDirection);
     }
 
     static float lightposz = 0.f;
@@ -58,21 +58,21 @@ void oMyPlayer::Update(float dt) {
     }
 
     jleQuadRendering_OpenGL::lightPos =
-        mTransform->GetWorldXYDepth() + glm::vec3{0, 0, lightposz};
+        _transform->GetWorldXYDepth() + glm::vec3{0, 0, lightposz};
     jleQuadRendering_OpenGL::depthRange = depthRng;
 }
 
 void oMyPlayer::Attack(oCharacter::oCharacterDirection direction) {
-    if (!mCanAttack) {
+    if (!_canAttack) {
         return;
     }
 
     oCharacter::Attack(direction);
 
-    auto pos = mHexagonItem.GetHexagonItemPlacement();
+    auto pos = _hexagonItem.GetHexagonItemPlacement();
     jleNetworking::TryEmitJsonData(
         "basic_attack",
-        {{"q", pos.x}, {"r", pos.y}, {"d", mCharacterDirection}});
+        {{"q", pos.x}, {"r", pos.y}, {"d", _characterDirection}});
 }
 
 void oMyPlayer::ToJson(nlohmann::json& j_out) { oCharacter::ToJson(j_out); }
@@ -112,7 +112,7 @@ void oMyPlayer::Movement(float dt) {
 
     static bool verticalSide = true;
 
-    auto&& hexagonCoords = mHexagonItem.GetHexagonItemPlacement();
+    auto&& hexagonCoords = _hexagonItem.GetHexagonItemPlacement();
     const int hexagonQ = hexagonCoords.x;
     const int hexagonR = hexagonCoords.y;
 
@@ -121,7 +121,7 @@ void oMyPlayer::Movement(float dt) {
         if (world->IsHexagonWalkable(q, r)) {
             SetHexagonPlacementInterp(q, r);
             jleNetworking::TryEmitJsonData(
-                "player_pos", {{"q", q}, {"r", r}, {"d", mCharacterDirection}});
+                "player_pos", {{"q", q}, {"r", r}, {"d", _characterDirection}});
             canMove = false;
             lastMovement = jleCore::core->status->GetCurrentFrameTime();
             currentMoveTime = defaultMoveTime;
@@ -132,7 +132,7 @@ void oMyPlayer::Movement(float dt) {
         }
     };
 
-    switch (mCharacterDirection) {
+    switch (_characterDirection) {
 
     case oCharacterDirection::west:
         if (TryMoveTo(hexagonQ - 1, hexagonR)) {
@@ -262,7 +262,7 @@ void oMyPlayer::Movement_v1(float dt) {
 
     static bool verticalSide = true;
 
-    auto&& hexagonCoords = mHexagonItem.GetHexagonItemPlacement();
+    auto&& hexagonCoords = _hexagonItem.GetHexagonItemPlacement();
     const int hexagonQ = hexagonCoords.x;
     const int hexagonR = hexagonCoords.y;
 
@@ -392,30 +392,30 @@ void oMyPlayer::Abilities() {
     bool q = jleCore::core->input->keyboard->GetKeyDown('Q');
     bool e = jleCore::core->input->keyboard->GetKeyDown('E');
 
-    if (q && mCanThrowFireball) {
+    if (q && _canThrowFireball) {
 
-        auto t = mContainedInScene->SpawnTemplateObject(
+        auto t = _containedInScene->SpawnTemplateObject(
             jleRelativePath{"GR:otemps/FireballTempl.tmpl"});
         const auto fireball = std::static_pointer_cast<oFireball>(t);
         auto mx = hexHelperFunctions::GetPixelatedMouseXWorldSpace();
         auto my = hexHelperFunctions::GetPixelatedMouseYWorldSpace();
 
         fireball->GetComponent<cTransform>()->SetWorldPositionX(
-            mTransform->GetWorldX() - 20.f);
+            _transform->GetWorldX() - 20.f);
         fireball->GetComponent<cTransform>()->SetWorldPositionY(
-            mTransform->GetWorldY() - 10);
+            _transform->GetWorldY() - 10);
 
         auto *world = oWorld::sWorld;
         auto p = hexHexagonFunctions::PixelToHex(
-            mx, my, world->mHexSizeX, world->mHexSizeY);
+            mx, my, world->_hexSizeX, world->_hexSizeY);
 
         fireball->SetTarget(p.x, p.y);
 
-        mCanThrowFireball = false;
+        _canThrowFireball = false;
 
         const auto futureFunc = [](std::weak_ptr<void> data) {
             auto safeThis = std::static_pointer_cast<oMyPlayer>(data.lock());
-            safeThis->mCanThrowFireball = true;
+            safeThis->_canThrowFireball = true;
         };
 
         // Can throw fireball again in x seconds

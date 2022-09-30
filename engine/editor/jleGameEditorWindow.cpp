@@ -38,26 +38,26 @@ void jleGameEditorWindow::Update(jleGameEngine& ge) {
 
     const auto& cursorScreenPos = ImGui::GetCursorScreenPos();
     const auto viewport = ImGui::GetMainViewport();
-    mWindowPositionX = cursorScreenPos.x - viewport->Pos.x;
-    mWindowPositionY = cursorScreenPos.y - viewport->Pos.y;
+    _windowPositionX = cursorScreenPos.x - viewport->Pos.x;
+    _windowPositionY = cursorScreenPos.y - viewport->Pos.y;
 
     const auto& internalInputMouse =
         std::static_pointer_cast<jleMouseInputInternal>(
             jleCore::core->input->mouse);
     const auto& engineFramebufferMain =
         jleGameEngine::gEngine->framebuffer_main;
-    internalInputMouse->SetScreenBeginCoords(mWindowPositionX,
-                                             mWindowPositionY);
+    internalInputMouse->SetScreenBeginCoords(_windowPositionX,
+                                             _windowPositionY);
     internalInputMouse->SetScreenSize(GetWindowWidth(), GetWindowHeight());
 
     if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset ==
-              mLastGameWindowWidth &&
+              _lastGameWindowWidth &&
           ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y -
                   negYOffset ==
-              mLastGameWindowHeight)) {
-        mLastGameWindowWidth =
+              _lastGameWindowHeight)) {
+        _lastGameWindowWidth =
             ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset;
-        mLastGameWindowHeight = ImGui::GetWindowHeight() -
+        _lastGameWindowHeight = ImGui::GetWindowHeight() -
                                 ImGui::GetCursorStartPos().y - negYOffset;
 
         auto dims = ge.GetFramebufferDimensions(
@@ -67,8 +67,8 @@ void jleGameEditorWindow::Update(jleGameEngine& ge) {
         internalInputMouse->SetPixelatedScreenSize(dims.first, dims.second);
 
         auto& game = ((jleGameEngine *)jleCore::core)->GetGameRef();
-        game.mMainCamera.mCameraWidth = dims.first;
-        game.mMainCamera.mCameraHeight = dims.second;
+        game._mainCamera._cameraWidth = dims.first;
+        game._mainCamera._cameraHeight = dims.second;
     }
 
     // Get the texture from the framebuffer
@@ -77,26 +77,26 @@ void jleGameEditorWindow::Update(jleGameEngine& ge) {
     jleStaticOpenGLState::globalActiveTexture =
         (unsigned int)ge.framebuffer_main->GetTexture();
     ImGui::Image((void *)(intptr_t)ge.framebuffer_main->GetTexture(),
-                 ImVec2(mLastGameWindowWidth, mLastGameWindowHeight),
+                 ImVec2(_lastGameWindowWidth, _lastGameWindowHeight),
                  ImVec2(0, 1),
                  ImVec2(1, 0));
 
-    if (ImGui::IsWindowFocused() != mWasFocused) {
-        mWasFocused = ImGui::IsWindowFocused();
-        ge.input->SetInputEnabled(mWasFocused);
+    if (ImGui::IsWindowFocused() != _wasFocused) {
+        _wasFocused = ImGui::IsWindowFocused();
+        ge.input->SetInputEnabled(_wasFocused);
     }
 
     ImGui::End();
 }
 
 int jleGameEditorWindow::GetWindowWidth() const {
-    return int(mLastGameWindowWidth);
+    return int(_lastGameWindowWidth);
 }
 
 int jleGameEditorWindow::GetWindowHeight() const {
-    return int(mLastGameWindowHeight);
+    return int(_lastGameWindowHeight);
 }
 
-int jleGameEditorWindow::GetWindowPosX() const { return mWindowPositionX; }
+int jleGameEditorWindow::GetWindowPosX() const { return _windowPositionX; }
 
-int jleGameEditorWindow::GetWindowPosY() const { return mWindowPositionY; }
+int jleGameEditorWindow::GetWindowPosY() const { return _windowPositionY; }

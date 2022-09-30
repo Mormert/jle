@@ -175,12 +175,12 @@ jleQuadRendering_OpenGL::~jleQuadRendering_OpenGL() {
 
 void jleQuadRendering_OpenGL::SendTexturedQuad(
     TexturedQuad& texturedQuad, RenderingMethod renderingMethod) {
-    mQueuedTexturedQuads.push_back(texturedQuad);
+    _queuedTexturedQuads.push_back(texturedQuad);
 }
 
 void jleQuadRendering_OpenGL::SendTexturedHeightQuad(
     TexturedHeightQuad& texturedHeightQuad, RenderingMethod renderingMethod) {
-    mQueuedTexturedHeightQuads.push_back(texturedHeightQuad);
+    _queuedTexturedHeightQuads.push_back(texturedHeightQuad);
 }
 
 void jleQuadRendering_OpenGL::SendColoredQuad(ColoredQuad& coloredQuad,
@@ -191,14 +191,14 @@ void jleQuadRendering_OpenGL::QueueRender(
     jleFramebufferInterface& framebufferOut, jleCamera& camera) {
     Render(framebufferOut,
            camera,
-           mQueuedTexturedQuads,
-           mQueuedTexturedHeightQuads,
+           _queuedTexturedQuads,
+           _queuedTexturedHeightQuads,
            true);
 }
 
 void jleQuadRendering_OpenGL::ClearBuffersForNextFrame() {
-    mQueuedTexturedQuads.clear();
-    mQueuedTexturedHeightQuads.clear();
+    _queuedTexturedQuads.clear();
+    _queuedTexturedHeightQuads.clear();
 }
 
 void jleQuadRendering_OpenGL::Render(
@@ -213,7 +213,7 @@ void jleQuadRendering_OpenGL::Render(
     const int viewportWidth = framebufferOut.GetWidth();
     const int viewportHeight = framebufferOut.GetHeight();
 
-    camera.mPosition = glm::vec3{-camera.mX, -camera.mY, 0.f};
+    camera._position = glm::vec3{-camera._x, -camera._y, 0.f};
     camera.SetOrthographicProjection(
         viewportWidth, viewportHeight, -10000.f, 10000.f);
 
@@ -235,7 +235,7 @@ void jleQuadRendering_OpenGL::Render(
     ProcessTexturedHeightQuads(
         texturedHeightQuads,
         view,
-        glm::vec3{camera.mXNoOffset, camera.mYNoOffset, 0.f});
+        glm::vec3{camera._xNoOffset, camera._yNoOffset, 0.f});
 
     framebufferOut.BindToDefaultFramebuffer();
 }

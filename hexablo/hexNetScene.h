@@ -23,10 +23,10 @@ public:
 private:
     std::weak_ptr<jleObject> GetPlayerFromId(const std::string& id);
 
-    std::map<std::string, std::weak_ptr<jleObject>> mPlayers;
+    std::map<std::string, std::weak_ptr<jleObject>> _players;
 
     std::weak_ptr<oFireball> GetFireballFromId(const int id);
-    std::map<int, std::weak_ptr<oFireball>> mFireballs;
+    std::map<int, std::weak_ptr<oFireball>> _fireballs;
 };
 
 #endif // HEXABLO_HEXNETSCENE_H
