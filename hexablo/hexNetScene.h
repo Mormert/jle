@@ -14,10 +14,11 @@ public:
 
     void OnNetFailed() override;
 
-    void OnNetClosed(const std::string &reason) override;
+    void OnNetClosed(const std::string& reason) override;
 
-    void ProcessNetMessage(const std::string &event, const nlohmann::json &message, const std::string &sender) override;
-
+    void ProcessNetMessage(const std::string& event,
+                           const nlohmann::json& message,
+                           const std::string& sender) override;
 
 private:
     std::weak_ptr<jleObject> GetPlayerFromId(const std::string& id);
@@ -26,9 +27,6 @@ private:
 
     std::weak_ptr<oFireball> GetFireballFromId(const int id);
     std::map<int, std::weak_ptr<oFireball>> mFireballs;
-
-
 };
 
-
-#endif //HEXABLO_HEXNETSCENE_H
+#endif // HEXABLO_HEXNETSCENE_H

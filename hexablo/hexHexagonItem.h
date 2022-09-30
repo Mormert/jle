@@ -3,12 +3,11 @@
 #ifndef HEXABLO_HEXHEXAGONITEM_H
 #define HEXABLO_HEXHEXAGONITEM_H
 
-#include <glm/glm.hpp>
 #include "json.hpp"
+#include <glm/glm.hpp>
 
 class hexHexagonItem {
 public:
-
     virtual ~hexHexagonItem();
 
     bool TryUpdateHexagonItemPlacement(int q, int r);
@@ -21,13 +20,11 @@ private:
     int mHexagonQ{0}, mHexagonR{0};
     bool mIsPlacedOnWorld{false};
 
-    friend void to_json(nlohmann::json &j, const hexHexagonItem &h);
-    friend void from_json(const nlohmann::json &j, hexHexagonItem &h);
-
+    friend void to_json(nlohmann::json& j, const hexHexagonItem& h);
+    friend void from_json(const nlohmann::json& j, hexHexagonItem& h);
 };
 
-void to_json(nlohmann::json &j, const hexHexagonItem &h);
-void from_json(const nlohmann::json &j, hexHexagonItem &h);
+void to_json(nlohmann::json& j, const hexHexagonItem& h);
+void from_json(const nlohmann::json& j, hexHexagonItem& h);
 
-
-#endif //HEXABLO_HEXHEXAGONITEM_H
+#endif // HEXABLO_HEXHEXAGONITEM_H

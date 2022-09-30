@@ -86,9 +86,9 @@
             "_custom_components": [
                 {
                     "_comp_name": "cTransform",
-                    "depth": 0.0,
-                    "x": 777.0,
-                    "y": -243.0
+                    "depth": 7.28000020980835,
+                    "x": 504.0,
+                    "y": 1314.0
                 },
                 {
                     "_comp_name": "cAseprite",
@@ -107,14 +107,14 @@
                     ],
                     "offsetX": -32,
                     "offsetY": -40,
-                    "textureX": 288,
+                    "textureX": 48,
                     "textureY": 0,
                     "width": 48
                 },
                 {
                     "_comp_name": "cCamera",
-                    "offsetX": -240.0,
-                    "offsetY": -120.0
+                    "offsetX": -400.0,
+                    "offsetY": -300.0
                 }
             ],
             "_instance_name": "oMyPlayer_12",
@@ -123,8 +123,8 @@
             "mEastTextureY": 0,
             "mHealthBarObjectTemplatePath": "GR:otemps/oCharacterHealthBar.tmpl",
             "mHexagonItem": {
-                "mHexagonQ": 55,
-                "mHexagonR": -27
+                "mHexagonQ": 36,
+                "mHexagonR": 146
             },
             "mInterpBetweenHexasSpeed": 4.0,
             "mMaxHP": 50,
@@ -170,7 +170,7 @@
                     ],
                     "offsetX": -48,
                     "offsetY": -48,
-                    "textureX": 0,
+                    "textureX": 258,
                     "textureY": 0,
                     "width": 86
                 }
@@ -231,7 +231,7 @@
                             "mAsepritePaths_STRVEC": [],
                             "offsetX": 0,
                             "offsetY": 0,
-                            "textureX": 128,
+                            "textureX": 160,
                             "textureY": 0,
                             "width": 0
                         }
@@ -282,7 +282,7 @@
                     ],
                     "offsetX": -48,
                     "offsetY": -48,
-                    "textureX": 86,
+                    "textureX": 258,
                     "textureY": 0,
                     "width": 86
                 }
@@ -398,7 +398,7 @@
                     ],
                     "offsetX": -48,
                     "offsetY": -48,
-                    "textureX": 172,
+                    "textureX": 344,
                     "textureY": 0,
                     "width": 86
                 }

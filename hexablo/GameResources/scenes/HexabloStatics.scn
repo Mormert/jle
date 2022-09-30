@@ -87,8 +87,8 @@
                             "textureX": 189,
                             "textureY": 114,
                             "width": 100,
-                            "x": 895.0,
-                            "y": -262.0
+                            "x": 782.0,
+                            "y": -455.0
                         },
                         {
                             "_comp_name": "cTransform",
@@ -109,14 +109,14 @@
                     "textureX": 189,
                     "textureY": 84,
                     "width": 102,
-                    "x": 895.0,
-                    "y": -292.0
+                    "x": 782.0,
+                    "y": -485.0
                 },
                 {
                     "_comp_name": "cTransform",
                     "depth": 0.0,
-                    "x": 895.0,
-                    "y": -292.0
+                    "x": 782.0,
+                    "y": -485.0
                 }
             ],
             "_instance_name": "depthTest01"
@@ -161,11 +161,737 @@
                 {
                     "_comp_name": "cTransform",
                     "depth": 0.0,
-                    "x": 683.0,
-                    "y": -622.0
+                    "x": 195.0,
+                    "y": -664.0
                 }
             ],
             "_instance_name": "jleObject_43"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSprite",
+                    "depth": 0.0,
+                    "height": 256,
+                    "path": "GR:gfx/conceptart/DepthTower/diffuse.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 256,
+                    "x": 859.0,
+                    "y": -328.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 859.0,
+                    "y": -328.0
+                }
+            ],
+            "_instance_name": "jleObject_44"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/DepthTower/pd.png",
+                    "pathHeight": "GR:gfx/conceptart/DepthTower/ph.png",
+                    "pathNormal": "GR:gfx/conceptart/DepthTower/pn.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": 423.0,
+                    "y": -999.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 423.0,
+                    "y": -999.0
+                }
+            ],
+            "_instance_name": "tower2"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1024,
+                    "pathDiffuse": "GR:gfx/conceptart/DepthTower/S.png",
+                    "pathHeight": "GR:gfx/conceptart/DepthTower/ph.png",
+                    "pathNormal": "GR:gfx/conceptart/DepthTower/SN.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1024,
+                    "x": 805.0,
+                    "y": -391.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 805.0,
+                    "y": -391.0
+                }
+            ],
+            "_instance_name": "tower1"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Abbaye/abbaye_color.png",
+                    "pathHeight": "GR:gfx/conceptart/Abbaye/abbaye_heightmap.png",
+                    "pathNormal": "GR:gfx/conceptart/Abbaye/abbaye_normal.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1920,
+                    "x": -205.0,
+                    "y": -2182.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": -205.0,
+                    "y": -2182.0
+                }
+            ],
+            "_instance_name": "jleObject_47"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 256,
+                    "pathDiffuse": "GR:gfx/conceptart/Sarco/sarco-color.png",
+                    "pathHeight": "GR:gfx/conceptart/Sarco/sarco-heightmap.png",
+                    "pathNormal": "GR:gfx/conceptart/Sarco/sarco-normal.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 256,
+                    "x": 1136.0,
+                    "y": -221.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 1136.0,
+                    "y": -221.0
+                }
+            ],
+            "_instance_name": "jleObject_48"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Tree1/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Tree1/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Tree1/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": -1350.0,
+                    "y": -307.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": -1350.0,
+                    "y": -307.0
+                }
+            ],
+            "_instance_name": "tree"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/TreeTop/D.png",
+                    "pathHeight": "GR:gfx/conceptart/TreeTop/H.png",
+                    "pathNormal": "GR:gfx/conceptart/TreeTop/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": 1464.0,
+                    "y": -565.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 1464.0,
+                    "y": -565.0
+                }
+            ],
+            "_instance_name": "treeTop"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/sphere/D.png",
+                    "pathHeight": "GR:gfx/conceptart/sphere/H.png",
+                    "pathNormal": "GR:gfx/conceptart/sphere/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": 487.0,
+                    "y": -436.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 487.0,
+                    "y": -436.0
+                }
+            ],
+            "_instance_name": "sphere"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Sphere2/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Sphere2/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Sphere2/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": -1056.0,
+                    "y": -145.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": -1056.0,
+                    "y": -145.0
+                }
+            ],
+            "_instance_name": "tree"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/DepthTower/D.png",
+                    "pathHeight": "GR:gfx/conceptart/DepthTower/H.png",
+                    "pathNormal": "GR:gfx/conceptart/DepthTower/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": -838.0,
+                    "y": -392.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": -838.0,
+                    "y": -392.0
+                }
+            ],
+            "_instance_name": "towerss"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Ground/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Ground/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Ground/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": -1990.0,
+                    "y": -311.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": -1990.0,
+                    "y": -311.0
+                }
+            ],
+            "_instance_name": "ground"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Ground/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Ground/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Ground/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": -925.0,
+                    "y": -309.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": -925.0,
+                    "y": -309.0
+                }
+            ],
+            "_instance_name": "ground"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Tree2/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Tree2/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Tree2/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": -1213.0,
+                    "y": -1272.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": -1213.0,
+                    "y": -1272.0
+                }
+            ],
+            "_instance_name": "tree"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/DepthTower/D2.png",
+                    "pathHeight": "GR:gfx/conceptart/DepthTower/H5.png",
+                    "pathNormal": "GR:gfx/conceptart/DepthTower/N2.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": -1032.0,
+                    "y": -1200.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": -1032.0,
+                    "y": -1200.0
+                }
+            ],
+            "_instance_name": "tower2"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/DepthTower/D2.png",
+                    "pathHeight": "GR:gfx/conceptart/DepthTower/H5.png",
+                    "pathNormal": "GR:gfx/conceptart/DepthTower/N2.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": -1492.0,
+                    "y": -959.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": -1492.0,
+                    "y": -959.0
+                }
+            ],
+            "_instance_name": "tower2"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/DepthTower/D2.png",
+                    "pathHeight": "GR:gfx/conceptart/DepthTower/H5.png",
+                    "pathNormal": "GR:gfx/conceptart/DepthTower/N2.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": -1918.0,
+                    "y": -660.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": -1918.0,
+                    "y": -660.0
+                }
+            ],
+            "_instance_name": "tower2"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/DepthTower/D2.png",
+                    "pathHeight": "GR:gfx/conceptart/DepthTower/H5.png",
+                    "pathNormal": "GR:gfx/conceptart/DepthTower/N2.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": -1869.0,
+                    "y": -1028.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": -1869.0,
+                    "y": -1028.0
+                }
+            ],
+            "_instance_name": "tower2"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Tree2/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Tree2/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Tree2/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": -2138.0,
+                    "y": -428.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": -2138.0,
+                    "y": -428.0
+                }
+            ],
+            "_instance_name": "tree"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 700,
+                    "pathDiffuse": "GR:gfx/conceptart/Cone/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Cone/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Cone/N.png",
+                    "textureX": 400,
+                    "textureY": 600,
+                    "width": 500,
+                    "x": -1332.0,
+                    "y": 175.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": -1332.0,
+                    "y": 175.0
+                }
+            ],
+            "_instance_name": "cone"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Ground/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Ground/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Ground/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": 59.0,
+                    "y": 891.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 59.0,
+                    "y": 891.0
+                }
+            ],
+            "_instance_name": "ground"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Pillar/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Pillar/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Pillar/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": 13.0,
+                    "y": 705.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 13.0,
+                    "y": 705.0
+                }
+            ],
+            "_instance_name": "tower"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Tree3/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Tree3/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Tree3/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": 146.0,
+                    "y": 826.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 146.0,
+                    "y": 826.0
+                }
+            ],
+            "_instance_name": "tree"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Tree3/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Tree3/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Tree3/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": 354.0,
+                    "y": 886.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 354.0,
+                    "y": 886.0
+                }
+            ],
+            "_instance_name": "tree"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Tree3/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Tree3/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Tree3/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": -96.0,
+                    "y": 770.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": -96.0,
+                    "y": 770.0
+                }
+            ],
+            "_instance_name": "tree"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Pillar/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Pillar/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Pillar/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": 93.0,
+                    "y": 745.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 93.0,
+                    "y": 745.0
+                }
+            ],
+            "_instance_name": "tower"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Pillar/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Pillar/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Pillar/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": 172.0,
+                    "y": 741.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 172.0,
+                    "y": 741.0
+                }
+            ],
+            "_instance_name": "tower"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Pillar/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Pillar/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Pillar/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": 129.0,
+                    "y": 683.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 129.0,
+                    "y": 683.0
+                }
+            ],
+            "_instance_name": "tower"
+        },
+        {
+            "__obj_name": "jleObject",
+            "_childObjects": [],
+            "_custom_components": [
+                {
+                    "_comp_name": "cSpriteDepth",
+                    "depth": 0.0,
+                    "height": 1080,
+                    "pathDiffuse": "GR:gfx/conceptart/Pillar/D.png",
+                    "pathHeight": "GR:gfx/conceptart/Pillar/H.png",
+                    "pathNormal": "GR:gfx/conceptart/Pillar/N.png",
+                    "textureX": 0,
+                    "textureY": 0,
+                    "width": 1080,
+                    "x": 179.0,
+                    "y": 871.0
+                },
+                {
+                    "_comp_name": "cTransform",
+                    "depth": 0.0,
+                    "x": 179.0,
+                    "y": 871.0
+                }
+            ],
+            "_instance_name": "tower"
         }
     ],
     "_sceneName": "HexabloStatics"

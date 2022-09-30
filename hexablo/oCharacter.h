@@ -3,20 +3,19 @@
 #ifndef HEXABLO_OCHARACTER_H
 #define HEXABLO_OCHARACTER_H
 
-#include "jleObject.h"
-#include "cTransform.h"
-#include "cSprite.h"
 #include "cAseprite.h"
-#include "oCharacterHealthBar.h"
+#include "cSprite.h"
+#include "cTransform.h"
 #include "hexHexagonItem.h"
+#include "jleObject.h"
+#include "oCharacterHealthBar.h"
 
-#include <memory>
 #include <iostream>
+#include <memory>
 
 class oCharacter : public jleObject {
     JLE_REGISTER_OBJECT_TYPE(oCharacter)
 public:
-
     enum class oCharacterDirection {
         west,
         northwest,
@@ -44,15 +43,14 @@ public:
 
     void Update(float dt) override;
 
-    void ToJson(nlohmann::json &j_out) override;
+    void ToJson(nlohmann::json& j_out) override;
 
-    void FromJson(const nlohmann::json &j_in) override;
+    void FromJson(const nlohmann::json& j_in) override;
 
     std::shared_ptr<cTransform> mTransform{nullptr};
     std::shared_ptr<cAseprite> mAseprite{nullptr};
 
 protected:
-
     void LookAtPosition(int x, int y);
 
     hexHexagonItem mHexagonItem;
@@ -105,8 +103,6 @@ protected:
 
     int mSouthwestTextureX{224};
     int mSouthwestTextureY{};
-
 };
 
-
-#endif //HEXABLO_OCHARACTER_H
+#endif // HEXABLO_OCHARACTER_H

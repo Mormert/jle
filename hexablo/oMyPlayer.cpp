@@ -5,18 +5,16 @@
 #include "hexHexagonFunctions.h"
 #include "jleCore.h"
 
-#include "plog/Log.h"
-#include "oWorld.h"
 #include "oFireball.h"
+#include "oWorld.h"
+#include "plog/Log.h"
 
 #include <glm/glm.hpp>
 
 // TODO: Remove this include:
 #include "jleQuadRendering_OpenGL.h"
 
-void oMyPlayer::SetupDefaultObject() {
-    oCharacter::SetupDefaultObject();
-}
+void oMyPlayer::SetupDefaultObject() { oCharacter::SetupDefaultObject(); }
 
 void oMyPlayer::Start() {
     oCharacter::Start();
@@ -45,8 +43,7 @@ void oMyPlayer::Update(float dt) {
         lightposz -= 1.f;
     }
 
-    if(lightposz <= -200.f)
-    {
+    if (lightposz <= -200.f) {
         lightposz = -200.f;
     }
 
@@ -60,9 +57,9 @@ void oMyPlayer::Update(float dt) {
         LOGV << depthRng;
     }
 
-    jleQuadRendering_OpenGL::lightPos = mTransform->GetWorldXYDepth() + glm::vec3{0, 0, lightposz};
+    jleQuadRendering_OpenGL::lightPos =
+        mTransform->GetWorldXYDepth() + glm::vec3{0, 0, lightposz};
     jleQuadRendering_OpenGL::depthRange = depthRng;
-
 }
 
 void oMyPlayer::Attack(oCharacter::oCharacterDirection direction) {
@@ -74,16 +71,13 @@ void oMyPlayer::Attack(oCharacter::oCharacterDirection direction) {
 
     auto pos = mHexagonItem.GetHexagonItemPlacement();
     jleNetworking::TryEmitJsonData(
-            "basic_attack", {{"q", pos.x},
-                             {"r", pos.y},
-                             {"d", mCharacterDirection}});
+        "basic_attack",
+        {{"q", pos.x}, {"r", pos.y}, {"d", mCharacterDirection}});
 }
 
-void oMyPlayer::ToJson(nlohmann::json &j_out) {
-    oCharacter::ToJson(j_out);
-}
+void oMyPlayer::ToJson(nlohmann::json& j_out) { oCharacter::ToJson(j_out); }
 
-void oMyPlayer::FromJson(const nlohmann::json &j_in) {
+void oMyPlayer::FromJson(const nlohmann::json& j_in) {
     oCharacter::FromJson(j_in);
 }
 
@@ -102,9 +96,11 @@ void oMyPlayer::Movement(float dt) {
     static float currentMoveTime = defaultMoveTime;
 
     if (!canMove) {
-        if (jleCore::core->status->GetCurrentFrameTime() > lastMovement + currentMoveTime) {
+        if (jleCore::core->status->GetCurrentFrameTime() >
+            lastMovement + currentMoveTime) {
             canMove = true;
-        } else {
+        }
+        else {
             return;
         }
     }
@@ -116,7 +112,7 @@ void oMyPlayer::Movement(float dt) {
 
     static bool verticalSide = true;
 
-    auto &&hexagonCoords = mHexagonItem.GetHexagonItemPlacement();
+    auto&& hexagonCoords = mHexagonItem.GetHexagonItemPlacement();
     const int hexagonQ = hexagonCoords.x;
     const int hexagonR = hexagonCoords.y;
 
@@ -125,92 +121,118 @@ void oMyPlayer::Movement(float dt) {
         if (world->IsHexagonWalkable(q, r)) {
             SetHexagonPlacementInterp(q, r);
             jleNetworking::TryEmitJsonData(
-                    "player_pos", {{"q", q},
-                                   {"r", r},
-                                   {"d", mCharacterDirection}});
+                "player_pos", {{"q", q}, {"r", r}, {"d", mCharacterDirection}});
             canMove = false;
             lastMovement = jleCore::core->status->GetCurrentFrameTime();
             currentMoveTime = defaultMoveTime;
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     };
 
     switch (mCharacterDirection) {
 
-        case oCharacterDirection::west:
-            if (TryMoveTo(hexagonQ - 1, hexagonR)) { return; };
-            break;
-        case oCharacterDirection::northwest:
-            if (hexagonR % 2 == 0) {
-                if (TryMoveTo(hexagonQ - 1, hexagonR - 1)) { return; }
-            } else {
-                if (TryMoveTo(hexagonQ, hexagonR - 1)) { return; }
+    case oCharacterDirection::west:
+        if (TryMoveTo(hexagonQ - 1, hexagonR)) {
+            return;
+        };
+        break;
+    case oCharacterDirection::northwest:
+        if (hexagonR % 2 == 0) {
+            if (TryMoveTo(hexagonQ - 1, hexagonR - 1)) {
+                return;
             }
-            break;
-        case oCharacterDirection::north:
-            if (!TryMoveTo(hexagonQ, hexagonR - 2)) {
-                bool moved = false;
-                if (hexagonR % 2 == 0) { // try move like W+A
-                    moved = TryMoveTo(hexagonQ - 1, hexagonR - 1);
-                } else {
-                    moved = TryMoveTo(hexagonQ, hexagonR - 1);
-                }
+        }
+        else {
+            if (TryMoveTo(hexagonQ, hexagonR - 1)) {
+                return;
+            }
+        }
+        break;
+    case oCharacterDirection::north:
+        if (!TryMoveTo(hexagonQ, hexagonR - 2)) {
+            bool moved = false;
+            if (hexagonR % 2 == 0) { // try move like W+A
+                moved = TryMoveTo(hexagonQ - 1, hexagonR - 1);
+            }
+            else {
+                moved = TryMoveTo(hexagonQ, hexagonR - 1);
+            }
 
-                if (!moved) { // try move like W+D
-                    if (hexagonR % 2 == 0) {
-                        TryMoveTo(hexagonQ, hexagonR - 1);
-                    } else {
-                        TryMoveTo(hexagonQ + 1, hexagonR - 1);
-                    }
+            if (!moved) { // try move like W+D
+                if (hexagonR % 2 == 0) {
+                    TryMoveTo(hexagonQ, hexagonR - 1);
+                }
+                else {
+                    TryMoveTo(hexagonQ + 1, hexagonR - 1);
                 }
             }
-            break;
-        case oCharacterDirection::northeast:
-            if (hexagonR % 2 == 0) {
-                if (TryMoveTo(hexagonQ, hexagonR - 1)) { return; }
-            } else {
-                if (TryMoveTo(hexagonQ + 1, hexagonR - 1)) { return; }
+        }
+        break;
+    case oCharacterDirection::northeast:
+        if (hexagonR % 2 == 0) {
+            if (TryMoveTo(hexagonQ, hexagonR - 1)) {
+                return;
             }
-            break;
-        case oCharacterDirection::east:
-            if (TryMoveTo(hexagonQ + 1, hexagonR)) { return; }
-            break;
-        case oCharacterDirection::southeast:
-            if (hexagonR % 2 == 0) {
-                if (TryMoveTo(hexagonQ, hexagonR + 1)) { return; }
-            } else {
-                if (TryMoveTo(hexagonQ + 1, hexagonR + 1)) { return; }
+        }
+        else {
+            if (TryMoveTo(hexagonQ + 1, hexagonR - 1)) {
+                return;
             }
-            break;
-        case oCharacterDirection::south:
-            if (!TryMoveTo(hexagonQ, hexagonR + 2)) {
-                bool moved = false;
-                if (hexagonR % 2 == 0) {  // try move like A+S
-                    moved = TryMoveTo(hexagonQ - 1, hexagonR + 1);
-                } else {
-                    moved = TryMoveTo(hexagonQ, hexagonR + 1);
-                }
+        }
+        break;
+    case oCharacterDirection::east:
+        if (TryMoveTo(hexagonQ + 1, hexagonR)) {
+            return;
+        }
+        break;
+    case oCharacterDirection::southeast:
+        if (hexagonR % 2 == 0) {
+            if (TryMoveTo(hexagonQ, hexagonR + 1)) {
+                return;
+            }
+        }
+        else {
+            if (TryMoveTo(hexagonQ + 1, hexagonR + 1)) {
+                return;
+            }
+        }
+        break;
+    case oCharacterDirection::south:
+        if (!TryMoveTo(hexagonQ, hexagonR + 2)) {
+            bool moved = false;
+            if (hexagonR % 2 == 0) { // try move like A+S
+                moved = TryMoveTo(hexagonQ - 1, hexagonR + 1);
+            }
+            else {
+                moved = TryMoveTo(hexagonQ, hexagonR + 1);
+            }
 
-                if (!moved) { // try move like W+D
-                    if (hexagonR % 2 == 0) {
-                        TryMoveTo(hexagonQ, hexagonR + 1);
-                    } else {
-                        TryMoveTo(hexagonQ + 1, hexagonR + 1);
-                    }
+            if (!moved) { // try move like W+D
+                if (hexagonR % 2 == 0) {
+                    TryMoveTo(hexagonQ, hexagonR + 1);
+                }
+                else {
+                    TryMoveTo(hexagonQ + 1, hexagonR + 1);
                 }
             }
-            break;
-        case oCharacterDirection::southwest:
-            if (hexagonR % 2 == 0) {
-                if (TryMoveTo(hexagonQ - 1, hexagonR + 1)) { return; }
-            } else {
-                if (TryMoveTo(hexagonQ, hexagonR + 1)) { return; }
+        }
+        break;
+    case oCharacterDirection::southwest:
+        if (hexagonR % 2 == 0) {
+            if (TryMoveTo(hexagonQ - 1, hexagonR + 1)) {
+                return;
             }
-            break;
+        }
+        else {
+            if (TryMoveTo(hexagonQ, hexagonR + 1)) {
+                return;
+            }
+        }
+        break;
     }
-
 }
 
 void oMyPlayer::Movement_v1(float dt) {
@@ -221,9 +243,11 @@ void oMyPlayer::Movement_v1(float dt) {
     static float currentMoveTime = defaultMoveTime;
 
     if (!canMove) {
-        if (jleCore::core->status->GetCurrentFrameTime() > lastMovement + currentMoveTime) {
+        if (jleCore::core->status->GetCurrentFrameTime() >
+            lastMovement + currentMoveTime) {
             canMove = true;
-        } else {
+        }
+        else {
             return;
         }
     }
@@ -238,7 +262,7 @@ void oMyPlayer::Movement_v1(float dt) {
 
     static bool verticalSide = true;
 
-    auto &&hexagonCoords = mHexagonItem.GetHexagonItemPlacement();
+    auto&& hexagonCoords = mHexagonItem.GetHexagonItemPlacement();
     const int hexagonQ = hexagonCoords.x;
     const int hexagonR = hexagonCoords.y;
 
@@ -250,83 +274,118 @@ void oMyPlayer::Movement_v1(float dt) {
             lastMovement = jleCore::core->status->GetCurrentFrameTime();
             currentMoveTime = defaultMoveTime;
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     };
 
     if (w && d) {
         if (hexagonR % 2 == 0) {
-            if (TryMoveTo(hexagonQ, hexagonR - 1)) { return; }
-        } else {
-            if (TryMoveTo(hexagonQ + 1, hexagonR - 1)) { return; }
+            if (TryMoveTo(hexagonQ, hexagonR - 1)) {
+                return;
+            }
+        }
+        else {
+            if (TryMoveTo(hexagonQ + 1, hexagonR - 1)) {
+                return;
+            }
         }
         return;
-    } else if (w && a) {
+    }
+    else if (w && a) {
         if (hexagonR % 2 == 0) {
-            if (TryMoveTo(hexagonQ - 1, hexagonR - 1)) { return; }
-        } else {
-            if (TryMoveTo(hexagonQ, hexagonR - 1)) { return; }
+            if (TryMoveTo(hexagonQ - 1, hexagonR - 1)) {
+                return;
+            }
+        }
+        else {
+            if (TryMoveTo(hexagonQ, hexagonR - 1)) {
+                return;
+            }
         }
         return;
-    } else if (a && s) {
+    }
+    else if (a && s) {
         if (hexagonR % 2 == 0) {
-            if (TryMoveTo(hexagonQ - 1, hexagonR + 1)) { return; }
-        } else {
-            if (TryMoveTo(hexagonQ, hexagonR + 1)) { return; }
+            if (TryMoveTo(hexagonQ - 1, hexagonR + 1)) {
+                return;
+            }
+        }
+        else {
+            if (TryMoveTo(hexagonQ, hexagonR + 1)) {
+                return;
+            }
         }
         return;
-    } else if (s && d) {
+    }
+    else if (s && d) {
         if (hexagonR % 2 == 0) {
-            if (TryMoveTo(hexagonQ, hexagonR + 1)) { return; }
-        } else {
-            if (TryMoveTo(hexagonQ + 1, hexagonR + 1)) { return; }
+            if (TryMoveTo(hexagonQ, hexagonR + 1)) {
+                return;
+            }
+        }
+        else {
+            if (TryMoveTo(hexagonQ + 1, hexagonR + 1)) {
+                return;
+            }
         }
         return;
-    } else if (a) {
-        if (TryMoveTo(hexagonQ - 1, hexagonR)) { return; }
+    }
+    else if (a) {
+        if (TryMoveTo(hexagonQ - 1, hexagonR)) {
+            return;
+        }
         return;
-    } else if (d) {
-        if (TryMoveTo(hexagonQ + 1, hexagonR)) { return; }
+    }
+    else if (d) {
+        if (TryMoveTo(hexagonQ + 1, hexagonR)) {
+            return;
+        }
         return;
-    } else if (w) {
+    }
+    else if (w) {
         if (!TryMoveTo(hexagonQ, hexagonR - 2)) {
             bool moved = false;
             if (hexagonR % 2 == 0) { // try move like W+A
                 moved = TryMoveTo(hexagonQ - 1, hexagonR - 1);
-            } else {
+            }
+            else {
                 moved = TryMoveTo(hexagonQ, hexagonR - 1);
             }
 
             if (!moved) { // try move like W+D
                 if (hexagonR % 2 == 0) {
                     TryMoveTo(hexagonQ, hexagonR - 1);
-                } else {
+                }
+                else {
                     TryMoveTo(hexagonQ + 1, hexagonR - 1);
                 }
             }
         }
         return;
-    } else if (s) {
+    }
+    else if (s) {
         if (!TryMoveTo(hexagonQ, hexagonR + 2)) {
             bool moved = false;
-            if (hexagonR % 2 == 0) {  // try move like A+S
+            if (hexagonR % 2 == 0) { // try move like A+S
                 moved = TryMoveTo(hexagonQ - 1, hexagonR + 1);
-            } else {
+            }
+            else {
                 moved = TryMoveTo(hexagonQ, hexagonR + 1);
             }
 
             if (!moved) { // try move like W+D
                 if (hexagonR % 2 == 0) {
                     TryMoveTo(hexagonQ, hexagonR + 1);
-                } else {
+                }
+                else {
                     TryMoveTo(hexagonQ + 1, hexagonR + 1);
                 }
             }
         }
         return;
     }
-
 }
 
 void oMyPlayer::Abilities() {
@@ -335,21 +394,22 @@ void oMyPlayer::Abilities() {
 
     if (q && mCanThrowFireball) {
 
-
-        auto t = mContainedInScene->SpawnTemplateObject(jleRelativePath{"GR:otemps/FireballTempl.tmpl"});
+        auto t = mContainedInScene->SpawnTemplateObject(
+            jleRelativePath{"GR:otemps/FireballTempl.tmpl"});
         const auto fireball = std::static_pointer_cast<oFireball>(t);
         auto mx = hexHelperFunctions::GetPixelatedMouseXWorldSpace();
         auto my = hexHelperFunctions::GetPixelatedMouseYWorldSpace();
 
-        fireball->GetComponent<cTransform>()->SetWorldPositionX(mTransform->GetWorldX() - 20.f);
-        fireball->GetComponent<cTransform>()->SetWorldPositionY(mTransform->GetWorldY() - 10);
-
+        fireball->GetComponent<cTransform>()->SetWorldPositionX(
+            mTransform->GetWorldX() - 20.f);
+        fireball->GetComponent<cTransform>()->SetWorldPositionY(
+            mTransform->GetWorldY() - 10);
 
         auto *world = oWorld::sWorld;
-        auto p = hexHexagonFunctions::PixelToHex(mx, my, world->mHexSizeX, world->mHexSizeY);
+        auto p = hexHexagonFunctions::PixelToHex(
+            mx, my, world->mHexSizeX, world->mHexSizeY);
 
         fireball->SetTarget(p.x, p.y);
-
 
         mCanThrowFireball = false;
 
@@ -359,8 +419,8 @@ void oMyPlayer::Abilities() {
         };
 
         // Can throw fireball again in x seconds
-        jleCore::core->GetTimerManager().
-                ExecuteFuncInSecondsWeakData(0.2, futureFunc, GetWeakPtrToThis());
+        jleCore::core->GetTimerManager().ExecuteFuncInSecondsWeakData(
+            0.2, futureFunc, GetWeakPtrToThis());
 
         return;
     }
