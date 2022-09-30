@@ -182,7 +182,9 @@ void jleWindow_GLFW_OpenGL::InitWindow(
                                      &images[0].height,
                                      nullptr,
                                      4);
+#ifndef linux
         glfwSetWindowIcon(nativeWindow, 1, images);
+#endif
         stbi_image_free(images[0].pixels);
     }
 }
