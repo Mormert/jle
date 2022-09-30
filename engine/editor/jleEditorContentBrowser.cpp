@@ -169,7 +169,10 @@ void jleEditorContentBrowser::ContentBrowser() {
         ImGui::SameLine();
     }
 
-    ImGui::Text("%ls", mSelectedDirectory.c_str());
+    {
+        auto text = mSelectedDirectory.wstring();
+        ImGui::Text("%.*ls", static_cast<int>(text.size()), text.data());
+    }
 
     ImGui::BeginGroup();
 

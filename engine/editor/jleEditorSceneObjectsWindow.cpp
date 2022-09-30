@@ -164,7 +164,9 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
             bool hasAnObjectSelected = false;
             std::shared_ptr<jleObject> selectedObjectSafePtr;
             if (selectedObjectSafePtr = selectedObject.lock()) {
-                ImGui::Text(selectedObjectSafePtr->mInstanceName.c_str());
+                auto text =
+                    std::string_view{selectedObjectSafePtr->mInstanceName};
+                ImGui::Text("%.*s", static_cast<int>(text.size()), text.data());
                 hasAnObjectSelected = true;
             }
             else {
@@ -245,9 +247,13 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
                         ImGui::EndTabItem();
                     }
                     if (ImGui::BeginTabItem("Details")) {
-                        ImGui::Text(
-                            "Object type   : %s",
-                            selectedObjectSafePtr->GetObjectNameVirtual());
+                        {
+                            auto name =
+                                selectedObjectSafePtr->GetObjectNameVirtual();
+                            ImGui::Text("Object type   : %.*s",
+                                        static_cast<int>(name.size()),
+                                        name.data());
+                        }
                         ImGui::Text(
                             "Instance name : %s",
                             selectedObjectSafePtr->mInstanceName.c_str());
