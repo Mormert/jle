@@ -69,9 +69,9 @@ int resize_canvas_js(int width, int height) {
 
     printf("Change window size: %d, %d", width, height);
 
-    const auto& window = Window_GLFW_OpenGL::activeWindow;
+    const auto& window = jleWindow_GLFW_OpenGL::activeWindow;
 
-    Window_GLFW_OpenGL::framebuffer_size_callback(nullptr, width, height);
+    jleWindow_GLFW_OpenGL::framebuffer_size_callback(nullptr, width, height);
 
     return 1;
 }
