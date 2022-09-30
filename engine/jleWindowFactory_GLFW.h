@@ -10,5 +10,6 @@ class jleWindowFactory_GLFW : public jleWindowFactoryInterface {
 public:
     std::unique_ptr<jleWindowAPIInterface> CreateWin() override;
 
-    std::unique_ptr<jleWindowInitializerInterface> CreateWindowInitializer() override;
+    std::unique_ptr<jleWindowInitializerInterface> CreateWindowInitializer()
+        override;
 };

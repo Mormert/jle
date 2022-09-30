@@ -25,8 +25,9 @@
 
 #include <GLFW/glfw3.h>
 
-jleSceneEditorWindow::jleSceneEditorWindow(const std::string& window_name,
-                                     std::shared_ptr<jleFramebufferInterface>& framebuffer)
+jleSceneEditorWindow::jleSceneEditorWindow(
+    const std::string& window_name,
+    std::shared_ptr<jleFramebufferInterface>& framebuffer)
     : iEditorImGuiWindow(window_name),
       mTransformMarkerImage("EditorResources/icons/transform_marker.png") {
     mFramebuffer = framebuffer;
@@ -63,9 +64,9 @@ void jleSceneEditorWindow::Update(jleGameEngine& ge) {
         int32_t(cursorScreenPos.y) - viewport->Pos.y;
 
     const auto previousFrameCursorPos = mLastCursorPos;
-    mLastCursorPos =
-        std::static_pointer_cast<jleWindowInternalAPIInterface>(jleCore::core->window)
-            ->GetCursor();
+    mLastCursorPos = std::static_pointer_cast<jleWindowInternalAPIInterface>(
+                         jleCore::core->window)
+                         ->GetCursor();
     const int32_t mouseX = mLastCursorPos.first;
     const int32_t mouseY = mLastCursorPos.second;
     const int32_t mouseDeltaX = mouseX - previousFrameCursorPos.first;
@@ -119,8 +120,8 @@ void jleSceneEditorWindow::Update(jleGameEngine& ge) {
             mTexturedQuad.y = transform->GetWorldY() - 64.f;
             std::vector<TexturedQuad> texturedQuads{mTexturedQuad};
             auto quadRenderer =
-                ((jleQuadRenderingInternalInterface *)(jleCore::core->rendering->quads
-                                                .get()));
+                ((jleQuadRenderingInternalInterface *)(jleCore::core->rendering
+                                                           ->quads.get()));
             quadRenderer->Render(*mFramebuffer,
                                  jleEditor::mEditorCamera,
                                  texturedQuads,

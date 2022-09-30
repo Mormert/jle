@@ -12,7 +12,8 @@ jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string& window_name)
 
 void jleEditorWindowsPanel::Update(jleGameEngine& ge) { DockspaceUpdate(ge); }
 
-void jleEditorWindowsPanel::AddWindow(std::shared_ptr<iEditorImGuiWindow> window) {
+void jleEditorWindowsPanel::AddWindow(
+    std::shared_ptr<iEditorImGuiWindow> window) {
     windows.push_back(window);
 }
 

@@ -10,7 +10,7 @@
 class jleSceneEditorWindow : public iEditorImGuiWindow {
 public:
     jleSceneEditorWindow(const std::string& window_name,
-                      std::shared_ptr<jleFramebufferInterface>& framebuffer);
+                         std::shared_ptr<jleFramebufferInterface>& framebuffer);
 
     void Update(jleGameEngine& ge) override;
 

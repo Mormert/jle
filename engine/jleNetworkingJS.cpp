@@ -2,6 +2,8 @@
 
 // JavaScript glue code for the Networking class
 
+// clang-format off
+
 #ifdef __EMSCRIPTEN__
 
 #include "jleNetworking.h"

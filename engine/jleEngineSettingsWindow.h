@@ -12,8 +12,8 @@ struct jleEditorSettings;
 class jleEngineSettingsWindow : public iEditorImGuiWindow {
 public:
     jleEngineSettingsWindow(const std::string& window_name,
-                         const std::shared_ptr<jleGameSettings>& gs,
-                         const std::shared_ptr<jleEditorSettings>& es);
+                            const std::shared_ptr<jleGameSettings>& gs,
+                            const std::shared_ptr<jleEditorSettings>& es);
 
     virtual void Update(jleGameEngine& ge) override;
 

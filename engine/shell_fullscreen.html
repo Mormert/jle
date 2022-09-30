@@ -5,8 +5,8 @@
 <!doctype html>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+          name="viewport"/>
     <title>jle game</title>
     <style>
         body {
@@ -33,16 +33,16 @@
             -ms-interpolation-mode: nearest-neighbor;
         }
     </style>
-    <meta name="description" content="">
-    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+    <meta content="" name="description">
+    <meta content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1" name="viewport">
 
 </head>
 <body>
 <canvas class="emscripten" id="canvas" oncontextmenu="return false;"></canvas>
 
-<script src="https://cdn.socket.io/4.4.1/socket.io.min.js"
+<script crossorigin="anonymous"
         integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H"
-        crossorigin="anonymous"></script>
+        src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
 <script type="text/javascript">
     var canvas = document.getElementById("canvas");
 

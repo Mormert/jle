@@ -24,13 +24,13 @@ jleTextRendering_OpenGL::jleTextRendering_OpenGL() { gltInit(); }
 jleTextRendering_OpenGL::~jleTextRendering_OpenGL() { gltTerminate(); }
 
 void jleTextRendering_OpenGL::SendSimpleText(const std::string& text,
-                                          float x,
-                                          float y,
-                                          float scale,
-                                          float r,
-                                          float g,
-                                          float b,
-                                          float a) {
+                                             float x,
+                                             float y,
+                                             float scale,
+                                             float r,
+                                             float g,
+                                             float b,
+                                             float a) {
     jleSimpleTextData td{x, y, scale, r, g, b, a};
     td.gltextPtr = gltCreateText();
     gltSetText(td.gltextPtr, text.c_str());
@@ -38,7 +38,7 @@ void jleTextRendering_OpenGL::SendSimpleText(const std::string& text,
 }
 
 void jleTextRendering_OpenGL::Render(jleFramebufferInterface& framebufferOut,
-                                  const jleCamera& camera) {
+                                     const jleCamera& camera) {
     JLE_SCOPE_PROFILE(jleTextRendering_OpenGL::Render)
     if (mSimpleTextDatas.empty() && mFontTextDatas.empty()) {
         return;
@@ -88,15 +88,15 @@ void jleTextRendering_OpenGL::ClearBuffersForNextFrame() {
 }
 
 void jleTextRendering_OpenGL::SendFontText(jleFont *font,
-                                        const std::string& text,
-                                        uint32_t fontSize,
-                                        float x,
-                                        float y,
-                                        float depth,
-                                        float r,
-                                        float g,
-                                        float b,
-                                        float a) {
+                                           const std::string& text,
+                                           uint32_t fontSize,
+                                           float x,
+                                           float y,
+                                           float depth,
+                                           float r,
+                                           float g,
+                                           float b,
+                                           float a) {
     jleFontTextData data;
     mFontTextDatas.push_back({x, y, depth, r, g, b, a, fontSize, font, text});
 }

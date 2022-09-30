@@ -19,7 +19,8 @@ public:
 
     virtual void Setup(const jleRenderingFactoryInterface& renderFactory) = 0;
 
-    virtual void Render(jleFramebufferInterface& framebufferOut, jleCamera& camera) = 0;
+    virtual void Render(jleFramebufferInterface& framebufferOut,
+                        jleCamera& camera) = 0;
 
     virtual void ClearBuffersForNextFrame() = 0;
 };

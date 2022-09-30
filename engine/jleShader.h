@@ -12,8 +12,8 @@ public:
 
     // Create shader from file
     jleShader(const char *vertexPath,
-                  const char *fragmentPath,
-                  const char *geometryPath = nullptr);
+              const char *fragmentPath,
+              const char *geometryPath = nullptr);
 
     // Create shader from string containing the shader code
     // explicit Shader_OpenGL(std::string vertexCode, std::string fragmentCode,

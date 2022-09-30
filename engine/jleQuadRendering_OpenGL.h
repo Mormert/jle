@@ -29,7 +29,8 @@ public:
     void SendColoredQuad(ColoredQuad& coloredQuad,
                          RenderingMethod renderingMethod) override;
 
-    void QueueRender(jleFramebufferInterface& framebufferOut, jleCamera& camera) override;
+    void QueueRender(jleFramebufferInterface& framebufferOut,
+                     jleCamera& camera) override;
 
     void Render(jleFramebufferInterface& framebufferOut,
                 jleCamera& camera,

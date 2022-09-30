@@ -20,7 +20,7 @@
 
 constexpr float quadVertices[] =
     { // Vertex attributes for a quad that fills the entire screen in NDC
-        // positions   // texCoords
+      // positions   // texCoords
         -1.0f, 1.0f, 0.0f, 1.0f,  -1.0f, -1.0f,
         0.0f,  0.0f, 1.0f, -1.0f, 1.0f,  0.0f,
 

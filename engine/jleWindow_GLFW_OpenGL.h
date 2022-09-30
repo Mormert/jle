@@ -36,9 +36,9 @@ public:
 
     unsigned int GetWindowWidth() override;
 
-    void InitWindow(
-        jleWindowInitializerInterface& windowInitializer,
-        std::shared_ptr<jleRenderingInternalAPIInterface> internalRenderingAPI) override;
+    void InitWindow(jleWindowInitializerInterface& windowInitializer,
+                    std::shared_ptr<jleRenderingInternalAPIInterface>
+                        internalRenderingAPI) override;
 
     unsigned int AddWindowResizeCallback(
         std::function<void(unsigned int, unsigned int)> callback) override;

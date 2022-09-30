@@ -37,15 +37,15 @@ void jleWindow_GLFW_OpenGL::key_callback(
 }
 
 void jleWindow_GLFW_OpenGL::scroll_callback(GLFWwindow *window,
-                                         double xoffset,
-                                         double yoffset) {
+                                            double xoffset,
+                                            double yoffset) {
     activeWindow->currentScrollX = static_cast<float>(xoffset);
     activeWindow->currentScrollY = static_cast<float>(yoffset);
 }
 
 void jleWindow_GLFW_OpenGL::framebuffer_size_callback(GLFWwindow *window,
-                                                   int width,
-                                                   int height) {
+                                                      int width,
+                                                      int height) {
     activeWindow->internalRenderingAPI->SetViewportDimensions(
         0,
         0,
@@ -82,9 +82,13 @@ float jleWindow_GLFW_OpenGL::GetTime() {
     return static_cast<float>(glfwGetTime());
 }
 
-float jleWindow_GLFW_OpenGL::GetScrollX() { return activeWindow->currentScrollX; }
+float jleWindow_GLFW_OpenGL::GetScrollX() {
+    return activeWindow->currentScrollX;
+}
 
-float jleWindow_GLFW_OpenGL::GetScrollY() { return activeWindow->currentScrollY; }
+float jleWindow_GLFW_OpenGL::GetScrollY() {
+    return activeWindow->currentScrollY;
+}
 
 jleWindow_GLFW_OpenGL::~jleWindow_GLFW_OpenGL() {
     glfwDestroyWindow(nativeWindow);
@@ -207,9 +211,13 @@ bool jleWindow_GLFW_OpenGL::GetKey(char key) {
     return glfwGetKey(nativeWindow, key);
 }
 
-bool jleWindow_GLFW_OpenGL::GetKeyPressed(char key) { return sPressedKeys[key]; }
+bool jleWindow_GLFW_OpenGL::GetKeyPressed(char key) {
+    return sPressedKeys[key];
+}
 
-bool jleWindow_GLFW_OpenGL::GetKeyReleased(char key) { return sReleasedKeys[key]; }
+bool jleWindow_GLFW_OpenGL::GetKeyReleased(char key) {
+    return sReleasedKeys[key];
+}
 
 std::pair<int, int> jleWindow_GLFW_OpenGL::GetCursor() {
     double x, y;
@@ -234,7 +242,8 @@ unsigned int jleWindow_GLFW_OpenGL::AddWindowResizeCallback(
     return i;
 }
 
-void jleWindow_GLFW_OpenGL::RemoveWindowResizeCallback(unsigned int callback_id) {
+void jleWindow_GLFW_OpenGL::RemoveWindowResizeCallback(
+    unsigned int callback_id) {
     windowResizedCallbacks.erase(callback_id);
 }
 

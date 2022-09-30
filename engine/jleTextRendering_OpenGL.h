@@ -34,7 +34,8 @@ public:
                       float b,
                       float a) override;
 
-    void Render(jleFramebufferInterface& framebufferOut, const jleCamera& camera) override;
+    void Render(jleFramebufferInterface& framebufferOut,
+                const jleCamera& camera) override;
 
     void ClearBuffersForNextFrame() override;
 

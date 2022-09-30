@@ -86,7 +86,8 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings>& cs)
           std::make_shared<jleKeyboardInputInternal>(
               std::static_pointer_cast<jleWindowInternalAPIInterface>(window)),
           std::make_shared<jleMouseInputInternal>(
-              std::static_pointer_cast<jleWindowInternalAPIInterface>(window)))},
+              std::static_pointer_cast<jleWindowInternalAPIInterface>(
+                  window)))},
       window_initializer{windowFactory->CreateWindowInitializer()},
       texture_creator{std::make_shared<jleTextureCreator_OpenGL>()},
       status{std::make_shared<CoreStatus_Internal>()} {
@@ -158,7 +159,8 @@ void jleCore::MainLoop() {
     Render();
     ((jleWindowInternalAPIInterface *)window.get())->UpdateWindow();
 
-    running = !((jleWindowInternalAPIInterface *)window.get())->WindowShouldClose();
+    running =
+        !((jleWindowInternalAPIInterface *)window.get())->WindowShouldClose();
 }
 
 jleTimerManager& jleCore::GetTimerManager() { return mTimerManager; }

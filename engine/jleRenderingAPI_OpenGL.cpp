@@ -19,21 +19,23 @@
 #include "plog/Log.h"
 
 void jleRenderingAPI_OpenGL::SetViewportDimensions(int x,
-                                                int y,
-                                                unsigned int width,
-                                                unsigned int height) {
+                                                   int y,
+                                                   unsigned int width,
+                                                   unsigned int height) {
     glViewport(x, y, static_cast<int>(width), static_cast<int>(height));
 }
 
 void jleRenderingAPI_OpenGL::Render(jleFramebufferInterface& framebufferOut,
-                                 jleCamera& camera) {
+                                    jleCamera& camera) {
     JLE_SCOPE_PROFILE(jleRenderingAPI_OpenGL::Render)
     ((jleQuadRenderingInternalInterface *)quads.get())
         ->QueueRender(framebufferOut, camera);
-    ((jleTextRenderingInternalInterface *)texts.get())->Render(framebufferOut, camera);
+    ((jleTextRenderingInternalInterface *)texts.get())
+        ->Render(framebufferOut, camera);
 }
 
-void jleRenderingAPI_OpenGL::Setup(const jleRenderingFactoryInterface& renderFactory) {
+void jleRenderingAPI_OpenGL::Setup(
+    const jleRenderingFactoryInterface& renderFactory) {
     LOG_VERBOSE << "Creating text rendering";
     this->texts = renderFactory.CreateTextRendering();
     LOG_VERBOSE << "Creating quad rendering";
@@ -41,6 +43,8 @@ void jleRenderingAPI_OpenGL::Setup(const jleRenderingFactoryInterface& renderFac
 }
 
 void jleRenderingAPI_OpenGL::ClearBuffersForNextFrame() {
-    ((jleQuadRenderingInternalInterface *)quads.get())->ClearBuffersForNextFrame();
-    ((jleTextRenderingInternalInterface *)texts.get())->ClearBuffersForNextFrame();
+    ((jleQuadRenderingInternalInterface *)quads.get())
+        ->ClearBuffersForNextFrame();
+    ((jleTextRenderingInternalInterface *)texts.get())
+        ->ClearBuffersForNextFrame();
 }

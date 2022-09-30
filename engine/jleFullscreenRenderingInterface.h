@@ -10,6 +10,6 @@ public:
 
     virtual void RenderFramebufferFullscreen(
         jleFramebufferInterface& framebuffer,
-                                             unsigned int screenWidth,
-                                             unsigned int screenHeight) = 0;
+        unsigned int screenWidth,
+        unsigned int screenHeight) = 0;
 };
