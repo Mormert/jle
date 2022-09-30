@@ -102,7 +102,7 @@ std::pair<bool, uint32_t> jleEditorContentBrowser::DirectoryTreeViewRecursive(
 }
 
 void jleEditorContentBrowser::ContentHierarchy(std::string directoryPath,
-                                            const std::string& folderName) {
+                                               const std::string& folderName) {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0.0f, 0.0f});
 
     ImGui::Begin("Content Hierarchy");
@@ -169,7 +169,10 @@ void jleEditorContentBrowser::ContentBrowser() {
         ImGui::SameLine();
     }
 
-    ImGui::Text("%ls", mSelectedDirectory.c_str());
+    {
+        auto text = mSelectedDirectory.wstring();
+        ImGui::Text("%.*ls", static_cast<int>(text.size()), text.data());
+    }
 
     ImGui::BeginGroup();
 
@@ -382,7 +385,8 @@ void jleEditorContentBrowser::SelectedFilePopup(std::filesystem::path& file) {
     }
 }
 
-void jleEditorContentBrowser::SelectedFilePopupScene(std::filesystem::path& file) {
+void jleEditorContentBrowser::SelectedFilePopupScene(
+    std::filesystem::path& file) {
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
