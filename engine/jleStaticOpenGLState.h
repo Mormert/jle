@@ -2,10 +2,8 @@
 
 #pragma once
 
-namespace jle {
-    // Contains global data corresponding to the OpenGL State
-    struct jleStaticOpenGLState {
-        static bool globalOpenGLInitialized;
-        static unsigned int globalActiveTexture;
-    };
-}
+// Contains global data corresponding to the OpenGL State
+struct jleStaticOpenGLState {
+    static bool globalOpenGLInitialized;
+    static unsigned int globalActiveTexture;
+};

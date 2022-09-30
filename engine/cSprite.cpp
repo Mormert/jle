@@ -4,17 +4,17 @@
 
 #include "jleObject.h"
 
-
 #include "jleGameEngine.h"
 
-cSprite::cSprite(jle::jleObject *owner, jle::jleScene *scene) : jleComponent{owner, scene}, quad{nullptr} {
+cSprite::cSprite(jleObject *owner, jleScene *scene)
+    : jleComponent{owner, scene}, quad{nullptr} {}
+
+void cSprite::CreateAndSetTextureFromPath(const std::string& path) {
+    quad.texture = jleCore::core->texture_creator->LoadTextureFromPath(
+        jleRelativePath{path});
 }
 
-void cSprite::CreateAndSetTextureFromPath(const std::string &path) {
-    quad.texture = jle::jleCore::core->texture_creator->LoadTextureFromPath(jleRelativePath{path});
-}
-
-void cSprite::SetTexture(std::shared_ptr<jle::iTexture> texture) {
+void cSprite::SetTexture(std::shared_ptr<jleTextureInterface> texture) {
     quad.texture = texture;
 }
 
@@ -34,7 +34,6 @@ void cSprite::Start() {
     if (texturePath != "") {
         CreateAndSetTextureFromPath(texturePath);
     }
-
 }
 
 void cSprite::Update(float dt) {
@@ -42,24 +41,23 @@ void cSprite::Update(float dt) {
     quad.y = transform->GetWorldY();
 
     if (quad.texture.get()) {
-        jle::jleCore::core->rendering->quads->SendTexturedQuad(*&quad, RenderingMethod::Dynamic);
+        jleCore::core->rendering->quads->SendTexturedQuad(
+            *&quad, RenderingMethod::Dynamic);
     }
 }
 
-void cSprite::ToJson(nlohmann::json &j_out) {
-    j_out = nlohmann::json{
-            {"path",     texturePath},
-            {"x",        quad.x},
-            {"y",        quad.y},
-            {"depth",    quad.depth},
-            {"height",   quad.height},
-            {"width",    quad.width},
-            {"textureX", quad.textureX},
-            {"textureY", quad.textureY}
-    };
+void cSprite::ToJson(nlohmann::json& j_out) {
+    j_out = nlohmann::json{{"path", texturePath},
+                           {"x", quad.x},
+                           {"y", quad.y},
+                           {"depth", quad.depth},
+                           {"height", quad.height},
+                           {"width", quad.width},
+                           {"textureX", quad.textureX},
+                           {"textureY", quad.textureY}};
 }
 
-void cSprite::FromJson(const nlohmann::json &j_in) {
+void cSprite::FromJson(const nlohmann::json& j_in) {
     texturePath = j_in.at("path");
     quad.x = j_in.at("x");
     quad.y = j_in.at("y");

@@ -2,22 +2,24 @@
 
 #pragma once
 
-#include "jleComponent.h"
 #include "cTransform.h"
+#include "jleComponent.h"
 
-#include "iQuadRendering.h"
-#include "iTexture.h"
+#include "jleQuadRenderingInterface.h"
+#include "jleTextureInterface.h"
 
 #include <memory>
 #include <string>
 
-class cSpriteDepth : public jle::jleComponent {
+class cSpriteDepth : public jleComponent {
     JLE_REGISTER_COMPONENT_TYPE(cSpriteDepth)
 public:
-    explicit cSpriteDepth(jle::jleObject *owner = nullptr, jle::jleScene *scene = nullptr);
+    explicit cSpriteDepth(jleObject *owner = nullptr,
+                          jleScene *scene = nullptr);
 
-    void CreateAndSetTextureFromPath(const std::string &pathDiffuse, const std::string &pathHeight,
-                                     const std::string &pathNormal);
+    void CreateAndSetTextureFromPath(const std::string& pathDiffuse,
+                                     const std::string& pathHeight,
+                                     const std::string& pathNormal);
 
     void SetRectangleDimensions(int width, int height);
 
@@ -27,9 +29,9 @@ public:
 
     virtual void Update(float dt) override;
 
-    virtual void ToJson(nlohmann::json &j_out) override;
+    virtual void ToJson(nlohmann::json& j_out) override;
 
-    virtual void FromJson(const nlohmann::json &j_in) override;
+    virtual void FromJson(const nlohmann::json& j_in) override;
 
 private:
     std::string texturePathDiffuse = "";
@@ -38,5 +40,4 @@ private:
 
     TexturedHeightQuad quad;
     std::shared_ptr<cTransform> transform;
-
 };

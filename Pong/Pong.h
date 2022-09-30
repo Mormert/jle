@@ -9,9 +9,9 @@
 #include "AIRacketController.h"
 #include "ScoreText.h"
 
-#include "iTexture.h"
+#include "jleTextureInterface.h"
 
-class Pong : public jle::jleGame
+class Pong : public jleGame
 {
 public:
 	virtual ~Pong();
@@ -19,7 +19,7 @@ public:
 	virtual void Update(float dt) override;
 
 private:
-	std::shared_ptr<jle::iTexture> game_texture;
+	std::shared_ptr<iTexture> game_texture;
 	std::unique_ptr<PlayerRacketController> player;
 	std::unique_ptr<AIRacketController> ai;
 	std::unique_ptr<Ball> ball;

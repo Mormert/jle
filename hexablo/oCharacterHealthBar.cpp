@@ -4,7 +4,7 @@
 
 void oCharacterHealthBar::SetupDefaultObject() {
     mTransform = AddCustomComponent<cTransform>();
-    mAseprite = AddCustomComponent<jle::cAseprite>();
+    mAseprite = AddCustomComponent<cAseprite>();
 }
 
 void oCharacterHealthBar::SetHP(int maxHP, int currentHP) {

@@ -9,17 +9,18 @@ class jleRelativePath;
 
 class jleAbsolutePath;
 
-// A class that has paths such as for example "ER:SomeFolder/SomeFile.txt", that is actually located in the "EngineResources"
-// folder, that can be located at different places, depending on build configuration, etc
+// A class that has paths such as for example "ER:SomeFolder/SomeFile.txt", that
+// is actually located in the "EngineResources" folder, that can be located at
+// different places, depending on build configuration, etc
 class jleRelativePath {
 public:
     friend class jleAbsolutePath;
 
     // Constructs a relative path directly
-    explicit jleRelativePath(const std::string &relativePath);
+    explicit jleRelativePath(const std::string& relativePath);
 
     // Constructs a relative path from an absolute path
-    explicit jleRelativePath(const jleAbsolutePath &absolutePath);
+    explicit jleRelativePath(const jleAbsolutePath& absolutePath);
 
     // Returns the drive, like "GR:"
     const std::string GetPathPrefix() const;
@@ -32,17 +33,18 @@ private:
     std::string mRelativePath;
 };
 
-// A class that contains the absolute path to a resource, for example "C:dev/jle/EngineResources/SomeFolder/SomeFile.txt"
-// and can be used to find the relative path "ER:SomeFolder/SomeFile.txt".
+// A class that contains the absolute path to a resource, for example
+// "C:dev/jle/EngineResources/SomeFolder/SomeFile.txt" and can be used to find
+// the relative path "ER:SomeFolder/SomeFile.txt".
 class jleAbsolutePath {
 public:
     friend class jleRelativePath;
 
     // Constructs an absolute path directly
-    explicit jleAbsolutePath(const std::string &absoultePath);
+    explicit jleAbsolutePath(const std::string& absoultePath);
 
     // Constructs an absolute path from a relative path
-    explicit jleAbsolutePath(const jleRelativePath &relativePath);
+    explicit jleAbsolutePath(const jleRelativePath& relativePath);
 
     [[nodiscard]] std::string GetRelativePathStr() const;
 
@@ -52,4 +54,4 @@ private:
     std::string mAbsolutePath;
 };
 
-#endif //JLEPATH_H
+#endif // JLEPATH_H

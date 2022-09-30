@@ -3,11 +3,11 @@
 #include "jlePath.h"
 #include "jlePathDefines.h"
 
-jleRelativePath::jleRelativePath(const std::string &relativePath) {
+jleRelativePath::jleRelativePath(const std::string& relativePath) {
     mRelativePath = relativePath;
 }
 
-jleRelativePath::jleRelativePath(const jleAbsolutePath &absolutePath) {
+jleRelativePath::jleRelativePath(const jleAbsolutePath& absolutePath) {
     const std::string gameResourcesStr{"GameResources"};
 
     std::string path = absolutePath.mAbsolutePath;
@@ -38,7 +38,8 @@ jleRelativePath::jleRelativePath(const jleAbsolutePath &absolutePath) {
         return;
     }
 
-    LOGE << "Could not generate true resource path from absolute path for " << path;
+    LOGE << "Could not generate true resource path from absolute path for "
+         << path;
     mRelativePath = path;
 }
 
@@ -54,12 +55,11 @@ const std::string jleRelativePath::GetPathPrefix() const {
     return mRelativePath.substr(0, 3);
 }
 
-
-jleAbsolutePath::jleAbsolutePath(const std::string &absoultePath) {
+jleAbsolutePath::jleAbsolutePath(const std::string& absoultePath) {
     mAbsolutePath = absoultePath;
 }
 
-jleAbsolutePath::jleAbsolutePath(const jleRelativePath &relativePath) {
+jleAbsolutePath::jleAbsolutePath(const jleRelativePath& relativePath) {
     std::string path = relativePath.mRelativePath;
 
     // Correct the path's slashes
@@ -68,38 +68,42 @@ jleAbsolutePath::jleAbsolutePath(const jleRelativePath &relativePath) {
     }
 
     jleRootFolder rootFolder = jleRootFolder::None;
-    const auto &&prefixString = path.substr(0, 3);
+    const auto&& prefixString = path.substr(0, 3);
 
     if (prefixString == GAME_RESOURCES_PREFIX) {
         rootFolder = jleRootFolder::GameResources;
-    } else if (prefixString == ENGINE_RESOURCES_PREFIX) {
+    }
+    else if (prefixString == ENGINE_RESOURCES_PREFIX) {
         rootFolder = jleRootFolder::EngineResources;
-    } else if (prefixString == EDITOR_RESOURCES_PREFIX) {
+    }
+    else if (prefixString == EDITOR_RESOURCES_PREFIX) {
         rootFolder = jleRootFolder::EditorResources;
     }
 
     std::string rootFolderStr;
     std::string *resourcesDirectory;
     switch (rootFolder) {
-        case jleRootFolder::EngineResources:
-            rootFolderStr = ENGINE_RESOURCES_PREFIX;
-            resourcesDirectory = &JLE_ENGINE_RESOURCES_PATH;
-            break;
-        case jleRootFolder::GameResources:
-            rootFolderStr = GAME_RESOURCES_PREFIX;
-            resourcesDirectory = &GAME_RESOURCES_DIRECTORY;
-            break;
-        case jleRootFolder::EditorResources:
-            rootFolderStr = EDITOR_RESOURCES_PREFIX;
-            resourcesDirectory = &JLE_EDITOR_RESOURCES_PATH;
-            break;
-        case jleRootFolder::None:
-            mAbsolutePath = path;
-            return;
+    case jleRootFolder::EngineResources:
+        rootFolderStr = ENGINE_RESOURCES_PREFIX;
+        resourcesDirectory = &JLE_ENGINE_RESOURCES_PATH;
+        break;
+    case jleRootFolder::GameResources:
+        rootFolderStr = GAME_RESOURCES_PREFIX;
+        resourcesDirectory = &GAME_RESOURCES_DIRECTORY;
+        break;
+    case jleRootFolder::EditorResources:
+        rootFolderStr = EDITOR_RESOURCES_PREFIX;
+        resourcesDirectory = &JLE_EDITOR_RESOURCES_PATH;
+        break;
+    case jleRootFolder::None:
+        mAbsolutePath = path;
+        return;
     }
 
     if (path.find(rootFolderStr) == std::string::npos) {
-        LOG_ERROR << "Could not find true game resource path. Path did not contain " << rootFolderStr;
+        LOG_ERROR
+            << "Could not find true game resource path. Path did not contain "
+            << rootFolderStr;
         mAbsolutePath = path;
         return;
     }

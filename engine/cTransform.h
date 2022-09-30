@@ -7,11 +7,10 @@
 
 #include <glm/glm.hpp>
 
-class cTransform : public jle::jleComponent {
+class cTransform : public jleComponent {
     JLE_REGISTER_COMPONENT_TYPE(cTransform)
 public:
-
-    explicit cTransform(jle::jleObject *owner = nullptr, jle::jleScene *scene = nullptr);
+    explicit cTransform(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
     inline void SetWorldPosition(float x, float y, float depth) {
 
@@ -21,7 +20,7 @@ public:
 
         auto p = mAttachedToObject->GetParent();
         while (p) {
-            if (auto &&t = p->GetComponent<cTransform>()) {
+            if (auto&& t = p->GetComponent<cTransform>()) {
                 mX -= t->mX;
                 mY -= t->mY;
                 mDepth -= t->mDepth;
@@ -35,7 +34,6 @@ public:
         mDepth += depth;
 
         SetDirty();
-
     }
 
     inline void SetWorldPositionXY(float x, float y) {
@@ -45,7 +43,7 @@ public:
 
         auto p = mAttachedToObject->GetParent();
         while (p) {
-            if (auto &&t = p->GetComponent<cTransform>()) {
+            if (auto&& t = p->GetComponent<cTransform>()) {
                 mX -= t->mX;
                 mY -= t->mY;
             }
@@ -57,7 +55,6 @@ public:
         mY += y;
 
         SetDirty();
-
     }
 
     inline void SetWorldPositionX(float x) {
@@ -65,7 +62,7 @@ public:
 
         auto p = mAttachedToObject->GetParent();
         while (p) {
-            if (auto &&t = p->GetComponent<cTransform>()) {
+            if (auto&& t = p->GetComponent<cTransform>()) {
                 mX -= t->mX;
             }
 
@@ -83,7 +80,7 @@ public:
 
         auto p = mAttachedToObject->GetParent();
         while (p) {
-            if (auto &&t = p->GetComponent<cTransform>()) {
+            if (auto&& t = p->GetComponent<cTransform>()) {
                 mY -= t->mY;
             }
 
@@ -144,22 +141,17 @@ public:
         return mWorldDepth;
     }
 
-    [[nodiscard]] inline glm::vec3 GetWorldXYDepth()
-    {
+    [[nodiscard]] inline glm::vec3 GetWorldXYDepth() {
         if (mDirty) {
             RefreshWorldCoordinates();
         }
 
-        return {mX,mY,mDepth};
+        return {mX, mY, mDepth};
     }
 
-    [[nodiscard]] inline float GetLocalX() const {
-        return mX;
-    }
+    [[nodiscard]] inline float GetLocalX() const { return mX; }
 
-    [[nodiscard]] inline float GetLocalY() const {
-        return mY;
-    }
+    [[nodiscard]] inline float GetLocalY() const { return mY; }
 
     [[nodiscard]] inline float GetLocalDepth() const { return mDepth; }
 
@@ -167,8 +159,8 @@ public:
         mDirty = true;
 
         // Also set all the child transforms dirty
-        auto &children = mAttachedToObject->GetChildObjects();
-        for (auto &&child: children) {
+        auto& children = mAttachedToObject->GetChildObjects();
+        for (auto&& child : children) {
             if (auto t = child->GetComponent<cTransform>()) {
                 t->mDirty = true;
                 t->SetDirty();
@@ -176,19 +168,18 @@ public:
         }
     }
 
-    void ToJson(nlohmann::json &j_out) override;
+    void ToJson(nlohmann::json& j_out) override;
 
-    void FromJson(const nlohmann::json &j_in) override;
+    void FromJson(const nlohmann::json& j_in) override;
 
 private:
-
     inline void RefreshWorldCoordinates() {
         mWorldX = mX;
         mWorldY = mY;
         mWorldDepth = mDepth;
         auto p = mAttachedToObject->GetParent();
         while (p) {
-            if (auto &&t = p->GetComponent<cTransform>()) {
+            if (auto&& t = p->GetComponent<cTransform>()) {
                 mWorldX += t->mX;
                 mWorldY += t->mY;
                 mWorldDepth += t->mDepth;

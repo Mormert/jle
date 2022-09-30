@@ -3,41 +3,38 @@
 #ifndef HEXABLO_CUITRANSFORMUPDATER_H
 #define HEXABLO_CUITRANSFORMUPDATER_H
 
-#include "jleGame.h"
 #include "cCamera.h"
-#include "jleComponent.h"
 #include "cTransform.h"
+#include "jleComponent.h"
+#include "jleGame.h"
 
-namespace jle {
+class cUITransformUpdater : public jleComponent {
+    JLE_REGISTER_COMPONENT_TYPE(cUITransformUpdater)
+public:
+    explicit cUITransformUpdater(jleObject *owner = nullptr,
+                                 jleScene *scene = nullptr);
 
-    class cUITransformUpdater : public jle::jleComponent {
-        JLE_REGISTER_COMPONENT_TYPE(cUITransformUpdater)
-    public:
-        explicit cUITransformUpdater(jle::jleObject *owner = nullptr, jle::jleScene *scene = nullptr);
+    ~cUITransformUpdater() override;
 
-        ~cUITransformUpdater() override;
+    void Start() override;
 
-        void Start() override;
+    void ToJson(nlohmann::json& j_out) override;
 
-        void ToJson(nlohmann::json &j_out) override;
+    void FromJson(const nlohmann::json& j_in) override;
 
-        void FromJson(const nlohmann::json &j_in) override;
+    void Update(float dt) override;
 
-        void Update(float dt) override;
+private:
+    std::shared_ptr<cTransform> mTransform{nullptr};
+    std::weak_ptr<cCamera> mCamera{};
 
-    private:
-        std::shared_ptr<cTransform> mTransform{nullptr};
-        std::weak_ptr<cCamera> mCamera{};
+    bool mTop{true};
+    bool mBottom{false};
+    bool mLeft{false};
+    bool mRight{false};
 
-        bool mTop{true};
-        bool mBottom{false};
-        bool mLeft{false};
-        bool mRight{false};
+    int mX{}, mY{};
+    jleGame& mGameRef;
+};
 
-        int mX{}, mY{};
-        jleGame& mGameRef;
-
-    };
-
-}
-#endif //HEXABLO_CUITRANSFORMUPDATER_H
+#endif // HEXABLO_CUITRANSFORMUPDATER_H

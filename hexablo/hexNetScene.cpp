@@ -38,7 +38,7 @@ hexNetScene::ProcessNetMessage(const std::string &event, const nlohmann::json &m
 
     if (event == "player_pos") {
         if (mPlayers.find(sender) == mPlayers.end()) {
-            std::weak_ptr<jle::jleObject> newPlayer = SpawnTemplateObject(jleRelativePath{"GR:/otemps/otherPlayer.tmpl"});
+            std::weak_ptr<jleObject> newPlayer = SpawnTemplateObject(jleRelativePath{"GR:/otemps/otherPlayer.tmpl"});
             mPlayers[sender] = newPlayer;
         }
 
@@ -74,10 +74,10 @@ hexNetScene::ProcessNetMessage(const std::string &event, const nlohmann::json &m
 
 }
 
-std::weak_ptr<jle::jleObject> hexNetScene::GetPlayerFromId(const std::string &id) {
+std::weak_ptr<jleObject> hexNetScene::GetPlayerFromId(const std::string &id) {
     auto it = mPlayers.find(id);
     if (it == mPlayers.end() || (it != mPlayers.end() && it->second.expired())) {
-        std::weak_ptr<jle::jleObject> newPlayer = SpawnTemplateObject(jleRelativePath{"GR:/otemps/otherPlayer.tmpl"});
+        std::weak_ptr<jleObject> newPlayer = SpawnTemplateObject(jleRelativePath{"GR:/otemps/otherPlayer.tmpl"});
         mPlayers[id] = newPlayer;
         return newPlayer;
     }

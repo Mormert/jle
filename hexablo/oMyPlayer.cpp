@@ -12,7 +12,7 @@
 #include <glm/glm.hpp>
 
 // TODO: Remove this include:
-#include "QuadRendering_OpenGL.h"
+#include "jleQuadRendering_OpenGL.h"
 
 void oMyPlayer::SetupDefaultObject() {
     oCharacter::SetupDefaultObject();
@@ -33,15 +33,15 @@ void oMyPlayer::Update(float dt) {
 
     Abilities();
 
-    if (jle::jleCore::core->input->mouse->GetMouseClick(1)) {
+    if (jleCore::core->input->mouse->GetMouseClick(1)) {
         Attack(mCharacterDirection);
     }
 
     static float lightposz = 0.f;
-    if (jle::jleCore::core->input->keyboard->GetKeyDown('R')) {
+    if (jleCore::core->input->keyboard->GetKeyDown('R')) {
         lightposz += 1.f;
     }
-    if (jle::jleCore::core->input->keyboard->GetKeyDown('F')) {
+    if (jleCore::core->input->keyboard->GetKeyDown('F')) {
         lightposz -= 1.f;
     }
 
@@ -51,17 +51,17 @@ void oMyPlayer::Update(float dt) {
     }
 
     static float depthRng = 127.f; // 127.f when pixelated
-    if (jle::jleCore::core->input->keyboard->GetKeyDown('Y')) {
+    if (jleCore::core->input->keyboard->GetKeyDown('Y')) {
         depthRng += 0.1f;
         LOGV << depthRng;
     }
-    if (jle::jleCore::core->input->keyboard->GetKeyDown('H')) {
+    if (jleCore::core->input->keyboard->GetKeyDown('H')) {
         depthRng -= 0.1f;
         LOGV << depthRng;
     }
 
-    jle::QuadRendering_OpenGL::lightPos = mTransform->GetWorldXYDepth() + glm::vec3{0, 0, lightposz};
-    jle::QuadRendering_OpenGL::depthRange = depthRng;
+    jleQuadRendering_OpenGL::lightPos = mTransform->GetWorldXYDepth() + glm::vec3{0, 0, lightposz};
+    jleQuadRendering_OpenGL::depthRange = depthRng;
 
 }
 
@@ -102,13 +102,13 @@ void oMyPlayer::Movement(float dt) {
     static float currentMoveTime = defaultMoveTime;
 
     if (!canMove) {
-        if (jle::jleCore::core->status->GetCurrentFrameTime() > lastMovement + currentMoveTime) {
+        if (jleCore::core->status->GetCurrentFrameTime() > lastMovement + currentMoveTime) {
             canMove = true;
         } else {
             return;
         }
     }
-    const bool f = jle::jleCore::core->input->mouse->GetMouseClick(0);
+    const bool f = jleCore::core->input->mouse->GetMouseClick(0);
 
     if (!f) {
         return;
@@ -129,7 +129,7 @@ void oMyPlayer::Movement(float dt) {
                                    {"r", r},
                                    {"d", mCharacterDirection}});
             canMove = false;
-            lastMovement = jle::jleCore::core->status->GetCurrentFrameTime();
+            lastMovement = jleCore::core->status->GetCurrentFrameTime();
             currentMoveTime = defaultMoveTime;
             return true;
         } else {
@@ -221,16 +221,16 @@ void oMyPlayer::Movement_v1(float dt) {
     static float currentMoveTime = defaultMoveTime;
 
     if (!canMove) {
-        if (jle::jleCore::core->status->GetCurrentFrameTime() > lastMovement + currentMoveTime) {
+        if (jleCore::core->status->GetCurrentFrameTime() > lastMovement + currentMoveTime) {
             canMove = true;
         } else {
             return;
         }
     }
-    bool w = jle::jleCore::core->input->keyboard->GetKeyDown('W');
-    bool a = jle::jleCore::core->input->keyboard->GetKeyDown('A');
-    bool s = jle::jleCore::core->input->keyboard->GetKeyDown('S');
-    bool d = jle::jleCore::core->input->keyboard->GetKeyDown('D');
+    bool w = jleCore::core->input->keyboard->GetKeyDown('W');
+    bool a = jleCore::core->input->keyboard->GetKeyDown('A');
+    bool s = jleCore::core->input->keyboard->GetKeyDown('S');
+    bool d = jleCore::core->input->keyboard->GetKeyDown('D');
 
     if ((w && a && s && d) || (w && s) || (a && d)) {
         return;
@@ -247,7 +247,7 @@ void oMyPlayer::Movement_v1(float dt) {
         if (world->IsHexagonWalkable(q, r)) {
             SetHexagonPlacementInterp(q, r);
             canMove = false;
-            lastMovement = jle::jleCore::core->status->GetCurrentFrameTime();
+            lastMovement = jleCore::core->status->GetCurrentFrameTime();
             currentMoveTime = defaultMoveTime;
             return true;
         } else {
@@ -330,8 +330,8 @@ void oMyPlayer::Movement_v1(float dt) {
 }
 
 void oMyPlayer::Abilities() {
-    bool q = jle::jleCore::core->input->keyboard->GetKeyDown('Q');
-    bool e = jle::jleCore::core->input->keyboard->GetKeyDown('E');
+    bool q = jleCore::core->input->keyboard->GetKeyDown('Q');
+    bool e = jleCore::core->input->keyboard->GetKeyDown('E');
 
     if (q && mCanThrowFireball) {
 
@@ -359,7 +359,7 @@ void oMyPlayer::Abilities() {
         };
 
         // Can throw fireball again in x seconds
-        jle::jleCore::core->GetTimerManager().
+        jleCore::core->GetTimerManager().
                 ExecuteFuncInSecondsWeakData(0.2, futureFunc, GetWeakPtrToThis());
 
         return;

@@ -13,7 +13,7 @@
 #include <memory>
 #include <iostream>
 
-class oCharacter : public jle::jleObject {
+class oCharacter : public jleObject {
     JLE_REGISTER_OBJECT_TYPE(oCharacter)
 public:
 
@@ -49,7 +49,7 @@ public:
     void FromJson(const nlohmann::json &j_in) override;
 
     std::shared_ptr<cTransform> mTransform{nullptr};
-    std::shared_ptr<jle::cAseprite> mAseprite{nullptr};
+    std::shared_ptr<cAseprite> mAseprite{nullptr};
 
 protected:
 

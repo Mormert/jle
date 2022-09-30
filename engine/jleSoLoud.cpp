@@ -3,14 +3,14 @@
 #include "jleSoLoud.h"
 #include <iostream>
 
-void jle::jleSoLoud::Init() {
+void jleSoLoud::Init() {
 #ifndef NDEBUG
     std::cout << "Initializing Sound Engine\n";
 #endif
     gSoLoud.init();
 }
 
-void jle::jleSoLoud::DeInit() {
+void jleSoLoud::DeInit() {
 #ifndef NDEBUG
     std::cout << "De-initializing Sound Engine\n";
 #endif

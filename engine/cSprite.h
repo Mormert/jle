@@ -2,23 +2,23 @@
 
 #pragma once
 
-#include "jleComponent.h"
 #include "cTransform.h"
+#include "jleComponent.h"
 
-#include "iQuadRendering.h"
-#include "iTexture.h"
+#include "jleQuadRenderingInterface.h"
+#include "jleTextureInterface.h"
 
 #include <memory>
 #include <string>
 
-class cSprite : public jle::jleComponent {
+class cSprite : public jleComponent {
     JLE_REGISTER_COMPONENT_TYPE(cSprite)
 public:
-    cSprite(jle::jleObject *owner = nullptr, jle::jleScene *scene = nullptr);
+    cSprite(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
-    void CreateAndSetTextureFromPath(const std::string &path);
+    void CreateAndSetTextureFromPath(const std::string& path);
 
-    void SetTexture(std::shared_ptr<jle::iTexture> texture);
+    void SetTexture(std::shared_ptr<jleTextureInterface> texture);
 
     void SetRectangleDimensions(int width, int height);
 
@@ -28,14 +28,13 @@ public:
 
     virtual void Update(float dt) override;
 
-    virtual void ToJson(nlohmann::json &j_out) override;
+    virtual void ToJson(nlohmann::json& j_out) override;
 
-    virtual void FromJson(const nlohmann::json &j_in) override;
+    virtual void FromJson(const nlohmann::json& j_in) override;
 
 private:
     std::string texturePath = "";
 
     TexturedQuad quad;
     std::shared_ptr<cTransform> transform;
-
 };

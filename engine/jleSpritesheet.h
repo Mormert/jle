@@ -3,13 +3,13 @@
 #ifndef JLESPRITESHEET_H
 #define JLESPRITESHEET_H
 
-#include "iTexture.h"
-#include "FileLoadInterface.h"
+#include "jleFileLoadInterface.h"
+#include "jleTextureInterface.h"
 
 #include "json.hpp"
 
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
 struct jleSpritesheetEntity {
     struct jleSpritesheetEntityFrame {
@@ -17,27 +17,27 @@ struct jleSpritesheetEntity {
     } mFrame;
 };
 
-struct jleSpritesheet : FileLoadInterface {
+struct jleSpritesheet : jleFileLoadInterface {
 
     jleSpritesheet() = default;
 
-    explicit jleSpritesheet(const std::string &path);
+    explicit jleSpritesheet(const std::string& path);
 
     void LoadImage();
 
-    bool LoadFromFile(const std::string &path) override;
+    bool LoadFromFile(const std::string& path) override;
 
     std::unordered_map<std::string, jleSpritesheetEntity> mSpritesheetEntities;
 
-    std::shared_ptr<jle::iTexture> mImageTexture;
+    std::shared_ptr<jleTextureInterface> mImageTexture;
     std::string mPathJson;
 };
 
-void from_json(const nlohmann::json &j, jleSpritesheet &s);
+void from_json(const nlohmann::json& j, jleSpritesheet& s);
 
-void from_json(const nlohmann::json &j, jleSpritesheetEntity &s);
+void from_json(const nlohmann::json& j, jleSpritesheetEntity& s);
 
-void from_json(const nlohmann::json &j, jleSpritesheetEntity::jleSpritesheetEntityFrame &s);
+void from_json(const nlohmann::json& j,
+               jleSpritesheetEntity::jleSpritesheetEntityFrame& s);
 
-
-#endif //JLESPRITESHEET_H
+#endif // JLESPRITESHEET_H

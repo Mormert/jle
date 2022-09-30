@@ -4,7 +4,7 @@
 
 #include "jleCore.h"
 
-Racket::Racket(int x, int y, std::shared_ptr<jle::iTexture> texture) : x{x}, y{y}, racketTexturedQuad{texture}
+Racket::Racket(int x, int y, std::shared_ptr<iTexture> texture) : x{x}, y{y}, racketTexturedQuad{texture}
 {
 	racketTexturedQuad.textureX = 13;
 	racketTexturedQuad.textureY = 12;
@@ -22,7 +22,7 @@ void Racket::SetY(int y)
 void Racket::Update()
 {
 	racketTexturedQuad.y = y;
-	jle::jleCore::core->rendering->quads->SendTexturedQuad(*&racketTexturedQuad, RenderingMethod::Dynamic);
+	jleCore::core->rendering->quads->SendTexturedQuad(*&racketTexturedQuad, RenderingMethod::Dynamic);
 
 	auto ball = Ball::main_ball;
 	const auto bx = ball->GetX();

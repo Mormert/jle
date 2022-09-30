@@ -8,7 +8,7 @@
 
 void oFireball::SetupDefaultObject() {
     mTransform = AddCustomComponent<cTransform>();
-    mAseprite = AddCustomComponent<jle::cAseprite>();
+    mAseprite = AddCustomComponent<cAseprite>();
 }
 
 void oFireball::Start() {

@@ -2,7 +2,7 @@
 
 #include "jleGame.h"
 
-class Hexablo final : public jle::jleGame {
+class Hexablo final : public jleGame {
 public:
     ~Hexablo() override = default;
 

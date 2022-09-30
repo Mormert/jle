@@ -2,38 +2,33 @@
 
 #pragma once
 
-
-#include "jleComponent.h"
-#include "jleAseprite.h"
 #include "cTransform.h"
+#include "jleAseprite.h"
+#include "jleComponent.h"
 
-namespace jle {
+class cCamera : public jleComponent {
+    JLE_REGISTER_COMPONENT_TYPE(cCamera)
+public:
+    explicit cCamera(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
-    class cCamera : public jle::jleComponent {
-        JLE_REGISTER_COMPONENT_TYPE(cCamera)
-    public:
-        explicit cCamera(jle::jleObject *owner = nullptr, jle::jleScene *scene = nullptr);
+    ~cCamera() override;
 
-        ~cCamera() override;
+    void Start() override;
 
-        void Start() override;
+    void ToJson(nlohmann::json& j_out) override;
 
-        void ToJson(nlohmann::json &j_out) override;
+    void FromJson(const nlohmann::json& j_in) override;
 
-        void FromJson(const nlohmann::json &j_in) override;
+    void Update(float dt) override;
 
-        void Update(float dt) override;
+    float GetOffsetX();
 
-        float GetOffsetX();
-        float GetOffsetY();
+    float GetOffsetY();
 
-    private:
-        std::shared_ptr<cTransform> mTransform{nullptr};
-        float mOffsetX{};
-        float mOffsetY{};
+private:
+    std::shared_ptr<cTransform> mTransform{nullptr};
+    float mOffsetX{};
+    float mOffsetY{};
 
-        inline static uint32_t sInstanceCounter = 0;
-    };
-
-}
-
+    inline static uint32_t sInstanceCounter = 0;
+};

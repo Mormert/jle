@@ -2,21 +2,21 @@
 
 #include "jleGame.h"
 
-class Pong2 : public jle::jleGame
+class Pong2 : public jleGame
 {
 public:
 
-	static void OverrideGameSettings(jle::jleGameSettings& gs)
+	static void OverrideGameSettings(jleGameSettings& gs)
 	{
 		gs.windowSettings.WindowTitle = "Pong";
-		gs.framebufferSettings.fixedAxis = jle::FIXED_AXIS::height;
+		gs.framebufferSettings.fixedAxis = FIXED_AXIS::height;
 		gs.framebufferSettings.fixedAxisPixels = 300;
 
 		gs.windowSettings.windowHeight = 720;
 		gs.windowSettings.windowWidth = 1280;
 	}
 
-	static void OverrideGameEditorSettings(jle::jleGameSettings& gs, jle::jleEditorSettings& es)
+	static void OverrideGameEditorSettings(jleGameSettings& gs, jleEditorSettings& es)
 	{
 		gs.windowSettings.WindowTitle = "Pong - jle editor";
 	}
@@ -27,8 +27,8 @@ public:
 
 
 private:
-	std::shared_ptr<jle::jleScene> scene;
-	std::shared_ptr<jle::jleScene> scene2;
+	std::shared_ptr<jleScene> scene;
+	std::shared_ptr<jleScene> scene2;
 	int i = 0;
 };
 

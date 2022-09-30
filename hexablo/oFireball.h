@@ -8,7 +8,7 @@
 #include "cAseprite.h"
 
 
-class oFireball : public jle::jleObject {
+class oFireball : public jleObject {
     JLE_REGISTER_OBJECT_TYPE(oFireball)
 public:
 
@@ -33,7 +33,7 @@ public:
 
 private:
     std::shared_ptr<cTransform> mTransform{nullptr};
-    std::shared_ptr<jle::cAseprite> mAseprite{nullptr};
+    std::shared_ptr<cAseprite> mAseprite{nullptr};
 
     int mMovingTowardsR, mMovingTowardsQ, mHexagonPixelX, mHexagonPixelY, mInterpingX, mInterpingY;
     const float mInterpBetweenHexasSpeed = 1.f;

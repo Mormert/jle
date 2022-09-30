@@ -1,53 +1,49 @@
 // Copyright (c) 2022. Johan Lind
 
-
 #ifndef JLENETSCENE_H
 #define JLENETSCENE_H
 
-#include "jleScene.h"
 #include "jleNetworking.h"
+#include "jleScene.h"
 
-namespace jle {
-    class jleNetScene : public jleScene {
-    public:
-        jleNetScene();
+class jleNetScene : public jleScene {
+public:
+    jleNetScene();
 
-        explicit jleNetScene(const std::string &sceneName);
+    explicit jleNetScene(const std::string& sceneName);
 
-        void SceneUpdate() override;
+    void SceneUpdate() override;
 
-        void OnSceneCreation() override;
+    void OnSceneCreation() override;
 
-        void OnSceneDestruction() override;
+    void OnSceneDestruction() override;
 
-        virtual void
-        ProcessNetMessage(const std::string &event, const nlohmann::json &message, const std::string &sender);
+    virtual void ProcessNetMessage(const std::string& event,
+                                   const nlohmann::json& message,
+                                   const std::string& sender);
 
-        virtual void OnNetConnected() {};
+    virtual void OnNetConnected(){};
 
-        virtual void OnNetFailed() {};
+    virtual void OnNetFailed(){};
 
-        virtual void OnNetClosed(const std::string &reason) {};
+    virtual void OnNetClosed(const std::string& reason){};
 
-        void ToJson(nlohmann::json &j_out) override;
+    void ToJson(nlohmann::json& j_out) override;
 
-        void FromJson(const nlohmann::json &j_in) override;
+    void FromJson(const nlohmann::json& j_in) override;
 
-    protected:
-        jleNetworking mNetworking;
+protected:
+    jleNetworking mNetworking;
 
-        // TODO: Move this to more flexible solution
+    // TODO: Move this to more flexible solution
 #ifdef __EMSCRIPTEN__
-        std::string mConnectAddress{"hexablo.herokuapp.com"};
+    std::string mConnectAddress{"hexablo.herokuapp.com"};
 #else
-        // std::string mConnectAddress{"http://localhost:314"};
-        std::string mConnectAddress{"http://hexablo.herokuapp.com"};
+    // std::string mConnectAddress{"http://localhost:314"};
+    std::string mConnectAddress{"http://hexablo.herokuapp.com"};
 #endif
 
-        bool mIsHost = false;
-    };
-
-}
-
+    bool mIsHost = false;
+};
 
 #endif // JLENETSCENE_H

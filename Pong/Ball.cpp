@@ -6,7 +6,7 @@
 
 Ball* Ball::main_ball{ nullptr };
 
-Ball::Ball(int x, int y, std::shared_ptr<jle::iTexture> texture) : x{ x }, y{ y }, ballTexturedQuad{ texture }
+Ball::Ball(int x, int y, std::shared_ptr<iTexture> texture) : x{ x }, y{ y }, ballTexturedQuad{ texture }
 {
 	ballTexturedQuad.textureX = 11;
 	ballTexturedQuad.textureY = 14;
@@ -39,7 +39,7 @@ void Ball::Update(float dt)
 
 	ballTexturedQuad.y = y;
 	ballTexturedQuad.x = x;
-	jle::jleCore::core->rendering->quads->SendTexturedQuad(*&ballTexturedQuad, RenderingMethod::Dynamic);
+	jleCore::core->rendering->quads->SendTexturedQuad(*&ballTexturedQuad, RenderingMethod::Dynamic);
 }
 
 void Ball::ResetPosition(int x, int y)

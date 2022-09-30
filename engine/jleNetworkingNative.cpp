@@ -4,13 +4,14 @@
 
 #ifndef __EMSCRIPTEN__
 
-#include <iostream>
 #include "jleNetworking.h"
+#include <iostream>
 
-void jleNetworking::Connect(const std::string &uri,
-                            const std::function<void(void)>& onConnected,
-                            const std::function<void(int const& reason)>& onClosed,
-                            const std::function<void(void)>& onFailed) {
+void jleNetworking::Connect(
+    const std::string& uri,
+    const std::function<void(void)>& onConnected,
+    const std::function<void(int const& reason)>& onClosed,
+    const std::function<void(void)>& onFailed) {
     c.set_logs_quiet();
 
     c.set_open_listener(onConnected);
@@ -19,10 +20,14 @@ void jleNetworking::Connect(const std::string &uri,
 
     c.connect(uri);
 
-    c.socket()->on("msgpack", sio::socket::event_listener_aux(
-            [&](std::string const &name, sio::message::ptr const &data, bool isAck, sio::message::list &ack_resp) {
-                OnReceiveMessagePack(data->get_string());
-            }));
+    c.socket()->on(
+        "msgpack",
+        sio::socket::event_listener_aux([&](std::string const& name,
+                                            sio::message::ptr const& data,
+                                            bool isAck,
+                                            sio::message::list& ack_resp) {
+            OnReceiveMessagePack(data->get_string());
+        }));
 
     connected = true;
     sNet = this;
@@ -40,21 +45,21 @@ void jleNetworking::Disconnect() {
     sNet = nullptr;
 }
 
-void jleNetworking::EmitJsonData(const std::string &event, const nlohmann::json &json, const std::string &receiver) {
+void jleNetworking::EmitJsonData(const std::string& event,
+                                 const nlohmann::json& json,
+                                 const std::string& receiver) {
 
     if (!connected) {
         return;
     }
 
-    nlohmann::json json_package{{"e", event},
-                                {"j", json},
-                                {"r", receiver}};
+    nlohmann::json json_package{{"e", event}, {"j", json}, {"r", receiver}};
 
     c.socket()->emit("msgpack", to_string(json_package));
-
 }
 
-void jleNetworking::EmitEvent(const std::string &event, const std::string &data) {
+void jleNetworking::EmitEvent(const std::string& event,
+                              const std::string& data) {
 
     if (!connected) {
         return;
@@ -63,9 +68,6 @@ void jleNetworking::EmitEvent(const std::string &event, const std::string &data)
     c.socket()->emit(event, data);
 }
 
-std::string jleNetworking::GetSessionID() {
-    return c.get_sessionid();
-}
-
+std::string jleNetworking::GetSessionID() { return c.get_sessionid(); }
 
 #endif // __EMSCRIPTEN__

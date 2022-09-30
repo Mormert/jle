@@ -3,16 +3,16 @@
 #ifndef HEXABLO_OWORLD_H
 #define HEXABLO_OWORLD_H
 
-#include "jleObject.h"
-#include "iTexture.h"
-#include "iQuadRendering.h"
 #include "hexHexagonItem.h"
 #include "jleAseprite.h"
+#include "jleObject.h"
+#include "jleQuadRenderingInterface.h"
+#include "jleTextureInterface.h"
 #include <glm/glm.hpp>
 
 #include <set>
 
-class oWorld : public jle::jleObject {
+class oWorld : public jleObject {
     JLE_REGISTER_OBJECT_TYPE(oWorld)
 public:
 
@@ -76,9 +76,9 @@ private:
     std::set<std::pair<int, int>> mStaticallyNotWalkableHexagons;
 
     std::string mWorldHexTilesAsepritePath;
-    jle::jleAseprite mAseprite;
+    jleAseprite mAseprite;
 
-    iQuadRendering *mQuadRenderingPtr{nullptr};
+    jleQuadRenderingInterface *mQuadRenderingPtr{nullptr};
 
     struct HexagonTile {
         float mDepth;

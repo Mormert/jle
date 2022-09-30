@@ -3,46 +3,48 @@
 #ifndef JLETIMERMANAGER_H
 #define JLETIMERMANAGER_H
 
-#include <memory>
 #include <map>
+#include <memory>
 
-namespace jle {
+class jleTimerManager {
 
+public:
+    // Will crash if data is invalid when called, will however extend object
+    // lifetime
+    void ExecuteFuncInSecondsSharedData(double seconds,
+                                        void (*f)(std::shared_ptr<void>),
+                                        const std::shared_ptr<void>& data);
 
-    class jleTimerManager {
+    // Will not run if data is invalid when called (no crash), and also not
+    // impact object lifetime
+    void ExecuteFuncInSecondsWeakData(double seconds,
+                                      void (*f)(std::weak_ptr<void>),
+                                      const std::weak_ptr<void>& data);
 
-    public:
-        // Will crash if data is invalid when called, will however extend object lifetime
-        void ExecuteFuncInSecondsSharedData(double seconds, void (*f)(std::shared_ptr<void>), const std::shared_ptr<void> &data);
+private:
+    friend class jleCore;
 
-        // Will not run if data is invalid when called (no crash), and also not impact object lifetime
-        void ExecuteFuncInSecondsWeakData(double seconds, void (*f)(std::weak_ptr<void>), const std::weak_ptr<void> &data);
+    friend class jleGameEngine;
 
-    private:
-        friend class jleCore;
-        friend class jleGameEngine;
+    void Process();
 
-        void Process();
+    void ClearTimers();
 
-        void ClearTimers();
+    struct jleTimerManagerFunctionSharedData {
+        void (*mFunction)(std::shared_ptr<void>);
 
-        struct jleTimerManagerFunctionSharedData {
-            void (*mFunction)(std::shared_ptr<void>);
-
-            std::shared_ptr<void> mData;
-        };
-
-        struct jleTimerManagerFunctionWeakData {
-            void (*mFunction)(std::weak_ptr<void>);
-
-            std::weak_ptr<void> mData;
-        };
-
-        std::map<double, jleTimerManagerFunctionSharedData> mFunctionsSharedData;
-
-        std::map<double, jleTimerManagerFunctionWeakData> mFunctionsWeakData;
-
+        std::shared_ptr<void> mData;
     };
-}
 
-#endif //JLETIMERMANAGER_H
+    struct jleTimerManagerFunctionWeakData {
+        void (*mFunction)(std::weak_ptr<void>);
+
+        std::weak_ptr<void> mData;
+    };
+
+    std::map<double, jleTimerManagerFunctionSharedData> mFunctionsSharedData;
+
+    std::map<double, jleTimerManagerFunctionWeakData> mFunctionsWeakData;
+};
+
+#endif // JLETIMERMANAGER_H

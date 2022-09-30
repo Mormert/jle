@@ -15,7 +15,7 @@ void oWorld::Start() {
     if (mAseprite.mFrames.empty()) {
         LoadTilesTexture();
     }
-    mQuadRenderingPtr = jle::jleCore::core->rendering->quads.get();
+    mQuadRenderingPtr = jleCore::core->rendering->quads.get();
 
     GenerateVisualWorld();
 }
@@ -72,7 +72,7 @@ void oWorld::FromJson(const nlohmann::json &j_in) {
 void oWorld::LoadTilesTexture() {
     if (!mWorldHexTilesAsepritePath.empty()) {
         mAseprite.LoadFromFile(jleRelativePath{mWorldHexTilesAsepritePath}.GetAbsolutePathStr());
-        //mWorldHexTilesTexture = jle::jleCore::core->texture_creator->LoadTextureFromPath(truePath);
+        //mWorldHexTilesTexture = jleCore::core->texture_creator->LoadTextureFromPath(truePath);
     }
 }
 

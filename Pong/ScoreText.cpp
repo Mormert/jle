@@ -4,7 +4,7 @@
 
 #include <cassert>
 
-ScoreText::ScoreText(int posX, int posY, std::shared_ptr<jle::iTexture> texture) : x{ posX }, y{ posY }, scoreTextQuad { texture }
+ScoreText::ScoreText(int posX, int posY, std::shared_ptr<iTexture> texture) : x{ posX }, y{ posY }, scoreTextQuad { texture }
 {
 	scoreTextQuad.textureX = 0;
 	scoreTextQuad.textureY = 0;
@@ -65,5 +65,5 @@ void ScoreText::SetScore(int score)
 
 void ScoreText::Update()
 {
-	jle::jleCore::core->rendering->quads->SendTexturedQuad(*&scoreTextQuad, RenderingMethod::Dynamic);
+	jleCore::core->rendering->quads->SendTexturedQuad(*&scoreTextQuad, RenderingMethod::Dynamic);
 }

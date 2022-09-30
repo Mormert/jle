@@ -3,5 +3,5 @@
 
 int main()
 {
-	jle::KickStart<Pong2>();
+	KickStart<Pong2>();
 }

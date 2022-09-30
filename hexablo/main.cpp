@@ -5,7 +5,7 @@
 int main()
 {
 
-    jle::KickStart<Hexablo>();
+    KickStart<Hexablo>();
 
 	return 0;
 }

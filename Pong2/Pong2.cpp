@@ -20,18 +20,18 @@ Pong2::~Pong2()
 void Pong2::Start()
 {
 
-	//jle::jleObjectTypeUtils::RegisterObject<oPlayerRacket>();
+	//jleObjectTypeUtils::RegisterObject<oPlayerRacket>();
 
 	std::ifstream i("GameResources/file.json");
 	nlohmann::json j;
 	i >> j;
 
-	scene = CreateScene<jle::jleScene>();
-	jle::from_json(j, *scene);
+	scene = CreateScene<jleScene>();
+	from_json(j, *scene);
 	//scene->SpawnObject("oPlayerRacket");
 	//scene->SpawnObject("oRacket");
 
-	/*scene2 = CreateScene<jle::jleScene>();
+	/*scene2 = CreateScene<jleScene>();
 	scene2->SpawnObject("oRacket");
 	scene2->SpawnObject<oPlayerRacket>();
 
@@ -47,7 +47,7 @@ void Pong2::Start()
 
 void Pong2::Update(float dt)
 {
-	if (jle::jleCore::core->input->keyboard->GetKeyDown('A'))
+	if (jleCore::core->input->keyboard->GetKeyDown('A'))
 	{
 		nlohmann::json j = *scene;
 		std::cout << "Scene contains: \n " << j.dump(4) << "\n";
@@ -57,11 +57,11 @@ void Pong2::Update(float dt)
 		i++;
 	}
 
-	if(jle::jleCore::core->input->keyboard->GetKeyDown('S'))
+	if(jleCore::core->input->keyboard->GetKeyDown('S'))
 	{
 		std::ofstream i("scene_save.json");
 		nlohmann::json j;
-		jle::to_json(j, *scene);
+		to_json(j, *scene);
 		i << j.dump(4);
 		i.close();
 	}

@@ -8,7 +8,7 @@
 
 void oCharacter::SetupDefaultObject() {
     mTransform = AddCustomComponent<cTransform>();
-    mAseprite = AddCustomComponent<jle::cAseprite>();
+    mAseprite = AddCustomComponent<cAseprite>();
 
     mHealthBarObjPtr = std::static_pointer_cast<oCharacterHealthBar>(
             SpawnChildObjectFromTemplate(jleRelativePath{"GR:otemps/oCharacterHealthBar.tmpl"}));
@@ -27,7 +27,7 @@ void oCharacter::Start() {
 
 void oCharacter::Update(float dt) {
 
-    if (jle::jleCore::core->input->keyboard->GetKeyPressed('T')) {
+    if (jleCore::core->input->keyboard->GetKeyPressed('T')) {
         SetHexagonPlacementInterp(hexHelperFunctions::GetRandInt(0, 10), hexHelperFunctions::GetRandInt(0, 10));
     }
     const auto lerpVec2 = [](const glm::vec2 &a, const glm::vec2 &b, float alpha) {
@@ -212,11 +212,11 @@ void oCharacter::Attack(oCharacter::oCharacterDirection dir) {
     };
 
     // Go back to the default animation
-    jle::jleCore::core->GetTimerManager().
+    jleCore::core->GetTimerManager().
             ExecuteFuncInSecondsWeakData(animationTimeMs * 0.001, futureFunc, GetWeakPtrToThis());
 
     // Can not attack again for the animation time + some additional time
-    jle::jleCore::core->GetTimerManager().
+    jleCore::core->GetTimerManager().
             ExecuteFuncInSecondsWeakData(
             (animationTimeMs + mAttackCooldownAfterAnimationMs) * 0.001, [](std::weak_ptr<void> data) {
                 auto safeThis = std::static_pointer_cast<oCharacter>(data.lock());

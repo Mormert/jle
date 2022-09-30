@@ -1,14 +1,14 @@
 #pragma once
 
-#include "iRenderingAPI.h"
-#include "iTexture.h"
+#include "jleRenderingAPIInterface.h"
+#include "jleTextureInterface.h"
 
 #include <memory>
 
 class Ball
 {
 public:
-	Ball(int x, int y, std::shared_ptr<jle::iTexture> texture);
+	Ball(int x, int y, std::shared_ptr<iTexture> texture);
 	void Update(float dt);
 	void SetDir(float dx, float dy) { dirX = dx; dirY = dy; }
 	void SetSpeed(float spd) { speed = spd; }

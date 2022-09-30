@@ -8,7 +8,7 @@
 #include "cAseprite.h"
 
 
-class oCharacterHealthBar : public jle::jleObject {
+class oCharacterHealthBar : public jleObject {
     JLE_REGISTER_OBJECT_TYPE(oCharacterHealthBar)
 public:
 
@@ -25,7 +25,7 @@ public:
     }
 
     std::shared_ptr<cTransform> mTransform;
-    std::shared_ptr<jle::cAseprite> mAseprite;
+    std::shared_ptr<cAseprite> mAseprite;
 
 private:
     int mMaxWidth{};

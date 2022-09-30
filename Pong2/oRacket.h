@@ -15,7 +15,7 @@
 #define JLE_VAR_DECL(VARTYPE, VARNAME) VARTYPE VARNAME;
 
 
-class oRacket : public jle::jleObject
+class oRacket : public jleObject
 {
 	JLE_REGISTER_OBJECT_TYPE(oRacket)
 public:

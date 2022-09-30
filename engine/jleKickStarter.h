@@ -2,65 +2,71 @@
 
 #pragma once
 
-#include "jleGameEngine.h"
-#include "jleEditor.h"
+#include "editor/jleEditor.h"
 #include "jleConfigUtils.h"
-#include <plog/Init.h>
-#include <plog/Formatters/TxtFormatter.h>
+#include "jleGameEngine.h"
 #include <plog/Appenders/ColorConsoleAppender.h>
 #include <plog/Appenders/RollingFileAppender.h>
+#include <plog/Formatters/TxtFormatter.h>
+#include <plog/Init.h>
 
+template <typename T>
+void KickStartGame() {
+    LOG_VERBOSE << "Kickstarting the game";
+    static_assert(std::is_base_of<jleGame, T>::value,
+                  "T must derive from jleGame");
 
-namespace jle {
+    auto gameSettings = std::make_shared<jleGameSettings>();
 
-    template<typename T>
-    void KickStartGame() {
-        LOG_VERBOSE << "Kickstarting the game";
-        static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
+    cfg::LoadEngineConfig<jleGameSettings>(
+        GAME_RESOURCES_DIRECTORY + "/jle_gs_config.json", *gameSettings);
 
-        auto gameSettings = std::make_shared<jleGameSettings>();
+    T::OverrideGameSettings(*gameSettings);
 
-        cfg::LoadEngineConfig<jleGameSettings>(GAME_RESOURCES_DIRECTORY + "/jle_gs_config.json", *gameSettings);
+    auto gameEngine = std::make_unique<jleGameEngine>(gameSettings);
+    gameEngine->SetGame<T>();
+    gameEngine->Run();
+}
 
-        T::OverrideGameSettings(*gameSettings);
+template <typename T>
+void KickStartGameInEditor() {
+    LOG_VERBOSE << "Kickstarting the editor";
+    static_assert(std::is_base_of<jleGame, T>::value,
+                  "T must derive from jleGame");
 
-        auto gameEngine = std::make_unique<jleGameEngine>(gameSettings);
-        gameEngine->SetGame<T>();
-        gameEngine->Run();
-    }
+    auto gameSettings = std::make_shared<jleGameSettings>();
+    auto gameEditorSettings = std::make_shared<jleEditorSettings>();
 
-    template<typename T>
-    void KickStartGameInEditor() {
-        LOG_VERBOSE << "Kickstarting the editor";
-        static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
+    cfg::LoadEngineConfig<jleGameSettings>(
+        GAME_RESOURCES_DIRECTORY + "/jle_gs_config.json", *gameSettings);
+    cfg::LoadEngineConfig<jleEditorSettings>(
+        GAME_RESOURCES_DIRECTORY + "/jle_es_config.json", *gameEditorSettings);
 
-        auto gameSettings = std::make_shared<jleGameSettings>();
-        auto gameEditorSettings = std::make_shared<jleEditorSettings>();
+    T::OverrideGameSettings(*gameSettings);
+    T::OverrideGameEditorSettings(*gameSettings, *gameEditorSettings);
 
-        cfg::LoadEngineConfig<jleGameSettings>(GAME_RESOURCES_DIRECTORY + "/jle_gs_config.json", *gameSettings);
-        cfg::LoadEngineConfig<jleEditorSettings>(GAME_RESOURCES_DIRECTORY + "/jle_es_config.json", *gameEditorSettings);
+    auto gameEngineInEditor =
+        std::make_unique<jleEditor>(gameSettings, gameEditorSettings);
+    gameEngineInEditor->SetGame<T>();
+    gameEngineInEditor->Run();
+}
 
-        T::OverrideGameSettings(*gameSettings);
-        T::OverrideGameEditorSettings(*gameSettings, *gameEditorSettings);
+template <typename T>
+void KickStart() {
+    static_assert(std::is_base_of<jleGame, T>::value,
+                  "T must derive from jleGame");
 
-        auto gameEngineInEditor = std::make_unique<jleEditor>(gameSettings, gameEditorSettings);
-        gameEngineInEditor->SetGame<T>();
-        gameEngineInEditor->Run();
-    }
-
-    template<typename T>
-    void KickStart() {
-        static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
-
-        // Initialize plog when kickstarting, so logging is enabled everywhere after the kickstart
-        plog::RollingFileAppender<plog::TxtFormatter> fileAppender("jle_log.plog", 1000,5);
-        plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;     // Log to command window
-        plog::init<0>(plog::verbose, &fileAppender).addAppender(&consoleAppender);
+    // Initialize plog when kickstarting, so logging is enabled everywhere after
+    // the kickstart
+    plog::RollingFileAppender<plog::TxtFormatter> fileAppender(
+        "jle_log.plog", 1000, 5);
+    plog::ColorConsoleAppender<plog::TxtFormatter>
+        consoleAppender; // Log to command window
+    plog::init<0>(plog::verbose, &fileAppender).addAppender(&consoleAppender);
 
 #ifdef BUILD_EDITOR
-        KickStartGameInEditor<T>();
+    KickStartGameInEditor<T>();
 #else
-        KickStartGame<T>();
+    KickStartGame<T>();
 #endif
-    }
 }

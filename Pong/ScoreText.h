@@ -1,13 +1,13 @@
 #pragma once
 
-#include "iRenderingAPI.h"
+#include "jleRenderingAPIInterface.h"
 
 #include <memory>
 
 class ScoreText
 {
 public:
-	ScoreText(int posX, int posY, std::shared_ptr<jle::iTexture> texture);
+	ScoreText(int posX, int posY, std::shared_ptr<iTexture> texture);
 	void SetScore(int score);
 	void Update();
 private:

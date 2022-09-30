@@ -6,7 +6,7 @@
 #include "jleNetScene.h"
 #include "oFireball.h"
 
-class hexNetScene : public jle::jleNetScene {
+class hexNetScene : public jleNetScene {
 public:
     void SceneUpdate() override;
 
@@ -20,9 +20,9 @@ public:
 
 
 private:
-    std::weak_ptr<jle::jleObject> GetPlayerFromId(const std::string& id);
+    std::weak_ptr<jleObject> GetPlayerFromId(const std::string& id);
 
-    std::map<std::string, std::weak_ptr<jle::jleObject>> mPlayers;
+    std::map<std::string, std::weak_ptr<jleObject>> mPlayers;
 
     std::weak_ptr<oFireball> GetFireballFromId(const int id);
     std::map<int, std::weak_ptr<oFireball>> mFireballs;

@@ -1,32 +1,30 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "cText.h"
-#include "jleResourceHolder.h"
-#include "jlePathDefines.h"
-#include "jleObject.h"
 #include "jleGameEngine.h"
+#include "jleObject.h"
+#include "jlePathDefines.h"
+#include "jleResourceHolder.h"
 
-jle::cText::cText(jle::jleObject *owner, jle::jleScene *scene) : jleComponent(owner, scene) {
+cText::cText(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 
-}
-
-void jle::cText::Start() {
+void cText::Start() {
     mTransform = mAttachedToObject->AddDependencyComponent<cTransform>(this);
 }
 
-void jle::cText::ToJson(nlohmann::json &j_out) {
+void cText::ToJson(nlohmann::json& j_out) {
     j_out = nlohmann::json{
-            {"fontPath", mFontPath},
-            {"text",     mText},
-            {"fontSize", mFontSize},
-            {"colorR",   mColorR},
-            {"colorG",   mColorG},
-            {"colorB",   mColorB},
-            {"colorA",   mColorA},
+        {"fontPath", mFontPath},
+        {"text", mText},
+        {"fontSize", mFontSize},
+        {"colorR", mColorR},
+        {"colorG", mColorG},
+        {"colorB", mColorB},
+        {"colorA", mColorA},
     };
 }
 
-void jle::cText::FromJson(const nlohmann::json &j_in) {
+void cText::FromJson(const nlohmann::json& j_in) {
     mFontPath = j_in.at("fontPath");
     mText = j_in.at("text");
     mFontSize = j_in.at("fontSize");
@@ -35,21 +33,25 @@ void jle::cText::FromJson(const nlohmann::json &j_in) {
     mColorB = j_in.at("colorB");
     mColorA = j_in.at("colorA");
 
-    mFont = jleResourceHolder::LoadResourceFromFile<jle::jleFont>(jleRelativePath{mFontPath});
+    mFont = jleResourceHolder::LoadResourceFromFile<jleFont>(
+        jleRelativePath{mFontPath});
 }
 
-void jle::cText::Update(float dt) {
+void cText::Update(float dt) {
     if (!mFont) {
         return;
     }
 
-    jle::jleCore::core->rendering->texts->SendFontText(mFont.get(), mText, mFontSize,
-                                                       mTransform->GetWorldX(), mTransform->GetWorldY(),
-                                                       mTransform->GetWorldDepth(),
-                                                       mColorR, mColorG, mColorB, mColorA);
+    jleCore::core->rendering->texts->SendFontText(mFont.get(),
+                                                  mText,
+                                                  mFontSize,
+                                                  mTransform->GetWorldX(),
+                                                  mTransform->GetWorldY(),
+                                                  mTransform->GetWorldDepth(),
+                                                  mColorR,
+                                                  mColorG,
+                                                  mColorB,
+                                                  mColorA);
 }
 
-void jle::cText::SetText(const std::string &text) {
-    mText = text;
-}
-
+void cText::SetText(const std::string& text) { mText = text; }
