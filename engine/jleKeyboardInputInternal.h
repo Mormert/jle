@@ -2,12 +2,10 @@
 
 #pragma once
 
-#include "jleKeyboardInputInterface.h"
 #include "jleWindowInternalAPIInterface.h"
 #include "jleWindowLinkableInterface.h"
 
-class jleKeyboardInputInternal : public jleKeyboardInputInterface,
-                                 public jleWindowLinkableInterface {
+class jleKeyboardInputInternal : public jleWindowLinkableInterface {
 public:
     explicit jleKeyboardInputInternal(
         std::shared_ptr<jleWindowInternalAPIInterface> windowInternal);
@@ -15,12 +13,16 @@ public:
     void LinkWindow(
         std::shared_ptr<jleWindowInternalAPIInterface> windowInternal) override;
 
-    bool GetKeyPressed(char key) override;
+    bool GetKeyPressed(char key);
 
-    bool GetKeyReleased(char key) override;
+    bool GetKeyReleased(char key);
 
-    bool GetKeyDown(char key, bool ignoreInputEnabled = false) override;
+    bool GetKeyDown(char key, bool ignoreInputEnabled = false);
+
+    void SetIsEnabled(bool value);
 
 private:
     std::shared_ptr<jleWindowInternalAPIInterface> windowInternal;
+
+    bool _isEnabled = true;
 };

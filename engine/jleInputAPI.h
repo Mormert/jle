@@ -2,30 +2,30 @@
 
 #pragma once
 
-#include "jleInputInterface.h"
-
-#include "jleKeyboardInputInterface.h"
-#include "jleMouseInputInterface.h"
+#include "jleKeyboardInputInternal.h"
+#include "jleMouseInputInternal.h"
 
 #include <memory>
 #include <utility>
 
-class jleInputAPI : public jleInputInterface {
+class jleInputAPI {
 public:
-    ~jleInputAPI() override = default;
+    ~jleInputAPI() = default;
 
-    jleInputAPI(std::shared_ptr<jleKeyboardInputInterface> ki,
-                std::shared_ptr<jleMouseInputInterface> mi)
+    jleInputAPI(std::shared_ptr<jleKeyboardInputInternal> ki,
+                std::shared_ptr<jleMouseInputInternal> mi)
         : keyboard{std::move(std::move(ki))}, mouse{std::move(std::move(mi))} {}
 
-    std::shared_ptr<jleKeyboardInputInterface> keyboard;
-    std::shared_ptr<jleMouseInputInterface> mouse;
+    std::shared_ptr<jleKeyboardInputInternal> keyboard;
+    std::shared_ptr<jleMouseInputInternal> mouse;
 
     // Set to false if the input system should stop polling
-    void SetInputEnabled(bool enabled) override {
-        jleInputInterface::SetInputEnabled(enabled);
+    void SetInputEnabled(bool isEnabled) {
+        _isInputEnabled = isEnabled;
 
-        keyboard->SetInputEnabled(enabled);
-        mouse->SetInputEnabled(enabled);
+        keyboard->SetIsEnabled(isEnabled);
+        mouse->SetIsEnabled(isEnabled);
     }
+
+    bool _isInputEnabled = true;
 };
