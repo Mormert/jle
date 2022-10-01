@@ -5,4 +5,4 @@
 jleProfilerWindow::jleProfilerWindow(const std::string& window_name)
     : iEditorImGuiWindow{window_name} {}
 
-void jleProfilerWindow::Update(jleGameEngine& ge) { mProfilersWindow.Render(); }
+void jleProfilerWindow::Update(jleGameEngine& ge) { _profilersWindow.Render(); }

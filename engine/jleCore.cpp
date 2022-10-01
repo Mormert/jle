@@ -152,7 +152,7 @@ void jleCore::MainLoop() {
 
     coreImpl->status_internal->Refresh();
 
-    mTimerManager.Process();
+    _timerManager.Process();
 
     Update(status->GetDeltaFrameTime());
 
@@ -163,4 +163,4 @@ void jleCore::MainLoop() {
         !((jleWindowInternalAPIInterface *)window.get())->WindowShouldClose();
 }
 
-jleTimerManager& jleCore::GetTimerManager() { return mTimerManager; }
+jleTimerManager& jleCore::GetTimerManager() { return _timerManager; }

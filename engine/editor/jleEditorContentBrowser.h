@@ -13,18 +13,18 @@ public:
     void Update(jleGameEngine &ge) override;
 
 private:
-    std::shared_ptr<jleTexture> mFileIcon;
-    std::shared_ptr<jleTexture> mDirectoryIcon;
-    std::shared_ptr<jleTexture> mBackDirectoryIcon;
-    std::shared_ptr<jleTexture> mSceneFileIcon;
-    std::shared_ptr<jleTexture> mImageFileIcon;
-    std::shared_ptr<jleTexture> mJsonFileIcon;
+    std::shared_ptr<jleTexture> _fileIcon;
+    std::shared_ptr<jleTexture> _directoryIcon;
+    std::shared_ptr<jleTexture> _backDirectoryIcon;
+    std::shared_ptr<jleTexture> _sceneFileIcon;
+    std::shared_ptr<jleTexture> _imageFileIcon;
+    std::shared_ptr<jleTexture> _jsonFileIcon;
 
     // Selected directory to show files in
-    std::filesystem::path mSelectedDirectory;
+    std::filesystem::path _selectedDirectory;
 
     // File selected for File Popup
-    std::filesystem::path mFileSelected;
+    std::filesystem::path _fileSelected;
 
     std::pair<bool, uint32_t> DirectoryTreeViewRecursive(
             const std::filesystem::path &path,

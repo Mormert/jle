@@ -32,15 +32,15 @@ public:
     void SetTarget(int q, int r);
 
 private:
-    std::shared_ptr<cTransform> mTransform{nullptr};
-    std::shared_ptr<cAseprite> mAseprite{nullptr};
+    std::shared_ptr<cTransform> _transform{nullptr};
+    std::shared_ptr<cAseprite> _aseprite{nullptr};
 
-    int mMovingTowardsR, mMovingTowardsQ, mHexagonPixelX, mHexagonPixelY, mInterpingX, mInterpingY;
-    const float mInterpBetweenHexasSpeed = 1.f;
-    float mInterpingAlpha = 0.f;
-    bool mInterpingPosition = true;
+    int _movingTowardsR, _movingTowardsQ, _hexagonPixelX, _hexagonPixelY, _interpingX, _interpingY;
+    const float _interpBetweenHexasSpeed = 1.f;
+    float _interpingAlpha = 0.f;
+    bool _interpingPosition = true;
 
-    int mId;
+    int _id;
 
 };
 

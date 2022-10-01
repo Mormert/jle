@@ -9,49 +9,49 @@
 cText::cText(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 
 void cText::Start() {
-    mTransform = mAttachedToObject->AddDependencyComponent<cTransform>(this);
+    _transform = _attachedToObject->AddDependencyComponent<cTransform>(this);
 }
 
 void cText::ToJson(nlohmann::json& j_out) {
     j_out = nlohmann::json{
-        {"fontPath", mFontPath},
-        {"text", mText},
-        {"fontSize", mFontSize},
-        {"colorR", mColorR},
-        {"colorG", mColorG},
-        {"colorB", mColorB},
-        {"colorA", mColorA},
+        {"fontPath", _fontPath},
+        {"text", _text},
+        {"fontSize", _fontSize},
+        {"colorR", _colorR},
+        {"colorG", _colorG},
+        {"colorB", _colorB},
+        {"colorA", _colorA},
     };
 }
 
 void cText::FromJson(const nlohmann::json& j_in) {
-    mFontPath = j_in.at("fontPath");
-    mText = j_in.at("text");
-    mFontSize = j_in.at("fontSize");
-    mColorR = j_in.at("colorR");
-    mColorG = j_in.at("colorG");
-    mColorB = j_in.at("colorB");
-    mColorA = j_in.at("colorA");
+    _fontPath = j_in.at("fontPath");
+    _text = j_in.at("text");
+    _fontSize = j_in.at("fontSize");
+    _colorR = j_in.at("colorR");
+    _colorG = j_in.at("colorG");
+    _colorB = j_in.at("colorB");
+    _colorA = j_in.at("colorA");
 
-    mFont = jleResourceHolder::LoadResourceFromFile<jleFont>(
-        jleRelativePath{mFontPath});
+    _font = jleResourceHolder::LoadResourceFromFile<jleFont>(
+        jleRelativePath{_fontPath});
 }
 
 void cText::Update(float dt) {
-    if (!mFont) {
+    if (!_font) {
         return;
     }
 
-    jleCore::core->rendering->texts->SendFontText(mFont.get(),
-                                                  mText,
-                                                  mFontSize,
-                                                  mTransform->GetWorldX(),
-                                                  mTransform->GetWorldY(),
-                                                  mTransform->GetWorldDepth(),
-                                                  mColorR,
-                                                  mColorG,
-                                                  mColorB,
-                                                  mColorA);
+    jleCore::core->rendering->texts->SendFontText(_font.get(),
+                                                  _text,
+                                                  _fontSize,
+                                                  _transform->GetWorldX(),
+                                                  _transform->GetWorldY(),
+                                                  _transform->GetWorldDepth(),
+                                                  _colorR,
+                                                  _colorG,
+                                                  _colorB,
+                                                  _colorA);
 }
 
-void cText::SetText(const std::string& text) { mText = text; }
+void cText::SetText(const std::string& text) { _text = text; }

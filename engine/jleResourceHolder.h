@@ -27,8 +27,8 @@ public:
 
         const auto prefix = path.GetPathPrefix();
 
-        auto it = mResources[prefix].find(path.GetRelativePathStr());
-        if (it != mResources[prefix].end()) {
+        auto it = _resources[prefix].find(path.GetRelativePathStr());
+        if (it != _resources[prefix].end()) {
             return std::static_pointer_cast<T>(it->second);
         }
 
@@ -36,8 +36,8 @@ public:
 
         new_resource->LoadFromFile(path.GetAbsolutePathStr());
 
-        mResources[prefix].erase(path.GetRelativePathStr());
-        mResources[prefix].insert(
+        _resources[prefix].erase(path.GetRelativePathStr());
+        _resources[prefix].insert(
             std::make_pair(path.GetRelativePathStr(), new_resource));
 
         PeriodicResourcesCleanUp();
@@ -51,8 +51,8 @@ public:
                               const jleRelativePath& path) {
         const auto prefix = path.GetPathPrefix();
 
-        mResources[prefix].erase(path.GetRelativePathStr());
-        mResources[prefix].insert(
+        _resources[prefix].erase(path.GetRelativePathStr());
+        _resources[prefix].insert(
             std::make_pair(path.GetRelativePathStr(), resource));
 
         PeriodicResourcesCleanUp();
@@ -63,14 +63,14 @@ public:
     static std::shared_ptr<T> GetResource(const jleRelativePath& path) {
         const auto prefix = path.GetPathPrefix();
         return std::static_pointer_cast<T>(
-            mResources[prefix].at(path.GetRelativePathStr()));
+            _resources[prefix].at(path.GetRelativePathStr()));
     }
 
     // Check to see if a resource is loaded
     static bool IsResourceLoaded(const jleRelativePath& path) {
         const auto prefix = path.GetPathPrefix();
-        auto it = mResources[prefix].find(path.GetRelativePathStr());
-        if (it == mResources[prefix].end()) {
+        auto it = _resources[prefix].find(path.GetRelativePathStr());
+        if (it == _resources[prefix].end()) {
             return false;
         }
         return true;
@@ -80,19 +80,19 @@ public:
     // If the resources have no other users, they will be deleted
     static void UnloadAllResources(const std::string& drive) {
         LOG_VERBOSE << "Unloading in-memory file resources on drive " << drive
-                    << ' ' << mResources[drive].size();
-        mResources[drive].clear();
+                    << ' ' << _resources[drive].size();
+        _resources[drive].clear();
     }
 
     static void UnloadResource(const jleRelativePath& path) {
-        mResources[path.GetPathPrefix()].erase(path.GetRelativePathStr());
+        _resources[path.GetPathPrefix()].erase(path.GetRelativePathStr());
     }
 
     static const std::unordered_map<
         std::string,
         std::unordered_map<std::string, std::shared_ptr<void>>>&
     GetResourcesMap() {
-        return mResources;
+        return _resources;
     }
 
 private:
@@ -101,17 +101,17 @@ private:
     static inline std::unordered_map<
         std::string,
         std::unordered_map<std::string, std::shared_ptr<void>>>
-        mResources{};
+        _resources{};
 
-    static inline int mPeriodicCleanCounter{0};
+    static inline int _periodicCleanCounter{0};
 
     static void PeriodicResourcesCleanUp() {
         // Clean every 10th time that this method is called
-        if (++mPeriodicCleanCounter % 10 == 0) {
+        if (++_periodicCleanCounter % 10 == 0) {
             std::vector<std::string> keys_for_removal;
 
             // TODO: Only clean up the drive that is being used, not all of them
-            for (auto&& drives : mResources) {
+            for (auto&& drives : _resources) {
                 for (auto&& res_kvp : drives.second) {
                     // If the use count is 1, it means that no other place is
                     // the resource used other than inside the unordered map,
@@ -123,7 +123,7 @@ private:
             }
 
             for (auto&& key : keys_for_removal) {
-                mResources.erase(key);
+                _resources.erase(key);
             }
         }
     }

@@ -42,7 +42,7 @@ public:
 private:
     std::shared_ptr<jleWindowInternalAPIInterface> windowInternal;
 
-    int mScreenBeginX{0}, mScreenBeginY{0};
-    int mScreenWidth, mScreenHeight;
-    int mPixelatedScreenWidth, mPixelatedScreenHeight;
+    int _screenBeginX{0}, _screenBeginY{0};
+    int _screenWidth, _screenHeight;
+    int _pixelatedScreenWidth, _pixelatedScreenHeight;
 };

@@ -14,155 +14,155 @@ public:
 
     inline void SetWorldPosition(float x, float y, float depth) {
 
-        mX = 0.f;
-        mY = 0.f;
-        mDepth = 0.f;
+        _x = 0.f;
+        _y = 0.f;
+        _depth = 0.f;
 
-        auto p = mAttachedToObject->GetParent();
+        auto p = _attachedToObject->GetParent();
         while (p) {
             if (auto&& t = p->GetComponent<cTransform>()) {
-                mX -= t->mX;
-                mY -= t->mY;
-                mDepth -= t->mDepth;
+                _x -= t->_x;
+                _y -= t->_y;
+                _depth -= t->_depth;
             }
 
             p = p->GetParent();
         }
 
-        mX += x;
-        mY += y;
-        mDepth += depth;
+        _x += x;
+        _y += y;
+        _depth += depth;
 
         SetDirty();
     }
 
     inline void SetWorldPositionXY(float x, float y) {
 
-        mX = 0.f;
-        mY = 0.f;
+        _x = 0.f;
+        _y = 0.f;
 
-        auto p = mAttachedToObject->GetParent();
+        auto p = _attachedToObject->GetParent();
         while (p) {
             if (auto&& t = p->GetComponent<cTransform>()) {
-                mX -= t->mX;
-                mY -= t->mY;
+                _x -= t->_x;
+                _y -= t->_y;
             }
 
             p = p->GetParent();
         }
 
-        mX += x;
-        mY += y;
+        _x += x;
+        _y += y;
 
         SetDirty();
     }
 
     inline void SetWorldPositionX(float x) {
-        mX = 0.f;
+        _x = 0.f;
 
-        auto p = mAttachedToObject->GetParent();
+        auto p = _attachedToObject->GetParent();
         while (p) {
             if (auto&& t = p->GetComponent<cTransform>()) {
-                mX -= t->mX;
+                _x -= t->_x;
             }
 
             p = p->GetParent();
         }
 
-        mX += x;
+        _x += x;
 
         SetDirty();
     }
 
     inline void SetWorldPositionY(float y) {
 
-        mY = 0.f;
+        _y = 0.f;
 
-        auto p = mAttachedToObject->GetParent();
+        auto p = _attachedToObject->GetParent();
         while (p) {
             if (auto&& t = p->GetComponent<cTransform>()) {
-                mY -= t->mY;
+                _y -= t->_y;
             }
 
             p = p->GetParent();
         }
 
-        mY += y;
+        _y += y;
 
         SetDirty();
     }
 
     inline void SetLocalPosition(float x, float y, float depth = 0.f) {
-        mX = x, mY = y;
-        mDepth = depth;
+        _x = x, _y = y;
+        _depth = depth;
 
         SetDirty();
     }
 
     inline void AddLocalPosition(float x, float y, float depth = 0.f) {
-        mX += x;
-        mY += y;
-        mDepth += depth;
+        _x += x;
+        _y += y;
+        _depth += depth;
 
         SetDirty();
     }
 
     inline void SetLocalPositionX(float x) {
-        mX = x;
+        _x = x;
         SetDirty();
     }
 
     inline void SetLocalPositionY(float y) {
-        mY = y;
+        _y = y;
         SetDirty();
     }
 
     [[nodiscard]] inline float GetWorldX() {
-        if (mDirty) {
+        if (_dirty) {
             RefreshWorldCoordinates();
         }
 
-        return mWorldX;
+        return _worldX;
     }
 
     [[nodiscard]] inline float GetWorldY() {
-        if (mDirty) {
+        if (_dirty) {
             RefreshWorldCoordinates();
         }
 
-        return mWorldY;
+        return _worldY;
     }
 
     [[nodiscard]] inline float GetWorldDepth() {
-        if (mDirty) {
+        if (_dirty) {
             RefreshWorldCoordinates();
         }
 
-        return mWorldDepth;
+        return _worldDepth;
     }
 
     [[nodiscard]] inline glm::vec3 GetWorldXYDepth() {
-        if (mDirty) {
+        if (_dirty) {
             RefreshWorldCoordinates();
         }
 
-        return {mX, mY, mDepth};
+        return {_x, _y, _depth};
     }
 
-    [[nodiscard]] inline float GetLocalX() const { return mX; }
+    [[nodiscard]] inline float GetLocalX() const { return _x; }
 
-    [[nodiscard]] inline float GetLocalY() const { return mY; }
+    [[nodiscard]] inline float GetLocalY() const { return _y; }
 
-    [[nodiscard]] inline float GetLocalDepth() const { return mDepth; }
+    [[nodiscard]] inline float GetLocalDepth() const { return _depth; }
 
     inline void SetDirty() {
-        mDirty = true;
+        _dirty = true;
 
         // Also set all the child transforms dirty
-        auto& children = mAttachedToObject->GetChildObjects();
+        auto& children = _attachedToObject->GetChildObjects();
         for (auto&& child : children) {
             if (auto t = child->GetComponent<cTransform>()) {
-                t->mDirty = true;
+                t->_dirty = true;
                 t->SetDirty();
             }
         }
@@ -174,24 +174,24 @@ public:
 
 private:
     inline void RefreshWorldCoordinates() {
-        mWorldX = mX;
-        mWorldY = mY;
-        mWorldDepth = mDepth;
-        auto p = mAttachedToObject->GetParent();
+        _worldX = _x;
+        _worldY = _y;
+        _worldDepth = _depth;
+        auto p = _attachedToObject->GetParent();
         while (p) {
             if (auto&& t = p->GetComponent<cTransform>()) {
-                mWorldX += t->mX;
-                mWorldY += t->mY;
-                mWorldDepth += t->mDepth;
+                _worldX += t->_x;
+                _worldY += t->_y;
+                _worldDepth += t->_depth;
             }
 
             p = p->GetParent();
         }
-        mDirty = false;
+        _dirty = false;
     }
 
-    float mX = 0.f, mY = 0.f, mDepth = 0.f;
+    float _x = 0.f, _y = 0.f, _depth = 0.f;
 
-    float mWorldX{}, mWorldY{}, mWorldDepth{};
-    bool mDirty = true;
+    float _worldX{}, _worldY{}, _worldDepth{};
+    bool _dirty = true;
 };

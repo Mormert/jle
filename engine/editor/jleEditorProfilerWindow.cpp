@@ -30,9 +30,9 @@ void jleEditorProfilerWindow::DrawProfilerRecursive(uint32_t index) {
     if (ImGui::TreeNodeEx(std::to_string(index).c_str(),
                           ImGuiTreeNodeFlags_DefaultOpen,
                           "%s (%.3f ms)",
-                          vec[index].mName.data(),
-                          vec[index].mExecutionTime.count() * 0.001f)) {
-        for (auto&& childIndex : vec[index].mChildren) {
+                          vec[index]._name.data(),
+                          vec[index]._executionTime.count() * 0.001f)) {
+        for (auto&& childIndex : vec[index]._children) {
             DrawProfilerRecursive(childIndex);
         }
         ImGui::TreePop();

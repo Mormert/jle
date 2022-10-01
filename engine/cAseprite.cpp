@@ -9,56 +9,56 @@
 #include "jleResourceHolder.h"
 
 void cAseprite::Start() {
-    mTransform = mAttachedToObject->AddDependencyComponent<cTransform>(this);
+    _transform = _attachedToObject->AddDependencyComponent<cTransform>(this);
 
-    mAseprites.clear();
-    for (auto&& path : mAsepritePaths) {
-        mAseprites.push_back(
+    _aseprites.clear();
+    for (auto&& path : _asepritePaths) {
+        _aseprites.push_back(
             jleResourceHolder::LoadResourceFromFile<jleAseprite>(
-                jleRelativePath{path.mString}));
+                jleRelativePath{path._string}));
     }
 }
 
 void cAseprite::Update(float dt) {
-    if (mAseprites.empty() ||
-        mCurrentlyActiveAseprite + 1 > mAseprites.size()) {
+    if (_aseprites.empty() ||
+        _currentlyActiveAseprite + 1 > _aseprites.size()) {
         return;
     }
 
-    auto&& aseprite = mAseprites[mCurrentlyActiveAseprite];
+    auto&& aseprite = _aseprites[_currentlyActiveAseprite];
 
-    if (aseprite->mFrames.empty()) {
+    if (aseprite->_frames.empty()) {
         return;
     }
 
-    if (mAnimating) {
-        mCurrentFrameTimeSpent += dt * 1000.f;
-        if (mCurrentFrameTimeSpent >= mCurrentFrameDurationMs) {
-            mCurrentFrame++;
-            if (mCurrentFrame >= aseprite->mFrames.size()) {
-                mCurrentFrame = 0;
+    if (_animating) {
+        _currentFrameTimeSpent += dt * 1000.f;
+        if (_currentFrameTimeSpent >= _currentFrameDurationMs) {
+            _currentFrame++;
+            if (_currentFrame >= aseprite->_frames.size()) {
+                _currentFrame = 0;
             }
-            mCurrentFrameTimeSpent = 0;
-            mCurrentFrameDurationMs =
-                aseprite->mFrames.at(mCurrentFrame).mDuration;
+            _currentFrameTimeSpent = 0;
+            _currentFrameDurationMs =
+                aseprite->_frames.at(_currentFrame)._duration;
         }
     }
 
-    if (mCurrentFrame >= aseprite->mFrames.size()) {
-        mCurrentFrame = aseprite->mFrames.size() - 1;
+    if (_currentFrame >= aseprite->_frames.size()) {
+        _currentFrame = aseprite->_frames.size() - 1;
     }
-    const auto& frame = aseprite->mFrames.at(mCurrentFrame);
+    const auto& frame = aseprite->_frames.at(_currentFrame);
 
-    auto& texture = aseprite->mImageTexture;
+    auto& texture = aseprite->_imageTexture;
     if (texture != nullptr) {
         TexturedQuad quad{texture};
-        quad.x = mTransform->GetWorldX() + mOffsetX;
-        quad.y = mTransform->GetWorldY() + mOffsetY;
-        quad.height = mHeight;
-        quad.width = mWidth;
-        quad.textureX = frame.mFrame.mX + mTextureX;
-        quad.textureY = frame.mFrame.mY + mTextureY;
-        quad.depth = mTransform->GetWorldDepth();
+        quad.x = _transform->GetWorldX() + _offsetX;
+        quad.y = _transform->GetWorldY() + _offsetY;
+        quad.height = _height;
+        quad.width = _width;
+        quad.textureX = frame._frame._x + _textureX;
+        quad.textureY = frame._frame._y + _textureY;
+        quad.depth = _transform->GetWorldDepth();
 
         if (quad.texture.get()) {
             jleCore::core->rendering->quads->SendTexturedQuad(
@@ -68,42 +68,42 @@ void cAseprite::Update(float dt) {
 }
 
 void cAseprite::ToJson(nlohmann::json& j_out) {
-    j_out = nlohmann::json{{"mAsepritePaths_STRVEC", mAsepritePaths},
-                           {"height", mHeight},
-                           {"width", mWidth},
-                           {"textureX", mTextureX},
-                           {"textureY", mTextureY},
-                           {"offsetX", mOffsetX},
-                           {"offsetY", mOffsetY},
-                           {"animating", mAnimating}};
+    j_out = nlohmann::json{{"_asepritePaths_STRVEC", _asepritePaths},
+                           {"height", _height},
+                           {"width", _width},
+                           {"textureX", _textureX},
+                           {"textureY", _textureY},
+                           {"offsetX", _offsetX},
+                           {"offsetY", _offsetY},
+                           {"animating", _animating}};
 }
 
 void cAseprite::FromJson(const nlohmann::json& j_in) {
 
-    const auto asepritePaths = j_in.find("mAsepritePaths_STRVEC");
+    const auto asepritePaths = j_in.find("_asepritePaths_STRVEC");
     if (asepritePaths != j_in.end()) {
-        mAsepritePaths =
-            j_in.at("mAsepritePaths_STRVEC").get<std::vector<jleJsonString>>();
+        _asepritePaths =
+            j_in.at("_asepritePaths_STRVEC").get<std::vector<jleJsonString>>();
     }
 
-    mHeight = j_in.at("height");
-    mWidth = j_in.at("width");
-    mTextureX = j_in.at("textureX");
-    mTextureY = j_in.at("textureY");
-    mOffsetX = j_in.at("offsetX");
-    mOffsetY = j_in.at("offsetY");
-    mAnimating = j_in.at("animating");
+    _height = j_in.at("height");
+    _width = j_in.at("width");
+    _textureX = j_in.at("textureX");
+    _textureY = j_in.at("textureY");
+    _offsetX = j_in.at("offsetX");
+    _offsetY = j_in.at("offsetY");
+    _animating = j_in.at("animating");
 
     // Make sure to reset current frame to not cause out of bounds crash
-    mCurrentFrame = 0;
-    mCurrentFrameTimeSpent = 0.f;
-    mCurrentlyActiveAseprite = 0;
+    _currentFrame = 0;
+    _currentFrameTimeSpent = 0.f;
+    _currentlyActiveAseprite = 0;
 
-    mAseprites.clear();
-    for (auto&& path : mAsepritePaths) {
-        mAseprites.push_back(
+    _aseprites.clear();
+    for (auto&& path : _asepritePaths) {
+        _aseprites.push_back(
             jleResourceHolder::LoadResourceFromFile<jleAseprite>(
-                jleRelativePath{path.mString}));
+                jleRelativePath{path._string}));
     }
 }
 
@@ -111,38 +111,38 @@ cAseprite::cAseprite(jleObject *owner, jleScene *scene)
     : jleComponent(owner, scene) {}
 
 void cAseprite::SetCurrentAseprite(unsigned int index) {
-    if (index < mAseprites.size()) {
-        mCurrentlyActiveAseprite = index;
+    if (index < _aseprites.size()) {
+        _currentlyActiveAseprite = index;
         return;
     }
     LOGE << "Trying to set active aseprite animation outside bounds!";
 }
 
 unsigned int cAseprite::GetCurrentAsepriteIndex() const {
-    return mCurrentlyActiveAseprite;
+    return _currentlyActiveAseprite;
 }
 
 int cAseprite::AddAsepritePath(const std::string& path) {
-    mAsepritePaths.push_back({path});
-    mAseprites.push_back(jleResourceHolder::LoadResourceFromFile<jleAseprite>(
+    _asepritePaths.push_back({path});
+    _aseprites.push_back(jleResourceHolder::LoadResourceFromFile<jleAseprite>(
         jleRelativePath{path}));
-    return (int)mAseprites.size() - 1;
+    return (int)_aseprites.size() - 1;
 }
 
 jleAseprite& cAseprite::GetActiveAsepriteRef() {
-    return *mAseprites[mCurrentlyActiveAseprite];
+    return *_aseprites[_currentlyActiveAseprite];
 }
 
 void cAseprite::SetCurrentAsepriteFrame(unsigned int index) {
-    if (mAseprites.empty()) {
+    if (_aseprites.empty()) {
         LOGE << "No found aseprites on this object";
         return;
     }
 
-    const auto frames = mAseprites[mCurrentlyActiveAseprite]->mFrames.size();
+    const auto frames = _aseprites[_currentlyActiveAseprite]->_frames.size();
     if (index < frames) {
-        mCurrentFrameDurationMs = 0;
-        mCurrentFrame = index;
+        _currentFrameDurationMs = 0;
+        _currentFrame = index;
         return;
     }
     LOGE << "Trying to set current frame outside bounds!";

@@ -19,7 +19,7 @@ class jleObject : public jleJsonInterface<nlohmann::json>,
                   public std::enable_shared_from_this<jleObject> {
     JLE_REGISTER_OBJECT_TYPE(jleObject)
 public:
-    std::string mInstanceName;
+    std::string _instanceName;
 
     virtual void Start() {}
 
@@ -94,7 +94,7 @@ public:
     static nlohmann::json GetObjectTemplateJson(const jleRelativePath& path);
 
     // If this object is based on a template
-    std::optional<std::string> mTemplatePath{};
+    std::optional<std::string> _templatePath{};
 
     int GetInstanceID() const;
 
@@ -109,27 +109,27 @@ private:
 
     void UpdateChildren(float dt);
 
-    bool mPendingKill = false;
+    bool _pendingKill = false;
 
-    bool mIsStarted = false;
+    bool _isStarted = false;
 
-    int mInstanceID;
+    int _instanceID;
 
     static inline int sObjectsCreatedCount{0};
 
 protected:
-    std::vector<std::shared_ptr<jleComponent>> mComponents{};
+    std::vector<std::shared_ptr<jleComponent>> _components{};
 
-    // Dynamic Custom Components is a subset of mComponents, containing
+    // Dynamic Custom Components is a subset of _components, containing
     // components That can be added/removed dynamically, and saved on object
     // instances in a scene.
-    std::vector<std::shared_ptr<jleComponent>> mDynamicCustomComponents{};
+    std::vector<std::shared_ptr<jleComponent>> _dynamicCustomComponents{};
 
-    std::vector<std::shared_ptr<jleObject>> mChildObjects{};
+    std::vector<std::shared_ptr<jleObject>> _childObjects{};
 
-    jleObject *mParentObject = nullptr;
+    jleObject *_parentObject = nullptr;
 
-    jleScene *mContainedInScene = nullptr;
+    jleScene *_containedInScene = nullptr;
 
     virtual void SetupDefaultObject() {}
 

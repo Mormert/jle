@@ -56,12 +56,12 @@ public:
     // Should always be accessed via GetRegisteredObjectsRef()
     static inline std::unique_ptr<
         std::map<std::string, std::function<std::shared_ptr<jleObject>()>>>
-        mRegisteredObjectsPtr{nullptr};
+        _registeredObjectsPtr{nullptr};
 
     // Should always be accessed via GetRegisteredComponentsRef()
     static inline std::unique_ptr<
         std::map<std::string, std::function<std::shared_ptr<jleComponent>()>>>
-        mRegisteredComponentsPtr{nullptr};
+        _registeredComponentsPtr{nullptr};
 };
 
 template <typename T>

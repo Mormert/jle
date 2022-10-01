@@ -37,12 +37,12 @@ hexNetScene::ProcessNetMessage(const std::string &event, const nlohmann::json &m
     }
 
     if (event == "player_pos") {
-        if (mPlayers.find(sender) == mPlayers.end()) {
+        if (_players.find(sender) == _players.end()) {
             std::weak_ptr<jleObject> newPlayer = SpawnTemplateObject(jleRelativePath{"GR:/otemps/otherPlayer.tmpl"});
-            mPlayers[sender] = newPlayer;
+            _players[sender] = newPlayer;
         }
 
-        if (auto otherPlayer = mPlayers[sender].lock()) {
+        if (auto otherPlayer = _players[sender].lock()) {
             int q = message["q"];
             int r = message["r"];
             int d = message["d"];
@@ -50,7 +50,7 @@ hexNetScene::ProcessNetMessage(const std::string &event, const nlohmann::json &m
             std::static_pointer_cast<oCharacter>(otherPlayer)->SetCharacterDirection(
                     static_cast<oCharacter::oCharacterDirection>(d));
         } else {
-            mPlayers.erase(sender);
+            _players.erase(sender);
         }
 
         return;
@@ -75,20 +75,20 @@ hexNetScene::ProcessNetMessage(const std::string &event, const nlohmann::json &m
 }
 
 std::weak_ptr<jleObject> hexNetScene::GetPlayerFromId(const std::string &id) {
-    auto it = mPlayers.find(id);
-    if (it == mPlayers.end() || (it != mPlayers.end() && it->second.expired())) {
+    auto it = _players.find(id);
+    if (it == _players.end() || (it != _players.end() && it->second.expired())) {
         std::weak_ptr<jleObject> newPlayer = SpawnTemplateObject(jleRelativePath{"GR:/otemps/otherPlayer.tmpl"});
-        mPlayers[id] = newPlayer;
+        _players[id] = newPlayer;
         return newPlayer;
     }
     return it->second.lock();
 }
 
 std::weak_ptr<oFireball> hexNetScene::GetFireballFromId(const int id) {
-    auto it = mFireballs.find(id);
-    if (it == mFireballs.end() || (it != mFireballs.end() && it->second.expired())) {
+    auto it = _fireballs.find(id);
+    if (it == _fireballs.end() || (it != _fireballs.end() && it->second.expired())) {
         auto newFireball = std::static_pointer_cast<oFireball>(SpawnTemplateObject(jleRelativePath{"GR:otemps/FireballTempl.tmpl"}));
-        mFireballs[id] = newFireball;
+        _fireballs[id] = newFireball;
         return newFireball;
     }
     return it->second.lock();

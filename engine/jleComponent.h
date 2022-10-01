@@ -39,10 +39,10 @@ protected:
     friend class jleObject;
 
     // The object that owns this component
-    jleObject *mAttachedToObject;
+    jleObject *_attachedToObject;
 
     // The scene in which this component's object lives
-    jleScene *mContainedInScene;
+    jleScene *_containedInScene;
 };
 
 void to_json(nlohmann::json& j, const std::shared_ptr<jleComponent> c);

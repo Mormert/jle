@@ -14,11 +14,11 @@ public:
     static void NewFrame();
 
     struct jleProfilerData {
-        std::string_view mName;
+        std::string_view _name;
 
-        std::chrono::duration<double, std::micro> mExecutionTime;
+        std::chrono::duration<double, std::micro> _executionTime;
 
-        std::vector<int> mChildren;
+        std::vector<int> _children;
     };
 
     struct jleProfilerRAII {
@@ -27,10 +27,10 @@ public:
         ~jleProfilerRAII();
 
     private:
-        std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime;
-        std::string_view mName;
-        int mIndex;
-        int mParentIndex;
+        std::chrono::time_point<std::chrono::high_resolution_clock> _startTime;
+        std::string_view _name;
+        int _index;
+        int _parentIndex;
     };
 
     static std::vector<jleProfilerData>& GetProfilerDataLastFrame();

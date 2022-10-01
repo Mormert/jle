@@ -13,8 +13,8 @@
 
 struct jleSpritesheetEntity {
     struct jleSpritesheetEntityFrame {
-        int mX, mY, mWidth, mHeight;
-    } mFrame;
+        int _x, _y, _width, _height;
+    } _frame;
 };
 
 struct jleSpritesheet : jleFileLoadInterface {
@@ -27,10 +27,10 @@ struct jleSpritesheet : jleFileLoadInterface {
 
     bool LoadFromFile(const std::string& path) override;
 
-    std::unordered_map<std::string, jleSpritesheetEntity> mSpritesheetEntities;
+    std::unordered_map<std::string, jleSpritesheetEntity> _spritesheetEntities;
 
-    std::shared_ptr<jleTexture> mImageTexture;
-    std::string mPathJson;
+    std::shared_ptr<jleTexture> _imageTexture;
+    std::string _pathJson;
 };
 
 void from_json(const nlohmann::json& j, jleSpritesheet& s);

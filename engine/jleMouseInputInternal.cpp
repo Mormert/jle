@@ -17,7 +17,7 @@ void jleMouseInputInternal::LinkWindow(
 
 int jleMouseInputInternal::GetMouseX() {
 #ifdef BUILD_EDITOR
-    return windowInternal->GetCursor().first - mScreenBeginX;
+    return windowInternal->GetCursor().first - _screenBeginX;
 #else
     return windowInternal->GetCursor().first;
 #endif
@@ -25,7 +25,7 @@ int jleMouseInputInternal::GetMouseX() {
 
 int jleMouseInputInternal::GetMouseY() {
 #ifdef BUILD_EDITOR
-    return windowInternal->GetCursor().second - mScreenBeginY;
+    return windowInternal->GetCursor().second - _screenBeginY;
 #else
     return windowInternal->GetCursor().second;
 #endif
@@ -44,27 +44,27 @@ float jleMouseInputInternal::GetScrollY() {
 }
 
 void jleMouseInputInternal::SetScreenBeginCoords(int x, int y) {
-    mScreenBeginX = x;
-    mScreenBeginY = y;
+    _screenBeginX = x;
+    _screenBeginY = y;
 }
 
 void jleMouseInputInternal::SetScreenSize(int width, int height) {
-    mScreenWidth = width;
-    mScreenHeight = height;
+    _screenWidth = width;
+    _screenHeight = height;
 }
 
 void jleMouseInputInternal::SetPixelatedScreenSize(int width, int height) {
-    mPixelatedScreenWidth = width;
-    mPixelatedScreenHeight = height;
+    _pixelatedScreenWidth = width;
+    _pixelatedScreenHeight = height;
 }
 
 int jleMouseInputInternal::GetPixelatedMouseX() {
-    const float ratio = float(mPixelatedScreenWidth) / float(mScreenWidth);
+    const float ratio = float(_pixelatedScreenWidth) / float(_screenWidth);
     return int(ratio * float(GetMouseX()));
 }
 
 int jleMouseInputInternal::GetPixelatedMouseY() {
-    const float ratio = float(mPixelatedScreenHeight) / float(mScreenHeight);
+    const float ratio = float(_pixelatedScreenHeight) / float(_screenHeight);
     return int(ratio * float(GetMouseY()));
 }
 

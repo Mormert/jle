@@ -35,7 +35,7 @@ private:
     void Movement_v1(float dt);
     void Movement(float dt);
 
-    bool mCanThrowFireball = true;
+    bool _canThrowFireball = true;
 
 };
 

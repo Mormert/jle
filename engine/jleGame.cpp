@@ -4,25 +4,25 @@
 
 void jleGame::UpdateActiveScenes(float dt) {
     JLE_SCOPE_PROFILE(jleGame::UpdateActiveScenes)
-    for (int i = mActiveScenes.size() - 1; i >= 0; i--) {
-        if (mActiveScenes[i]->bPendingSceneDestruction) {
-            mActiveScenes.erase(mActiveScenes.begin() + i);
+    for (int i = _activeScenes.size() - 1; i >= 0; i--) {
+        if (_activeScenes[i]->bPendingSceneDestruction) {
+            _activeScenes.erase(_activeScenes.begin() + i);
             continue;
         }
 
-        mActiveScenes[i]->SceneUpdate();
-        mActiveScenes[i]->ProcessNewSceneObjects();
-        mActiveScenes[i]->UpdateSceneObjects(dt);
+        _activeScenes[i]->SceneUpdate();
+        _activeScenes[i]->ProcessNewSceneObjects();
+        _activeScenes[i]->UpdateSceneObjects(dt);
     }
 }
 
 std::vector<std::shared_ptr<jleScene>>& jleGame::GetActiveScenesRef() {
-    return mActiveScenes;
+    return _activeScenes;
 }
 
 bool jleGame::CheckSceneIsActive(const std::string& sceneName) {
-    for (auto&& scene : mActiveScenes) {
-        if (sceneName == scene->mSceneName) {
+    for (auto&& scene : _activeScenes) {
+        if (sceneName == scene->_sceneName) {
             return true;
         }
     }

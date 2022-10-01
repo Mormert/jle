@@ -5,7 +5,7 @@
 #include "jleObject.h"
 
 void cCamera::Start() {
-    mTransform = mAttachedToObject->AddDependencyComponent<cTransform>(this);
+    _transform = _attachedToObject->AddDependencyComponent<cTransform>(this);
     sInstanceCounter++;
 
     if (sInstanceCounter > 1) {
@@ -16,23 +16,23 @@ void cCamera::Start() {
 void cCamera::Update(float dt) {
     auto& game = ((jleGameEngine *)jleCore::core)->GetGameRef();
 
-    game.mMainCamera.mX = mTransform->GetWorldX() + mOffsetX;
-    game.mMainCamera.mY = mTransform->GetWorldY() + mOffsetY;
+    game._mainCamera._x = _transform->GetWorldX() + _offsetX;
+    game._mainCamera._y = _transform->GetWorldY() + _offsetY;
 
-    game.mMainCamera.mXNoOffset = mTransform->GetWorldX();
-    game.mMainCamera.mYNoOffset = mTransform->GetWorldY();
+    game._mainCamera._xNoOffset = _transform->GetWorldX();
+    game._mainCamera._yNoOffset = _transform->GetWorldY();
 }
 
 void cCamera::ToJson(nlohmann::json& j_out) {
     j_out = nlohmann::json{
-        {"offsetX", mOffsetX},
-        {"offsetY", mOffsetY},
+        {"offsetX", _offsetX},
+        {"offsetY", _offsetY},
     };
 }
 
 void cCamera::FromJson(const nlohmann::json& j_in) {
-    mOffsetX = j_in.at("offsetX");
-    mOffsetY = j_in.at("offsetY");
+    _offsetX = j_in.at("offsetX");
+    _offsetY = j_in.at("offsetY");
 }
 
 cCamera::cCamera(jleObject *owner, jleScene *scene)
@@ -40,6 +40,6 @@ cCamera::cCamera(jleObject *owner, jleScene *scene)
 
 cCamera::~cCamera() { sInstanceCounter--; }
 
-float cCamera::GetOffsetX() { return mOffsetX; }
+float cCamera::GetOffsetX() { return _offsetX; }
 
-float cCamera::GetOffsetY() { return mOffsetY; }
+float cCamera::GetOffsetY() { return _offsetY; }

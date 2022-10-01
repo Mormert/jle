@@ -44,7 +44,7 @@ private:
         float x, y, scale, r, g, b, a;
         GLTtext *gltextPtr;
     };
-    std::vector<jleSimpleTextData> mSimpleTextDatas;
+    std::vector<jleSimpleTextData> _simpleTextDatas;
 
     struct jleFontTextData {
         float x, y, depth, r, g, b, a;
@@ -52,5 +52,5 @@ private:
         jleFont *font;
         std::string text;
     };
-    std::vector<jleFontTextData> mFontTextDatas;
+    std::vector<jleFontTextData> _fontTextDatas;
 };

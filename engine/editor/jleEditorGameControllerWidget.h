@@ -10,8 +10,8 @@ public:
 
     void Update(jleGameEngine &ge) override;
 
-    std::shared_ptr<jleTexture> mPlayGameIcon;
-    std::shared_ptr<jleTexture> mRestartGameIcon;
-    std::shared_ptr<jleTexture> mPauseGameIcon;
-    std::shared_ptr<jleTexture> mNextFrameIcon;
+    std::shared_ptr<jleTexture> _playGameIcon;
+    std::shared_ptr<jleTexture> _restartGameIcon;
+    std::shared_ptr<jleTexture> _pauseGameIcon;
+    std::shared_ptr<jleTexture> _nextFrameIcon;
 };
