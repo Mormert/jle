@@ -17,7 +17,7 @@ public:
 
     template <class T>
     void SetGame() {
-        gameCreator = std::make_unique<GameCreator<T>>();
+        _gameCreator = []() { return std::make_unique<T>(); };
     }
 
     // Main framebuffer
@@ -49,26 +49,9 @@ public:
     static inline jleGameEngine *gEngine;
 
 private:
-    class iGameCreator {
-    public:
-        virtual ~iGameCreator() = default;
+    std::function<std::unique_ptr<jleGame>()> _gameCreator;
 
-        virtual std::unique_ptr<jleGame> CreateGame() = 0;
-    };
-
-    template <class T>
-    class GameCreator : public iGameCreator {
-    public:
-        ~GameCreator() override {}
-
-        std::unique_ptr<jleGame> CreateGame() override {
-            return std::make_unique<T>();
-        }
-    };
-
-    std::unique_ptr<iGameCreator> gameCreator;
-
-    std::unique_ptr<jleFullscreenRenderingInterface> fullscreen_renderer;
+    std::unique_ptr<jleFullscreenRenderingInterface> _fullscreen_renderer;
 
     void FramebufferResizeEvent(unsigned int width, unsigned int height);
 

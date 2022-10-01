@@ -44,12 +44,12 @@ std::pair<unsigned int, unsigned int> jleGameEngine::GetFramebufferDimensions(
 }
 
 void jleGameEngine::StartGame() {
-    if (!gameCreator) {
+    if (!_gameCreator) {
         LOG_WARNING << "Game has not been set! Use SetGame<jleGameDerived>() "
                        "before starting the game.";
         return;
     }
-    game = gameCreator->CreateGame();
+    game = _gameCreator();
     game->Start();
 
     game->_mainCamera._cameraWidth = framebuffer_main->GetWidth();
@@ -113,7 +113,7 @@ void jleGameEngine::Start() {
         core_settings->windowSettings.windowWidth,
         core_settings->windowSettings.windowHeight);
 
-    fullscreen_renderer = renderingFactory->CreateFullscreenRendering();
+    _fullscreen_renderer = renderingFactory->CreateFullscreenRendering();
 
     window->AddWindowResizeCallback(
         std::bind(&jleGameEngine::FramebufferResizeEvent,
@@ -158,7 +158,7 @@ void jleGameEngine::Render() {
             ->Render(*framebuffer_main.get(), GetGameRef()._mainCamera);
         ((jleRenderingInternalAPIInterface *)rendering.get())
             ->ClearBuffersForNextFrame();
-        fullscreen_renderer->RenderFramebufferFullscreen(
+        _fullscreen_renderer->RenderFramebufferFullscreen(
             *framebuffer_main.get(),
             window->GetWindowWidth(),
             window->GetWindowHeight());
