@@ -58,6 +58,8 @@ void jleMouseInputInternal::SetPixelatedScreenSize(int width, int height) {
     _pixelatedScreenHeight = height;
 }
 
+void jleMouseInputInternal::SetIsEnabled(bool value) { _isEnabled = value; }
+
 int jleMouseInputInternal::GetPixelatedMouseX() {
     const float ratio = float(_pixelatedScreenWidth) / float(_screenWidth);
     return int(ratio * float(GetMouseX()));
@@ -69,7 +71,7 @@ int jleMouseInputInternal::GetPixelatedMouseY() {
 }
 
 bool jleMouseInputInternal::GetMouseClick(int button) {
-    if (input_enabled) {
+    if (_isEnabled) {
         return windowInternal->GetMouseClick(button);
     }
     return false;

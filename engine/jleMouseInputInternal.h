@@ -2,12 +2,10 @@
 
 #pragma once
 
-#include "jleMouseInputInterface.h"
 #include "jleWindowInternalAPIInterface.h"
 #include "jleWindowLinkableInterface.h"
 
-class jleMouseInputInternal : public jleMouseInputInterface,
-                              public jleWindowLinkableInterface {
+class jleMouseInputInternal : public jleWindowLinkableInterface {
 public:
     explicit jleMouseInputInternal(
         std::shared_ptr<jleWindowInternalAPIInterface> windowInternal);
@@ -15,23 +13,23 @@ public:
     void LinkWindow(
         std::shared_ptr<jleWindowInternalAPIInterface> windowInternal) override;
 
-    int GetMouseX() override;
+    int GetMouseX();
 
-    int GetMouseY() override;
+    int GetMouseY();
 
-    float GetMouseXDelta() override;
+    float GetMouseXDelta();
 
-    float GetMouseYDelta() override;
+    float GetMouseYDelta();
 
-    float GetScrollX() override;
+    float GetScrollX();
 
-    float GetScrollY() override;
+    float GetScrollY();
 
-    int GetPixelatedMouseX() override;
+    int GetPixelatedMouseX();
 
-    int GetPixelatedMouseY() override;
+    int GetPixelatedMouseY();
 
-    bool GetMouseClick(int button) override;
+    bool GetMouseClick(int button);
 
     void SetScreenBeginCoords(int x, int y);
 
@@ -39,10 +37,13 @@ public:
 
     void SetPixelatedScreenSize(int width, int height);
 
+    void SetIsEnabled(bool value);
+
 private:
     std::shared_ptr<jleWindowInternalAPIInterface> windowInternal;
 
     int _screenBeginX{0}, _screenBeginY{0};
     int _screenWidth, _screenHeight;
     int _pixelatedScreenWidth, _pixelatedScreenHeight;
+    bool _isEnabled = true;
 };
