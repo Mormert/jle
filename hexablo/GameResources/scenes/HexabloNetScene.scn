@@ -31,9 +31,9 @@
                     "_comp_name": "cAseprite",
                     "animating": true,
                     "height": 64,
-                    "mAsepritePaths_STRVEC": [
+                    "_asepritePaths_STRVEC": [
                         {
-                            "mString": "GR:gfx/conceptart/Vfx/fireball-sheet.json"
+                            "_string": "GR:gfx/conceptart/Vfx/fireball-sheet.json"
                         }
                     ],
                     "offsetX": 0,
@@ -61,5 +61,5 @@
         }
     ],
     "_sceneName": "HexabloNetScene",
-    "mConnectAddress": ""
+    "_connectAddress": ""
 }
