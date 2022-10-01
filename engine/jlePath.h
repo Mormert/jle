@@ -30,7 +30,7 @@ public:
     [[nodiscard]] std::string GetAbsolutePathStr() const;
 
 private:
-    std::string mRelativePath;
+    std::string _relativePath;
 };
 
 // A class that contains the absolute path to a resource, for example
@@ -51,7 +51,7 @@ public:
     [[nodiscard]] std::string GetAbsolutePathStr() const;
 
 private:
-    std::string mAbsolutePath;
+    std::string _absolutePath;
 };
 
 #endif // JLEPATH_H

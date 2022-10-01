@@ -59,7 +59,7 @@ private:
     // Called from C++ or JavaScript, networking thread
     void OnReceiveMessagePack(const std::string& data);
 
-    moodycamel::ReaderWriterQueue<nlohmann::json> mMessagePacks{128};
+    moodycamel::ReaderWriterQueue<nlohmann::json> _messagePacks{128};
 
     // Has native and JS implementation
     std::string GetSessionID();

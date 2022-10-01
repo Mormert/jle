@@ -41,7 +41,7 @@ public:
     // access the one and only world globally
     inline static oWorld *sWorld;
 
-    int mHexSizeX{}, mHexSizeY{};
+    int _hexSizeX{}, _hexSizeY{};
 
 private:
     void LoadTilesTexture();
@@ -63,33 +63,33 @@ private:
     };
 
 #ifndef NDEBUG
-    // In debug mode we also use this mHexagonItems_debug to assure that mHexagonItems
+    // In debug mode we also use this _hexagonItems_debug to assure that _hexagonItems
     // for our purposes hashes correctly. Using double maps are obviously slower since 2 lookups
     // are required, and we only use it in debug mode.
-    std::unordered_map<int, std::unordered_map<int, hexHexagonItem *>> mHexagonItems_debug;
+    std::unordered_map<int, std::unordered_map<int, hexHexagonItem *>> _hexagonItems_debug;
 #endif
 
-    std::unordered_map<std::pair<int, int>, hexHexagonItem *, pair_hash> mHexagonItems;
+    std::unordered_map<std::pair<int, int>, hexHexagonItem *, pair_hash> _hexagonItems;
 
-    std::array<std::array<int, 50>, 50> mWorldHexagons;
+    std::array<std::array<int, 50>, 50> _worldHexagons;
 
-    std::set<std::pair<int, int>> mStaticallyNotWalkableHexagons;
+    std::set<std::pair<int, int>> _staticallyNotWalkableHexagons;
 
-    std::string mWorldHexTilesAsepritePath;
-    jleAseprite mAseprite;
+    std::string _worldHexTilesAsepritePath;
+    jleAseprite _aseprite;
 
-    jleQuadRenderingInterface *mQuadRenderingPtr{nullptr};
+    jleQuadRenderingInterface *_quadRenderingPtr{nullptr};
 
     struct HexagonTile {
-        float mDepth;
-        int mTextureX, mTextureY, mWidth, mHeight;
+        float _depth;
+        int _textureX, _textureY, _width, _height;
     };
 
     friend void from_json(const nlohmann::json &j, oWorld::HexagonTile &w);
 
     friend void to_json(nlohmann::json &j, const oWorld::HexagonTile &w);
 
-    std::vector<HexagonTile> mHexagonTiles{5};
+    std::vector<HexagonTile> _hexagonTiles{5};
 };
 
 void from_json(const nlohmann::json &j, oWorld::HexagonTile &w);

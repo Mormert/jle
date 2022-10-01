@@ -7,31 +7,31 @@
 #include <fstream>
 
 void from_json(const nlohmann::json& j, jleSpritesheet& s) {
-    s.mSpritesheetEntities =
+    s._spritesheetEntities =
         j.get<std::unordered_map<std::string, jleSpritesheetEntity>>();
 }
 
 void from_json(const nlohmann::json& j, jleSpritesheetEntity& s) {
-    s.mFrame = j["frame"];
+    s._frame = j["frame"];
 }
 
 void from_json(const nlohmann::json& j,
                jleSpritesheetEntity::jleSpritesheetEntityFrame& s) {
-    s.mX = j["x"];
-    s.mY = j["y"];
-    s.mWidth = j["width"];
-    s.mHeight = j["height"];
+    s._x = j["x"];
+    s._y = j["y"];
+    s._width = j["width"];
+    s._height = j["height"];
 }
 
 void jleSpritesheet::LoadImage() {
-    std::string pngPath = mPathJson.substr(0, mPathJson.find(".", 0)) + ".png";
+    std::string pngPath = _pathJson.substr(0, _pathJson.find(".", 0)) + ".png";
 
-    mImageTexture = jleCore::core->texture_creator->LoadTextureFromPath(
+    _imageTexture = jleCore::core->texture_creator->LoadTextureFromPath(
         jleRelativePath{pngPath});
 }
 
 bool jleSpritesheet::LoadFromFile(const std::string& path) {
-    mPathJson = path;
+    _pathJson = path;
     std::ifstream i(path);
     if (i.good()) {
         nlohmann::json j;
@@ -48,6 +48,6 @@ bool jleSpritesheet::LoadFromFile(const std::string& path) {
 }
 
 jleSpritesheet::jleSpritesheet(const std::string& path) {
-    mPathJson = path;
+    _pathJson = path;
     LoadFromFile(path);
 }

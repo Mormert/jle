@@ -23,5 +23,5 @@ inline std::shared_ptr<jleObject> jleScene::SpawnObject(
 }
 
 inline std::vector<std::shared_ptr<jleObject>>& jleScene::GetSceneObjects() {
-    return mSceneObjects;
+    return _sceneObjects;
 }

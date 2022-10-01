@@ -46,22 +46,22 @@ inline std::shared_ptr<jleComponent> jleTypeReflectionUtils::
 
 inline std::map<std::string, std::function<std::shared_ptr<jleObject>()>>&
 jleTypeReflectionUtils::GetRegisteredObjectsRef() {
-    if (!mRegisteredObjectsPtr) {
-        mRegisteredObjectsPtr = std::make_unique<
+    if (!_registeredObjectsPtr) {
+        _registeredObjectsPtr = std::make_unique<
             std::map<std::string,
                      std::function<std::shared_ptr<jleObject>()>>>();
     }
-    return *mRegisteredObjectsPtr;
+    return *_registeredObjectsPtr;
 }
 
 inline std::map<std::string, std::function<std::shared_ptr<jleComponent>()>>&
 jleTypeReflectionUtils::GetRegisteredComponentsRef() {
-    if (!mRegisteredComponentsPtr) {
-        mRegisteredComponentsPtr = std::make_unique<
+    if (!_registeredComponentsPtr) {
+        _registeredComponentsPtr = std::make_unique<
             std::map<std::string,
                      std::function<std::shared_ptr<jleComponent>()>>>();
     }
-    return *mRegisteredComponentsPtr;
+    return *_registeredComponentsPtr;
 }
 
 template <typename T>

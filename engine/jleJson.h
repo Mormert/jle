@@ -39,37 +39,37 @@ public:
 // JSON simple data wrappers used in arrays (wrapping as an object)
 
 struct jleJsonString {
-    std::string mString;
+    std::string _string;
 };
 
 inline void from_json(const nlohmann::json& j, jleJsonString& s) {
-    JLE_FROM_JSON_WITH_DEFAULT(j, s.mString, "mString", "");
+    JLE_FROM_JSON_WITH_DEFAULT(j, s._string, "_string", "");
 }
 
 inline void to_json(nlohmann::json& j, const jleJsonString& s) {
-    j["mString"] = s.mString;
+    j["_string"] = s._string;
 }
 
 struct jleJsonInt {
-    int mInt;
+    int _int;
 };
 
 inline void from_json(const nlohmann::json& j, jleJsonInt& i) {
-    JLE_FROM_JSON_WITH_DEFAULT(j, i.mInt, "mInt", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(j, i._int, "_int", 0);
 }
 
 inline void to_json(nlohmann::json& j, const jleJsonInt& i) {
-    j["mInt"] = i.mInt;
+    j["_int"] = i._int;
 }
 
 struct jleJsonFloat {
-    float mFloat;
+    float _float;
 };
 
 inline void from_json(const nlohmann::json& j, jleJsonFloat& f) {
-    JLE_FROM_JSON_WITH_DEFAULT(j, f.mFloat, "mFloat", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(j, f._float, "_float", 0);
 }
 
 inline void to_json(nlohmann::json& j, const jleJsonFloat& f) {
-    j["mFloat"] = f.mFloat;
+    j["_float"] = f._float;
 }

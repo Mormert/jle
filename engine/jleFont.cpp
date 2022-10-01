@@ -25,8 +25,8 @@
 jleFont::jleFont(const std::string& path) { LoadFromFile(path); }
 
 jleFont::~jleFont() {
-    if (sInitialized && mFontLoaded) {
-        FT_Done_Face(mFace);
+    if (sInitialized && _fontLoaded) {
+        FT_Done_Face(_face);
     }
 }
 
@@ -79,20 +79,20 @@ void jleFont::RenderText(const std::string& text,
                          glm::vec3 color,
                          const jleCamera& camera) {
 
-    if (!mFontLoaded) {
+    if (!_fontLoaded) {
         return;
     }
 
     // TODO: Add scale as param
     constexpr float scale = 1.f;
 
-    auto it = mFontSizeLookup.find(fontSize);
-    if (it == mFontSizeLookup.end()) {
+    auto it = _fontSizeLookup.find(fontSize);
+    if (it == _fontSizeLookup.end()) {
         // Font Size not setup, so set it up
         AddFontSizePixels(fontSize);
     }
 
-    auto fontSz = mFontSizeLookup[fontSize];
+    auto fontSz = _fontSizeLookup[fontSize];
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
@@ -104,19 +104,19 @@ void jleFont::RenderText(const std::string& text,
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(sVAO);
 
-    const auto ySizeOffset = mFace->size->metrics.y_ppem;
+    const auto ySizeOffset = _face->size->metrics.y_ppem;
 
     // iterate through all characters
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end(); c++) {
-        jleFontSize::jleFontCharacter ch = fontSz.mCharacters[*c];
+        jleFontSize::jleFontCharacter ch = fontSz._characters[*c];
 
-        float xpos = x + ch.mBearing.x * scale;
-        float ypos = y + ySizeOffset - ch.mSize.y +
-                     (ch.mSize.y - ch.mBearing.y); // TODO: Add scale multiplier
+        float xpos = x + ch._bearing.x * scale;
+        float ypos = y + ySizeOffset - ch._size.y +
+                     (ch._size.y - ch._bearing.y); // TODO: Add scale multiplier
 
-        float w = ch.mSize.x * scale;
-        float h = ch.mSize.y * scale;
+        float w = ch._size.x * scale;
+        float h = ch._size.y * scale;
         // update VBO for each character
         float vertices[6][4] = {{xpos, ypos + h, 0.0f, 1.0f},
                                 {xpos + w, ypos, 1.0f, 0.0f},
@@ -127,7 +127,7 @@ void jleFont::RenderText(const std::string& text,
                                 {xpos + w, ypos + h, 1.0f, 1.0f}};
 
         // render glyph texture over quad
-        glBindTexture(GL_TEXTURE_2D, ch.mTextureID);
+        glBindTexture(GL_TEXTURE_2D, ch._textureID);
         // update content of VBO memory
         glBindBuffer(GL_ARRAY_BUFFER, sVBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
@@ -136,7 +136,7 @@ void jleFont::RenderText(const std::string& text,
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // now advance cursors for next glyph (note that advance is number of
         // 1/64 pixels)
-        x += (ch.mAdvance >> 6) *
+        x += (ch._advance >> 6) *
              scale; // bitshift by 6 to get value in pixels (2^6 = 64)
     }
     glBindVertexArray(0);
@@ -166,20 +166,20 @@ bool jleFont::LoadFromFile(const std::string& path) {
         Init();
     }
 
-    if (FT_New_Face(sFreeTypeLibrary, path.c_str(), 0, &mFace)) {
+    if (FT_New_Face(sFreeTypeLibrary, path.c_str(), 0, &_face)) {
         LOGE << "Failed to load font: " << path;
         return false;
     }
 
-    mFontLoaded = true;
+    _fontLoaded = true;
     return true;
 }
 
 void jleFont::AddFontSizePixels(uint32_t sizePixels) {
-    FT_Set_Pixel_Sizes(mFace, 0, sizePixels);
+    FT_Set_Pixel_Sizes(_face, 0, sizePixels);
 
     // Check if it already contains a setup for the given pixel size
-    if (mFontSizeLookup.count(sizePixels)) {
+    if (_fontSizeLookup.count(sizePixels)) {
         return;
     }
 
@@ -190,7 +190,7 @@ void jleFont::AddFontSizePixels(uint32_t sizePixels) {
 
     for (unsigned char c = 0; c < 128; c++) {
         // load character glyph
-        if (FT_Load_Char(mFace, c, FT_LOAD_RENDER)) {
+        if (FT_Load_Char(_face, c, FT_LOAD_RENDER)) {
             LOGW << "FreeType failed to load " << c;
             continue;
         }
@@ -205,22 +205,22 @@ void jleFont::AddFontSizePixels(uint32_t sizePixels) {
         glTexImage2D(GL_TEXTURE_2D,
                      0,
                      GL_ALPHA,
-                     mFace->glyph->bitmap.width,
-                     mFace->glyph->bitmap.rows,
+                     _face->glyph->bitmap.width,
+                     _face->glyph->bitmap.rows,
                      0,
                      GL_ALPHA,
                      GL_UNSIGNED_BYTE,
-                     mFace->glyph->bitmap.buffer);
+                     _face->glyph->bitmap.buffer);
 #else
         glTexImage2D(GL_TEXTURE_2D,
                      0,
                      GL_RED,
-                     mFace->glyph->bitmap.width,
-                     mFace->glyph->bitmap.rows,
+                     _face->glyph->bitmap.width,
+                     _face->glyph->bitmap.rows,
                      0,
                      GL_RED,
                      GL_UNSIGNED_BYTE,
-                     mFace->glyph->bitmap.buffer);
+                     _face->glyph->bitmap.buffer);
 #endif
 
         // set texture options
@@ -232,12 +232,12 @@ void jleFont::AddFontSizePixels(uint32_t sizePixels) {
 
         jleFontSize::jleFontCharacter character = {
             texture,
-            glm::ivec2(mFace->glyph->bitmap.width, mFace->glyph->bitmap.rows),
-            glm::ivec2(mFace->glyph->bitmap_left, mFace->glyph->bitmap_top),
-            static_cast<unsigned int>(mFace->glyph->advance.x)};
-        fontSize.mCharacters.insert(
+            glm::ivec2(_face->glyph->bitmap.width, _face->glyph->bitmap.rows),
+            glm::ivec2(_face->glyph->bitmap_left, _face->glyph->bitmap_top),
+            static_cast<unsigned int>(_face->glyph->advance.x)};
+        fontSize._characters.insert(
             std::pair<char, jleFontSize::jleFontCharacter>(c, character));
     }
 
-    mFontSizeLookup[sizePixels] = fontSize;
+    _fontSizeLookup[sizePixels] = fontSize;
 }

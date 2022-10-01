@@ -29,20 +29,20 @@ public:
 
     [[nodiscard]] jleAseprite& GetActiveAsepriteRef();
 
-    std::vector<jleJsonString> mAsepritePaths;
+    std::vector<jleJsonString> _asepritePaths;
 
-    uint32_t mWidth{}, mHeight{}, mTextureX{}, mTextureY{};
-    int32_t mOffsetX{}, mOffsetY{};
+    uint32_t _width{}, _height{}, _textureX{}, _textureY{};
+    int32_t _offsetX{}, _offsetY{};
 
-    bool mAnimating = false;
+    bool _animating = false;
 
 private:
-    unsigned int mCurrentlyActiveAseprite{0};
-    std::vector<std::shared_ptr<jleAseprite>> mAseprites{};
+    unsigned int _currentlyActiveAseprite{0};
+    std::vector<std::shared_ptr<jleAseprite>> _aseprites{};
 
-    std::shared_ptr<cTransform> mTransform{nullptr};
+    std::shared_ptr<cTransform> _transform{nullptr};
 
-    uint32_t mCurrentFrame = 0;
-    uint32_t mCurrentFrameDurationMs{};
-    float mCurrentFrameTimeSpent = 0.f;
+    uint32_t _currentFrame = 0;
+    uint32_t _currentFrameDurationMs{};
+    float _currentFrameTimeSpent = 0.f;
 };

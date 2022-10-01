@@ -6,11 +6,11 @@
 
 void jleNetworking::OnReceiveMessagePack(const std::string& data) {
     const nlohmann::json json = nlohmann::json::parse(data);
-    mMessagePacks.enqueue(json);
+    _messagePacks.enqueue(json);
 }
 
 bool jleNetworking::TryReceiveMessagePack(nlohmann::json& out) {
-    return mMessagePacks.try_dequeue(out);
+    return _messagePacks.try_dequeue(out);
 }
 
 void jleNetworking::TryEmitJsonData(const std::string& event,

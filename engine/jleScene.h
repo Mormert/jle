@@ -50,20 +50,20 @@ public:
 
     std::vector<std::shared_ptr<jleObject>>& GetSceneObjects();
 
-    std::string mSceneName;
+    std::string _sceneName;
 
 protected:
     friend class jleObject;
 
-    std::vector<std::shared_ptr<jleObject>> mSceneObjects;
-    std::vector<std::shared_ptr<jleObject>> mNewSceneObjects;
+    std::vector<std::shared_ptr<jleObject>> _sceneObjects;
+    std::vector<std::shared_ptr<jleObject>> _newSceneObjects;
 
     friend void to_json(nlohmann::json& j, jleScene& s);
 
     friend void from_json(const nlohmann::json& j, jleScene& s);
 
 private:
-    static int mScenesCreatedCount;
+    static int _scenesCreatedCount;
 
     void ConfigurateSpawnedObject(const std::shared_ptr<jleObject>& obj);
 };

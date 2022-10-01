@@ -28,9 +28,9 @@ void oStaticSprite::SetupDefaultObject() {
     auto t = spawnedObject->AddCustomComponent<cTransform>();
     auto c = spawnedObject->AddCustomComponent<cAseprite>();
     c->AddAsepritePath("GR:rottenapple.json");
-    c->mAnimating = true;
-    c->mHeight = 12;
-    c->mWidth = 12;
+    c->_animating = true;
+    c->_height = 12;
+    c->_width = 12;
 
     t->SetLocalPosition(25 + (std::rand() % (325 - 25 + 1)),
                         25 + (std::rand() % (325 - 25 + 1)));
@@ -45,9 +45,9 @@ void oStaticSprite::Update(float dt) {
         auto t = spawnedObject->AddCustomComponent<cTransform>();
         auto c = spawnedObject->AddCustomComponent<cAseprite>();
         c->AddAsepritePath("GR:rottenapple.json");
-        c->mAnimating = true;
-        c->mHeight = 12;
-        c->mWidth = 12;
+        c->_animating = true;
+        c->_height = 12;
+        c->_width = 12;
 
         t->SetLocalPosition(25 + (std::rand() % (325 - 25 + 1)),
                             25 + (std::rand() % (325 - 25 + 1)));

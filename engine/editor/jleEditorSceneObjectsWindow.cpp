@@ -64,7 +64,7 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
             ((jleGameEngine *)jleCore::core)->GetGameRef().GetActiveScenesRef();
 
         for (auto scene : activeScenes) {
-            if (ImGui::Selectable(scene->mSceneName.c_str(),
+            if (ImGui::Selectable(scene->_sceneName.c_str(),
                                   selectedScene.lock() == scene)) {
                 selectedScene = scene;
             }
@@ -98,14 +98,14 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
                     if (ImGui::Button("Rename Scene",
                                       ImVec2(138 * globalImguiScale, 0))) {
                         opened = true;
-                        buf = std::string{scene->mSceneName};
+                        buf = std::string{scene->_sceneName};
                         ImGui::OpenPopup("Rename Scene");
                     }
 
                     if (ImGui::BeginPopupModal("Rename Scene", &opened, 0)) {
                         ImGui::InputText("Scene Name", &buf);
                         if (ImGui::Button("Confirm")) {
-                            scene->mSceneName = std::string{buf};
+                            scene->_sceneName = std::string{buf};
                             opened = false;
                         }
                         ImGui::EndPopup();
@@ -118,7 +118,7 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
                         std::filesystem::create_directories(
                             GAME_RESOURCES_DIRECTORY + "/scenes");
                         std::ofstream sceneSave{GAME_RESOURCES_DIRECTORY +
-                                                "/scenes/" + scene->mSceneName +
+                                                "/scenes/" + scene->_sceneName +
                                                 ".scn"};
                         nlohmann::json j;
                         to_json(j, *scene);
@@ -165,7 +165,7 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
             std::shared_ptr<jleObject> selectedObjectSafePtr;
             if (selectedObjectSafePtr = selectedObject.lock()) {
                 auto text =
-                    std::string_view{selectedObjectSafePtr->mInstanceName};
+                    std::string_view{selectedObjectSafePtr->_instanceName};
                 ImGui::Text("%.*s", static_cast<int>(text.size()), text.data());
                 hasAnObjectSelected = true;
             }
@@ -180,10 +180,10 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
                     if (ImGui::BeginTabItem("Object Properties")) {
 
                         // If this is an object template
-                        if (selectedObjectSafePtr->mTemplatePath.has_value()) {
+                        if (selectedObjectSafePtr->_templatePath.has_value()) {
                             ImGui::Text(
                                 "Object template: %s",
-                                selectedObjectSafePtr->mTemplatePath->c_str());
+                                selectedObjectSafePtr->_templatePath->c_str());
                             ImGui::NewLine();
                         }
 
@@ -200,7 +200,7 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
 
                             lastSelectedObject = selectedObjectSafePtr;
 
-                            mJsonToImgui.JsonToImgui(
+                            _jsonToImgui.JsonToImgui(
                                 selectedObjectJson,
                                 {std::string{selectedObjectSafePtr
                                                  ->GetObjectNameVirtual()}});
@@ -208,7 +208,7 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
 
                         // This does calls to ImGui:: to draw the editable
                         // object properties
-                        mJsonToImgui.DrawAndGetInput();
+                        _jsonToImgui.DrawAndGetInput();
 
                         ImGui::EndTabItem();
                     }
@@ -256,7 +256,7 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
                         }
                         ImGui::Text(
                             "Instance name : %s",
-                            selectedObjectSafePtr->mInstanceName.c_str());
+                            selectedObjectSafePtr->_instanceName.c_str());
                         ImGui::Text("Components attached count: %d",
                                     selectedObjectSafePtr->GetComponentCount());
                         ImGui::EndTabItem();
@@ -267,20 +267,20 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
 
             ImGui::EndChild();
             if (hasAnObjectSelected) {
-                if (selectedObjectSafePtr->mTemplatePath.has_value()) {
+                if (selectedObjectSafePtr->_templatePath.has_value()) {
                     if (ImGui::Button("Update Template")) {
-                        auto pushedObjectJson = mJsonToImgui.ImGuiToJson();
+                        auto pushedObjectJson = _jsonToImgui.ImGuiToJson();
                         from_json(pushedObjectJson, selectedObjectSafePtr);
                         selectedObjectSafePtr->FromJson(pushedObjectJson);
 
                         // Haxx: remove the template field, and add it back
                         // again after :>
                         const auto templatePathTempSave =
-                            selectedObjectSafePtr->mTemplatePath.value();
-                        selectedObjectSafePtr->mTemplatePath.reset();
+                            selectedObjectSafePtr->_templatePath.value();
+                        selectedObjectSafePtr->_templatePath.reset();
                         jleRelativePath relPath{templatePathTempSave};
                         selectedObjectSafePtr->SaveObjectTemplate(relPath);
-                        selectedObjectSafePtr->mTemplatePath =
+                        selectedObjectSafePtr->_templatePath =
                             templatePathTempSave;
                     }
                     ImGui::SameLine();
@@ -296,7 +296,7 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
                         if (ImGui::BeginPopupModal(
                                 "Confirm Template Unlinking", &opened, 0)) {
                             if (ImGui::Button("Unlink")) {
-                                selectedObjectSafePtr->mTemplatePath.reset();
+                                selectedObjectSafePtr->_templatePath.reset();
                             }
                             ImGui::SameLine();
                             if (ImGui::Button("Cancel")) {
@@ -313,7 +313,7 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
                     }
                     ImGui::SameLine();
                     if (ImGui::Button("Push Object Changes")) {
-                        auto pushedObjectJson = mJsonToImgui.ImGuiToJson();
+                        auto pushedObjectJson = _jsonToImgui.ImGuiToJson();
                         from_json(pushedObjectJson, selectedObjectSafePtr);
                         selectedObjectSafePtr->FromJson(pushedObjectJson);
                     }
@@ -335,15 +335,15 @@ void jleEditorSceneObjectsWindow::ObjectTreeRecursive(
     std::shared_ptr<jleObject> object) {
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
 
-    std::string instanceDisplayName = object->mInstanceName;
-    if (object->mTemplatePath.has_value()) {
+    std::string instanceDisplayName = object->_instanceName;
+    if (object->_templatePath.has_value()) {
         instanceDisplayName += " [T]";
     }
 
     ImGui::PushID(object->GetInstanceID()); // push instance id
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 5));
     bool open = ImGui::TreeNodeEx(
-        object->mInstanceName.c_str(),
+        object->_instanceName.c_str(),
         ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_DefaultOpen |
             (selectedObject.lock() == object ? ImGuiTreeNodeFlags_Selected
                                              : 0) |
@@ -353,7 +353,7 @@ void jleEditorSceneObjectsWindow::ObjectTreeRecursive(
     ImGui::PopStyleVar();
     ImGui::PopID(); // pop instance id
 
-    ImGui::PushID(object->mInstanceName.c_str());
+    ImGui::PushID(object->_instanceName.c_str());
     if (ImGui::BeginPopupContextItem()) {
 
         if (ImGui::BeginMenu("Create Object")) {
@@ -388,14 +388,14 @@ void jleEditorSceneObjectsWindow::ObjectTreeRecursive(
             if (ImGui::Button("Rename Object",
                               ImVec2(138 * globalImguiScale, 0))) {
                 opened = true;
-                buf = std::string{object->mInstanceName};
+                buf = std::string{object->_instanceName};
                 ImGui::OpenPopup("Rename Object");
             }
 
             if (ImGui::BeginPopupModal("Rename Object", &opened, 0)) {
                 ImGui::InputText("Object Name", &buf);
                 if (ImGui::Button("Confirm")) {
-                    object->mInstanceName = std::string{buf};
+                    object->_instanceName = std::string{buf};
                     opened = false;
                 }
                 ImGui::EndPopup();
@@ -447,7 +447,7 @@ void jleEditorSceneObjectsWindow::ObjectTreeRecursive(
     }
 
     if (ImGui::BeginDragDropSource()) {
-        ImGui::Text("Moving object: %s", object->mInstanceName.c_str());
+        ImGui::Text("Moving object: %s", object->_instanceName.c_str());
         ImGui::SetDragDropPayload(
             "JLE_OBJECT", &object, sizeof(std::shared_ptr<jleObject>));
         ImGui::EndDragDropSource();

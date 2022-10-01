@@ -7,21 +7,21 @@
 #include "jleCore.h"
 
 void oCharacter::SetupDefaultObject() {
-    mTransform = AddCustomComponent<cTransform>();
-    mAseprite = AddCustomComponent<cAseprite>();
+    _transform = AddCustomComponent<cTransform>();
+    _aseprite = AddCustomComponent<cAseprite>();
 
-    mHealthBarObjPtr = std::static_pointer_cast<oCharacterHealthBar>(
+    _healthBarObjPtr = std::static_pointer_cast<oCharacterHealthBar>(
             SpawnChildObjectFromTemplate(jleRelativePath{"GR:otemps/oCharacterHealthBar.tmpl"}));
 }
 
 void oCharacter::Start() {
-    const auto &&placement = mHexagonItem.GetHexagonItemPlacement();
+    const auto &&placement = _hexagonItem.GetHexagonItemPlacement();
     SetHexagonPlacementTeleport(placement.x, placement.y);
 
-    mCurrentHP = mMaxHP;
+    _currentHP = _maxHP;
 
-    if (!mShowHpBar) {
-        mHealthBarObjPtr->DestroyObject();
+    if (!_showHpBar) {
+        _healthBarObjPtr->DestroyObject();
     }
 }
 
@@ -34,63 +34,63 @@ void oCharacter::Update(float dt) {
         return a * alpha + b * (1.f - alpha);
     };
 
-    if (mInterpingPosition) {
+    if (_interpingPosition) {
 
-        mAseprite->SetCurrentAseprite(mWalkAsepriteIndex);
+        _aseprite->SetCurrentAseprite(_walkAsepriteIndex);
 
         auto pos = lerpVec2(
-                {mHexagonPixelX, mHexagonPixelY},
-                {mInterpingX, mInterpingY}, mInterpingAlpha);
+                {_hexagonPixelX, _hexagonPixelY},
+                {_interpingX, _interpingY}, _interpingAlpha);
 
-        mInterpingX = pos.x;
-        mInterpingY = pos.y;
-        mTransform->SetWorldPositionXY((int) mInterpingX, (int) mInterpingY);
+        _interpingX = pos.x;
+        _interpingY = pos.y;
+        _transform->SetWorldPositionXY((int) _interpingX, (int) _interpingY);
 
-        mInterpingAlpha += mInterpBetweenHexasSpeed * dt;
-        if (mInterpingAlpha >= 1.f) {
-            mInterpingAlpha = 1.f;
-            mInterpingPosition = false;
-            mAseprite->SetCurrentAseprite(mIdleAsepriteIndex);
+        _interpingAlpha += _interpBetweenHexasSpeed * dt;
+        if (_interpingAlpha >= 1.f) {
+            _interpingAlpha = 1.f;
+            _interpingPosition = false;
+            _aseprite->SetCurrentAseprite(_idleAsepriteIndex);
         }
     }
 
 }
 
 void oCharacter::SetCharacterDirection(oCharacterDirection direction) {
-    mCharacterDirection = direction;
+    _characterDirection = direction;
 
     switch (direction) {
         case oCharacterDirection::west:
-            mAseprite->mTextureX = mWestTextureX;
-            mAseprite->mTextureY = mWestTextureY;
+            _aseprite->_textureX = _westTextureX;
+            _aseprite->_textureY = _westTextureY;
             break;
         case oCharacterDirection::northwest:
-            mAseprite->mTextureX = mNorthwestTextureX;
-            mAseprite->mTextureY = mNorthwestTextureY;
+            _aseprite->_textureX = _northwestTextureX;
+            _aseprite->_textureY = _northwestTextureY;
             break;
         case oCharacterDirection::north:
-            mAseprite->mTextureX = mNorthTextureX;
-            mAseprite->mTextureY = mNorthTextureY;
+            _aseprite->_textureX = _northTextureX;
+            _aseprite->_textureY = _northTextureY;
             break;
         case oCharacterDirection::northeast:
-            mAseprite->mTextureX = mNortheastTextureX;
-            mAseprite->mTextureY = mNortheastTextureY;
+            _aseprite->_textureX = _northeastTextureX;
+            _aseprite->_textureY = _northeastTextureY;
             break;
         case oCharacterDirection::east:
-            mAseprite->mTextureX = mEastTextureX;
-            mAseprite->mTextureY = mEastTextureY;
+            _aseprite->_textureX = _eastTextureX;
+            _aseprite->_textureY = _eastTextureY;
             break;
         case oCharacterDirection::southeast:
-            mAseprite->mTextureX = mSoutheastTextureX;
-            mAseprite->mTextureY = mSoutheastTextureY;
+            _aseprite->_textureX = _southeastTextureX;
+            _aseprite->_textureY = _southeastTextureY;
             break;
         case oCharacterDirection::south:
-            mAseprite->mTextureX = mSouthTextureX;
-            mAseprite->mTextureY = mSouthTextureY;
+            _aseprite->_textureX = _southTextureX;
+            _aseprite->_textureY = _southTextureY;
             break;
         case oCharacterDirection::southwest:
-            mAseprite->mTextureX = mSouthwestTextureX;
-            mAseprite->mTextureY = mSouthwestTextureY;
+            _aseprite->_textureX = _southwestTextureX;
+            _aseprite->_textureY = _southwestTextureY;
             break;
     }
 
@@ -98,117 +98,117 @@ void oCharacter::SetCharacterDirection(oCharacterDirection direction) {
 
 
 void oCharacter::SetHexagonPlacementTeleport(int q, int r) {
-    if (!mHexagonItem.TryUpdateHexagonItemPlacement(q, r)) {
+    if (!_hexagonItem.TryUpdateHexagonItemPlacement(q, r)) {
         return;
     }
 
 
     const auto *world = oWorld::sWorld;
-    auto p = hexHexagonFunctions::HexToPixel(q, r, world->mHexSizeX, world->mHexSizeY);
+    auto p = hexHexagonFunctions::HexToPixel(q, r, world->_hexSizeX, world->_hexSizeY);
 
-    mHexagonPixelX = p.x;
-    mHexagonPixelY = p.y;
+    _hexagonPixelX = p.x;
+    _hexagonPixelY = p.y;
 
-    mTransform->SetWorldPositionXY(mHexagonPixelX, mHexagonPixelY);
-    mInterpingPosition = false;
+    _transform->SetWorldPositionXY(_hexagonPixelX, _hexagonPixelY);
+    _interpingPosition = false;
 }
 
 void oCharacter::SetHexagonPlacementInterp(int q, int r) {
-    if (!mHexagonItem.TryUpdateHexagonItemPlacement(q, r)) {
+    if (!_hexagonItem.TryUpdateHexagonItemPlacement(q, r)) {
         return;
     }
 
     const auto *world = oWorld::sWorld;
-    auto p = hexHexagonFunctions::HexToPixel(q, r, world->mHexSizeX, world->mHexSizeY);
+    auto p = hexHexagonFunctions::HexToPixel(q, r, world->_hexSizeX, world->_hexSizeY);
 
-    mHexagonPixelX = p.x;
-    mHexagonPixelY = p.y;
+    _hexagonPixelX = p.x;
+    _hexagonPixelY = p.y;
 
-    mInterpingX = mTransform->GetWorldX();
-    mInterpingY = mTransform->GetWorldY();
+    _interpingX = _transform->GetWorldX();
+    _interpingY = _transform->GetWorldY();
 
-    mInterpingPosition = true;
-    mInterpingAlpha = 0.f;
+    _interpingPosition = true;
+    _interpingAlpha = 0.f;
 }
 
 
 void oCharacter::ToJson(nlohmann::json &j_out) {
-    j_out["mHexagonItem"] = mHexagonItem;
+    j_out["_hexagonItem"] = _hexagonItem;
 
-    j_out["mInterpBetweenHexasSpeed"] = mInterpBetweenHexasSpeed;
+    j_out["_interpBetweenHexasSpeed"] = _interpBetweenHexasSpeed;
 
-    j_out["mAttackCooldownAfterAnimationMs"] = mAttackCooldownAfterAnimationMs;
+    j_out["_attackCooldownAfterAnimationMs"] = _attackCooldownAfterAnimationMs;
 
-    j_out["mMaxHP"] = mMaxHP;
-    j_out["mShowHpBar"] = mShowHpBar;
+    j_out["_maxHP"] = _maxHP;
+    j_out["_showHpBar"] = _showHpBar;
 
-    j_out["mHealthBarObjectTemplatePath"] = mHealthBarObjectTemplatePath;
+    j_out["_healthBarObjectTemplatePath"] = _healthBarObjectTemplatePath;
 
-    j_out["mWestTextureX"] = mWestTextureX;
-    j_out["mWestTextureY"] = mWestTextureY;
-    j_out["mNorthwestTextureX"] = mNorthwestTextureX;
-    j_out["mNorthwestTextureY"] = mNorthwestTextureY;
-    j_out["mNorthTextureX"] = mNorthTextureX;
-    j_out["mNorthTextureY"] = mNorthTextureY;
-    j_out["mNortheastTextureX"] = mNortheastTextureX;
-    j_out["mNortheastTextureY"] = mNortheastTextureY;
-    j_out["mEastTextureX"] = mEastTextureX;
-    j_out["mEastTextureY"] = mEastTextureY;
-    j_out["mSoutheastTextureX"] = mSoutheastTextureX;
-    j_out["mSoutheastTextureY"] = mSoutheastTextureY;
-    j_out["mSouthTextureX"] = mSouthTextureX;
-    j_out["mSouthTextureY"] = mSouthTextureY;
-    j_out["mSouthwestTextureX"] = mSouthwestTextureX;
-    j_out["mSouthwestTextureY"] = mSouthwestTextureY;
+    j_out["_westTextureX"] = _westTextureX;
+    j_out["_westTextureY"] = _westTextureY;
+    j_out["_northwestTextureX"] = _northwestTextureX;
+    j_out["_northwestTextureY"] = _northwestTextureY;
+    j_out["_northTextureX"] = _northTextureX;
+    j_out["_northTextureY"] = _northTextureY;
+    j_out["_northeastTextureX"] = _northeastTextureX;
+    j_out["_northeastTextureY"] = _northeastTextureY;
+    j_out["_eastTextureX"] = _eastTextureX;
+    j_out["_eastTextureY"] = _eastTextureY;
+    j_out["_southeastTextureX"] = _southeastTextureX;
+    j_out["_southeastTextureY"] = _southeastTextureY;
+    j_out["_southTextureX"] = _southTextureX;
+    j_out["_southTextureY"] = _southTextureY;
+    j_out["_southwestTextureX"] = _southwestTextureX;
+    j_out["_southwestTextureY"] = _southwestTextureY;
 }
 
 void oCharacter::FromJson(const nlohmann::json &j_in) {
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mHexagonItem, "mHexagonItem", {});
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _hexagonItem, "_hexagonItem", {});
 
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mInterpBetweenHexasSpeed, "mInterpBetweenHexasSpeed", 1.f);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _interpBetweenHexasSpeed, "_interpBetweenHexasSpeed", 1.f);
 
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mAttackCooldownAfterAnimationMs, "mAttackCooldownAfterAnimationMs", 0.f);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _attackCooldownAfterAnimationMs, "_attackCooldownAfterAnimationMs", 0.f);
 
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mHealthBarObjectTemplatePath, "mHealthBarObjectTemplatePath", "");
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _healthBarObjectTemplatePath, "_healthBarObjectTemplatePath", "");
 
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mMaxHP, "mMaxHP", 50);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mShowHpBar, "mShowHpBar", true);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _maxHP, "_maxHP", 50);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _showHpBar, "_showHpBar", true);
 
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mWestTextureX, "mWestTextureX", 0);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mWestTextureY, "mWestTextureY", 0);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mNorthwestTextureX, "mNorthwestTextureX", 32);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mNorthwestTextureY, "mNorthwestTextureY", 0);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mNorthTextureX, "mNorthTextureX", 64);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mNorthTextureY, "mNorthTextureY", 0);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mNortheastTextureX, "mNortheastTextureX", 96);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mNortheastTextureY, "mNortheastTextureY", 0);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mEastTextureX, "mEastTextureX", 128);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mEastTextureY, "mEastTextureY", 0);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mSoutheastTextureX, "mSoutheastTextureX", 160);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mSoutheastTextureY, "mSoutheastTextureY", 0);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mSouthTextureX, "mSouthTextureX", 192);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mSouthTextureY, "mSouthTextureY", 0);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mSouthwestTextureX, "mSouthwestTextureX", 224);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, mSouthwestTextureY, "mSouthwestTextureY", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _westTextureX, "_westTextureX", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _westTextureY, "_westTextureY", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _northwestTextureX, "_northwestTextureX", 32);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _northwestTextureY, "_northwestTextureY", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _northTextureX, "_northTextureX", 64);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _northTextureY, "_northTextureY", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _northeastTextureX, "_northeastTextureX", 96);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _northeastTextureY, "_northeastTextureY", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _eastTextureX, "_eastTextureX", 128);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _eastTextureY, "_eastTextureY", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _southeastTextureX, "_southeastTextureX", 160);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _southeastTextureY, "_southeastTextureY", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _southTextureX, "_southTextureX", 192);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _southTextureY, "_southTextureY", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _southwestTextureX, "_southwestTextureX", 224);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _southwestTextureY, "_southwestTextureY", 0);
 }
 
 void oCharacter::Attack(oCharacter::oCharacterDirection dir) {
 
     SetCharacterDirection(dir);
 
-    if (!mCanAttack) {
+    if (!_canAttack) {
         return;
     }
 
-    mAseprite->SetCurrentAseprite(mAttackAsepriteIndex);
-    mAseprite->SetCurrentAsepriteFrame(0);
+    _aseprite->SetCurrentAseprite(_attackAsepriteIndex);
+    _aseprite->SetCurrentAsepriteFrame(0);
 
-    const double animationTimeMs = mAseprite->GetActiveAsepriteRef().GetTotalAnimationTimeMs();
+    const double animationTimeMs = _aseprite->GetActiveAsepriteRef().GetTotalAnimationTimeMs();
 
     const auto futureFunc = [](std::weak_ptr<void> data) {
         auto safeThis = std::static_pointer_cast<oCharacter>(data.lock());
-        safeThis->mAseprite->SetCurrentAseprite(0);
-        safeThis->mAseprite->SetCurrentAsepriteFrame(0);
+        safeThis->_aseprite->SetCurrentAseprite(0);
+        safeThis->_aseprite->SetCurrentAsepriteFrame(0);
     };
 
     // Go back to the default animation
@@ -218,22 +218,22 @@ void oCharacter::Attack(oCharacter::oCharacterDirection dir) {
     // Can not attack again for the animation time + some additional time
     jleCore::core->GetTimerManager().
             ExecuteFuncInSecondsWeakData(
-            (animationTimeMs + mAttackCooldownAfterAnimationMs) * 0.001, [](std::weak_ptr<void> data) {
+            (animationTimeMs + _attackCooldownAfterAnimationMs) * 0.001, [](std::weak_ptr<void> data) {
                 auto safeThis = std::static_pointer_cast<oCharacter>(data.lock());
-                safeThis->mCanAttack = true;
+                safeThis->_canAttack = true;
             }, GetWeakPtrToThis());
 
-    mCanAttack = false;
+    _canAttack = false;
 
 }
 
 void oCharacter::SetHP(int hp) {
-    if (hp > mMaxHP) {
-        hp = mMaxHP;
+    if (hp > _maxHP) {
+        hp = _maxHP;
     }
 
-    if (mHealthBarObjPtr) {
-        mHealthBarObjPtr->SetHP(mMaxHP, hp);
+    if (_healthBarObjPtr) {
+        _healthBarObjPtr->SetHP(_maxHP, hp);
     }
 }
 
@@ -241,7 +241,7 @@ void oCharacter::LookAtPosition(int x, int y) {
     constexpr int smallXAdjustment = -2;
 
     glm::vec2 target = {x, y};
-    glm::vec2 origin = {mTransform->GetWorldX() + smallXAdjustment, mTransform->GetWorldY()};
+    glm::vec2 origin = {_transform->GetWorldX() + smallXAdjustment, _transform->GetWorldY()};
 
     glm::vec2 vector2 = target - origin;
     glm::vec2 vector1{0, 1};

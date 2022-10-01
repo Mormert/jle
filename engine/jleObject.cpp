@@ -11,63 +11,63 @@
 #include <optional>
 
 jleObject::jleObject() {
-    mInstanceName = "jleObject_" + std::to_string(sObjectsCreatedCount);
-    mInstanceID = sObjectsCreatedCount;
+    _instanceName = "jleObject_" + std::to_string(sObjectsCreatedCount);
+    _instanceID = sObjectsCreatedCount;
     sObjectsCreatedCount++;
 }
 
 void jleObject::DestroyComponent(jleComponent *component) {
-    for (int i = mComponents.size() - 1; i >= 0; i--) {
-        if (mComponents[i].get() == component) {
-            mComponents.erase(mComponents.begin() + i);
+    for (int i = _components.size() - 1; i >= 0; i--) {
+        if (_components[i].get() == component) {
+            _components.erase(_components.begin() + i);
         }
     }
-    for (int i = mDynamicCustomComponents.size() - 1; i >= 0; i--) {
-        if (mDynamicCustomComponents[i].get() == component) {
-            mDynamicCustomComponents.erase(mDynamicCustomComponents.begin() +
+    for (int i = _dynamicCustomComponents.size() - 1; i >= 0; i--) {
+        if (_dynamicCustomComponents[i].get() == component) {
+            _dynamicCustomComponents.erase(_dynamicCustomComponents.begin() +
                                            i);
         }
     }
 }
 
-void jleObject::DestroyObject() { mPendingKill = true; }
+void jleObject::DestroyObject() { _pendingKill = true; }
 
-int jleObject::GetComponentCount() { return mComponents.size(); }
+int jleObject::GetComponentCount() { return _components.size(); }
 
 std::vector<std::shared_ptr<jleComponent>>& jleObject::GetCustomComponents() {
-    return mDynamicCustomComponents;
+    return _dynamicCustomComponents;
 }
 
 std::vector<std::shared_ptr<jleObject>>& jleObject::GetChildObjects() {
-    return mChildObjects;
+    return _childObjects;
 }
 
 void jleObject::AttachChildObject(const std::shared_ptr<jleObject>& object) {
     // The objects must live in the same scene
-    assert(object->mContainedInScene == mContainedInScene);
-    if (object->mParentObject) {
+    assert(object->_containedInScene == _containedInScene);
+    if (object->_parentObject) {
         // Remove the object from previous parent, if any
-        auto it = std::find(object->mParentObject->mChildObjects.begin(),
-                            object->mParentObject->mChildObjects.end(),
+        auto it = std::find(object->_parentObject->_childObjects.begin(),
+                            object->_parentObject->_childObjects.end(),
                             object);
-        object->mParentObject->mChildObjects.erase(it);
+        object->_parentObject->_childObjects.erase(it);
     }
     else {
         // Else the object is directly in the scene
         // Remove the object from existing directly in the scene, and instead as
         // a node under this object
-        if (object->mIsStarted) {
-            auto it = std::find(mContainedInScene->mSceneObjects.begin(),
-                                mContainedInScene->mSceneObjects.end(),
+        if (object->_isStarted) {
+            auto it = std::find(_containedInScene->_sceneObjects.begin(),
+                                _containedInScene->_sceneObjects.end(),
                                 object);
-            if (it != mContainedInScene->mSceneObjects.end()) {
-                mContainedInScene->mSceneObjects.erase(it);
+            if (it != _containedInScene->_sceneObjects.end()) {
+                _containedInScene->_sceneObjects.erase(it);
             }
         }
     }
 
-    object->mParentObject = this;
-    mChildObjects.push_back(object);
+    object->_parentObject = this;
+    _childObjects.push_back(object);
 
     if (auto t = object->GetComponent<cTransform>()) {
         t->SetDirty();
@@ -75,26 +75,26 @@ void jleObject::AttachChildObject(const std::shared_ptr<jleObject>& object) {
 }
 
 void jleObject::DetachObjectFromParent() {
-    if (mParentObject) {
+    if (_parentObject) {
         int i = 0;
         std::shared_ptr<jleObject> thiz;
-        for (auto&& o : mParentObject->mChildObjects) {
+        for (auto&& o : _parentObject->_childObjects) {
             if (o.get() == this) {
                 thiz = o;
-                mParentObject->mChildObjects.erase(
-                    mParentObject->mChildObjects.begin() + i);
+                _parentObject->_childObjects.erase(
+                    _parentObject->_childObjects.begin() + i);
                 break;
             }
             i++;
         }
         // Insert this object to be contained directly in the scene
-        mContainedInScene->mSceneObjects.push_back(thiz);
+        _containedInScene->_sceneObjects.push_back(thiz);
     }
 
-    mParentObject = nullptr;
+    _parentObject = nullptr;
 }
 
-jleObject::jleObject(jleScene *scene) : mContainedInScene{scene} {}
+jleObject::jleObject(jleScene *scene) : _containedInScene{scene} {}
 
 void jleObject::SaveObjectTemplate(jleRelativePath& path) {
     std::string sceneSavePath;
@@ -103,7 +103,7 @@ void jleObject::SaveObjectTemplate(jleRelativePath& path) {
     }
     else {
         sceneSavePath =
-            GAME_RESOURCES_DIRECTORY + "/otemps/" + mInstanceName + ".tmpl";
+            GAME_RESOURCES_DIRECTORY + "/otemps/" + _instanceName + ".tmpl";
     }
 
     std::filesystem::create_directories(GAME_RESOURCES_DIRECTORY + "/otemps");
@@ -134,7 +134,7 @@ std::shared_ptr<jleObject> jleObject::SpawnChildObjectFromTemplate(
 
         auto spawnedObjFromJson = SpawnChildObject(objectsName);
         spawnedObjFromJson->InjectTemplate(j);
-        spawnedObjFromJson->mTemplatePath = path.GetRelativePathStr();
+        spawnedObjFromJson->_templatePath = path.GetRelativePathStr();
 
         return spawnedObjFromJson;
     }
@@ -142,33 +142,33 @@ std::shared_ptr<jleObject> jleObject::SpawnChildObjectFromTemplate(
 }
 
 void jleObject::StartComponents() {
-    for (int i = mComponents.size() - 1; i >= 0; i--) {
-        mComponents[i]->Start();
+    for (int i = _components.size() - 1; i >= 0; i--) {
+        _components[i]->Start();
     }
 }
 
 void jleObject::UpdateComponents(float dt) {
-    for (int i = mComponents.size() - 1; i >= 0; i--) {
-        mComponents[i]->Update(dt);
+    for (int i = _components.size() - 1; i >= 0; i--) {
+        _components[i]->Update(dt);
     }
 }
 
 void jleObject::UpdateChildren(float dt) {
-    for (int32_t i = mChildObjects.size() - 1; i >= 0; i--) {
-        if (mChildObjects[i]->mPendingKill) {
-            mChildObjects.erase(mChildObjects.begin() + i);
+    for (int32_t i = _childObjects.size() - 1; i >= 0; i--) {
+        if (_childObjects[i]->_pendingKill) {
+            _childObjects.erase(_childObjects.begin() + i);
             continue;
         }
 
-        mChildObjects[i]->Update(dt);
-        mChildObjects[i]->UpdateComponents(dt);
+        _childObjects[i]->Update(dt);
+        _childObjects[i]->UpdateComponents(dt);
 
         // Recursively update children after this object has updated
-        mChildObjects[i]->UpdateChildren(dt);
+        _childObjects[i]->UpdateChildren(dt);
     }
 }
 
-jleObject *jleObject::GetParent() { return mParentObject; }
+jleObject *jleObject::GetParent() { return _parentObject; }
 
 std::weak_ptr<jleObject> jleObject::GetWeakPtrToThis() {
     return weak_from_this();
@@ -177,16 +177,16 @@ std::weak_ptr<jleObject> jleObject::GetWeakPtrToThis() {
 void to_json(nlohmann::json& j, const std::shared_ptr<jleObject>& o) {
     // If this object is based on a template object, then only save that
     // reference
-    if (o->mTemplatePath.has_value()) {
-        j = nlohmann::json{{"_otemp", o->mTemplatePath.value()},
-                           {"_instance_name", o->mInstanceName}};
+    if (o->_templatePath.has_value()) {
+        j = nlohmann::json{{"_otemp", o->_templatePath.value()},
+                           {"_instance_name", o->_instanceName}};
         return;
     }
 
     j = nlohmann::json{{"__obj_name", o->GetObjectNameVirtual()},
-                       {"_instance_name", o->mInstanceName},
-                       {"_custom_components", o->mDynamicCustomComponents},
-                       {"_childObjects", o->mChildObjects}};
+                       {"_instance_name", o->_instanceName},
+                       {"_custom_components", o->_dynamicCustomComponents},
+                       {"_childObjects", o->_childObjects}};
 
     o->ToJson(j);
 }
@@ -199,7 +199,7 @@ std::shared_ptr<jleObject> jleObject::ProcessChildJsonData(
 
     std::optional<std::shared_ptr<jleObject>> existingObject;
     for (auto&& existing_object : o->GetChildObjects()) {
-        if (existing_object->mInstanceName == instanceName) {
+        if (existing_object->_instanceName == instanceName) {
             existingObject = existing_object;
             break;
         }
@@ -222,12 +222,12 @@ void jleObject::DuplicateObject_Editor() {
     nlohmann::json j;
     to_json(j, GetWeakPtrToThis().lock());
 
-    mContainedInScene->SpawnObject(j);
+    _containedInScene->SpawnObject(j);
 }
 
 void jleObject::ProcessJsonData(const nlohmann::json& j,
                                 std::shared_ptr<jleObject>& o) {
-    JLE_FROM_JSON_IF_EXISTS(j, o->mInstanceName, "_instance_name")
+    JLE_FROM_JSON_IF_EXISTS(j, o->_instanceName, "_instance_name")
 
     for (auto&& custom_components_json : j.at("_custom_components")) {
         std::string componentName;
@@ -260,7 +260,7 @@ void jleObject::ProcessJsonData(const nlohmann::json& j,
                     jleRelativePath{objectTemplatePath});
                 templateJson["_instance_name"] = objectInstanceName;
                 auto newChildObject = ProcessChildJsonData(templateJson, o);
-                newChildObject->mTemplatePath = objectTemplatePath;
+                newChildObject->_templatePath = objectTemplatePath;
             }
             else {
                 ProcessChildJsonData(object_json, o);
@@ -295,14 +295,14 @@ void from_json(const nlohmann::json& json, std::shared_ptr<jleObject>& object) {
         const std::string objectInstanceName = json.at("_instance_name");
         const auto templateJson = jleObject::GetObjectTemplateJson(
             jleRelativePath{objectTemplatePath});
-        object->mTemplatePath = objectTemplatePath;
+        object->_templatePath = objectTemplatePath;
 
         jleObject::ProcessJsonData(templateJson, object);
-        object->mInstanceName = objectInstanceName;
+        object->_instanceName = objectInstanceName;
     }
     else {
         jleObject::ProcessJsonData(json, object);
     }
 }
 
-int jleObject::GetInstanceID() const { return mInstanceID; }
+int jleObject::GetInstanceID() const { return _instanceID; }

@@ -9,15 +9,15 @@ inline std::shared_ptr<T> jleObject::AddComponent() {
     static_assert(std::is_base_of<jleComponent, T>::value,
                   "T must derive from jleComponent");
 
-    for (auto& component : mComponents) {
+    for (auto& component : _components) {
         if (std::dynamic_pointer_cast<T>(component)) {
             return std::dynamic_pointer_cast<T>(component);
         }
     }
 
     std::shared_ptr<T> newComponent =
-        std::make_shared<T>(this, mContainedInScene);
-    mComponents.push_back(newComponent);
+        std::make_shared<T>(this, _containedInScene);
+    _components.push_back(newComponent);
 
     return newComponent;
 };
@@ -28,7 +28,7 @@ inline std::shared_ptr<T> jleObject::AddCustomComponent(bool start_immediate) {
                   "T must derive from jleComponent");
 
     std::shared_ptr<T> newCustomComponent = AddComponent<T>();
-    mDynamicCustomComponents.push_back(newCustomComponent);
+    _dynamicCustomComponents.push_back(newCustomComponent);
 
     if (start_immediate) {
         newCustomComponent->Start();
@@ -41,10 +41,10 @@ inline std::shared_ptr<jleComponent> jleObject::AddComponent(
     const std::string& component_name) {
     auto newComponent =
         jleTypeReflectionUtils::InstantiateComponentByString(component_name);
-    newComponent->mAttachedToObject = this;
-    newComponent->mContainedInScene = mContainedInScene;
+    newComponent->_attachedToObject = this;
+    newComponent->_containedInScene = _containedInScene;
 
-    mComponents.push_back(newComponent);
+    _components.push_back(newComponent);
 
     return newComponent;
 }
@@ -52,7 +52,7 @@ inline std::shared_ptr<jleComponent> jleObject::AddComponent(
 inline std::shared_ptr<jleComponent> jleObject::AddCustomComponent(
     const std::string& component_name, bool start_immediate) {
     auto newCustomComponent = AddComponent(component_name);
-    mDynamicCustomComponents.push_back(newCustomComponent);
+    _dynamicCustomComponents.push_back(newCustomComponent);
 
     if (start_immediate) {
         newCustomComponent->Start();
@@ -66,7 +66,7 @@ inline std::shared_ptr<T> jleObject::GetComponent() {
     static_assert(std::is_base_of<jleComponent, T>::value,
                   "T must derive from jleComponent");
 
-    for (auto& component : mComponents) {
+    for (auto& component : _components) {
         if (std::dynamic_pointer_cast<T>(component)) {
             return std::dynamic_pointer_cast<T>(component);
         }
@@ -81,9 +81,9 @@ inline std::shared_ptr<T> jleObject::AddDependencyComponent(
     static_assert(std::is_base_of<jleComponent, T>::value,
                   "T must derive from jleComponent");
 
-    std::shared_ptr<T> c = component->mAttachedToObject->GetComponent<T>();
+    std::shared_ptr<T> c = component->_attachedToObject->GetComponent<T>();
     if (!c) {
-        c = component->mAttachedToObject->AddCustomComponent<T>();
+        c = component->_attachedToObject->AddCustomComponent<T>();
     }
 
     return c;
@@ -94,14 +94,14 @@ inline std::shared_ptr<T> jleObject::SpawnChildObject() {
     // We still want the object to be spawned initially in the scene,
     // but to immediately be moved over to the object's ownership.
     // This is because the scene will run the Start() methods on the new object.
-    std::shared_ptr<T> object = mContainedInScene->SpawnObject<T>();
+    std::shared_ptr<T> object = _containedInScene->SpawnObject<T>();
     AttachChildObject(object);
     return object;
 }
 
 inline std::shared_ptr<jleObject> jleObject::SpawnChildObject(
     const std::string& objName) {
-    auto object = mContainedInScene->SpawnObject(objName);
+    auto object = _containedInScene->SpawnObject(objName);
     AttachChildObject(object);
     return object;
 }

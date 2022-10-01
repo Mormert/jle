@@ -3,11 +3,11 @@
 #include "oCharacterHealthBar.h"
 
 void oCharacterHealthBar::SetupDefaultObject() {
-    mTransform = AddCustomComponent<cTransform>();
-    mAseprite = AddCustomComponent<cAseprite>();
+    _transform = AddCustomComponent<cTransform>();
+    _aseprite = AddCustomComponent<cAseprite>();
 }
 
 void oCharacterHealthBar::SetHP(int maxHP, int currentHP) {
-    const auto w = (currentHP / (float)maxHP) * (float)mMaxWidth;
-    mAseprite->mWidth = w;
+    const auto w = (currentHP / (float)maxHP) * (float)_maxWidth;
+    _aseprite->_width = w;
 }

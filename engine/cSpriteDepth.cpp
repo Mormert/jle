@@ -38,7 +38,7 @@ void cSpriteDepth::SetTextureBeginCoordinates(int x, int y) {
 }
 
 void cSpriteDepth::Start() {
-    transform = mAttachedToObject->AddDependencyComponent<cTransform>(this);
+    transform = _attachedToObject->AddDependencyComponent<cTransform>(this);
 
     if (texturePathHeight != "" && texturePathDiffuse != "" &&
         texturePathNormal != "") {

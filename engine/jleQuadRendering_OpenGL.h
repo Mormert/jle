@@ -76,6 +76,6 @@ private:
     unsigned int quadVBO_Instanced, quadVAO_Instanced, instanceVBO,
         elementbuffer;
 
-    std::vector<TexturedQuad> mQueuedTexturedQuads;
-    std::vector<TexturedHeightQuad> mQueuedTexturedHeightQuads;
+    std::vector<TexturedQuad> _queuedTexturedQuads;
+    std::vector<TexturedHeightQuad> _queuedTexturedHeightQuads;
 };

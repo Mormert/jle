@@ -48,63 +48,63 @@ public:
 
     void FromJson(const nlohmann::json &j_in) override;
 
-    std::shared_ptr<cTransform> mTransform{nullptr};
-    std::shared_ptr<cAseprite> mAseprite{nullptr};
+    std::shared_ptr<cTransform> _transform{nullptr};
+    std::shared_ptr<cAseprite> _aseprite{nullptr};
 
 protected:
 
     void LookAtPosition(int x, int y);
 
-    hexHexagonItem mHexagonItem;
+    hexHexagonItem _hexagonItem;
 
-    int mHexagonPixelX{}, mHexagonPixelY{};
+    int _hexagonPixelX{}, _hexagonPixelY{};
 
-    float mInterpingX{}, mInterpingY{};
-    float mInterpingAlpha{0.f};
-    bool mInterpingPosition{false};
-    float mInterpBetweenHexasSpeed = 1.f;
+    float _interpingX{}, _interpingY{};
+    float _interpingAlpha{0.f};
+    bool _interpingPosition{false};
+    float _interpBetweenHexasSpeed = 1.f;
 
-    oCharacterDirection mCharacterDirection{};
+    oCharacterDirection _characterDirection{};
 
-    unsigned int mIdleAsepriteIndex{0};
-    unsigned int mAttackAsepriteIndex{1};
-    unsigned int mWalkAsepriteIndex{2};
+    unsigned int _idleAsepriteIndex{0};
+    unsigned int _attackAsepriteIndex{1};
+    unsigned int _walkAsepriteIndex{2};
 
-    float mAttackCooldownAfterAnimationMs{0};
+    float _attackCooldownAfterAnimationMs{0};
 
-    bool mShowHpBar = true;
-    std::shared_ptr<oCharacterHealthBar> mHealthBarObjPtr{};
+    bool _showHpBar = true;
+    std::shared_ptr<oCharacterHealthBar> _healthBarObjPtr{};
 
-    int mMaxHP{};
-    int mCurrentHP{};
+    int _maxHP{};
+    int _currentHP{};
 
-    std::string mHealthBarObjectTemplatePath;
+    std::string _healthBarObjectTemplatePath;
 
-    bool mCanAttack = true;
+    bool _canAttack = true;
 
-    int mWestTextureX{};
-    int mWestTextureY{};
+    int _westTextureX{};
+    int _westTextureY{};
 
-    int mNorthwestTextureX{32};
-    int mNorthwestTextureY{};
+    int _northwestTextureX{32};
+    int _northwestTextureY{};
 
-    int mNorthTextureX{64};
-    int mNorthTextureY{};
+    int _northTextureX{64};
+    int _northTextureY{};
 
-    int mNortheastTextureX{96};
-    int mNortheastTextureY{};
+    int _northeastTextureX{96};
+    int _northeastTextureY{};
 
-    int mEastTextureX{128};
-    int mEastTextureY{};
+    int _eastTextureX{128};
+    int _eastTextureY{};
 
-    int mSoutheastTextureX{160};
-    int mSoutheastTextureY{};
+    int _southeastTextureX{160};
+    int _southeastTextureY{};
 
-    int mSouthTextureX{192};
-    int mSouthTextureY{};
+    int _southTextureX{192};
+    int _southTextureY{};
 
-    int mSouthwestTextureX{224};
-    int mSouthwestTextureY{};
+    int _southwestTextureX{224};
+    int _southwestTextureY{};
 
 };
 

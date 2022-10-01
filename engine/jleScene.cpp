@@ -6,59 +6,59 @@
 
 #include <iostream>
 
-int jleScene::mScenesCreatedCount{0};
+int jleScene::_scenesCreatedCount{0};
 
 jleScene::jleScene() {
-    mSceneName = "Scene_" + std::to_string(mScenesCreatedCount);
-    mScenesCreatedCount++;
+    _sceneName = "Scene_" + std::to_string(_scenesCreatedCount);
+    _scenesCreatedCount++;
 }
 
 jleScene::jleScene(const std::string& sceneName) {
-    this->mSceneName = sceneName;
-    mScenesCreatedCount++;
+    this->_sceneName = sceneName;
+    _scenesCreatedCount++;
 }
 
 void jleScene::UpdateSceneObjects(float dt) {
     JLE_SCOPE_PROFILE(jleScene::UpdateSceneObjects)
-    for (int32_t i = mSceneObjects.size() - 1; i >= 0; i--) {
-        if (mSceneObjects[i]->mPendingKill) {
-            mSceneObjects.erase(mSceneObjects.begin() + i);
+    for (int32_t i = _sceneObjects.size() - 1; i >= 0; i--) {
+        if (_sceneObjects[i]->_pendingKill) {
+            _sceneObjects.erase(_sceneObjects.begin() + i);
             continue;
         }
 
-        mSceneObjects[i]->Update(dt);
-        mSceneObjects[i]->UpdateComponents(dt);
-        mSceneObjects[i]->UpdateChildren(dt);
+        _sceneObjects[i]->Update(dt);
+        _sceneObjects[i]->UpdateComponents(dt);
+        _sceneObjects[i]->UpdateChildren(dt);
     }
 }
 
 void jleScene::ProcessNewSceneObjects() {
     JLE_SCOPE_PROFILE(jleScene::ProcessNewSceneObjects)
-    if (!mNewSceneObjects.empty()) {
-        for (const auto& newObject : mNewSceneObjects) {
-            if (!newObject->mIsStarted) {
+    if (!_newSceneObjects.empty()) {
+        for (const auto& newObject : _newSceneObjects) {
+            if (!newObject->_isStarted) {
                 newObject->Start();
                 newObject->StartComponents();
-                newObject->mIsStarted = true;
+                newObject->_isStarted = true;
             }
 
             // Only push back objects existing directly in the scene into scene
             // objects The object can be placed as a child object in another
             // object, and thus no longer existing directly in the scene
-            if (newObject->mParentObject == nullptr) {
-                mSceneObjects.push_back(newObject);
+            if (newObject->_parentObject == nullptr) {
+                _sceneObjects.push_back(newObject);
             }
         }
 
-        mNewSceneObjects.clear();
+        _newSceneObjects.clear();
     }
 }
 
 void jleScene::DestroyScene() {
     bPendingSceneDestruction = true;
 
-    mSceneObjects.clear();
-    mNewSceneObjects.clear();
+    _sceneObjects.clear();
+    _newSceneObjects.clear();
 
     OnSceneDestruction();
 }
@@ -71,7 +71,7 @@ std::shared_ptr<jleObject> jleScene::SpawnTemplateObject(
     j.at("__obj_name").get_to(objectsName);
 
     auto spawnedObjFromJson = SpawnObject(objectsName);
-    spawnedObjFromJson->mTemplatePath = templatePath.GetRelativePathStr();
+    spawnedObjFromJson->_templatePath = templatePath.GetRelativePathStr();
     from_json(j, spawnedObjFromJson);
     spawnedObjFromJson->FromJson(j);
 
@@ -94,21 +94,21 @@ void to_json(nlohmann::json& j, jleScene& s) { s.ToJson(j); }
 void from_json(const nlohmann::json& j, jleScene& s) { s.FromJson(j); }
 
 void jleScene::ConfigurateSpawnedObject(const std::shared_ptr<jleObject>& obj) {
-    obj->mContainedInScene = this;
+    obj->_containedInScene = this;
     obj->SetupDefaultObject();
-    obj->mInstanceName = std::string{obj->GetObjectNameVirtual()} + "_" +
+    obj->_instanceName = std::string{obj->GetObjectNameVirtual()} + "_" +
                          std::to_string(obj->sObjectsCreatedCount);
 
-    mNewSceneObjects.push_back(obj);
+    _newSceneObjects.push_back(obj);
 }
 
 void jleScene::ToJson(nlohmann::json& j_out) {
-    j_out["_objects"] = mSceneObjects;
-    j_out["_sceneName"] = mSceneName;
+    j_out["_objects"] = _sceneObjects;
+    j_out["_sceneName"] = _sceneName;
 }
 
 void jleScene::FromJson(const nlohmann::json& j_in) {
-    JLE_FROM_JSON_IF_EXISTS(j_in, mSceneName, "_sceneName");
+    JLE_FROM_JSON_IF_EXISTS(j_in, _sceneName, "_sceneName");
 
     for (auto object_json : j_in.at("_objects")) {
 
@@ -131,7 +131,7 @@ void jleScene::FromJson(const nlohmann::json& j_in) {
         object_json.at("__obj_name").get_to(objectsName);
 
         auto spawnedObjFromJson = SpawnObject(objectsName);
-        spawnedObjFromJson->mTemplatePath = objectTemplatePath;
+        spawnedObjFromJson->_templatePath = objectTemplatePath;
         from_json(object_json, spawnedObjFromJson);
         spawnedObjFromJson->FromJson(object_json);
     }

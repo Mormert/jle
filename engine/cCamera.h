@@ -26,9 +26,9 @@ public:
     float GetOffsetY();
 
 private:
-    std::shared_ptr<cTransform> mTransform{nullptr};
-    float mOffsetX{};
-    float mOffsetY{};
+    std::shared_ptr<cTransform> _transform{nullptr};
+    float _offsetX{};
+    float _offsetY{};
 
     inline static uint32_t sInstanceCounter = 0;
 };

@@ -20,6 +20,6 @@ public:
 private:
     std::shared_ptr<jleGameSettings> gameSettings;
     std::shared_ptr<jleEditorSettings> editorSettings;
-    jleEditorJsonToImgui mJsonToImguiGS;
-    jleEditorJsonToImgui mJsonToImguiES;
+    jleEditorJsonToImgui _jsonToImguiGS;
+    jleEditorJsonToImgui _jsonToImguiES;
 };

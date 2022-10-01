@@ -3,22 +3,22 @@
 #include "jleProfiler.h"
 
 jleProfiler::jleProfilerRAII::jleProfilerRAII(const std::string_view name)
-    : mStartTime{std::chrono::high_resolution_clock::now()}, mName{name} {
-    sProfilerData.push_back(jleProfilerData{mName});
-    mIndex = sProfilerData.size() - 1;
-    mParentIndex = sCurrentProfilerData;
-    if (mParentIndex >= 0) {
-        sProfilerData[mParentIndex].mChildren.push_back(mIndex);
+    : _startTime{std::chrono::high_resolution_clock::now()}, _name{name} {
+    sProfilerData.push_back(jleProfilerData{_name});
+    _index = sProfilerData.size() - 1;
+    _parentIndex = sCurrentProfilerData;
+    if (_parentIndex >= 0) {
+        sProfilerData[_parentIndex]._children.push_back(_index);
     }
-    sCurrentProfilerData = mIndex;
+    sCurrentProfilerData = _index;
 }
 
 jleProfiler::jleProfilerRAII::~jleProfilerRAII() {
     const auto execTime =
-        std::chrono::high_resolution_clock::now() - mStartTime;
-    sProfilerData[mIndex].mExecutionTime = execTime;
+        std::chrono::high_resolution_clock::now() - _startTime;
+    sProfilerData[_index]._executionTime = execTime;
 
-    sCurrentProfilerData = mParentIndex;
+    sCurrentProfilerData = _parentIndex;
 }
 
 void jleProfiler::NewFrame() {

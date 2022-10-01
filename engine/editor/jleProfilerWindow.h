@@ -13,5 +13,5 @@ public:
 
     virtual void Update(jleGameEngine& ge) override;
 
-    ProfilersWindow mProfilersWindow;
+    ProfilersWindow _profilersWindow;
 };

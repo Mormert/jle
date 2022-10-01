@@ -9,17 +9,17 @@ void jleTimerManager::Process() {
     JLE_SCOPE_PROFILE(jleTimerManager::Process)
     const auto timeNow = glfwGetTime();
 
-    if (!mFunctionsSharedData.empty()) {
-        for (auto it = mFunctionsSharedData.cbegin();
-             it != mFunctionsSharedData.cend() /**/;
+    if (!_functionsSharedData.empty()) {
+        for (auto it = _functionsSharedData.cbegin();
+             it != _functionsSharedData.cend() /**/;
              /**/) {
             if (timeNow >= it->first) {
-                const auto data = it->second.mData;
-                const auto function = it->second.mFunction;
+                const auto data = it->second._data;
+                const auto function = it->second._function;
 
                 function(data); // execute!
 
-                mFunctionsSharedData.erase(it++);
+                _functionsSharedData.erase(it++);
             }
             else {
                 break;
@@ -27,19 +27,19 @@ void jleTimerManager::Process() {
         }
     }
 
-    if (!mFunctionsWeakData.empty()) {
-        for (auto it = mFunctionsWeakData.cbegin();
-             it != mFunctionsWeakData.cend() /**/;
+    if (!_functionsWeakData.empty()) {
+        for (auto it = _functionsWeakData.cbegin();
+             it != _functionsWeakData.cend() /**/;
              /**/) {
             if (timeNow >= it->first) {
-                const auto data = it->second.mData;
-                const auto function = it->second.mFunction;
+                const auto data = it->second._data;
+                const auto function = it->second._function;
 
                 if (!data.expired()) {
                     function(data); // execute!
                 }
 
-                mFunctionsWeakData.erase(it++);
+                _functionsWeakData.erase(it++);
             }
             else {
                 break;
@@ -55,7 +55,7 @@ void jleTimerManager::ExecuteFuncInSecondsSharedData(
     jleTimerManagerFunctionSharedData functionAndData{f, data};
 
     double futureTime = (glfwGetTime() + seconds);
-    mFunctionsSharedData.insert({futureTime, functionAndData});
+    _functionsSharedData.insert({futureTime, functionAndData});
 }
 
 void jleTimerManager::ExecuteFuncInSecondsWeakData(
@@ -65,10 +65,10 @@ void jleTimerManager::ExecuteFuncInSecondsWeakData(
     jleTimerManagerFunctionWeakData functionAndData{f, data};
 
     double futureTime = (glfwGetTime() + seconds);
-    mFunctionsWeakData.insert({futureTime, functionAndData});
+    _functionsWeakData.insert({futureTime, functionAndData});
 }
 
 void jleTimerManager::ClearTimers() {
-    mFunctionsSharedData.clear();
-    mFunctionsWeakData.clear();
+    _functionsSharedData.clear();
+    _functionsWeakData.clear();
 }
