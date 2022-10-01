@@ -129,9 +129,9 @@
                     "_comp_name": "cAseprite",
                     "animating": true,
                     "height": 70,
-                    "mAsepritePaths_STRVEC": [
+                    "_asepritePaths_STRVEC": [
                         {
-                            "mString": "GR:gfx/conceptart/3DCharacter/mount/horse.json"
+                            "_string": "GR:gfx/conceptart/3DCharacter/mount/horse.json"
                         }
                     ],
                     "offsetX": 0,
@@ -155,8 +155,8 @@
             "_custom_components": [
                 {
                     "_comp_name": "cSpritesheet",
-                    "mSpriteName": "spritepacks/dir2/tower",
-                    "mSpritesheetPath": "GR:gfx/spritesheets/hdr/tower.json"
+                    "_spriteName": "spritepacks/dir2/tower",
+                    "_spritesheetPath": "GR:gfx/spritesheets/hdr/tower.json"
                 },
                 {
                     "_comp_name": "cTransform",

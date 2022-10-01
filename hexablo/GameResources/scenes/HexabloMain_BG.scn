@@ -5,46 +5,46 @@
             "_childObjects": [],
             "_custom_components": [],
             "_instance_name": "oWorldMain",
-            "mHexSizeX": 14,
-            "mHexSizeY": 9,
-            "mHexagonTiles": [
+            "_hexSizeX": 14,
+            "_hexSizeY": 9,
+            "_hexagonTiles": [
                 {
-                    "mDepth": -0.5,
-                    "mHeight": 13,
-                    "mTextureX": 1,
-                    "mTextureY": 1,
-                    "mWidth": 15
+                    "_depth": -0.5,
+                    "_height": 13,
+                    "_textureX": 1,
+                    "_textureY": 1,
+                    "_width": 15
                 },
                 {
-                    "mDepth": -0.5,
-                    "mHeight": 13,
-                    "mTextureX": 17,
-                    "mTextureY": 1,
-                    "mWidth": 15
+                    "_depth": -0.5,
+                    "_height": 13,
+                    "_textureX": 17,
+                    "_textureY": 1,
+                    "_width": 15
                 },
                 {
-                    "mDepth": -0.4000000059604645,
-                    "mHeight": 13,
-                    "mTextureX": 33,
-                    "mTextureY": 1,
-                    "mWidth": 15
+                    "_depth": -0.4000000059604645,
+                    "_height": 13,
+                    "_textureX": 33,
+                    "_textureY": 1,
+                    "_width": 15
                 },
                 {
-                    "mDepth": -0.30000001192092896,
-                    "mHeight": 13,
-                    "mTextureX": 49,
-                    "mTextureY": 1,
-                    "mWidth": 15
+                    "_depth": -0.30000001192092896,
+                    "_height": 13,
+                    "_textureX": 49,
+                    "_textureY": 1,
+                    "_width": 15
                 },
                 {
-                    "mDepth": -0.5,
-                    "mHeight": 13,
-                    "mTextureX": 65,
-                    "mTextureY": 1,
-                    "mWidth": 15
+                    "_depth": -0.5,
+                    "_height": 13,
+                    "_textureX": 65,
+                    "_textureY": 1,
+                    "_width": 15
                 }
             ],
-            "mWorldHexTilesAsepritePath": "GR:gfx/world/worldHexTiles.json"
+            "_worldHexTilesAsepritePath": "GR:gfx/world/worldHexTiles.json"
         }
     ],
     "_sceneName": "HexabloMain_BG"
