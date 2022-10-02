@@ -3,20 +3,18 @@
 #pragma once
 
 #include "jleCoreSettings.h"
-#include "jleFramebufferInterface.h"
 #include "jleInputAPI.h"
 #include "jleNetworking.h"
 #include "jleProfiler.h"
 #include "jleRendering.h"
-#include "jleRenderingFactoryInterface.h"
-#include "jleTextureCreatorInterface.h"
 #include "jleTimerManager.h"
 #include "jleWindowAPIInterface.h"
 #include "jleWindowFactoryInterface.h"
-#include "jleWindowInitializerInterface.h"
 #include "no_copy_no_move.h"
 
 #include <memory>
+
+class Framebuffer_OpenGL;
 
 struct jleCoreStatus {
     virtual ~jleCoreStatus() = default;
@@ -55,9 +53,6 @@ public:
 
     // Entry point for a user to do fundamental rendering
     const std::shared_ptr<jleRendering> rendering;
-
-    // Entry point for a user to create textures of different kinds
-    const std::shared_ptr<jleTextureCreatorInterface> texture_creator;
 
     // Entry point for a user to get core status
     const std::shared_ptr<jleCoreStatus> status;

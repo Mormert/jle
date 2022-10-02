@@ -4,7 +4,7 @@
 
 #include "jleWindowAPIInterface.h"
 
-#include "jleWindowInitializerInterface.h"
+#include "jleWindowInitializer_GLFW_OpenGL.h"
 
 #include <memory>
 
