@@ -2,7 +2,7 @@
 
 #include "jleTextRendering.h"
 #include "jleFont.h"
-#include "jleFramebufferInterface.h"
+#include "jleFrameBuffer_OpenGL.h"
 #include "jleProfiler.h"
 
 #ifdef __EMSCRIPTEN__
@@ -26,13 +26,13 @@ jleTextRendering::jleTextRendering() { gltInit(); }
 jleTextRendering::~jleTextRendering() { gltTerminate(); }
 
 void jleTextRendering::SendSimpleText(const std::string& text,
-                                             float x,
-                                             float y,
-                                             float scale,
-                                             float r,
-                                             float g,
-                                             float b,
-                                             float a) {
+                                      float x,
+                                      float y,
+                                      float scale,
+                                      float r,
+                                      float g,
+                                      float b,
+                                      float a) {
     jleSimpleTextData td{x, y, scale, r, g, b, a};
     td.gltextPtr = gltCreateText();
     gltSetText(td.gltextPtr, text.c_str());
@@ -40,7 +40,7 @@ void jleTextRendering::SendSimpleText(const std::string& text,
 }
 
 void jleTextRendering::Render(jleFramebufferInterface& framebufferOut,
-                                     const jleCamera& camera) {
+                              const jleCamera& camera) {
     JLE_SCOPE_PROFILE(jleTextRendering::Render)
     if (_simpleTextDatas.empty() && _fontTextDatas.empty()) {
         return;
@@ -90,15 +90,15 @@ void jleTextRendering::ClearBuffersForNextFrame() {
 }
 
 void jleTextRendering::SendFontText(jleFont *font,
-                                           const std::string& text,
-                                           uint32_t fontSize,
-                                           float x,
-                                           float y,
-                                           float depth,
-                                           float r,
-                                           float g,
-                                           float b,
-                                           float a) {
+                                    const std::string& text,
+                                    uint32_t fontSize,
+                                    float x,
+                                    float y,
+                                    float depth,
+                                    float r,
+                                    float g,
+                                    float b,
+                                    float a) {
     jleFontTextData data;
     _fontTextDatas.push_back({x, y, depth, r, g, b, a, fontSize, font, text});
 }

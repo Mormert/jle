@@ -5,7 +5,10 @@
 #include "no_copy_no_move.h"
 
 #include <climits>
+#include <memory>
 #include <string>
+
+class jleImage;
 
 class jleTexture {
     NO_COPY_NO_MOVE(jleTexture)
@@ -27,9 +30,9 @@ public:
 
     int32_t GetHeight();
 
-private:
-    friend class jleTextureCreator_OpenGL;
+    friend std::unique_ptr<jleTexture> FromImage(const jleImage& image);
 
+private:
     int32_t width, height, nrChannels;
 
     unsigned int texture_id = UINT_MAX; // OpenGL Texture ID

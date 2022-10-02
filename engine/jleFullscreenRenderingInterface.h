@@ -2,14 +2,13 @@
 
 #pragma once
 
-#include "jleFramebufferInterface.h"
+class jleFramebuffer_OpenGL;
 
 class jleFullscreenRenderingInterface {
 public:
     virtual ~jleFullscreenRenderingInterface() = default;
 
-    virtual void RenderFramebufferFullscreen(
-        jleFramebufferInterface& framebuffer,
-        unsigned int screenWidth,
-        unsigned int screenHeight) = 0;
+    virtual void RenderFramebufferFullscreen(jleFramebuffer_OpenGL& framebuffer,
+                                             unsigned int screenWidth,
+                                             unsigned int screenHeight) = 0;
 };

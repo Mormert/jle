@@ -6,7 +6,6 @@
 #include "jleFrameBuffer_OpenGL.h"
 #include "jleQuadRendering.h"
 #include "jleTextRendering.h"
-#include "jleWindowInitializerInterface.h"
 #include <memory>
 
 class jleRenderingFactoryInterface;

@@ -2,12 +2,11 @@
 
 #pragma once
 
-#include "jleWindowInitializerInterface.h"
+#include "jleWindowInitializer_GLFW_OpenGL.h"
 
-class jleWindowInitializer_GLFW_OpenGL final
-    : public jleWindowInitializerInterface {
+class jleWindowInitializer_GLFW_OpenGL {
 public:
-    ~jleWindowInitializer_GLFW_OpenGL() override = default;
+    ~jleWindowInitializer_GLFW_OpenGL() = default;
 
-    void *InitWindow(int width, int height, const char *title) override;
+    void *InitWindow(int width, int height, const char *title);
 };
