@@ -4,16 +4,16 @@
 
 #include "jleCamera.h"
 #include "jleFrameBuffer_OpenGL.h"
-#include "jleQuadRendering_OpenGL.h"
-#include "jleTextRendering_OpenGL.h"
+#include "jleQuadRendering.h"
+#include "jleTextRendering.h"
 #include "jleWindowInitializerInterface.h"
 #include <memory>
 
 class jleRenderingFactoryInterface;
 
-class jleRenderingAPI_OpenGL {
+class jleRendering {
 public:
-    ~jleRenderingAPI_OpenGL() = default;
+    ~jleRendering() = default;
 
     void Setup(const jleRenderingFactoryInterface& renderFactory);
 
@@ -26,10 +26,10 @@ public:
 
     void ClearBuffersForNextFrame();
 
-    jleQuadRendering_OpenGL& quads();
-    jleTextRendering_OpenGL& texts();
+    jleQuadRendering& quads();
+    jleTextRendering& texts();
 
 private:
-    std::unique_ptr<jleQuadRendering_OpenGL> _quads;
-    std::unique_ptr<jleTextRendering_OpenGL> _texts;
+    std::unique_ptr<jleQuadRendering> _quads;
+    std::unique_ptr<jleTextRendering> _texts;
 };

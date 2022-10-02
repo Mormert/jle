@@ -1,6 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#include "jleTextRendering_OpenGL.h"
+#include "jleTextRendering.h"
 #include "jleFont.h"
 #include "jleFramebufferInterface.h"
 #include "jleProfiler.h"
@@ -21,11 +21,11 @@
 
 #include <gltext/gltext.h>
 
-jleTextRendering_OpenGL::jleTextRendering_OpenGL() { gltInit(); }
+jleTextRendering::jleTextRendering() { gltInit(); }
 
-jleTextRendering_OpenGL::~jleTextRendering_OpenGL() { gltTerminate(); }
+jleTextRendering::~jleTextRendering() { gltTerminate(); }
 
-void jleTextRendering_OpenGL::SendSimpleText(const std::string& text,
+void jleTextRendering::SendSimpleText(const std::string& text,
                                              float x,
                                              float y,
                                              float scale,
@@ -39,9 +39,9 @@ void jleTextRendering_OpenGL::SendSimpleText(const std::string& text,
     _simpleTextDatas.push_back(td);
 }
 
-void jleTextRendering_OpenGL::Render(jleFramebufferInterface& framebufferOut,
+void jleTextRendering::Render(jleFramebufferInterface& framebufferOut,
                                      const jleCamera& camera) {
-    JLE_SCOPE_PROFILE(jleTextRendering_OpenGL::Render)
+    JLE_SCOPE_PROFILE(jleTextRendering::Render)
     if (_simpleTextDatas.empty() && _fontTextDatas.empty()) {
         return;
     }
@@ -80,7 +80,7 @@ void jleTextRendering_OpenGL::Render(jleFramebufferInterface& framebufferOut,
     framebufferOut.BindToDefaultFramebuffer();
 }
 
-void jleTextRendering_OpenGL::ClearBuffersForNextFrame() {
+void jleTextRendering::ClearBuffersForNextFrame() {
     // Clean up after rendering this frame
     for (auto&& textData : _simpleTextDatas) {
         gltDeleteText(textData.gltextPtr);
@@ -89,7 +89,7 @@ void jleTextRendering_OpenGL::ClearBuffersForNextFrame() {
     _fontTextDatas.clear();
 }
 
-void jleTextRendering_OpenGL::SendFontText(jleFont *font,
+void jleTextRendering::SendFontText(jleFont *font,
                                            const std::string& text,
                                            uint32_t fontSize,
                                            float x,

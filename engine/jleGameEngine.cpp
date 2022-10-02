@@ -4,7 +4,7 @@
 
 #include "jleExplicitInclude.h"
 #include "jleMouseInputInternal.h"
-#include "jleRenderingAPI_OpenGL.h"
+#include "jleRendering.h"
 
 #include <plog/Log.h>
 

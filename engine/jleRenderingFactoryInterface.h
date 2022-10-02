@@ -4,9 +4,9 @@
 
 #include "jleFramebufferInterface.h"
 #include "jleFullscreenRenderingInterface.h"
-#include "jleQuadRendering_OpenGL.h"
-#include "jleRenderingAPI_OpenGL.h"
-#include "jleTextRendering_OpenGL.h"
+#include "jleQuadRendering.h"
+#include "jleRendering.h"
+#include "jleTextRendering.h"
 
 #include <memory>
 
@@ -14,13 +14,13 @@ class jleRenderingFactoryInterface {
 public:
     virtual ~jleRenderingFactoryInterface() = default;
 
-    virtual std::unique_ptr<jleRenderingAPI_OpenGL> CreateRenderingAPI()
+    virtual std::unique_ptr<jleRendering> CreateRenderingAPI()
         const = 0;
 
-    virtual std::unique_ptr<jleQuadRendering_OpenGL> CreateQuadRendering()
+    virtual std::unique_ptr<jleQuadRendering> CreateQuadRendering()
         const = 0;
 
-    virtual std::unique_ptr<jleTextRendering_OpenGL> CreateTextRendering()
+    virtual std::unique_ptr<jleTextRendering> CreateTextRendering()
         const = 0;
 
     virtual std::unique_ptr<jleFullscreenRenderingInterface>

@@ -3,7 +3,7 @@
 #include "jleCore.h"
 #include "jleSoLoud.h"
 
-#include "jleKeyboardInputInternal.h"
+#include "jleKeyboardInput.h"
 #include "jleMouseInputInternal.h"
 
 #include "jleFont.h"
@@ -24,7 +24,7 @@ jleCore *jleCore::core{nullptr};
 
 struct CoreStatus_Internal;
 struct jleCore::jleCoreInternalImpl {
-    std::shared_ptr<jleRenderingAPI_OpenGL> rendering_internal;
+    std::shared_ptr<jleRendering> rendering_internal;
     std::shared_ptr<jleWindowInternalAPIInterface> window_internal;
     std::shared_ptr<CoreStatus_Internal> status_internal;
 };
@@ -83,7 +83,7 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings>& cs)
       window{windowFactory->CreateWin()},
       rendering{renderingFactory->CreateRenderingAPI()},
       input{std::make_shared<jleInputAPI>(
-          std::make_shared<jleKeyboardInputInternal>(
+          std::make_shared<jleKeyboardInput>(
               std::static_pointer_cast<jleWindowInternalAPIInterface>(window)),
           std::make_shared<jleMouseInputInternal>(
               std::static_pointer_cast<jleWindowInternalAPIInterface>(
@@ -94,7 +94,7 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings>& cs)
     PLOG_INFO << "Starting the core";
     coreImpl = std::make_unique<jleCoreInternalImpl>();
     coreImpl->rendering_internal =
-        std::static_pointer_cast<jleRenderingAPI_OpenGL>(rendering);
+        std::static_pointer_cast<jleRendering>(rendering);
     coreImpl->window_internal =
         std::static_pointer_cast<jleWindowInternalAPIInterface>(window);
     coreImpl->status_internal =

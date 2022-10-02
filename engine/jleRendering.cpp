@@ -1,6 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#include "jleRenderingAPI_OpenGL.h"
+#include "jleRendering.h"
 
 #ifdef __EMSCRIPTEN__
 #include <GLES3/gl3.h>
@@ -14,26 +14,26 @@
 #endif
 
 #include "jleProfiler.h"
-#include "jleQuadRendering_OpenGL.h"
+#include "jleQuadRendering.h"
 #include "jleRenderingFactoryInterface.h"
-#include "jleTextRendering_OpenGL.h"
+#include "jleTextRendering.h"
 #include "plog/Log.h"
 
-void jleRenderingAPI_OpenGL::SetViewportDimensions(int x,
+void jleRendering::SetViewportDimensions(int x,
                                                    int y,
                                                    unsigned int width,
                                                    unsigned int height) {
     glViewport(x, y, static_cast<int>(width), static_cast<int>(height));
 }
 
-void jleRenderingAPI_OpenGL::Render(jleFramebufferInterface& framebufferOut,
+void jleRendering::Render(jleFramebufferInterface& framebufferOut,
                                     jleCamera& camera) {
-    JLE_SCOPE_PROFILE(jleRenderingAPI_OpenGL::Render)
+    JLE_SCOPE_PROFILE(jleRendering::Render)
     _quads->QueueRender(framebufferOut, camera);
     _texts->Render(framebufferOut, camera);
 }
 
-void jleRenderingAPI_OpenGL::Setup(
+void jleRendering::Setup(
     const jleRenderingFactoryInterface& renderFactory) {
     LOG_VERBOSE << "Creating text rendering";
     this->_texts = renderFactory.CreateTextRendering();
@@ -41,11 +41,11 @@ void jleRenderingAPI_OpenGL::Setup(
     this->_quads = renderFactory.CreateQuadRendering();
 }
 
-void jleRenderingAPI_OpenGL::ClearBuffersForNextFrame() {
+void jleRendering::ClearBuffersForNextFrame() {
     _quads->ClearBuffersForNextFrame();
     _texts->ClearBuffersForNextFrame();
 }
 
-jleQuadRendering_OpenGL &jleRenderingAPI_OpenGL::quads() { return *_quads; }
+jleQuadRendering &jleRendering::quads() { return *_quads; }
 
-jleTextRendering_OpenGL &jleRenderingAPI_OpenGL::texts() { return *_texts; }
+jleTextRendering &jleRendering::texts() { return *_texts; }

@@ -10,11 +10,11 @@ struct GLTtext;
 class jleFont;
 class jleFramebufferInterface;
 
-class jleTextRendering_OpenGL {
+class jleTextRendering {
 public:
-    jleTextRendering_OpenGL();
+    jleTextRendering();
 
-    ~jleTextRendering_OpenGL();
+    ~jleTextRendering();
 
     void SendSimpleText(const std::string& text,
                         float x,

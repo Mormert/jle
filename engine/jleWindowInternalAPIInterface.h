@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "jleRenderingAPI_OpenGL.h"
+#include "jleRendering.h"
 #include "jleWindowAPIInterface.h"
 #include "jleWindowInitializerInterface.h"
 
@@ -16,7 +16,7 @@ public:
 
     virtual void InitWindow(
         jleWindowInitializerInterface& windowInitializer,
-        std::shared_ptr<jleRenderingAPI_OpenGL> internalRenderingAPI) = 0;
+        std::shared_ptr<jleRendering> internalRenderingAPI) = 0;
 
     virtual void UpdateWindow() = 0;
 

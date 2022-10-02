@@ -6,7 +6,7 @@
 #include "hexHexagonItem.h"
 #include "jleAseprite.h"
 #include "jleObject.h"
-#include "jleQuadRendering_OpenGL.h"
+#include "jleQuadRendering.h"
 #include "jleTexture.h"
 #include <glm/glm.hpp>
 
@@ -80,7 +80,7 @@ private:
     std::string _worldHexTilesAsepritePath;
     jleAseprite _aseprite;
 
-    jleQuadRendering_OpenGL *_quadRenderingPtr{nullptr};
+    jleQuadRendering *_quadRenderingPtr{nullptr};
 
     struct HexagonTile {
         float _depth;

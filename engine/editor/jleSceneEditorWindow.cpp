@@ -8,7 +8,7 @@
 
 #include "cTransform.h"
 #include "glm/common.hpp"
-#include "jleQuadRendering_OpenGL.h"
+#include "jleQuadRendering.h"
 #include "jleStaticOpenGLState.h"
 #include "jleWindowInternalAPIInterface.h"
 

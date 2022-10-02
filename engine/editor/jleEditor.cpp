@@ -29,7 +29,7 @@
 #include "editor/jleEditorWindowsPanel.h"
 #include "jleEngineSettingsWindow.h"
 #include "jleGameEditorWindow.h"
-#include "jleQuadRendering_OpenGL.h"
+#include "jleQuadRendering.h"
 #include "jleSceneEditorWindow.h"
 #include "jleWindow_GLFW_OpenGL.h"
 

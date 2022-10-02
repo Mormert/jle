@@ -16,14 +16,14 @@ enum class RenderingMethod { Dynamic, Static };
 
 class jleFramebufferInterface;
 
-class jleQuadRendering_OpenGL {
+class jleQuadRendering {
 public:
     static inline glm::vec3 lightPos{};
     static inline float depthRange{10000.f};
 
-    jleQuadRendering_OpenGL();
+    jleQuadRendering();
 
-    ~jleQuadRendering_OpenGL();
+    ~jleQuadRendering();
 
     // Inherited via iQuadRenderingInternal
     void SendTexturedQuad(TexturedQuad& texturedQuad,

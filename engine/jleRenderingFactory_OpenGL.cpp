@@ -4,27 +4,27 @@
 
 #include "jleFrameBuffer_OpenGL.h"
 #include "jleFullscreenRendering_OpenGL.h"
-#include "jleQuadRendering_OpenGL.h"
-#include "jleRenderingAPI_OpenGL.h"
-#include "jleTextRendering_OpenGL.h"
+#include "jleQuadRendering.h"
+#include "jleRendering.h"
+#include "jleTextRendering.h"
 #include "plog/Log.h"
 
 #include <memory>
 
-std::unique_ptr<jleRenderingAPI_OpenGL> jleRenderingFactory_OpenGL::
+std::unique_ptr<jleRendering> jleRenderingFactory_OpenGL::
     CreateRenderingAPI() const {
-    return std::make_unique<jleRenderingAPI_OpenGL>();
+    return std::make_unique<jleRendering>();
 }
 
-std::unique_ptr<jleQuadRendering_OpenGL> jleRenderingFactory_OpenGL::
+std::unique_ptr<jleQuadRendering> jleRenderingFactory_OpenGL::
     CreateQuadRendering() const {
     LOG_VERBOSE << "Factory creating quad rendering";
-    return std::make_unique<jleQuadRendering_OpenGL>();
+    return std::make_unique<jleQuadRendering>();
 }
 
-std::unique_ptr<jleTextRendering_OpenGL> jleRenderingFactory_OpenGL::
+std::unique_ptr<jleTextRendering> jleRenderingFactory_OpenGL::
     CreateTextRendering() const {
-    return std::make_unique<jleTextRendering_OpenGL>();
+    return std::make_unique<jleTextRendering>();
 }
 
 std::unique_ptr<jleFramebufferInterface> jleRenderingFactory_OpenGL::

@@ -6,13 +6,13 @@
 
 class jleRenderingFactory_OpenGL : public jleRenderingFactoryInterface {
 public:
-    [[nodiscard]] std::unique_ptr<jleRenderingAPI_OpenGL> CreateRenderingAPI()
+    [[nodiscard]] std::unique_ptr<jleRendering> CreateRenderingAPI()
         const override;
 
-    [[nodiscard]] std::unique_ptr<jleQuadRendering_OpenGL> CreateQuadRendering()
+    [[nodiscard]] std::unique_ptr<jleQuadRendering> CreateQuadRendering()
         const override;
 
-    [[nodiscard]] std::unique_ptr<jleTextRendering_OpenGL> CreateTextRendering()
+    [[nodiscard]] std::unique_ptr<jleTextRendering> CreateTextRendering()
         const override;
 
     [[nodiscard]] std::unique_ptr<jleFramebufferInterface> CreateFramebuffer(

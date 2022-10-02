@@ -5,9 +5,9 @@
 #include "jleWindowInternalAPIInterface.h"
 #include "jleWindowLinkableInterface.h"
 
-class jleKeyboardInputInternal : public jleWindowLinkableInterface {
+class jleKeyboardInput : public jleWindowLinkableInterface {
 public:
-    explicit jleKeyboardInputInternal(
+    explicit jleKeyboardInput(
         std::shared_ptr<jleWindowInternalAPIInterface> windowInternal);
 
     void LinkWindow(

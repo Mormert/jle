@@ -38,7 +38,7 @@ public:
 
     void InitWindow(
         jleWindowInitializerInterface& windowInitializer,
-        std::shared_ptr<jleRenderingAPI_OpenGL> internalRenderingAPI) override;
+        std::shared_ptr<jleRendering> internalRenderingAPI) override;
 
     unsigned int AddWindowResizeCallback(
         std::function<void(unsigned int, unsigned int)> callback) override;
@@ -86,7 +86,7 @@ private:
     inline static bool sPressedKeys[256];
     inline static bool sReleasedKeys[256];
 
-    std::shared_ptr<jleRenderingAPI_OpenGL> internalRenderingAPI;
+    std::shared_ptr<jleRendering> internalRenderingAPI;
 
     std::map<unsigned int, std::function<void(unsigned int, unsigned int)>>
         windowResizedCallbacks;

@@ -121,7 +121,7 @@ unsigned int jleWindow_GLFW_OpenGL::GetWindowWidth() {
 
 void jleWindow_GLFW_OpenGL::InitWindow(
     jleWindowInitializerInterface& windowInitializer,
-    std::shared_ptr<jleRenderingAPI_OpenGL> internalRenderingAPI) {
+    std::shared_ptr<jleRendering> internalRenderingAPI) {
     if (!internalRenderingAPI) {
         std::cerr << "Rendering API is null!\n";
         exit(1);
