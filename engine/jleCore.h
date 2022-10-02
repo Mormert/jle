@@ -68,8 +68,6 @@ private:
 
     static void main_loop() { jleCore::core->MainLoop(); }
 
-    const std::unique_ptr<jleWindowInitializerInterface> window_initializer;
-
     // Internal impl data
     struct jleCoreInternalImpl;
     std::unique_ptr<jleCoreInternalImpl> coreImpl;
