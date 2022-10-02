@@ -19,8 +19,7 @@
 #endif
 
 #include "3rdparty/git_submodules/glfw/include/GLFW/glfw3.h"
-#include "jleWindow_GLFW_OpenGL.h"
-
+#include "3rdparty/git_submodules/plog/include/plog/Log.h"
 #include "editor/jleConsoleEditorWindow.h"
 #include "editor/jleEditorContentBrowser.h"
 #include "editor/jleEditorGameControllerWidget.h"
@@ -30,11 +29,9 @@
 #include "editor/jleEditorWindowsPanel.h"
 #include "jleEngineSettingsWindow.h"
 #include "jleGameEditorWindow.h"
-
-#include "jleQuadRenderingInternalInterface.h"
+#include "jleQuadRendering_OpenGL.h"
 #include "jleSceneEditorWindow.h"
-
-#include "3rdparty/git_submodules/plog/include/plog/Log.h"
+#include "jleWindow_GLFW_OpenGL.h"
 
 jleEditor::jleEditor(std::shared_ptr<jleGameSettings> gs,
                      std::shared_ptr<jleEditorSettings> es)
@@ -120,8 +117,7 @@ void jleEditor::Render() {
     JLE_SCOPE_PROFILE(jleEditor::Render)
     if (!gameHalted && game) {
         // Render to game view
-        ((jleRenderingInternalAPIInterface *)rendering.get())
-            ->Render(*framebuffer_main, game->_mainCamera);
+        rendering->Render(*framebuffer_main, game->_mainCamera);
     }
 
     // _editorCamera.SetPerspectiveProjection(90.f,
@@ -132,11 +128,9 @@ void jleEditor::Render() {
                                             10000.f,
                                             -10000.f);
     // Render to editor scene view
-    ((jleRenderingInternalAPIInterface *)rendering.get())
-        ->Render(*_editorFramebuffer, _editorCamera);
+    rendering->Render(*_editorFramebuffer, _editorCamera);
 
-    ((jleRenderingInternalAPIInterface *)rendering.get())
-        ->ClearBuffersForNextFrame();
+    rendering->ClearBuffersForNextFrame();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

@@ -4,7 +4,7 @@
 #include "jleCore.h"
 #include "jleGameEngine.h"
 #include "jlePathDefines.h"
-#include "jleQuadRenderingInterface.h"
+#include "jleQuadRendering_OpenGL.h"
 #include "jleResourceHolder.h"
 
 #include <plog/Log.h>
@@ -34,7 +34,7 @@ void cSpritesheet::Update(float dt) {
         quad.depth = _transform->GetWorldDepth();
 
         if (quad.texture.get()) {
-            jleCore::core->rendering->quads->SendTexturedQuad(
+            jleCore::core->rendering->quads().SendTexturedQuad(
                 quad, RenderingMethod::Dynamic);
         }
     }

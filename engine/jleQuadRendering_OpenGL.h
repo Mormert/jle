@@ -2,43 +2,49 @@
 
 #pragma once
 
-#include "jleQuadRenderingInternalInterface.h"
-
 #include "glm/ext/scalar_constants.hpp"
+#include "jleCamera.h"
+#include "jleQuads.h"
 #include "jleShader.h"
-
+#include "jleTexture.h"
 #include <glm/glm.hpp>
+#include <memory>
+#include <utility>
 #include <vector>
 
-class jleQuadRendering_OpenGL : public jleQuadRenderingInternalInterface {
+enum class RenderingMethod { Dynamic, Static };
+
+class jleFramebufferInterface;
+
+class jleQuadRendering_OpenGL {
 public:
     static inline glm::vec3 lightPos{};
     static inline float depthRange{10000.f};
 
     jleQuadRendering_OpenGL();
 
-    ~jleQuadRendering_OpenGL() override;
+    ~jleQuadRendering_OpenGL();
 
     // Inherited via iQuadRenderingInternal
     void SendTexturedQuad(TexturedQuad& texturedQuad,
-                          RenderingMethod renderingMethod) override;
+                          RenderingMethod renderingMethod);
 
     void SendTexturedHeightQuad(TexturedHeightQuad& texturedHeightQuad,
-                                RenderingMethod renderingMethod) override;
+                                RenderingMethod renderingMethod);
 
     void SendColoredQuad(ColoredQuad& coloredQuad,
-                         RenderingMethod renderingMethod) override;
+                         RenderingMethod renderingMethod);
 
     void QueueRender(jleFramebufferInterface& framebufferOut,
-                     jleCamera& camera) override;
+                     jleCamera& camera);
 
     void Render(jleFramebufferInterface& framebufferOut,
                 jleCamera& camera,
                 const std::vector<TexturedQuad>& texturedQuads,
                 const std::vector<TexturedHeightQuad>& texturedHeightQuads,
-                bool clearDepthColor) override;
+                bool clearDepthColor);
 
-    void ClearBuffersForNextFrame() override;
+    void ClearBuffersForNextFrame();
 
 private:
     jleShader quadShader;

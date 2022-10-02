@@ -7,7 +7,7 @@
 #include "jleInputAPI.h"
 #include "jleNetworking.h"
 #include "jleProfiler.h"
-#include "jleRenderingAPIInterface.h"
+#include "jleRenderingAPI_OpenGL.h"
 #include "jleRenderingFactoryInterface.h"
 #include "jleTextureCreatorInterface.h"
 #include "jleTimerManager.h"
@@ -54,7 +54,7 @@ public:
     const std::shared_ptr<jleInputAPI> input;
 
     // Entry point for a user to do fundamental rendering
-    const std::shared_ptr<jleRenderingAPIInterface> rendering;
+    const std::shared_ptr<jleRenderingAPI_OpenGL> rendering;
 
     // Entry point for a user to create textures of different kinds
     const std::shared_ptr<jleTextureCreatorInterface> texture_creator;

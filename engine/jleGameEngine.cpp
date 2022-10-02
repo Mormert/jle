@@ -2,10 +2,9 @@
 
 #include "jleGameEngine.h"
 
-#include "jleRenderingInternalAPIInterface.h"
-
 #include "jleExplicitInclude.h"
 #include "jleMouseInputInternal.h"
+#include "jleRenderingAPI_OpenGL.h"
 
 #include <plog/Log.h>
 
@@ -82,8 +81,7 @@ void jleGameEngine::ExecuteNextFrame() {
     auto gameHaltedTemp = gameHalted;
     gameHalted = false;
     Update(status->GetDeltaFrameTime());
-    ((jleRenderingInternalAPIInterface *)rendering.get())
-        ->Render(*framebuffer_main, GetGameRef()._mainCamera);
+    rendering->Render(*framebuffer_main, GetGameRef()._mainCamera);
     gameHalted = gameHaltedTemp;
 }
 
@@ -154,10 +152,8 @@ void jleGameEngine::Update(float dt) {
 void jleGameEngine::Render() {
     JLE_SCOPE_PROFILE(jleGameEngine::Render)
     if (!gameHalted && game) {
-        ((jleRenderingInternalAPIInterface *)rendering.get())
-            ->Render(*framebuffer_main.get(), GetGameRef()._mainCamera);
-        ((jleRenderingInternalAPIInterface *)rendering.get())
-            ->ClearBuffersForNextFrame();
+        rendering->Render(*framebuffer_main.get(), GetGameRef()._mainCamera);
+        rendering->ClearBuffersForNextFrame();
         _fullscreen_renderer->RenderFramebufferFullscreen(
             *framebuffer_main.get(),
             window->GetWindowWidth(),
