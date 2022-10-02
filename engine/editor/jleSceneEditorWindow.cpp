@@ -8,7 +8,7 @@
 
 #include "cTransform.h"
 #include "glm/common.hpp"
-#include "jleQuadRenderingInternalInterface.h"
+#include "jleQuadRendering_OpenGL.h"
 #include "jleStaticOpenGLState.h"
 #include "jleWindowInternalAPIInterface.h"
 
@@ -119,14 +119,11 @@ void jleSceneEditorWindow::Update(jleGameEngine& ge) {
             _texturedQuad.x = transform->GetWorldX() - 64.f;
             _texturedQuad.y = transform->GetWorldY() - 64.f;
             std::vector<TexturedQuad> texturedQuads{_texturedQuad};
-            auto quadRenderer =
-                ((jleQuadRenderingInternalInterface *)(jleCore::core->rendering
-                                                           ->quads.get()));
-            quadRenderer->Render(*_framebuffer,
-                                 jleEditor::_editorCamera,
-                                 texturedQuads,
-                                 {},
-                                 false);
+            jleCore::core->rendering->quads().Render(*_framebuffer,
+                                                     jleEditor::_editorCamera,
+                                                     texturedQuads,
+                                                     {},
+                                                     false);
         }
     }
 

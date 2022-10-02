@@ -56,7 +56,7 @@ void cSpriteDepth::Update(float dt) {
     }
 
     if (quad.mtextureWithHeightmap->texture) {
-        jleCore::core->rendering->quads->SendTexturedHeightQuad(
+        jleCore::core->rendering->quads().SendTexturedHeightQuad(
             *&quad, RenderingMethod::Dynamic);
     }
 }

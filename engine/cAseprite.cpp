@@ -5,7 +5,7 @@
 #include "jleObject.h"
 #include "jlePath.h"
 #include "jlePathDefines.h"
-#include "jleQuadRenderingInterface.h"
+#include "jleQuadRendering_OpenGL.h"
 #include "jleResourceHolder.h"
 
 void cAseprite::Start() {
@@ -61,7 +61,7 @@ void cAseprite::Update(float dt) {
         quad.depth = _transform->GetWorldDepth();
 
         if (quad.texture.get()) {
-            jleCore::core->rendering->quads->SendTexturedQuad(
+            jleCore::core->rendering->quads().SendTexturedQuad(
                 quad, RenderingMethod::Dynamic);
         }
     }

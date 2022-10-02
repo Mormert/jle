@@ -42,16 +42,16 @@ void cText::Update(float dt) {
         return;
     }
 
-    jleCore::core->rendering->texts->SendFontText(_font.get(),
-                                                  _text,
-                                                  _fontSize,
-                                                  _transform->GetWorldX(),
-                                                  _transform->GetWorldY(),
-                                                  _transform->GetWorldDepth(),
-                                                  _colorR,
-                                                  _colorG,
-                                                  _colorB,
-                                                  _colorA);
+    jleCore::core->rendering->texts().SendFontText(_font.get(),
+                                                   _text,
+                                                   _fontSize,
+                                                   _transform->GetWorldX(),
+                                                   _transform->GetWorldY(),
+                                                   _transform->GetWorldDepth(),
+                                                   _colorR,
+                                                   _colorG,
+                                                   _colorB,
+                                                   _colorA);
 }
 
 void cText::SetText(const std::string& text) { _text = text; }

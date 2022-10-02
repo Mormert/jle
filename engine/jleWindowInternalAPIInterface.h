@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "jleRenderingInternalAPIInterface.h"
+#include "jleRenderingAPI_OpenGL.h"
 #include "jleWindowAPIInterface.h"
 #include "jleWindowInitializerInterface.h"
 
@@ -14,9 +14,9 @@ public:
     ~jleWindowInternalAPIInterface() override = default;
     ;
 
-    virtual void InitWindow(jleWindowInitializerInterface& windowInitializer,
-                            std::shared_ptr<jleRenderingInternalAPIInterface>
-                                internalRenderingAPI) = 0;
+    virtual void InitWindow(
+        jleWindowInitializerInterface& windowInitializer,
+        std::shared_ptr<jleRenderingAPI_OpenGL> internalRenderingAPI) = 0;
 
     virtual void UpdateWindow() = 0;
 

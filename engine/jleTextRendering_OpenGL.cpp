@@ -1,6 +1,8 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jleTextRendering_OpenGL.h"
+#include "jleFont.h"
+#include "jleFramebufferInterface.h"
 #include "jleProfiler.h"
 
 #ifdef __EMSCRIPTEN__

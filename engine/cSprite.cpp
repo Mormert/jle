@@ -41,7 +41,7 @@ void cSprite::Update(float dt) {
     quad.y = transform->GetWorldY();
 
     if (quad.texture.get()) {
-        jleCore::core->rendering->quads->SendTexturedQuad(
+        jleCore::core->rendering->quads().SendTexturedQuad(
             *&quad, RenderingMethod::Dynamic);
     }
 }

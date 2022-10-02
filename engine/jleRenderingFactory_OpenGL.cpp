@@ -11,18 +11,18 @@
 
 #include <memory>
 
-std::unique_ptr<jleRenderingAPIInterface> jleRenderingFactory_OpenGL::
+std::unique_ptr<jleRenderingAPI_OpenGL> jleRenderingFactory_OpenGL::
     CreateRenderingAPI() const {
     return std::make_unique<jleRenderingAPI_OpenGL>();
 }
 
-std::unique_ptr<jleQuadRenderingInterface> jleRenderingFactory_OpenGL::
+std::unique_ptr<jleQuadRendering_OpenGL> jleRenderingFactory_OpenGL::
     CreateQuadRendering() const {
     LOG_VERBOSE << "Factory creating quad rendering";
     return std::make_unique<jleQuadRendering_OpenGL>();
 }
 
-std::unique_ptr<jleTextRenderingInterface> jleRenderingFactory_OpenGL::
+std::unique_ptr<jleTextRendering_OpenGL> jleRenderingFactory_OpenGL::
     CreateTextRendering() const {
     return std::make_unique<jleTextRendering_OpenGL>();
 }

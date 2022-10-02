@@ -2,25 +2,34 @@
 
 #pragma once
 
+#include "jleCamera.h"
 #include "jleFrameBuffer_OpenGL.h"
-#include "jleRenderingInternalAPIInterface.h"
+#include "jleQuadRendering_OpenGL.h"
+#include "jleTextRendering_OpenGL.h"
 #include "jleWindowInitializerInterface.h"
+#include <memory>
 
-#include "jleFullscreenRendering_OpenGL.h"
+class jleRenderingFactoryInterface;
 
-class jleRenderingAPI_OpenGL : public jleRenderingInternalAPIInterface {
+class jleRenderingAPI_OpenGL {
 public:
-    ~jleRenderingAPI_OpenGL() override = default;
+    ~jleRenderingAPI_OpenGL() = default;
 
-    void Setup(const jleRenderingFactoryInterface& renderFactory) override;
+    void Setup(const jleRenderingFactoryInterface& renderFactory);
 
     void SetViewportDimensions(int x,
                                int y,
                                unsigned int width,
-                               unsigned int height) override;
+                               unsigned int height);
 
-    void Render(jleFramebufferInterface& framebufferOut,
-                jleCamera& camera) override;
+    void Render(jleFramebufferInterface& framebufferOut, jleCamera& camera);
 
-    void ClearBuffersForNextFrame() override;
+    void ClearBuffersForNextFrame();
+
+    jleQuadRendering_OpenGL& quads();
+    jleTextRendering_OpenGL& texts();
+
+private:
+    std::unique_ptr<jleQuadRendering_OpenGL> _quads;
+    std::unique_ptr<jleTextRendering_OpenGL> _texts;
 };

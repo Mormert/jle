@@ -5,7 +5,7 @@
 #include "cTransform.h"
 #include "jleComponent.h"
 
-#include "jleQuadRenderingInterface.h"
+#include "jleQuads.h"
 #include "jleTexture.h"
 
 #include <memory>

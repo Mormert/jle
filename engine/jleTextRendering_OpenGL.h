@@ -2,17 +2,19 @@
 
 #pragma once
 
-#include "jleTextRenderingInternalInterface.h"
-
+#include "jleCamera.h"
+#include <string>
 #include <vector>
 
 struct GLTtext;
+class jleFont;
+class jleFramebufferInterface;
 
-class jleTextRendering_OpenGL : public jleTextRenderingInternalInterface {
+class jleTextRendering_OpenGL {
 public:
     jleTextRendering_OpenGL();
 
-    ~jleTextRendering_OpenGL() override;
+    ~jleTextRendering_OpenGL();
 
     void SendSimpleText(const std::string& text,
                         float x,
@@ -21,7 +23,7 @@ public:
                         float r,
                         float g,
                         float b,
-                        float a) override;
+                        float a);
 
     void SendFontText(jleFont *font,
                       const std::string& text,
@@ -32,12 +34,12 @@ public:
                       float r,
                       float g,
                       float b,
-                      float a) override;
+                      float a);
 
     void Render(jleFramebufferInterface& framebufferOut,
-                const jleCamera& camera) override;
+                const jleCamera& camera);
 
-    void ClearBuffersForNextFrame() override;
+    void ClearBuffersForNextFrame();
 
 private:
     struct jleSimpleTextData {

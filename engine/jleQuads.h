@@ -1,13 +1,7 @@
-// Copyright (c) 2022. Johan Lind
-
 #pragma once
 
 #include "jleTexture.h"
-
 #include <memory>
-#include <utility>
-
-enum class RenderingMethod { Dynamic, Static };
 
 struct Quad {
     float x = 0.f, y = 0.f;
@@ -16,15 +10,15 @@ struct Quad {
 
 struct TexturedQuad : public Quad {
     explicit TexturedQuad(std::shared_ptr<jleTexture> t)
-            : texture{std::move(t)} {}
+        : texture{std::move(t)} {}
 
     explicit TexturedQuad(std::shared_ptr<jleTexture> t,
                           int texX,
                           int texY,
                           unsigned int w,
                           unsigned int h)
-            : texture{std::move(t)}, textureX{texX}, textureY{texY}, width{w},
-              height{h} {}
+        : texture{std::move(t)}, textureX{texX}, textureY{texY}, width{w},
+          height{h} {}
 
     TexturedQuad() = default;
 
@@ -68,18 +62,4 @@ struct TexturedHeightQuad : public Quad {
 
 struct ColoredQuad : public Quad {
     unsigned char r{}, g{}, b{}, a{};
-};
-
-class jleQuadRenderingInterface {
-public:
-    virtual ~jleQuadRenderingInterface() = default;
-
-    virtual void SendTexturedQuad(TexturedQuad& texturedQuad,
-                                  RenderingMethod renderingMethod) = 0;
-
-    virtual void SendTexturedHeightQuad(TexturedHeightQuad& texturedHeightQuad,
-                                        RenderingMethod renderingMethod) = 0;
-
-    virtual void SendColoredQuad(ColoredQuad& coloredQuad,
-                                 RenderingMethod renderingMethod) = 0;
 };
