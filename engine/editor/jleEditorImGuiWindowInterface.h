@@ -16,7 +16,6 @@ public:
         : window_name{std::move(window_name)} {}
 
     virtual ~iEditorImGuiWindow() = default;
-    ;
 
     virtual void Update(jleGameEngine& ge) = 0;
 

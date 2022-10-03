@@ -17,14 +17,11 @@ void cSpriteDepth::CreateAndSetTextureFromPath(const std::string& pathDiffuse,
     }
 
     quad.mtextureWithHeightmap->texture =
-        jleCore::core->texture_creator->LoadTextureFromPath(
-            jleRelativePath{pathDiffuse});
+        jleTexture::FromPath(jleRelativePath{pathDiffuse});
     quad.mtextureWithHeightmap->heightmap =
-        jleCore::core->texture_creator->LoadTextureFromPath(
-            jleRelativePath{pathHeight});
+        jleTexture::FromPath(jleRelativePath{pathHeight});
     quad.mtextureWithHeightmap->normalmap =
-        jleCore::core->texture_creator->LoadTextureFromPath(
-            jleRelativePath{pathNormal});
+        jleTexture::FromPath(jleRelativePath{pathNormal});
 }
 
 void cSpriteDepth::SetRectangleDimensions(int width, int height) {

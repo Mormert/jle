@@ -26,8 +26,7 @@ void from_json(const nlohmann::json& j,
 void jleSpritesheet::LoadImage() {
     std::string pngPath = _pathJson.substr(0, _pathJson.find(".", 0)) + ".png";
 
-    _imageTexture = jleCore::core->texture_creator->LoadTextureFromPath(
-        jleRelativePath{pngPath});
+    _imageTexture = jleTexture::FromPath(jleRelativePath{pngPath});
 }
 
 bool jleSpritesheet::LoadFromFile(const std::string& path) {

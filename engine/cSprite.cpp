@@ -10,8 +10,7 @@ cSprite::cSprite(jleObject *owner, jleScene *scene)
     : jleComponent{owner, scene}, quad{nullptr} {}
 
 void cSprite::CreateAndSetTextureFromPath(const std::string& path) {
-    quad.texture = jleCore::core->texture_creator->LoadTextureFromPath(
-        jleRelativePath{path});
+    quad.texture = jleTexture::FromPath(jleRelativePath{path});
 }
 
 void cSprite::SetTexture(std::shared_ptr<jleTexture> texture) {

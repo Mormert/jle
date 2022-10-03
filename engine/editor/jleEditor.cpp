@@ -28,6 +28,7 @@
 #include "editor/jleEditorSceneObjectsWindow.h"
 #include "editor/jleEditorWindowsPanel.h"
 #include "jleEngineSettingsWindow.h"
+#include "jleFrameBuffer_OpenGL.h"
 #include "jleGameEditorWindow.h"
 #include "jleQuadRendering.h"
 #include "jleSceneEditorWindow.h"
@@ -49,10 +50,10 @@ void jleEditor::Start() {
         GetFramebufferDimensions(core_settings->windowSettings.windowWidth,
                                  core_settings->windowSettings.windowHeight);
     framebuffer_main =
-        renderingFactory->CreateFramebuffer(dims.first, dims.second);
+        std::make_shared<Framebuffer_OpenGL>(dims.first, dims.second);
 
     _editorFramebuffer =
-        renderingFactory->CreateFramebuffer(dims.first, dims.second);
+        std::make_shared<Framebuffer_OpenGL>(dims.first, dims.second);
 
     // Note: Important that menu comes first here, since the others are
     // dependent on the menu's dockspace.

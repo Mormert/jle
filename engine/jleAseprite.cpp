@@ -80,8 +80,8 @@ jleAseprite::jleAseprite(const std::string& path) {
 void jleAseprite::LoadImage() {
     std::filesystem::path p{_path};
     p.remove_filename();
-    _imageTexture = jleCore::core->texture_creator->LoadTextureFromPath(
-        jleRelativePath{p.string() + _meta._image});
+    _imageTexture =
+        jleTexture::FromPath(jleRelativePath{p.string() + _meta._image});
 }
 
 int jleAseprite::GetTotalAnimationTimeMs() {

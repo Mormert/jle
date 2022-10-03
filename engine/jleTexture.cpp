@@ -16,9 +16,9 @@
 #endif
 
 #include "jleImage.h"
+#include "jleResourceHolder.h"
 #include "jleStaticOpenGLState.h"
 #include "plog/Log.h"
-
 #include <iostream>
 #include <memory>
 
@@ -110,4 +110,19 @@ jleTexture::jleTexture(const jleImage& image) {
     }
     glBindTexture(GL_TEXTURE_2D, 0);
     jleStaticOpenGLState::globalActiveTexture = 0;
+}
+
+std::shared_ptr<jleTexture> jleTexture::FromPath(const jleRelativePath& path) {
+    if (!jleResourceHolder::IsResourceLoaded(path)) {
+
+        auto texture = std::make_shared<jleTexture>(
+            *jleResourceHolder::LoadResourceFromFile<jleImage>(path));
+
+        jleResourceHolder::StoreResource<jleTexture>(texture, path);
+
+        return texture;
+    }
+    else {
+        return jleResourceHolder::GetResource<jleTexture>(path);
+    }
 }

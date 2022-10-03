@@ -4,6 +4,7 @@
 
 #include "no_copy_no_move.h"
 
+#include "jlePath.h"
 #include <climits>
 #include <memory>
 #include <string>
@@ -16,6 +17,11 @@ class jleTexture {
 public:
     jleTexture() = default;
     explicit jleTexture(const jleImage& image);
+
+    // Utilizes the resource holder such that only one copy of the resource will
+    // exists, and if it does not exist, the program will construct it and store
+    // it for later use
+    static std::shared_ptr<jleTexture> FromPath(const jleRelativePath& path);
 
     ~jleTexture();
 
