@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "3rdparty/json.hpp"
+#include "json.hpp"
 #include <iostream>
 
 #include "jleCoreSettings.h"

@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jleEditorProfilerWindow.h"
-#include "3rdparty/ImGui/imgui.h"
+#include "ImGui/imgui.h"
 
 jleEditorProfilerWindow::jleEditorProfilerWindow(const std::string& window_name)
     : iEditorImGuiWindow{window_name} {}

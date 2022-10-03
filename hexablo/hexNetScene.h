@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef HEXABLO_HEXNETSCENE_H
-#define HEXABLO_HEXNETSCENE_H
+#pragma once
 
 #include "jleNetScene.h"
 #include "oFireball.h"
@@ -28,5 +27,3 @@ private:
     std::weak_ptr<oFireball> GetFireballFromId(const int id);
     std::map<int, std::weak_ptr<oFireball>> _fireballs;
 };
-
-#endif // HEXABLO_HEXNETSCENE_H

@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "3rdparty/ImGui/imgui.h"
-#include "3rdparty/git_submodules/glm/glm/glm.hpp"
+#include "ImGui/imgui.h"
+#include "glm/glm.hpp"
 
 #include <algorithm>
 #include <array>

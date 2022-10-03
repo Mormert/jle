@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef HEXABLO_HEXHELPERFUNCTIONS_H
-#define HEXABLO_HEXHELPERFUNCTIONS_H
+#pragma once
 
 class hexHelperFunctions {
 public:
@@ -10,5 +9,3 @@ public:
 
     [[nodiscard]] static int GetRandInt(int min, int max);
 };
-
-#endif // HEXABLO_HEXHELPERFUNCTIONS_H

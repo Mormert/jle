@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef HEXABLO_CUITRANSFORMUPDATER_H
-#define HEXABLO_CUITRANSFORMUPDATER_H
+#pragma once
 
 #include "cCamera.h"
 #include "cTransform.h"
@@ -36,5 +35,3 @@ private:
     int _x{}, _y{};
     jleGame& _gameRef;
 };
-
-#endif // HEXABLO_CUITRANSFORMUPDATER_H

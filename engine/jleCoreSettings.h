@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "jleEngineInternalAPIs.h"
 #include "jleWindowSettings.h"
+#include "json.hpp"
 
 struct jleEngineInternalAPISettings {
     enum class RenderingAPI {

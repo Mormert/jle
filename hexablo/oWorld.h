@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef HEXABLO_OWORLD_H
-#define HEXABLO_OWORLD_H
+#pragma once
 
 #include "hexHexagonItem.h"
 #include "jleAseprite.h"
@@ -97,5 +96,3 @@ private:
 void from_json(const nlohmann::json& j, oWorld::HexagonTile& w);
 
 void to_json(nlohmann::json& j, const oWorld::HexagonTile& w);
-
-#endif // HEXABLO_OWORLD_H

@@ -2,9 +2,9 @@
 
 #include "jleEditorGameControllerWidget.h"
 
-#include "3rdparty/ImGui/imgui.h"
+#include "ImGui/imgui.h"
 
-#include "3rdparty/git_submodules/plog/include/plog/Log.h"
+#include "plog/Log.h"
 
 jleEditorGameControllerWidget::jleEditorGameControllerWidget(
     const std::string& window_name)

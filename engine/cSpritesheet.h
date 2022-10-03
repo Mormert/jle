@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef JLE_CSPRITESHEET_H
-#define JLE_CSPRITESHEET_H
+#pragma once
 
 #include "cTransform.h"
 #include "jleComponent.h"
@@ -31,5 +30,3 @@ private:
     std::string _spritesheetPath;
     std::string _spriteName;
 };
-
-#endif // JLE_CSPRITESHEET_H

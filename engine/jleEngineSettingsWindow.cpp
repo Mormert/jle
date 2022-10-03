@@ -3,9 +3,9 @@
 #include "jleEngineSettingsWindow.h"
 #include "jleConfigUtils.h"
 
-#include "3rdparty/ImGui/imgui.h"
-#include "3rdparty/ImGui/imgui_impl_glfw.h"
-#include "3rdparty/ImGui/imgui_impl_opengl3.h"
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_glfw.h"
+#include "ImGui/imgui_impl_opengl3.h"
 
 jleEngineSettingsWindow::jleEngineSettingsWindow(
     const std::string& window_name,

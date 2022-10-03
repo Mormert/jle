@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef JLEPROFILER_H
-#define JLEPROFILER_H
+#pragma once
 
 #include "jlePathDefines.h"
 #include <chrono>
@@ -54,5 +53,3 @@ private:
 #else
 #define JLE_SCOPE_PROFILE(profile_name)
 #endif
-
-#endif // JLEPROFILER_H

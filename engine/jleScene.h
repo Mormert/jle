@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef JLE_SCENE_H
-#define JLE_SCENE_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -73,5 +72,3 @@ void to_json(nlohmann::json& j, jleScene& s);
 void from_json(const nlohmann::json& j, jleScene& s);
 
 #include "jleScene.inl"
-
-#endif // JLE_SCENE_H

@@ -2,8 +2,8 @@
 
 #include "jleEditorSceneObjectsWindow.h"
 
-#include "3rdparty/ImGui/imgui.h"
-#include "3rdparty/ImGui/imgui_stdlib.h"
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_stdlib.h"
 #include "jleNetScene.h"
 #include "jleTypeReflectionUtils.h"
 

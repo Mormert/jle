@@ -2,7 +2,7 @@
 
 #include "jleImage.h"
 
-#include "3rdparty/stb_image.h"
+#include "stb_image.h"
 
 #include "plog/Log.h"
 

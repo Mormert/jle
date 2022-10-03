@@ -4,7 +4,7 @@
 
 #include "jleGameEditorWindow.h"
 
-#include "3rdparty/ImGui/imgui.h"
+#include "ImGui/imgui.h"
 #include "plog/Log.h"
 
 jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string& window_name)

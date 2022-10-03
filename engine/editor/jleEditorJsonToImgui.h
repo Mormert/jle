@@ -8,13 +8,13 @@
 #include <utility>
 #include <vector>
 
-#include "3rdparty/ImGui/imgui.h"
-#include "3rdparty/ImGui/imgui_impl_glfw.h"
-#include "3rdparty/ImGui/imgui_impl_opengl3.h"
-#include "3rdparty/ImGui/imgui_stdlib.h"
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_glfw.h"
+#include "ImGui/imgui_impl_opengl3.h"
+#include "ImGui/imgui_stdlib.h"
 
-#include "3rdparty/git_submodules/plog/include/plog/Log.h"
-#include "3rdparty/json.hpp"
+#include "json.hpp"
+#include "plog/Log.h"
 
 class jleEditorJsonToImgui {
 public:

@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef HEXABLO_HEXHEXAGONFUNCTIONS_H
-#define HEXABLO_HEXHEXAGONFUNCTIONS_H
+#pragma once
 
 #include <glm/glm.hpp>
 
@@ -27,5 +26,3 @@ public:
 
     [[nodiscard]] static glm::ivec3 CubeRound(glm::vec3 fractionalCube);
 };
-
-#endif // HEXABLO_HEXHEXAGONFUNCTIONS_H

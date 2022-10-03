@@ -1,9 +1,9 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jleWindow.h"
+#include "initWindow.h"
 #include "jlePath.h"
 #include "jlePathDefines.h"
-#include "initWindow.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -15,7 +15,7 @@
 
 #include <iostream>
 
-#include "3rdparty/stb_image.h"
+#include "stb_image.h"
 
 jleWindow *jleWindow::activeWindow{nullptr};
 

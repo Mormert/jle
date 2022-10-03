@@ -21,7 +21,7 @@
 #define EGL_EGLEXT_PROTOTYPES
 #else
 
-#include "3rdparty/glad/glad.h"
+#include "glad/glad.h"
 
 #endif
 

@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef JLESPRITESHEET_H
-#define JLESPRITESHEET_H
+#pragma once
 
 #include "jleFileLoadInterface.h"
 #include "jleTexture.h"
@@ -39,5 +38,3 @@ void from_json(const nlohmann::json& j, jleSpritesheetEntity& s);
 
 void from_json(const nlohmann::json& j,
                jleSpritesheetEntity::jleSpritesheetEntityFrame& s);
-
-#endif // JLESPRITESHEET_H
