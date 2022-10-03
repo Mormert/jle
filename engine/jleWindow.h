@@ -9,9 +9,9 @@
 
 class GLFWwindow;
 
-class jleWindow_GLFW_OpenGL {
+class jleWindow {
 public:
-    ~jleWindow_GLFW_OpenGL();
+    ~jleWindow();
 
     static void error_callback(int error, const char *description);
 
@@ -65,7 +65,7 @@ public:
 
     std::pair<int, int> GetCursor();
 
-    static jleWindow_GLFW_OpenGL *activeWindow;
+    static jleWindow *activeWindow;
 
     GLFWwindow *GetGLFWWindow() { return nativeWindow; }
 

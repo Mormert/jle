@@ -4,14 +4,14 @@
 
 #include <memory>
 
-class jleWindow_GLFW_OpenGL;
+class jleWindow;
 
 class jleMouseInputInternal {
 public:
     explicit jleMouseInputInternal(
-        std::shared_ptr<jleWindow_GLFW_OpenGL> windowInternal);
+        std::shared_ptr<jleWindow> windowInternal);
 
-    void LinkWindow(std::shared_ptr<jleWindow_GLFW_OpenGL> windowInternal);
+    void LinkWindow(std::shared_ptr<jleWindow> windowInternal);
 
     int GetMouseX();
 
@@ -40,7 +40,7 @@ public:
     void SetIsEnabled(bool value);
 
 private:
-    std::shared_ptr<jleWindow_GLFW_OpenGL> windowInternal;
+    std::shared_ptr<jleWindow> windowInternal;
 
     int _screenBeginX{0}, _screenBeginY{0};
     int _screenWidth, _screenHeight;

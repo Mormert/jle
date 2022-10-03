@@ -3,12 +3,12 @@
 #pragma once
 
 #include "jleCamera.h"
-#include "jleFrameBuffer_OpenGL.h"
+#include "jleFrameBuffer.h"
 #include "jleQuadRendering.h"
 #include "jleTextRendering.h"
 #include <memory>
 
-class Framebuffer_OpenGL;
+class jleFramebuffer;
 
 class jleRendering {
 public:
@@ -21,7 +21,7 @@ public:
                                unsigned int width,
                                unsigned int height);
 
-    void Render(Framebuffer_OpenGL& framebufferOut, jleCamera& camera);
+    void Render(jleFramebuffer& framebufferOut, jleCamera& camera);
 
     void ClearBuffersForNextFrame();
 

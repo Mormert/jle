@@ -14,7 +14,7 @@
 
 enum class RenderingMethod { Dynamic, Static };
 
-class Framebuffer_OpenGL;
+class jleFramebuffer;
 
 class jleQuadRendering {
 public:
@@ -35,9 +35,9 @@ public:
     void SendColoredQuad(ColoredQuad& coloredQuad,
                          RenderingMethod renderingMethod);
 
-    void QueueRender(Framebuffer_OpenGL& framebufferOut, jleCamera& camera);
+    void QueueRender(jleFramebuffer& framebufferOut, jleCamera& camera);
 
-    void Render(Framebuffer_OpenGL& framebufferOut,
+    void Render(jleFramebuffer& framebufferOut,
                 jleCamera& camera,
                 const std::vector<TexturedQuad>& texturedQuads,
                 const std::vector<TexturedHeightQuad>& texturedHeightQuads,
@@ -70,7 +70,7 @@ private:
     void RenderCube(glm::mat4& model, jleShader& shader);
 
     jleShader shadowMappingShader;
-    std::unique_ptr<Framebuffer_OpenGL> shadowMapBuffer;
+    std::unique_ptr<jleFramebuffer> shadowMapBuffer;
 
     void RenderShadowCubes(glm::mat4& view);
     // ---

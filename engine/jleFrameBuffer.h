@@ -2,13 +2,13 @@
 
 #pragma once
 
-class Framebuffer_OpenGL {
+class jleFramebuffer {
 public:
-    Framebuffer_OpenGL(unsigned int width,
+    jleFramebuffer(unsigned int width,
                        unsigned int height,
                        bool shadowBuffer = false);
 
-    ~Framebuffer_OpenGL();
+    ~jleFramebuffer();
 
     void CreateFramebuffer(unsigned int width, unsigned int height);
 

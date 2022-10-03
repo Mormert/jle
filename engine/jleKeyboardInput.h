@@ -4,14 +4,14 @@
 
 #include <memory>
 
-class jleWindow_GLFW_OpenGL;
+class jleWindow;
 
 class jleKeyboardInput {
 public:
     explicit jleKeyboardInput(
-        std::shared_ptr<jleWindow_GLFW_OpenGL> windowInternal);
+        std::shared_ptr<jleWindow> windowInternal);
 
-    void LinkWindow(std::shared_ptr<jleWindow_GLFW_OpenGL> windowInternal);
+    void LinkWindow(std::shared_ptr<jleWindow> windowInternal);
 
     bool GetKeyPressed(char key);
 
@@ -22,7 +22,7 @@ public:
     void SetIsEnabled(bool value);
 
 private:
-    std::shared_ptr<jleWindow_GLFW_OpenGL> windowInternal;
+    std::shared_ptr<jleWindow> windowInternal;
 
     bool _isEnabled = true;
 };

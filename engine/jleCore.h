@@ -11,7 +11,7 @@
 
 #include <memory>
 
-class Framebuffer_OpenGL;
+class jleFramebuffer;
 
 struct CoreStatus_Internal {
 public:
@@ -50,7 +50,7 @@ public:
     static jleCore *core;
 
     // Entry point for a user to access the windowing API
-    const std::shared_ptr<jleWindow_GLFW_OpenGL> window;
+    const std::shared_ptr<jleWindow> window;
 
     // Entry point for a user to access the input API
     const std::shared_ptr<jleInputAPI> input;
