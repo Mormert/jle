@@ -9,9 +9,15 @@
 // hexagons where every coordinate is integer.
 class hexHexagonFunctions {
 public:
-    [[nodiscard]] static glm::ivec2 HexToPixel(int hexQ, int hexR, int hexSizeX, int hexSizeY);
+    [[nodiscard]] static glm::ivec2 HexToPixel(int hexQ,
+                                               int hexR,
+                                               int hexSizeX,
+                                               int hexSizeY);
 
-    [[nodiscard]] static glm::ivec2 PixelToHex(int pixelX, int pixelY, int hexSizeX, int hexSizeY);
+    [[nodiscard]] static glm::ivec2 PixelToHex(int pixelX,
+                                               int pixelY,
+                                               int hexSizeX,
+                                               int hexSizeY);
 
     [[nodiscard]] static glm::ivec2 CubeToAxial(glm::vec3 cube);
 
@@ -19,8 +25,7 @@ public:
 
     [[nodiscard]] static glm::ivec2 AxialRound(glm::vec3 hex);
 
-
     [[nodiscard]] static glm::ivec3 CubeRound(glm::vec3 fractionalCube);
 };
 
-#endif //HEXABLO_HEXHEXAGONFUNCTIONS_H
+#endif // HEXABLO_HEXHEXAGONFUNCTIONS_H

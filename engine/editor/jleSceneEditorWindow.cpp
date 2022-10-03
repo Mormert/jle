@@ -65,9 +65,7 @@ void jleSceneEditorWindow::Update(jleGameEngine& ge) {
         int32_t(cursorScreenPos.y) - viewport->Pos.y;
 
     const auto previousFrameCursorPos = _lastCursorPos;
-    _lastCursorPos =
-        std::static_pointer_cast<jleWindow>(jleCore::core->window)
-            ->GetCursor();
+    _lastCursorPos = jleCore::core->window->GetCursor();
     const int32_t mouseX = _lastCursorPos.first;
     const int32_t mouseY = _lastCursorPos.second;
     const int32_t mouseDeltaX = mouseX - previousFrameCursorPos.first;

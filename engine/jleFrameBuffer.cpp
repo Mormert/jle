@@ -19,8 +19,8 @@
 #include <iostream>
 
 jleFramebuffer::jleFramebuffer(unsigned int width,
-                                       unsigned int height,
-                                       bool shadowBuffer) {
+                               unsigned int height,
+                               bool shadowBuffer) {
     if (shadowBuffer) {
         CreateShadowFramebuffer(width, height);
     }
@@ -38,7 +38,7 @@ jleFramebuffer::~jleFramebuffer() {
 }
 
 void jleFramebuffer::CreateFramebuffer(unsigned int width,
-                                           unsigned int height) {
+                                       unsigned int height) {
     this->width = width;
     this->height = height;
 
@@ -84,7 +84,7 @@ void jleFramebuffer::CreateFramebuffer(unsigned int width,
 }
 
 void jleFramebuffer::ResizeFramebuffer(unsigned int width,
-                                           unsigned int height) {
+                                       unsigned int height) {
 
     // LOG_VERBOSE << "Resized Framebuffer " << framebuffer << ": " << width <<
     // ", " << height;
@@ -127,7 +127,7 @@ unsigned int jleFramebuffer::GetHeight() { return height; }
 unsigned int jleFramebuffer::GetTexture() { return texColorBuffer; }
 
 void jleFramebuffer::CreateShadowFramebuffer(unsigned int width,
-                                                 unsigned int height) {
+                                             unsigned int height) {
     this->width = width;
     this->height = height;
 

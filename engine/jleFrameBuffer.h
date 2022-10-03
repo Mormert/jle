@@ -5,8 +5,8 @@
 class jleFramebuffer {
 public:
     jleFramebuffer(unsigned int width,
-                       unsigned int height,
-                       bool shadowBuffer = false);
+                   unsigned int height,
+                   bool shadowBuffer = false);
 
     ~jleFramebuffer();
 

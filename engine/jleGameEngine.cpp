@@ -105,9 +105,7 @@ void jleGameEngine::Start() {
     framebuffer_main =
         std::make_shared<jleFramebuffer>(dims.first, dims.second);
 
-    const auto& internalInputMouse =
-        std::static_pointer_cast<jleMouseInputInternal>(
-            jleCore::core->input->mouse);
+    const auto& internalInputMouse = jleCore::core->input->mouse;
     internalInputMouse->SetPixelatedScreenSize(dims.first, dims.second);
     internalInputMouse->SetScreenSize(
         core_settings->windowSettings.windowWidth,
