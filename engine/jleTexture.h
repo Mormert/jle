@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "no_copy_no_move.h"
-
 #include "jlePath.h"
 #include <climits>
 #include <memory>
@@ -12,9 +10,12 @@
 class jleImage;
 
 class jleTexture {
-    NO_COPY_NO_MOVE(jleTexture)
-
 public:
+    jleTexture(const jleTexture&) = delete;
+    jleTexture& operator=(const jleTexture&) = delete;
+    jleTexture(jleTexture&& e) = delete;
+    jleTexture& operator=(jleTexture&& e) = delete;
+
     jleTexture() = default;
     explicit jleTexture(const jleImage& image);
 
