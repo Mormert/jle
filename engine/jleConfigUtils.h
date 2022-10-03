@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "json.hpp"
+#include "plog/Log.h"
 #include <fstream>
 
 namespace cfg {

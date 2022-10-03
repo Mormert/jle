@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef JLETYPEREFLECTIONUTILS_H
-#define JLETYPEREFLECTIONUTILS_H
+#pragma once
 
 #include <cassert>
 #include <functional>
@@ -77,5 +76,3 @@ public:
 };
 
 #include "jleTypeReflectionUtils.inl"
-
-#endif // JLETYPEREFLECTIONUTILS_H

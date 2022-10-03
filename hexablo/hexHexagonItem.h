@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef HEXABLO_HEXHEXAGONITEM_H
-#define HEXABLO_HEXHEXAGONITEM_H
+#pragma once
 
 #include "json.hpp"
 #include <glm/glm.hpp>
@@ -26,5 +25,3 @@ private:
 
 void to_json(nlohmann::json& j, const hexHexagonItem& h);
 void from_json(const nlohmann::json& j, hexHexagonItem& h);
-
-#endif // HEXABLO_HEXHEXAGONITEM_H

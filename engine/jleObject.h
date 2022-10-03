@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef JLE_OBJECT
-#define JLE_OBJECT
+#pragma once
 
 #include <memory>
 #include <optional>
@@ -9,9 +8,9 @@
 
 #include "jleTypeReflectionUtils.h"
 
-#include "3rdparty/json.hpp"
 #include "jleJson.h"
 #include "jlePath.h"
+#include "json.hpp"
 
 class jleScene;
 
@@ -144,5 +143,3 @@ void to_json(nlohmann::json& j, const std::shared_ptr<jleObject>& o);
 void from_json(const nlohmann::json& j, std::shared_ptr<jleObject>& o);
 
 #include "jleObject.inl"
-
-#endif // JLE_OBJECT

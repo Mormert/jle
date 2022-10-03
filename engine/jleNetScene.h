@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef JLENETSCENE_H
-#define JLENETSCENE_H
+#pragma once
 
 #include "jleNetworking.h"
 #include "jleScene.h"
@@ -45,5 +44,3 @@ protected:
 
     bool _isHost = false;
 };
-
-#endif // JLENETSCENE_H

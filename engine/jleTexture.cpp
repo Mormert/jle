@@ -2,7 +2,7 @@
 
 #include "jleTexture.h"
 
-#include "3rdparty/stb_image.h"
+#include "stb_image.h"
 
 #ifdef __EMSCRIPTEN__
 #include <GLES3/gl3.h>

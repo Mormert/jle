@@ -1,13 +1,11 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jleCore.h"
-#include "jleSoLoud.h"
-
+#include "jleFont.h"
 #include "jleKeyboardInput.h"
 #include "jleMouseInput.h"
-
-#include "jleFont.h"
 #include "jleRendering.h"
+#include "jleSoLoud.h"
 #include "jleStaticOpenGLState.h"
 #include "jleTexture.h"
 #include "jleWindow.h"

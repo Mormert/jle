@@ -2,7 +2,7 @@
 
 #include "jleGameEditorWindow.h"
 
-#include "3rdparty/ImGui/imgui.h"
+#include "ImGui/imgui.h"
 
 #include "jleMouseInput.h"
 #include "jleStaticOpenGLState.h"
@@ -14,7 +14,7 @@
 #define EGL_EGLEXT_PROTOTYPES
 #else
 
-#include "3rdparty/glad/glad.h"
+#include "glad/glad.h"
 
 #endif
 

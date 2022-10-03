@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef EDITORRESOURCEVIEWER_H
-#define EDITORRESOURCEVIEWER_H
+#pragma once
 
 #include "jleEditorImGuiWindowInterface.h"
 
@@ -11,5 +10,3 @@ public:
 
     void Update(jleGameEngine& ge) override;
 };
-
-#endif // EDITORRESOURCEVIEWER_H

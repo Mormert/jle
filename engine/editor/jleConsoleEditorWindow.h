@@ -6,9 +6,9 @@
 
 #include "jleEditorImGuiWindowInterface.h"
 
-#include "3rdparty/ImGui/imgui.h"
+#include "ImGui/imgui.h"
 
-#include "3rdparty/git_submodules/plog/include/plog/Appenders/IAppender.h"
+#include "plog/Appenders/IAppender.h"
 
 class jleConsoleEditorWindow : public iEditorImGuiWindow,
                                public plog::IAppender {

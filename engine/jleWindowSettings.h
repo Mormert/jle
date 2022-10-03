@@ -4,7 +4,7 @@
 
 #include "jlePathDefines.h"
 
-#include "3rdparty/json.hpp"
+#include "json.hpp"
 
 #include <string>
 

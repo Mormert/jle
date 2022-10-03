@@ -2,8 +2,8 @@
 
 #include "jleConsoleEditorWindow.h"
 
-#include "3rdparty/ImGui/imgui.h"
-#include "3rdparty/git_submodules/plog/include/plog/Formatters/FuncMessageFormatter.h"
+#include "ImGui/imgui.h"
+#include "plog/Formatters/FuncMessageFormatter.h"
 
 #include <algorithm>
 #include <locale>

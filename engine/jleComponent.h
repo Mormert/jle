@@ -5,7 +5,7 @@
 #include "jleJson.h"
 #include "jleTypeReflectionUtils.h"
 
-#include "3rdparty/json.hpp"
+#include "json.hpp"
 
 #include <string_view>
 

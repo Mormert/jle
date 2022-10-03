@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jleEditorResourceViewer.h"
-#include "3rdparty/ImGui/imgui.h"
+#include "ImGui/imgui.h"
 #include "jleResourceHolder.h"
 
 void jleEditorResourceViewer::Update(jleGameEngine& ge) {

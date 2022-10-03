@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef JLEPATH_H
-#define JLEPATH_H
+#pragma once
 
 #include <string>
 
@@ -53,5 +52,3 @@ public:
 private:
     std::string _absolutePath;
 };
-
-#endif // JLEPATH_H

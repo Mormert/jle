@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef EDITORPROFILERWINDOW_H
-#define EDITORPROFILERWINDOW_H
+#pragma once
 
 #include "jleEditorImGuiWindowInterface.h"
 #include "jleProfiler.h"
@@ -15,5 +14,3 @@ public:
 private:
     void DrawProfilerRecursive(uint32_t index);
 };
-
-#endif // EDITORPROFILERWINDOW_H

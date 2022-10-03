@@ -4,9 +4,9 @@
 
 #include "jlePathDefines.h"
 
-#include "3rdparty/ImGui/imgui.h"
-#include "3rdparty/ImGui/imgui_impl_glfw.h"
-#include "3rdparty/ImGui/imgui_impl_opengl3.h"
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_glfw.h"
+#include "ImGui/imgui_impl_opengl3.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -18,8 +18,7 @@
 
 #endif
 
-#include "3rdparty/git_submodules/glfw/include/GLFW/glfw3.h"
-#include "3rdparty/git_submodules/plog/include/plog/Log.h"
+#include "GLFW/glfw3.h"
 #include "editor/jleConsoleEditorWindow.h"
 #include "editor/jleEditorContentBrowser.h"
 #include "editor/jleEditorGameControllerWidget.h"
@@ -33,6 +32,7 @@
 #include "jleQuadRendering.h"
 #include "jleSceneEditorWindow.h"
 #include "jleWindow.h"
+#include "plog/Log.h"
 
 jleEditor::jleEditor(std::shared_ptr<jleGameSettings> gs,
                      std::shared_ptr<jleEditorSettings> es)

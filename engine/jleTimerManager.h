@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#ifndef JLETIMERMANAGER_H
-#define JLETIMERMANAGER_H
+#pragma once
 
 #include <map>
 #include <memory>
@@ -46,5 +45,3 @@ private:
 
     std::map<double, jleTimerManagerFunctionWeakData> _functionsWeakData;
 };
-
-#endif // JLETIMERMANAGER_H
