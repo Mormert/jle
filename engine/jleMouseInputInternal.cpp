@@ -2,17 +2,17 @@
 
 #include "jleMouseInputInternal.h"
 
-#include "jleWindow_GLFW_OpenGL.h"
+#include "jleWindow.h"
 #include <GLFW/glfw3.h>
 #include <utility>
 
 jleMouseInputInternal::jleMouseInputInternal(
-    std::shared_ptr<jleWindow_GLFW_OpenGL> windowInternal) {
+    std::shared_ptr<jleWindow> windowInternal) {
     this->windowInternal = std::move(windowInternal);
 }
 
 void jleMouseInputInternal::LinkWindow(
-    std::shared_ptr<jleWindow_GLFW_OpenGL> windowInternal) {
+    std::shared_ptr<jleWindow> windowInternal) {
     this->windowInternal = windowInternal;
 }
 

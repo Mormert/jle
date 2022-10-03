@@ -28,11 +28,11 @@
 #include "editor/jleEditorSceneObjectsWindow.h"
 #include "editor/jleEditorWindowsPanel.h"
 #include "jleEngineSettingsWindow.h"
-#include "jleFrameBuffer_OpenGL.h"
+#include "jleFrameBuffer.h"
 #include "jleGameEditorWindow.h"
 #include "jleQuadRendering.h"
 #include "jleSceneEditorWindow.h"
-#include "jleWindow_GLFW_OpenGL.h"
+#include "jleWindow.h"
 
 jleEditor::jleEditor(std::shared_ptr<jleGameSettings> gs,
                      std::shared_ptr<jleEditorSettings> es)
@@ -50,10 +50,10 @@ void jleEditor::Start() {
         GetFramebufferDimensions(core_settings->windowSettings.windowWidth,
                                  core_settings->windowSettings.windowHeight);
     framebuffer_main =
-        std::make_shared<Framebuffer_OpenGL>(dims.first, dims.second);
+        std::make_shared<jleFramebuffer>(dims.first, dims.second);
 
     _editorFramebuffer =
-        std::make_shared<Framebuffer_OpenGL>(dims.first, dims.second);
+        std::make_shared<jleFramebuffer>(dims.first, dims.second);
 
     // Note: Important that menu comes first here, since the others are
     // dependent on the menu's dockspace.
@@ -185,7 +185,7 @@ void jleEditor::InitImgui() {
 
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(
-        std::static_pointer_cast<jleWindow_GLFW_OpenGL>(window)
+        std::static_pointer_cast<jleWindow>(window)
             ->GetGLFWWindow(),
         true);
 

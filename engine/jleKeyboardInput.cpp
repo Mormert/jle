@@ -1,16 +1,16 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jleKeyboardInput.h"
-#include "jleWindow_GLFW_OpenGL.h"
+#include "jleWindow.h"
 #include <GLFW/glfw3.h>
 
 jleKeyboardInput::jleKeyboardInput(
-    std::shared_ptr<jleWindow_GLFW_OpenGL> windowInternal) {
+    std::shared_ptr<jleWindow> windowInternal) {
     this->windowInternal = windowInternal;
 }
 
 void jleKeyboardInput::LinkWindow(
-    std::shared_ptr<jleWindow_GLFW_OpenGL> windowInternal) {
+    std::shared_ptr<jleWindow> windowInternal) {
     this->windowInternal = windowInternal;
 }
 

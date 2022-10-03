@@ -2,7 +2,7 @@
 
 #include "jleTextRendering.h"
 #include "jleFont.h"
-#include "jleFrameBuffer_OpenGL.h"
+#include "jleFrameBuffer.h"
 #include "jleProfiler.h"
 
 #ifdef __EMSCRIPTEN__
@@ -39,7 +39,7 @@ void jleTextRendering::SendSimpleText(const std::string& text,
     _simpleTextDatas.push_back(td);
 }
 
-void jleTextRendering::Render(Framebuffer_OpenGL& framebufferOut,
+void jleTextRendering::Render(jleFramebuffer& framebufferOut,
                               const jleCamera& camera) {
     JLE_SCOPE_PROFILE(jleTextRendering::Render)
     if (_simpleTextDatas.empty() && _fontTextDatas.empty()) {

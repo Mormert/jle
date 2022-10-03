@@ -1,6 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#include "jleFrameBuffer_OpenGL.h"
+#include "jleFrameBuffer.h"
 
 #ifdef __EMSCRIPTEN__
 #include <GLES3/gl3.h>
@@ -18,7 +18,7 @@
 
 #include <iostream>
 
-Framebuffer_OpenGL::Framebuffer_OpenGL(unsigned int width,
+jleFramebuffer::jleFramebuffer(unsigned int width,
                                        unsigned int height,
                                        bool shadowBuffer) {
     if (shadowBuffer) {
@@ -29,7 +29,7 @@ Framebuffer_OpenGL::Framebuffer_OpenGL(unsigned int width,
     }
 }
 
-Framebuffer_OpenGL::~Framebuffer_OpenGL() {
+jleFramebuffer::~jleFramebuffer() {
     glDeleteFramebuffers(1, &framebuffer);
     glDeleteRenderbuffers(1, &rbo);
     glDeleteTextures(1, &texColorBuffer);
@@ -37,7 +37,7 @@ Framebuffer_OpenGL::~Framebuffer_OpenGL() {
     std::cout << "Deleted Framebuffer with id " << framebuffer << "!\n";
 }
 
-void Framebuffer_OpenGL::CreateFramebuffer(unsigned int width,
+void jleFramebuffer::CreateFramebuffer(unsigned int width,
                                            unsigned int height) {
     this->width = width;
     this->height = height;
@@ -83,7 +83,7 @@ void Framebuffer_OpenGL::CreateFramebuffer(unsigned int width,
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Framebuffer_OpenGL::ResizeFramebuffer(unsigned int width,
+void jleFramebuffer::ResizeFramebuffer(unsigned int width,
                                            unsigned int height) {
 
     // LOG_VERBOSE << "Resized Framebuffer " << framebuffer << ": " << width <<
@@ -112,21 +112,21 @@ void Framebuffer_OpenGL::ResizeFramebuffer(unsigned int width,
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
-void Framebuffer_OpenGL::BindToFramebuffer() {
+void jleFramebuffer::BindToFramebuffer() {
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 }
 
-void Framebuffer_OpenGL::BindToDefaultFramebuffer() {
+void jleFramebuffer::BindToDefaultFramebuffer() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-unsigned int Framebuffer_OpenGL::GetWidth() { return width; }
+unsigned int jleFramebuffer::GetWidth() { return width; }
 
-unsigned int Framebuffer_OpenGL::GetHeight() { return height; }
+unsigned int jleFramebuffer::GetHeight() { return height; }
 
-unsigned int Framebuffer_OpenGL::GetTexture() { return texColorBuffer; }
+unsigned int jleFramebuffer::GetTexture() { return texColorBuffer; }
 
-void Framebuffer_OpenGL::CreateShadowFramebuffer(unsigned int width,
+void jleFramebuffer::CreateShadowFramebuffer(unsigned int width,
                                                  unsigned int height) {
     this->width = width;
     this->height = height;

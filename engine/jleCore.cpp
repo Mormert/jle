@@ -10,7 +10,7 @@
 #include "jleRendering.h"
 #include "jleStaticOpenGLState.h"
 #include "jleTexture.h"
-#include "jleWindow_GLFW_OpenGL.h"
+#include "jleWindow.h"
 
 #include <plog/Log.h>
 
@@ -24,11 +24,11 @@ jleCore *jleCore::core{nullptr};
 
 struct jleCore::jleCoreInternalImpl {
     std::shared_ptr<jleRendering> renderingInternal;
-    std::shared_ptr<jleWindow_GLFW_OpenGL> windowInternal;
+    std::shared_ptr<jleWindow> windowInternal;
     std::shared_ptr<CoreStatus_Internal> statusInternal;
 };
 jleCore::jleCore(const std::shared_ptr<jleCoreSettings>& cs)
-    : window{std::make_unique<jleWindow_GLFW_OpenGL>()},
+    : window{std::make_unique<jleWindow>()},
       input{std::make_shared<jleInputAPI>(
           std::make_shared<jleKeyboardInput>(window),
           std::make_shared<jleMouseInputInternal>(

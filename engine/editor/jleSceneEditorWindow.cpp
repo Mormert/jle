@@ -8,11 +8,11 @@
 
 #include "cTransform.h"
 #include "glm/common.hpp"
-#include "jleFrameBuffer_OpenGL.h"
+#include "jleFrameBuffer.h"
 #include "jleQuadRendering.h"
 #include "jleStaticOpenGLState.h"
 #include "jleTexture.h"
-#include "jleWindow_GLFW_OpenGL.h"
+#include "jleWindow.h"
 
 #ifdef __EMSCRIPTEN__
 #include <GLES3/gl3.h>
@@ -29,7 +29,7 @@
 
 jleSceneEditorWindow::jleSceneEditorWindow(
     const std::string& window_name,
-    std::shared_ptr<Framebuffer_OpenGL>& framebuffer)
+    std::shared_ptr<jleFramebuffer>& framebuffer)
     : iEditorImGuiWindow(window_name),
       _transformMarkerImage("EditorResources/icons/transform_marker.png") {
     _framebuffer = framebuffer;
@@ -66,7 +66,7 @@ void jleSceneEditorWindow::Update(jleGameEngine& ge) {
 
     const auto previousFrameCursorPos = _lastCursorPos;
     _lastCursorPos =
-        std::static_pointer_cast<jleWindow_GLFW_OpenGL>(jleCore::core->window)
+        std::static_pointer_cast<jleWindow>(jleCore::core->window)
             ->GetCursor();
     const int32_t mouseX = _lastCursorPos.first;
     const int32_t mouseY = _lastCursorPos.second;

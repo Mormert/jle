@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jleQuadRendering.h"
-#include "jleFrameBuffer_OpenGL.h"
+#include "jleFrameBuffer.h"
 #include "jlePathDefines.h"
 #include "jleProfiler.h"
 #include "plog/Log.h"
@@ -186,7 +186,7 @@ void jleQuadRendering::SendTexturedHeightQuad(
 void jleQuadRendering::SendColoredQuad(ColoredQuad& coloredQuad,
                                        RenderingMethod renderingMethod) {}
 
-void jleQuadRendering::QueueRender(Framebuffer_OpenGL& framebufferOut,
+void jleQuadRendering::QueueRender(jleFramebuffer& framebufferOut,
                                    jleCamera& camera) {
     Render(framebufferOut,
            camera,
@@ -201,7 +201,7 @@ void jleQuadRendering::ClearBuffersForNextFrame() {
 }
 
 void jleQuadRendering::Render(
-    Framebuffer_OpenGL& framebufferOut,
+    jleFramebuffer& framebufferOut,
     jleCamera& camera,
     const std::vector<TexturedQuad>& texturedQuads,
     const std::vector<TexturedHeightQuad>& texturedHeightQuads,

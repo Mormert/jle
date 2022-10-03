@@ -1,6 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#include "jleFullscreenRendering_OpenGL.h"
+#include "jleFullscreenRendering.h"
 
 #ifdef __EMSCRIPTEN__
 #include <GLES3/gl3.h>
@@ -13,7 +13,7 @@
 
 #endif
 
-#include "jleFrameBuffer_OpenGL.h"
+#include "jleFrameBuffer.h"
 #include "jlePathDefines.h"
 #include "jleStaticOpenGLState.h"
 #include <string>
@@ -27,7 +27,7 @@ constexpr float quadVertices[] =
         -1.0f, 1.0f, 0.0f, 1.0f,  1.0f,  -1.0f,
         1.0f,  0.0f, 1.0f, 1.0f,  1.0f,  1.0f};
 
-jleFullscreenRendering_OpenGL::jleFullscreenRendering_OpenGL()
+jleFullscreenRendering::jleFullscreenRendering()
     : quadScreenShader{
           std::string{JLE_ENGINE_PATH_SHADERS + "/quadScreen.vert"}.c_str(),
           std::string{JLE_ENGINE_PATH_SHADERS + "/quadScreen.frag"}.c_str()} {
@@ -50,13 +50,13 @@ jleFullscreenRendering_OpenGL::jleFullscreenRendering_OpenGL()
                           (void *)(2 * sizeof(float)));
 }
 
-jleFullscreenRendering_OpenGL::~jleFullscreenRendering_OpenGL() {
+jleFullscreenRendering::~jleFullscreenRendering() {
     glDeleteVertexArrays(1, &quadVAO);
     glDeleteBuffers(1, &quadVBO);
 }
 
-void jleFullscreenRendering_OpenGL::RenderFramebufferFullscreen(
-    Framebuffer_OpenGL& framebuffer,
+void jleFullscreenRendering::RenderFramebufferFullscreen(
+    jleFramebuffer& framebuffer,
     unsigned int screenWidth,
     unsigned int screenHeight) {
     // Back to default screen framebuffer
