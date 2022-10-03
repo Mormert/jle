@@ -4,7 +4,7 @@
 #include "jleSoLoud.h"
 
 #include "jleKeyboardInput.h"
-#include "jleMouseInputInternal.h"
+#include "jleMouseInput.h"
 
 #include "jleFont.h"
 #include "jleRendering.h"
@@ -31,7 +31,7 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings>& cs)
     : window{std::make_unique<jleWindow>()},
       input{std::make_shared<jleInputAPI>(
           std::make_shared<jleKeyboardInput>(window),
-          std::make_shared<jleMouseInputInternal>(
+          std::make_shared<jleMouseInput>(
 
               window))},
       rendering{std::make_shared<jleRendering>()},

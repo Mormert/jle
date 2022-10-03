@@ -1,22 +1,22 @@
 // Copyright (c) 2022. Johan Lind
 
-#include "jleMouseInputInternal.h"
+#include "jleMouseInput.h"
 
 #include "jleWindow.h"
 #include <GLFW/glfw3.h>
 #include <utility>
 
-jleMouseInputInternal::jleMouseInputInternal(
+jleMouseInput::jleMouseInput(
     std::shared_ptr<jleWindow> windowInternal) {
     this->windowInternal = std::move(windowInternal);
 }
 
-void jleMouseInputInternal::LinkWindow(
+void jleMouseInput::LinkWindow(
     std::shared_ptr<jleWindow> windowInternal) {
     this->windowInternal = windowInternal;
 }
 
-int jleMouseInputInternal::GetMouseX() {
+int jleMouseInput::GetMouseX() {
 #ifdef BUILD_EDITOR
     return windowInternal->GetCursor().first - _screenBeginX;
 #else
@@ -24,7 +24,7 @@ int jleMouseInputInternal::GetMouseX() {
 #endif
 }
 
-int jleMouseInputInternal::GetMouseY() {
+int jleMouseInput::GetMouseY() {
 #ifdef BUILD_EDITOR
     return windowInternal->GetCursor().second - _screenBeginY;
 #else
@@ -32,46 +32,46 @@ int jleMouseInputInternal::GetMouseY() {
 #endif
 }
 
-float jleMouseInputInternal::GetMouseXDelta() { return 0; }
+float jleMouseInput::GetMouseXDelta() { return 0; }
 
-float jleMouseInputInternal::GetMouseYDelta() { return 0; }
+float jleMouseInput::GetMouseYDelta() { return 0; }
 
-float jleMouseInputInternal::GetScrollX() {
+float jleMouseInput::GetScrollX() {
     return windowInternal->GetScrollX();
 }
 
-float jleMouseInputInternal::GetScrollY() {
+float jleMouseInput::GetScrollY() {
     return windowInternal->GetScrollY();
 }
 
-void jleMouseInputInternal::SetScreenBeginCoords(int x, int y) {
+void jleMouseInput::SetScreenBeginCoords(int x, int y) {
     _screenBeginX = x;
     _screenBeginY = y;
 }
 
-void jleMouseInputInternal::SetScreenSize(int width, int height) {
+void jleMouseInput::SetScreenSize(int width, int height) {
     _screenWidth = width;
     _screenHeight = height;
 }
 
-void jleMouseInputInternal::SetPixelatedScreenSize(int width, int height) {
+void jleMouseInput::SetPixelatedScreenSize(int width, int height) {
     _pixelatedScreenWidth = width;
     _pixelatedScreenHeight = height;
 }
 
-void jleMouseInputInternal::SetIsEnabled(bool value) { _isEnabled = value; }
+void jleMouseInput::SetIsEnabled(bool value) { _isEnabled = value; }
 
-int jleMouseInputInternal::GetPixelatedMouseX() {
+int jleMouseInput::GetPixelatedMouseX() {
     const float ratio = float(_pixelatedScreenWidth) / float(_screenWidth);
     return int(ratio * float(GetMouseX()));
 }
 
-int jleMouseInputInternal::GetPixelatedMouseY() {
+int jleMouseInput::GetPixelatedMouseY() {
     const float ratio = float(_pixelatedScreenHeight) / float(_screenHeight);
     return int(ratio * float(GetMouseY()));
 }
 
-bool jleMouseInputInternal::GetMouseClick(int button) {
+bool jleMouseInput::GetMouseClick(int button) {
     if (_isEnabled) {
         return windowInternal->GetMouseClick(button);
     }
