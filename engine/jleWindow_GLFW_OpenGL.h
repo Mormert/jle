@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "GLFW/glfw3.h"
 #include "jleRendering.h"
 #include "jleWindowSettings.h"
-
 #include <map>
 #include <memory>
+
+class GLFWwindow;
 
 class jleWindow_GLFW_OpenGL {
 public:
