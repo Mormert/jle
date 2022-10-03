@@ -34,6 +34,7 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings>& cs)
           std::make_shared<jleMouseInputInternal>(
 
               window))},
+      rendering{std::make_shared<jleRendering>()},
       status{std::make_shared<CoreStatus_Internal>()} {
     PLOG_INFO << "Starting the core";
     coreImpl = std::make_unique<jleCoreInternalImpl>();
