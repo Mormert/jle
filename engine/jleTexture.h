@@ -15,6 +15,7 @@ class jleTexture {
 
 public:
     jleTexture() = default;
+    explicit jleTexture(const jleImage& image);
 
     ~jleTexture();
 
@@ -30,10 +31,9 @@ public:
 
     int32_t GetHeight();
 
-    friend std::unique_ptr<jleTexture> FromImage(const jleImage& image);
+    unsigned int id();
 
 private:
-    int32_t width, height, nrChannels;
-
-    unsigned int texture_id = UINT_MAX; // OpenGL Texture ID
+    int32_t _width = 0, _height = 0, _nrChannels = 0;
+    unsigned int _id = UINT_MAX; // OpenGL Texture ID
 };

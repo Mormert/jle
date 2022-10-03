@@ -14,7 +14,6 @@ add_library(engine STATIC
         "jleScene.cpp"
         "jleTextRendering.cpp"
         "jleWindowInitializer_GLFW_OpenGL.cpp"
-        "jleWindowFactory_GLFW.cpp"
         "jleStaticOpenGLState.cpp"
         "jleGameEngine.cpp"
         "jleKeyboardInput.cpp"

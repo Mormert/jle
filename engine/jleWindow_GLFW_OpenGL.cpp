@@ -3,6 +3,7 @@
 #include "jleWindow_GLFW_OpenGL.h"
 #include "jlePath.h"
 #include "jlePathDefines.h"
+#include "jleWindowInitializer_GLFW_OpenGL.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -120,7 +121,6 @@ unsigned int jleWindow_GLFW_OpenGL::GetWindowWidth() {
 }
 
 void jleWindow_GLFW_OpenGL::InitWindow(
-    jleWindowInitializerInterface& windowInitializer,
     std::shared_ptr<jleRendering> internalRenderingAPI) {
     if (!internalRenderingAPI) {
         std::cerr << "Rendering API is null!\n";
@@ -144,10 +144,10 @@ void jleWindow_GLFW_OpenGL::InitWindow(
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     }
 
-    nativeWindow = static_cast<GLFWwindow *>(
-        windowInitializer.InitWindow(windowSettings.windowWidth,
-                                     windowSettings.windowHeight,
-                                     windowSettings.WindowTitle.c_str()));
+    nativeWindow = reinterpret_cast<GLFWwindow *>(
+        ::InitWindow(windowSettings.windowWidth,
+                     windowSettings.windowHeight,
+                     windowSettings.WindowTitle.c_str()));
 
     glfwSetKeyCallback(nativeWindow, key_callback);
     glfwSetScrollCallback(nativeWindow, scroll_callback);

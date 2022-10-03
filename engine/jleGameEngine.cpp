@@ -3,9 +3,10 @@
 #include "jleGameEngine.h"
 
 #include "jleExplicitInclude.h"
+#include "jleFrameBuffer_OpenGL.h"
+#include "jleFullscreenRendering_OpenGL.h"
 #include "jleMouseInputInternal.h"
 #include "jleRendering.h"
-
 #include <plog/Log.h>
 
 jleGameEngine::jleGameEngine(std::shared_ptr<jleGameSettings> gs)

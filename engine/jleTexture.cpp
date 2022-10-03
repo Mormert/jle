@@ -23,37 +23,38 @@
 #include <memory>
 
 jleTexture::~jleTexture() {
-    if (texture_id != UINT_MAX) {
-        glDeleteTextures(1, &texture_id);
+    if (_id != UINT_MAX) {
+        glDeleteTextures(1, &_id);
     }
-    std::cout << "Destroyed texture with id " << texture_id << '\n';
+    std::cout << "Destroyed texture with id " << _id << '\n';
 }
 
 bool jleTexture::IsActive() {
-    return jleStaticOpenGLState::globalActiveTexture == texture_id;
+    return jleStaticOpenGLState::globalActiveTexture == _id;
 }
 
 void jleTexture::SetToActiveTexture(int texture_slot) {
     glActiveTexture(GL_TEXTURE0 + texture_slot);
-    glBindTexture(GL_TEXTURE_2D, texture_id);
-    jleStaticOpenGLState::globalActiveTexture = texture_id;
+    glBindTexture(GL_TEXTURE_2D, _id);
+    jleStaticOpenGLState::globalActiveTexture = _id;
 }
 
-unsigned int jleTexture::GetTextureID() { return texture_id; }
+unsigned int jleTexture::GetTextureID() { return _id; }
 
-int32_t jleTexture::GetWidth() { return width; }
+int32_t jleTexture::GetWidth() { return _width; }
 
-int32_t jleTexture::GetHeight() { return height; }
+int32_t jleTexture::GetHeight() { return _height; }
 
-std::unique_ptr<jleTexture> FromImage(const jleImage& image) {
-    auto texture_opengl = std::make_unique<jleTexture>();
+unsigned int jleTexture::id() { return _id; }
 
-    texture_opengl->width = image.GetImageWidth();
-    texture_opengl->height = image.GetImageHeight();
-    texture_opengl->nrChannels = image.GetImageNrChannels();
+jleTexture::jleTexture(const jleImage& image) {
+    _width = image.GetImageWidth();
+    _height = image.GetImageHeight();
+    _nrChannels = image.GetImageNrChannels();
 
-    glGenTextures(1, &texture_opengl->texture_id);
-    glBindTexture(GL_TEXTURE_2D, texture_opengl->texture_id);
+    glGenTextures(1, &_id);
+
+    glBindTexture(GL_TEXTURE_2D, _id);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -70,7 +71,7 @@ std::unique_ptr<jleTexture> FromImage(const jleImage& image) {
         else if (image.GetImageNrChannels() == 4)
             format = GL_RGBA;
 
-        glBindTexture(GL_TEXTURE_2D, texture_opengl->texture_id);
+        glBindTexture(GL_TEXTURE_2D, _id);
         if (format == GL_RGB) {
             // Needed to load jpg images with different byte alignments
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -100,17 +101,13 @@ std::unique_ptr<jleTexture> FromImage(const jleImage& image) {
             GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-        PLOG_VERBOSE << "Generated OpenGL texture "
-                     << texture_opengl->texture_id << " ("
+        PLOG_VERBOSE << "Generated OpenGL texture " << _id << " ("
                      << image.GetImageNrChannels() << " channels)";
     }
     else {
-        PLOG_ERROR << "Failed to generate OpenGL texture "
-                   << texture_opengl->texture_id
+        PLOG_ERROR << "Failed to generate OpenGL texture " << _id
                    << " with path: " << image.GetPath();
     }
     glBindTexture(GL_TEXTURE_2D, 0);
     jleStaticOpenGLState::globalActiveTexture = 0;
-
-    return texture_opengl;
 }

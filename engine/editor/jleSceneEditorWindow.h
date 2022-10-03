@@ -4,8 +4,8 @@
 
 #include "editor/jleEditorImGuiWindowInterface.h"
 
-#include "jleFramebufferInterface.h"
 #include "jleGameEngine.h"
+#include "jleImage.h"
 
 class jleSceneEditorWindow : public iEditorImGuiWindow {
 public:

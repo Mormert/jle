@@ -13,9 +13,9 @@
 
 #endif
 
+#include "jleFrameBuffer_OpenGL.h"
 #include "jlePathDefines.h"
 #include "jleStaticOpenGLState.h"
-
 #include <string>
 
 constexpr float quadVertices[] =
@@ -56,7 +56,7 @@ jleFullscreenRendering_OpenGL::~jleFullscreenRendering_OpenGL() {
 }
 
 void jleFullscreenRendering_OpenGL::RenderFramebufferFullscreen(
-    jleFramebufferInterface& framebuffer,
+    Framebuffer_OpenGL& framebuffer,
     unsigned int screenWidth,
     unsigned int screenHeight) {
     // Back to default screen framebuffer

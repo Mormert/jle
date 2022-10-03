@@ -10,7 +10,8 @@
 #include "glm/common.hpp"
 #include "jleQuadRendering.h"
 #include "jleStaticOpenGLState.h"
-#include "jleWindowInternalAPIInterface.h"
+#include "jleTexture.h"
+#include "jleWindow_GLFW_OpenGL.h"
 
 #ifdef __EMSCRIPTEN__
 #include <GLES3/gl3.h>
@@ -32,8 +33,7 @@ jleSceneEditorWindow::jleSceneEditorWindow(
       _transformMarkerImage("EditorResources/icons/transform_marker.png") {
     _framebuffer = framebuffer;
     _transformMarkerTexture =
-        jleCore::core->texture_creator->CreateTextureFromImage(
-            _transformMarkerImage);
+        std::make_unique<jleTexture>(_transformMarkerImage);
 
     _texturedQuad.texture = _transformMarkerTexture;
     _texturedQuad.width = 128;

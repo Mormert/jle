@@ -15,30 +15,28 @@
 
 #include "jleProfiler.h"
 #include "jleQuadRendering.h"
-#include "jleRenderingFactoryInterface.h"
 #include "jleTextRendering.h"
 #include "plog/Log.h"
 
 void jleRendering::SetViewportDimensions(int x,
-                                                   int y,
-                                                   unsigned int width,
-                                                   unsigned int height) {
+                                         int y,
+                                         unsigned int width,
+                                         unsigned int height) {
     glViewport(x, y, static_cast<int>(width), static_cast<int>(height));
 }
 
-void jleRendering::Render(jleFramebufferInterface& framebufferOut,
-                                    jleCamera& camera) {
+void jleRendering::Render(Framebuffer_OpenGL& framebufferOut,
+                          jleCamera& camera) {
     JLE_SCOPE_PROFILE(jleRendering::Render)
     _quads->QueueRender(framebufferOut, camera);
     _texts->Render(framebufferOut, camera);
 }
 
-void jleRendering::Setup(
-    const jleRenderingFactoryInterface& renderFactory) {
+void jleRendering::Setup() {
     LOG_VERBOSE << "Creating text rendering";
-    this->_texts = renderFactory.CreateTextRendering();
+    this->_texts = std::make_unique<jleTextRendering>();
     LOG_VERBOSE << "Creating quad rendering";
-    this->_quads = renderFactory.CreateQuadRendering();
+    this->_quads = std::make_unique<jleQuadRendering>();
 }
 
 void jleRendering::ClearBuffersForNextFrame() {
@@ -46,6 +44,6 @@ void jleRendering::ClearBuffersForNextFrame() {
     _texts->ClearBuffersForNextFrame();
 }
 
-jleQuadRendering &jleRendering::quads() { return *_quads; }
+jleQuadRendering& jleRendering::quads() { return *_quads; }
 
-jleTextRendering &jleRendering::texts() { return *_texts; }
+jleTextRendering& jleRendering::texts() { return *_texts; }

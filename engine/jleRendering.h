@@ -8,20 +8,20 @@
 #include "jleTextRendering.h"
 #include <memory>
 
-class jleRenderingFactoryInterface;
+class Framebuffer_OpenGL;
 
 class jleRendering {
 public:
     ~jleRendering() = default;
 
-    void Setup(const jleRenderingFactoryInterface& renderFactory);
+    void Setup();
 
     void SetViewportDimensions(int x,
                                int y,
                                unsigned int width,
                                unsigned int height);
 
-    void Render(jleFramebufferInterface& framebufferOut, jleCamera& camera);
+    void Render(Framebuffer_OpenGL& framebufferOut, jleCamera& camera);
 
     void ClearBuffersForNextFrame();
 

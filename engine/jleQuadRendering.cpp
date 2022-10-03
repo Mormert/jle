@@ -173,8 +173,8 @@ jleQuadRendering::~jleQuadRendering() {
     glDeleteVertexArrays(1, &quadVAO_Instanced);
 }
 
-void jleQuadRendering::SendTexturedQuad(
-    TexturedQuad& texturedQuad, RenderingMethod renderingMethod) {
+void jleQuadRendering::SendTexturedQuad(TexturedQuad& texturedQuad,
+                                        RenderingMethod renderingMethod) {
     _queuedTexturedQuads.push_back(texturedQuad);
 }
 
@@ -184,11 +184,10 @@ void jleQuadRendering::SendTexturedHeightQuad(
 }
 
 void jleQuadRendering::SendColoredQuad(ColoredQuad& coloredQuad,
-                                              RenderingMethod renderingMethod) {
-}
+                                       RenderingMethod renderingMethod) {}
 
-void jleQuadRendering::QueueRender(
-    jleFramebufferInterface& framebufferOut, jleCamera& camera) {
+void jleQuadRendering::QueueRender(Framebuffer_OpenGL& framebufferOut,
+                                   jleCamera& camera) {
     Render(framebufferOut,
            camera,
            _queuedTexturedQuads,
@@ -202,7 +201,7 @@ void jleQuadRendering::ClearBuffersForNextFrame() {
 }
 
 void jleQuadRendering::Render(
-    jleFramebufferInterface& framebufferOut,
+    Framebuffer_OpenGL& framebufferOut,
     jleCamera& camera,
     const std::vector<TexturedQuad>& texturedQuads,
     const std::vector<TexturedHeightQuad>& texturedHeightQuads,
@@ -244,8 +243,7 @@ void jleQuadRendering::ProcessTexturedQuads(
     const std::vector<TexturedQuad>& texturedQuads, glm::mat4& view) {
     JLE_SCOPE_PROFILE(jleQuadRendering::ProcessTexturedQuads)
 
-    std::unordered_map<std::shared_ptr<jleTexture>,
-            std::vector<QuadData>>
+    std::unordered_map<std::shared_ptr<jleTexture>, std::vector<QuadData>>
         quadDataMap;
 
     for (auto&& quad : texturedQuads) {

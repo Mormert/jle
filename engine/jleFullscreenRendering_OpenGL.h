@@ -2,24 +2,23 @@
 
 #pragma once
 
-#include "jleFullscreenRenderingInterface.h"
-
 #include "no_copy_no_move.h"
 
 #include "jleShader.h"
 
-class jleFullscreenRendering_OpenGL : public jleFullscreenRenderingInterface {
+class Framebuffer_OpenGL;
+
+class jleFullscreenRendering_OpenGL {
 public:
     NO_COPY_NO_MOVE(jleFullscreenRendering_OpenGL)
 
     jleFullscreenRendering_OpenGL();
 
-    virtual ~jleFullscreenRendering_OpenGL();
+    ~jleFullscreenRendering_OpenGL();
 
-    virtual void RenderFramebufferFullscreen(
-        jleFramebufferInterface& framebuffer,
-        unsigned int screenWidth,
-        unsigned int screenHeight) override;
+    void RenderFramebufferFullscreen(Framebuffer_OpenGL& framebuffer,
+                                     unsigned int screenWidth,
+                                     unsigned int screenHeight);
 
 private:
     jleShader quadScreenShader;

@@ -8,24 +8,29 @@
 #include "jleProfiler.h"
 #include "jleRendering.h"
 #include "jleTimerManager.h"
-#include "jleWindowAPIInterface.h"
-#include "jleWindowFactoryInterface.h"
 #include "no_copy_no_move.h"
 
 #include <memory>
 
 class Framebuffer_OpenGL;
 
-struct jleCoreStatus {
-    virtual ~jleCoreStatus() = default;
+struct CoreStatus_Internal {
+public:
+    int GetFPS() { return fps; }
 
-    virtual int GetFPS() = 0;
+    float GetDeltaFrameTime() { return deltaTime; }
 
-    virtual float GetDeltaFrameTime() = 0;
+    float GetCurrentFrameTime() { return currentFrame; }
 
-    virtual float GetCurrentFrameTime() = 0;
+    float GetLastFrameTime() { return lastFrame; }
 
-    virtual float GetLastFrameTime() = 0;
+    void Refresh();
+
+private:
+    int fps = 0;
+    float deltaTime = 0;
+    float currentFrame = 0;
+    float lastFrame = 0;
 };
 
 // Core part of the jle engine
@@ -39,14 +44,11 @@ public:
 
     void Run();
 
-    const std::unique_ptr<jleRenderingFactoryInterface> renderingFactory;
-    const std::unique_ptr<jleWindowFactoryInterface> windowFactory;
-
     // Singleton
     static jleCore *core;
 
     // Entry point for a user to access the windowing API
-    const std::shared_ptr<jleWindowAPIInterface> window;
+    const std::shared_ptr<jleWindow_GLFW_OpenGL> window;
 
     // Entry point for a user to access the input API
     const std::shared_ptr<jleInputAPI> input;
@@ -55,7 +57,7 @@ public:
     const std::shared_ptr<jleRendering> rendering;
 
     // Entry point for a user to get core status
-    const std::shared_ptr<jleCoreStatus> status;
+    const std::shared_ptr<CoreStatus_Internal> status;
 
     jleTimerManager& GetTimerManager();
 
