@@ -16,9 +16,11 @@ public:
 
     void Update(float dt) override;
 
-    void ToJson(nlohmann::json& j_out) override;
+    void ToJson(nlohmann::json &j_out) override;
 
-    void FromJson(const nlohmann::json& j_in) override;
+    void FromJson(const nlohmann::json &j_in) override;
+
+    void SetEntity(const std::string &entityName);
 
 private:
     std::shared_ptr<cTransform> _transform{nullptr};
@@ -29,4 +31,5 @@ private:
 
     std::string _spritesheetPath;
     std::string _spriteName;
+    glm::vec2 _offset{};
 };
