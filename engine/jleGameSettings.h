@@ -21,8 +21,10 @@ struct jleGameSettings : public jleCoreSettings {
     ~jleGameSettings() override = default;
 };
 
-#pragma region jleFramebufferSettings to /from json
+#pragma region jleFramebufferSettings to / from json
 using json = nlohmann::json;
+
+#pragma region FramebufferSettings to / from json
 
 inline void to_json(nlohmann::json& j,
                     const jleGameSettings::jleFramebufferSettings& fs) {
@@ -38,7 +40,7 @@ inline void from_json(const nlohmann::json& j,
 
 #pragma endregion
 
-#pragma region GameSettings to /from json
+#pragma region GameSettings to / from json
 
 inline void to_json(nlohmann::json& j, const jleGameSettings& gs) {
     j = (jleCoreSettings&)gs;
