@@ -2,15 +2,19 @@
 
 #pragma once
 
-#include "no_copy_no_move.h"
-
 #include "jleShader.h"
 
 class Framebuffer_OpenGL;
 
 class jleFullscreenRendering_OpenGL {
 public:
-    NO_COPY_NO_MOVE(jleFullscreenRendering_OpenGL)
+    jleFullscreenRendering_OpenGL(const jleFullscreenRendering_OpenGL&) =
+        delete;
+    jleFullscreenRendering_OpenGL& operator=(
+        const jleFullscreenRendering_OpenGL&) = delete;
+    jleFullscreenRendering_OpenGL(jleFullscreenRendering_OpenGL&& e) = delete;
+    jleFullscreenRendering_OpenGL& operator=(
+        jleFullscreenRendering_OpenGL&& e) = delete;
 
     jleFullscreenRendering_OpenGL();
 

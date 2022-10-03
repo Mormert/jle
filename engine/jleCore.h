@@ -8,7 +8,6 @@
 #include "jleProfiler.h"
 #include "jleRendering.h"
 #include "jleTimerManager.h"
-#include "no_copy_no_move.h"
 
 #include <memory>
 
@@ -36,7 +35,10 @@ private:
 // Core part of the jle engine
 class jleCore {
 public:
-    NO_COPY_NO_MOVE(jleCore)
+    jleCore(const jleCore&) = delete;
+    jleCore(jleCore&&) = delete;
+    jleCore& operator=(const jleCore&) = delete;
+    jleCore& operator=(jleCore&&) = delete;
 
     explicit jleCore(const std::shared_ptr<jleCoreSettings>& cs);
 
