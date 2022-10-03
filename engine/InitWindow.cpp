@@ -1,6 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#include "jleWindowInitializer.h"
+#include "initWindow.h"
 #include "jleStaticOpenGLState.h"
 
 #ifdef __EMSCRIPTEN__

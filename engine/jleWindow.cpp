@@ -3,7 +3,7 @@
 #include "jleWindow.h"
 #include "jlePath.h"
 #include "jlePathDefines.h"
-#include "jleWindowInitializer.h"
+#include "initWindow.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
