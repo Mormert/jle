@@ -17,8 +17,7 @@
 
 #include <iostream>
 
-InterfaceWindowPtr jleWindowInitializer_GLFW_OpenGL::InitWindow(
-    int width, int height, const char *title) {
+void *InitWindow(int width, int height, const char *title) {
 
 #ifdef BUILD_OPENGLES30
     // Runs on OpenGL ES 3.0

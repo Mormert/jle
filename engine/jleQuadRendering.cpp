@@ -1,6 +1,6 @@
 // Copyright (c) 2022. Johan Lind
 
-#include "jleQuadRendering_OpenGL.h"
+#include "jleQuadRendering.h"
 #include "jleFrameBuffer_OpenGL.h"
 #include "jlePathDefines.h"
 #include "jleProfiler.h"
@@ -30,7 +30,7 @@ struct QuadData {
     float tex_x, tex_y, tex_w, tex_h;
 };
 
-jleQuadRendering_OpenGL::jleQuadRendering_OpenGL()
+jleQuadRendering::jleQuadRendering()
     : quadShader{std::string{JLE_ENGINE_PATH_SHADERS + "/quad.vert"}.c_str(),
                  std::string{JLE_ENGINE_PATH_SHADERS + "/quad.frag"}.c_str()},
       quadShaderInstanced{
@@ -164,7 +164,7 @@ jleQuadRendering_OpenGL::jleQuadRendering_OpenGL()
     SetupShaders();
 }
 
-jleQuadRendering_OpenGL::~jleQuadRendering_OpenGL() {
+jleQuadRendering::~jleQuadRendering() {
     glDeleteBuffers(1, &quadVBO);
     glDeleteVertexArrays(1, &quadVAO);
 
@@ -173,22 +173,21 @@ jleQuadRendering_OpenGL::~jleQuadRendering_OpenGL() {
     glDeleteVertexArrays(1, &quadVAO_Instanced);
 }
 
-void jleQuadRendering_OpenGL::SendTexturedQuad(
-    TexturedQuad& texturedQuad, RenderingMethod renderingMethod) {
+void jleQuadRendering::SendTexturedQuad(TexturedQuad& texturedQuad,
+                                        RenderingMethod renderingMethod) {
     _queuedTexturedQuads.push_back(texturedQuad);
 }
 
-void jleQuadRendering_OpenGL::SendTexturedHeightQuad(
+void jleQuadRendering::SendTexturedHeightQuad(
     TexturedHeightQuad& texturedHeightQuad, RenderingMethod renderingMethod) {
     _queuedTexturedHeightQuads.push_back(texturedHeightQuad);
 }
 
-void jleQuadRendering_OpenGL::SendColoredQuad(ColoredQuad& coloredQuad,
-                                              RenderingMethod renderingMethod) {
-}
+void jleQuadRendering::SendColoredQuad(ColoredQuad& coloredQuad,
+                                       RenderingMethod renderingMethod) {}
 
-void jleQuadRendering_OpenGL::QueueRender(
-    jleFramebufferInterface& framebufferOut, jleCamera& camera) {
+void jleQuadRendering::QueueRender(Framebuffer_OpenGL& framebufferOut,
+                                   jleCamera& camera) {
     Render(framebufferOut,
            camera,
            _queuedTexturedQuads,
@@ -196,19 +195,19 @@ void jleQuadRendering_OpenGL::QueueRender(
            true);
 }
 
-void jleQuadRendering_OpenGL::ClearBuffersForNextFrame() {
+void jleQuadRendering::ClearBuffersForNextFrame() {
     _queuedTexturedQuads.clear();
     _queuedTexturedHeightQuads.clear();
 }
 
-void jleQuadRendering_OpenGL::Render(
-    jleFramebufferInterface& framebufferOut,
+void jleQuadRendering::Render(
+    Framebuffer_OpenGL& framebufferOut,
     jleCamera& camera,
     const std::vector<TexturedQuad>& texturedQuads,
     const std::vector<TexturedHeightQuad>& texturedHeightQuads,
     bool clearDepthColor) {
 
-    JLE_SCOPE_PROFILE(jleQuadRendering_OpenGL::Render)
+    JLE_SCOPE_PROFILE(jleQuadRendering::Render)
 
     const int viewportWidth = framebufferOut.GetWidth();
     const int viewportHeight = framebufferOut.GetHeight();
@@ -240,12 +239,11 @@ void jleQuadRendering_OpenGL::Render(
     framebufferOut.BindToDefaultFramebuffer();
 }
 
-void jleQuadRendering_OpenGL::ProcessTexturedQuads(
+void jleQuadRendering::ProcessTexturedQuads(
     const std::vector<TexturedQuad>& texturedQuads, glm::mat4& view) {
-    JLE_SCOPE_PROFILE(jleQuadRendering_OpenGL::ProcessTexturedQuads)
+    JLE_SCOPE_PROFILE(jleQuadRendering::ProcessTexturedQuads)
 
-    std::unordered_map<std::shared_ptr<jleTexture>,
-            std::vector<QuadData>>
+    std::unordered_map<std::shared_ptr<jleTexture>, std::vector<QuadData>>
         quadDataMap;
 
     for (auto&& quad : texturedQuads) {
@@ -301,11 +299,11 @@ void jleQuadRendering_OpenGL::ProcessTexturedQuads(
     }
 }
 
-void jleQuadRendering_OpenGL::ProcessTexturedHeightQuads(
+void jleQuadRendering::ProcessTexturedHeightQuads(
     const std::vector<TexturedHeightQuad>& texturedHeightQuads,
     glm::mat4& view,
     glm::vec3 viewPos) {
-    JLE_SCOPE_PROFILE(jleQuadRendering_OpenGL::ProcessTexturedHeightQuads)
+    JLE_SCOPE_PROFILE(jleQuadRendering::ProcessTexturedHeightQuads)
 
     std::unordered_map<std::shared_ptr<TextureWithHeightmap>,
                        std::vector<QuadData>>
@@ -372,7 +370,7 @@ void jleQuadRendering_OpenGL::ProcessTexturedHeightQuads(
     }
 }
 
-void jleQuadRendering_OpenGL::SetupShaders() {
+void jleQuadRendering::SetupShaders() {
 
     // Set up the angles on the "camera", as it was rendered in 3D software
     static const float xyAngle = 0.f;
@@ -411,7 +409,7 @@ void jleQuadRendering_OpenGL::SetupShaders() {
     quadHeightmapShaderInstanced.SetFloat("light.quadratic", 0.00032f);
 }
 
-void jleQuadRendering_OpenGL::RenderCube(glm::mat4& model, jleShader& shader) {
+void jleQuadRendering::RenderCube(glm::mat4& model, jleShader& shader) {
     static unsigned int cubeVAO = 0;
     static unsigned int cubeVBO = 0;
 
@@ -751,7 +749,7 @@ void jleQuadRendering_OpenGL::RenderCube(glm::mat4& model, jleShader& shader) {
     glBindVertexArray(0);
 }
 
-void jleQuadRendering_OpenGL::RenderShadowCubes(glm::mat4& view) {
+void jleQuadRendering::RenderShadowCubes(glm::mat4& view) {
 
     std::random_device rd;  // obtain a random number from hardware
     std::mt19937 gen(rd()); // seed the generator

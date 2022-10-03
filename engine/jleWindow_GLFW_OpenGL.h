@@ -2,16 +2,16 @@
 
 #pragma once
 
-#include "jleWindowInternalAPIInterface.h"
-
-#include "GLFW/glfw3.h"
-
+#include "jleRendering.h"
+#include "jleWindowSettings.h"
 #include <map>
 #include <memory>
 
-class jleWindow_GLFW_OpenGL : public jleWindowInternalAPIInterface {
+class GLFWwindow;
+
+class jleWindow_GLFW_OpenGL {
 public:
-    ~jleWindow_GLFW_OpenGL() override;
+    ~jleWindow_GLFW_OpenGL();
 
     static void error_callback(int error, const char *description);
 
@@ -26,46 +26,44 @@ public:
                                           int width,
                                           int height);
 
-    void SetWindowSettings(WindowSettings& windowSettings) override;
+    void SetWindowSettings(WindowSettings& windowSettings);
 
-    void DisplayCursor(bool enable) override;
+    void DisplayCursor(bool enable);
 
-    bool IsCursorDisplayed() override;
+    bool IsCursorDisplayed();
 
-    unsigned int GetWindowHeight() override;
+    unsigned int GetWindowHeight();
 
-    unsigned int GetWindowWidth() override;
+    unsigned int GetWindowWidth();
 
-    void InitWindow(
-        jleWindowInitializerInterface& windowInitializer,
-        std::shared_ptr<jleRenderingAPI_OpenGL> internalRenderingAPI) override;
+    void InitWindow(std::shared_ptr<jleRendering> internalRenderingAPI);
 
     unsigned int AddWindowResizeCallback(
-        std::function<void(unsigned int, unsigned int)> callback) override;
+        std::function<void(unsigned int, unsigned int)> callback);
 
-    void RemoveWindowResizeCallback(unsigned int callback_id) override;
+    void RemoveWindowResizeCallback(unsigned int callback_id);
 
-    void ExecuteResizeCallbacks(int w, int h) override;
+    void ExecuteResizeCallbacks(int w, int h);
 
-    void UpdateWindow() override;
+    void UpdateWindow();
 
-    bool WindowShouldClose() override;
+    bool WindowShouldClose();
 
-    float GetTime() override;
+    float GetTime();
 
-    bool GetMouseClick(int button) override;
+    bool GetMouseClick(int button);
 
-    bool GetKey(char key) override;
+    bool GetKey(char key);
 
-    bool GetKeyPressed(char key) override;
+    bool GetKeyPressed(char key);
 
-    bool GetKeyReleased(char key) override;
+    bool GetKeyReleased(char key);
 
-    float GetScrollX() override;
+    float GetScrollX();
 
-    float GetScrollY() override;
+    float GetScrollY();
 
-    std::pair<int, int> GetCursor() override;
+    std::pair<int, int> GetCursor();
 
     static jleWindow_GLFW_OpenGL *activeWindow;
 
@@ -86,7 +84,7 @@ private:
     inline static bool sPressedKeys[256];
     inline static bool sReleasedKeys[256];
 
-    std::shared_ptr<jleRenderingAPI_OpenGL> internalRenderingAPI;
+    std::shared_ptr<jleRendering> internalRenderingAPI;
 
     std::map<unsigned int, std::function<void(unsigned int, unsigned int)>>
         windowResizedCallbacks;

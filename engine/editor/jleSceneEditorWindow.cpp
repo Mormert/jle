@@ -8,9 +8,11 @@
 
 #include "cTransform.h"
 #include "glm/common.hpp"
-#include "jleQuadRendering_OpenGL.h"
+#include "jleFrameBuffer_OpenGL.h"
+#include "jleQuadRendering.h"
 #include "jleStaticOpenGLState.h"
-#include "jleWindowInternalAPIInterface.h"
+#include "jleTexture.h"
+#include "jleWindow_GLFW_OpenGL.h"
 
 #ifdef __EMSCRIPTEN__
 #include <GLES3/gl3.h>
@@ -27,13 +29,12 @@
 
 jleSceneEditorWindow::jleSceneEditorWindow(
     const std::string& window_name,
-    std::shared_ptr<jleFramebufferInterface>& framebuffer)
+    std::shared_ptr<Framebuffer_OpenGL>& framebuffer)
     : iEditorImGuiWindow(window_name),
       _transformMarkerImage("EditorResources/icons/transform_marker.png") {
     _framebuffer = framebuffer;
     _transformMarkerTexture =
-        jleCore::core->texture_creator->CreateTextureFromImage(
-            _transformMarkerImage);
+        std::make_unique<jleTexture>(_transformMarkerImage);
 
     _texturedQuad.texture = _transformMarkerTexture;
     _texturedQuad.width = 128;
@@ -64,9 +65,9 @@ void jleSceneEditorWindow::Update(jleGameEngine& ge) {
         int32_t(cursorScreenPos.y) - viewport->Pos.y;
 
     const auto previousFrameCursorPos = _lastCursorPos;
-    _lastCursorPos = std::static_pointer_cast<jleWindowInternalAPIInterface>(
-                         jleCore::core->window)
-                         ->GetCursor();
+    _lastCursorPos =
+        std::static_pointer_cast<jleWindow_GLFW_OpenGL>(jleCore::core->window)
+            ->GetCursor();
     const int32_t mouseX = _lastCursorPos.first;
     const int32_t mouseY = _lastCursorPos.second;
     const int32_t mouseDeltaX = mouseX - previousFrameCursorPos.first;

@@ -2,16 +2,16 @@
 
 #pragma once
 
-#include "jleWindowInternalAPIInterface.h"
-#include "jleWindowLinkableInterface.h"
+#include <memory>
 
-class jleMouseInputInternal : public jleWindowLinkableInterface {
+class jleWindow_GLFW_OpenGL;
+
+class jleMouseInputInternal {
 public:
     explicit jleMouseInputInternal(
-        std::shared_ptr<jleWindowInternalAPIInterface> windowInternal);
+        std::shared_ptr<jleWindow_GLFW_OpenGL> windowInternal);
 
-    void LinkWindow(
-        std::shared_ptr<jleWindowInternalAPIInterface> windowInternal) override;
+    void LinkWindow(std::shared_ptr<jleWindow_GLFW_OpenGL> windowInternal);
 
     int GetMouseX();
 
@@ -40,7 +40,7 @@ public:
     void SetIsEnabled(bool value);
 
 private:
-    std::shared_ptr<jleWindowInternalAPIInterface> windowInternal;
+    std::shared_ptr<jleWindow_GLFW_OpenGL> windowInternal;
 
     int _screenBeginX{0}, _screenBeginY{0};
     int _screenWidth, _screenHeight;

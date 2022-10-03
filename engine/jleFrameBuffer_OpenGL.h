@@ -2,32 +2,29 @@
 
 #pragma once
 
-#include "jleFramebufferInterface.h"
-
-class Framebuffer_OpenGL : public jleFramebufferInterface {
+class Framebuffer_OpenGL {
 public:
     Framebuffer_OpenGL(unsigned int width,
                        unsigned int height,
                        bool shadowBuffer = false);
 
-    ~Framebuffer_OpenGL() override;
+    ~Framebuffer_OpenGL();
 
-    void CreateFramebuffer(unsigned int width, unsigned int height) override;
+    void CreateFramebuffer(unsigned int width, unsigned int height);
 
-    void CreateShadowFramebuffer(unsigned int width,
-                                 unsigned int height) override;
+    void CreateShadowFramebuffer(unsigned int width, unsigned int height);
 
-    void ResizeFramebuffer(unsigned int width, unsigned int height) override;
+    void ResizeFramebuffer(unsigned int width, unsigned int height);
 
-    void BindToFramebuffer() override;
+    void BindToFramebuffer();
 
-    void BindToDefaultFramebuffer() override;
+    void BindToDefaultFramebuffer();
 
-    unsigned int GetWidth() override;
+    unsigned int GetWidth();
 
-    unsigned int GetHeight() override;
+    unsigned int GetHeight();
 
-    unsigned int GetTexture() override;
+    unsigned int GetTexture();
 
 private:
     unsigned int width{}, height{};

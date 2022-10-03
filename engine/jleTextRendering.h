@@ -8,13 +8,13 @@
 
 struct GLTtext;
 class jleFont;
-class jleFramebufferInterface;
+class Framebuffer_OpenGL;
 
-class jleTextRendering_OpenGL {
+class jleTextRendering {
 public:
-    jleTextRendering_OpenGL();
+    jleTextRendering();
 
-    ~jleTextRendering_OpenGL();
+    ~jleTextRendering();
 
     void SendSimpleText(const std::string& text,
                         float x,
@@ -36,8 +36,7 @@ public:
                       float b,
                       float a);
 
-    void Render(jleFramebufferInterface& framebufferOut,
-                const jleCamera& camera);
+    void Render(Framebuffer_OpenGL& framebufferOut, const jleCamera& camera);
 
     void ClearBuffersForNextFrame();
 

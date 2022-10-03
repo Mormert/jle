@@ -1,8 +1,8 @@
 // Copyright (c) 2022. Johan Lind
 
-#include "jleTextRendering_OpenGL.h"
+#include "jleTextRendering.h"
 #include "jleFont.h"
-#include "jleFramebufferInterface.h"
+#include "jleFrameBuffer_OpenGL.h"
 #include "jleProfiler.h"
 
 #ifdef __EMSCRIPTEN__
@@ -21,27 +21,27 @@
 
 #include <gltext/gltext.h>
 
-jleTextRendering_OpenGL::jleTextRendering_OpenGL() { gltInit(); }
+jleTextRendering::jleTextRendering() { gltInit(); }
 
-jleTextRendering_OpenGL::~jleTextRendering_OpenGL() { gltTerminate(); }
+jleTextRendering::~jleTextRendering() { gltTerminate(); }
 
-void jleTextRendering_OpenGL::SendSimpleText(const std::string& text,
-                                             float x,
-                                             float y,
-                                             float scale,
-                                             float r,
-                                             float g,
-                                             float b,
-                                             float a) {
+void jleTextRendering::SendSimpleText(const std::string& text,
+                                      float x,
+                                      float y,
+                                      float scale,
+                                      float r,
+                                      float g,
+                                      float b,
+                                      float a) {
     jleSimpleTextData td{x, y, scale, r, g, b, a};
     td.gltextPtr = gltCreateText();
     gltSetText(td.gltextPtr, text.c_str());
     _simpleTextDatas.push_back(td);
 }
 
-void jleTextRendering_OpenGL::Render(jleFramebufferInterface& framebufferOut,
-                                     const jleCamera& camera) {
-    JLE_SCOPE_PROFILE(jleTextRendering_OpenGL::Render)
+void jleTextRendering::Render(Framebuffer_OpenGL& framebufferOut,
+                              const jleCamera& camera) {
+    JLE_SCOPE_PROFILE(jleTextRendering::Render)
     if (_simpleTextDatas.empty() && _fontTextDatas.empty()) {
         return;
     }
@@ -80,7 +80,7 @@ void jleTextRendering_OpenGL::Render(jleFramebufferInterface& framebufferOut,
     framebufferOut.BindToDefaultFramebuffer();
 }
 
-void jleTextRendering_OpenGL::ClearBuffersForNextFrame() {
+void jleTextRendering::ClearBuffersForNextFrame() {
     // Clean up after rendering this frame
     for (auto&& textData : _simpleTextDatas) {
         gltDeleteText(textData.gltextPtr);
@@ -89,16 +89,16 @@ void jleTextRendering_OpenGL::ClearBuffersForNextFrame() {
     _fontTextDatas.clear();
 }
 
-void jleTextRendering_OpenGL::SendFontText(jleFont *font,
-                                           const std::string& text,
-                                           uint32_t fontSize,
-                                           float x,
-                                           float y,
-                                           float depth,
-                                           float r,
-                                           float g,
-                                           float b,
-                                           float a) {
+void jleTextRendering::SendFontText(jleFont *font,
+                                    const std::string& text,
+                                    uint32_t fontSize,
+                                    float x,
+                                    float y,
+                                    float depth,
+                                    float r,
+                                    float g,
+                                    float b,
+                                    float a) {
     jleFontTextData data;
     _fontTextDatas.push_back({x, y, depth, r, g, b, a, fontSize, font, text});
 }

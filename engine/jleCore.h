@@ -3,31 +3,34 @@
 #pragma once
 
 #include "jleCoreSettings.h"
-#include "jleFramebufferInterface.h"
 #include "jleInputAPI.h"
 #include "jleNetworking.h"
 #include "jleProfiler.h"
-#include "jleRenderingAPI_OpenGL.h"
-#include "jleRenderingFactoryInterface.h"
-#include "jleTextureCreatorInterface.h"
+#include "jleRendering.h"
 #include "jleTimerManager.h"
-#include "jleWindowAPIInterface.h"
-#include "jleWindowFactoryInterface.h"
-#include "jleWindowInitializerInterface.h"
 #include "no_copy_no_move.h"
 
 #include <memory>
 
-struct jleCoreStatus {
-    virtual ~jleCoreStatus() = default;
+class Framebuffer_OpenGL;
 
-    virtual int GetFPS() = 0;
+struct CoreStatus_Internal {
+public:
+    int GetFPS() { return fps; }
 
-    virtual float GetDeltaFrameTime() = 0;
+    float GetDeltaFrameTime() { return deltaTime; }
 
-    virtual float GetCurrentFrameTime() = 0;
+    float GetCurrentFrameTime() { return currentFrame; }
 
-    virtual float GetLastFrameTime() = 0;
+    float GetLastFrameTime() { return lastFrame; }
+
+    void Refresh();
+
+private:
+    int fps = 0;
+    float deltaTime = 0;
+    float currentFrame = 0;
+    float lastFrame = 0;
 };
 
 // Core part of the jle engine
@@ -41,26 +44,20 @@ public:
 
     void Run();
 
-    const std::unique_ptr<jleRenderingFactoryInterface> renderingFactory;
-    const std::unique_ptr<jleWindowFactoryInterface> windowFactory;
-
     // Singleton
     static jleCore *core;
 
     // Entry point for a user to access the windowing API
-    const std::shared_ptr<jleWindowAPIInterface> window;
+    const std::shared_ptr<jleWindow_GLFW_OpenGL> window;
 
     // Entry point for a user to access the input API
     const std::shared_ptr<jleInputAPI> input;
 
     // Entry point for a user to do fundamental rendering
-    const std::shared_ptr<jleRenderingAPI_OpenGL> rendering;
-
-    // Entry point for a user to create textures of different kinds
-    const std::shared_ptr<jleTextureCreatorInterface> texture_creator;
+    const std::shared_ptr<jleRendering> rendering;
 
     // Entry point for a user to get core status
-    const std::shared_ptr<jleCoreStatus> status;
+    const std::shared_ptr<CoreStatus_Internal> status;
 
     jleTimerManager& GetTimerManager();
 
@@ -72,8 +69,6 @@ private:
     bool running{false};
 
     static void main_loop() { jleCore::core->MainLoop(); }
-
-    const std::unique_ptr<jleWindowInitializerInterface> window_initializer;
 
     // Internal impl data
     struct jleCoreInternalImpl;

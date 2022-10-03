@@ -3,9 +3,11 @@
 #include "jleGameEngine.h"
 
 #include "jleExplicitInclude.h"
+#include "jleFrameBuffer_OpenGL.h"
+#include "jleFullscreenRendering_OpenGL.h"
 #include "jleMouseInputInternal.h"
-#include "jleRenderingAPI_OpenGL.h"
-
+#include "jleRendering.h"
+#include "jleWindow_GLFW_OpenGL.h"
 #include <plog/Log.h>
 
 jleGameEngine::jleGameEngine(std::shared_ptr<jleGameSettings> gs)
@@ -101,7 +103,7 @@ void jleGameEngine::Start() {
         GetFramebufferDimensions(core_settings->windowSettings.windowWidth,
                                  core_settings->windowSettings.windowHeight);
     framebuffer_main =
-        renderingFactory->CreateFramebuffer(dims.first, dims.second);
+        std::make_shared<Framebuffer_OpenGL>(dims.first, dims.second);
 
     const auto& internalInputMouse =
         std::static_pointer_cast<jleMouseInputInternal>(
@@ -111,7 +113,7 @@ void jleGameEngine::Start() {
         core_settings->windowSettings.windowWidth,
         core_settings->windowSettings.windowHeight);
 
-    _fullscreen_renderer = renderingFactory->CreateFullscreenRendering();
+    _fullscreen_renderer = std::make_unique<jleFullscreenRendering_OpenGL>();
 
     window->AddWindowResizeCallback(
         std::bind(&jleGameEngine::FramebufferResizeEvent,

@@ -7,7 +7,8 @@
 #include "jleGame.h"
 #include "jleGameSettings.h"
 
-#include "jleFullscreenRenderingInterface.h"
+class jleFullscreenRendering_OpenGL;
+class Framebuffer_OpenGL;
 
 class jleGameEngine : public jleCore {
 public:
@@ -21,7 +22,7 @@ public:
     }
 
     // Main framebuffer
-    std::shared_ptr<jleFramebufferInterface> framebuffer_main;
+    std::shared_ptr<Framebuffer_OpenGL> framebuffer_main;
 
     void SetGameDimsPixels(FIXED_AXIS fa, unsigned int pixels);
 
@@ -51,7 +52,7 @@ public:
 private:
     std::function<std::unique_ptr<jleGame>()> _gameCreator;
 
-    std::unique_ptr<jleFullscreenRenderingInterface> _fullscreen_renderer;
+    std::unique_ptr<jleFullscreenRendering_OpenGL> _fullscreen_renderer;
 
     void FramebufferResizeEvent(unsigned int width, unsigned int height);
 

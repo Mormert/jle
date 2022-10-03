@@ -5,7 +5,7 @@
 #include "jleObject.h"
 #include "jlePath.h"
 #include "jlePathDefines.h"
-#include "jleQuadRendering_OpenGL.h"
+#include "jleQuadRendering.h"
 #include "jleResourceHolder.h"
 
 void cAseprite::Start() {

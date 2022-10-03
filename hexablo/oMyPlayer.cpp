@@ -12,7 +12,7 @@
 #include <glm/glm.hpp>
 
 // TODO: Remove this include:
-#include "jleQuadRendering_OpenGL.h"
+#include "jleQuadRendering.h"
 
 void oMyPlayer::SetupDefaultObject() {
     oCharacter::SetupDefaultObject();
@@ -60,8 +60,8 @@ void oMyPlayer::Update(float dt) {
         LOGV << depthRng;
     }
 
-    jleQuadRendering_OpenGL::lightPos = _transform->GetWorldXYDepth() + glm::vec3{0, 0, lightposz};
-    jleQuadRendering_OpenGL::depthRange = depthRng;
+    jleQuadRendering::lightPos = _transform->GetWorldXYDepth() + glm::vec3{0, 0, lightposz};
+    jleQuadRendering::depthRange = depthRng;
 
 }
 

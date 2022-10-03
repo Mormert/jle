@@ -13,21 +13,19 @@
 
 jleEditorContentBrowser::jleEditorContentBrowser(const std::string& window_name)
     : iEditorImGuiWindow(window_name) {
-    _directoryIcon = jleCore::core->texture_creator->LoadTextureFromPath(
-        jleRelativePath{"ED:/icons/directory.png"});
-    _fileIcon = jleCore::core->texture_creator->LoadTextureFromPath(
-        jleRelativePath{"ED:/icons/files.png"});
-    _backDirectoryIcon = jleCore::core->texture_creator->LoadTextureFromPath(
-        jleRelativePath{"ED:/icons/back_directory.png"});
+    _directoryIcon =
+        jleTexture::FromPath(jleRelativePath{"ED:/icons/directory.png"});
+    _fileIcon = jleTexture::FromPath(jleRelativePath{"ED:/icons/files.png"});
+    _backDirectoryIcon =
+        jleTexture::FromPath(jleRelativePath{"ED:/icons/back_directory.png"});
 
-    _sceneFileIcon = jleCore::core->texture_creator->LoadTextureFromPath(
-        jleRelativePath{"ED:/icons/scene.png"});
+    _sceneFileIcon =
+        jleTexture::FromPath(jleRelativePath{"ED:/icons/scene.png"});
 
-    _imageFileIcon = jleCore::core->texture_creator->LoadTextureFromPath(
-        jleRelativePath{"ED:/icons/image.png"});
+    _imageFileIcon =
+        jleTexture::FromPath(jleRelativePath{"ED:/icons/image.png"});
 
-    _jsonFileIcon = jleCore::core->texture_creator->LoadTextureFromPath(
-        jleRelativePath{"ED:/icons/json.png"});
+    _jsonFileIcon = jleTexture::FromPath(jleRelativePath{"ED:/icons/json.png"});
 
     _selectedDirectory = GAME_RESOURCES_DIRECTORY;
 }

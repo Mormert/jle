@@ -4,14 +4,24 @@
 
 #include "no_copy_no_move.h"
 
+#include "jlePath.h"
 #include <climits>
+#include <memory>
 #include <string>
+
+class jleImage;
 
 class jleTexture {
     NO_COPY_NO_MOVE(jleTexture)
 
 public:
     jleTexture() = default;
+    explicit jleTexture(const jleImage& image);
+
+    // Utilizes the resource holder such that only one copy of the resource will
+    // exists, and if it does not exist, the program will construct it and store
+    // it for later use
+    static std::shared_ptr<jleTexture> FromPath(const jleRelativePath& path);
 
     ~jleTexture();
 
@@ -27,10 +37,9 @@ public:
 
     int32_t GetHeight();
 
+    unsigned int id();
+
 private:
-    friend class jleTextureCreator_OpenGL;
-
-    int32_t width, height, nrChannels;
-
-    unsigned int texture_id = UINT_MAX; // OpenGL Texture ID
+    int32_t _width = 0, _height = 0, _nrChannels = 0;
+    unsigned int _id = UINT_MAX; // OpenGL Texture ID
 };

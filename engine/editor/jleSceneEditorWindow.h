@@ -4,13 +4,13 @@
 
 #include "editor/jleEditorImGuiWindowInterface.h"
 
-#include "jleFramebufferInterface.h"
 #include "jleGameEngine.h"
+#include "jleImage.h"
 
 class jleSceneEditorWindow : public iEditorImGuiWindow {
 public:
     jleSceneEditorWindow(const std::string& window_name,
-                         std::shared_ptr<jleFramebufferInterface>& framebuffer);
+                         std::shared_ptr<Framebuffer_OpenGL>& framebuffer);
 
     void Update(jleGameEngine& ge) override;
 
@@ -19,7 +19,7 @@ private:
     std::pair<int32_t, int32_t> _lastCursorPos;
     bool _wasFocused = false;
 
-    std::shared_ptr<jleFramebufferInterface> _framebuffer;
+    std::shared_ptr<Framebuffer_OpenGL> _framebuffer;
     jleImage _transformMarkerImage;
     std::shared_ptr<jleTexture> _transformMarkerTexture;
     TexturedQuad _texturedQuad;

@@ -7,11 +7,11 @@
 #include "editor/jleEditorImGuiWindowInterface.h"
 #include "editor/jleEditorSettings.h"
 #include "jleGameEngine.h"
-
 #include "jleImage.h"
-
 #include <memory>
 #include <vector>
+
+class Framebuffer_OpenGL;
 
 class jleEditor : public jleGameEngine {
 public:
@@ -24,7 +24,7 @@ public:
 
     void Render() override;
 
-    std::shared_ptr<jleFramebufferInterface> _editorFramebuffer;
+    std::shared_ptr<Framebuffer_OpenGL> _editorFramebuffer;
 
     static inline jleCamera _editorCamera{jleCameraProjection::Orthographic};
 
