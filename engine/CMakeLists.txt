@@ -17,7 +17,7 @@ add_library(engine STATIC
         "jleStaticOpenGLState.cpp"
         "jleGameEngine.cpp"
         "jleKeyboardInput.cpp"
-        "jleMouseInputInternal.cpp"
+        "jleMouseInput.cpp"
         "jleFrameBuffer.cpp"
         "jleFullscreenRendering.cpp"
         "jleQuadRendering.cpp"

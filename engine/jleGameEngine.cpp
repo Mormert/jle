@@ -5,7 +5,7 @@
 #include "jleExplicitInclude.h"
 #include "jleFrameBuffer.h"
 #include "jleFullscreenRendering.h"
-#include "jleMouseInputInternal.h"
+#include "jleMouseInput.h"
 #include "jleRendering.h"
 #include "jleWindow.h"
 #include <plog/Log.h>
@@ -132,7 +132,7 @@ void jleGameEngine::FramebufferResizeEvent(unsigned int width,
     framebuffer_main->ResizeFramebuffer(dims.first, dims.second);
 
     const auto& internalInputMouse =
-        std::static_pointer_cast<jleMouseInputInternal>(
+        std::static_pointer_cast<jleMouseInput>(
             jleCore::core->input->mouse);
     internalInputMouse->SetPixelatedScreenSize(dims.first, dims.second);
     internalInputMouse->SetScreenSize(width, height);

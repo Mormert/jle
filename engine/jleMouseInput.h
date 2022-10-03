@@ -6,9 +6,9 @@
 
 class jleWindow;
 
-class jleMouseInputInternal {
+class jleMouseInput {
 public:
-    explicit jleMouseInputInternal(std::shared_ptr<jleWindow> windowInternal);
+    explicit jleMouseInput(std::shared_ptr<jleWindow> windowInternal);
 
     void LinkWindow(std::shared_ptr<jleWindow> windowInternal);
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "jleKeyboardInput.h"
-#include "jleMouseInputInternal.h"
+#include "jleMouseInput.h"
 
 #include <memory>
 #include <utility>
@@ -13,11 +13,11 @@ public:
     ~jleInputAPI() = default;
 
     jleInputAPI(std::shared_ptr<jleKeyboardInput> ki,
-                std::shared_ptr<jleMouseInputInternal> mi)
+                std::shared_ptr<jleMouseInput> mi)
         : keyboard{std::move(std::move(ki))}, mouse{std::move(std::move(mi))} {}
 
     std::shared_ptr<jleKeyboardInput> keyboard;
-    std::shared_ptr<jleMouseInputInternal> mouse;
+    std::shared_ptr<jleMouseInput> mouse;
 
     // Set to false if the input system should stop polling
     void SetInputEnabled(bool isEnabled) {

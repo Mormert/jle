@@ -4,7 +4,7 @@
 
 #include "3rdparty/ImGui/imgui.h"
 
-#include "jleMouseInputInternal.h"
+#include "jleMouseInput.h"
 #include "jleStaticOpenGLState.h"
 
 #ifdef __EMSCRIPTEN__
