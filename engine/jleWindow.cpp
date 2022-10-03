@@ -38,15 +38,15 @@ void jleWindow::key_callback(
 }
 
 void jleWindow::scroll_callback(GLFWwindow *window,
-                                            double xoffset,
-                                            double yoffset) {
+                                double xoffset,
+                                double yoffset) {
     activeWindow->currentScrollX = static_cast<float>(xoffset);
     activeWindow->currentScrollY = static_cast<float>(yoffset);
 }
 
 void jleWindow::framebuffer_size_callback(GLFWwindow *window,
-                                                      int width,
-                                                      int height) {
+                                          int width,
+                                          int height) {
     activeWindow->internalRenderingAPI->SetViewportDimensions(
         0,
         0,
@@ -79,17 +79,11 @@ int resize_canvas_js(int width, int height) {
 }
 #endif
 
-float jleWindow::GetTime() {
-    return static_cast<float>(glfwGetTime());
-}
+float jleWindow::GetTime() { return static_cast<float>(glfwGetTime()); }
 
-float jleWindow::GetScrollX() {
-    return activeWindow->currentScrollX;
-}
+float jleWindow::GetScrollX() { return activeWindow->currentScrollX; }
 
-float jleWindow::GetScrollY() {
-    return activeWindow->currentScrollY;
-}
+float jleWindow::GetScrollY() { return activeWindow->currentScrollY; }
 
 jleWindow::~jleWindow() {
     glfwDestroyWindow(nativeWindow);
@@ -116,12 +110,9 @@ unsigned int jleWindow::GetWindowHeight() {
     return windowSettings.windowHeight;
 }
 
-unsigned int jleWindow::GetWindowWidth() {
-    return windowSettings.windowWidth;
-}
+unsigned int jleWindow::GetWindowWidth() { return windowSettings.windowWidth; }
 
-void jleWindow::InitWindow(
-    std::shared_ptr<jleRendering> internalRenderingAPI) {
+void jleWindow::InitWindow(std::shared_ptr<jleRendering> internalRenderingAPI) {
     if (!internalRenderingAPI) {
         std::cerr << "Rendering API is null!\n";
         exit(1);
@@ -207,17 +198,11 @@ bool jleWindow::WindowShouldClose() {
     return glfwWindowShouldClose(nativeWindow);
 }
 
-bool jleWindow::GetKey(char key) {
-    return glfwGetKey(nativeWindow, key);
-}
+bool jleWindow::GetKey(char key) { return glfwGetKey(nativeWindow, key); }
 
-bool jleWindow::GetKeyPressed(char key) {
-    return sPressedKeys[key];
-}
+bool jleWindow::GetKeyPressed(char key) { return sPressedKeys[key]; }
 
-bool jleWindow::GetKeyReleased(char key) {
-    return sReleasedKeys[key];
-}
+bool jleWindow::GetKeyReleased(char key) { return sReleasedKeys[key]; }
 
 std::pair<int, int> jleWindow::GetCursor() {
     double x, y;
@@ -242,8 +227,7 @@ unsigned int jleWindow::AddWindowResizeCallback(
     return i;
 }
 
-void jleWindow::RemoveWindowResizeCallback(
-    unsigned int callback_id) {
+void jleWindow::RemoveWindowResizeCallback(unsigned int callback_id) {
     windowResizedCallbacks.erase(callback_id);
 }
 

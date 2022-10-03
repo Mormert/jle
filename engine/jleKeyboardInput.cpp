@@ -4,13 +4,11 @@
 #include "jleWindow.h"
 #include <GLFW/glfw3.h>
 
-jleKeyboardInput::jleKeyboardInput(
-    std::shared_ptr<jleWindow> windowInternal) {
+jleKeyboardInput::jleKeyboardInput(std::shared_ptr<jleWindow> windowInternal) {
     this->windowInternal = windowInternal;
 }
 
-void jleKeyboardInput::LinkWindow(
-    std::shared_ptr<jleWindow> windowInternal) {
+void jleKeyboardInput::LinkWindow(std::shared_ptr<jleWindow> windowInternal) {
     this->windowInternal = windowInternal;
 }
 

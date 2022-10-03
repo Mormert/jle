@@ -184,10 +184,7 @@ void jleEditor::InitImgui() {
     io.IniFilename = iniFile.c_str();
 
     // Setup Platform/Renderer bindings
-    ImGui_ImplGlfw_InitForOpenGL(
-        std::static_pointer_cast<jleWindow>(window)
-            ->GetGLFWWindow(),
-        true);
+    ImGui_ImplGlfw_InitForOpenGL(window->GetGLFWWindow(), true);
 
 #ifdef BUILD_OPENGLES30
     ImGui_ImplOpenGL3_Init("#version 300 es");

@@ -41,9 +41,7 @@ void jleGameEditorWindow::Update(jleGameEngine& ge) {
     _windowPositionX = cursorScreenPos.x - viewport->Pos.x;
     _windowPositionY = cursorScreenPos.y - viewport->Pos.y;
 
-    const auto& internalInputMouse =
-        std::static_pointer_cast<jleMouseInputInternal>(
-            jleCore::core->input->mouse);
+    const auto& internalInputMouse = jleCore::core->input->mouse;
     const auto& engineFramebufferMain =
         jleGameEngine::gEngine->framebuffer_main;
     internalInputMouse->SetScreenBeginCoords(_windowPositionX,

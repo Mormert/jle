@@ -3,7 +3,6 @@
 #ifndef HEXABLO_HEXHELPERFUNCTIONS_H
 #define HEXABLO_HEXHELPERFUNCTIONS_H
 
-
 class hexHelperFunctions {
 public:
     [[nodiscard]] static int GetPixelatedMouseXWorldSpace();
@@ -12,5 +11,4 @@ public:
     [[nodiscard]] static int GetRandInt(int min, int max);
 };
 
-
-#endif //HEXABLO_HEXHELPERFUNCTIONS_H
+#endif // HEXABLO_HEXHELPERFUNCTIONS_H

@@ -38,8 +38,7 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings>& cs)
       status{std::make_shared<CoreStatus_Internal>()} {
     PLOG_INFO << "Starting the core";
     coreImpl = std::make_unique<jleCoreInternalImpl>();
-    coreImpl->renderingInternal =
-        std::static_pointer_cast<jleRendering>(rendering);
+    coreImpl->renderingInternal = rendering;
     coreImpl->windowInternal = window;
     coreImpl->statusInternal = status;
 

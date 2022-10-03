@@ -2,10 +2,9 @@
 
 #include "jleKickStarter.h"
 
-int main()
-{
+int main() {
 
     KickStart<Hexablo>();
 
-	return 0;
+    return 0;
 }
