@@ -4,7 +4,7 @@
 #include "oMyPlayer.h"
 #include <memory>
 
-void oMonster::upDefaultObject() { oCharacter::upDefaultObject(); }
+void oMonster::setupDefaultObject() { oCharacter::setupDefaultObject(); }
 
 void oMonster::start() { oCharacter::start(); }
 

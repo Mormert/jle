@@ -2,7 +2,7 @@
 
 #include "oCharacterHealthBar.h"
 
-void oCharacterHealthBar::upDefaultObject() {
+void oCharacterHealthBar::setupDefaultObject() {
     _transform = addCustomComponent<cTransform>();
     _aseprite = addCustomComponent<cAseprite>();
 }

@@ -46,7 +46,7 @@ void jleTextRendering::render(jleFramebuffer& framebufferOut,
         return;
     }
 
-    framebufferOut.bindToFramebuffer();
+    framebufferOut.bind();
 
     if (!_fontTextDatas.empty()) {
         // Render text with fonts
@@ -77,7 +77,7 @@ void jleTextRendering::render(jleFramebuffer& framebufferOut,
         gltEndDraw();
     }
 
-    framebufferOut.bindToDefaultFramebuffer();
+    framebufferOut.bindDefault();
 }
 
 void jleTextRendering::clearBuffersForNextFrame() {

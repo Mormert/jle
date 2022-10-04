@@ -9,7 +9,7 @@
 class oCharacterHealthBar : public jleObject {
     JLE_REGISTER_OBJECT_TYPE(oCharacterHealthBar)
 public:
-    void upDefaultObject() override;
+    void setupDefaultObject() override;
 
     void hp(int maxHP, int currentHP);
 

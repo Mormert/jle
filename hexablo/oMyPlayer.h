@@ -10,7 +10,7 @@
 class oMyPlayer : public oCharacter {
     JLE_REGISTER_OBJECT_TYPE(oMyPlayer)
 public:
-    void upDefaultObject() override;
+    void setupDefaultObject() override;
 
     void start() override;
 

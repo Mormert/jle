@@ -11,7 +11,7 @@ class oFireball : public jleObject {
 public:
     oFireball();
 
-    void upDefaultObject() override;
+    void setupDefaultObject() override;
 
     void start() override;
 

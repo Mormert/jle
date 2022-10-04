@@ -13,7 +13,7 @@
 class oStaticSprite : public jleObject {
     JLE_REGISTER_OBJECT_TYPE(oStaticSprite)
 public:
-    void upDefaultObject() override;
+    void setupDefaultObject() override;
 
     void start() override;
 

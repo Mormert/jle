@@ -60,7 +60,7 @@ void jleGameEditorWindow::update(jleGameEngine& ge) {
         auto dims = ge.framebufferDimensions(
             static_cast<unsigned int>(ImGui::GetWindowWidth()),
             static_cast<unsigned int>(ImGui::GetWindowHeight()));
-        ge.framebuffer_main->resizeFramebuffer(dims.first, dims.second);
+        ge.framebuffer_main->resize(dims.first, dims.second);
         internalInputMouse->pixelatedScreenSize(dims.first, dims.second);
 
         auto& game = ((jleGameEngine *)jleCore::core)->gameRef();

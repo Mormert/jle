@@ -33,7 +33,7 @@ bool jleTexture::isActive() {
     return jleStaticOpenGLState::globalActiveTexture == _id;
 }
 
-void jleTexture::toActiveTexture(int texture_slot) {
+void jleTexture::setActive(int texture_slot) {
     glActiveTexture(GL_TEXTURE0 + texture_slot);
     glBindTexture(GL_TEXTURE_2D, _id);
     jleStaticOpenGLState::globalActiveTexture = _id;
@@ -46,9 +46,9 @@ int32_t jleTexture::height() { return _height; }
 unsigned int jleTexture::id() { return _id; }
 
 jleTexture::jleTexture(const jleImage& image) {
-    _width = image.imageWidth();
-    _height = image.imageHeight();
-    _nrChannels = image.imageNrChannels();
+    _width = image.width();
+    _height = image.height();
+    _nrChannels = image.nrChannels();
 
     glGenTextures(1, &_id);
 
@@ -60,13 +60,13 @@ jleTexture::jleTexture(const jleImage& image) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    if (image.imageData()) {
+    if (image.data()) {
         GLenum format = GL_RGBA;
-        if (image.imageNrChannels() == 1)
+        if (image.nrChannels() == 1)
             format = GL_RED;
-        else if (image.imageNrChannels() == 3)
+        else if (image.nrChannels() == 3)
             format = GL_RGB;
-        else if (image.imageNrChannels() == 4)
+        else if (image.nrChannels() == 4)
             format = GL_RGBA;
 
         glBindTexture(GL_TEXTURE_2D, _id);
@@ -81,12 +81,12 @@ jleTexture::jleTexture(const jleImage& image) {
         glTexImage2D(GL_TEXTURE_2D,
                      0,
                      format,
-                     image.imageWidth(),
-                     image.imageHeight(),
+                     image.width(),
+                     image.height(),
                      0,
                      format,
                      GL_UNSIGNED_BYTE,
-                     image.imageData());
+                     image.data());
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D,
@@ -100,7 +100,7 @@ jleTexture::jleTexture(const jleImage& image) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         PLOG_VERBOSE << "Generated OpenGL texture " << _id << " ("
-                     << image.imageNrChannels() << " channels)";
+                     << image.nrChannels() << " channels)";
     }
     else {
         PLOG_ERROR << "Failed to generate OpenGL texture " << _id

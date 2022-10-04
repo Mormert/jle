@@ -127,7 +127,7 @@ void jleGameEngine::start() {
 void jleGameEngine::framebufferResizeEvent(unsigned int width,
                                            unsigned int height) {
     auto dims = framebufferDimensions(width, height);
-    framebuffer_main->resizeFramebuffer(dims.first, dims.second);
+    framebuffer_main->resize(dims.first, dims.second);
 
     const auto& internalInputMouse =
         std::static_pointer_cast<jleMouseInput>(jleCore::core->input->mouse);

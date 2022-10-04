@@ -65,7 +65,7 @@ void jleCore::run() {
     jleFont::init();
 
     PLOG_INFO << "Setting up rendering internals";
-    coreImpl->renderingInternal->up();
+    coreImpl->renderingInternal->setup();
 
     PLOG_INFO << "Starting the game loop";
 

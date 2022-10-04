@@ -161,7 +161,7 @@ jleQuadRendering::jleQuadRendering()
 
     glBindVertexArray(0);
 
-    upShaders();
+    setupShaders();
 }
 
 jleQuadRendering::~jleQuadRendering() {
@@ -218,7 +218,7 @@ void jleQuadRendering::render(
 
     glm::mat4 view = camera.projectionViewMatrix();
 
-    framebufferOut.bindToFramebuffer();
+    framebufferOut.bind();
 
     if (clearDepthColor) {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Make everything black
@@ -236,7 +236,7 @@ void jleQuadRendering::render(
         view,
         glm::vec3{camera._xNoOffset, camera._yNoOffset, 0.f});
 
-    framebufferOut.bindToDefaultFramebuffer();
+    framebufferOut.bindDefault();
 }
 
 void jleQuadRendering::processTexturedQuads(
@@ -282,7 +282,7 @@ void jleQuadRendering::processTexturedQuads(
         quadShaderInstanced.use();
 
         if (!key.first->isActive()) {
-            key.first->toActiveTexture();
+            key.first->setActive();
             quadShaderInstanced.SetVec2("textureDims",
                                         glm::vec2{float(key.first->width()),
                                                   float(key.first->height())});
@@ -347,9 +347,9 @@ void jleQuadRendering::processTexturedHeightQuads(
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         if (!key.first->texture->isActive()) {
-            key.first->texture->toActiveTexture(0);
-            key.first->heightmap->toActiveTexture(1);
-            key.first->normalmap->toActiveTexture(2);
+            key.first->texture->setActive(0);
+            key.first->heightmap->setActive(1);
+            key.first->normalmap->setActive(2);
             quadHeightmapShaderInstanced.SetVec2(
                 "textureDims",
                 glm::vec2{float(key.first->texture->width()),
@@ -369,7 +369,7 @@ void jleQuadRendering::processTexturedHeightQuads(
     }
 }
 
-void jleQuadRendering::upShaders() {
+void jleQuadRendering::setupShaders() {
 
     // Set up the angles on the "camera", as it was rendered in 3D software
     static const float xyAngle = 0.f;

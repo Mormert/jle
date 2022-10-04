@@ -95,7 +95,7 @@ void from_json(const nlohmann::json& j, jleScene& s) { s.fromJson(j); }
 
 void jleScene::configurateSpawnedObject(const std::shared_ptr<jleObject>& obj) {
     obj->_containedInScene = this;
-    obj->upDefaultObject();
+    obj->setupDefaultObject();
     obj->_instanceName = std::string{obj->objectNameVirtual()} + "_" +
                          std::to_string(obj->sObjectsCreatedCount);
 

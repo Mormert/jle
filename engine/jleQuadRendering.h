@@ -49,7 +49,7 @@ private:
     jleShader quadShader;
     unsigned int quadVBO, quadVAO;
 
-    void upShaders();
+    void setupShaders();
 
     void processTexturedQuads(const std::vector<texturedQuad>& texturedQuads,
                               glm::mat4& view);

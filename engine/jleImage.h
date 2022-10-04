@@ -24,13 +24,13 @@ public:
 
     ~jleImage() override;
 
-    [[nodiscard]] unsigned int imageWidth() const;
+    [[nodiscard]] unsigned int width() const;
 
-    [[nodiscard]] unsigned int imageHeight() const;
+    [[nodiscard]] unsigned int height() const;
 
-    [[nodiscard]] unsigned int imageNrChannels() const;
+    [[nodiscard]] unsigned int nrChannels() const;
 
-    [[nodiscard]] unsigned char *imageData() const;
+    [[nodiscard]] unsigned char *data() const;
 
     [[nodiscard]] std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>
     pixelAtLocation(uint32_t x, uint32_t y) const;
@@ -39,7 +39,7 @@ public:
 
 private:
     unsigned char *image_data{nullptr};
-    int w = 0, h = 0, nr_channels = 0;
+    int _width = 0, _height = 0, _nrChannels = 0;
 
     std::string _path;
 };
