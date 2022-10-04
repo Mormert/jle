@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <locale>
 
-jleConsoleEditorWindow::jleConsoleEditorWindow(const std::string& window_name)
+jleConsoleEditorWindow::jleConsoleEditorWindow(const std::string &window_name)
     : iEditorImGuiWindow{window_name} {
     clearLog();
     memset(InputBuf, 0, sizeof(InputBuf));
@@ -117,7 +117,7 @@ void jleConsoleEditorWindow::execCommand(const char *command_line) {
     ScrollToBottom = true;
 }
 
-void jleConsoleEditorWindow::update(jleGameEngine& ge) {
+void jleConsoleEditorWindow::update(jleGameEngine &ge) {
     if (!isOpened) {
         return;
     }
@@ -390,7 +390,7 @@ int jleConsoleEditorWindow::textEditCallback(ImGuiInputTextCallbackData *data) {
     return 0;
 }
 
-void jleConsoleEditorWindow::write(const plog::Record& record) {
+void jleConsoleEditorWindow::write(const plog::Record &record) {
     std::wostringstream woss;
     woss << PLOG_NSTR("<") << plog::severityToString(record.getSeverity())
          << PLOG_NSTR("> ") << record.getFunc() << PLOG_NSTR("@")

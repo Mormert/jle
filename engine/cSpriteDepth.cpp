@@ -9,9 +9,9 @@
 cSpriteDepth::cSpriteDepth(jleObject *owner, jleScene *scene)
     : jleComponent{owner, scene} {}
 
-void cSpriteDepth::createAndSetTextureFromPath(const std::string& pathDiffuse,
-                                               const std::string& pathHeight,
-                                               const std::string& pathNormal) {
+void cSpriteDepth::createAndSetTextureFromPath(const std::string &pathDiffuse,
+                                               const std::string &pathHeight,
+                                               const std::string &pathNormal) {
     if (!quad.mtextureWithHeightmap) {
         quad.mtextureWithHeightmap = std::make_shared<TextureWithHeightmap>();
     }
@@ -58,7 +58,7 @@ void cSpriteDepth::update(float dt) {
     }
 }
 
-void cSpriteDepth::toJson(nlohmann::json& j_out) {
+void cSpriteDepth::toJson(nlohmann::json &j_out) {
     j_out = nlohmann::json{{"pathDiffuse", texturePathDiffuse},
                            {"pathHeight", texturePathHeight},
                            {"pathNormal", texturePathNormal},
@@ -71,7 +71,7 @@ void cSpriteDepth::toJson(nlohmann::json& j_out) {
                            {"textureY", quad.textureY}};
 }
 
-void cSpriteDepth::fromJson(const nlohmann::json& j_in) {
+void cSpriteDepth::fromJson(const nlohmann::json &j_in) {
     texturePathDiffuse = j_in.at("pathDiffuse");
     texturePathHeight = j_in.at("pathHeight");
     texturePathNormal = j_in.at("pathNormal");

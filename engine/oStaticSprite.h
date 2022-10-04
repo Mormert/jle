@@ -19,13 +19,13 @@ public:
 
     void update(float dt) override;
 
-    void toJson(nlohmann::json& j_out) override {
+    void toJson(nlohmann::json &j_out) override {
 
         transform->toJson(j_out["transform"]);
         sprite->toJson(j_out["sprite"]);
     }
 
-    void fromJson(const nlohmann::json& j_in) override {
+    void fromJson(const nlohmann::json &j_in) override {
 
         try {
             transform->fromJson(j_in.at("transform"));

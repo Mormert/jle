@@ -75,9 +75,9 @@ void oMyPlayer::attack(oCharacter::oCharacterDirection direction) {
         {{"q", pos.x}, {"r", pos.y}, {"d", _characterDirection}});
 }
 
-void oMyPlayer::toJson(nlohmann::json& j_out) { oCharacter::toJson(j_out); }
+void oMyPlayer::toJson(nlohmann::json &j_out) { oCharacter::toJson(j_out); }
 
-void oMyPlayer::fromJson(const nlohmann::json& j_in) {
+void oMyPlayer::fromJson(const nlohmann::json &j_in) {
     oCharacter::fromJson(j_in);
 }
 
@@ -112,7 +112,7 @@ void oMyPlayer::movement(float dt) {
 
     static bool verticalSide = true;
 
-    auto&& hexagonCoords = _hexagonItem.hexagonItemPlacement();
+    auto &&hexagonCoords = _hexagonItem.hexagonItemPlacement();
     const int hexagonQ = hexagonCoords.x;
     const int hexagonR = hexagonCoords.y;
 
@@ -262,7 +262,7 @@ void oMyPlayer::Movement_v1(float dt) {
 
     static bool verticalSide = true;
 
-    auto&& hexagonCoords = _hexagonItem.hexagonItemPlacement();
+    auto &&hexagonCoords = _hexagonItem.hexagonItemPlacement();
     const int hexagonQ = hexagonCoords.x;
     const int hexagonR = hexagonCoords.y;
 

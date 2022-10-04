@@ -22,14 +22,14 @@ public:
 
     virtual void start() {}
 
-    static void overrideGameSettings(jleGameSettings& gs) {}
+    static void overrideGameSettings(jleGameSettings &gs) {}
 
-    static void overrideGameEditorSettings(jleGameSettings& gs,
-                                           jleEditorSettings& es) {}
+    static void overrideGameEditorSettings(jleGameSettings &gs,
+                                           jleEditorSettings &es) {}
 
     void updateActiveScenes(float dt);
 
-    bool checkSceneIsActive(const std::string& sceneName);
+    bool checkSceneIsActive(const std::string &sceneName);
 
     template <typename T>
     std::shared_ptr<T> createScene() {
@@ -45,7 +45,7 @@ public:
     }
 
     template <typename T>
-    std::shared_ptr<jleScene> loadScene(const std::string& scenePath) {
+    std::shared_ptr<jleScene> loadScene(const std::string &scenePath) {
 
         static_assert(std::is_base_of<jleScene, T>::value,
                       "T must derive from jleScene");
@@ -70,7 +70,7 @@ public:
         }
     }
 
-    std::vector<std::shared_ptr<jleScene>>& activeScenesRef();
+    std::vector<std::shared_ptr<jleScene>> &activeScenesRef();
 
     jleCamera _mainCamera{jleCameraProjection::Orthographic};
 

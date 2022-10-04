@@ -8,9 +8,9 @@
 #include "ImGui/imgui_impl_opengl3.h"
 
 jleEngineSettingsWindow::jleEngineSettingsWindow(
-    const std::string& window_name,
-    const std::shared_ptr<jleGameSettings>& gs,
-    const std::shared_ptr<jleEditorSettings>& es)
+    const std::string &window_name,
+    const std::shared_ptr<jleGameSettings> &gs,
+    const std::shared_ptr<jleEditorSettings> &es)
     : iEditorImGuiWindow{window_name}, editorSettings{es} {
     nlohmann::json j_gs = *gs;
     _jsonToImguiGS.jsonToImgui(j_gs, "Game Settings");
@@ -19,7 +19,7 @@ jleEngineSettingsWindow::jleEngineSettingsWindow(
     _jsonToImguiES.jsonToImgui(j_es, "Editor Settings");
 }
 
-void jleEngineSettingsWindow::update(jleGameEngine& ge) {
+void jleEngineSettingsWindow::update(jleGameEngine &ge) {
     if (!isOpened) {
         return;
     }

@@ -18,12 +18,12 @@
 
 #endif
 
-jleGameEditorWindow::jleGameEditorWindow(const std::string& window_name)
+jleGameEditorWindow::jleGameEditorWindow(const std::string &window_name)
     : iEditorImGuiWindow{window_name} {
     gGameEditorWindow = this;
 }
 
-void jleGameEditorWindow::update(jleGameEngine& ge) {
+void jleGameEditorWindow::update(jleGameEngine &ge) {
     if (!isOpened) {
         return;
     }
@@ -36,13 +36,13 @@ void jleGameEditorWindow::update(jleGameEngine& ge) {
     constexpr float negYOffset = 6;
     constexpr float negXOffset = 6;
 
-    const auto& cursorScreenPos = ImGui::GetCursorScreenPos();
+    const auto &cursorScreenPos = ImGui::GetCursorScreenPos();
     const auto viewport = ImGui::GetMainViewport();
     _windowPositionX = cursorScreenPos.x - viewport->Pos.x;
     _windowPositionY = cursorScreenPos.y - viewport->Pos.y;
 
-    const auto& internalInputMouse = jleCore::core->input->mouse;
-    const auto& engineFramebufferMain =
+    const auto &internalInputMouse = jleCore::core->input->mouse;
+    const auto &engineFramebufferMain =
         jleGameEngine::gEngine->framebuffer_main;
     internalInputMouse->screenBeginCoords(_windowPositionX, _windowPositionY);
     internalInputMouse->screenSize(width(), height());
@@ -63,7 +63,7 @@ void jleGameEditorWindow::update(jleGameEngine& ge) {
         ge.framebuffer_main->resize(dims.first, dims.second);
         internalInputMouse->pixelatedScreenSize(dims.first, dims.second);
 
-        auto& game = ((jleGameEngine *)jleCore::core)->gameRef();
+        auto &game = ((jleGameEngine *)jleCore::core)->gameRef();
         game._mainCamera._cameraWidth = dims.first;
         game._mainCamera._cameraHeight = dims.second;
     }

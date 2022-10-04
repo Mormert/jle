@@ -7,7 +7,7 @@
 #include "plog/Log.h"
 
 jleEditorGameControllerWidget::jleEditorGameControllerWidget(
-    const std::string& window_name)
+    const std::string &window_name)
     : iEditorImGuiWindow{window_name} {
     _playGameIcon = jleTexture::fromPath(jleRelativePath{"ED:/icons/play.png"});
     _restartGameIcon =
@@ -18,7 +18,7 @@ jleEditorGameControllerWidget::jleEditorGameControllerWidget(
         jleTexture::fromPath(jleRelativePath{"ED:/icons/next_frame.png"});
 }
 
-void jleEditorGameControllerWidget::update(jleGameEngine& ge) {
+void jleEditorGameControllerWidget::update(jleGameEngine &ge) {
 
     const ImVec2 iconSize{ImGui::GetWindowHeight() - 3,
                           ImGui::GetWindowHeight() - 3};

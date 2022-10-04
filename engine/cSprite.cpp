@@ -9,7 +9,7 @@
 cSprite::cSprite(jleObject *owner, jleScene *scene)
     : jleComponent{owner, scene}, quad{nullptr} {}
 
-void cSprite::createAndSetTextureFromPath(const std::string& path) {
+void cSprite::createAndSetTextureFromPath(const std::string &path) {
     quad.texture = jleTexture::fromPath(jleRelativePath{path});
 }
 
@@ -45,7 +45,7 @@ void cSprite::update(float dt) {
     }
 }
 
-void cSprite::toJson(nlohmann::json& j_out) {
+void cSprite::toJson(nlohmann::json &j_out) {
     j_out = nlohmann::json{{"path", texturePath},
                            {"x", quad.x},
                            {"y", quad.y},
@@ -56,7 +56,7 @@ void cSprite::toJson(nlohmann::json& j_out) {
                            {"textureY", quad.textureY}};
 }
 
-void cSprite::fromJson(const nlohmann::json& j_in) {
+void cSprite::fromJson(const nlohmann::json &j_in) {
     texturePath = j_in.at("path");
     quad.x = j_in.at("x");
     quad.y = j_in.at("y");

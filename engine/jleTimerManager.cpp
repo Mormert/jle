@@ -51,7 +51,7 @@ void jleTimerManager::process() {
 void jleTimerManager::executeFuncInSecondsSharedData(
     double seconds,
     void (*f)(std::shared_ptr<void>),
-    const std::shared_ptr<void>& data) {
+    const std::shared_ptr<void> &data) {
     jleTimerManagerFunctionSharedData functionAndData{f, data};
 
     double futureTime = (glfwGetTime() + seconds);
@@ -61,7 +61,7 @@ void jleTimerManager::executeFuncInSecondsSharedData(
 void jleTimerManager::executeFuncInSecondsWeakData(
     double seconds,
     void (*f)(std::weak_ptr<void>),
-    const std::weak_ptr<void>& data) {
+    const std::weak_ptr<void> &data) {
     jleTimerManagerFunctionWeakData functionAndData{f, data};
 
     double futureTime = (glfwGetTime() + seconds);

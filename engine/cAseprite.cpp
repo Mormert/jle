@@ -12,7 +12,7 @@ void cAseprite::start() {
     _transform = _attachedToObject->addDependencyComponent<cTransform>(this);
 
     _aseprites.clear();
-    for (auto&& path : _asepritePaths) {
+    for (auto &&path : _asepritePaths) {
         _aseprites.push_back(
             jleResourceHolder::loadResourceFromFile<jleAseprite>(
                 jleRelativePath{path._string}));
@@ -25,7 +25,7 @@ void cAseprite::update(float dt) {
         return;
     }
 
-    auto&& aseprite = _aseprites[_currentlyActiveAseprite];
+    auto &&aseprite = _aseprites[_currentlyActiveAseprite];
 
     if (aseprite->_frames.empty()) {
         return;
@@ -47,9 +47,9 @@ void cAseprite::update(float dt) {
     if (_currentFrame >= aseprite->_frames.size()) {
         _currentFrame = aseprite->_frames.size() - 1;
     }
-    const auto& frame = aseprite->_frames.at(_currentFrame);
+    const auto &frame = aseprite->_frames.at(_currentFrame);
 
-    auto& texture = aseprite->_imageTexture;
+    auto &texture = aseprite->_imageTexture;
     if (texture != nullptr) {
         texturedQuad quad{texture};
         quad.x = _transform->worldX() + _offsetX;
@@ -67,7 +67,7 @@ void cAseprite::update(float dt) {
     }
 }
 
-void cAseprite::toJson(nlohmann::json& j_out) {
+void cAseprite::toJson(nlohmann::json &j_out) {
     j_out = nlohmann::json{{"_asepritePaths_STRVEC", _asepritePaths},
                            {"height", _height},
                            {"width", _width},
@@ -78,7 +78,7 @@ void cAseprite::toJson(nlohmann::json& j_out) {
                            {"animating", _animating}};
 }
 
-void cAseprite::fromJson(const nlohmann::json& j_in) {
+void cAseprite::fromJson(const nlohmann::json &j_in) {
 
     const auto asepritePaths = j_in.find("_asepritePaths_STRVEC");
     if (asepritePaths != j_in.end()) {
@@ -100,7 +100,7 @@ void cAseprite::fromJson(const nlohmann::json& j_in) {
     _currentlyActiveAseprite = 0;
 
     _aseprites.clear();
-    for (auto&& path : _asepritePaths) {
+    for (auto &&path : _asepritePaths) {
         _aseprites.push_back(
             jleResourceHolder::loadResourceFromFile<jleAseprite>(
                 jleRelativePath{path._string}));
@@ -122,14 +122,14 @@ unsigned int cAseprite::currentAsepriteIndex() const {
     return _currentlyActiveAseprite;
 }
 
-int cAseprite::addAsepritePath(const std::string& path) {
+int cAseprite::addAsepritePath(const std::string &path) {
     _asepritePaths.push_back({path});
     _aseprites.push_back(jleResourceHolder::loadResourceFromFile<jleAseprite>(
         jleRelativePath{path}));
     return (int)_aseprites.size() - 1;
 }
 
-jleAseprite& cAseprite::activeAsepriteRef() {
+jleAseprite &cAseprite::activeAsepriteRef() {
     return *_aseprites[_currentlyActiveAseprite];
 }
 

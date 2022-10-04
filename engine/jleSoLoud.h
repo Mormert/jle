@@ -4,7 +4,7 @@
 
 class jleSoLoud {
 public:
-    static inline SoLoud::Soloud& soLoud() { return gSoLoud; }
+    static inline SoLoud::Soloud &soLoud() { return gSoLoud; }
 
 private:
     friend class jleCore;

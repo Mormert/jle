@@ -8,9 +8,9 @@
 
 class jleGameEditorWindow : public iEditorImGuiWindow {
 public:
-    explicit jleGameEditorWindow(const std::string& window_name);
+    explicit jleGameEditorWindow(const std::string &window_name);
 
-    void update(jleGameEngine& ge) override;
+    void update(jleGameEngine &ge) override;
 
     static inline jleGameEditorWindow *gGameEditorWindow;
 

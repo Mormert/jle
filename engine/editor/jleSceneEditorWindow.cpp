@@ -28,8 +28,8 @@
 #include <GLFW/glfw3.h>
 
 jleSceneEditorWindow::jleSceneEditorWindow(
-    const std::string& window_name,
-    std::shared_ptr<jleFramebuffer>& framebuffer)
+    const std::string &window_name,
+    std::shared_ptr<jleFramebuffer> &framebuffer)
     : iEditorImGuiWindow(window_name),
       _transformMarkerImage("EditorResources/icons/transform_marker.png") {
     _framebuffer = framebuffer;
@@ -44,7 +44,7 @@ jleSceneEditorWindow::jleSceneEditorWindow(
     _texturedQuad.textureY = 0;
 }
 
-void jleSceneEditorWindow::update(jleGameEngine& ge) {
+void jleSceneEditorWindow::update(jleGameEngine &ge) {
     if (!isOpened) {
         return;
     }
@@ -57,7 +57,7 @@ void jleSceneEditorWindow::update(jleGameEngine& ge) {
     constexpr float negYOffset = 6;
     constexpr float negXOffset = 6;
 
-    const auto& cursorScreenPos = ImGui::GetCursorScreenPos();
+    const auto &cursorScreenPos = ImGui::GetCursorScreenPos();
     const auto viewport = ImGui::GetMainViewport();
     const int32_t windowPositionX =
         int32_t(cursorScreenPos.x) - viewport->Pos.x;
@@ -106,7 +106,7 @@ void jleSceneEditorWindow::update(jleGameEngine& ge) {
         _framebuffer->resize(dims.first * zoomValue, dims.second * zoomValue);
     }
 
-    const auto& selectedObject =
+    const auto &selectedObject =
         jleEditorSceneObjectsWindow::GetSelectedObject();
     std::shared_ptr<cTransform> transform{nullptr};
 
@@ -243,14 +243,14 @@ void jleSceneEditorWindow::update(jleGameEngine& ge) {
 
         if (!draggingTransformMarker && ImGui::IsMouseClicked(0)) {
             // Select closest object from mouse click
-            auto& game = ((jleGameEngine *)jleCore::core)->gameRef();
-            const auto& scenes = game.activeScenesRef();
+            auto &game = ((jleGameEngine *)jleCore::core)->gameRef();
+            const auto &scenes = game.activeScenesRef();
 
             std::unordered_map<std::shared_ptr<cTransform>,
                                std::shared_ptr<jleObject>>
                 transformsMap;
-            for (auto& scene : scenes) {
-                for (auto& object : scene->sceneObjects()) {
+            for (auto &scene : scenes) {
+                for (auto &object : scene->sceneObjects()) {
                     auto objectsTransform = object->component<cTransform>();
                     if (objectsTransform) {
                         transformsMap.insert(
@@ -261,9 +261,9 @@ void jleSceneEditorWindow::update(jleGameEngine& ge) {
 
             std::shared_ptr<cTransform> closestTransform = nullptr;
             std::shared_ptr<jleObject> selectedObject = nullptr;
-            for (auto& transformPair : transformsMap) {
-                const auto& transform = transformPair.first;
-                const auto& object = transformPair.second;
+            for (auto &transformPair : transformsMap) {
+                const auto &transform = transformPair.first;
+                const auto &object = transformPair.second;
                 if (closestTransform == nullptr) {
                     closestTransform = transform;
                     selectedObject = object;

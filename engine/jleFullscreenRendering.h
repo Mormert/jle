@@ -8,16 +8,16 @@ class jleFramebuffer;
 
 class jleFullscreenRendering {
 public:
-    jleFullscreenRendering(const jleFullscreenRendering&) = delete;
-    jleFullscreenRendering& operator=(const jleFullscreenRendering&) = delete;
-    jleFullscreenRendering(jleFullscreenRendering&& e) = delete;
-    jleFullscreenRendering& operator=(jleFullscreenRendering&& e) = delete;
+    jleFullscreenRendering(const jleFullscreenRendering &) = delete;
+    jleFullscreenRendering &operator=(const jleFullscreenRendering &) = delete;
+    jleFullscreenRendering(jleFullscreenRendering &&e) = delete;
+    jleFullscreenRendering &operator=(jleFullscreenRendering &&e) = delete;
 
     jleFullscreenRendering();
 
     ~jleFullscreenRendering();
 
-    void renderFramebufferFullscreen(jleFramebuffer& framebuffer,
+    void renderFramebufferFullscreen(jleFramebuffer &framebuffer,
                                      unsigned int screenWidth,
                                      unsigned int screenHeight);
 

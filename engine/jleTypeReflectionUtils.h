@@ -40,17 +40,16 @@ public:
     [[maybe_unused]] static void registerComponent();
 
     static std::shared_ptr<jleObject> instantiateObjectByString(
-        const std::string& str);
+        const std::string &str);
 
     static std::shared_ptr<jleComponent> instantiateComponentByString(
-        const std::string& str);
+        const std::string &str);
 
-    static std::map<std::string, std::function<std::shared_ptr<jleObject>()>>&
-    registeredObjectsRef();
+    static std::map<std::string, std::function<std::shared_ptr<jleObject>()>>
+        &registeredObjectsRef();
 
-    static std::map<std::string,
-                    std::function<std::shared_ptr<jleComponent>()>>&
-    registeredComponentsRef();
+    static std::map<std::string, std::function<std::shared_ptr<jleComponent>()>>
+        &registeredComponentsRef();
 
     // Should always be accessed via registeredObjectsRef()
     static inline std::unique_ptr<
@@ -66,13 +65,13 @@ public:
 template <typename T>
 class jleObjectTypeRegistrator {
 public:
-    explicit jleObjectTypeRegistrator(const std::string& oName);
+    explicit jleObjectTypeRegistrator(const std::string &oName);
 };
 
 template <typename T>
 class jleComponentTypeRegistrator {
 public:
-    explicit jleComponentTypeRegistrator(const std::string& cName);
+    explicit jleComponentTypeRegistrator(const std::string &cName);
 };
 
 #include "jleTypeReflectionUtils.inl"

@@ -13,14 +13,14 @@ public:
 
     void onNetFailed() override;
 
-    void onNetClosed(const std::string& reason) override;
+    void onNetClosed(const std::string &reason) override;
 
-    void processNetMessage(const std::string& event,
-                           const nlohmann::json& message,
-                           const std::string& sender) override;
+    void processNetMessage(const std::string &event,
+                           const nlohmann::json &message,
+                           const std::string &sender) override;
 
 private:
-    std::weak_ptr<jleObject> playerFromId(const std::string& id);
+    std::weak_ptr<jleObject> playerFromId(const std::string &id);
 
     std::map<std::string, std::weak_ptr<jleObject>> _players;
 

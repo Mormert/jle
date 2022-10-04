@@ -13,5 +13,3 @@ BraceWrapping:
 
 AlwaysBreakAfterReturnType: None
 PenaltyReturnTypeOnItsOwnLine: 1000000
-
-ReferenceAlignment: Left

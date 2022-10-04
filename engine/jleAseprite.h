@@ -44,12 +44,12 @@ struct jleAseprite : jleFileLoadInterface {
 
     jleAseprite() = default;
 
-    explicit jleAseprite(const std::string& path);
+    explicit jleAseprite(const std::string &path);
 
     // Finds and sets the image resource reference for this jleAseprite
     void loadImage();
 
-    bool loadFromFile(const std::string& path) override;
+    bool loadFromFile(const std::string &path) override;
 
     // This format expects Aseprite exporting to use 'Array' and not 'Hash'
     std::vector<jleAsepriteFrame> _frames;
@@ -62,14 +62,14 @@ struct jleAseprite : jleFileLoadInterface {
     std::string _path;
 };
 
-void from_json(const nlohmann::json& j, jleAseprite& a);
+void from_json(const nlohmann::json &j, jleAseprite &a);
 
-void from_json(const nlohmann::json& j, jleAsepriteMeta& a);
+void from_json(const nlohmann::json &j, jleAsepriteMeta &a);
 
-void from_json(const nlohmann::json& j, jleAsepriteMetaLayer& a);
+void from_json(const nlohmann::json &j, jleAsepriteMetaLayer &a);
 
-void from_json(const nlohmann::json& j, jleAsepriteFrame& a);
+void from_json(const nlohmann::json &j, jleAsepriteFrame &a);
 
-void from_json(const nlohmann::json& j, jleAsepriteXYWH& a);
+void from_json(const nlohmann::json &j, jleAsepriteXYWH &a);
 
-void from_json(const nlohmann::json& j, jleAsepriteXY& a);
+void from_json(const nlohmann::json &j, jleAsepriteXY &a);

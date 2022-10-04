@@ -13,7 +13,7 @@ jleScene::jleScene() {
     _scenesCreatedCount++;
 }
 
-jleScene::jleScene(const std::string& sceneName) {
+jleScene::jleScene(const std::string &sceneName) {
     this->_sceneName = sceneName;
     _scenesCreatedCount++;
 }
@@ -35,7 +35,7 @@ void jleScene::updateSceneObjects(float dt) {
 void jleScene::processNewSceneObjects() {
     JLE_SCOPE_PROFILE(jleScene::processNewSceneObjects)
     if (!_newSceneObjects.empty()) {
-        for (const auto& newObject : _newSceneObjects) {
+        for (const auto &newObject : _newSceneObjects) {
             if (!newObject->_isStarted) {
                 newObject->start();
                 newObject->startComponents();
@@ -64,7 +64,7 @@ void jleScene::destroyScene() {
 }
 
 std::shared_ptr<jleObject> jleScene::spawnTemplateObject(
-    const jleRelativePath& templatePath) {
+    const jleRelativePath &templatePath) {
     auto j = jleObject::objectTemplateJson(templatePath);
 
     std::string objectsName;
@@ -78,7 +78,7 @@ std::shared_ptr<jleObject> jleScene::spawnTemplateObject(
     return spawnedObjFromJson;
 }
 
-std::shared_ptr<jleObject> jleScene::spawnObject(const nlohmann::json& j_in) {
+std::shared_ptr<jleObject> jleScene::spawnObject(const nlohmann::json &j_in) {
     std::string objectsName;
     j_in.at("__obj_name").get_to(objectsName);
 
@@ -89,11 +89,11 @@ std::shared_ptr<jleObject> jleScene::spawnObject(const nlohmann::json& j_in) {
     return spawnedObjFromJson;
 }
 
-void to_json(nlohmann::json& j, jleScene& s) { s.toJson(j); }
+void to_json(nlohmann::json &j, jleScene &s) { s.toJson(j); }
 
-void from_json(const nlohmann::json& j, jleScene& s) { s.fromJson(j); }
+void from_json(const nlohmann::json &j, jleScene &s) { s.fromJson(j); }
 
-void jleScene::configurateSpawnedObject(const std::shared_ptr<jleObject>& obj) {
+void jleScene::configurateSpawnedObject(const std::shared_ptr<jleObject> &obj) {
     obj->_containedInScene = this;
     obj->setupDefaultObject();
     obj->_instanceName = std::string{obj->objectNameVirtual()} + "_" +
@@ -102,12 +102,12 @@ void jleScene::configurateSpawnedObject(const std::shared_ptr<jleObject>& obj) {
     _newSceneObjects.push_back(obj);
 }
 
-void jleScene::toJson(nlohmann::json& j_out) {
+void jleScene::toJson(nlohmann::json &j_out) {
     j_out["_objects"] = _sceneObjects;
     j_out["_sceneName"] = _sceneName;
 }
 
-void jleScene::fromJson(const nlohmann::json& j_in) {
+void jleScene::fromJson(const nlohmann::json &j_in) {
     JLE_FROM_JSON_IF_EXISTS(j_in, _sceneName, "_sceneName");
 
     for (auto object_json : j_in.at("_objects")) {

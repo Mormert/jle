@@ -15,7 +15,7 @@ void cUITransformUpdater::start() {
     jleObject *parent = _attachedToObject;
     do {
 
-        if (auto&& c = parent->component<cCamera>()) {
+        if (auto &&c = parent->component<cCamera>()) {
             _camera = c;
             break;
         }
@@ -24,7 +24,7 @@ void cUITransformUpdater::start() {
     } while (parent);
 }
 
-void cUITransformUpdater::toJson(nlohmann::json& j_out) {
+void cUITransformUpdater::toJson(nlohmann::json &j_out) {
     j_out["_top"] = _top;
     j_out["_bottom"] = _bottom;
     j_out["_left"] = _left;
@@ -33,7 +33,7 @@ void cUITransformUpdater::toJson(nlohmann::json& j_out) {
     j_out["_y"] = _y;
 }
 
-void cUITransformUpdater::fromJson(const nlohmann::json& j_in) {
+void cUITransformUpdater::fromJson(const nlohmann::json &j_in) {
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _top, "_top", true);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _bottom, "_bottom", false);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _left, "_left", false);

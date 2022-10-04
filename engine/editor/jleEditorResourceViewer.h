@@ -6,7 +6,7 @@
 
 class jleEditorResourceViewer : public iEditorImGuiWindow {
 public:
-    explicit jleEditorResourceViewer(const std::string& window_name);
+    explicit jleEditorResourceViewer(const std::string &window_name);
 
-    void update(jleGameEngine& ge) override;
+    void update(jleGameEngine &ge) override;
 };

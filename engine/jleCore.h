@@ -35,12 +35,12 @@ private:
 // Core part of the jle engine
 class jleCore {
 public:
-    jleCore(const jleCore&) = delete;
-    jleCore(jleCore&&) = delete;
-    jleCore& operator=(const jleCore&) = delete;
-    jleCore& operator=(jleCore&&) = delete;
+    jleCore(const jleCore &) = delete;
+    jleCore(jleCore &&) = delete;
+    jleCore &operator=(const jleCore &) = delete;
+    jleCore &operator=(jleCore &&) = delete;
 
-    explicit jleCore(const std::shared_ptr<jleCoreSettings>& cs);
+    explicit jleCore(const std::shared_ptr<jleCoreSettings> &cs);
 
     virtual ~jleCore();
 
@@ -61,7 +61,7 @@ public:
     // Entry point for a user to get core status
     const std::shared_ptr<CoreStatus_Internal> status;
 
-    jleTimerManager& timerManager();
+    jleTimerManager &timerManager();
 
 private:
     void loop();

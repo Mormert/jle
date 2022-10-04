@@ -17,13 +17,13 @@ public:
 
     void update(float dt) override;
 
-    void toJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json &j_out) override;
 
-    void fromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json &j_in) override;
 
-    void toNet(nlohmann::json& j_out);
+    void toNet(nlohmann::json &j_out);
 
-    void fromNet(const nlohmann::json& j_in);
+    void fromNet(const nlohmann::json &j_in);
 
     void target(int q, int r);
 

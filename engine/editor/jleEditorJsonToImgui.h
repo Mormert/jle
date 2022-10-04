@@ -20,7 +20,7 @@ class jleEditorJsonToImgui {
 public:
     void drawAndGetInput() { _rootNode.recursiveDraw(); }
 
-    void jsonToImgui(nlohmann::json& j, const std::string& objectName) {
+    void jsonToImgui(nlohmann::json &j, const std::string &objectName) {
         PLOG_VERBOSE << j.dump(4);
         _rootNode._nodes.clear();
         _rootNode._name = objectName;
@@ -41,8 +41,8 @@ private:
 
         virtual ~_iNode() = default;
 
-        void constructChildObject(const std::string& objName,
-                                  const nlohmann::json& jsonObject) {
+        void constructChildObject(const std::string &objName,
+                                  const nlohmann::json &jsonObject) {
             if (jsonObject.is_object()) {
                 auto oNode = std::make_shared<_iNode>();
                 oNode->_name = objName;
@@ -57,7 +57,7 @@ private:
                 _nodes.push_back(arrayNode);
 
                 int arrayIndex = 0;
-                auto&& json_array = jsonObject.get<nlohmann::json::array_t>();
+                auto &&json_array = jsonObject.get<nlohmann::json::array_t>();
 
                 if (!json_array.empty()) {
                     // store the value type as the first element
@@ -65,7 +65,7 @@ private:
                     arrayNode->value_type = json_array[0].type();
                 }
 
-                for (auto&& json_element_in_array : json_array) {
+                for (auto &&json_element_in_array : json_array) {
                     auto arrayChild = std::make_shared<_iNode>();
                     arrayChild->recursivelyConstructTree(json_element_in_array);
                     arrayChild->_name = std::to_string(arrayIndex++);
@@ -104,11 +104,11 @@ private:
         // Takes a json object, and depending on what the json object is (float,
         // int, or another json object), use recursion to construct nodes of the
         // json object children, or
-        void recursivelyConstructTree(const nlohmann::json& j) {
+        void recursivelyConstructTree(const nlohmann::json &j) {
             if (j.is_object()) // root needs to be json object
             {
                 auto objHead = j.get<nlohmann::json::object_t>();
-                for (auto& objChildren : objHead) {
+                for (auto &objChildren : objHead) {
                     constructChildObject(objChildren.first, objChildren.second);
                 }
             }
@@ -119,7 +119,7 @@ private:
         // etc.
         virtual void recursiveDraw() {
             if (ImGui::TreeNode(_name.c_str())) {
-                for (auto& nodeChildren : _nodes) {
+                for (auto &nodeChildren : _nodes) {
                     nodeChildren->recursiveDraw();
                 }
 
@@ -128,8 +128,8 @@ private:
         }
 
         // Recursively goes through all children and constructs a json object
-        virtual void constructJson(nlohmann::json& j_out) {
-            for (auto& childNode : _nodes) {
+        virtual void constructJson(nlohmann::json &j_out) {
+            for (auto &childNode : _nodes) {
                 nlohmann::json j_inner;
                 childNode->constructJson(j_inner);
                 j_out[childNode->_name] = j_inner;
@@ -146,8 +146,8 @@ private:
             if (ImGui::TreeNode(
                     (_name + " [" + std::to_string(_nodes.size()) + "]")
                         .c_str())) {
-                const auto endsWith = [](const std::string& mainStr,
-                                         const std::string& toMatch) {
+                const auto endsWith = [](const std::string &mainStr,
+                                         const std::string &toMatch) {
                     if (mainStr.size() >= toMatch.size() &&
                         mainStr.compare(mainStr.size() - toMatch.size(),
                                         toMatch.size(),
@@ -201,7 +201,7 @@ private:
 
                 std::vector<int> nodesToRemove;
                 int index = 0;
-                for (auto&& nodeChildren : _nodes) {
+                for (auto &&nodeChildren : _nodes) {
 
                     nodeChildren->recursiveDraw();
                     ImGui::SameLine();
@@ -214,7 +214,7 @@ private:
                 }
 
                 if (!nodesToRemove.empty()) {
-                    for (auto&& node : nodesToRemove) {
+                    for (auto &&node : nodesToRemove) {
                         _nodes.erase(_nodes.begin() + node);
                     }
                 }
@@ -223,9 +223,9 @@ private:
             }
         }
 
-        void constructJson(nlohmann::json& j_out) override {
+        void constructJson(nlohmann::json &j_out) override {
             j_out = nlohmann::json::array();
-            for (auto& childNode : _nodes) {
+            for (auto &childNode : _nodes) {
                 nlohmann::json j_inner;
                 childNode->constructJson(j_inner);
                 j_out.push_back(j_inner);
@@ -244,7 +244,7 @@ private:
                 _name.c_str(), &value, 0.02f, -FLT_MAX, FLT_MAX, "%.2f");
         }
 
-        void constructJson(nlohmann::json& j_out) override { j_out = value; }
+        void constructJson(nlohmann::json &j_out) override { j_out = value; }
     };
 
     struct _NodeInt : _iNode {
@@ -258,7 +258,7 @@ private:
                 _name.c_str(), &value, 0.02f, INT_MIN, INT_MAX, "%.2f");
         }
 
-        void constructJson(nlohmann::json& j_out) override { j_out = value; }
+        void constructJson(nlohmann::json &j_out) override { j_out = value; }
     };
 
     struct _NodeBool : _iNode {
@@ -271,7 +271,7 @@ private:
             ImGui::Checkbox(_name.c_str(), &value);
         }
 
-        void constructJson(nlohmann::json& j_out) override { j_out = value; }
+        void constructJson(nlohmann::json &j_out) override { j_out = value; }
     };
 
     struct _NodeString : _iNode {
@@ -284,7 +284,7 @@ private:
             ImGui::InputText(_name.c_str(), &str);
         }
 
-        void constructJson(nlohmann::json& j_out) override {
+        void constructJson(nlohmann::json &j_out) override {
             // TODO: Watch out for buffer overflow here
             j_out = str.data();
         }

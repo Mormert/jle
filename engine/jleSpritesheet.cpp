@@ -5,28 +5,28 @@
 #include <filesystem>
 #include <fstream>
 
-void from_json(const nlohmann::json& j, jleSpritesheet& s) {
+void from_json(const nlohmann::json &j, jleSpritesheet &s) {
     s._spritesheetEntities =
         j.get<std::unordered_map<std::string, jleSpritesheetEntity>>();
 }
 
-void from_json(const nlohmann::json& j, jleSpritesheetEntity& s) {
+void from_json(const nlohmann::json &j, jleSpritesheetEntity &s) {
     s.frame = j["frame"];
     // TODO: Should backward compatability be handled for this struct?
     s.sourceSize = j.value("spriteSourceSize",
                            jleSpritesheetEntity::jleSpritesheetEntitySource{});
 }
 
-void from_json(const nlohmann::json& j,
-               jleSpritesheetEntity::jleSpritesheetEntityFrame& s) {
+void from_json(const nlohmann::json &j,
+               jleSpritesheetEntity::jleSpritesheetEntityFrame &s) {
     s.x = j["x"];
     s.y = j["y"];
     s.width = j["w"];
     s.height = j["h"];
 }
 
-void from_json(const json& j,
-               jleSpritesheetEntity::jleSpritesheetEntitySource& s) {
+void from_json(const json &j,
+               jleSpritesheetEntity::jleSpritesheetEntitySource &s) {
     s.x = j["x"];
     s.y = j["y"];
     s.width = j["w"];
@@ -39,7 +39,7 @@ void jleSpritesheet::loadImage() {
     _imageTexture = jleTexture::fromPath(jleRelativePath{pngPath});
 }
 
-bool jleSpritesheet::loadFromFile(const std::string& path) {
+bool jleSpritesheet::loadFromFile(const std::string &path) {
     _pathJson = path;
     std::ifstream i(path);
     if (i.good()) {
@@ -56,7 +56,7 @@ bool jleSpritesheet::loadFromFile(const std::string& path) {
     }
 }
 
-jleSpritesheet::jleSpritesheet(const std::string& path) {
+jleSpritesheet::jleSpritesheet(const std::string &path) {
     _pathJson = path;
     loadFromFile(path);
 }

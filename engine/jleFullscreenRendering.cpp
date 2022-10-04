@@ -56,7 +56,7 @@ jleFullscreenRendering::~jleFullscreenRendering() {
 }
 
 void jleFullscreenRendering::renderFramebufferFullscreen(
-    jleFramebuffer& framebuffer,
+    jleFramebuffer &framebuffer,
     unsigned int screenWidth,
     unsigned int screenHeight) {
     // Back to default screen framebuffer

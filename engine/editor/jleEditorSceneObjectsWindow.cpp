@@ -11,14 +11,14 @@
 #include <fstream>
 
 jleEditorSceneObjectsWindow::jleEditorSceneObjectsWindow(
-    const std::string& window_name)
+    const std::string &window_name)
     : iEditorImGuiWindow{window_name} {}
 
-std::weak_ptr<jleObject>& jleEditorSceneObjectsWindow::GetSelectedObject() {
+std::weak_ptr<jleObject> &jleEditorSceneObjectsWindow::GetSelectedObject() {
     return selectedObject;
 }
 
-void jleEditorSceneObjectsWindow::update(jleGameEngine& ge) {
+void jleEditorSceneObjectsWindow::update(jleGameEngine &ge) {
     if (!isOpened) {
         return;
     }
@@ -41,7 +41,7 @@ void jleEditorSceneObjectsWindow::update(jleGameEngine& ge) {
             if (selectedScene.lock() &&
                 !selectedScene.lock()->bPendingSceneDestruction) {
                 if (ImGui::BeginMenu("Create Object")) {
-                    for (auto&& objectType :
+                    for (auto &&objectType :
                          jleTypeReflectionUtils::registeredObjectsRef()) {
                         if (ImGui::MenuItem(objectType.first.c_str())) {
                             selectedScene.lock()->spawnObject(objectType.first);
@@ -60,7 +60,7 @@ void jleEditorSceneObjectsWindow::update(jleGameEngine& ge) {
         ImGui::BeginChild(
             "scene pane", ImVec2(150 * globalImguiScale, 0), true);
 
-        auto& activeScenes =
+        auto &activeScenes =
             ((jleGameEngine *)jleCore::core)->gameRef().activeScenesRef();
 
         for (auto scene : activeScenes) {
@@ -140,7 +140,7 @@ void jleEditorSceneObjectsWindow::update(jleGameEngine& ge) {
             "objects pane", ImVec2(280 * globalImguiScale, 0), true);
 
         if (auto selectedSceneSafePtr = selectedScene.lock()) {
-            auto& sceneObjectsRef = selectedSceneSafePtr->sceneObjects();
+            auto &sceneObjectsRef = selectedSceneSafePtr->sceneObjects();
             for (int32_t i = sceneObjectsRef.size() - 1; i >= 0; i--) {
                 if (sceneObjectsRef[i]) {
                     objectTreeRecursive(sceneObjectsRef[i]);
@@ -214,7 +214,7 @@ void jleEditorSceneObjectsWindow::update(jleGameEngine& ge) {
                     }
                     if (ImGui::BeginTabItem("Custom Components")) {
                         if (ImGui::BeginMenu("Add Custom Component")) {
-                            for (auto&& componentType : jleTypeReflectionUtils::
+                            for (auto &&componentType : jleTypeReflectionUtils::
                                      registeredComponentsRef()) {
                                 if (ImGui::MenuItem(
                                         componentType.first.c_str())) {
@@ -226,7 +226,7 @@ void jleEditorSceneObjectsWindow::update(jleGameEngine& ge) {
                             ImGui::EndMenu();
                         }
 
-                        auto&& customComponents =
+                        auto &&customComponents =
                             selectedObjectSafePtr->customComponents();
                         if (customComponents.size() > 0) {
                             if (ImGui::BeginMenu("Remove Custom Component")) {
@@ -357,7 +357,7 @@ void jleEditorSceneObjectsWindow::objectTreeRecursive(
     if (ImGui::BeginPopupContextItem()) {
 
         if (ImGui::BeginMenu("Create Object")) {
-            for (auto&& objectType :
+            for (auto &&objectType :
                  jleTypeReflectionUtils::registeredObjectsRef()) {
                 if (ImGui::MenuItem(objectType.first.c_str())) {
                     object->spawnChildObject(objectType.first);
@@ -454,7 +454,7 @@ void jleEditorSceneObjectsWindow::objectTreeRecursive(
     }
 
     if (open) {
-        auto& childObjectsRef = object->childObjects();
+        auto &childObjectsRef = object->childObjects();
         for (int32_t i = childObjectsRef.size() - 1; i >= 0; i--) {
             objectTreeRecursive(childObjectsRef[i]);
         }
@@ -462,6 +462,6 @@ void jleEditorSceneObjectsWindow::objectTreeRecursive(
     }
 }
 
-std::weak_ptr<jleScene>& jleEditorSceneObjectsWindow::GetSelectedScene() {
+std::weak_ptr<jleScene> &jleEditorSceneObjectsWindow::GetSelectedScene() {
     return selectedScene;
 }

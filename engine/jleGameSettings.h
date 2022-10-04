@@ -26,14 +26,14 @@ using json = nlohmann::json;
 
 #pragma region FramebufferSettings to / from json
 
-inline void to_json(nlohmann::json& j,
-                    const jleGameSettings::jleFramebufferSettings& fs) {
+inline void to_json(nlohmann::json &j,
+                    const jleGameSettings::jleFramebufferSettings &fs) {
     j = json{{"fixed_axis_enum", fs.fixedAxis},
              {"fixed_axis_pixels", fs.fixedAxisPixels}};
 }
 
-inline void from_json(const nlohmann::json& j,
-                      jleGameSettings::jleFramebufferSettings& fs) {
+inline void from_json(const nlohmann::json &j,
+                      jleGameSettings::jleFramebufferSettings &fs) {
     j.at("fixed_axis_enum").get_to(fs.fixedAxis);
     j.at("fixed_axis_pixels").get_to(fs.fixedAxisPixels);
 }
@@ -42,13 +42,13 @@ inline void from_json(const nlohmann::json& j,
 
 #pragma region GameSettings to / from json
 
-inline void to_json(nlohmann::json& j, const jleGameSettings& gs) {
-    j = (jleCoreSettings&)gs;
+inline void to_json(nlohmann::json &j, const jleGameSettings &gs) {
+    j = (jleCoreSettings &)gs;
     j["framebuffer_settings"] = gs.framebufferSettings;
 }
 
-inline void from_json(const nlohmann::json& j, jleGameSettings& gs) {
-    from_json(j, (jleCoreSettings&)gs);
+inline void from_json(const nlohmann::json &j, jleGameSettings &gs) {
+    from_json(j, (jleCoreSettings &)gs);
     j.at("framebuffer_settings").get_to(gs.framebufferSettings);
 }
 

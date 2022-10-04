@@ -7,15 +7,15 @@
 
 class jleEditorSceneObjectsWindow : public iEditorImGuiWindow {
 public:
-    explicit jleEditorSceneObjectsWindow(const std::string& window_name);
+    explicit jleEditorSceneObjectsWindow(const std::string &window_name);
 
-    void update(jleGameEngine& ge) override;
+    void update(jleGameEngine &ge) override;
 
-    static std::weak_ptr<jleObject>& GetSelectedObject();
+    static std::weak_ptr<jleObject> &GetSelectedObject();
 
     static void SetSelectedObject(std::shared_ptr<jleObject> object);
 
-    static std::weak_ptr<jleScene>& GetSelectedScene();
+    static std::weak_ptr<jleScene> &GetSelectedScene();
 
 private:
     jleEditorJsonToImgui _jsonToImgui;

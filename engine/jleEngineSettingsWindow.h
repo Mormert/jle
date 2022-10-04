@@ -11,11 +11,11 @@ struct jleEditorSettings;
 
 class jleEngineSettingsWindow : public iEditorImGuiWindow {
 public:
-    jleEngineSettingsWindow(const std::string& window_name,
-                            const std::shared_ptr<jleGameSettings>& gs,
-                            const std::shared_ptr<jleEditorSettings>& es);
+    jleEngineSettingsWindow(const std::string &window_name,
+                            const std::shared_ptr<jleGameSettings> &gs,
+                            const std::shared_ptr<jleEditorSettings> &es);
 
-    virtual void update(jleGameEngine& ge) override;
+    virtual void update(jleGameEngine &ge) override;
 
 private:
     std::shared_ptr<jleGameSettings> gameSettings;

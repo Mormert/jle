@@ -13,11 +13,11 @@ public:
 
     void hp(int maxHP, int currentHP);
 
-    void toJson(nlohmann::json& j_out) override {
+    void toJson(nlohmann::json &j_out) override {
         j_out["_maxWidth"] = _maxWidth;
     }
 
-    void fromJson(const nlohmann::json& j_in) override{
+    void fromJson(const nlohmann::json &j_in) override{
         JLE_FROM_JSON_WITH_DEFAULT(j_in, _maxWidth, "_maxWidth", 16)}
 
     std::shared_ptr<cTransform> _transform;

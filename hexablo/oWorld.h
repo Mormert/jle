@@ -24,9 +24,9 @@ public:
 
     void update(float dt) override;
 
-    void toJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json &j_out) override;
 
-    void fromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json &j_in) override;
 
     hexHexagonItem *hexItemAt(int q, int r);
 
@@ -50,7 +50,7 @@ private:
 
     struct pair_hash {
         template <class T1, class T2>
-        std::size_t operator()(const std::pair<T1, T2>& p) const {
+        std::size_t operator()(const std::pair<T1, T2> &p) const {
             auto h1 = std::hash<T1>{}(p.first);
             auto h2 = std::hash<T2>{}(p.second);
 
@@ -86,13 +86,13 @@ private:
         int _textureX, _textureY, _width, _height;
     };
 
-    friend void from_json(const nlohmann::json& j, oWorld::HexagonTile& w);
+    friend void from_json(const nlohmann::json &j, oWorld::HexagonTile &w);
 
-    friend void to_json(nlohmann::json& j, const oWorld::HexagonTile& w);
+    friend void to_json(nlohmann::json &j, const oWorld::HexagonTile &w);
 
     std::vector<HexagonTile> _hexagonTiles{5};
 };
 
-void from_json(const nlohmann::json& j, oWorld::HexagonTile& w);
+void from_json(const nlohmann::json &j, oWorld::HexagonTile &w);
 
-void to_json(nlohmann::json& j, const oWorld::HexagonTile& w);
+void to_json(nlohmann::json &j, const oWorld::HexagonTile &w);

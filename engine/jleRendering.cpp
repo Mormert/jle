@@ -25,7 +25,7 @@ void jleRendering::viewportDimensions(int x,
     glViewport(x, y, static_cast<int>(width), static_cast<int>(height));
 }
 
-void jleRendering::render(jleFramebuffer& framebufferOut, jleCamera& camera) {
+void jleRendering::render(jleFramebuffer &framebufferOut, jleCamera &camera) {
     JLE_SCOPE_PROFILE(jleRendering::Render)
     _quads->queuerender(framebufferOut, camera);
     _texts->render(framebufferOut, camera);
@@ -43,6 +43,6 @@ void jleRendering::clearBuffersForNextFrame() {
     _texts->clearBuffersForNextFrame();
 }
 
-jleQuadRendering& jleRendering::quads() { return *_quads; }
+jleQuadRendering &jleRendering::quads() { return *_quads; }
 
-jleTextRendering& jleRendering::texts() { return *_texts; }
+jleTextRendering &jleRendering::texts() { return *_texts; }

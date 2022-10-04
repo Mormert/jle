@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-bool jleImage::loadFromFile(const std::string& path) {
+bool jleImage::loadFromFile(const std::string &path) {
     this->_path = path;
     stbi_set_flip_vertically_on_load(false);
     image_data = stbi_load(path.c_str(), &_width, &_height, &_nrChannels, 0);
@@ -19,12 +19,12 @@ bool jleImage::loadFromFile(const std::string& path) {
     return false;
 }
 
-jleImage::jleImage(const std::string& path) {
+jleImage::jleImage(const std::string &path) {
     this->_path = path;
     loadFromFile(path);
 }
 
-jleImage::jleImage(const jleImage& i) {
+jleImage::jleImage(const jleImage &i) {
     std::copy(i.image_data,
               i.image_data + i._nrChannels * i._width * i._height,
               this->image_data);
@@ -33,7 +33,7 @@ jleImage::jleImage(const jleImage& i) {
     this->_height = i._height;
 }
 
-jleImage& jleImage::operator=(const jleImage& i) {
+jleImage &jleImage::operator=(const jleImage &i) {
     if (this == &i) {
         return *this;
     }
@@ -51,7 +51,7 @@ jleImage& jleImage::operator=(const jleImage& i) {
     return *this;
 }
 
-jleImage::jleImage(jleImage&& i) noexcept {
+jleImage::jleImage(jleImage &&i) noexcept {
     this->image_data = i.image_data;
     this->_nrChannels = i._nrChannels;
     this->_width = i._height;
@@ -63,7 +63,7 @@ jleImage::jleImage(jleImage&& i) noexcept {
     i.image_data = nullptr;
 }
 
-jleImage& jleImage::operator=(jleImage&& i) noexcept {
+jleImage &jleImage::operator=(jleImage &&i) noexcept {
     if (this != &i) {
         if (image_data) {
             stbi_image_free(image_data);
@@ -98,7 +98,7 @@ unsigned char *jleImage::data() const { return image_data; }
 
 unsigned int jleImage::width() const { return _width; }
 
-const std::string& jleImage::path() const { return _path; }
+const std::string &jleImage::path() const { return _path; }
 
 std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> jleImage::pixelAtLocation(
     uint32_t x, uint32_t y) const {

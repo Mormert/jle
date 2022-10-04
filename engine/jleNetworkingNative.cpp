@@ -8,10 +8,10 @@
 #include <iostream>
 
 void jleNetworking::connect(
-    const std::string& uri,
-    const std::function<void(void)>& onConnected,
-    const std::function<void(int const& reason)>& onClosed,
-    const std::function<void(void)>& onFailed) {
+    const std::string &uri,
+    const std::function<void(void)> &onConnected,
+    const std::function<void(int const &reason)> &onClosed,
+    const std::function<void(void)> &onFailed) {
     c.set_logs_quiet();
 
     c.set_open_listener(onConnected);
@@ -22,10 +22,10 @@ void jleNetworking::connect(
 
     c.socket()->on(
         "msgpack",
-        sio::socket::event_listener_aux([&](std::string const& name,
-                                            sio::message::ptr const& data,
+        sio::socket::event_listener_aux([&](std::string const &name,
+                                            sio::message::ptr const &data,
                                             bool isAck,
-                                            sio::message::list& ack_resp) {
+                                            sio::message::list &ack_resp) {
             onReceiveMessagePack(data->get_string());
         }));
 
@@ -45,9 +45,9 @@ void jleNetworking::disconnect() {
     sNet = nullptr;
 }
 
-void jleNetworking::emitJsonData(const std::string& event,
-                                 const nlohmann::json& json,
-                                 const std::string& receiver) {
+void jleNetworking::emitJsonData(const std::string &event,
+                                 const nlohmann::json &json,
+                                 const std::string &receiver) {
 
     if (!connected) {
         return;
@@ -58,8 +58,8 @@ void jleNetworking::emitJsonData(const std::string& event,
     c.socket()->emit("msgpack", to_string(json_package));
 }
 
-void jleNetworking::emitEvent(const std::string& event,
-                              const std::string& data) {
+void jleNetworking::emitEvent(const std::string &event,
+                              const std::string &data) {
 
     if (!connected) {
         return;

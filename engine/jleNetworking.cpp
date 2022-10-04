@@ -4,18 +4,18 @@
 
 #include "jleNetworking.h"
 
-void jleNetworking::onReceiveMessagePack(const std::string& data) {
+void jleNetworking::onReceiveMessagePack(const std::string &data) {
     const nlohmann::json json = nlohmann::json::parse(data);
     _messagePacks.enqueue(json);
 }
 
-bool jleNetworking::tryReceiveMessagePack(nlohmann::json& out) {
+bool jleNetworking::tryReceiveMessagePack(nlohmann::json &out) {
     return _messagePacks.try_dequeue(out);
 }
 
-void jleNetworking::tryEmitJsonData(const std::string& event,
-                                    const nlohmann::json& json,
-                                    const std::string& receiver) {
+void jleNetworking::tryEmitJsonData(const std::string &event,
+                                    const nlohmann::json &json,
+                                    const std::string &receiver) {
     if (!sNet) {
         return;
     }

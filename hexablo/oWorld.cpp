@@ -48,14 +48,14 @@ void oWorld::update(float dt) {
     _quadRenderingPtr->sendTexturedQuad(quad, RenderingMethod::Dynamic);*/
 }
 
-void oWorld::toJson(nlohmann::json& j_out) {
+void oWorld::toJson(nlohmann::json &j_out) {
     j_out["_worldHexTilesAsepritePath"] = _worldHexTilesAsepritePath;
     j_out["_hexagonTiles"] = _hexagonTiles;
     j_out["_hexSizeX"] = _hexSizeX;
     j_out["_hexSizeY"] = _hexSizeY;
 }
 
-void oWorld::fromJson(const nlohmann::json& j_in) {
+void oWorld::fromJson(const nlohmann::json &j_in) {
     JLE_FROM_JSON_WITH_DEFAULT(
         j_in, _worldHexTilesAsepritePath, "_worldHexTilesAsepritePath", "");
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _hexSizeX, "_hexSizeX", 8);
@@ -79,7 +79,7 @@ void oWorld::loadTilesTexture() {
     }
 }
 
-void from_json(const nlohmann::json& j, oWorld::HexagonTile& w) {
+void from_json(const nlohmann::json &j, oWorld::HexagonTile &w) {
     w._depth = j.at("_depth");
     w._textureX = j.at("_textureX");
     w._textureY = j.at("_textureY");
@@ -87,7 +87,7 @@ void from_json(const nlohmann::json& j, oWorld::HexagonTile& w) {
     w._height = j.at("_height");
 }
 
-void to_json(nlohmann::json& j, const oWorld::HexagonTile& w) {
+void to_json(nlohmann::json &j, const oWorld::HexagonTile &w) {
     j = nlohmann::json{{"_depth", w._depth},
                        {"_textureX", w._textureX},
                        {"_textureY", w._textureY},
@@ -188,9 +188,9 @@ void oWorld::renderVisualWorld(float dt) {
 
     for (int i = 0; i < _worldHexagons.size(); i++) {
         for (int j = 0; j < _worldHexagons[i].size(); j++) {
-            const auto& hexagonTile = _hexagonTiles[_worldHexagons[i][j]];
+            const auto &hexagonTile = _hexagonTiles[_worldHexagons[i][j]];
 
-            const auto& frame = _aseprite._frames.at(currentFrame);
+            const auto &frame = _aseprite._frames.at(currentFrame);
 
             texturedQuad quad{_aseprite._imageTexture,
                               frame._frame._x + hexagonTile._textureX,

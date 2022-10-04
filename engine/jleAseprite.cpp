@@ -8,14 +8,14 @@
 #include <fstream>
 
 // jleAsepriteMetaLayer
-void from_json(const nlohmann::json& j, jleAsepriteMetaLayer& a) {
+void from_json(const nlohmann::json &j, jleAsepriteMetaLayer &a) {
     a._name = j.at("name");
     a._opacity = j.at("opacity");
     a._blendmode = j.at("blendMode");
 }
 
 // jleAsepriteMeta
-void from_json(const nlohmann::json& j, jleAsepriteMeta& a) {
+void from_json(const nlohmann::json &j, jleAsepriteMeta &a) {
     a._app = j.at("app");
     a._version = j.at("version");
     a._image = j.at("image");
@@ -26,7 +26,7 @@ void from_json(const nlohmann::json& j, jleAsepriteMeta& a) {
 }
 
 // jleAsepriteFrame
-void from_json(const nlohmann::json& j, jleAsepriteFrame& a) {
+void from_json(const nlohmann::json &j, jleAsepriteFrame &a) {
     a._frame = j.at("frame");
     a._rotated = j.at("rotated");
     a._trimmed = j.at("trimmed");
@@ -36,13 +36,13 @@ void from_json(const nlohmann::json& j, jleAsepriteFrame& a) {
 }
 
 // jleAsepriteXY
-void from_json(const nlohmann::json& j, jleAsepriteXY& a) {
+void from_json(const nlohmann::json &j, jleAsepriteXY &a) {
     a._w = j.at("w");
     a._h = j.at("h");
 }
 
 // jleAsepriteXYWH
-void from_json(const nlohmann::json& j, jleAsepriteXYWH& a) {
+void from_json(const nlohmann::json &j, jleAsepriteXYWH &a) {
     a._x = j.at("x");
     a._y = j.at("y");
     a._w = j.at("w");
@@ -50,12 +50,12 @@ void from_json(const nlohmann::json& j, jleAsepriteXYWH& a) {
 }
 
 // jleAseprite
-void from_json(const nlohmann::json& j, jleAseprite& a) {
+void from_json(const nlohmann::json &j, jleAseprite &a) {
     a._meta = j.at("meta");
     a._frames = j.at("frames").get<std::vector<jleAsepriteFrame>>();
 }
 
-bool jleAseprite::loadFromFile(const std::string& path) {
+bool jleAseprite::loadFromFile(const std::string &path) {
     _path = path;
     std::ifstream i(path);
     if (i.good()) {
@@ -72,7 +72,7 @@ bool jleAseprite::loadFromFile(const std::string& path) {
     }
 }
 
-jleAseprite::jleAseprite(const std::string& path) {
+jleAseprite::jleAseprite(const std::string &path) {
     _path = path;
     loadFromFile(path);
 }
@@ -86,7 +86,7 @@ void jleAseprite::loadImage() {
 
 int jleAseprite::totalAnimationTimeMs() {
     int res = 0;
-    for (auto&& frame : _frames) {
+    for (auto &&frame : _frames) {
         res += frame._duration;
     }
     return res;

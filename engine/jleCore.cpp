@@ -25,7 +25,7 @@ struct jleCore::jleCoreInternalImpl {
     std::shared_ptr<jleWindow> windowInternal;
     std::shared_ptr<CoreStatus_Internal> statusInternal;
 };
-jleCore::jleCore(const std::shared_ptr<jleCoreSettings>& cs)
+jleCore::jleCore(const std::shared_ptr<jleCoreSettings> &cs)
     : window{std::make_unique<jleWindow>()},
       input{std::make_shared<jleInputAPI>(
           std::make_shared<jleKeyboardInput>(window),
@@ -101,7 +101,7 @@ void jleCore::mainLoop() {
     running = !window->windowShouldClose();
 }
 
-jleTimerManager& jleCore::timerManager() { return _timerManager; }
+jleTimerManager &jleCore::timerManager() { return _timerManager; }
 
 void CoreStatus_Internal::refresh() {
     _currentFrame = jleCore::core->coreImpl->windowInternal->time();

@@ -14,7 +14,7 @@ void cCamera::start() {
 }
 
 void cCamera::update(float dt) {
-    auto& game = ((jleGameEngine *)jleCore::core)->gameRef();
+    auto &game = ((jleGameEngine *)jleCore::core)->gameRef();
 
     game._mainCamera._x = _transform->worldX() + _offsetX;
     game._mainCamera._y = _transform->worldY() + _offsetY;
@@ -23,14 +23,14 @@ void cCamera::update(float dt) {
     game._mainCamera._yNoOffset = _transform->worldY();
 }
 
-void cCamera::toJson(nlohmann::json& j_out) {
+void cCamera::toJson(nlohmann::json &j_out) {
     j_out = nlohmann::json{
         {"offsetX", _offsetX},
         {"offsetY", _offsetY},
     };
 }
 
-void cCamera::fromJson(const nlohmann::json& j_in) {
+void cCamera::fromJson(const nlohmann::json &j_in) {
     _offsetX = j_in.at("offsetX");
     _offsetY = j_in.at("offsetY");
 }

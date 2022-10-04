@@ -9,7 +9,7 @@ inline std::shared_ptr<T> jleObject::addComponent() {
     static_assert(std::is_base_of<jleComponent, T>::value,
                   "T must derive from jleComponent");
 
-    for (auto& component : _components) {
+    for (auto &component : _components) {
         if (std::dynamic_pointer_cast<T>(component)) {
             return std::dynamic_pointer_cast<T>(component);
         }
@@ -38,7 +38,7 @@ inline std::shared_ptr<T> jleObject::addCustomComponent(bool start_immediate) {
 };
 
 inline std::shared_ptr<jleComponent> jleObject::addComponent(
-    const std::string& component_name) {
+    const std::string &component_name) {
     auto newComponent =
         jleTypeReflectionUtils::instantiateComponentByString(component_name);
     newComponent->_attachedToObject = this;
@@ -50,7 +50,7 @@ inline std::shared_ptr<jleComponent> jleObject::addComponent(
 }
 
 inline std::shared_ptr<jleComponent> jleObject::addCustomComponent(
-    const std::string& component_name, bool start_immediate) {
+    const std::string &component_name, bool start_immediate) {
     auto newCustomComponent = addComponent(component_name);
     _dynamicCustomComponents.push_back(newCustomComponent);
 
@@ -66,7 +66,7 @@ inline std::shared_ptr<T> jleObject::component() {
     static_assert(std::is_base_of<jleComponent, T>::value,
                   "T must derive from jleComponent");
 
-    for (auto& component : _components) {
+    for (auto &component : _components) {
         if (std::dynamic_pointer_cast<T>(component)) {
             return std::dynamic_pointer_cast<T>(component);
         }
@@ -100,7 +100,7 @@ inline std::shared_ptr<T> jleObject::spawnChildObject() {
 }
 
 inline std::shared_ptr<jleObject> jleObject::spawnChildObject(
-    const std::string& objName) {
+    const std::string &objName) {
     auto object = _containedInScene->spawnObject(objName);
     attachChildObject(object);
     return object;
