@@ -13,18 +13,21 @@ void from_json(const nlohmann::json& j, jleSpritesheet& s) {
 
 void from_json(const nlohmann::json& j, jleSpritesheetEntity& s) {
     s._frame = j["frame"];
-    s._sourceSize = j["spriteSourceSize"];
+    // TODO: Should backward compatability be handled for this struct?
+    s._sourceSize = j.value("spriteSourceSize",
+                            jleSpritesheetEntity::jleSpritesheetEntitySource{});
 }
 
-void from_json(const nlohmann::json &j,
-               jleSpritesheetEntity::jleSpritesheetEntityFrame &s) {
+void from_json(const nlohmann::json& j,
+               jleSpritesheetEntity::jleSpritesheetEntityFrame& s) {
     s._x = j["x"];
     s._y = j["y"];
     s._width = j["width"];
     s._height = j["height"];
 }
 
-void from_json(const json &j, jleSpritesheetEntity::jleSpritesheetEntitySource &s) {
+void from_json(const json& j,
+               jleSpritesheetEntity::jleSpritesheetEntitySource& s) {
     s._x = j["x"];
     s._y = j["y"];
     s._width = j["w"];
@@ -37,7 +40,7 @@ void jleSpritesheet::LoadImage() {
     _imageTexture = jleTexture::FromPath(jleRelativePath{pngPath});
 }
 
-bool jleSpritesheet::LoadFromFile(const std::string &path) {
+bool jleSpritesheet::LoadFromFile(const std::string& path) {
     _pathJson = path;
     std::ifstream i(path);
     if (i.good()) {
