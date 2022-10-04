@@ -31,7 +31,7 @@ void jleRendering::render(jleFramebuffer& framebufferOut, jleCamera& camera) {
     _texts->render(framebufferOut, camera);
 }
 
-void jleRendering::up() {
+void jleRendering::setup() {
     LOG_VERBOSE << "Creating text rendering";
     this->_texts = std::make_unique<jleTextRendering>();
     LOG_VERBOSE << "Creating quad rendering";

@@ -30,13 +30,13 @@ int jleMouseInput::mouseY() {
 #endif
 }
 
-float jleMouseInput::mouseXDelta() { return 0; }
+float jleMouseInput::xDelta() { return 0; }
 
-float jleMouseInput::mouseYDelta() { return 0; }
+float jleMouseInput::yDelta() { return 0; }
 
-float jleMouseInput::GetScrollX() { return windowInternal->scrollX(); }
+float jleMouseInput::scrollX() { return windowInternal->scrollX(); }
 
-float jleMouseInput::GetScrollY() { return windowInternal->scrollY(); }
+float jleMouseInput::scrollY() { return windowInternal->scrollY(); }
 
 void jleMouseInput::screenBeginCoords(int x, int y) {
     _screenBeginX = x;

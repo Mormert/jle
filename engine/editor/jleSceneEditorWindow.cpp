@@ -174,7 +174,7 @@ void jleSceneEditorWindow::update(jleGameEngine& ge) {
                 115.f * ge.status->deltaFrameTime());
         }
 
-        auto currentScroll = jleCore::core->input->mouse->GetScrollY();
+        auto currentScroll = jleCore::core->input->mouse->scrollY();
         if (currentScroll != 0.f) {
             zoomValue -= currentScroll * 0.1f;
             zoomValue = glm::clamp(zoomValue, 0.25f, 5.f);

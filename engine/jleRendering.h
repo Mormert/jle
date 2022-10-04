@@ -14,7 +14,7 @@ class jleRendering {
 public:
     ~jleRendering() = default;
 
-    void up();
+    void setup();
 
     void viewportDimensions(int x,
                             int y,

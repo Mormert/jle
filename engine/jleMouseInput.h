@@ -16,13 +16,13 @@ public:
 
     int mouseY();
 
-    float mouseXDelta();
+    float xDelta();
 
-    float mouseYDelta();
+    float yDelta();
 
-    float GetScrollX();
+    float scrollX();
 
-    float GetScrollY();
+    float scrollY();
 
     int pixelatedMouseX();
 
