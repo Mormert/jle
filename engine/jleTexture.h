@@ -30,7 +30,7 @@ public:
     bool isActive();
 
     // Set this Texture to be the globally active texture
-    void toActiveTexture(int texture_slot = 0);
+    void setActive(int texture_slot = 0);
 
     int32_t width();
 

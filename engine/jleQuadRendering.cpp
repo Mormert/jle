@@ -282,7 +282,7 @@ void jleQuadRendering::processTexturedQuads(
         quadShaderInstanced.use();
 
         if (!key.first->isActive()) {
-            key.first->toActiveTexture();
+            key.first->setActive();
             quadShaderInstanced.SetVec2("textureDims",
                                         glm::vec2{float(key.first->width()),
                                                   float(key.first->height())});
@@ -347,9 +347,9 @@ void jleQuadRendering::processTexturedHeightQuads(
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         if (!key.first->texture->isActive()) {
-            key.first->texture->toActiveTexture(0);
-            key.first->heightmap->toActiveTexture(1);
-            key.first->normalmap->toActiveTexture(2);
+            key.first->texture->setActive(0);
+            key.first->heightmap->setActive(1);
+            key.first->normalmap->setActive(2);
             quadHeightmapShaderInstanced.SetVec2(
                 "textureDims",
                 glm::vec2{float(key.first->texture->width()),
