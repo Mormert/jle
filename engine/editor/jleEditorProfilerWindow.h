@@ -9,8 +9,8 @@ class jleEditorProfilerWindow : public iEditorImGuiWindow {
 public:
     explicit jleEditorProfilerWindow(const std::string& window_name);
 
-    void Update(jleGameEngine& ge) override;
+    void update(jleGameEngine& ge) override;
 
 private:
-    void DrawProfilerRecursive(uint32_t index);
+    void drawProfilerRecursive(uint32_t index);
 };

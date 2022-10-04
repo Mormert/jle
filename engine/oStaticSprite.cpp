@@ -5,11 +5,11 @@
 #include "jleCore.h"
 #include "jleScene.h"
 
-void oStaticSprite::SetupDefaultObject() {
-    transform = AddComponent<cTransform>();
-    sprite = AddComponent<cSprite>();
+void oStaticSprite::upDefaultObject() {
+    transform = addComponent<cTransform>();
+    sprite = addComponent<cSprite>();
 
-    sprite->CreateAndSetTextureFromPath("GameResources/Fruit+.png");
+    sprite->createAndSetTextureFromPath("GameResources/Fruit+.png");
 
     beginX += 16;
     if (beginX > 608) {
@@ -20,36 +20,36 @@ void oStaticSprite::SetupDefaultObject() {
         beginY -= 96;
     }
 
-    sprite->SetTextureBeginCoordinates(beginX, beginY);
-    sprite->SetRectangleDimensions(16, 16);
+    sprite->textureBeginCoordinates(beginX, beginY);
+    sprite->rectangleDimensions(16, 16);
 
-    auto spawnedObject = SpawnChildObject<jleObject>();
+    auto spawnedObject = spawnChildObject<jleObject>();
 
-    auto t = spawnedObject->AddCustomComponent<cTransform>();
-    auto c = spawnedObject->AddCustomComponent<cAseprite>();
-    c->AddAsepritePath("GR:rottenapple.json");
+    auto t = spawnedObject->addCustomComponent<cTransform>();
+    auto c = spawnedObject->addCustomComponent<cAseprite>();
+    c->addAsepritePath("GR:rottenapple.json");
     c->_animating = true;
     c->_height = 12;
     c->_width = 12;
 
-    t->SetLocalPosition(25 + (std::rand() % (325 - 25 + 1)),
-                        25 + (std::rand() % (325 - 25 + 1)));
+    t->localPosition(25 + (std::rand() % (325 - 25 + 1)),
+                     25 + (std::rand() % (325 - 25 + 1)));
 }
 
-void oStaticSprite::Start() {}
+void oStaticSprite::start() {}
 
-void oStaticSprite::Update(float dt) {
-    if (jleCore::core->input->keyboard->GetKeyDown('Q')) {
-        auto spawnedObject = SpawnChildObject<jleObject>();
+void oStaticSprite::update(float dt) {
+    if (jleCore::core->input->keyboard->keyDown('Q')) {
+        auto spawnedObject = spawnChildObject<jleObject>();
 
-        auto t = spawnedObject->AddCustomComponent<cTransform>();
-        auto c = spawnedObject->AddCustomComponent<cAseprite>();
-        c->AddAsepritePath("GR:rottenapple.json");
+        auto t = spawnedObject->addCustomComponent<cTransform>();
+        auto c = spawnedObject->addCustomComponent<cAseprite>();
+        c->addAsepritePath("GR:rottenapple.json");
         c->_animating = true;
         c->_height = 12;
         c->_width = 12;
 
-        t->SetLocalPosition(25 + (std::rand() % (325 - 25 + 1)),
-                            25 + (std::rand() % (325 - 25 + 1)));
+        t->localPosition(25 + (std::rand() % (325 - 25 + 1)),
+                         25 + (std::rand() % (325 - 25 + 1)));
     }
 }

@@ -18,24 +18,24 @@ public:
     jleEditor(std::shared_ptr<jleGameSettings>,
               std::shared_ptr<jleEditorSettings>);
 
-    void StartEditor();
+    void startEditor();
 
-    void Start() override;
+    void start() override;
 
-    void Render() override;
+    void render() override;
 
     std::shared_ptr<jleFramebuffer> _editorFramebuffer;
 
     static inline jleCamera _editorCamera{jleCameraProjection::Orthographic};
 
 private:
-    void InitImgui();
+    void initImgui();
 
-    void SetImguiTheme();
+    void imguiTheme();
 
     void AddImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window);
 
-    void MainEditorWindowResized(int w, int h);
+    void mainEditorWindowResized(int w, int h);
 
     std::vector<std::shared_ptr<iEditorImGuiWindow>> ImGuiWindows;
 

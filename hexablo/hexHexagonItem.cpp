@@ -3,37 +3,37 @@
 #include "hexHexagonItem.h"
 #include "oWorld.h"
 
-bool hexHexagonItem::TryUpdateHexagonItemPlacement(int q, int r) {
+bool hexHexagonItem::tryUpdateHexagonItemPlacement(int q, int r) {
 
-    if (!oWorld::sWorld->IsHexagonWalkable(q, r)) {
+    if (!oWorld::sWorld->isHexagonWalkable(q, r)) {
         return false;
     }
 
     if (_isPlacedOnWorld && oWorld::sWorld) {
         // remove the old world placement
-        oWorld::sWorld->RemoveHexItemAt(_hexagonQ, _hexagonR);
+        oWorld::sWorld->removeHexItemAt(_hexagonQ, _hexagonR);
     }
 
     _hexagonQ = q;
     _hexagonR = r;
 
-    oWorld::sWorld->PlaceHexItemAt(this, q, r);
+    oWorld::sWorld->placeHexItemAt(this, q, r);
     _isPlacedOnWorld = true;
 
     return true;
 }
 
-glm::ivec2 hexHexagonItem::GetHexagonItemPlacement() const {
+glm::ivec2 hexHexagonItem::hexagonItemPlacement() const {
     return {_hexagonQ, _hexagonR};
 }
 
 hexHexagonItem::~hexHexagonItem() {
     if (_isPlacedOnWorld && oWorld::sWorld) {
-        oWorld::sWorld->RemoveHexItemAt(_hexagonQ, _hexagonR);
+        oWorld::sWorld->removeHexItemAt(_hexagonQ, _hexagonR);
     }
 }
 
-void hexHexagonItem::SetHexagonItemPlacement(int q, int r) {
+void hexHexagonItem::hexagonItemPlacement(int q, int r) {
     _hexagonQ = q;
     _hexagonR = r;
 }

@@ -9,13 +9,13 @@ class jleEditorWindowsPanel : public iEditorImGuiWindow {
 public:
     explicit jleEditorWindowsPanel(const std::string& window_name);
 
-    void Update(jleGameEngine& ge) override;
+    void update(jleGameEngine& ge) override;
 
-    void AddWindow(std::shared_ptr<iEditorImGuiWindow> window);
+    void addWindow(std::shared_ptr<iEditorImGuiWindow> window);
 
-    inline void MenuButtonsUpdate(jleGameEngine& ge);
+    inline void menuButtonsupdate(jleGameEngine& ge);
 
-    inline void DockspaceUpdate(jleGameEngine& ge);
+    inline void dockspaceupdate(jleGameEngine& ge);
 
 private:
     std::vector<std::shared_ptr<iEditorImGuiWindow>> windows;

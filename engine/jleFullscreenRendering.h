@@ -17,7 +17,7 @@ public:
 
     ~jleFullscreenRendering();
 
-    void RenderFramebufferFullscreen(jleFramebuffer& framebuffer,
+    void renderFramebufferFullscreen(jleFramebuffer& framebuffer,
                                      unsigned int screenWidth,
                                      unsigned int screenHeight);
 

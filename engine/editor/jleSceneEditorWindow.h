@@ -12,7 +12,7 @@ public:
     jleSceneEditorWindow(const std::string& window_name,
                          std::shared_ptr<jleFramebuffer>& framebuffer);
 
-    void Update(jleGameEngine& ge) override;
+    void update(jleGameEngine& ge) override;
 
 private:
     float _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;
@@ -22,5 +22,5 @@ private:
     std::shared_ptr<jleFramebuffer> _framebuffer;
     jleImage _transformMarkerImage;
     std::shared_ptr<jleTexture> _transformMarkerTexture;
-    TexturedQuad _texturedQuad;
+    texturedQuad _texturedQuad;
 };

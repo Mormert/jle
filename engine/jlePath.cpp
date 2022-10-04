@@ -43,15 +43,13 @@ jleRelativePath::jleRelativePath(const jleAbsolutePath& absolutePath) {
     _relativePath = path;
 }
 
-std::string jleRelativePath::GetRelativePathStr() const {
-    return _relativePath;
+std::string jleRelativePath::relativePathStr() const { return _relativePath; }
+
+std::string jleRelativePath::absolutePathStr() const {
+    return jleAbsolutePath{jleRelativePath(_relativePath)}.absolutePathStr();
 }
 
-std::string jleRelativePath::GetAbsolutePathStr() const {
-    return jleAbsolutePath{jleRelativePath(_relativePath)}.GetAbsolutePathStr();
-}
-
-const std::string jleRelativePath::GetPathPrefix() const {
+const std::string jleRelativePath::pathPrefix() const {
     return _relativePath.substr(0, 3);
 }
 
@@ -114,10 +112,8 @@ jleAbsolutePath::jleAbsolutePath(const jleRelativePath& relativePath) {
     _absolutePath = *resourcesDirectory + '/' + path;
 }
 
-std::string jleAbsolutePath::GetRelativePathStr() const {
-    return jleRelativePath{jleAbsolutePath(_absolutePath)}.GetRelativePathStr();
+std::string jleAbsolutePath::relativePathStr() const {
+    return jleRelativePath{jleAbsolutePath(_absolutePath)}.relativePathStr();
 }
 
-std::string jleAbsolutePath::GetAbsolutePathStr() const {
-    return _absolutePath;
-}
+std::string jleAbsolutePath::absolutePathStr() const { return _absolutePath; }

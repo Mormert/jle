@@ -10,13 +10,13 @@ class jleTimerManager {
 public:
     // Will crash if data is invalid when called, will however extend object
     // lifetime
-    void ExecuteFuncInSecondsSharedData(double seconds,
+    void executeFuncInSecondsSharedData(double seconds,
                                         void (*f)(std::shared_ptr<void>),
                                         const std::shared_ptr<void>& data);
 
     // Will not run if data is invalid when called (no crash), and also not
     // impact object lifetime
-    void ExecuteFuncInSecondsWeakData(double seconds,
+    void executeFuncInSecondsWeakData(double seconds,
                                       void (*f)(std::weak_ptr<void>),
                                       const std::weak_ptr<void>& data);
 
@@ -25,9 +25,9 @@ private:
 
     friend class jleGameEngine;
 
-    void Process();
+    void process();
 
-    void ClearTimers();
+    void clearTimers();
 
     struct jleTimerManagerFunctionSharedData {
         void (*_function)(std::shared_ptr<void>);

@@ -8,7 +8,7 @@
 
 namespace cfg {
 template <typename T>
-inline void LoadEngineConfig(const std::string& cfgName, T& cfgJson) {
+inline void loadEngineConfig(const std::string& cfgName, T& cfgJson) {
     std::ifstream i(cfgName);
     if (i.good()) {
         nlohmann::json j;
@@ -21,7 +21,7 @@ inline void LoadEngineConfig(const std::string& cfgName, T& cfgJson) {
     }
 }
 
-inline void SaveEngineConfig(const std::string& cfgName, nlohmann::json& j) {
+inline void saveEngineConfig(const std::string& cfgName, nlohmann::json& j) {
     std::ofstream i(cfgName);
     if (i.good()) {
         i << j.dump(4);

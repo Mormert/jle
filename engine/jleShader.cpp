@@ -77,12 +77,12 @@ jleShader::jleShader(const char *vertexPath,
     vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vShaderCode, NULL);
     glCompileShader(vertex);
-    CheckCompileErrors(vertex, "VERTEX");
+    checkCompileErrors(vertex, "VERTEX");
 
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment, 1, &fShaderCode, NULL);
     glCompileShader(fragment);
-    CheckCompileErrors(fragment, "FRAGMENT");
+    checkCompileErrors(fragment, "FRAGMENT");
     // if geometry shader is given, compile geometry shader - Not supported in
     // OpenGL ES 3.0 unsigned int geometry; if (geometryPath != nullptr)
     // {
@@ -90,7 +90,7 @@ jleShader::jleShader(const char *vertexPath,
     // 	geometry = glCreateShader(GL_GEOMETRY_SHADER);
     // 	glShaderSource(geometry, 1, &gShaderCode, NULL);
     // 	glCompileShader(geometry);
-    // 	CheckCompileErrors(geometry, "GEOMETRY");
+    // 	checkCompileErrors(geometry, "GEOMETRY");
     // }
     // shader Program
     ID = glCreateProgram();
@@ -99,7 +99,7 @@ jleShader::jleShader(const char *vertexPath,
     // if (geometryPath != nullptr)
     // 	glAttachShader(ID, geometry);
     glLinkProgram(ID);
-    CheckCompileErrors(ID, "PROGRAM");
+    checkCompileErrors(ID, "PROGRAM");
     // delete the shaders as they're linked into our program now and no longer
     // necessery
     glDeleteShader(vertex);
@@ -123,12 +123,12 @@ std::string geometryCode)
     vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vShaderCode, NULL);
     glCompileShader(vertex);
-    CheckCompileErrors(vertex, "VERTEX");
+    checkCompileErrors(vertex, "VERTEX");
 
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment, 1, &fShaderCode, NULL);
     glCompileShader(fragment);
-    CheckCompileErrors(fragment, "FRAGMENT");
+    checkCompileErrors(fragment, "FRAGMENT");
     // if geometry shader is given, compile geometry shader, geometry not
 supported in OpenGL ES 3.0
     // unsigned int geometry{ 0 };
@@ -138,7 +138,7 @@ supported in OpenGL ES 3.0
     // 	geometry = glCreateShader(GL_GEOMETRY_SHADER);
     // 	glShaderSource(geometry, 1, &gShaderCode, NULL);
     // 	glCompileShader(geometry);
-    // 	CheckCompileErrors(geometry, "GEOMETRY");
+    // 	checkCompileErrors(geometry, "GEOMETRY");
     // }
     // shader Program
     ID = glCreateProgram();
@@ -147,7 +147,7 @@ supported in OpenGL ES 3.0
     // if (geometryCode != "")
     // 	glAttachShader(ID, geometry);
     glLinkProgram(ID);
-    CheckCompileErrors(ID, "PROGRAM");
+    checkCompileErrors(ID, "PROGRAM");
     // delete the shaders as they're linked into our program now and no longer
 necessery glDeleteShader(vertex); glDeleteShader(fragment);
     // if (geometryCode != "")
@@ -156,7 +156,7 @@ necessery glDeleteShader(vertex); glDeleteShader(fragment);
 
 jleShader::~jleShader() { glDeleteProgram(ID); }
 
-void jleShader::Use() { glUseProgram(ID); }
+void jleShader::use() { glUseProgram(ID); }
 
 void jleShader::SetBool(const std::string& name, bool value) const {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
@@ -213,7 +213,7 @@ void jleShader::SetMat4(const std::string& name, const glm::mat4& mat) const {
         glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-void jleShader::CheckCompileErrors(unsigned int shader, std::string type) {
+void jleShader::checkCompileErrors(unsigned int shader, std::string type) {
     GLint success;
     GLchar infoLog[1024];
     if (type != "PROGRAM") {

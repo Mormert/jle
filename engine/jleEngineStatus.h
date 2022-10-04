@@ -4,19 +4,19 @@
 
 class jleEngineStatus {
 public:
-    static int GetFps();
+    static int fps();
 
-    static double GetDeltaTime();
+    static double deltaTime();
 
-    static double GetTime();
+    static double time();
 
 private:
-    static int fps;
-    static double deltaTime;
-    static double currentFrame;
-    static double lastFrame;
+    static int _fps;
+    static double _deltaTime;
+    static double _currentFrame;
+    static double _lastFrame;
 
-    static void UpdateEngineStatus();
+    static void updateEngineStatus();
 
     friend class jleCore;
 };

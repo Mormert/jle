@@ -8,8 +8,8 @@
 
 #include <algorithm>
 
-bool jleImage::LoadFromFile(const std::string& path) {
-    this->path = path;
+bool jleImage::loadFromFile(const std::string& path) {
+    this->_path = path;
     stbi_set_flip_vertically_on_load(false);
     image_data = stbi_load(path.c_str(), &w, &h, &nr_channels, 0);
 
@@ -20,8 +20,8 @@ bool jleImage::LoadFromFile(const std::string& path) {
 }
 
 jleImage::jleImage(const std::string& path) {
-    this->path = path;
-    LoadFromFile(path);
+    this->_path = path;
+    loadFromFile(path);
 }
 
 jleImage::jleImage(const jleImage& i) {
@@ -90,17 +90,17 @@ jleImage::~jleImage() {
     PLOG_VERBOSE << "Destroyed image [" << w << ", " << h << "].";
 }
 
-unsigned int jleImage::GetImageHeight() const { return h; }
+unsigned int jleImage::imageHeight() const { return h; }
 
-unsigned int jleImage::GetImageNrChannels() const { return nr_channels; }
+unsigned int jleImage::imageNrChannels() const { return nr_channels; }
 
-unsigned char *jleImage::GetImageData() const { return image_data; }
+unsigned char *jleImage::imageData() const { return image_data; }
 
-unsigned int jleImage::GetImageWidth() const { return w; }
+unsigned int jleImage::imageWidth() const { return w; }
 
-const std::string& jleImage::GetPath() const { return path; }
+const std::string& jleImage::path() const { return _path; }
 
-std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> jleImage::GetPixelAtLocation(
+std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> jleImage::pixelAtLocation(
     uint32_t x, uint32_t y) const {
     if (x >= w) {
         LOGW << "x was outside bounds: " << x

@@ -17,7 +17,7 @@ public:
     explicit jleGameEngine(std::shared_ptr<jleGameSettings> gs);
 
     template <class T>
-    void SetGame() {
+    void setGame() {
         _gameCreator = []() { return std::make_unique<T>(); };
     }
 
@@ -26,26 +26,26 @@ public:
 
     void SetGameDimsPixels(FIXED_AXIS fa, unsigned int pixels);
 
-    std::pair<unsigned int, unsigned int> GetFramebufferDimensions(
+    std::pair<unsigned int, unsigned int> framebufferDimensions(
         unsigned int windowWidth, unsigned int windowHeight);
 
-    void StartGame();
+    void startGame();
 
-    void RestartGame();
+    void restartGame();
 
-    void KillGame();
+    void killGame();
 
-    void HaltGame();
+    void haltGame();
 
-    void UnhaltGame();
+    void unhaltGame();
 
-    void ExecuteNextFrame();
+    void executeNextFrame();
 
-    bool IsGameKilled();
+    bool isGameKilled();
 
-    bool IsGameHalted();
+    bool isGameHalted();
 
-    jleGame& GetGameRef();
+    jleGame& gameRef();
 
     static inline jleGameEngine *gEngine;
 
@@ -54,16 +54,16 @@ private:
 
     std::unique_ptr<jleFullscreenRendering> _fullscreen_renderer;
 
-    void FramebufferResizeEvent(unsigned int width, unsigned int height);
+    void framebufferResizeEvent(unsigned int width, unsigned int height);
 
 protected:
-    void Start() override;
+    void start() override;
 
-    void Update(float dt) override;
+    void update(float dt) override;
 
-    void Render() override;
+    void render() override;
 
-    void Exiting() override;
+    void exiting() override;
 
     FIXED_AXIS fixed_axis;
 

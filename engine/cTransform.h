@@ -12,180 +12,180 @@ class cTransform : public jleComponent {
 public:
     explicit cTransform(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
-    inline void SetWorldPosition(float x, float y, float depth) {
+    inline void worldPosition(float x, float y, float depth) {
 
         _x = 0.f;
         _y = 0.f;
         _depth = 0.f;
 
-        auto p = _attachedToObject->GetParent();
+        auto p = _attachedToObject->parent();
         while (p) {
-            if (auto&& t = p->GetComponent<cTransform>()) {
+            if (auto&& t = p->component<cTransform>()) {
                 _x -= t->_x;
                 _y -= t->_y;
                 _depth -= t->_depth;
             }
 
-            p = p->GetParent();
+            p = p->parent();
         }
 
         _x += x;
         _y += y;
         _depth += depth;
 
-        SetDirty();
+        dirty();
     }
 
-    inline void SetWorldPositionXY(float x, float y) {
+    inline void worldPositionXY(float x, float y) {
 
         _x = 0.f;
         _y = 0.f;
 
-        auto p = _attachedToObject->GetParent();
+        auto p = _attachedToObject->parent();
         while (p) {
-            if (auto&& t = p->GetComponent<cTransform>()) {
+            if (auto&& t = p->component<cTransform>()) {
                 _x -= t->_x;
                 _y -= t->_y;
             }
 
-            p = p->GetParent();
+            p = p->parent();
         }
 
         _x += x;
         _y += y;
 
-        SetDirty();
+        dirty();
     }
 
-    inline void SetWorldPositionX(float x) {
+    inline void worldPositionX(float x) {
         _x = 0.f;
 
-        auto p = _attachedToObject->GetParent();
+        auto p = _attachedToObject->parent();
         while (p) {
-            if (auto&& t = p->GetComponent<cTransform>()) {
+            if (auto&& t = p->component<cTransform>()) {
                 _x -= t->_x;
             }
 
-            p = p->GetParent();
+            p = p->parent();
         }
 
         _x += x;
 
-        SetDirty();
+        dirty();
     }
 
-    inline void SetWorldPositionY(float y) {
+    inline void worldPositionY(float y) {
 
         _y = 0.f;
 
-        auto p = _attachedToObject->GetParent();
+        auto p = _attachedToObject->parent();
         while (p) {
-            if (auto&& t = p->GetComponent<cTransform>()) {
+            if (auto&& t = p->component<cTransform>()) {
                 _y -= t->_y;
             }
 
-            p = p->GetParent();
+            p = p->parent();
         }
 
         _y += y;
 
-        SetDirty();
+        dirty();
     }
 
-    inline void SetLocalPosition(float x, float y, float depth = 0.f) {
+    inline void localPosition(float x, float y, float depth = 0.f) {
         _x = x, _y = y;
         _depth = depth;
 
-        SetDirty();
+        dirty();
     }
 
-    inline void AddLocalPosition(float x, float y, float depth = 0.f) {
+    inline void addLocalPosition(float x, float y, float depth = 0.f) {
         _x += x;
         _y += y;
         _depth += depth;
 
-        SetDirty();
+        dirty();
     }
 
-    inline void SetLocalPositionX(float x) {
+    inline void localPositionX(float x) {
         _x = x;
-        SetDirty();
+        dirty();
     }
 
-    inline void SetLocalPositionY(float y) {
+    inline void localPositionY(float y) {
         _y = y;
-        SetDirty();
+        dirty();
     }
 
-    [[nodiscard]] inline float GetWorldX() {
+    [[nodiscard]] inline float worldX() {
         if (_dirty) {
-            RefreshWorldCoordinates();
+            refreshWorldCoordinates();
         }
 
         return _worldX;
     }
 
-    [[nodiscard]] inline float GetWorldY() {
+    [[nodiscard]] inline float worldY() {
         if (_dirty) {
-            RefreshWorldCoordinates();
+            refreshWorldCoordinates();
         }
 
         return _worldY;
     }
 
-    [[nodiscard]] inline float GetWorldDepth() {
+    [[nodiscard]] inline float worldDepth() {
         if (_dirty) {
-            RefreshWorldCoordinates();
+            refreshWorldCoordinates();
         }
 
         return _worldDepth;
     }
 
-    [[nodiscard]] inline glm::vec3 GetWorldXYDepth() {
+    [[nodiscard]] inline glm::vec3 worldXYDepth() {
         if (_dirty) {
-            RefreshWorldCoordinates();
+            refreshWorldCoordinates();
         }
 
         return {_x, _y, _depth};
     }
 
-    [[nodiscard]] inline float GetLocalX() const { return _x; }
+    [[nodiscard]] inline float localX() const { return _x; }
 
-    [[nodiscard]] inline float GetLocalY() const { return _y; }
+    [[nodiscard]] inline float localY() const { return _y; }
 
-    [[nodiscard]] inline float GetLocalDepth() const { return _depth; }
+    [[nodiscard]] inline float localDepth() const { return _depth; }
 
-    inline void SetDirty() {
+    inline void dirty() {
         _dirty = true;
 
         // Also set all the child transforms dirty
-        auto& children = _attachedToObject->GetChildObjects();
+        auto& children = _attachedToObject->childObjects();
         for (auto&& child : children) {
-            if (auto t = child->GetComponent<cTransform>()) {
+            if (auto t = child->component<cTransform>()) {
                 t->_dirty = true;
-                t->SetDirty();
+                t->dirty();
             }
         }
     }
 
-    void ToJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json& j_out) override;
 
-    void FromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json& j_in) override;
 
 private:
-    inline void RefreshWorldCoordinates() {
+    inline void refreshWorldCoordinates() {
         _worldX = _x;
         _worldY = _y;
         _worldDepth = _depth;
-        auto p = _attachedToObject->GetParent();
+        auto p = _attachedToObject->parent();
         while (p) {
-            if (auto&& t = p->GetComponent<cTransform>()) {
+            if (auto&& t = p->component<cTransform>()) {
                 _worldX += t->_x;
                 _worldY += t->_y;
                 _worldDepth += t->_depth;
             }
 
-            p = p->GetParent();
+            p = p->parent();
         }
         _dirty = false;
     }

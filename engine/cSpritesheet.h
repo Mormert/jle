@@ -12,15 +12,15 @@ public:
     explicit cSpritesheet(jleObject *owner = nullptr,
                           jleScene *scene = nullptr);
 
-    void Start() override;
+    void start() override;
 
-    void Update(float dt) override;
+    void update(float dt) override;
 
-    void ToJson(nlohmann::json &j_out) override;
+    void toJson(nlohmann::json& j_out) override;
 
-    void FromJson(const nlohmann::json &j_in) override;
+    void fromJson(const nlohmann::json& j_in) override;
 
-    void SetEntity(const std::string &entityName);
+    void entity(const std::string& entityName);
 
 private:
     std::shared_ptr<cTransform> _transform{nullptr};

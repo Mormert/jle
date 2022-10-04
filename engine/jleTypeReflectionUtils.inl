@@ -1,51 +1,51 @@
 // Copyright (c) 2022. Johan Lind
 
 template <typename T>
-inline void jleTypeReflectionUtils::RegisterObject() {
+inline void jleTypeReflectionUtils::registerObject() {
     static_assert(std::is_base_of<jleObject, T>::value,
                   "T must derive from jleObject");
 
-    std::string oName{T::GetObjectName()};
+    std::string oName{T::objectName()};
     std::function<std::shared_ptr<T>()> oCreationFunc = []() {
         return std::make_shared<T>();
     };
 
-    GetRegisteredObjectsRef().insert(std::make_pair(oName, oCreationFunc));
+    registeredObjectsRef().insert(std::make_pair(oName, oCreationFunc));
 }
 
 template <typename T>
-[[maybe_unused]] inline void jleTypeReflectionUtils::RegisterComponent() {
+[[maybe_unused]] inline void jleTypeReflectionUtils::registerComponent() {
     static_assert(std::is_base_of<jleComponent, T>::value,
                   "T must derive from jleComponent");
 
-    std::string cName{T::GetObjectName()};
+    std::string cName{T::objectName()};
     std::function<std::shared_ptr<T>()> cCreationFunc = []() {
         return std::make_shared<T>();
     };
 
-    GetRegisteredObjectsRef().insert(std::make_pair(cName, cCreationFunc));
+    registeredObjectsRef().insert(std::make_pair(cName, cCreationFunc));
 }
 
 inline std::shared_ptr<jleObject> jleTypeReflectionUtils::
-    InstantiateObjectByString(const std::string& str) {
-    auto it = GetRegisteredObjectsRef().find(str);
-    if (it == GetRegisteredObjectsRef().end()) {
+    instantiateObjectByString(const std::string& str) {
+    auto it = registeredObjectsRef().find(str);
+    if (it == registeredObjectsRef().end()) {
         return nullptr;
     }
     return it->second();
 }
 
 inline std::shared_ptr<jleComponent> jleTypeReflectionUtils::
-    InstantiateComponentByString(const std::string& str) {
-    auto it = GetRegisteredComponentsRef().find(str);
-    if (it == GetRegisteredComponentsRef().end()) {
+    instantiateComponentByString(const std::string& str) {
+    auto it = registeredComponentsRef().find(str);
+    if (it == registeredComponentsRef().end()) {
         return nullptr;
     }
     return it->second();
 }
 
 inline std::map<std::string, std::function<std::shared_ptr<jleObject>()>>&
-jleTypeReflectionUtils::GetRegisteredObjectsRef() {
+jleTypeReflectionUtils::registeredObjectsRef() {
     if (!_registeredObjectsPtr) {
         _registeredObjectsPtr = std::make_unique<
             std::map<std::string,
@@ -55,7 +55,7 @@ jleTypeReflectionUtils::GetRegisteredObjectsRef() {
 }
 
 inline std::map<std::string, std::function<std::shared_ptr<jleComponent>()>>&
-jleTypeReflectionUtils::GetRegisteredComponentsRef() {
+jleTypeReflectionUtils::registeredComponentsRef() {
     if (!_registeredComponentsPtr) {
         _registeredComponentsPtr = std::make_unique<
             std::map<std::string,
@@ -74,7 +74,7 @@ inline jleObjectTypeRegistrator<T>::jleObjectTypeRegistrator(
         return std::make_shared<T>();
     };
 
-    jleTypeReflectionUtils::GetRegisteredObjectsRef().insert(
+    jleTypeReflectionUtils::registeredObjectsRef().insert(
         std::make_pair(oName, oCreationFunc));
 }
 
@@ -88,6 +88,6 @@ inline jleComponentTypeRegistrator<T>::jleComponentTypeRegistrator(
         return std::make_shared<T>();
     };
 
-    jleTypeReflectionUtils::GetRegisteredComponentsRef().insert(
+    jleTypeReflectionUtils::registeredComponentsRef().insert(
         std::make_pair(cName, cCreationFunc));
 }

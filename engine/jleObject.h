@@ -20,93 +20,93 @@ class jleObject : public jleJsonInterface<nlohmann::json>,
 public:
     std::string _instanceName;
 
-    virtual void Start() {}
+    virtual void start() {}
 
-    virtual void Update(float dt) {}
+    virtual void update(float dt) {}
 
     jleObject();
 
     ~jleObject() override = default;
 
     template <typename T>
-    std::shared_ptr<T> AddComponent();
+    std::shared_ptr<T> addComponent();
 
     template <typename T>
-    std::shared_ptr<T> AddCustomComponent(bool start_immediate = false);
+    std::shared_ptr<T> addCustomComponent(bool start_immediate = false);
 
-    std::shared_ptr<jleComponent> AddComponent(
+    std::shared_ptr<jleComponent> addComponent(
         const std::string& component_name);
 
-    std::shared_ptr<jleComponent> AddCustomComponent(
+    std::shared_ptr<jleComponent> addCustomComponent(
         const std::string& component_name, bool start_immediate = false);
 
     template <typename T>
-    std::shared_ptr<T> GetComponent();
+    std::shared_ptr<T> component();
 
     template <typename T>
-    std::shared_ptr<T> AddDependencyComponent(const jleComponent *component);
+    std::shared_ptr<T> addDependencyComponent(const jleComponent *component);
 
     template <typename T>
-    std::shared_ptr<T> SpawnChildObject();
+    std::shared_ptr<T> spawnChildObject();
 
     // Has bad performance since it uses JSON, should only be used in the editor
     void DuplicateObject_Editor();
 
-    std::shared_ptr<jleObject> SpawnChildObject(const std::string& objName);
+    std::shared_ptr<jleObject> spawnChildObject(const std::string& objName);
 
-    void SaveObjectTemplate(jleRelativePath& path);
+    void saveObjectTemplate(jleRelativePath& path);
 
-    std::shared_ptr<jleObject> SpawnChildObjectFromTemplate(
+    std::shared_ptr<jleObject> spawnChildObjectFromTemplate(
         const jleRelativePath& path);
 
-    void InjectTemplate(const nlohmann::json& json);
+    void injectTemplate(const nlohmann::json& json);
 
     // Called from components
-    void DestroyComponent(jleComponent *component);
+    void destroyComponent(jleComponent *component);
 
-    void DestroyObject();
+    void destroyObject();
 
-    int GetComponentCount();
+    int componentCount();
 
-    std::vector<std::shared_ptr<jleComponent>>& GetCustomComponents();
+    std::vector<std::shared_ptr<jleComponent>>& customComponents();
 
-    void AttachChildObject(const std::shared_ptr<jleObject>& object);
+    void attachChildObject(const std::shared_ptr<jleObject>& object);
 
-    void DetachObjectFromParent();
+    void detachObjectFromParent();
 
-    std::vector<std::shared_ptr<jleObject>>& GetChildObjects();
+    std::vector<std::shared_ptr<jleObject>>& childObjects();
 
-    void ToJson(nlohmann::json& j_out) override {}
+    void toJson(nlohmann::json& j_out) override {}
 
-    void FromJson(const nlohmann::json& j_in) override {}
+    void fromJson(const nlohmann::json& j_in) override {}
 
-    jleObject *GetParent();
+    jleObject *parent();
 
-    [[nodiscard]] std::weak_ptr<jleObject> GetWeakPtrToThis();
+    [[nodiscard]] std::weak_ptr<jleObject> weakPtrToThis();
 
-    static void ProcessJsonData(const nlohmann::json& j,
+    static void processJsonData(const nlohmann::json& j,
                                 std::shared_ptr<jleObject>& o);
 
-    static std::shared_ptr<jleObject> ProcessChildJsonData(
+    static std::shared_ptr<jleObject> processChildJsonData(
         const nlohmann::json& j, std::shared_ptr<jleObject>& o);
 
-    static nlohmann::json GetObjectTemplateJson(const jleRelativePath& path);
+    static nlohmann::json objectTemplateJson(const jleRelativePath& path);
 
     // If this object is based on a template
     std::optional<std::string> _templatePath{};
 
-    int GetInstanceID() const;
+    int instanceID() const;
 
 private:
     friend class jleScene;
 
     explicit jleObject(jleScene *scene);
 
-    void StartComponents();
+    void startComponents();
 
-    void UpdateComponents(float dt);
+    void updateComponents(float dt);
 
-    void UpdateChildren(float dt);
+    void updateChildren(float dt);
 
     bool _pendingKill = false;
 
@@ -130,7 +130,7 @@ protected:
 
     jleScene *_containedInScene = nullptr;
 
-    virtual void SetupDefaultObject() {}
+    virtual void upDefaultObject() {}
 
     friend void to_json(nlohmann::json& j, const std::shared_ptr<jleObject>& o);
 

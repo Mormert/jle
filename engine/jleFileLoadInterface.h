@@ -9,5 +9,5 @@ public:
     virtual ~jleFileLoadInterface() = default;
 
     // Should implement logic for loading data from file into derived class
-    virtual bool LoadFromFile(const std::string& path) = 0;
+    virtual bool loadFromFile(const std::string& path) = 0;
 };

@@ -9,53 +9,53 @@
 
 #include "3rdparty/FastNoiseLite/FastNoiseLite.h"
 
-void oWorld::SetupDefaultObject() {}
+void oWorld::upDefaultObject() {}
 
-void oWorld::Start() {
+void oWorld::start() {
     if (_aseprite._frames.empty()) {
-        LoadTilesTexture();
+        loadTilesTexture();
     }
     _quadRenderingPtr = &jleCore::core->rendering->quads();
 
-    GenerateVisualWorld();
+    generateVisualWorld();
 }
 
-void oWorld::Update(float dt) {
+void oWorld::update(float dt) {
 
-    //  RenderVisualWorld(dt);
+    //  renderVisualWorld(dt);
 
     /*for (int i = 0; i < 25; i++) {
         for (int j = 0; j < 25; j++) {
-            const auto realCoords = hexHexagonFunctions::HexToPixel(i, j,
+            const auto realCoords = hexHexagonFunctions::hexToPixel(i, j,
     _hexSizeX, _hexSizeY); quad.x = realCoords.x - hexagonTile._width / 2;
             quad.y = realCoords.y - hexagonTile._height / 2;
             quad.depth = hexagonTile._depth;
-            _quadRenderingPtr->SendTexturedQuad(quad, RenderingMethod::Dynamic);
+            _quadRenderingPtr->sendTexturedQuad(quad, RenderingMethod::Dynamic);
         }
     }
 
-    const auto mx = hexHelperFunctions::GetPixelatedMouseXWorldSpace();
-    const auto my = hexHelperFunctions::GetPixelatedMouseYWorldSpace();
+    const auto mx = hexHelperFunctions::pixelatedMouseXWorldSpace();
+    const auto my = hexHelperFunctions::pixelatedMouseYWorldSpace();
 
-    const auto hexCoord = hexHexagonFunctions::PixelToHex(mx, my, _hexSizeX,
+    const auto hexCoord = hexHexagonFunctions::pixelToHex(mx, my, _hexSizeX,
     _hexSizeY);
 
     quad.textureX = _hexagonTiles[0]._textureX;
     quad.depth = 0.5f;
-    const auto realCoords = hexHexagonFunctions::HexToPixel(hexCoord.x,
+    const auto realCoords = hexHexagonFunctions::hexToPixel(hexCoord.x,
     hexCoord.y, _hexSizeX, _hexSizeY); quad.x = realCoords.x -
     hexagonTile._width / 2; quad.y = realCoords.y - hexagonTile._height / 2;
-    _quadRenderingPtr->SendTexturedQuad(quad, RenderingMethod::Dynamic);*/
+    _quadRenderingPtr->sendTexturedQuad(quad, RenderingMethod::Dynamic);*/
 }
 
-void oWorld::ToJson(nlohmann::json& j_out) {
+void oWorld::toJson(nlohmann::json& j_out) {
     j_out["_worldHexTilesAsepritePath"] = _worldHexTilesAsepritePath;
     j_out["_hexagonTiles"] = _hexagonTiles;
     j_out["_hexSizeX"] = _hexSizeX;
     j_out["_hexSizeY"] = _hexSizeY;
 }
 
-void oWorld::FromJson(const nlohmann::json& j_in) {
+void oWorld::fromJson(const nlohmann::json& j_in) {
     JLE_FROM_JSON_WITH_DEFAULT(
         j_in, _worldHexTilesAsepritePath, "_worldHexTilesAsepritePath", "");
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _hexSizeX, "_hexSizeX", 8);
@@ -66,14 +66,14 @@ void oWorld::FromJson(const nlohmann::json& j_in) {
             j_in.at("_hexagonTiles").get<std::vector<HexagonTile>>();
     }
     if (_aseprite._frames.empty()) {
-        LoadTilesTexture();
+        loadTilesTexture();
     }
 }
 
-void oWorld::LoadTilesTexture() {
+void oWorld::loadTilesTexture() {
     if (!_worldHexTilesAsepritePath.empty()) {
-        _aseprite.LoadFromFile(
-            jleRelativePath{_worldHexTilesAsepritePath}.GetAbsolutePathStr());
+        _aseprite.loadFromFile(
+            jleRelativePath{_worldHexTilesAsepritePath}.absolutePathStr());
         //_worldHexTilesTexture =
         // jleCore::core->texture_creator->LoadTextureFromPath(truePath);
     }
@@ -99,7 +99,7 @@ oWorld::oWorld() { sWorld = this; }
 
 oWorld::~oWorld() { sWorld = nullptr; }
 
-hexHexagonItem *oWorld::GetHexItemAt(int q, int r) {
+hexHexagonItem *oWorld::hexItemAt(int q, int r) {
 
 #ifndef NDEBUG
 
@@ -119,7 +119,7 @@ hexHexagonItem *oWorld::GetHexItemAt(int q, int r) {
 #endif
 }
 
-void oWorld::RemoveHexItemAt(int q, int r) {
+void oWorld::removeHexItemAt(int q, int r) {
     _hexagonItems.erase({q, r});
 
 #ifndef NDEBUG
@@ -127,7 +127,7 @@ void oWorld::RemoveHexItemAt(int q, int r) {
 #endif
 }
 
-void oWorld::PlaceHexItemAt(hexHexagonItem *item, int q, int r) {
+void oWorld::placeHexItemAt(hexHexagonItem *item, int q, int r) {
     _hexagonItems[{q, r}] = item;
 
 #ifndef NDEBUG
@@ -135,7 +135,7 @@ void oWorld::PlaceHexItemAt(hexHexagonItem *item, int q, int r) {
 #endif
 }
 
-bool oWorld::IsHexagonWalkable(int q, int r) {
+bool oWorld::isHexagonWalkable(int q, int r) {
     // Check for static hexagons, like water, rocks, etc first, since they are
     // the most common
     if (_staticallyNotWalkableHexagons.find({q, r}) !=
@@ -150,7 +150,7 @@ bool oWorld::IsHexagonWalkable(int q, int r) {
     return true;
 }
 
-void oWorld::GenerateVisualWorld() {
+void oWorld::generateVisualWorld() {
 
     FastNoiseLite noise;
     noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
@@ -170,7 +170,7 @@ void oWorld::GenerateVisualWorld() {
     }
 }
 
-void oWorld::RenderVisualWorld(float dt) {
+void oWorld::renderVisualWorld(float dt) {
 
     static int currentFrame = _aseprite._frames.size();
     static float currentFrameTimeSpent = 0;
@@ -192,18 +192,18 @@ void oWorld::RenderVisualWorld(float dt) {
 
             const auto& frame = _aseprite._frames.at(currentFrame);
 
-            TexturedQuad quad{_aseprite._imageTexture,
+            texturedQuad quad{_aseprite._imageTexture,
                               frame._frame._x + hexagonTile._textureX,
                               frame._frame._y + hexagonTile._textureY,
                               static_cast<unsigned int>(hexagonTile._width),
                               static_cast<unsigned int>(hexagonTile._height)};
 
             const auto realCoords =
-                hexHexagonFunctions::HexToPixel(i, j, _hexSizeX, _hexSizeY);
+                hexHexagonFunctions::hexToPixel(i, j, _hexSizeX, _hexSizeY);
             quad.x = realCoords.x - hexagonTile._width / 2;
             quad.y = realCoords.y - hexagonTile._height / 2;
             quad.depth = hexagonTile._depth;
-            _quadRenderingPtr->SendTexturedQuad(quad, RenderingMethod::Dynamic);
+            _quadRenderingPtr->sendTexturedQuad(quad, RenderingMethod::Dynamic);
         }
     }
 }

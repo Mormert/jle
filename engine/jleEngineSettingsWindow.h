@@ -15,7 +15,7 @@ public:
                             const std::shared_ptr<jleGameSettings>& gs,
                             const std::shared_ptr<jleEditorSettings>& es);
 
-    virtual void Update(jleGameEngine& ge) override;
+    virtual void update(jleGameEngine& ge) override;
 
 private:
     std::shared_ptr<jleGameSettings> gameSettings;

@@ -9,11 +9,11 @@ class hexHexagonItem {
 public:
     virtual ~hexHexagonItem();
 
-    bool TryUpdateHexagonItemPlacement(int q, int r);
+    bool tryUpdateHexagonItemPlacement(int q, int r);
 
-    void SetHexagonItemPlacement(int q, int r);
+    void hexagonItemPlacement(int q, int r);
 
-    [[nodiscard]] glm::ivec2 GetHexagonItemPlacement() const;
+    [[nodiscard]] glm::ivec2 hexagonItemPlacement() const;
 
 private:
     int _hexagonQ{0}, _hexagonR{0};

@@ -47,14 +47,14 @@ struct jleAseprite : jleFileLoadInterface {
     explicit jleAseprite(const std::string& path);
 
     // Finds and sets the image resource reference for this jleAseprite
-    void LoadImage();
+    void loadImage();
 
-    bool LoadFromFile(const std::string& path) override;
+    bool loadFromFile(const std::string& path) override;
 
     // This format expects Aseprite exporting to use 'Array' and not 'Hash'
     std::vector<jleAsepriteFrame> _frames;
 
-    int GetTotalAnimationTimeMs();
+    int totalAnimationTimeMs();
 
     jleAsepriteMeta _meta;
 

@@ -4,8 +4,8 @@
 
 class hexHelperFunctions {
 public:
-    [[nodiscard]] static int GetPixelatedMouseXWorldSpace();
-    [[nodiscard]] static int GetPixelatedMouseYWorldSpace();
+    [[nodiscard]] static int pixelatedMouseXWorldSpace();
+    [[nodiscard]] static int pixelatedMouseYWorldSpace();
 
-    [[nodiscard]] static int GetRandInt(int min, int max);
+    [[nodiscard]] static int randInt(int min, int max);
 };

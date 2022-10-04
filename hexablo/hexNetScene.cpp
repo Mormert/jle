@@ -3,35 +3,35 @@
 #include "hexNetScene.h"
 #include "oCharacter.h"
 
-void hexNetScene::OnNetConnected() { std::cout << "Net connected\n"; }
+void hexNetScene::onNetConnected() { std::cout << "Net connected\n"; }
 
-void hexNetScene::OnNetFailed() { std::cout << "Net failure\n"; }
+void hexNetScene::onNetFailed() { std::cout << "Net failure\n"; }
 
-void hexNetScene::OnNetClosed(const std::string& reason) {
+void hexNetScene::onNetClosed(const std::string& reason) {
     std::cout << "Net closed: " << reason << '\n';
 }
 
-void hexNetScene::SceneUpdate() { jleNetScene::SceneUpdate(); }
+void hexNetScene::sceneupdate() { jleNetScene::sceneupdate(); }
 
-void hexNetScene::ProcessNetMessage(const std::string& event,
+void hexNetScene::processNetMessage(const std::string& event,
                                     const nlohmann::json& message,
                                     const std::string& sender) {
-    jleNetScene::ProcessNetMessage(event, message, sender);
+    jleNetScene::processNetMessage(event, message, sender);
 
     if (event == "player_connect") {
         const std::string id = message["id"];
-        GetPlayerFromId(id); // will also create the player
+        playerFromId(id); // will also create the player
     }
 
     if (event == "oFireball") {
         const int id = message["id"];
-        auto fb = GetFireballFromId(id).lock();
-        fb->FromNet(message);
+        auto fb = fireballFromId(id).lock();
+        fb->fromNet(message);
     }
 
     if (event == "player_pos") {
         if (_players.find(sender) == _players.end()) {
-            std::weak_ptr<jleObject> newPlayer = SpawnTemplateObject(
+            std::weak_ptr<jleObject> newPlayer = spawnTemplateObject(
                 jleRelativePath{"GR:/otemps/otherPlayer.tmpl"});
             _players[sender] = newPlayer;
         }
@@ -41,9 +41,9 @@ void hexNetScene::ProcessNetMessage(const std::string& event,
             int r = message["r"];
             int d = message["d"];
             std::static_pointer_cast<oCharacter>(otherPlayer)
-                ->SetHexagonPlacementInterp(q, r);
+                ->hexagonPlacementInterp(q, r);
             std::static_pointer_cast<oCharacter>(otherPlayer)
-                ->SetCharacterDirection(
+                ->characterDirection(
                     static_cast<oCharacter::oCharacterDirection>(d));
         }
         else {
@@ -54,41 +54,41 @@ void hexNetScene::ProcessNetMessage(const std::string& event,
     }
 
     if (event == "basic_attack") {
-        auto player = GetPlayerFromId(sender).lock();
+        auto player = playerFromId(sender).lock();
         int q = message["q"];
         int r = message["r"];
         int d = message["d"];
-        std::static_pointer_cast<oCharacter>(player)
-            ->SetHexagonPlacementTeleport(q, r);
-        std::static_pointer_cast<oCharacter>(player)->Attack(
+        std::static_pointer_cast<oCharacter>(player)->hexagonPlacementTeleport(
+            q, r);
+        std::static_pointer_cast<oCharacter>(player)->attack(
             static_cast<oCharacter::oCharacterDirection>(d));
     }
 
     if (event == "player_dconnect") {
         const std::string id = message["id"];
-        auto player = GetPlayerFromId(id).lock();
-        player->DestroyObject();
+        auto player = playerFromId(id).lock();
+        player->destroyObject();
     }
 }
 
-std::weak_ptr<jleObject> hexNetScene::GetPlayerFromId(const std::string& id) {
+std::weak_ptr<jleObject> hexNetScene::playerFromId(const std::string& id) {
     auto it = _players.find(id);
     if (it == _players.end() ||
         (it != _players.end() && it->second.expired())) {
         std::weak_ptr<jleObject> newPlayer =
-            SpawnTemplateObject(jleRelativePath{"GR:/otemps/otherPlayer.tmpl"});
+            spawnTemplateObject(jleRelativePath{"GR:/otemps/otherPlayer.tmpl"});
         _players[id] = newPlayer;
         return newPlayer;
     }
     return it->second.lock();
 }
 
-std::weak_ptr<oFireball> hexNetScene::GetFireballFromId(const int id) {
+std::weak_ptr<oFireball> hexNetScene::fireballFromId(const int id) {
     auto it = _fireballs.find(id);
     if (it == _fireballs.end() ||
         (it != _fireballs.end() && it->second.expired())) {
         auto newFireball =
-            std::static_pointer_cast<oFireball>(SpawnTemplateObject(
+            std::static_pointer_cast<oFireball>(spawnTemplateObject(
                 jleRelativePath{"GR:otemps/FireballTempl.tmpl"}));
         _fireballs[id] = newFireball;
         return newFireball;

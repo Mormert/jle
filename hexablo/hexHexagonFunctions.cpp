@@ -4,7 +4,7 @@
 
 #include <vector>
 
-glm::ivec2 hexHexagonFunctions::HexToPixel(int hexQ,
+glm::ivec2 hexHexagonFunctions::hexToPixel(int hexQ,
                                            int hexR,
                                            int hexSizeX,
                                            int hexSizeY) {
@@ -20,11 +20,11 @@ glm::ivec2 hexHexagonFunctions::HexToPixel(int hexQ,
 }
 
 // The way we get the integer hex position is by doing the inverse of the
-// HexToPixel function, but since we will end up with a fractal hexagonal
+// hexToPixel function, but since we will end up with a fractal hexagonal
 // coordinate, we round the coordinates and get 4 candidates, which we try again
 // using the distance function. We also need to account for the row multiplier,
 // so we are testing against 8 different points.
-glm::ivec2 hexHexagonFunctions::PixelToHex(int pixelX,
+glm::ivec2 hexHexagonFunctions::pixelToHex(int pixelX,
                                            int pixelY,
                                            int hexSizeX,
                                            int hexSizeY) {
@@ -43,16 +43,16 @@ glm::ivec2 hexHexagonFunctions::PixelToHex(int pixelX,
         int hexR_lower = (int)floorf(hexR_frac);
 
         nearPixelPlaces.emplace_back(
-            HexToPixel(hexQ_upper, hexR_upper, hexSizeX, hexSizeY),
+            hexToPixel(hexQ_upper, hexR_upper, hexSizeX, hexSizeY),
             glm::ivec2{hexQ_upper, hexR_upper});
         nearPixelPlaces.emplace_back(
-            HexToPixel(hexQ_upper, hexR_lower, hexSizeX, hexSizeY),
+            hexToPixel(hexQ_upper, hexR_lower, hexSizeX, hexSizeY),
             glm::ivec2{hexQ_upper, hexR_lower});
         nearPixelPlaces.emplace_back(
-            HexToPixel(hexQ_lower, hexR_upper, hexSizeX, hexSizeY),
+            hexToPixel(hexQ_lower, hexR_upper, hexSizeX, hexSizeY),
             glm::ivec2{hexQ_lower, hexR_upper});
         nearPixelPlaces.emplace_back(
-            HexToPixel(hexQ_lower, hexR_lower, hexSizeX, hexSizeY),
+            hexToPixel(hexQ_lower, hexR_lower, hexSizeX, hexSizeY),
             glm::ivec2{hexQ_lower, hexR_lower});
     };
 
@@ -74,19 +74,19 @@ glm::ivec2 hexHexagonFunctions::PixelToHex(int pixelX,
     return hexPlace;
 }
 
-glm::ivec2 hexHexagonFunctions::CubeToAxial(glm::vec3 cube) {
+glm::ivec2 hexHexagonFunctions::cubeToAxial(glm::vec3 cube) {
     return {cube.x, cube.y};
 }
 
-glm::ivec3 hexHexagonFunctions::AxialToCube(glm::vec2 hex) {
+glm::ivec3 hexHexagonFunctions::axialToCube(glm::vec2 hex) {
     return {hex.x, hex.y, -hex.x - hex.y};
 }
 
-glm::ivec2 hexHexagonFunctions::AxialRound(glm::vec3 hex) {
-    return CubeToAxial(CubeRound(AxialToCube(hex)));
+glm::ivec2 hexHexagonFunctions::axialRound(glm::vec3 hex) {
+    return cubeToAxial(cubeRound(axialToCube(hex)));
 }
 
-glm::ivec3 hexHexagonFunctions::CubeRound(glm::vec3 fractionalCube) {
+glm::ivec3 hexHexagonFunctions::cubeRound(glm::vec3 fractionalCube) {
     float q = roundf(fractionalCube.x);
     float r = roundf(fractionalCube.y);
     float s = roundf(fractionalCube.z);

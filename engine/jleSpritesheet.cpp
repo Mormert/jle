@@ -33,13 +33,13 @@ void from_json(const json& j,
     s.height = j["h"];
 }
 
-void jleSpritesheet::LoadImage() {
+void jleSpritesheet::loadImage() {
     std::string pngPath = _pathJson.substr(0, _pathJson.find(".", 0)) + ".png";
 
-    _imageTexture = jleTexture::FromPath(jleRelativePath{pngPath});
+    _imageTexture = jleTexture::fromPath(jleRelativePath{pngPath});
 }
 
-bool jleSpritesheet::LoadFromFile(const std::string& path) {
+bool jleSpritesheet::loadFromFile(const std::string& path) {
     _pathJson = path;
     std::ifstream i(path);
     if (i.good()) {
@@ -47,7 +47,7 @@ bool jleSpritesheet::LoadFromFile(const std::string& path) {
         i >> j;
 
         from_json(j["frames"], *this);
-        LoadImage();
+        loadImage();
         return true;
     }
     else {
@@ -58,5 +58,5 @@ bool jleSpritesheet::LoadFromFile(const std::string& path) {
 
 jleSpritesheet::jleSpritesheet(const std::string& path) {
     _pathJson = path;
-    LoadFromFile(path);
+    loadFromFile(path);
 }

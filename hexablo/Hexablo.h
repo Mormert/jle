@@ -6,7 +6,7 @@ class Hexablo final : public jleGame {
 public:
     ~Hexablo() override = default;
 
-    void Start() override;
+    void start() override;
 
-    void Update(float dt) override;
+    void update(float dt) override;
 };

@@ -10,7 +10,7 @@ struct jleEditorSettings {
     std::string editorBackgroundImage{"ED:/jle_default_bg.jpg"};
 };
 
-#pragma region jleEditorSettings to /from json
+#pragma region jleEditorSettings to / from json
 using json = nlohmann::json;
 
 inline void to_json(nlohmann::json& j, const jleEditorSettings& es) {

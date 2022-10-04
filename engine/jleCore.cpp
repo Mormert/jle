@@ -40,19 +40,19 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings>& cs)
     coreImpl->windowInternal = window;
     coreImpl->statusInternal = status;
 
-    coreImpl->windowInternal->SetWindowSettings(cs->windowSettings);
+    coreImpl->windowInternal->settings(cs->windowSettings);
 
-    jleSoLoud::Init();
+    jleSoLoud::init();
 
     core_settings = cs;
 }
 
 jleCore::~jleCore() {
-    jleSoLoud::DeInit();
-    jleFont::DeInit();
+    jleSoLoud::deInit();
+    jleFont::deInit();
 }
 
-void jleCore::Run() {
+void jleCore::run() {
     if (core != nullptr) {
         std::cerr << "Error: Multiple instances of jleCore\n";
         exit(1);
@@ -60,52 +60,52 @@ void jleCore::Run() {
     core = this;
 
     PLOG_INFO << "Initializing the window";
-    coreImpl->windowInternal->InitWindow(coreImpl->renderingInternal);
+    coreImpl->windowInternal->initWindow(coreImpl->renderingInternal);
 
-    jleFont::Init();
+    jleFont::init();
 
     PLOG_INFO << "Setting up rendering internals";
-    coreImpl->renderingInternal->Setup();
+    coreImpl->renderingInternal->up();
 
     PLOG_INFO << "Starting the game loop";
 
     running = true;
-    Start();
+    start();
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(main_loop, 0, true);
 #else
-    Loop();
+    loop();
 #endif
 }
 
-void jleCore::Loop() {
+void jleCore::loop() {
     while (running) {
-        MainLoop();
+        mainLoop();
     }
-    Exiting();
+    exiting();
 }
 
-void jleCore::MainLoop() {
+void jleCore::mainLoop() {
     jleProfiler::NewFrame();
-    JLE_SCOPE_PROFILE(MainLoop)
+    JLE_SCOPE_PROFILE(mainLoop)
 
-    coreImpl->statusInternal->Refresh();
+    coreImpl->statusInternal->refresh();
 
-    _timerManager.Process();
+    _timerManager.process();
 
-    Update(status->GetDeltaFrameTime());
+    update(status->deltaFrameTime());
 
-    Render();
-    window->UpdateWindow();
+    render();
+    window->updateWindow();
 
-    running = !window->WindowShouldClose();
+    running = !window->windowShouldClose();
 }
 
-jleTimerManager& jleCore::GetTimerManager() { return _timerManager; }
+jleTimerManager& jleCore::timerManager() { return _timerManager; }
 
-void CoreStatus_Internal::Refresh() {
-    currentFrame = jleCore::core->coreImpl->windowInternal->GetTime();
-    deltaTime = currentFrame - lastFrame;
-    lastFrame = currentFrame;
-    fps = static_cast<int>(1.0 / deltaTime);
+void CoreStatus_Internal::refresh() {
+    _currentFrame = jleCore::core->coreImpl->windowInternal->time();
+    _deltaTime = _currentFrame - _lastFrame;
+    _lastFrame = _currentFrame;
+    _fps = static_cast<int>(1.0 / _deltaTime);
 }

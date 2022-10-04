@@ -10,7 +10,7 @@
 
 jleConsoleEditorWindow::jleConsoleEditorWindow(const std::string& window_name)
     : iEditorImGuiWindow{window_name} {
-    ClearLog();
+    clearLog();
     memset(InputBuf, 0, sizeof(InputBuf));
     HistoryPos = -1;
 
@@ -25,12 +25,12 @@ jleConsoleEditorWindow::jleConsoleEditorWindow(const std::string& window_name)
 }
 
 jleConsoleEditorWindow::~jleConsoleEditorWindow() {
-    ClearLog();
+    clearLog();
     for (int i = 0; i < History.Size; i++)
         free(History[i]);
 }
 
-int jleConsoleEditorWindow::Stricmp(const char *s1, const char *s2) {
+int jleConsoleEditorWindow::stricmp(const char *s1, const char *s2) {
     int d;
     while ((d = toupper(*s2) - toupper(*s1)) == 0 && *s1) {
         s1++;
@@ -39,7 +39,7 @@ int jleConsoleEditorWindow::Stricmp(const char *s1, const char *s2) {
     return d;
 }
 
-int jleConsoleEditorWindow::Strnicmp(const char *s1, const char *s2, int n) {
+int jleConsoleEditorWindow::strnicmp(const char *s1, const char *s2, int n) {
     int d = 0;
     while (n > 0 && (d = toupper(*s2) - toupper(*s1)) == 0 && *s1) {
         s1++;
@@ -49,7 +49,7 @@ int jleConsoleEditorWindow::Strnicmp(const char *s1, const char *s2, int n) {
     return d;
 }
 
-char *jleConsoleEditorWindow::Strdup(const char *s) {
+char *jleConsoleEditorWindow::strdup(const char *s) {
     IM_ASSERT(s);
     size_t len = strlen(s) + 1;
     void *buf = malloc(len);
@@ -57,20 +57,20 @@ char *jleConsoleEditorWindow::Strdup(const char *s) {
     return (char *)memcpy(buf, (const void *)s, len);
 }
 
-void jleConsoleEditorWindow::Strtrim(char *s) {
+void jleConsoleEditorWindow::strtrim(char *s) {
     char *str_end = s + strlen(s);
     while (str_end > s && str_end[-1] == ' ')
         str_end--;
     *str_end = 0;
 }
 
-void jleConsoleEditorWindow::ClearLog() {
+void jleConsoleEditorWindow::clearLog() {
     for (int i = 0; i < Items.Size; i++)
         free(Items[i]);
     Items.clear();
 }
 
-void jleConsoleEditorWindow::AddLog(const char *fmt, ...) {
+void jleConsoleEditorWindow::addLog(const char *fmt, ...) {
     // FIXME-OPT
     char buf[1024];
     va_list args;
@@ -78,46 +78,46 @@ void jleConsoleEditorWindow::AddLog(const char *fmt, ...) {
     vsnprintf(buf, IM_ARRAYSIZE(buf), fmt, args);
     buf[IM_ARRAYSIZE(buf) - 1] = 0;
     va_end(args);
-    Items.push_back(Strdup(buf));
+    Items.push_back(strdup(buf));
 }
 
-void jleConsoleEditorWindow::ExecCommand(const char *command_line) {
-    AddLog("# %s\n", command_line);
+void jleConsoleEditorWindow::execCommand(const char *command_line) {
+    addLog("# %s\n", command_line);
 
     // Insert into history. First find match and delete it so it can be pushed
     // to the back. This isn't trying to be smart or optimal.
     HistoryPos = -1;
     for (int i = History.Size - 1; i >= 0; i--)
-        if (Stricmp(History[i], command_line) == 0) {
+        if (stricmp(History[i], command_line) == 0) {
             free(History[i]);
             History.erase(History.begin() + i);
             break;
         }
-    History.push_back(Strdup(command_line));
+    History.push_back(strdup(command_line));
 
-    // Process command
-    if (Stricmp(command_line, "CLEAR") == 0) {
-        ClearLog();
+    // process command
+    if (stricmp(command_line, "CLEAR") == 0) {
+        clearLog();
     }
-    else if (Stricmp(command_line, "HELP") == 0) {
-        AddLog("Commands:");
+    else if (stricmp(command_line, "HELP") == 0) {
+        addLog("Commands:");
         for (int i = 0; i < Commands.Size; i++)
-            AddLog("- %s", Commands[i]);
+            addLog("- %s", Commands[i]);
     }
-    else if (Stricmp(command_line, "HISTORY") == 0) {
+    else if (stricmp(command_line, "HISTORY") == 0) {
         int first = History.Size - 10;
         for (int i = first > 0 ? first : 0; i < History.Size; i++)
-            AddLog("%3d: %s\n", i, History[i]);
+            addLog("%3d: %s\n", i, History[i]);
     }
     else {
-        AddLog("Unknown command: '%s'\n", command_line);
+        addLog("Unknown command: '%s'\n", command_line);
     }
 
     // On command input, we scroll to bottom even if AutoScroll==false
     ScrollToBottom = true;
 }
 
-void jleConsoleEditorWindow::Update(jleGameEngine& ge) {
+void jleConsoleEditorWindow::update(jleGameEngine& ge) {
     if (!isOpened) {
         return;
     }
@@ -147,17 +147,17 @@ void jleConsoleEditorWindow::Update(jleGameEngine& ge) {
 
     // TODO: display items starting from the bottom
 
-    // if (ImGui::SmallButton("Add Debug Text")) { AddLog("%d some text",
-    // Items.Size); AddLog("some more text"); AddLog("display very important
+    // if (ImGui::SmallButton("Add Debug Text")) { addLog("%d some text",
+    // Items.Size); addLog("some more text"); addLog("display very important
     // message here!"); } ImGui::SameLine(); if (ImGui::SmallButton("Add Debug
-    // Error")) { AddLog("[error] something went wrong"); } ImGui::SameLine();
+    // Error")) { addLog("[error] something went wrong"); } ImGui::SameLine();
     if (ImGui::SmallButton("Clear")) {
-        ClearLog();
+        clearLog();
     }
     ImGui::SameLine();
     bool copy_to_clipboard = ImGui::SmallButton("Copy");
-    // static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t =
-    // ImGui::GetTime(); AddLog("Spam %f", t); }
+    // static float t = 0.0f; if (ImGui::time() - t > 0.02f) { t =
+    // ImGui::time(); addLog("Spam %f", t); }
 
     ImGui::SameLine();
 
@@ -183,7 +183,7 @@ void jleConsoleEditorWindow::Update(jleGameEngine& ge) {
                       ImGuiWindowFlags_HorizontalScrollbar);
     if (ImGui::BeginPopupContextWindow()) {
         if (ImGui::Selectable("Clear"))
-            ClearLog();
+            clearLog();
         ImGui::EndPopup();
     }
 
@@ -267,12 +267,12 @@ void jleConsoleEditorWindow::Update(jleGameEngine& ge) {
                          InputBuf,
                          IM_ARRAYSIZE(InputBuf),
                          input_text_flags,
-                         &TextEditCallbackStub,
+                         &textEditCallbackStub,
                          (void *)this)) {
         char *s = InputBuf;
-        Strtrim(s);
+        strtrim(s);
         if (s[0])
-            ExecCommand(s);
+            execCommand(s);
         // strcpy(s, "");
         std::fill(s, s + InputBufSize, 0);
         reclaim_focus = true;
@@ -286,13 +286,13 @@ void jleConsoleEditorWindow::Update(jleGameEngine& ge) {
     ImGui::End();
 }
 
-int jleConsoleEditorWindow::TextEditCallbackStub(
+int jleConsoleEditorWindow::textEditCallbackStub(
     ImGuiInputTextCallbackData *data) {
     jleConsoleEditorWindow *console = (jleConsoleEditorWindow *)data->UserData;
-    return console->TextEditCallback(data);
+    return console->textEditCallback(data);
 }
 
-int jleConsoleEditorWindow::TextEditCallback(ImGuiInputTextCallbackData *data) {
+int jleConsoleEditorWindow::textEditCallback(ImGuiInputTextCallbackData *data) {
     switch (data->EventFlag) {
     case ImGuiInputTextFlags_CallbackCompletion: {
         // Example of TEXT COMPLETION
@@ -310,13 +310,13 @@ int jleConsoleEditorWindow::TextEditCallback(ImGuiInputTextCallbackData *data) {
         // Build a list of candidates
         ImVector<const char *> candidates;
         for (int i = 0; i < Commands.Size; i++)
-            if (Strnicmp(
+            if (strnicmp(
                     Commands[i], word_start, (int)(word_end - word_start)) == 0)
                 candidates.push_back(Commands[i]);
 
         if (candidates.Size == 0) {
             // No match
-            AddLog("No match for \"%.*s\"!\n",
+            addLog("No match for \"%.*s\"!\n",
                    (int)(word_end - word_start),
                    word_start);
         }
@@ -355,9 +355,9 @@ int jleConsoleEditorWindow::TextEditCallback(ImGuiInputTextCallbackData *data) {
             }
 
             // List matches
-            AddLog("Possible matches:\n");
+            addLog("Possible matches:\n");
             for (int i = 0; i < candidates.Size; i++)
-                AddLog("- %s\n", candidates[i]);
+                addLog("- %s\n", candidates[i]);
         }
 
         break;
@@ -412,5 +412,5 @@ void jleConsoleEditorWindow::write(const plog::Record& record) {
                    converted_str.begin(),
                    [](wchar_t c) { return (char)c; });
 
-    AddLog("%s", converted_str.c_str());
+    addLog("%s", converted_str.c_str());
 }

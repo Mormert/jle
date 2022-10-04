@@ -22,32 +22,32 @@ jleFramebuffer::jleFramebuffer(unsigned int width,
                                unsigned int height,
                                bool shadowBuffer) {
     if (shadowBuffer) {
-        CreateShadowFramebuffer(width, height);
+        createShadowFramebuffer(width, height);
     }
     else {
-        CreateFramebuffer(width, height);
+        createFramebuffer(width, height);
     }
 }
 
 jleFramebuffer::~jleFramebuffer() {
-    glDeleteFramebuffers(1, &framebuffer);
-    glDeleteRenderbuffers(1, &rbo);
-    glDeleteTextures(1, &texColorBuffer);
+    glDeleteFramebuffers(1, &_framebuffer);
+    glDeleteRenderbuffers(1, &_rbo);
+    glDeleteTextures(1, &_texColorBuffer);
 
-    std::cout << "Deleted Framebuffer with id " << framebuffer << "!\n";
+    std::cout << "Deleted Framebuffer with id " << _framebuffer << "!\n";
 }
 
-void jleFramebuffer::CreateFramebuffer(unsigned int width,
+void jleFramebuffer::createFramebuffer(unsigned int width,
                                        unsigned int height) {
-    this->width = width;
-    this->height = height;
+    this->_width = width;
+    this->_height = height;
 
-    glGenFramebuffers(1, &framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    glGenFramebuffers(1, &_framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
 
     // generate texture
-    glGenTextures(1, &texColorBuffer);
-    glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+    glGenTextures(1, &_texColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, _texColorBuffer);
     glTexImage2D(GL_TEXTURE_2D,
                  0,
                  GL_RGB,
@@ -62,39 +62,42 @@ void jleFramebuffer::CreateFramebuffer(unsigned int width,
     glBindTexture(GL_TEXTURE_2D, 0);
 
     // attach it to currently bound framebuffer object
-    glFramebufferTexture2D(
-        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorBuffer, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER,
+                           GL_COLOR_ATTACHMENT0,
+                           GL_TEXTURE_2D,
+                           _texColorBuffer,
+                           0);
 
-    glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+    glGenRenderbuffers(1, &_rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, _rbo);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
     glFramebufferRenderbuffer(
-        GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+        GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _rbo);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         LOG_ERROR << "Framebuffer is not complete!";
     }
     else {
-        LOG_VERBOSE << "Created Framebuffer with id " << framebuffer << "!";
+        LOG_VERBOSE << "Created Framebuffer with id " << _framebuffer << "!";
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void jleFramebuffer::ResizeFramebuffer(unsigned int width,
+void jleFramebuffer::resizeFramebuffer(unsigned int width,
                                        unsigned int height) {
 
     // LOG_VERBOSE << "Resized Framebuffer " << framebuffer << ": " << width <<
     // ", " << height;
 
-    this->width = width;
-    this->height = height;
+    this->_width = width;
+    this->_height = height;
 
     // resize texture
-    glBindTexture(GL_TEXTURE_2D, texColorBuffer);
-    jleStaticOpenGLState::globalActiveTexture = texColorBuffer;
+    glBindTexture(GL_TEXTURE_2D, _texColorBuffer);
+    jleStaticOpenGLState::globalActiveTexture = _texColorBuffer;
     glTexImage2D(GL_TEXTURE_2D,
                  0,
                  GL_RGB,
@@ -107,36 +110,36 @@ void jleFramebuffer::ResizeFramebuffer(unsigned int width,
     glBindTexture(GL_TEXTURE_2D, 0);
 
     // resize renderbuffer
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, _rbo);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
-void jleFramebuffer::BindToFramebuffer() {
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+void jleFramebuffer::bindToFramebuffer() {
+    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
 }
 
-void jleFramebuffer::BindToDefaultFramebuffer() {
+void jleFramebuffer::bindToDefaultFramebuffer() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-unsigned int jleFramebuffer::GetWidth() { return width; }
+unsigned int jleFramebuffer::width() { return _width; }
 
-unsigned int jleFramebuffer::GetHeight() { return height; }
+unsigned int jleFramebuffer::height() { return _height; }
 
-unsigned int jleFramebuffer::GetTexture() { return texColorBuffer; }
+unsigned int jleFramebuffer::texture() { return _texColorBuffer; }
 
-void jleFramebuffer::CreateShadowFramebuffer(unsigned int width,
+void jleFramebuffer::createShadowFramebuffer(unsigned int width,
                                              unsigned int height) {
-    this->width = width;
-    this->height = height;
+    this->_width = width;
+    this->_height = height;
 
-    glGenFramebuffers(1, &framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    glGenFramebuffers(1, &_framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
 
     // generate texture
-    glGenTextures(1, &texColorBuffer);
-    glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+    glGenTextures(1, &_texColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, _texColorBuffer);
     glTexImage2D(GL_TEXTURE_2D,
                  0,
                  GL_DEPTH_COMPONENT,
@@ -151,9 +154,9 @@ void jleFramebuffer::CreateShadowFramebuffer(unsigned int width,
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
     glFramebufferTexture2D(
-        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texColorBuffer, 0);
+        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _texColorBuffer, 0);
     glDrawBuffers(GL_NONE, nullptr);
     glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

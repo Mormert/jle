@@ -24,10 +24,10 @@ extern "C"
 EMSCRIPTEN_KEEPALIVE
 void on_receive_message_pack(char *value) {
     const std::string dataString{value};
-    jleNetworking::OnReceiveMessagePackFromJS(dataString);
+    jleNetworking::onReceiveMessagePackFromJS(dataString);
 }
 
-// TODO: Update connected variable on this event instead of directly in Connect()
+// TODO: Update connected variable on this event instead of directly in connect()
 EMSCRIPTEN_KEEPALIVE
 void on_socket_connect(char *value) {
     const std::string dataString{value};
@@ -45,16 +45,16 @@ void on_socket_failed() {
 }
 }
 
-void jleNetworking::OnReceiveMessagePackFromJS(const std::string &data) {
+void jleNetworking::onReceiveMessagePackFromJS(const std::string &data) {
     if (!jleNetworking::sNet) {
         return;
     }
 
-    sNet->OnReceiveMessagePack(data);
+    sNet->onReceiveMessagePack(data);
 }
 
 
-void jleNetworking::Connect(const std::string &uri,
+void jleNetworking::connect(const std::string &uri,
                             const std::function<void(void)> &onConnected,
                             const std::function<void(int const &reason)> &onClosed,
                             const std::function<void(void)> &onFailed) {
@@ -111,7 +111,7 @@ void jleNetworking::Connect(const std::string &uri,
 
 }
 
-void jleNetworking::Disconnect() {
+void jleNetworking::disconnect() {
 
     if (!connected) {
         return;
@@ -125,7 +125,7 @@ void jleNetworking::Disconnect() {
     sNet = nullptr;
 }
 
-void jleNetworking::EmitJsonData(const std::string &event, const nlohmann::json &json, const std::string &receiver) {
+void jleNetworking::emitJsonData(const std::string &event, const nlohmann::json &json, const std::string &receiver) {
 
     if (!connected) {
         return;
@@ -140,7 +140,7 @@ void jleNetworking::EmitJsonData(const std::string &event, const nlohmann::json 
     emscripten_run_script(js_eval_string.c_str());
 }
 
-void jleNetworking::EmitEvent(const std::string &event, const std::string &data) {
+void jleNetworking::emitEvent(const std::string &event, const std::string &data) {
 
     if (!connected) {
         return;
@@ -154,7 +154,7 @@ void jleNetworking::EmitEvent(const std::string &event, const std::string &data)
     emscripten_run_script(js_eval_string.c_str());
 }
 
-std::string jleNetworking::GetSessionID() {
+std::string jleNetworking::sessionID() {
 
     if (!connected) {
         return "";

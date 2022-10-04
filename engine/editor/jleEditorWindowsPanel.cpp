@@ -10,14 +10,14 @@
 jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string& window_name)
     : iEditorImGuiWindow{window_name}, _gameController{"Game Controller"} {}
 
-void jleEditorWindowsPanel::Update(jleGameEngine& ge) { DockspaceUpdate(ge); }
+void jleEditorWindowsPanel::update(jleGameEngine& ge) { dockspaceupdate(ge); }
 
-void jleEditorWindowsPanel::AddWindow(
+void jleEditorWindowsPanel::addWindow(
     std::shared_ptr<iEditorImGuiWindow> window) {
     windows.push_back(window);
 }
 
-void jleEditorWindowsPanel::DockspaceUpdate(jleGameEngine& ge) {
+void jleEditorWindowsPanel::dockspaceupdate(jleGameEngine& ge) {
 
     static bool opt_fullscreen = true;
     static bool opt_padding = false;
@@ -77,25 +77,25 @@ void jleEditorWindowsPanel::DockspaceUpdate(jleGameEngine& ge) {
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
     }
 
-    MenuButtonsUpdate(ge);
+    menuButtonsupdate(ge);
 
     ImGui::End();
 }
 
-void jleEditorWindowsPanel::MenuButtonsUpdate(jleGameEngine& ge) {
+void jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine& ge) {
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("Manage Windows")) {
             for (auto&& window : windows) {
-                if (window->GetOpened()) {
+                if (window->opened()) {
                     if (ImGui::MenuItem(
-                            ("Close " + window->GetWindowName()).c_str())) {
-                        window->CloseWindow();
+                            ("Close " + window->windowName()).c_str())) {
+                        window->closeWindow();
                     }
                 }
                 else {
                     if (ImGui::MenuItem(
-                            ("Open " + window->GetWindowName()).c_str())) {
-                        window->OpenWindow();
+                            ("Open " + window->windowName()).c_str())) {
+                        window->openWindow();
                     }
                 }
             }
@@ -103,7 +103,7 @@ void jleEditorWindowsPanel::MenuButtonsUpdate(jleGameEngine& ge) {
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Game Controller")) {
-            _gameController.Update(ge);
+            _gameController.update(ge);
             ImGui::EndMenu();
         }
 
@@ -115,9 +115,9 @@ void jleEditorWindowsPanel::MenuButtonsUpdate(jleGameEngine& ge) {
             ImGui::CalcTextSize("FPS: XXXX, DT: XXXXXXXX, Time: XXXXX").x -
             ImGui::GetScrollX() - 2 * ImGui::GetStyle().ItemSpacing.x);
         ImGui::Text("FPS: %4d, DT: %4f, Time: %4f",
-                    ge.status->GetFPS(),
-                    ge.status->GetDeltaFrameTime(),
-                    ge.status->GetCurrentFrameTime());
+                    ge.status->fps(),
+                    ge.status->deltaFrameTime(),
+                    ge.status->currentFrameTime());
 
         ImGui::EndMenuBar();
     }

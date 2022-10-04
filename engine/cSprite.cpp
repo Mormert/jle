@@ -9,43 +9,43 @@
 cSprite::cSprite(jleObject *owner, jleScene *scene)
     : jleComponent{owner, scene}, quad{nullptr} {}
 
-void cSprite::CreateAndSetTextureFromPath(const std::string& path) {
-    quad.texture = jleTexture::FromPath(jleRelativePath{path});
+void cSprite::createAndSetTextureFromPath(const std::string& path) {
+    quad.texture = jleTexture::fromPath(jleRelativePath{path});
 }
 
-void cSprite::SetTexture(std::shared_ptr<jleTexture> texture) {
+void cSprite::texture(std::shared_ptr<jleTexture> texture) {
     quad.texture = texture;
 }
 
-void cSprite::SetRectangleDimensions(int width, int height) {
+void cSprite::rectangleDimensions(int width, int height) {
     quad.width = width;
     quad.height = height;
 }
 
-void cSprite::SetTextureBeginCoordinates(int x, int y) {
+void cSprite::textureBeginCoordinates(int x, int y) {
     quad.textureX = x;
     quad.textureY = y;
 }
 
-void cSprite::Start() {
-    transform = _attachedToObject->AddDependencyComponent<cTransform>(this);
+void cSprite::start() {
+    transform = _attachedToObject->addDependencyComponent<cTransform>(this);
 
     if (texturePath != "") {
-        CreateAndSetTextureFromPath(texturePath);
+        createAndSetTextureFromPath(texturePath);
     }
 }
 
-void cSprite::Update(float dt) {
-    quad.x = transform->GetWorldX();
-    quad.y = transform->GetWorldY();
+void cSprite::update(float dt) {
+    quad.x = transform->worldX();
+    quad.y = transform->worldY();
 
     if (quad.texture.get()) {
-        jleCore::core->rendering->quads().SendTexturedQuad(
+        jleCore::core->rendering->quads().sendTexturedQuad(
             *&quad, RenderingMethod::Dynamic);
     }
 }
 
-void cSprite::ToJson(nlohmann::json& j_out) {
+void cSprite::toJson(nlohmann::json& j_out) {
     j_out = nlohmann::json{{"path", texturePath},
                            {"x", quad.x},
                            {"y", quad.y},
@@ -56,7 +56,7 @@ void cSprite::ToJson(nlohmann::json& j_out) {
                            {"textureY", quad.textureY}};
 }
 
-void cSprite::FromJson(const nlohmann::json& j_in) {
+void cSprite::fromJson(const nlohmann::json& j_in) {
     texturePath = j_in.at("path");
     quad.x = j_in.at("x");
     quad.y = j_in.at("y");
@@ -66,5 +66,5 @@ void cSprite::FromJson(const nlohmann::json& j_in) {
     quad.textureX = j_in.at("textureX");
     quad.textureY = j_in.at("textureY");
 
-    CreateAndSetTextureFromPath(texturePath);
+    createAndSetTextureFromPath(texturePath);
 }

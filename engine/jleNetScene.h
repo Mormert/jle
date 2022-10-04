@@ -11,25 +11,25 @@ public:
 
     explicit jleNetScene(const std::string& sceneName);
 
-    void SceneUpdate() override;
+    void sceneupdate() override;
 
-    void OnSceneCreation() override;
+    void onSceneCreation() override;
 
-    void OnSceneDestruction() override;
+    void onSceneDestruction() override;
 
-    virtual void ProcessNetMessage(const std::string& event,
+    virtual void processNetMessage(const std::string& event,
                                    const nlohmann::json& message,
                                    const std::string& sender);
 
-    virtual void OnNetConnected(){};
+    virtual void onNetConnected(){};
 
-    virtual void OnNetFailed(){};
+    virtual void onNetFailed(){};
 
-    virtual void OnNetClosed(const std::string& reason){};
+    virtual void onNetClosed(const std::string& reason){};
 
-    void ToJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json& j_out) override;
 
-    void FromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json& j_in) override;
 
 protected:
     jleNetworking _networking;

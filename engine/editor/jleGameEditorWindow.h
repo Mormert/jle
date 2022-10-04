@@ -10,17 +10,17 @@ class jleGameEditorWindow : public iEditorImGuiWindow {
 public:
     explicit jleGameEditorWindow(const std::string& window_name);
 
-    void Update(jleGameEngine& ge) override;
+    void update(jleGameEngine& ge) override;
 
     static inline jleGameEditorWindow *gGameEditorWindow;
 
-    int GetWindowWidth() const;
+    int width() const;
 
-    int GetWindowHeight() const;
+    int height() const;
 
-    int GetWindowPosX() const;
+    int x() const;
 
-    int GetWindowPosY() const;
+    int y() const;
 
 private:
     float _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;

@@ -5,8 +5,8 @@
 
 #include "jleProfiler.h"
 
-void jleTimerManager::Process() {
-    JLE_SCOPE_PROFILE(jleTimerManager::Process)
+void jleTimerManager::process() {
+    JLE_SCOPE_PROFILE(jleTimerManager::process)
     const auto timeNow = glfwGetTime();
 
     if (!_functionsSharedData.empty()) {
@@ -48,7 +48,7 @@ void jleTimerManager::Process() {
     }
 }
 
-void jleTimerManager::ExecuteFuncInSecondsSharedData(
+void jleTimerManager::executeFuncInSecondsSharedData(
     double seconds,
     void (*f)(std::shared_ptr<void>),
     const std::shared_ptr<void>& data) {
@@ -58,7 +58,7 @@ void jleTimerManager::ExecuteFuncInSecondsSharedData(
     _functionsSharedData.insert({futureTime, functionAndData});
 }
 
-void jleTimerManager::ExecuteFuncInSecondsWeakData(
+void jleTimerManager::executeFuncInSecondsWeakData(
     double seconds,
     void (*f)(std::weak_ptr<void>),
     const std::weak_ptr<void>& data) {
@@ -68,7 +68,7 @@ void jleTimerManager::ExecuteFuncInSecondsWeakData(
     _functionsWeakData.insert({futureTime, functionAndData});
 }
 
-void jleTimerManager::ClearTimers() {
+void jleTimerManager::clearTimers() {
     _functionsSharedData.clear();
     _functionsWeakData.clear();
 }

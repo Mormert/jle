@@ -16,7 +16,7 @@ public:
 
     ~jleTextRendering();
 
-    void SendSimpleText(const std::string& text,
+    void sendSimpleText(const std::string& text,
                         float x,
                         float y,
                         float scale,
@@ -25,7 +25,7 @@ public:
                         float b,
                         float a);
 
-    void SendFontText(jleFont *font,
+    void sendFontText(jleFont *font,
                       const std::string& text,
                       uint32_t fontSize,
                       float x,
@@ -36,9 +36,9 @@ public:
                       float b,
                       float a);
 
-    void Render(jleFramebuffer& framebufferOut, const jleCamera& camera);
+    void render(jleFramebuffer& framebufferOut, const jleCamera& camera);
 
-    void ClearBuffersForNextFrame();
+    void clearBuffersForNextFrame();
 
 private:
     struct jleSimpleTextData {

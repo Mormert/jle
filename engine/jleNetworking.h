@@ -22,30 +22,30 @@ public:
     jleNetworking() { sNet = this; }
 
     // Has native and JS implementation
-    void Connect(const std::string& uri,
+    void connect(const std::string& uri,
                  const std::function<void(void)>& onConnected,
                  const std::function<void(int const& reason)>& onClosed,
                  const std::function<void(void)>& onFailed);
 
-    void Disconnect();
+    void disconnect();
 
-    static void TryEmitJsonData(const std::string& event,
+    static void tryEmitJsonData(const std::string& event,
                                 const nlohmann::json& json,
                                 const std::string& receiver = "");
 
     // Called from game thread
-    void EmitJsonData(const std::string& event,
+    void emitJsonData(const std::string& event,
                       const nlohmann::json& json,
                       const std::string& receiver = "");
 
     // Called from game thread, returns false if no message packs are available
-    bool TryReceiveMessagePack(nlohmann::json& out);
+    bool tryReceiveMessagePack(nlohmann::json& out);
 
     static inline jleNetworking *sNet;
 
     static inline bool connected = false;
 
-    static void OnReceiveMessagePackFromJS(const std::string& data);
+    static void onReceiveMessagePackFromJS(const std::string& data);
 
 #ifdef __EMSCRIPTEN__
 
@@ -54,15 +54,15 @@ public:
 
 private:
     // Has native and JS implementation
-    void EmitEvent(const std::string& event, const std::string& data);
+    void emitEvent(const std::string& event, const std::string& data);
 
     // Called from C++ or JavaScript, networking thread
-    void OnReceiveMessagePack(const std::string& data);
+    void onReceiveMessagePack(const std::string& data);
 
     moodycamel::ReaderWriterQueue<nlohmann::json> _messagePacks{128};
 
     // Has native and JS implementation
-    std::string GetSessionID();
+    std::string sessionID();
 
 #ifndef __EMSCRIPTEN__
     sio::client c;

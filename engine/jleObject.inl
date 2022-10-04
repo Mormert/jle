@@ -5,7 +5,7 @@
 #include "jleScene.h"
 
 template <typename T>
-inline std::shared_ptr<T> jleObject::AddComponent() {
+inline std::shared_ptr<T> jleObject::addComponent() {
     static_assert(std::is_base_of<jleComponent, T>::value,
                   "T must derive from jleComponent");
 
@@ -23,24 +23,24 @@ inline std::shared_ptr<T> jleObject::AddComponent() {
 };
 
 template <typename T>
-inline std::shared_ptr<T> jleObject::AddCustomComponent(bool start_immediate) {
+inline std::shared_ptr<T> jleObject::addCustomComponent(bool start_immediate) {
     static_assert(std::is_base_of<jleComponent, T>::value,
                   "T must derive from jleComponent");
 
-    std::shared_ptr<T> newCustomComponent = AddComponent<T>();
+    std::shared_ptr<T> newCustomComponent = addComponent<T>();
     _dynamicCustomComponents.push_back(newCustomComponent);
 
     if (start_immediate) {
-        newCustomComponent->Start();
+        newCustomComponent->start();
     }
 
     return newCustomComponent;
 };
 
-inline std::shared_ptr<jleComponent> jleObject::AddComponent(
+inline std::shared_ptr<jleComponent> jleObject::addComponent(
     const std::string& component_name) {
     auto newComponent =
-        jleTypeReflectionUtils::InstantiateComponentByString(component_name);
+        jleTypeReflectionUtils::instantiateComponentByString(component_name);
     newComponent->_attachedToObject = this;
     newComponent->_containedInScene = _containedInScene;
 
@@ -49,20 +49,20 @@ inline std::shared_ptr<jleComponent> jleObject::AddComponent(
     return newComponent;
 }
 
-inline std::shared_ptr<jleComponent> jleObject::AddCustomComponent(
+inline std::shared_ptr<jleComponent> jleObject::addCustomComponent(
     const std::string& component_name, bool start_immediate) {
-    auto newCustomComponent = AddComponent(component_name);
+    auto newCustomComponent = addComponent(component_name);
     _dynamicCustomComponents.push_back(newCustomComponent);
 
     if (start_immediate) {
-        newCustomComponent->Start();
+        newCustomComponent->start();
     }
 
     return newCustomComponent;
 }
 
 template <typename T>
-inline std::shared_ptr<T> jleObject::GetComponent() {
+inline std::shared_ptr<T> jleObject::component() {
     static_assert(std::is_base_of<jleComponent, T>::value,
                   "T must derive from jleComponent");
 
@@ -76,32 +76,32 @@ inline std::shared_ptr<T> jleObject::GetComponent() {
 };
 
 template <typename T>
-inline std::shared_ptr<T> jleObject::AddDependencyComponent(
+inline std::shared_ptr<T> jleObject::addDependencyComponent(
     const jleComponent *component) {
     static_assert(std::is_base_of<jleComponent, T>::value,
                   "T must derive from jleComponent");
 
-    std::shared_ptr<T> c = component->_attachedToObject->GetComponent<T>();
+    std::shared_ptr<T> c = component->_attachedToObject->component<T>();
     if (!c) {
-        c = component->_attachedToObject->AddCustomComponent<T>();
+        c = component->_attachedToObject->addCustomComponent<T>();
     }
 
     return c;
 }
 
 template <typename T>
-inline std::shared_ptr<T> jleObject::SpawnChildObject() {
+inline std::shared_ptr<T> jleObject::spawnChildObject() {
     // We still want the object to be spawned initially in the scene,
     // but to immediately be moved over to the object's ownership.
-    // This is because the scene will run the Start() methods on the new object.
-    std::shared_ptr<T> object = _containedInScene->SpawnObject<T>();
-    AttachChildObject(object);
+    // This is because the scene will run the start() methods on the new object.
+    std::shared_ptr<T> object = _containedInScene->spawnObject<T>();
+    attachChildObject(object);
     return object;
 }
 
-inline std::shared_ptr<jleObject> jleObject::SpawnChildObject(
+inline std::shared_ptr<jleObject> jleObject::spawnChildObject(
     const std::string& objName) {
-    auto object = _containedInScene->SpawnObject(objName);
-    AttachChildObject(object);
+    auto object = _containedInScene->spawnObject(objName);
+    attachChildObject(object);
     return object;
 }

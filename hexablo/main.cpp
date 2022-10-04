@@ -4,7 +4,7 @@
 
 int main() {
 
-    KickStart<Hexablo>();
+    kickStart<Hexablo>();
 
     return 0;
 }

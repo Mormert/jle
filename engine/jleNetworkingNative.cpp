@@ -7,7 +7,7 @@
 #include "jleNetworking.h"
 #include <iostream>
 
-void jleNetworking::Connect(
+void jleNetworking::connect(
     const std::string& uri,
     const std::function<void(void)>& onConnected,
     const std::function<void(int const& reason)>& onClosed,
@@ -26,14 +26,14 @@ void jleNetworking::Connect(
                                             sio::message::ptr const& data,
                                             bool isAck,
                                             sio::message::list& ack_resp) {
-            OnReceiveMessagePack(data->get_string());
+            onReceiveMessagePack(data->get_string());
         }));
 
     connected = true;
     sNet = this;
 }
 
-void jleNetworking::Disconnect() {
+void jleNetworking::disconnect() {
 
     if (!connected) {
         return;
@@ -45,7 +45,7 @@ void jleNetworking::Disconnect() {
     sNet = nullptr;
 }
 
-void jleNetworking::EmitJsonData(const std::string& event,
+void jleNetworking::emitJsonData(const std::string& event,
                                  const nlohmann::json& json,
                                  const std::string& receiver) {
 
@@ -58,7 +58,7 @@ void jleNetworking::EmitJsonData(const std::string& event,
     c.socket()->emit("msgpack", to_string(json_package));
 }
 
-void jleNetworking::EmitEvent(const std::string& event,
+void jleNetworking::emitEvent(const std::string& event,
                               const std::string& data) {
 
     if (!connected) {
@@ -68,6 +68,6 @@ void jleNetworking::EmitEvent(const std::string& event,
     c.socket()->emit(event, data);
 }
 
-std::string jleNetworking::GetSessionID() { return c.get_sessionid(); }
+std::string jleNetworking::sessionID() { return c.get_sessionid(); }
 
 #endif // __EMSCRIPTEN__

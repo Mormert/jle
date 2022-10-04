@@ -18,7 +18,7 @@ std::weak_ptr<jleObject>& jleEditorSceneObjectsWindow::GetSelectedObject() {
     return selectedObject;
 }
 
-void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
+void jleEditorSceneObjectsWindow::update(jleGameEngine& ge) {
     if (!isOpened) {
         return;
     }
@@ -29,10 +29,10 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("Create Scene")) {
                 if (ImGui::MenuItem("jleScene")) {
-                    ge.GetGameRef().CreateScene<jleScene>();
+                    ge.gameRef().createScene<jleScene>();
                 }
                 if (ImGui::MenuItem("jleNetScene")) {
-                    ge.GetGameRef().CreateScene<jleNetScene>();
+                    ge.gameRef().createScene<jleNetScene>();
                 }
 
                 ImGui::EndMenu();
@@ -42,9 +42,9 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
                 !selectedScene.lock()->bPendingSceneDestruction) {
                 if (ImGui::BeginMenu("Create Object")) {
                     for (auto&& objectType :
-                         jleTypeReflectionUtils::GetRegisteredObjectsRef()) {
+                         jleTypeReflectionUtils::registeredObjectsRef()) {
                         if (ImGui::MenuItem(objectType.first.c_str())) {
-                            selectedScene.lock()->SpawnObject(objectType.first);
+                            selectedScene.lock()->spawnObject(objectType.first);
                         }
                     }
                     ImGui::EndMenu();
@@ -61,7 +61,7 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
             "scene pane", ImVec2(150 * globalImguiScale, 0), true);
 
         auto& activeScenes =
-            ((jleGameEngine *)jleCore::core)->GetGameRef().GetActiveScenesRef();
+            ((jleGameEngine *)jleCore::core)->gameRef().activeScenesRef();
 
         for (auto scene : activeScenes) {
             if (ImGui::Selectable(scene->_sceneName.c_str(),
@@ -71,18 +71,18 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
 
             if (selectedScene.lock() == scene) {
 
-                { // Destroy Scene
+                { // destroy Scene
                     static bool opened = false;
-                    if (ImGui::Button("Destroy Scene",
+                    if (ImGui::Button("destroy Scene",
                                       ImVec2(138 * globalImguiScale, 0))) {
                         opened = true;
-                        ImGui::OpenPopup("Confirm Scene Destroy");
+                        ImGui::OpenPopup("Confirm Scene destroy");
                     }
 
                     if (ImGui::BeginPopupModal(
-                            "Confirm Scene Destroy", &opened, 0)) {
-                        if (ImGui::Button("Destroy")) {
-                            scene->DestroyScene();
+                            "Confirm Scene destroy", &opened, 0)) {
+                        if (ImGui::Button("destroy")) {
+                            scene->destroyScene();
                         }
                         ImGui::SameLine();
                         if (ImGui::Button("Cancel")) {
@@ -140,10 +140,10 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
             "objects pane", ImVec2(280 * globalImguiScale, 0), true);
 
         if (auto selectedSceneSafePtr = selectedScene.lock()) {
-            auto& sceneObjectsRef = selectedSceneSafePtr->GetSceneObjects();
+            auto& sceneObjectsRef = selectedSceneSafePtr->sceneObjects();
             for (int32_t i = sceneObjectsRef.size() - 1; i >= 0; i--) {
                 if (sceneObjectsRef[i]) {
-                    ObjectTreeRecursive(sceneObjectsRef[i]);
+                    objectTreeRecursive(sceneObjectsRef[i]);
                 }
             }
         }
@@ -191,34 +191,34 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
                         if (selectedObjectSafePtr !=
                             lastSelectedObject.lock()) {
                             nlohmann::json selectedObjectJson;
-                            selectedObjectSafePtr->ToJson(selectedObjectJson);
+                            selectedObjectSafePtr->toJson(selectedObjectJson);
 
                             selectedObjectJson["_custom_components"] =
-                                selectedObjectSafePtr->GetCustomComponents();
+                                selectedObjectSafePtr->customComponents();
                             // selectedObjectJson["_childObjects"] =
-                            // selectedObjectSafePtr->GetChildObjects();
+                            // selectedObjectSafePtr->childObjects();
 
                             lastSelectedObject = selectedObjectSafePtr;
 
-                            _jsonToImgui.JsonToImgui(
+                            _jsonToImgui.jsonToImgui(
                                 selectedObjectJson,
                                 {std::string{selectedObjectSafePtr
-                                                 ->GetObjectNameVirtual()}});
+                                                 ->objectNameVirtual()}});
                         }
 
                         // This does calls to ImGui:: to draw the editable
                         // object properties
-                        _jsonToImgui.DrawAndGetInput();
+                        _jsonToImgui.drawAndGetInput();
 
                         ImGui::EndTabItem();
                     }
                     if (ImGui::BeginTabItem("Custom Components")) {
                         if (ImGui::BeginMenu("Add Custom Component")) {
                             for (auto&& componentType : jleTypeReflectionUtils::
-                                     GetRegisteredComponentsRef()) {
+                                     registeredComponentsRef()) {
                                 if (ImGui::MenuItem(
                                         componentType.first.c_str())) {
-                                    selectedObjectSafePtr->AddCustomComponent(
+                                    selectedObjectSafePtr->addCustomComponent(
                                         componentType.first, true);
                                     lastSelectedObject.reset(); // refresh
                                 }
@@ -227,16 +227,16 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
                         }
 
                         auto&& customComponents =
-                            selectedObjectSafePtr->GetCustomComponents();
+                            selectedObjectSafePtr->customComponents();
                         if (customComponents.size() > 0) {
                             if (ImGui::BeginMenu("Remove Custom Component")) {
                                 for (int i = customComponents.size() - 1;
                                      i >= 0;
                                      i--) {
                                     if (ImGui::MenuItem(customComponents[i]
-                                                            ->GetComponentName()
+                                                            ->componentName()
                                                             .data())) {
-                                        customComponents[i]->Destroy();
+                                        customComponents[i]->destroy();
                                         lastSelectedObject.reset(); // refresh
                                     }
                                 }
@@ -249,7 +249,7 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
                     if (ImGui::BeginTabItem("Details")) {
                         {
                             auto name =
-                                selectedObjectSafePtr->GetObjectNameVirtual();
+                                selectedObjectSafePtr->objectNameVirtual();
                             ImGui::Text("Object type   : %.*s",
                                         static_cast<int>(name.size()),
                                         name.data());
@@ -258,7 +258,7 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
                             "Instance name : %s",
                             selectedObjectSafePtr->_instanceName.c_str());
                         ImGui::Text("Components attached count: %d",
-                                    selectedObjectSafePtr->GetComponentCount());
+                                    selectedObjectSafePtr->componentCount());
                         ImGui::EndTabItem();
                     }
                     ImGui::EndTabBar();
@@ -269,9 +269,9 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
             if (hasAnObjectSelected) {
                 if (selectedObjectSafePtr->_templatePath.has_value()) {
                     if (ImGui::Button("Update Template")) {
-                        auto pushedObjectJson = _jsonToImgui.ImGuiToJson();
+                        auto pushedObjectJson = _jsonToImgui.imGuiToJson();
                         from_json(pushedObjectJson, selectedObjectSafePtr);
-                        selectedObjectSafePtr->FromJson(pushedObjectJson);
+                        selectedObjectSafePtr->fromJson(pushedObjectJson);
 
                         // Haxx: remove the template field, and add it back
                         // again after :>
@@ -279,7 +279,7 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
                             selectedObjectSafePtr->_templatePath.value();
                         selectedObjectSafePtr->_templatePath.reset();
                         jleRelativePath relPath{templatePathTempSave};
-                        selectedObjectSafePtr->SaveObjectTemplate(relPath);
+                        selectedObjectSafePtr->saveObjectTemplate(relPath);
                         selectedObjectSafePtr->_templatePath =
                             templatePathTempSave;
                     }
@@ -308,14 +308,14 @@ void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
                 }
                 else {
 
-                    if (ImGui::Button("Refresh Object")) {
+                    if (ImGui::Button("refresh Object")) {
                         lastSelectedObject.reset();
                     }
                     ImGui::SameLine();
                     if (ImGui::Button("Push Object Changes")) {
-                        auto pushedObjectJson = _jsonToImgui.ImGuiToJson();
+                        auto pushedObjectJson = _jsonToImgui.imGuiToJson();
                         from_json(pushedObjectJson, selectedObjectSafePtr);
-                        selectedObjectSafePtr->FromJson(pushedObjectJson);
+                        selectedObjectSafePtr->fromJson(pushedObjectJson);
                     }
                 }
             }
@@ -331,7 +331,7 @@ void jleEditorSceneObjectsWindow::SetSelectedObject(
     selectedObject = object;
 }
 
-void jleEditorSceneObjectsWindow::ObjectTreeRecursive(
+void jleEditorSceneObjectsWindow::objectTreeRecursive(
     std::shared_ptr<jleObject> object) {
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
 
@@ -340,14 +340,14 @@ void jleEditorSceneObjectsWindow::ObjectTreeRecursive(
         instanceDisplayName += " [T]";
     }
 
-    ImGui::PushID(object->GetInstanceID()); // push instance id
+    ImGui::PushID(object->instanceID()); // push instance id
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 5));
     bool open = ImGui::TreeNodeEx(
         object->_instanceName.c_str(),
         ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_DefaultOpen |
             (selectedObject.lock() == object ? ImGuiTreeNodeFlags_Selected
                                              : 0) |
-            (object->GetChildObjects().empty() ? ImGuiTreeNodeFlags_Leaf : 0),
+            (object->childObjects().empty() ? ImGuiTreeNodeFlags_Leaf : 0),
         "%s",
         instanceDisplayName.c_str());
     ImGui::PopStyleVar();
@@ -358,22 +358,22 @@ void jleEditorSceneObjectsWindow::ObjectTreeRecursive(
 
         if (ImGui::BeginMenu("Create Object")) {
             for (auto&& objectType :
-                 jleTypeReflectionUtils::GetRegisteredObjectsRef()) {
+                 jleTypeReflectionUtils::registeredObjectsRef()) {
                 if (ImGui::MenuItem(objectType.first.c_str())) {
-                    object->SpawnChildObject(objectType.first);
+                    object->spawnChildObject(objectType.first);
                 }
             }
             ImGui::EndMenu();
         }
 
-        if (ImGui::Button("Destroy Object",
+        if (ImGui::Button("destroy Object",
                           ImVec2(138 * globalImguiScale, 0))) {
-            object->DestroyObject();
+            object->destroyObject();
         }
 
         if (ImGui::Button("Save Template", ImVec2(138 * globalImguiScale, 0))) {
             jleRelativePath p{""};
-            object->SaveObjectTemplate(p);
+            object->saveObjectTemplate(p);
         }
 
         if (ImGui::Button("Duplicate", ImVec2(138 * globalImguiScale, 0))) {
@@ -402,10 +402,10 @@ void jleEditorSceneObjectsWindow::ObjectTreeRecursive(
             }
         }
 
-        if (object->GetParent()) {
+        if (object->parent()) {
             if (ImGui::Button("Detach Object",
                               ImVec2(138 * globalImguiScale, 0))) {
-                object->DetachObjectFromParent();
+                object->detachObjectFromParent();
             }
         }
 
@@ -427,20 +427,20 @@ void jleEditorSceneObjectsWindow::ObjectTreeRecursive(
             // being attached to If that's the case, we first detach the object
             // from it's parent, and then attach it to the target object
             bool canAttachDirectly = true;
-            jleObject *o = object->GetParent();
+            jleObject *o = object->parent();
             while (o) {
                 if (moveFrom.get() == o) {
                     canAttachDirectly = false;
                     break;
                 }
-                o = o->GetParent();
+                o = o->parent();
             }
             if (canAttachDirectly) {
-                object->AttachChildObject(moveFrom);
+                object->attachChildObject(moveFrom);
             }
             else {
-                object->DetachObjectFromParent();
-                object->AttachChildObject(moveFrom);
+                object->detachObjectFromParent();
+                object->attachChildObject(moveFrom);
             }
         }
         ImGui::EndDragDropTarget();
@@ -454,9 +454,9 @@ void jleEditorSceneObjectsWindow::ObjectTreeRecursive(
     }
 
     if (open) {
-        auto& childObjectsRef = object->GetChildObjects();
+        auto& childObjectsRef = object->childObjects();
         for (int32_t i = childObjectsRef.size() - 1; i >= 0; i--) {
-            ObjectTreeRecursive(childObjectsRef[i]);
+            objectTreeRecursive(childObjectsRef[i]);
         }
         ImGui::TreePop();
     }

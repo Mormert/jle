@@ -9,7 +9,7 @@
 cSpriteDepth::cSpriteDepth(jleObject *owner, jleScene *scene)
     : jleComponent{owner, scene} {}
 
-void cSpriteDepth::CreateAndSetTextureFromPath(const std::string& pathDiffuse,
+void cSpriteDepth::createAndSetTextureFromPath(const std::string& pathDiffuse,
                                                const std::string& pathHeight,
                                                const std::string& pathNormal) {
     if (!quad.mtextureWithHeightmap) {
@@ -17,48 +17,48 @@ void cSpriteDepth::CreateAndSetTextureFromPath(const std::string& pathDiffuse,
     }
 
     quad.mtextureWithHeightmap->texture =
-        jleTexture::FromPath(jleRelativePath{pathDiffuse});
+        jleTexture::fromPath(jleRelativePath{pathDiffuse});
     quad.mtextureWithHeightmap->heightmap =
-        jleTexture::FromPath(jleRelativePath{pathHeight});
+        jleTexture::fromPath(jleRelativePath{pathHeight});
     quad.mtextureWithHeightmap->normalmap =
-        jleTexture::FromPath(jleRelativePath{pathNormal});
+        jleTexture::fromPath(jleRelativePath{pathNormal});
 }
 
-void cSpriteDepth::SetRectangleDimensions(int width, int height) {
+void cSpriteDepth::rectangleDimensions(int width, int height) {
     quad.width = width;
     quad.height = height;
 }
 
-void cSpriteDepth::SetTextureBeginCoordinates(int x, int y) {
+void cSpriteDepth::textureBeginCoordinates(int x, int y) {
     quad.textureX = x;
     quad.textureY = y;
 }
 
-void cSpriteDepth::Start() {
-    transform = _attachedToObject->AddDependencyComponent<cTransform>(this);
+void cSpriteDepth::start() {
+    transform = _attachedToObject->addDependencyComponent<cTransform>(this);
 
     if (texturePathHeight != "" && texturePathDiffuse != "" &&
         texturePathNormal != "") {
-        CreateAndSetTextureFromPath(
+        createAndSetTextureFromPath(
             texturePathDiffuse, texturePathHeight, texturePathNormal);
     }
 }
 
-void cSpriteDepth::Update(float dt) {
-    quad.x = transform->GetWorldX();
-    quad.y = transform->GetWorldY();
+void cSpriteDepth::update(float dt) {
+    quad.x = transform->worldX();
+    quad.y = transform->worldY();
 
     if (!quad.mtextureWithHeightmap) {
         return;
     }
 
     if (quad.mtextureWithHeightmap->texture) {
-        jleCore::core->rendering->quads().SendTexturedHeightQuad(
+        jleCore::core->rendering->quads().sendTexturedHeightQuad(
             *&quad, RenderingMethod::Dynamic);
     }
 }
 
-void cSpriteDepth::ToJson(nlohmann::json& j_out) {
+void cSpriteDepth::toJson(nlohmann::json& j_out) {
     j_out = nlohmann::json{{"pathDiffuse", texturePathDiffuse},
                            {"pathHeight", texturePathHeight},
                            {"pathNormal", texturePathNormal},
@@ -71,7 +71,7 @@ void cSpriteDepth::ToJson(nlohmann::json& j_out) {
                            {"textureY", quad.textureY}};
 }
 
-void cSpriteDepth::FromJson(const nlohmann::json& j_in) {
+void cSpriteDepth::fromJson(const nlohmann::json& j_in) {
     texturePathDiffuse = j_in.at("pathDiffuse");
     texturePathHeight = j_in.at("pathHeight");
     texturePathNormal = j_in.at("pathNormal");
@@ -83,6 +83,6 @@ void cSpriteDepth::FromJson(const nlohmann::json& j_in) {
     quad.textureX = j_in.at("textureX");
     quad.textureY = j_in.at("textureY");
 
-    CreateAndSetTextureFromPath(
+    createAndSetTextureFromPath(
         texturePathDiffuse, texturePathHeight, texturePathNormal);
 }

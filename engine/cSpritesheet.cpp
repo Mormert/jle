@@ -8,58 +8,58 @@
 #include "json.hpp"
 #include <plog/Log.h>
 
-void cSpritesheet::Start() {
-    _transform = _attachedToObject->AddDependencyComponent<cTransform>(this);
+void cSpritesheet::start() {
+    _transform = _attachedToObject->addDependencyComponent<cTransform>(this);
 }
 
 cSpritesheet::cSpritesheet(jleObject *owner, jleScene *scene)
     : jleComponent(owner, scene) {}
 
-void cSpritesheet::Update(float dt) {
+void cSpritesheet::update(float dt) {
     if (!_spritesheet) {
         return;
     }
 
     auto& texture = _spritesheet->_imageTexture;
     if (texture != nullptr && _hasEntity) {
-        TexturedQuad quad{texture};
-        quad.x = _transform->GetWorldX() +
-                 _spritesheetEntityCache.sourceSize.x - _offset.x;
-        quad.y = _transform->GetWorldY() +
-                 _spritesheetEntityCache.sourceSize.y - _offset.y;
+        texturedQuad quad{texture};
+        quad.x = _transform->worldX() + _spritesheetEntityCache.sourceSize.x -
+                 _offset.x;
+        quad.y = _transform->worldY() + _spritesheetEntityCache.sourceSize.y -
+                 _offset.y;
 
         quad.height = _spritesheetEntityCache.frame.height;
         quad.width = _spritesheetEntityCache.frame.width;
         quad.textureX = _spritesheetEntityCache.frame.x;
         quad.textureY = _spritesheetEntityCache.frame.y;
-        quad.depth = _transform->GetWorldDepth();
+        quad.depth = _transform->worldDepth();
 
         if (quad.texture.get()) {
-            jleCore::core->rendering->quads().SendTexturedQuad(
+            jleCore::core->rendering->quads().sendTexturedQuad(
                 quad, RenderingMethod::Dynamic);
         }
     }
 }
 
-void cSpritesheet::ToJson(nlohmann::json& j_out) {
+void cSpritesheet::toJson(nlohmann::json& j_out) {
     j_out["_spritesheetPath"] = _spritesheetPath;
     j_out["_spriteName"] = _spriteName;
     j_out["_offsetX"] = _offset.x;
     j_out["_offsetY"] = _offset.y;
 }
 
-void cSpritesheet::FromJson(const nlohmann::json& j_in) {
+void cSpritesheet::fromJson(const nlohmann::json& j_in) {
     _spritesheetPath = j_in["_spritesheetPath"];
     _spriteName = j_in["_spriteName"];
     _offset.x = j_in.value("_offsetX", 0);
     _offset.y = j_in.value("_offsetY", 0);
-    _spritesheet = jleResourceHolder::LoadResourceFromFile<jleSpritesheet>(
+    _spritesheet = jleResourceHolder::loadResourceFromFile<jleSpritesheet>(
         jleRelativePath{_spritesheetPath});
 
-    SetEntity(_spriteName);
+    entity(_spriteName);
 }
 
-void cSpritesheet::SetEntity(const std::string& entityName) {
+void cSpritesheet::entity(const std::string& entityName) {
     if (!_spritesheet) {
         return;
     }

@@ -26,31 +26,31 @@ public:
         southwest
     };
 
-    virtual void Attack(oCharacterDirection direction);
+    virtual void attack(oCharacterDirection direction);
 
-    void SetHP(int hp);
+    void hp(int hp);
 
-    void SetCharacterDirection(oCharacterDirection direction);
+    void characterDirection(oCharacterDirection direction);
 
-    void SetHexagonPlacementTeleport(int q, int r);
+    void hexagonPlacementTeleport(int q, int r);
 
-    void SetHexagonPlacementInterp(int q, int r);
+    void hexagonPlacementInterp(int q, int r);
 
-    void SetupDefaultObject() override;
+    void upDefaultObject() override;
 
-    void Start() override;
+    void start() override;
 
-    void Update(float dt) override;
+    void update(float dt) override;
 
-    void ToJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json& j_out) override;
 
-    void FromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json& j_in) override;
 
     std::shared_ptr<cTransform> _transform{nullptr};
     std::shared_ptr<cAseprite> _aseprite{nullptr};
 
 protected:
-    void LookAtPosition(int x, int y);
+    void lookAtPosition(int x, int y);
 
     hexHexagonItem _hexagonItem;
 

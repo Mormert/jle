@@ -18,29 +18,29 @@
 #include "jleTextRendering.h"
 #include "plog/Log.h"
 
-void jleRendering::SetViewportDimensions(int x,
-                                         int y,
-                                         unsigned int width,
-                                         unsigned int height) {
+void jleRendering::viewportDimensions(int x,
+                                      int y,
+                                      unsigned int width,
+                                      unsigned int height) {
     glViewport(x, y, static_cast<int>(width), static_cast<int>(height));
 }
 
-void jleRendering::Render(jleFramebuffer& framebufferOut, jleCamera& camera) {
+void jleRendering::render(jleFramebuffer& framebufferOut, jleCamera& camera) {
     JLE_SCOPE_PROFILE(jleRendering::Render)
-    _quads->QueueRender(framebufferOut, camera);
-    _texts->Render(framebufferOut, camera);
+    _quads->queuerender(framebufferOut, camera);
+    _texts->render(framebufferOut, camera);
 }
 
-void jleRendering::Setup() {
+void jleRendering::up() {
     LOG_VERBOSE << "Creating text rendering";
     this->_texts = std::make_unique<jleTextRendering>();
     LOG_VERBOSE << "Creating quad rendering";
     this->_quads = std::make_unique<jleQuadRendering>();
 }
 
-void jleRendering::ClearBuffersForNextFrame() {
-    _quads->ClearBuffersForNextFrame();
-    _texts->ClearBuffersForNextFrame();
+void jleRendering::clearBuffersForNextFrame() {
+    _quads->clearBuffersForNextFrame();
+    _texts->clearBuffersForNextFrame();
 }
 
 jleQuadRendering& jleRendering::quads() { return *_quads; }

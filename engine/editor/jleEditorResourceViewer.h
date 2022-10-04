@@ -8,5 +8,5 @@ class jleEditorResourceViewer : public iEditorImGuiWindow {
 public:
     explicit jleEditorResourceViewer(const std::string& window_name);
 
-    void Update(jleGameEngine& ge) override;
+    void update(jleGameEngine& ge) override;
 };

@@ -31,9 +31,9 @@ class jleJsonInterface {
 public:
     virtual ~jleJsonInterface() = default;
 
-    virtual void ToJson(JSON& j_out) = 0;
+    virtual void toJson(JSON& j_out) = 0;
 
-    virtual void FromJson(const JSON& j_in) = 0;
+    virtual void fromJson(const JSON& j_in) = 0;
 };
 
 // JSON simple data wrappers used in arrays (wrapping as an object)
