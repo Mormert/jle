@@ -99,17 +99,15 @@ bool jleGameEngine::isGameHalted() { return gameHalted; }
 jleGame& jleGameEngine::gameRef() { return *game; }
 
 void jleGameEngine::start() {
-    auto dims =
-        framebufferDimensions(core_settings->windowSettings.windowWidth,
-                                 core_settings->windowSettings.windowHeight);
+    auto dims = framebufferDimensions(core_settings->windowSettings.width,
+                                      core_settings->windowSettings.height);
     framebuffer_main =
         std::make_shared<jleFramebuffer>(dims.first, dims.second);
 
     const auto& internalInputMouse = jleCore::core->input->mouse;
     internalInputMouse->pixelatedScreenSize(dims.first, dims.second);
-    internalInputMouse->screenSize(
-        core_settings->windowSettings.windowWidth,
-        core_settings->windowSettings.windowHeight);
+    internalInputMouse->screenSize(core_settings->windowSettings.width,
+                                   core_settings->windowSettings.height);
 
     _fullscreen_renderer = std::make_unique<jleFullscreenRendering>();
 
@@ -132,8 +130,7 @@ void jleGameEngine::framebufferResizeEvent(unsigned int width,
     framebuffer_main->resizeFramebuffer(dims.first, dims.second);
 
     const auto& internalInputMouse =
-        std::static_pointer_cast<jleMouseInput>(
-            jleCore::core->input->mouse);
+        std::static_pointer_cast<jleMouseInput>(jleCore::core->input->mouse);
     internalInputMouse->pixelatedScreenSize(dims.first, dims.second);
     internalInputMouse->screenSize(width, height);
 

@@ -53,8 +53,8 @@ void jleWindow::framebuffer_size_callback(GLFWwindow *window,
         static_cast<unsigned int>(width),
         static_cast<unsigned int>(height));
 
-    activeWindow->windowSettings.windowWidth = static_cast<unsigned int>(width);
-    activeWindow->windowSettings.windowHeight =
+    activeWindow->windowSettings.width = static_cast<unsigned int>(width);
+    activeWindow->windowSettings.height =
         static_cast<unsigned int>(height);
 
     // Call all subscribed callbacks
@@ -107,10 +107,10 @@ void jleWindow::displayCursor(bool enable) {
 bool jleWindow::isCursorDisplayed() { return cursorVisible; }
 
 unsigned int jleWindow::GetWindowHeight() {
-    return windowSettings.windowHeight;
+    return windowSettings.height;
 }
 
-unsigned int jleWindow::GetWindowWidth() { return windowSettings.windowWidth; }
+unsigned int jleWindow::GetWindowWidth() { return windowSettings.width; }
 
 void jleWindow::initWindow(std::shared_ptr<jleRendering> internalRenderingAPI) {
     if (!internalRenderingAPI) {
@@ -128,7 +128,7 @@ void jleWindow::initWindow(std::shared_ptr<jleRendering> internalRenderingAPI) {
         exit(1);
     }
 
-    if (windowSettings.windowIsRezisable) {
+    if (windowSettings.isRezisable) {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
     }
     else {
@@ -136,8 +136,8 @@ void jleWindow::initWindow(std::shared_ptr<jleRendering> internalRenderingAPI) {
     }
 
     nativeWindow = reinterpret_cast<GLFWwindow *>(
-        ::initWindow(windowSettings.windowWidth,
-                     windowSettings.windowHeight,
+        ::initWindow(windowSettings.width,
+                     windowSettings.height,
                      windowSettings.WindowTitle.c_str()));
 
     glfwSetKeyCallback(nativeWindow, key_callback);
@@ -145,17 +145,17 @@ void jleWindow::initWindow(std::shared_ptr<jleRendering> internalRenderingAPI) {
     glfwSetFramebufferSizeCallback(nativeWindow, framebuffer_size_callback);
 
     glfwSetWindowSizeLimits(nativeWindow,
-                            windowSettings.windowWidthMin,
-                            windowSettings.windowHeightMin,
+                            windowSettings.widthMin,
+                            windowSettings.heightMin,
                             GLFW_DONT_CARE,
                             GLFW_DONT_CARE);
 
-    displayCursor(windowSettings.windowDisplayCursor);
+    displayCursor(windowSettings.shouldDisplayCursor);
 
 #ifdef __EMSCRIPTEN__
     glfwSwapInterval(1);
 #else
-    if (windowSettings.windowCappedFps) {
+    if (windowSettings.isCappedFps) {
         glfwSwapInterval(1);
     }
     else {

@@ -46,7 +46,7 @@ void jleGameEditorWindow::Update(jleGameEngine& ge) {
         jleGameEngine::gEngine->framebuffer_main;
     internalInputMouse->screenBeginCoords(_windowPositionX,
                                              _windowPositionY);
-    internalInputMouse->screenSize(GetWindowWidth(), GetWindowHeight());
+    internalInputMouse->screenSize(width(), height());
 
     if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset ==
               _lastGameWindowWidth &&
@@ -87,14 +87,14 @@ void jleGameEditorWindow::Update(jleGameEngine& ge) {
     ImGui::End();
 }
 
-int jleGameEditorWindow::GetWindowWidth() const {
+int jleGameEditorWindow::width() const {
     return int(_lastGameWindowWidth);
 }
 
-int jleGameEditorWindow::GetWindowHeight() const {
+int jleGameEditorWindow::height() const {
     return int(_lastGameWindowHeight);
 }
 
-int jleGameEditorWindow::windowPosX() const { return _windowPositionX; }
+int jleGameEditorWindow::x() const { return _windowPositionX; }
 
-int jleGameEditorWindow::windowPosY() const { return _windowPositionY; }
+int jleGameEditorWindow::y() const { return _windowPositionY; }

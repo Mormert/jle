@@ -46,9 +46,8 @@ void jleEditor::start() {
 
     initImgui();
 
-    auto dims =
-        framebufferDimensions(core_settings->windowSettings.windowWidth,
-                                 core_settings->windowSettings.windowHeight);
+    auto dims = framebufferDimensions(core_settings->windowSettings.width,
+                                      core_settings->windowSettings.height);
     framebuffer_main =
         std::make_shared<jleFramebuffer>(dims.first, dims.second);
 
@@ -125,9 +124,9 @@ void jleEditor::Render() {
     // _editorFramebuffer->width(), _editorFramebuffer->height(), 50000.f,
     // 0.1f);
     _editorCamera.orthographicProjection(_editorFramebuffer->width(),
-                                            _editorFramebuffer->height(),
-                                            10000.f,
-                                            -10000.f);
+                                         _editorFramebuffer->height(),
+                                         10000.f,
+                                         -10000.f);
     // Render to editor scene view
     rendering->Render(*_editorFramebuffer, _editorCamera);
 

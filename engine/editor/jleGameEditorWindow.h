@@ -14,13 +14,13 @@ public:
 
     static inline jleGameEditorWindow *gGameEditorWindow;
 
-    int GetWindowWidth() const;
+    int width() const;
 
-    int GetWindowHeight() const;
+    int height() const;
 
-    int windowPosX() const;
+    int x() const;
 
-    int windowPosY() const;
+    int y() const;
 
 private:
     float _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;
