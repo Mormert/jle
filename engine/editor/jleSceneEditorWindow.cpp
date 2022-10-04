@@ -103,8 +103,7 @@ void jleSceneEditorWindow::update(jleGameEngine& ge) {
         auto dims = ge.framebufferDimensions(
             static_cast<unsigned int>(ImGui::GetWindowWidth()),
             static_cast<unsigned int>(ImGui::GetWindowHeight()));
-        _framebuffer->resizeFramebuffer(dims.first * zoomValue,
-                                        dims.second * zoomValue);
+        _framebuffer->resize(dims.first * zoomValue, dims.second * zoomValue);
     }
 
     const auto& selectedObject =
@@ -188,8 +187,8 @@ void jleSceneEditorWindow::update(jleGameEngine& ge) {
             const auto heightDiff = dims.second * zoomValue - oldHeight;
             jleEditor::_editorCamera._x -= widthDiff * .5f;
             jleEditor::_editorCamera._y -= heightDiff * .5f;
-            _framebuffer->resizeFramebuffer(dims.first * zoomValue,
-                                            dims.second * zoomValue);
+            _framebuffer->resize(dims.first * zoomValue,
+                                 dims.second * zoomValue);
         }
 
         static int draggingTransformMarker = 0;

@@ -14,11 +14,11 @@ public:
 
     void createShadowFramebuffer(unsigned int width, unsigned int height);
 
-    void resizeFramebuffer(unsigned int width, unsigned int height);
+    void resize(unsigned int width, unsigned int height);
 
-    void bindToFramebuffer();
+    void bind();
 
-    void bindToDefaultFramebuffer();
+    void bindDefault();
 
     unsigned int width();
 

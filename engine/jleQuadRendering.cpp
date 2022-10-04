@@ -218,7 +218,7 @@ void jleQuadRendering::render(
 
     glm::mat4 view = camera.projectionViewMatrix();
 
-    framebufferOut.bindToFramebuffer();
+    framebufferOut.bind();
 
     if (clearDepthColor) {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Make everything black
@@ -236,7 +236,7 @@ void jleQuadRendering::render(
         view,
         glm::vec3{camera._xNoOffset, camera._yNoOffset, 0.f});
 
-    framebufferOut.bindToDefaultFramebuffer();
+    framebufferOut.bindDefault();
 }
 
 void jleQuadRendering::processTexturedQuads(

@@ -86,7 +86,7 @@ void jleFramebuffer::createFramebuffer(unsigned int width,
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void jleFramebuffer::resizeFramebuffer(unsigned int width,
+void jleFramebuffer::resize(unsigned int width,
                                        unsigned int height) {
 
     // LOG_VERBOSE << "Resized Framebuffer " << framebuffer << ": " << width <<
@@ -115,11 +115,11 @@ void jleFramebuffer::resizeFramebuffer(unsigned int width,
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
-void jleFramebuffer::bindToFramebuffer() {
+void jleFramebuffer::bind() {
     glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
 }
 
-void jleFramebuffer::bindToDefaultFramebuffer() {
+void jleFramebuffer::bindDefault() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
