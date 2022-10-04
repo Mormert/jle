@@ -24,7 +24,7 @@ void kickStartGame() {
     T::overrideGameSettings(*gameSettings);
 
     auto gameEngine = std::make_unique<jleGameEngine>(gameSettings);
-    gameEngine->SetGame<T>();
+    gameEngine->setGame<T>();
     gameEngine->run();
 }
 
@@ -47,7 +47,7 @@ void kickStartGameInEditor() {
 
     auto gameEngineInEditor =
         std::make_unique<jleEditor>(gameSettings, gameEditorSettings);
-    gameEngineInEditor->SetGame<T>();
+    gameEngineInEditor->setGame<T>();
     gameEngineInEditor->run();
 }
 

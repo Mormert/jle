@@ -35,11 +35,11 @@ public:
     [[nodiscard]] std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>
     pixelAtLocation(uint32_t x, uint32_t y) const;
 
-    [[nodiscard]] const std::string& GetPath() const;
+    [[nodiscard]] const std::string& path() const;
 
 private:
     unsigned char *image_data{nullptr};
     int w = 0, h = 0, nr_channels = 0;
 
-    std::string path;
+    std::string _path;
 };

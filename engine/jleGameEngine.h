@@ -17,7 +17,7 @@ public:
     explicit jleGameEngine(std::shared_ptr<jleGameSettings> gs);
 
     template <class T>
-    void SetGame() {
+    void setGame() {
         _gameCreator = []() { return std::make_unique<T>(); };
     }
 

@@ -9,7 +9,7 @@
 #include <algorithm>
 
 bool jleImage::loadFromFile(const std::string& path) {
-    this->path = path;
+    this->_path = path;
     stbi_set_flip_vertically_on_load(false);
     image_data = stbi_load(path.c_str(), &w, &h, &nr_channels, 0);
 
@@ -20,7 +20,7 @@ bool jleImage::loadFromFile(const std::string& path) {
 }
 
 jleImage::jleImage(const std::string& path) {
-    this->path = path;
+    this->_path = path;
     loadFromFile(path);
 }
 
@@ -98,7 +98,7 @@ unsigned char *jleImage::imageData() const { return image_data; }
 
 unsigned int jleImage::imageWidth() const { return w; }
 
-const std::string& jleImage::GetPath() const { return path; }
+const std::string& jleImage::path() const { return _path; }
 
 std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> jleImage::pixelAtLocation(
     uint32_t x, uint32_t y) const {

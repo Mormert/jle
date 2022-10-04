@@ -106,7 +106,7 @@ jleTexture::jleTexture(const jleImage& image) {
     }
     else {
         PLOG_ERROR << "Failed to generate OpenGL texture " << _id
-                   << " with path: " << image.GetPath();
+                   << " with path: " << image.path();
     }
     glBindTexture(GL_TEXTURE_2D, 0);
     jleStaticOpenGLState::globalActiveTexture = 0;
