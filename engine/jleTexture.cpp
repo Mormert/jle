@@ -39,8 +39,6 @@ void jleTexture::toActiveTexture(int texture_slot) {
     jleStaticOpenGLState::globalActiveTexture = _id;
 }
 
-unsigned int jleTexture::textureID() { return _id; }
-
 int32_t jleTexture::width() { return _width; }
 
 int32_t jleTexture::height() { return _height; }

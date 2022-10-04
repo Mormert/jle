@@ -159,8 +159,7 @@ void jleEditorContentBrowser::contentBrowser() {
     if (_selectedDirectory != GAME_RESOURCES_DIRECTORY &&
         !_selectedDirectory.empty()) {
         if (ImGui::ImageButton(
-                reinterpret_cast<ImTextureID>(
-                    _backDirectoryIcon->textureID()),
+                reinterpret_cast<ImTextureID>(_backDirectoryIcon->id()),
                 ImVec2{19 * globalImguiScale, 16 * globalImguiScale})) {
             _selectedDirectory = _selectedDirectory.parent_path();
         }
@@ -216,9 +215,9 @@ void jleEditorContentBrowser::contentBrowser() {
                         iconTexture = _fileIcon;
                     }
 
-                    if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(
-                                               iconTexture->textureID()),
-                                           fileSize)) {
+                    if (ImGui::ImageButton(
+                            reinterpret_cast<ImTextureID>(iconTexture->id()),
+                            fileSize)) {
                         _fileSelected = dir_entry;
                         isFileSelected = true;
                     }
@@ -226,9 +225,9 @@ void jleEditorContentBrowser::contentBrowser() {
                 }
                 else if (dir_entry.is_directory()) {
                     ImGui::PushID(buttonID++);
-                    if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(
-                                               _directoryIcon->textureID()),
-                                           fileSize)) {
+                    if (ImGui::ImageButton(
+                            reinterpret_cast<ImTextureID>(_directoryIcon->id()),
+                            fileSize)) {
                         _selectedDirectory = dir_entry.path();
                     }
                     ImGui::PopID();

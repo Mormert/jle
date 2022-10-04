@@ -32,8 +32,6 @@ public:
     // Set this Texture to be the globally active texture
     void toActiveTexture(int texture_slot = 0);
 
-    unsigned int textureID();
-
     int32_t width();
 
     int32_t height();
