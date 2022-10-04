@@ -13,18 +13,20 @@ void cSpritesheet::Start() {
 }
 
 cSpritesheet::cSpritesheet(jleObject *owner, jleScene *scene)
-        : jleComponent(owner, scene) {}
+    : jleComponent(owner, scene) {}
 
 void cSpritesheet::Update(float dt) {
     if (!_spritesheet) {
         return;
     }
 
-    auto &texture = _spritesheet->_imageTexture;
+    auto& texture = _spritesheet->_imageTexture;
     if (texture != nullptr && _hasEntity) {
         TexturedQuad quad{texture};
-        quad.x = _transform->GetWorldX() + _spritesheetEntityCache._sourceSize._x - _offset.x;
-        quad.y = _transform->GetWorldY() + _spritesheetEntityCache._sourceSize._y - _offset.y;
+        quad.x = _transform->GetWorldX() +
+                 _spritesheetEntityCache._sourceSize._x - _offset.x;
+        quad.y = _transform->GetWorldY() +
+                 _spritesheetEntityCache._sourceSize._y - _offset.y;
 
         quad.height = _spritesheetEntityCache._frame._height;
         quad.width = _spritesheetEntityCache._frame._width;
@@ -34,29 +36,30 @@ void cSpritesheet::Update(float dt) {
 
         if (quad.texture.get()) {
             jleCore::core->rendering->quads().SendTexturedQuad(
-                    quad, RenderingMethod::Dynamic);
+                quad, RenderingMethod::Dynamic);
         }
     }
 }
 
-void cSpritesheet::ToJson(nlohmann::json &j_out) {
+void cSpritesheet::ToJson(nlohmann::json& j_out) {
     j_out["_spritesheetPath"] = _spritesheetPath;
     j_out["_spriteName"] = _spriteName;
     j_out["_offsetX"] = _offset.x;
     j_out["_offsetY"] = _offset.y;
 }
 
-void cSpritesheet::FromJson(const nlohmann::json &j_in) {
-    _spritesheetPath = j_in["mSpritesheetPath"];
-    _spriteName = j_in["mSpriteName"];
+void cSpritesheet::FromJson(const nlohmann::json& j_in) {
+    _spritesheetPath = j_in["_spritesheetPath"];
+    _spriteName = j_in["_spriteName"];
     _offset.x = j_in["_offsetX"];
     _offset.y = j_in["_offsetY"];
-    _spritesheet = jleResourceHolder::LoadResourceFromFile<jleSpritesheet>(jleRelativePath{_spritesheetPath});
+    _spritesheet = jleResourceHolder::LoadResourceFromFile<jleSpritesheet>(
+        jleRelativePath{_spritesheetPath});
 
     SetEntity(_spriteName);
 }
 
-void cSpritesheet::SetEntity(const std::string &entityName) {
+void cSpritesheet::SetEntity(const std::string& entityName) {
     if (!_spritesheet) {
         return;
     }
@@ -66,7 +69,9 @@ void cSpritesheet::SetEntity(const std::string &entityName) {
     if (entity != _spritesheet->_spritesheetEntities.end()) {
         _spritesheetEntityCache = entity->second;
         _hasEntity = true;
-    } else {
-        LOGW << "Could not find sprite entity on the spritesheet: " << _spriteName;
+    }
+    else {
+        LOGW << "Could not find sprite entity on the spritesheet: "
+             << _spriteName;
     }
 }
