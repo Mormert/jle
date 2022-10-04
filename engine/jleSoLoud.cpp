@@ -3,7 +3,7 @@
 #include "jleSoLoud.h"
 #include <iostream>
 
-void jleSoLoud::Init() {
+void jleSoLoud::init() {
 #ifndef NDEBUG
     std::cout << "Initializing Sound Engine\n";
 #endif

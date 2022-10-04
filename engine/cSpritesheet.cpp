@@ -56,10 +56,10 @@ void cSpritesheet::fromJson(const nlohmann::json& j_in) {
     _spritesheet = jleResourceHolder::loadResourceFromFile<jleSpritesheet>(
         jleRelativePath{_spritesheetPath});
 
-    SetEntity(_spriteName);
+    entity(_spriteName);
 }
 
-void cSpritesheet::SetEntity(const std::string& entityName) {
+void cSpritesheet::entity(const std::string& entityName) {
     if (!_spritesheet) {
         return;
     }

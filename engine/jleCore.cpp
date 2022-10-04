@@ -42,7 +42,7 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings>& cs)
 
     coreImpl->windowInternal->SetWindowSettings(cs->windowSettings);
 
-    jleSoLoud::Init();
+    jleSoLoud::init();
 
     core_settings = cs;
 }
@@ -62,7 +62,7 @@ void jleCore::run() {
     PLOG_INFO << "Initializing the window";
     coreImpl->windowInternal->initWindow(coreImpl->renderingInternal);
 
-    jleFont::Init();
+    jleFont::init();
 
     PLOG_INFO << "Setting up rendering internals";
     coreImpl->renderingInternal->up();

@@ -9,7 +9,7 @@ public:
 private:
     friend class jleCore;
 
-    static void Init();
+    static void init();
 
     static void deInit();
 

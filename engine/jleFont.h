@@ -67,7 +67,7 @@ private:
     static inline FT_Library sFreeTypeLibrary;
     static inline bool sInitialized{false};
 
-    static void Init();
+    static void init();
 
     static void deInit();
 

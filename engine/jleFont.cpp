@@ -30,7 +30,7 @@ jleFont::~jleFont() {
     }
 }
 
-void jleFont::Init() {
+void jleFont::init() {
     if (sInitialized) {
         return;
     }
@@ -163,7 +163,7 @@ void jleFont::renderTargetDimensions(int width,
 
 bool jleFont::loadFromFile(const std::string& path) {
     if (!sInitialized) {
-        Init();
+        init();
     }
 
     if (FT_New_Face(sFreeTypeLibrary, path.c_str(), 0, &_face)) {

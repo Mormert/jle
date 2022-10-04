@@ -20,7 +20,7 @@ public:
 
     void fromJson(const nlohmann::json &j_in) override;
 
-    void SetEntity(const std::string &entityName);
+    void entity(const std::string &entityName);
 
 private:
     std::shared_ptr<cTransform> _transform{nullptr};
