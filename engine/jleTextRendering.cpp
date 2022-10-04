@@ -25,7 +25,7 @@ jleTextRendering::jleTextRendering() { gltInit(); }
 
 jleTextRendering::~jleTextRendering() { gltTerminate(); }
 
-void jleTextRendering::SendSimpleText(const std::string& text,
+void jleTextRendering::sendSimpleText(const std::string& text,
                                       float x,
                                       float y,
                                       float scale,
@@ -46,14 +46,14 @@ void jleTextRendering::Render(jleFramebuffer& framebufferOut,
         return;
     }
 
-    framebufferOut.BindToFramebuffer();
+    framebufferOut.bindToFramebuffer();
 
     if (!_fontTextDatas.empty()) {
         // Render text with fonts
-        jleFont::SetRenderTargetDimensions(
-            framebufferOut.GetWidth(), framebufferOut.GetHeight(), camera);
+        jleFont::renderTargetDimensions(
+            framebufferOut.width(), framebufferOut.height(), camera);
         for (auto&& textData : _fontTextDatas) {
-            textData.font->RenderText(textData.text,
+            textData.font->renderText(textData.text,
                                       textData.fontSize,
                                       textData.x,
                                       textData.y,
@@ -69,18 +69,18 @@ void jleTextRendering::Render(jleFramebuffer& framebufferOut,
         for (auto&& textData : _simpleTextDatas) {
             gltColor(textData.r, textData.g, textData.b, textData.a);
             gltDrawText2D(textData.gltextPtr,
-                          textData.x - camera.GetIntX(),
-                          textData.y - camera.GetIntY(),
+                          textData.x - camera.intX(),
+                          textData.y - camera.intY(),
                           textData.scale);
         }
 
         gltEndDraw();
     }
 
-    framebufferOut.BindToDefaultFramebuffer();
+    framebufferOut.bindToDefaultFramebuffer();
 }
 
-void jleTextRendering::ClearBuffersForNextFrame() {
+void jleTextRendering::clearBuffersForNextFrame() {
     // Clean up after rendering this frame
     for (auto&& textData : _simpleTextDatas) {
         gltDeleteText(textData.gltextPtr);
@@ -89,7 +89,7 @@ void jleTextRendering::ClearBuffersForNextFrame() {
     _fontTextDatas.clear();
 }
 
-void jleTextRendering::SendFontText(jleFont *font,
+void jleTextRendering::sendFontText(jleFont *font,
                                     const std::string& text,
                                     uint32_t fontSize,
                                     float x,

@@ -20,56 +20,56 @@ public:
     // Gets a shared_ptr to a resource from file, or a shared_ptr to an already
     // loaded copy of that resource
     template <typename T>
-    static std::shared_ptr<T> LoadResourceFromFile(
+    static std::shared_ptr<T> loadResourceFromFile(
         const jleRelativePath& path) {
         static_assert(std::is_base_of<jleFileLoadInterface, T>::value,
                       "T must derive from FileLoadInterface");
 
-        const auto prefix = path.GetPathPrefix();
+        const auto prefix = path.pathPrefix();
 
-        auto it = _resources[prefix].find(path.GetRelativePathStr());
+        auto it = _resources[prefix].find(path.relativePathStr());
         if (it != _resources[prefix].end()) {
             return std::static_pointer_cast<T>(it->second);
         }
 
         std::shared_ptr<T> new_resource = std::make_shared<T>();
 
-        new_resource->LoadFromFile(path.GetAbsolutePathStr());
+        new_resource->loadFromFile(path.absolutePathStr());
 
-        _resources[prefix].erase(path.GetRelativePathStr());
+        _resources[prefix].erase(path.relativePathStr());
         _resources[prefix].insert(
-            std::make_pair(path.GetRelativePathStr(), new_resource));
+            std::make_pair(path.relativePathStr(), new_resource));
 
-        PeriodicResourcesCleanUp();
+        periodicResourcesCleanUp();
 
         return new_resource;
     }
 
     // Stores a resource with a certain path to be reused later
     template <typename T>
-    static void StoreResource(std::shared_ptr<T> resource,
+    static void storeResource(std::shared_ptr<T> resource,
                               const jleRelativePath& path) {
-        const auto prefix = path.GetPathPrefix();
+        const auto prefix = path.pathPrefix();
 
-        _resources[prefix].erase(path.GetRelativePathStr());
+        _resources[prefix].erase(path.relativePathStr());
         _resources[prefix].insert(
-            std::make_pair(path.GetRelativePathStr(), resource));
+            std::make_pair(path.relativePathStr(), resource));
 
-        PeriodicResourcesCleanUp();
+        periodicResourcesCleanUp();
     }
 
     // Get a resource that is already loaded
     template <typename T>
-    static std::shared_ptr<T> GetResource(const jleRelativePath& path) {
-        const auto prefix = path.GetPathPrefix();
+    static std::shared_ptr<T> resource(const jleRelativePath& path) {
+        const auto prefix = path.pathPrefix();
         return std::static_pointer_cast<T>(
-            _resources[prefix].at(path.GetRelativePathStr()));
+            _resources[prefix].at(path.relativePathStr()));
     }
 
     // Check to see if a resource is loaded
-    static bool IsResourceLoaded(const jleRelativePath& path) {
-        const auto prefix = path.GetPathPrefix();
-        auto it = _resources[prefix].find(path.GetRelativePathStr());
+    static bool isResourceLoaded(const jleRelativePath& path) {
+        const auto prefix = path.pathPrefix();
+        auto it = _resources[prefix].find(path.relativePathStr());
         if (it == _resources[prefix].end()) {
             return false;
         }
@@ -78,20 +78,20 @@ public:
 
     // Unload all resources from in-memory in the given drive.
     // If the resources have no other users, they will be deleted
-    static void UnloadAllResources(const std::string& drive) {
+    static void unloadAllResources(const std::string& drive) {
         LOG_VERBOSE << "Unloading in-memory file resources on drive " << drive
                     << ' ' << _resources[drive].size();
         _resources[drive].clear();
     }
 
-    static void UnloadResource(const jleRelativePath& path) {
-        _resources[path.GetPathPrefix()].erase(path.GetRelativePathStr());
+    static void unloadResource(const jleRelativePath& path) {
+        _resources[path.pathPrefix()].erase(path.relativePathStr());
     }
 
     static const std::unordered_map<
         std::string,
         std::unordered_map<std::string, std::shared_ptr<void>>>&
-    GetResourcesMap() {
+    resourcesMap() {
         return _resources;
     }
 
@@ -105,7 +105,7 @@ private:
 
     static inline int _periodicCleanCounter{0};
 
-    static void PeriodicResourcesCleanUp() {
+    static void periodicResourcesCleanUp() {
         // Clean every 10th time that this method is called
         if (++_periodicCleanCounter % 10 == 0) {
             std::vector<std::string> keys_for_removal;

@@ -22,5 +22,5 @@ private:
     std::shared_ptr<jleFramebuffer> _framebuffer;
     jleImage _transformMarkerImage;
     std::shared_ptr<jleTexture> _transformMarkerTexture;
-    TexturedQuad _texturedQuad;
+    texturedQuad _texturedQuad;
 };

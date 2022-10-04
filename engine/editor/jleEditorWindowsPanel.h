@@ -11,11 +11,11 @@ public:
 
     void Update(jleGameEngine& ge) override;
 
-    void AddWindow(std::shared_ptr<iEditorImGuiWindow> window);
+    void addWindow(std::shared_ptr<iEditorImGuiWindow> window);
 
-    inline void MenuButtonsUpdate(jleGameEngine& ge);
+    inline void menuButtonsUpdate(jleGameEngine& ge);
 
-    inline void DockspaceUpdate(jleGameEngine& ge);
+    inline void dockspaceUpdate(jleGameEngine& ge);
 
 private:
     std::vector<std::shared_ptr<iEditorImGuiWindow>> windows;

@@ -4,19 +4,19 @@
 #include "jleCore.h"
 #include "jleGameEngine.h"
 
-int hexHelperFunctions::GetPixelatedMouseXWorldSpace() {
-    auto& game = ((jleGameEngine *)jleCore::core)->GetGameRef();
-    return jleCore::core->input->mouse->GetPixelatedMouseX() +
-           game._mainCamera.GetIntX();
+int hexHelperFunctions::pixelatedMouseXWorldSpace() {
+    auto& game = ((jleGameEngine *)jleCore::core)->gameRef();
+    return jleCore::core->input->mouse->pixelatedMouseX() +
+           game._mainCamera.intX();
 }
 
-int hexHelperFunctions::GetPixelatedMouseYWorldSpace() {
-    auto& game = ((jleGameEngine *)jleCore::core)->GetGameRef();
-    return jleCore::core->input->mouse->GetPixelatedMouseY() +
-           game._mainCamera.GetIntY();
+int hexHelperFunctions::pixelatedMouseYWorldSpace() {
+    auto& game = ((jleGameEngine *)jleCore::core)->gameRef();
+    return jleCore::core->input->mouse->pixelatedMouseY() +
+           game._mainCamera.intY();
 }
 
-int hexHelperFunctions::GetRandInt(int min, int max) {
+int hexHelperFunctions::randInt(int min, int max) {
     int range = max - min + 1;
     return std::rand() % range + min;
 }

@@ -12,7 +12,7 @@ public:
 
     explicit jleImage(const std::string& path);
 
-    bool LoadFromFile(const std::string& path) override;
+    bool loadFromFile(const std::string& path) override;
 
     jleImage(const jleImage& i);
 
@@ -24,16 +24,16 @@ public:
 
     ~jleImage() override;
 
-    [[nodiscard]] unsigned int GetImageWidth() const;
+    [[nodiscard]] unsigned int imageWidth() const;
 
-    [[nodiscard]] unsigned int GetImageHeight() const;
+    [[nodiscard]] unsigned int imageHeight() const;
 
-    [[nodiscard]] unsigned int GetImageNrChannels() const;
+    [[nodiscard]] unsigned int imageNrChannels() const;
 
-    [[nodiscard]] unsigned char *GetImageData() const;
+    [[nodiscard]] unsigned char *imageData() const;
 
     [[nodiscard]] std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>
-    GetPixelAtLocation(uint32_t x, uint32_t y) const;
+    pixelAtLocation(uint32_t x, uint32_t y) const;
 
     [[nodiscard]] const std::string& GetPath() const;
 

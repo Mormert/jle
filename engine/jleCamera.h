@@ -30,43 +30,43 @@ struct jleCamera {
     // For orthographic projection
     float _cameraRotationDegrees{};
 
-    void SetPerspectiveProjection(float fov,
+    void perspectiveProjection(float fov,
                                   uint32_t screenWidth,
                                   uint32_t screenHeight,
                                   float farPlane,
                                   float nearPlane);
 
-    void SetOrthographicProjection(uint32_t screenWidth,
+    void orthographicProjection(uint32_t screenWidth,
                                    uint32_t screenHeight,
                                    float farPlane,
                                    float nearPlane);
 
-    [[nodiscard]] glm::mat4 GetProjectionViewMatrix() const;
+    [[nodiscard]] glm::mat4 projectionViewMatrix() const;
 
-    void SetPerspectiveMouseSensitivity(float sensitivity);
+    void perspectiveMouseSensitivity(float sensitivity);
 
-    void ApplyPerspectiveMouseMovementDelta(glm::vec2 delta);
+    void applyPerspectiveMouseMovementDelta(glm::vec2 delta);
 
-    void CalculatePerspectiveVectors();
+    void calculatePerspectiveVectors();
 
-    void MovePerspectiveForward(float speed);
+    void movePerspectiveForward(float speed);
 
-    void MovePerspectiveBackward(float speed);
+    void movePerspectiveBackward(float speed);
 
-    void MovePerspectiveRight(float speed);
+    void movePerspectiveRight(float speed);
 
-    void MovePerspectiveLeft(float speed);
+    void movePerspectiveLeft(float speed);
 
-    void MovePerspectiveUp(float speed);
+    void movePerspectiveUp(float speed);
 
-    void MovePerspectiveDown(float speed);
+    void movePerspectiveDown(float speed);
 
     float _x = 0.f, _y = 0.f;
     float _xNoOffset = 0.f, _yNoOffset = 0.f;
 
     int _cameraWidth{}, _cameraHeight{};
 
-    [[nodiscard]] int32_t GetIntX() const { return int32_t(_x); }
+    [[nodiscard]] int32_t intX() const { return int32_t(_x); }
 
-    [[nodiscard]] int32_t GetIntY() const { return int32_t(_y); }
+    [[nodiscard]] int32_t intY() const { return int32_t(_y); }
 };

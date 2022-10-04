@@ -8,7 +8,7 @@ public:
 
     static double GetDeltaTime();
 
-    static double GetTime();
+    static double time();
 
 private:
     static int fps;
@@ -16,7 +16,7 @@ private:
     static double currentFrame;
     static double lastFrame;
 
-    static void UpdateEngineStatus();
+    static void updateEngineStatus();
 
     friend class jleCore;
 };

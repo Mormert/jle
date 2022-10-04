@@ -13,9 +13,9 @@ int jleEngineStatus::GetFps() { return fps; }
 
 double jleEngineStatus::GetDeltaTime() { return deltaTime; }
 
-double jleEngineStatus::GetTime() { return currentFrame; }
+double jleEngineStatus::time() { return currentFrame; }
 
-void jleEngineStatus::UpdateEngineStatus() {
+void jleEngineStatus::updateEngineStatus() {
     currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;

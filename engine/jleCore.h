@@ -15,15 +15,15 @@ class jleFramebuffer;
 
 struct CoreStatus_Internal {
 public:
-    int GetFPS() { return fps; }
+    int fPS() { return fps; }
 
-    float GetDeltaFrameTime() { return deltaTime; }
+    float deltaFrameTime() { return deltaTime; }
 
-    float GetCurrentFrameTime() { return currentFrame; }
+    float currentFrameTime() { return currentFrame; }
 
-    float GetLastFrameTime() { return lastFrame; }
+    float lastFrameTime() { return lastFrame; }
 
-    void Refresh();
+    void refresh();
 
 private:
     int fps = 0;
@@ -44,7 +44,7 @@ public:
 
     virtual ~jleCore();
 
-    void Run();
+    void run();
 
     // Singleton
     static jleCore *core;
@@ -61,16 +61,16 @@ public:
     // Entry point for a user to get core status
     const std::shared_ptr<CoreStatus_Internal> status;
 
-    jleTimerManager& GetTimerManager();
+    jleTimerManager& timerManager();
 
 private:
-    void Loop();
+    void loop();
 
-    void MainLoop();
+    void mainLoop();
 
     bool running{false};
 
-    static void main_loop() { jleCore::core->MainLoop(); }
+    static void main_loop() { jleCore::core->mainLoop(); }
 
     // Internal impl data
     struct jleCoreInternalImpl;
@@ -79,13 +79,13 @@ private:
     friend struct CoreStatus_Internal;
 
 protected:
-    virtual void Start() {}
+    virtual void start() {}
 
     virtual void Update(float dt) {}
 
     virtual void Render() {}
 
-    virtual void Exiting() {}
+    virtual void exiting() {}
 
     std::shared_ptr<jleCoreSettings> core_settings;
 

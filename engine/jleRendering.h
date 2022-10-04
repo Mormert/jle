@@ -14,16 +14,16 @@ class jleRendering {
 public:
     ~jleRendering() = default;
 
-    void Setup();
+    void up();
 
-    void SetViewportDimensions(int x,
+    void viewportDimensions(int x,
                                int y,
                                unsigned int width,
                                unsigned int height);
 
     void Render(jleFramebuffer& framebufferOut, jleCamera& camera);
 
-    void ClearBuffersForNextFrame();
+    void clearBuffersForNextFrame();
 
     jleQuadRendering& quads();
     jleTextRendering& texts();

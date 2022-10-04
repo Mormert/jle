@@ -18,23 +18,23 @@ public:
 
     oWorld();
 
-    void SetupDefaultObject() override;
+    void upDefaultObject() override;
 
-    void Start() override;
+    void start() override;
 
     void Update(float dt) override;
 
-    void ToJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json& j_out) override;
 
-    void FromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json& j_in) override;
 
-    hexHexagonItem *GetHexItemAt(int q, int r);
+    hexHexagonItem *hexItemAt(int q, int r);
 
-    void RemoveHexItemAt(int q, int r);
+    void removeHexItemAt(int q, int r);
 
-    void PlaceHexItemAt(hexHexagonItem *item, int q, int r);
+    void placeHexItemAt(hexHexagonItem *item, int q, int r);
 
-    bool IsHexagonWalkable(int q, int r);
+    bool isHexagonWalkable(int q, int r);
 
     // access the one and only world globally
     inline static oWorld *sWorld;
@@ -42,11 +42,11 @@ public:
     int _hexSizeX{}, _hexSizeY{};
 
 private:
-    void LoadTilesTexture();
+    void loadTilesTexture();
 
-    void GenerateVisualWorld();
+    void generateVisualWorld();
 
-    void RenderVisualWorld(float dt);
+    void renderVisualWorld(float dt);
 
     struct pair_hash {
         template <class T1, class T2>

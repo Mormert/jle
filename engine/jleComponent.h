@@ -15,19 +15,19 @@ class jleComponent : public jleJsonInterface<nlohmann::json> {
 public:
     jleComponent(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
-    virtual void Start() {}
+    virtual void start() {}
 
     virtual void Update(float dt) {}
 
-    [[maybe_unused]] virtual void EditorUpdate(float dt) {}
+    [[maybe_unused]] virtual void editorUpdate(float dt) {}
 
-    void Destroy();
+    void destroy();
 
-    virtual const std::string_view GetComponentName() const = 0;
+    virtual const std::string_view componentName() const = 0;
 
-    virtual void ToJson(nlohmann::json& j_out) {}
+    virtual void toJson(nlohmann::json& j_out) {}
 
-    virtual void FromJson(const nlohmann::json& j_in) {}
+    virtual void fromJson(const nlohmann::json& j_in) {}
 
     friend void to_json(nlohmann::json& j,
                         const std::shared_ptr<jleComponent> c);

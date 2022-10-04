@@ -11,25 +11,25 @@
 #include <plog/Init.h>
 
 template <typename T>
-void KickStartGame() {
+void kickStartGame() {
     LOG_VERBOSE << "Kickstarting the game";
     static_assert(std::is_base_of<jleGame, T>::value,
                   "T must derive from jleGame");
 
     auto gameSettings = std::make_shared<jleGameSettings>();
 
-    cfg::LoadEngineConfig<jleGameSettings>(
+    cfg::loadEngineConfig<jleGameSettings>(
         GAME_RESOURCES_DIRECTORY + "/jle_gs_config.json", *gameSettings);
 
-    T::OverrideGameSettings(*gameSettings);
+    T::overrideGameSettings(*gameSettings);
 
     auto gameEngine = std::make_unique<jleGameEngine>(gameSettings);
     gameEngine->SetGame<T>();
-    gameEngine->Run();
+    gameEngine->run();
 }
 
 template <typename T>
-void KickStartGameInEditor() {
+void kickStartGameInEditor() {
     LOG_VERBOSE << "Kickstarting the editor";
     static_assert(std::is_base_of<jleGame, T>::value,
                   "T must derive from jleGame");
@@ -37,22 +37,22 @@ void KickStartGameInEditor() {
     auto gameSettings = std::make_shared<jleGameSettings>();
     auto gameEditorSettings = std::make_shared<jleEditorSettings>();
 
-    cfg::LoadEngineConfig<jleGameSettings>(
+    cfg::loadEngineConfig<jleGameSettings>(
         GAME_RESOURCES_DIRECTORY + "/jle_gs_config.json", *gameSettings);
-    cfg::LoadEngineConfig<jleEditorSettings>(
+    cfg::loadEngineConfig<jleEditorSettings>(
         GAME_RESOURCES_DIRECTORY + "/jle_es_config.json", *gameEditorSettings);
 
-    T::OverrideGameSettings(*gameSettings);
-    T::OverrideGameEditorSettings(*gameSettings, *gameEditorSettings);
+    T::overrideGameSettings(*gameSettings);
+    T::overrideGameEditorSettings(*gameSettings, *gameEditorSettings);
 
     auto gameEngineInEditor =
         std::make_unique<jleEditor>(gameSettings, gameEditorSettings);
     gameEngineInEditor->SetGame<T>();
-    gameEngineInEditor->Run();
+    gameEngineInEditor->run();
 }
 
 template <typename T>
-void KickStart() {
+void kickStart() {
     static_assert(std::is_base_of<jleGame, T>::value,
                   "T must derive from jleGame");
 
@@ -65,8 +65,8 @@ void KickStart() {
     plog::init<0>(plog::verbose, &fileAppender).addAppender(&consoleAppender);
 
 #ifdef BUILD_EDITOR
-    KickStartGameInEditor<T>();
+    kickStartGameInEditor<T>();
 #else
-    KickStartGame<T>();
+    kickStartGame<T>();
 #endif
 }

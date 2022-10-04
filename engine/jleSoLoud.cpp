@@ -10,7 +10,7 @@ void jleSoLoud::Init() {
     gSoLoud.init();
 }
 
-void jleSoLoud::DeInit() {
+void jleSoLoud::deInit() {
 #ifndef NDEBUG
     std::cout << "De-initializing Sound Engine\n";
 #endif

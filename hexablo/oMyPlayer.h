@@ -10,27 +10,27 @@
 class oMyPlayer : public oCharacter {
     JLE_REGISTER_OBJECT_TYPE(oMyPlayer)
 public:
-    void SetupDefaultObject() override;
+    void upDefaultObject() override;
 
-    void Start() override;
+    void start() override;
 
     void Update(float dt) override;
 
-    void ToJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json& j_out) override;
 
-    void FromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json& j_in) override;
 
     static inline std::weak_ptr<oMyPlayer> sMyPlayerPtr;
 
-    void Attack(oCharacterDirection direction) override;
+    void attack(oCharacterDirection direction) override;
 
-    void Abilities();
+    void abilities();
 
 private:
-    void LookAtMouse();
+    void lookAtMouse();
 
     void Movement_v1(float dt);
-    void Movement(float dt);
+    void movement(float dt);
 
     bool _canThrowFireball = true;
 };

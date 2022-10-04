@@ -28,46 +28,46 @@ public:
 
     void SetWindowSettings(WindowSettings& windowSettings);
 
-    void DisplayCursor(bool enable);
+    void displayCursor(bool enable);
 
-    bool IsCursorDisplayed();
+    bool isCursorDisplayed();
 
     unsigned int GetWindowHeight();
 
     unsigned int GetWindowWidth();
 
-    void InitWindow(std::shared_ptr<jleRendering> internalRenderingAPI);
+    void initWindow(std::shared_ptr<jleRendering> internalRenderingAPI);
 
-    unsigned int AddWindowResizeCallback(
+    unsigned int addWindowResizeCallback(
         std::function<void(unsigned int, unsigned int)> callback);
 
-    void RemoveWindowResizeCallback(unsigned int callback_id);
+    void removeWindowResizeCallback(unsigned int callback_id);
 
-    void ExecuteResizeCallbacks(int w, int h);
+    void executeResizeCallbacks(int w, int h);
 
-    void UpdateWindow();
+    void updateWindow();
 
-    bool WindowShouldClose();
+    bool windowShouldClose();
 
-    float GetTime();
+    float time();
 
-    bool GetMouseClick(int button);
+    bool mouseClick(int button);
 
-    bool GetKey(char key);
+    bool key(char key);
 
-    bool GetKeyPressed(char key);
+    bool keyPressed(char key);
 
-    bool GetKeyReleased(char key);
+    bool keyReleased(char key);
 
     float GetScrollX();
 
     float GetScrollY();
 
-    std::pair<int, int> GetCursor();
+    std::pair<int, int> cursor();
 
     static jleWindow *activeWindow;
 
-    GLFWwindow *GetGLFWWindow() { return nativeWindow; }
+    GLFWwindow *gLFWWindow() { return nativeWindow; }
 
 protected:
     // Native handle to GLFW window

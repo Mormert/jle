@@ -12,5 +12,5 @@ public:
     void Update(jleGameEngine& ge) override;
 
 private:
-    void DrawProfilerRecursive(uint32_t index);
+    void drawProfilerRecursive(uint32_t index);
 };

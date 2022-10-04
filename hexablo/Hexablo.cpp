@@ -4,13 +4,13 @@
 #include "jleGame.h"
 #include "jleGameEngine.h"
 
-void Hexablo::Start() {
-    LoadScene<jleScene>(GAME_RESOURCES_DIRECTORY + "/scenes/HexabloMain.scn");
-    LoadScene<jleScene>(GAME_RESOURCES_DIRECTORY +
+void Hexablo::start() {
+    loadScene<jleScene>(GAME_RESOURCES_DIRECTORY + "/scenes/HexabloMain.scn");
+    loadScene<jleScene>(GAME_RESOURCES_DIRECTORY +
                         "/scenes/HexabloMain_BG.scn");
-    LoadScene<jleScene>(GAME_RESOURCES_DIRECTORY +
+    loadScene<jleScene>(GAME_RESOURCES_DIRECTORY +
                         "/scenes/HexabloStatics.scn");
-    LoadScene<hexNetScene>(GAME_RESOURCES_DIRECTORY +
+    loadScene<hexNetScene>(GAME_RESOURCES_DIRECTORY +
                            "/scenes/HexabloNetScene.scn");
 }
 

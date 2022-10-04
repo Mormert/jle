@@ -28,6 +28,6 @@ void jleProfiler::NewFrame() {
 }
 
 std::vector<jleProfiler::jleProfilerData>& jleProfiler::
-    GetProfilerDataLastFrame() {
+    profilerDataLastFrame() {
     return sProfilerDataLastFrame;
 }

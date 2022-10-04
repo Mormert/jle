@@ -14,17 +14,17 @@ void jleEditorProfilerWindow::Update(jleGameEngine& ge) {
     ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_NoCollapse);
 
-    auto&& vec = jleProfiler::GetProfilerDataLastFrame();
+    auto&& vec = jleProfiler::profilerDataLastFrame();
 
     if (!vec.empty()) {
-        DrawProfilerRecursive(0);
+        drawProfilerRecursive(0);
     }
 
     ImGui::End();
 }
 
-void jleEditorProfilerWindow::DrawProfilerRecursive(uint32_t index) {
-    auto&& vec = jleProfiler::GetProfilerDataLastFrame();
+void jleEditorProfilerWindow::drawProfilerRecursive(uint32_t index) {
+    auto&& vec = jleProfiler::profilerDataLastFrame();
 
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15, 15));
     if (ImGui::TreeNodeEx(std::to_string(index).c_str(),
@@ -33,7 +33,7 @@ void jleEditorProfilerWindow::DrawProfilerRecursive(uint32_t index) {
                           vec[index]._name.data(),
                           vec[index]._executionTime.count() * 0.001f)) {
         for (auto&& childIndex : vec[index]._children) {
-            DrawProfilerRecursive(childIndex);
+            drawProfilerRecursive(childIndex);
         }
         ImGui::TreePop();
     }

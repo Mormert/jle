@@ -20,44 +20,44 @@ public:
 
     virtual void Update(float dt) {}
 
-    virtual void Start() {}
+    virtual void start() {}
 
-    static void OverrideGameSettings(jleGameSettings& gs) {}
+    static void overrideGameSettings(jleGameSettings& gs) {}
 
-    static void OverrideGameEditorSettings(jleGameSettings& gs,
+    static void overrideGameEditorSettings(jleGameSettings& gs,
                                            jleEditorSettings& es) {}
 
-    void UpdateActiveScenes(float dt);
+    void updateActiveScenes(float dt);
 
-    bool CheckSceneIsActive(const std::string& sceneName);
+    bool checkSceneIsActive(const std::string& sceneName);
 
     template <typename T>
-    std::shared_ptr<T> CreateScene() {
+    std::shared_ptr<T> createScene() {
         static_assert(std::is_base_of<jleScene, T>::value,
                       "T must derive from jleScene");
 
         std::shared_ptr<T> newScene = std::make_shared<T>();
         _activeScenes.push_back(newScene);
 
-        newScene->OnSceneCreation();
+        newScene->onSceneCreation();
 
         return newScene;
     }
 
     template <typename T>
-    std::shared_ptr<jleScene> LoadScene(const std::string& scenePath) {
+    std::shared_ptr<jleScene> loadScene(const std::string& scenePath) {
 
         static_assert(std::is_base_of<jleScene, T>::value,
                       "T must derive from jleScene");
 
-        if (CheckSceneIsActive(scenePath)) {
+        if (checkSceneIsActive(scenePath)) {
             LOG_WARNING << "Loaded scene is already loaded";
             return nullptr;
         }
 
         std::ifstream i(scenePath);
         if (i.good()) {
-            std::shared_ptr<T> scene = CreateScene<T>();
+            std::shared_ptr<T> scene = createScene<T>();
             nlohmann::json j;
             i >> j;
 
@@ -70,7 +70,7 @@ public:
         }
     }
 
-    std::vector<std::shared_ptr<jleScene>>& GetActiveScenesRef();
+    std::vector<std::shared_ptr<jleScene>>& activeScenesRef();
 
     jleCamera _mainCamera{jleCameraProjection::Orthographic};
 

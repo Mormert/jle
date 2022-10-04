@@ -22,11 +22,11 @@ public:
     explicit jleRelativePath(const jleAbsolutePath& absolutePath);
 
     // Returns the drive, like "GR:"
-    const std::string GetPathPrefix() const;
+    const std::string pathPrefix() const;
 
-    [[nodiscard]] std::string GetRelativePathStr() const;
+    [[nodiscard]] std::string relativePathStr() const;
 
-    [[nodiscard]] std::string GetAbsolutePathStr() const;
+    [[nodiscard]] std::string absolutePathStr() const;
 
 private:
     std::string _relativePath;
@@ -45,9 +45,9 @@ public:
     // Constructs an absolute path from a relative path
     explicit jleAbsolutePath(const jleRelativePath& relativePath);
 
-    [[nodiscard]] std::string GetRelativePathStr() const;
+    [[nodiscard]] std::string relativePathStr() const;
 
-    [[nodiscard]] std::string GetAbsolutePathStr() const;
+    [[nodiscard]] std::string absolutePathStr() const;
 
 private:
     std::string _absolutePath;

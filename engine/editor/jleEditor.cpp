@@ -38,16 +38,16 @@ jleEditor::jleEditor(std::shared_ptr<jleGameSettings> gs,
                      std::shared_ptr<jleEditorSettings> es)
     : jleGameEngine{gs}, editor_settings{es} {}
 
-void jleEditor::StartEditor() {}
+void jleEditor::startEditor() {}
 
-void jleEditor::Start() {
+void jleEditor::start() {
 
     LOG_INFO << "Starting the editor";
 
-    InitImgui();
+    initImgui();
 
     auto dims =
-        GetFramebufferDimensions(core_settings->windowSettings.windowWidth,
+        framebufferDimensions(core_settings->windowSettings.windowWidth,
                                  core_settings->windowSettings.windowHeight);
     framebuffer_main =
         std::make_shared<jleFramebuffer>(dims.first, dims.second);
@@ -63,55 +63,55 @@ void jleEditor::Start() {
     auto sceneWindow = std::make_shared<jleSceneEditorWindow>(
         "Scene Window", _editorFramebuffer);
     AddImGuiWindow(sceneWindow);
-    menu->AddWindow(sceneWindow);
+    menu->addWindow(sceneWindow);
 
     auto gameWindow = std::make_shared<jleGameEditorWindow>("Game Window");
     AddImGuiWindow(gameWindow);
-    menu->AddWindow(gameWindow);
+    menu->addWindow(gameWindow);
 
     auto console = std::make_shared<jleConsoleEditorWindow>("Console Window");
     plog::get<0>()->addAppender(&*console);
     AddImGuiWindow(console);
-    menu->AddWindow(console);
+    menu->addWindow(console);
 
     auto settingsWindow = std::make_shared<jleEngineSettingsWindow>(
         "Engine Settings", gameSettings, editor_settings);
     AddImGuiWindow(settingsWindow);
-    menu->AddWindow(settingsWindow);
+    menu->addWindow(settingsWindow);
 
     // auto gameController =
     // std::make_shared<EditorGameControllerWidget>("Controller");
     // AddImGuiWindow(gameController);
-    // menu->AddWindow(gameController);
+    // menu->addWindow(gameController);
 
     auto editorSceneObjects =
         std::make_shared<jleEditorSceneObjectsWindow>("Scene Objects");
     AddImGuiWindow(editorSceneObjects);
-    menu->AddWindow(editorSceneObjects);
+    menu->addWindow(editorSceneObjects);
 
     auto contentBrowser =
         std::make_shared<jleEditorContentBrowser>("Content Browser");
     AddImGuiWindow(contentBrowser);
-    menu->AddWindow(contentBrowser);
+    menu->addWindow(contentBrowser);
 
     auto resourceViewer =
         std::make_shared<jleEditorResourceViewer>("Resource Viewer");
     AddImGuiWindow(resourceViewer);
-    menu->AddWindow(resourceViewer);
+    menu->addWindow(resourceViewer);
 
     auto profilerWindow = std::make_shared<jleEditorProfilerWindow>("Profiler");
     AddImGuiWindow(profilerWindow);
-    menu->AddWindow(profilerWindow);
+    menu->addWindow(profilerWindow);
 
-    jleCore::window->AddWindowResizeCallback(
-        std::bind(&jleEditor::MainEditorWindowResized,
+    jleCore::window->addWindowResizeCallback(
+        std::bind(&jleEditor::mainEditorWindowResized,
                   this,
                   std::placeholders::_1,
                   std::placeholders::_2));
 
     LOG_INFO << "Starting the game in editor mode";
 
-    StartGame();
+    startGame();
 }
 
 void jleEditor::Render() {
@@ -121,17 +121,17 @@ void jleEditor::Render() {
         rendering->Render(*framebuffer_main, game->_mainCamera);
     }
 
-    // _editorCamera.SetPerspectiveProjection(90.f,
-    // _editorFramebuffer->GetWidth(), _editorFramebuffer->GetHeight(), 50000.f,
+    // _editorCamera.perspectiveProjection(90.f,
+    // _editorFramebuffer->width(), _editorFramebuffer->height(), 50000.f,
     // 0.1f);
-    _editorCamera.SetOrthographicProjection(_editorFramebuffer->GetWidth(),
-                                            _editorFramebuffer->GetHeight(),
+    _editorCamera.orthographicProjection(_editorFramebuffer->width(),
+                                            _editorFramebuffer->height(),
                                             10000.f,
                                             -10000.f);
     // Render to editor scene view
     rendering->Render(*_editorFramebuffer, _editorCamera);
 
-    rendering->ClearBuffersForNextFrame();
+    rendering->clearBuffersForNextFrame();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -166,7 +166,7 @@ void jleEditor::Render() {
     }
 }
 
-void jleEditor::InitImgui() {
+void jleEditor::initImgui() {
     ImGui::DebugCheckVersionAndDataLayout(IMGUI_VERSION,
                                           sizeof(ImGuiIO),
                                           sizeof(ImGuiStyle),
@@ -183,8 +183,8 @@ void jleEditor::InitImgui() {
     static const std::string iniFile = GAME_RESOURCES_DIRECTORY + "/imgui.ini";
     io.IniFilename = iniFile.c_str();
 
-    // Setup Platform/Renderer bindings
-    ImGui_ImplGlfw_InitForOpenGL(window->GetGLFWWindow(), true);
+    // up Platform/Renderer bindings
+    ImGui_ImplGlfw_InitForOpenGL(window->gLFWWindow(), true);
 
 #ifdef BUILD_OPENGLES30
     ImGui_ImplOpenGL3_Init("#version 300 es");
@@ -200,11 +200,11 @@ void jleEditor::InitImgui() {
     io.Fonts->AddFontFromFileTTF(
         "EditorResources/fonts/Roboto-Regular.ttf", 18, &config);
 
-    // Setup Dear ImGui style
-    SetImguiTheme();
+    // up Dear ImGui style
+    imguiTheme();
 }
 
-void jleEditor::SetImguiTheme() {
+void jleEditor::imguiTheme() {
     // cherry colors, 3 intensities
 #define HI(v) ImVec4(0.502f, 0.075f, 0.256f, v)
 #define MED(v) ImVec4(0.455f, 0.198f, 0.301f, v)
@@ -281,7 +281,7 @@ void jleEditor::AddImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window) {
     ImGuiWindows.push_back(window);
 }
 
-void jleEditor::MainEditorWindowResized(int w, int h) {
+void jleEditor::mainEditorWindowResized(int w, int h) {
     auto&& io = ImGui::GetIO();
     io.FontGlobalScale = w / 1920.f;
 }

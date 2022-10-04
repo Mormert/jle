@@ -8,11 +8,11 @@ struct Quad {
     float depth = 0.f;
 };
 
-struct TexturedQuad : public Quad {
-    explicit TexturedQuad(std::shared_ptr<jleTexture> t)
+struct texturedQuad : public Quad {
+    explicit texturedQuad(std::shared_ptr<jleTexture> t)
         : texture{std::move(t)} {}
 
-    explicit TexturedQuad(std::shared_ptr<jleTexture> t,
+    explicit texturedQuad(std::shared_ptr<jleTexture> t,
                           int texX,
                           int texY,
                           unsigned int w,
@@ -20,7 +20,7 @@ struct TexturedQuad : public Quad {
         : texture{std::move(t)}, textureX{texX}, textureY{texY}, width{w},
           height{h} {}
 
-    TexturedQuad() = default;
+    texturedQuad() = default;
 
     std::shared_ptr<jleTexture> texture{nullptr};
 
@@ -37,11 +37,11 @@ struct TextureWithHeightmap {
     std::shared_ptr<jleTexture> normalmap{nullptr};
 };
 
-struct TexturedHeightQuad : public Quad {
-    explicit TexturedHeightQuad(std::shared_ptr<TextureWithHeightmap> t)
+struct texturedHeightQuad : public Quad {
+    explicit texturedHeightQuad(std::shared_ptr<TextureWithHeightmap> t)
         : mtextureWithHeightmap{std::move(t)} {}
 
-    explicit TexturedHeightQuad(std::shared_ptr<TextureWithHeightmap> t,
+    explicit texturedHeightQuad(std::shared_ptr<TextureWithHeightmap> t,
                                 int texX,
                                 int texY,
                                 unsigned int w,
@@ -49,7 +49,7 @@ struct TexturedHeightQuad : public Quad {
         : mtextureWithHeightmap{std::move(t)}, textureX{texX}, textureY{texY},
           width{w}, height{h} {}
 
-    TexturedHeightQuad() = default;
+    texturedHeightQuad() = default;
 
     std::shared_ptr<TextureWithHeightmap> mtextureWithHeightmap;
 

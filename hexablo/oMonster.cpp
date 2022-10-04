@@ -4,33 +4,33 @@
 #include "oMyPlayer.h"
 #include <memory>
 
-void oMonster::SetupDefaultObject() {
-    oCharacter::SetupDefaultObject();
+void oMonster::upDefaultObject() {
+    oCharacter::upDefaultObject();
 }
 
-void oMonster::Start() {
-    oCharacter::Start();
+void oMonster::start() {
+    oCharacter::start();
 }
 
 void oMonster::Update(float dt) {
     oCharacter::Update(dt);
 
-    LookAtPlayer();
+    lookAtPlayer();
 }
 
-void oMonster::ToJson(nlohmann::json &j_out) {
-    oCharacter::ToJson(j_out);
+void oMonster::toJson(nlohmann::json &j_out) {
+    oCharacter::toJson(j_out);
 }
 
-void oMonster::FromJson(const nlohmann::json &j_in) {
-    oCharacter::FromJson(j_in);
+void oMonster::fromJson(const nlohmann::json &j_in) {
+    oCharacter::fromJson(j_in);
 }
 
-void oMonster::LookAtPlayer() {
+void oMonster::lookAtPlayer() {
 
     if (auto &&p = oMyPlayer::sMyPlayerPtr.lock()) {
-        auto &&transform = p->GetComponent<cTransform>();
-        LookAtPosition(transform->GetWorldX(), transform->GetWorldY());
+        auto &&transform = p->component<cTransform>();
+        lookAtPosition(transform->worldX(), transform->worldY());
     }
 
 }

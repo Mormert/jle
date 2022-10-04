@@ -6,29 +6,29 @@
 #include "oWorld.h"
 #include "jleCore.h"
 
-void oCharacter::SetupDefaultObject() {
-    _transform = AddCustomComponent<cTransform>();
-    _aseprite = AddCustomComponent<cAseprite>();
+void oCharacter::upDefaultObject() {
+    _transform = addCustomComponent<cTransform>();
+    _aseprite = addCustomComponent<cAseprite>();
 
     _healthBarObjPtr = std::static_pointer_cast<oCharacterHealthBar>(
-            SpawnChildObjectFromTemplate(jleRelativePath{"GR:otemps/oCharacterHealthBar.tmpl"}));
+            spawnChildObjectFromTemplate(jleRelativePath{"GR:otemps/oCharacterHealthBar.tmpl"}));
 }
 
-void oCharacter::Start() {
-    const auto &&placement = _hexagonItem.GetHexagonItemPlacement();
-    SetHexagonPlacementTeleport(placement.x, placement.y);
+void oCharacter::start() {
+    const auto &&placement = _hexagonItem.hexagonItemPlacement();
+    hexagonPlacementTeleport(placement.x, placement.y);
 
     _currentHP = _maxHP;
 
     if (!_showHpBar) {
-        _healthBarObjPtr->DestroyObject();
+        _healthBarObjPtr->destroyObject();
     }
 }
 
 void oCharacter::Update(float dt) {
 
-    if (jleCore::core->input->keyboard->GetKeyPressed('T')) {
-        SetHexagonPlacementInterp(hexHelperFunctions::GetRandInt(0, 10), hexHelperFunctions::GetRandInt(0, 10));
+    if (jleCore::core->input->keyboard->keyPressed('T')) {
+        hexagonPlacementInterp(hexHelperFunctions::randInt(0, 10), hexHelperFunctions::randInt(0, 10));
     }
     const auto lerpVec2 = [](const glm::vec2 &a, const glm::vec2 &b, float alpha) {
         return a * alpha + b * (1.f - alpha);
@@ -36,7 +36,7 @@ void oCharacter::Update(float dt) {
 
     if (_interpingPosition) {
 
-        _aseprite->SetCurrentAseprite(_walkAsepriteIndex);
+        _aseprite->currentAseprite(_walkAsepriteIndex);
 
         auto pos = lerpVec2(
                 {_hexagonPixelX, _hexagonPixelY},
@@ -44,19 +44,19 @@ void oCharacter::Update(float dt) {
 
         _interpingX = pos.x;
         _interpingY = pos.y;
-        _transform->SetWorldPositionXY((int) _interpingX, (int) _interpingY);
+        _transform->worldPositionXY((int) _interpingX, (int) _interpingY);
 
         _interpingAlpha += _interpBetweenHexasSpeed * dt;
         if (_interpingAlpha >= 1.f) {
             _interpingAlpha = 1.f;
             _interpingPosition = false;
-            _aseprite->SetCurrentAseprite(_idleAsepriteIndex);
+            _aseprite->currentAseprite(_idleAsepriteIndex);
         }
     }
 
 }
 
-void oCharacter::SetCharacterDirection(oCharacterDirection direction) {
+void oCharacter::characterDirection(oCharacterDirection direction) {
     _characterDirection = direction;
 
     switch (direction) {
@@ -97,42 +97,42 @@ void oCharacter::SetCharacterDirection(oCharacterDirection direction) {
 }
 
 
-void oCharacter::SetHexagonPlacementTeleport(int q, int r) {
-    if (!_hexagonItem.TryUpdateHexagonItemPlacement(q, r)) {
+void oCharacter::hexagonPlacementTeleport(int q, int r) {
+    if (!_hexagonItem.tryUpdateHexagonItemPlacement(q, r)) {
         return;
     }
 
 
     const auto *world = oWorld::sWorld;
-    auto p = hexHexagonFunctions::HexToPixel(q, r, world->_hexSizeX, world->_hexSizeY);
+    auto p = hexHexagonFunctions::hexToPixel(q, r, world->_hexSizeX, world->_hexSizeY);
 
     _hexagonPixelX = p.x;
     _hexagonPixelY = p.y;
 
-    _transform->SetWorldPositionXY(_hexagonPixelX, _hexagonPixelY);
+    _transform->worldPositionXY(_hexagonPixelX, _hexagonPixelY);
     _interpingPosition = false;
 }
 
-void oCharacter::SetHexagonPlacementInterp(int q, int r) {
-    if (!_hexagonItem.TryUpdateHexagonItemPlacement(q, r)) {
+void oCharacter::hexagonPlacementInterp(int q, int r) {
+    if (!_hexagonItem.tryUpdateHexagonItemPlacement(q, r)) {
         return;
     }
 
     const auto *world = oWorld::sWorld;
-    auto p = hexHexagonFunctions::HexToPixel(q, r, world->_hexSizeX, world->_hexSizeY);
+    auto p = hexHexagonFunctions::hexToPixel(q, r, world->_hexSizeX, world->_hexSizeY);
 
     _hexagonPixelX = p.x;
     _hexagonPixelY = p.y;
 
-    _interpingX = _transform->GetWorldX();
-    _interpingY = _transform->GetWorldY();
+    _interpingX = _transform->worldX();
+    _interpingY = _transform->worldY();
 
     _interpingPosition = true;
     _interpingAlpha = 0.f;
 }
 
 
-void oCharacter::ToJson(nlohmann::json &j_out) {
+void oCharacter::toJson(nlohmann::json &j_out) {
     j_out["_hexagonItem"] = _hexagonItem;
 
     j_out["_interpBetweenHexasSpeed"] = _interpBetweenHexasSpeed;
@@ -162,7 +162,7 @@ void oCharacter::ToJson(nlohmann::json &j_out) {
     j_out["_southwestTextureY"] = _southwestTextureY;
 }
 
-void oCharacter::FromJson(const nlohmann::json &j_in) {
+void oCharacter::fromJson(const nlohmann::json &j_in) {
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _hexagonItem, "_hexagonItem", {});
 
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _interpBetweenHexasSpeed, "_interpBetweenHexasSpeed", 1.f);
@@ -192,56 +192,56 @@ void oCharacter::FromJson(const nlohmann::json &j_in) {
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _southwestTextureY, "_southwestTextureY", 0);
 }
 
-void oCharacter::Attack(oCharacter::oCharacterDirection dir) {
+void oCharacter::attack(oCharacter::oCharacterDirection dir) {
 
-    SetCharacterDirection(dir);
+    characterDirection(dir);
 
     if (!_canAttack) {
         return;
     }
 
-    _aseprite->SetCurrentAseprite(_attackAsepriteIndex);
-    _aseprite->SetCurrentAsepriteFrame(0);
+    _aseprite->currentAseprite(_attackAsepriteIndex);
+    _aseprite->currentAsepriteFrame(0);
 
-    const double animationTimeMs = _aseprite->GetActiveAsepriteRef().GetTotalAnimationTimeMs();
+    const double animationTimeMs = _aseprite->activeAsepriteRef().totalAnimationTimeMs();
 
     const auto futureFunc = [](std::weak_ptr<void> data) {
         auto safeThis = std::static_pointer_cast<oCharacter>(data.lock());
-        safeThis->_aseprite->SetCurrentAseprite(0);
-        safeThis->_aseprite->SetCurrentAsepriteFrame(0);
+        safeThis->_aseprite->currentAseprite(0);
+        safeThis->_aseprite->currentAsepriteFrame(0);
     };
 
     // Go back to the default animation
-    jleCore::core->GetTimerManager().
-            ExecuteFuncInSecondsWeakData(animationTimeMs * 0.001, futureFunc, GetWeakPtrToThis());
+    jleCore::core->timerManager().
+            executeFuncInSecondsWeakData(animationTimeMs * 0.001, futureFunc, weakPtrToThis());
 
     // Can not attack again for the animation time + some additional time
-    jleCore::core->GetTimerManager().
-            ExecuteFuncInSecondsWeakData(
+    jleCore::core->timerManager().
+            executeFuncInSecondsWeakData(
             (animationTimeMs + _attackCooldownAfterAnimationMs) * 0.001, [](std::weak_ptr<void> data) {
                 auto safeThis = std::static_pointer_cast<oCharacter>(data.lock());
                 safeThis->_canAttack = true;
-            }, GetWeakPtrToThis());
+            }, weakPtrToThis());
 
     _canAttack = false;
 
 }
 
-void oCharacter::SetHP(int hp) {
+void oCharacter::hP(int hp) {
     if (hp > _maxHP) {
         hp = _maxHP;
     }
 
     if (_healthBarObjPtr) {
-        _healthBarObjPtr->SetHP(_maxHP, hp);
+        _healthBarObjPtr->hP(_maxHP, hp);
     }
 }
 
-void oCharacter::LookAtPosition(int x, int y) {
+void oCharacter::lookAtPosition(int x, int y) {
     constexpr int smallXAdjustment = -2;
 
     glm::vec2 target = {x, y};
-    glm::vec2 origin = {_transform->GetWorldX() + smallXAdjustment, _transform->GetWorldY()};
+    glm::vec2 origin = {_transform->worldX() + smallXAdjustment, _transform->worldY()};
 
     glm::vec2 vector2 = target - origin;
     glm::vec2 vector1{0, 1};
@@ -250,26 +250,26 @@ void oCharacter::LookAtPosition(int x, int y) {
     const double angleDeg = glm::degrees(angleRad);
 
     if (angleDeg > -240.0 && angleDeg < -180) {
-        SetCharacterDirection(oCharacterDirection::northwest);
+        characterDirection(oCharacterDirection::northwest);
     }
 
     if (angleDeg > -180 && angleDeg < -120) {
-        SetCharacterDirection(oCharacterDirection::northeast);
+        characterDirection(oCharacterDirection::northeast);
     }
 
     if (angleDeg > -120 && angleDeg < -60) {
-        SetCharacterDirection(oCharacterDirection::east);
+        characterDirection(oCharacterDirection::east);
     }
 
     if (angleDeg > -60 && angleDeg < 0) {
-        SetCharacterDirection(oCharacterDirection::southeast);
+        characterDirection(oCharacterDirection::southeast);
     }
 
     if (angleDeg > 0 && angleDeg < 60) {
-        SetCharacterDirection(oCharacterDirection::southwest);
+        characterDirection(oCharacterDirection::southwest);
     }
 
     if (angleDeg > 60 && angleDeg < 240) {
-        SetCharacterDirection(oCharacterDirection::west);
+        characterDirection(oCharacterDirection::west);
     }
 }

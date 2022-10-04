@@ -9,15 +9,15 @@
 class oCharacterHealthBar : public jleObject {
     JLE_REGISTER_OBJECT_TYPE(oCharacterHealthBar)
 public:
-    void SetupDefaultObject() override;
+    void upDefaultObject() override;
 
-    void SetHP(int maxHP, int currentHP);
+    void hP(int maxHP, int currentHP);
 
-    void ToJson(nlohmann::json& j_out) override {
+    void toJson(nlohmann::json& j_out) override {
         j_out["_maxWidth"] = _maxWidth;
     }
 
-    void FromJson(const nlohmann::json& j_in) override{
+    void fromJson(const nlohmann::json& j_in) override{
         JLE_FROM_JSON_WITH_DEFAULT(j_in, _maxWidth, "_maxWidth", 16)}
 
     std::shared_ptr<cTransform> _transform;

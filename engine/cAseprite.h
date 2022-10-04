@@ -11,23 +11,23 @@ class cAseprite : public jleComponent {
 public:
     explicit cAseprite(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
-    void Start() override;
+    void start() override;
 
     void Update(float dt) override;
 
-    void ToJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json& j_out) override;
 
-    void FromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json& j_in) override;
 
-    int AddAsepritePath(const std::string& path);
+    int addAsepritePath(const std::string& path);
 
-    void SetCurrentAseprite(unsigned int index);
+    void currentAseprite(unsigned int index);
 
-    void SetCurrentAsepriteFrame(unsigned int index);
+    void currentAsepriteFrame(unsigned int index);
 
-    [[nodiscard]] unsigned int GetCurrentAsepriteIndex() const;
+    [[nodiscard]] unsigned int currentAsepriteIndex() const;
 
-    [[nodiscard]] jleAseprite& GetActiveAsepriteRef();
+    [[nodiscard]] jleAseprite& activeAsepriteRef();
 
     std::vector<jleJsonString> _asepritePaths;
 

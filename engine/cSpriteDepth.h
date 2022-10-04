@@ -17,27 +17,27 @@ public:
     explicit cSpriteDepth(jleObject *owner = nullptr,
                           jleScene *scene = nullptr);
 
-    void CreateAndSetTextureFromPath(const std::string& pathDiffuse,
+    void createAndSetTextureFromPath(const std::string& pathDiffuse,
                                      const std::string& pathHeight,
                                      const std::string& pathNormal);
 
-    void SetRectangleDimensions(int width, int height);
+    void rectangleDimensions(int width, int height);
 
-    void SetTextureBeginCoordinates(int x, int y);
+    void textureBeginCoordinates(int x, int y);
 
-    virtual void Start() override;
+    virtual void start() override;
 
     virtual void Update(float dt) override;
 
-    virtual void ToJson(nlohmann::json& j_out) override;
+    virtual void toJson(nlohmann::json& j_out) override;
 
-    virtual void FromJson(const nlohmann::json& j_in) override;
+    virtual void fromJson(const nlohmann::json& j_in) override;
 
 private:
     std::string texturePathDiffuse = "";
     std::string texturePathHeight = "";
     std::string texturePathNormal = "";
 
-    TexturedHeightQuad quad;
+    texturedHeightQuad quad;
     std::shared_ptr<cTransform> transform;
 };

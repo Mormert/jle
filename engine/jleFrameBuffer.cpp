@@ -22,10 +22,10 @@ jleFramebuffer::jleFramebuffer(unsigned int width,
                                unsigned int height,
                                bool shadowBuffer) {
     if (shadowBuffer) {
-        CreateShadowFramebuffer(width, height);
+        createShadowFramebuffer(width, height);
     }
     else {
-        CreateFramebuffer(width, height);
+        createFramebuffer(width, height);
     }
 }
 
@@ -37,7 +37,7 @@ jleFramebuffer::~jleFramebuffer() {
     std::cout << "Deleted Framebuffer with id " << _framebuffer << "!\n";
 }
 
-void jleFramebuffer::CreateFramebuffer(unsigned int width,
+void jleFramebuffer::createFramebuffer(unsigned int width,
                                        unsigned int height) {
     this->_width = width;
     this->_height = height;
@@ -83,7 +83,7 @@ void jleFramebuffer::CreateFramebuffer(unsigned int width,
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void jleFramebuffer::ResizeFramebuffer(unsigned int width,
+void jleFramebuffer::resizeFramebuffer(unsigned int width,
                                        unsigned int height) {
 
     // LOG_VERBOSE << "Resized Framebuffer " << framebuffer << ": " << width <<
@@ -112,21 +112,21 @@ void jleFramebuffer::ResizeFramebuffer(unsigned int width,
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
-void jleFramebuffer::BindToFramebuffer() {
+void jleFramebuffer::bindToFramebuffer() {
     glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
 }
 
-void jleFramebuffer::BindToDefaultFramebuffer() {
+void jleFramebuffer::bindToDefaultFramebuffer() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-unsigned int jleFramebuffer::GetWidth() { return _width; }
+unsigned int jleFramebuffer::width() { return _width; }
 
-unsigned int jleFramebuffer::GetHeight() { return _height; }
+unsigned int jleFramebuffer::height() { return _height; }
 
-unsigned int jleFramebuffer::GetTexture() { return _texColorBuffer; }
+unsigned int jleFramebuffer::texture() { return _texColorBuffer; }
 
-void jleFramebuffer::CreateShadowFramebuffer(unsigned int width,
+void jleFramebuffer::createShadowFramebuffer(unsigned int width,
                                              unsigned int height) {
     this->_width = width;
     this->_height = height;

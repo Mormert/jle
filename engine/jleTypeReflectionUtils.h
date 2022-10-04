@@ -11,17 +11,17 @@
 #include <iostream>
 
 #define JLE_REGISTER_OBJECT_TYPE(object_name)                                  \
-    static const std::string_view GetObjectName() { return #object_name; };    \
+    static const std::string_view objectName() { return #object_name; };    \
     static inline const jleObjectTypeRegistrator<object_name> object_name_Reg{ \
         #object_name};                                                         \
                                                                                \
 public:                                                                        \
-    virtual std::string_view GetObjectNameVirtual() { return #object_name; }   \
+    virtual std::string_view objectNameVirtual() { return #object_name; }   \
                                                                                \
 private:
 
 #define JLE_REGISTER_COMPONENT_TYPE(component_name)                            \
-    const std::string_view GetComponentName() const override {                 \
+    const std::string_view componentName() const override {                 \
         return #component_name;                                                \
     }                                                                          \
     static inline const jleComponentTypeRegistrator<component_name>            \
@@ -34,30 +34,30 @@ class jleComponent;
 class jleTypeReflectionUtils {
 public:
     template <typename T>
-    [[maybe_unused]] static void RegisterObject();
+    [[maybe_unused]] static void registerObject();
 
     template <typename T>
-    [[maybe_unused]] static void RegisterComponent();
+    [[maybe_unused]] static void registerComponent();
 
-    static std::shared_ptr<jleObject> InstantiateObjectByString(
+    static std::shared_ptr<jleObject> instantiateObjectByString(
         const std::string& str);
 
-    static std::shared_ptr<jleComponent> InstantiateComponentByString(
+    static std::shared_ptr<jleComponent> instantiateComponentByString(
         const std::string& str);
 
     static std::map<std::string, std::function<std::shared_ptr<jleObject>()>>&
-    GetRegisteredObjectsRef();
+    registeredObjectsRef();
 
     static std::map<std::string,
                     std::function<std::shared_ptr<jleComponent>()>>&
-    GetRegisteredComponentsRef();
+    registeredComponentsRef();
 
-    // Should always be accessed via GetRegisteredObjectsRef()
+    // Should always be accessed via registeredObjectsRef()
     static inline std::unique_ptr<
         std::map<std::string, std::function<std::shared_ptr<jleObject>()>>>
         _registeredObjectsPtr{nullptr};
 
-    // Should always be accessed via GetRegisteredComponentsRef()
+    // Should always be accessed via registeredComponentsRef()
     static inline std::unique_ptr<
         std::map<std::string, std::function<std::shared_ptr<jleComponent>()>>>
         _registeredComponentsPtr{nullptr};

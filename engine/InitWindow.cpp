@@ -17,7 +17,7 @@
 
 #include <iostream>
 
-void *InitWindow(int width, int height, const char *title) {
+void *initWindow(int width, int height, const char *title) {
 
 #ifdef BUILD_OPENGLES30
     // Runs on OpenGL ES 3.0

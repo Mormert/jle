@@ -16,25 +16,25 @@ class cSprite : public jleComponent {
 public:
     cSprite(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
-    void CreateAndSetTextureFromPath(const std::string& path);
+    void createAndSetTextureFromPath(const std::string& path);
 
-    void SetTexture(std::shared_ptr<jleTexture> texture);
+    void texture(std::shared_ptr<jleTexture> texture);
 
-    void SetRectangleDimensions(int width, int height);
+    void rectangleDimensions(int width, int height);
 
-    void SetTextureBeginCoordinates(int x, int y);
+    void textureBeginCoordinates(int x, int y);
 
-    virtual void Start() override;
+    virtual void start() override;
 
     virtual void Update(float dt) override;
 
-    virtual void ToJson(nlohmann::json& j_out) override;
+    virtual void toJson(nlohmann::json& j_out) override;
 
-    virtual void FromJson(const nlohmann::json& j_in) override;
+    virtual void fromJson(const nlohmann::json& j_in) override;
 
 private:
     std::string texturePath = "";
 
-    TexturedQuad quad;
+    texturedQuad quad;
     std::shared_ptr<cTransform> transform;
 };

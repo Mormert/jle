@@ -13,17 +13,17 @@ public:
 
     ~cCamera() override;
 
-    void Start() override;
+    void start() override;
 
-    void ToJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json& j_out) override;
 
-    void FromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json& j_in) override;
 
     void Update(float dt) override;
 
-    float GetOffsetX();
+    float offsetX();
 
-    float GetOffsetY();
+    float offsetY();
 
 private:
     std::shared_ptr<cTransform> _transform{nullptr};

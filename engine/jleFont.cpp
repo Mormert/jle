@@ -22,7 +22,7 @@
 #include <cassert>
 #include <iostream>
 
-jleFont::jleFont(const std::string& path) { LoadFromFile(path); }
+jleFont::jleFont(const std::string& path) { loadFromFile(path); }
 
 jleFont::~jleFont() {
     if (sInitialized && _fontLoaded) {
@@ -63,7 +63,7 @@ void jleFont::Init() {
     sInitialized = true;
 }
 
-void jleFont::DeInit() {
+void jleFont::deInit() {
     if (sFreeTypeLibrary != nullptr) {
         FT_Done_FreeType(sFreeTypeLibrary);
     }
@@ -71,7 +71,7 @@ void jleFont::DeInit() {
     sInitialized = false;
 }
 
-void jleFont::RenderText(const std::string& text,
+void jleFont::renderText(const std::string& text,
                          uint32_t fontSize,
                          float x,
                          float y,
@@ -89,7 +89,7 @@ void jleFont::RenderText(const std::string& text,
     auto it = _fontSizeLookup.find(fontSize);
     if (it == _fontSizeLookup.end()) {
         // Font Size not setup, so set it up
-        AddFontSizePixels(fontSize);
+        addFontSizePixels(fontSize);
     }
 
     auto fontSz = _fontSizeLookup[fontSize];
@@ -144,14 +144,14 @@ void jleFont::RenderText(const std::string& text,
     jleStaticOpenGLState::globalActiveTexture = 0;
 }
 
-void jleFont::SetRenderTargetDimensions(int width,
+void jleFont::renderTargetDimensions(int width,
                                         int height,
                                         const jleCamera& camera) {
 
-    sProj = glm::ortho(static_cast<float>(camera.GetIntX()),
-                       static_cast<float>(camera.GetIntX() + width),
-                       static_cast<float>(camera.GetIntY() + height),
-                       static_cast<float>(camera.GetIntY()),
+    sProj = glm::ortho(static_cast<float>(camera.intX()),
+                       static_cast<float>(camera.intX() + width),
+                       static_cast<float>(camera.intY() + height),
+                       static_cast<float>(camera.intY()),
                        -1.f,
                        1.f);
 
@@ -161,7 +161,7 @@ void jleFont::SetRenderTargetDimensions(int width,
     glViewport(0, 0, width, height);
 }
 
-bool jleFont::LoadFromFile(const std::string& path) {
+bool jleFont::loadFromFile(const std::string& path) {
     if (!sInitialized) {
         Init();
     }
@@ -175,7 +175,7 @@ bool jleFont::LoadFromFile(const std::string& path) {
     return true;
 }
 
-void jleFont::AddFontSizePixels(uint32_t sizePixels) {
+void jleFont::addFontSizePixels(uint32_t sizePixels) {
     FT_Set_Pixel_Sizes(_face, 0, sizePixels);
 
     // Check if it already contains a setup for the given pixel size

@@ -55,7 +55,7 @@ void from_json(const nlohmann::json& j, jleAseprite& a) {
     a._frames = j.at("frames").get<std::vector<jleAsepriteFrame>>();
 }
 
-bool jleAseprite::LoadFromFile(const std::string& path) {
+bool jleAseprite::loadFromFile(const std::string& path) {
     _path = path;
     std::ifstream i(path);
     if (i.good()) {
@@ -63,7 +63,7 @@ bool jleAseprite::LoadFromFile(const std::string& path) {
         i >> j;
 
         from_json(j, *this);
-        LoadImage();
+        loadImage();
         return true;
     }
     else {
@@ -74,17 +74,17 @@ bool jleAseprite::LoadFromFile(const std::string& path) {
 
 jleAseprite::jleAseprite(const std::string& path) {
     _path = path;
-    LoadFromFile(path);
+    loadFromFile(path);
 }
 
-void jleAseprite::LoadImage() {
+void jleAseprite::loadImage() {
     std::filesystem::path p{_path};
     p.remove_filename();
     _imageTexture =
-        jleTexture::FromPath(jleRelativePath{p.string() + _meta._image});
+        jleTexture::fromPath(jleRelativePath{p.string() + _meta._image});
 }
 
-int jleAseprite::GetTotalAnimationTimeMs() {
+int jleAseprite::totalAnimationTimeMs() {
     int res = 0;
     for (auto&& frame : _frames) {
         res += frame._duration;

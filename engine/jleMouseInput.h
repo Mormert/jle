@@ -10,33 +10,33 @@ class jleMouseInput {
 public:
     explicit jleMouseInput(std::shared_ptr<jleWindow> windowInternal);
 
-    void LinkWindow(std::shared_ptr<jleWindow> windowInternal);
+    void linkWindow(std::shared_ptr<jleWindow> windowInternal);
 
-    int GetMouseX();
+    int mouseX();
 
-    int GetMouseY();
+    int mouseY();
 
-    float GetMouseXDelta();
+    float mouseXDelta();
 
-    float GetMouseYDelta();
+    float mouseYDelta();
 
     float GetScrollX();
 
     float GetScrollY();
 
-    int GetPixelatedMouseX();
+    int pixelatedMouseX();
 
-    int GetPixelatedMouseY();
+    int pixelatedMouseY();
 
-    bool GetMouseClick(int button);
+    bool mouseClick(int button);
 
-    void SetScreenBeginCoords(int x, int y);
+    void screenBeginCoords(int x, int y);
 
-    void SetScreenSize(int width, int height);
+    void screenSize(int width, int height);
 
-    void SetPixelatedScreenSize(int width, int height);
+    void pixelatedScreenSize(int width, int height);
 
-    void SetIsEnabled(bool value);
+    void isEnabled(bool value);
 
 private:
     std::shared_ptr<jleWindow> windowInternal;

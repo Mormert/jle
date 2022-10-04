@@ -18,7 +18,7 @@
 #include "jleTextRendering.h"
 #include "plog/Log.h"
 
-void jleRendering::SetViewportDimensions(int x,
+void jleRendering::viewportDimensions(int x,
                                          int y,
                                          unsigned int width,
                                          unsigned int height) {
@@ -27,20 +27,20 @@ void jleRendering::SetViewportDimensions(int x,
 
 void jleRendering::Render(jleFramebuffer& framebufferOut, jleCamera& camera) {
     JLE_SCOPE_PROFILE(jleRendering::Render)
-    _quads->QueueRender(framebufferOut, camera);
+    _quads->queueRender(framebufferOut, camera);
     _texts->Render(framebufferOut, camera);
 }
 
-void jleRendering::Setup() {
+void jleRendering::up() {
     LOG_VERBOSE << "Creating text rendering";
     this->_texts = std::make_unique<jleTextRendering>();
     LOG_VERBOSE << "Creating quad rendering";
     this->_quads = std::make_unique<jleQuadRendering>();
 }
 
-void jleRendering::ClearBuffersForNextFrame() {
-    _quads->ClearBuffersForNextFrame();
-    _texts->ClearBuffersForNextFrame();
+void jleRendering::clearBuffersForNextFrame() {
+    _quads->clearBuffersForNextFrame();
+    _texts->clearBuffersForNextFrame();
 }
 
 jleQuadRendering& jleRendering::quads() { return *_quads; }

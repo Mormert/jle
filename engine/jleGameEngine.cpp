@@ -24,7 +24,7 @@ void jleGameEngine::SetGameDimsPixels(FIXED_AXIS fa, unsigned int pixels) {
     gameDimsPixels = pixels;
 }
 
-std::pair<unsigned int, unsigned int> jleGameEngine::GetFramebufferDimensions(
+std::pair<unsigned int, unsigned int> jleGameEngine::framebufferDimensions(
     unsigned int windowWidth, unsigned int windowHeight) {
     if (fixed_axis == FIXED_AXIS::height) {
         float aspect =
@@ -44,98 +44,98 @@ std::pair<unsigned int, unsigned int> jleGameEngine::GetFramebufferDimensions(
     return std::make_pair(windowWidth, windowHeight);
 }
 
-void jleGameEngine::StartGame() {
+void jleGameEngine::startGame() {
     if (!_gameCreator) {
         LOG_WARNING << "Game has not been set! Use SetGame<jleGameDerived>() "
                        "before starting the game.";
         return;
     }
     game = _gameCreator();
-    game->Start();
+    game->start();
 
-    game->_mainCamera._cameraWidth = framebuffer_main->GetWidth();
-    game->_mainCamera._cameraHeight = framebuffer_main->GetHeight();
+    game->_mainCamera._cameraWidth = framebuffer_main->width();
+    game->_mainCamera._cameraHeight = framebuffer_main->height();
 }
 
-void jleGameEngine::RestartGame() {
+void jleGameEngine::restartGame() {
     game.reset();
-    _timerManager.ClearTimers();
-    StartGame();
+    _timerManager.clearTimers();
+    startGame();
 }
 
-void jleGameEngine::KillGame() {
-    _timerManager.ClearTimers();
+void jleGameEngine::killGame() {
+    _timerManager.clearTimers();
     game.reset();
 }
 
-void jleGameEngine::HaltGame() {
+void jleGameEngine::haltGame() {
     // TODO: Halt timers
     gameHalted = true;
 }
 
-void jleGameEngine::UnhaltGame() {
+void jleGameEngine::unhaltGame() {
     // TODO: Unhalt timers
     gameHalted = false;
 }
 
-void jleGameEngine::ExecuteNextFrame() {
-    LOG_VERBOSE << "Next frame dt: " << status->GetDeltaFrameTime();
+void jleGameEngine::executeNextFrame() {
+    LOG_VERBOSE << "Next frame dt: " << status->deltaFrameTime();
     auto gameHaltedTemp = gameHalted;
     gameHalted = false;
-    Update(status->GetDeltaFrameTime());
-    rendering->Render(*framebuffer_main, GetGameRef()._mainCamera);
+    Update(status->deltaFrameTime());
+    rendering->Render(*framebuffer_main, gameRef()._mainCamera);
     gameHalted = gameHaltedTemp;
 }
 
-bool jleGameEngine::IsGameKilled() {
+bool jleGameEngine::isGameKilled() {
     if (game) {
         return false;
     }
     return true;
 }
 
-bool jleGameEngine::IsGameHalted() { return gameHalted; }
+bool jleGameEngine::isGameHalted() { return gameHalted; }
 
-jleGame& jleGameEngine::GetGameRef() { return *game; }
+jleGame& jleGameEngine::gameRef() { return *game; }
 
-void jleGameEngine::Start() {
+void jleGameEngine::start() {
     auto dims =
-        GetFramebufferDimensions(core_settings->windowSettings.windowWidth,
+        framebufferDimensions(core_settings->windowSettings.windowWidth,
                                  core_settings->windowSettings.windowHeight);
     framebuffer_main =
         std::make_shared<jleFramebuffer>(dims.first, dims.second);
 
     const auto& internalInputMouse = jleCore::core->input->mouse;
-    internalInputMouse->SetPixelatedScreenSize(dims.first, dims.second);
-    internalInputMouse->SetScreenSize(
+    internalInputMouse->pixelatedScreenSize(dims.first, dims.second);
+    internalInputMouse->screenSize(
         core_settings->windowSettings.windowWidth,
         core_settings->windowSettings.windowHeight);
 
     _fullscreen_renderer = std::make_unique<jleFullscreenRendering>();
 
-    window->AddWindowResizeCallback(
-        std::bind(&jleGameEngine::FramebufferResizeEvent,
+    window->addWindowResizeCallback(
+        std::bind(&jleGameEngine::framebufferResizeEvent,
                   this,
                   std::placeholders::_1,
                   std::placeholders::_2));
 
-    // framebuffer_main->ResizeFramebuffer(200, 200);
+    // framebuffer_main->resizeFramebuffer(200, 200);
 
     LOG_INFO << "Starting the game engine";
 
-    StartGame();
+    startGame();
 }
 
-void jleGameEngine::FramebufferResizeEvent(unsigned int width,
+void jleGameEngine::framebufferResizeEvent(unsigned int width,
                                            unsigned int height) {
-    auto dims = GetFramebufferDimensions(width, height);
-    framebuffer_main->ResizeFramebuffer(dims.first, dims.second);
+    auto dims = framebufferDimensions(width, height);
+    framebuffer_main->resizeFramebuffer(dims.first, dims.second);
 
     const auto& internalInputMouse =
         std::static_pointer_cast<jleMouseInput>(
             jleCore::core->input->mouse);
-    internalInputMouse->SetPixelatedScreenSize(dims.first, dims.second);
-    internalInputMouse->SetScreenSize(width, height);
+    internalInputMouse->pixelatedScreenSize(dims.first, dims.second);
+    internalInputMouse->screenSize(width, height);
 
     game->_mainCamera._cameraWidth = dims.first;
     game->_mainCamera._cameraHeight = dims.second;
@@ -145,20 +145,20 @@ void jleGameEngine::Update(float dt) {
     JLE_SCOPE_PROFILE(jleGameEngine::Update)
     if (!gameHalted && game) {
         game->Update(dt);
-        game->UpdateActiveScenes(dt);
+        game->updateActiveScenes(dt);
     }
 }
 
 void jleGameEngine::Render() {
     JLE_SCOPE_PROFILE(jleGameEngine::Render)
     if (!gameHalted && game) {
-        rendering->Render(*framebuffer_main.get(), GetGameRef()._mainCamera);
-        rendering->ClearBuffersForNextFrame();
-        _fullscreen_renderer->RenderFramebufferFullscreen(
+        rendering->Render(*framebuffer_main.get(), gameRef()._mainCamera);
+        rendering->clearBuffersForNextFrame();
+        _fullscreen_renderer->renderFramebufferFullscreen(
             *framebuffer_main.get(),
             window->GetWindowWidth(),
             window->GetWindowHeight());
     }
 }
 
-void jleGameEngine::Exiting() { KillGame(); }
+void jleGameEngine::exiting() { killGame(); }

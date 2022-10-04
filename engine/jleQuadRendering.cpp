@@ -90,7 +90,7 @@ jleQuadRendering::jleQuadRendering()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    // Setup instanced rendering
+    // up instanced rendering
     QuadData quadDatas[100][100];
     for (int i = 0; i < 100; i++) {
         for (int j = 0; j < 100; j++) {
@@ -161,7 +161,7 @@ jleQuadRendering::jleQuadRendering()
 
     glBindVertexArray(0);
 
-    SetupShaders();
+    upShaders();
 }
 
 jleQuadRendering::~jleQuadRendering() {
@@ -173,20 +173,20 @@ jleQuadRendering::~jleQuadRendering() {
     glDeleteVertexArrays(1, &quadVAO_Instanced);
 }
 
-void jleQuadRendering::SendTexturedQuad(TexturedQuad& texturedQuad,
+void jleQuadRendering::sendTexturedQuad(texturedQuad& texturedQuad,
                                         RenderingMethod renderingMethod) {
     _queuedTexturedQuads.push_back(texturedQuad);
 }
 
-void jleQuadRendering::SendTexturedHeightQuad(
-    TexturedHeightQuad& texturedHeightQuad, RenderingMethod renderingMethod) {
+void jleQuadRendering::sendTexturedHeightQuad(
+    texturedHeightQuad& texturedHeightQuad, RenderingMethod renderingMethod) {
     _queuedTexturedHeightQuads.push_back(texturedHeightQuad);
 }
 
-void jleQuadRendering::SendColoredQuad(ColoredQuad& coloredQuad,
+void jleQuadRendering::sendColoredQuad(ColoredQuad& coloredQuad,
                                        RenderingMethod renderingMethod) {}
 
-void jleQuadRendering::QueueRender(jleFramebuffer& framebufferOut,
+void jleQuadRendering::queueRender(jleFramebuffer& framebufferOut,
                                    jleCamera& camera) {
     Render(framebufferOut,
            camera,
@@ -195,7 +195,7 @@ void jleQuadRendering::QueueRender(jleFramebuffer& framebufferOut,
            true);
 }
 
-void jleQuadRendering::ClearBuffersForNextFrame() {
+void jleQuadRendering::clearBuffersForNextFrame() {
     _queuedTexturedQuads.clear();
     _queuedTexturedHeightQuads.clear();
 }
@@ -203,22 +203,22 @@ void jleQuadRendering::ClearBuffersForNextFrame() {
 void jleQuadRendering::Render(
     jleFramebuffer& framebufferOut,
     jleCamera& camera,
-    const std::vector<TexturedQuad>& texturedQuads,
-    const std::vector<TexturedHeightQuad>& texturedHeightQuads,
+    const std::vector<texturedQuad>& texturedQuads,
+    const std::vector<texturedHeightQuad>& texturedHeightQuads,
     bool clearDepthColor) {
 
     JLE_SCOPE_PROFILE(jleQuadRendering::Render)
 
-    const int viewportWidth = framebufferOut.GetWidth();
-    const int viewportHeight = framebufferOut.GetHeight();
+    const int viewportWidth = framebufferOut.width();
+    const int viewportHeight = framebufferOut.height();
 
     camera._position = glm::vec3{-camera._x, -camera._y, 0.f};
-    camera.SetOrthographicProjection(
+    camera.orthographicProjection(
         viewportWidth, viewportHeight, -10000.f, 10000.f);
 
-    glm::mat4 view = camera.GetProjectionViewMatrix();
+    glm::mat4 view = camera.projectionViewMatrix();
 
-    framebufferOut.BindToFramebuffer();
+    framebufferOut.bindToFramebuffer();
 
     if (clearDepthColor) {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Make everything black
@@ -230,18 +230,18 @@ void jleQuadRendering::Render(
     // Change viewport dimensions to match framebuffer's dimensions
     glViewport(0, 0, viewportWidth, viewportHeight);
 
-    ProcessTexturedQuads(texturedQuads, view);
-    ProcessTexturedHeightQuads(
+    processTexturedQuads(texturedQuads, view);
+    processTexturedHeightQuads(
         texturedHeightQuads,
         view,
         glm::vec3{camera._xNoOffset, camera._yNoOffset, 0.f});
 
-    framebufferOut.BindToDefaultFramebuffer();
+    framebufferOut.bindToDefaultFramebuffer();
 }
 
-void jleQuadRendering::ProcessTexturedQuads(
-    const std::vector<TexturedQuad>& texturedQuads, glm::mat4& view) {
-    JLE_SCOPE_PROFILE(jleQuadRendering::ProcessTexturedQuads)
+void jleQuadRendering::processTexturedQuads(
+    const std::vector<texturedQuad>& texturedQuads, glm::mat4& view) {
+    JLE_SCOPE_PROFILE(jleQuadRendering::processTexturedQuads)
 
     std::unordered_map<std::shared_ptr<jleTexture>, std::vector<QuadData>>
         quadDataMap;
@@ -281,12 +281,12 @@ void jleQuadRendering::ProcessTexturedQuads(
 
         quadShaderInstanced.Use();
 
-        if (!key.first->IsActive()) {
-            key.first->SetToActiveTexture();
+        if (!key.first->isActive()) {
+            key.first->toActiveTexture();
             quadShaderInstanced.SetVec2(
                 "textureDims",
-                glm::vec2{float(key.first->GetWidth()),
-                          float(key.first->GetHeight())});
+                glm::vec2{float(key.first->width()),
+                          float(key.first->height())});
             quadShaderInstanced.SetInt("texture0", 0);
         }
 
@@ -299,11 +299,11 @@ void jleQuadRendering::ProcessTexturedQuads(
     }
 }
 
-void jleQuadRendering::ProcessTexturedHeightQuads(
-    const std::vector<TexturedHeightQuad>& texturedHeightQuads,
+void jleQuadRendering::processTexturedHeightQuads(
+    const std::vector<texturedHeightQuad>& texturedHeightQuads,
     glm::mat4& view,
     glm::vec3 viewPos) {
-    JLE_SCOPE_PROFILE(jleQuadRendering::ProcessTexturedHeightQuads)
+    JLE_SCOPE_PROFILE(jleQuadRendering::processTexturedHeightQuads)
 
     std::unordered_map<std::shared_ptr<TextureWithHeightmap>,
                        std::vector<QuadData>>
@@ -347,14 +347,14 @@ void jleQuadRendering::ProcessTexturedHeightQuads(
                               (void *)(3 * sizeof(float)));
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        if (!key.first->texture->IsActive()) {
-            key.first->texture->SetToActiveTexture(0);
-            key.first->heightmap->SetToActiveTexture(1);
-            key.first->normalmap->SetToActiveTexture(2);
+        if (!key.first->texture->isActive()) {
+            key.first->texture->toActiveTexture(0);
+            key.first->heightmap->toActiveTexture(1);
+            key.first->normalmap->toActiveTexture(2);
             quadHeightmapShaderInstanced.SetVec2(
                 "textureDims",
-                glm::vec2{float(key.first->texture->GetWidth()),
-                          float(key.first->texture->GetHeight())});
+                glm::vec2{float(key.first->texture->width()),
+                          float(key.first->texture->height())});
 
             quadHeightmapShaderInstanced.SetInt("texture_albedo", 0);
             quadHeightmapShaderInstanced.SetInt("texture_heightmap", 1);
@@ -370,7 +370,7 @@ void jleQuadRendering::ProcessTexturedHeightQuads(
     }
 }
 
-void jleQuadRendering::SetupShaders() {
+void jleQuadRendering::upShaders() {
 
     // Set up the angles on the "camera", as it was rendered in 3D software
     static const float xyAngle = 0.f;
@@ -409,7 +409,7 @@ void jleQuadRendering::SetupShaders() {
     quadHeightmapShaderInstanced.SetFloat("light.quadratic", 0.00032f);
 }
 
-void jleQuadRendering::RenderCube(glm::mat4& model, jleShader& shader) {
+void jleQuadRendering::renderCube(glm::mat4& model, jleShader& shader) {
     static unsigned int cubeVAO = 0;
     static unsigned int cubeVBO = 0;
 
@@ -749,7 +749,7 @@ void jleQuadRendering::RenderCube(glm::mat4& model, jleShader& shader) {
     glBindVertexArray(0);
 }
 
-void jleQuadRendering::RenderShadowCubes(glm::mat4& view) {
+void jleQuadRendering::renderShadowCubes(glm::mat4& view) {
 
     std::random_device rd;  // obtain a random number from hardware
     std::mt19937 gen(rd()); // seed the generator
@@ -779,7 +779,7 @@ void jleQuadRendering::RenderShadowCubes(glm::mat4& view) {
         model, glm::radians(45.f), glm::normalize(glm::vec3(0.0, 0.0, 1.0)));
     model = glm::scale(model, glm::vec3(20.f));
 
-    RenderCube(model, shadowMappingShader);
+    renderCube(model, shadowMappingShader);
 
     static std::vector<glm::mat4> models;
     static bool generatedModels = false;
@@ -795,6 +795,6 @@ void jleQuadRendering::RenderShadowCubes(glm::mat4& view) {
     }
 
     for (auto&& model : models) {
-        RenderCube(model, shadowMappingShader);
+        renderCube(model, shadowMappingShader);
     }
 }

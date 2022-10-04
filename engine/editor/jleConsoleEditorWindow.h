@@ -17,25 +17,25 @@ public:
 
     ~jleConsoleEditorWindow();
 
-    static int Stricmp(const char *s1, const char *s2);
+    static int stricmp(const char *s1, const char *s2);
 
-    static int Strnicmp(const char *s1, const char *s2, int n);
+    static int strnicmp(const char *s1, const char *s2, int n);
 
-    static char *Strdup(const char *s);
+    static char *strdup(const char *s);
 
-    static void Strtrim(char *s);
+    static void strtrim(char *s);
 
-    void ClearLog();
+    void clearLog();
 
-    void AddLog(const char *fmt, ...) IM_FMTARGS(2);
+    void addLog(const char *fmt, ...) IM_FMTARGS(2);
 
-    void ExecCommand(const char *command_line);
+    void execCommand(const char *command_line);
 
     virtual void Update(jleGameEngine& ge) override;
 
-    static int TextEditCallbackStub(ImGuiInputTextCallbackData *data);
+    static int textEditCallbackStub(ImGuiInputTextCallbackData *data);
 
-    int TextEditCallback(ImGuiInputTextCallbackData *data);
+    int textEditCallback(ImGuiInputTextCallbackData *data);
 
     // Inherited from plog::IAppender
     void write(const plog::Record& record) override;

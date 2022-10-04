@@ -18,9 +18,9 @@ public:
 
     int GetWindowHeight() const;
 
-    int GetWindowPosX() const;
+    int windowPosX() const;
 
-    int GetWindowPosY() const;
+    int windowPosY() const;
 
 private:
     float _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;

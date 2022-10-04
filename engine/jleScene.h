@@ -20,34 +20,34 @@ public:
     virtual ~jleScene() = default;
 
     template <typename T>
-    std::shared_ptr<T> SpawnObject();
+    std::shared_ptr<T> spawnObject();
 
-    std::shared_ptr<jleObject> SpawnObject(const std::string& objName);
+    std::shared_ptr<jleObject> spawnObject(const std::string& objName);
 
-    std::shared_ptr<jleObject> SpawnObject(const nlohmann::json& j_in);
+    std::shared_ptr<jleObject> spawnObject(const nlohmann::json& j_in);
 
-    std::shared_ptr<jleObject> SpawnTemplateObject(
+    std::shared_ptr<jleObject> spawnTemplateObject(
         const jleRelativePath& templatePath);
 
-    void UpdateSceneObjects(float dt);
+    void updateSceneObjects(float dt);
 
-    void ProcessNewSceneObjects();
+    void processNewSceneObjects();
 
-    virtual void SceneUpdate() {}
+    virtual void sceneUpdate() {}
 
-    virtual void OnSceneCreation() {}
+    virtual void onSceneCreation() {}
 
-    virtual void OnSceneDestruction() {}
+    virtual void onSceneDestruction() {}
 
-    void DestroyScene();
+    void destroyScene();
 
-    void ToJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json& j_out) override;
 
-    void FromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json& j_in) override;
 
     bool bPendingSceneDestruction = false;
 
-    std::vector<std::shared_ptr<jleObject>>& GetSceneObjects();
+    std::vector<std::shared_ptr<jleObject>>& sceneObjects();
 
     std::string _sceneName;
 
@@ -64,7 +64,7 @@ protected:
 private:
     static int _scenesCreatedCount;
 
-    void ConfigurateSpawnedObject(const std::shared_ptr<jleObject>& obj);
+    void configurateSpawnedObject(const std::shared_ptr<jleObject>& obj);
 };
 
 void to_json(nlohmann::json& j, jleScene& s);

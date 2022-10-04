@@ -4,14 +4,14 @@
 
 class jleSoLoud {
 public:
-    static inline SoLoud::Soloud& GetSoLoud() { return gSoLoud; }
+    static inline SoLoud::Soloud& soLoud() { return gSoLoud; }
 
 private:
     friend class jleCore;
 
     static void Init();
 
-    static void DeInit();
+    static void deInit();
 
     static inline SoLoud::Soloud gSoLoud;
 };

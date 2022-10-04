@@ -20,11 +20,11 @@ public:
     std::shared_ptr<jleMouseInput> mouse;
 
     // Set to false if the input system should stop polling
-    void SetInputEnabled(bool isEnabled) {
+    void inputEnabled(bool isEnabled) {
         _isInputEnabled = isEnabled;
 
-        keyboard->SetIsEnabled(isEnabled);
-        mouse->SetIsEnabled(isEnabled);
+        keyboard->isEnabled(isEnabled);
+        mouse->isEnabled(isEnabled);
     }
 
     bool _isInputEnabled = true;

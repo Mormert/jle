@@ -19,13 +19,13 @@ public:
 
     virtual void Update(jleGameEngine& ge) = 0;
 
-    virtual void OpenWindow() { isOpened = true; }
+    virtual void openWindow() { isOpened = true; }
 
-    virtual void CloseWindow() { isOpened = false; }
+    virtual void closeWindow() { isOpened = false; }
 
-    bool GetOpened() const { return isOpened; }
+    bool opened() const { return isOpened; }
 
-    const std::string& GetWindowName() { return window_name; }
+    const std::string& windowName() { return window_name; }
 
 protected:
     std::string window_name;

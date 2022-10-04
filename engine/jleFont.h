@@ -24,13 +24,13 @@ public:
 
     ~jleFont() override;
 
-    void AddFontSizePixels(uint32_t sizePixels);
+    void addFontSizePixels(uint32_t sizePixels);
 
-    bool LoadFromFile(const std::string& path) override;
+    bool loadFromFile(const std::string& path) override;
 
     // TODO: Move rendering to Text Rendering engine subsystem
     // TODO: Add scale as param
-    void RenderText(const std::string& text,
+    void renderText(const std::string& text,
                     uint32_t fontSize,
                     float x,
                     float y,
@@ -38,7 +38,7 @@ public:
                     glm::vec3 color,
                     const jleCamera& camera);
 
-    static void SetRenderTargetDimensions(int width,
+    static void renderTargetDimensions(int width,
                                           int height,
                                           const jleCamera& camera);
 
@@ -69,7 +69,7 @@ private:
 
     static void Init();
 
-    static void DeInit();
+    static void deInit();
 
     friend class jleCore;
 };

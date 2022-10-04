@@ -11,21 +11,21 @@ class oFireball : public jleObject {
 public:
     oFireball();
 
-    void SetupDefaultObject() override;
+    void upDefaultObject() override;
 
-    void Start() override;
+    void start() override;
 
     void Update(float dt) override;
 
-    void ToJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json& j_out) override;
 
-    void FromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json& j_in) override;
 
-    void ToNet(nlohmann::json& j_out);
+    void toNet(nlohmann::json& j_out);
 
-    void FromNet(const nlohmann::json& j_in);
+    void fromNet(const nlohmann::json& j_in);
 
-    void SetTarget(int q, int r);
+    void target(int q, int r);
 
 private:
     std::shared_ptr<cTransform> _transform{nullptr};

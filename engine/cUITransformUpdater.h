@@ -15,11 +15,11 @@ public:
 
     ~cUITransformUpdater() override;
 
-    void Start() override;
+    void start() override;
 
-    void ToJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json& j_out) override;
 
-    void FromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json& j_in) override;
 
     void Update(float dt) override;
 

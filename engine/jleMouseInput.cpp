@@ -11,30 +11,30 @@ jleMouseInput::jleMouseInput(
     this->windowInternal = std::move(windowInternal);
 }
 
-void jleMouseInput::LinkWindow(
+void jleMouseInput::linkWindow(
     std::shared_ptr<jleWindow> windowInternal) {
     this->windowInternal = windowInternal;
 }
 
-int jleMouseInput::GetMouseX() {
+int jleMouseInput::mouseX() {
 #ifdef BUILD_EDITOR
-    return windowInternal->GetCursor().first - _screenBeginX;
+    return windowInternal->cursor().first - _screenBeginX;
 #else
-    return windowInternal->GetCursor().first;
+    return windowInternal->cursor().first;
 #endif
 }
 
-int jleMouseInput::GetMouseY() {
+int jleMouseInput::mouseY() {
 #ifdef BUILD_EDITOR
-    return windowInternal->GetCursor().second - _screenBeginY;
+    return windowInternal->cursor().second - _screenBeginY;
 #else
-    return windowInternal->GetCursor().second;
+    return windowInternal->cursor().second;
 #endif
 }
 
-float jleMouseInput::GetMouseXDelta() { return 0; }
+float jleMouseInput::mouseXDelta() { return 0; }
 
-float jleMouseInput::GetMouseYDelta() { return 0; }
+float jleMouseInput::mouseYDelta() { return 0; }
 
 float jleMouseInput::GetScrollX() {
     return windowInternal->GetScrollX();
@@ -44,36 +44,36 @@ float jleMouseInput::GetScrollY() {
     return windowInternal->GetScrollY();
 }
 
-void jleMouseInput::SetScreenBeginCoords(int x, int y) {
+void jleMouseInput::screenBeginCoords(int x, int y) {
     _screenBeginX = x;
     _screenBeginY = y;
 }
 
-void jleMouseInput::SetScreenSize(int width, int height) {
+void jleMouseInput::screenSize(int width, int height) {
     _screenWidth = width;
     _screenHeight = height;
 }
 
-void jleMouseInput::SetPixelatedScreenSize(int width, int height) {
+void jleMouseInput::pixelatedScreenSize(int width, int height) {
     _pixelatedScreenWidth = width;
     _pixelatedScreenHeight = height;
 }
 
-void jleMouseInput::SetIsEnabled(bool value) { _isEnabled = value; }
+void jleMouseInput::isEnabled(bool value) { _isEnabled = value; }
 
-int jleMouseInput::GetPixelatedMouseX() {
+int jleMouseInput::pixelatedMouseX() {
     const float ratio = float(_pixelatedScreenWidth) / float(_screenWidth);
-    return int(ratio * float(GetMouseX()));
+    return int(ratio * float(mouseX()));
 }
 
-int jleMouseInput::GetPixelatedMouseY() {
+int jleMouseInput::pixelatedMouseY() {
     const float ratio = float(_pixelatedScreenHeight) / float(_screenHeight);
-    return int(ratio * float(GetMouseY()));
+    return int(ratio * float(mouseY()));
 }
 
-bool jleMouseInput::GetMouseClick(int button) {
+bool jleMouseInput::mouseClick(int button) {
     if (_isEnabled) {
-        return windowInternal->GetMouseClick(button);
+        return windowInternal->mouseClick(button);
     }
     return false;
 }

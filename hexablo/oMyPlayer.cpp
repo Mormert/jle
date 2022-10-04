@@ -14,12 +14,12 @@
 // TODO: Remove this include:
 #include "jleQuadRendering.h"
 
-void oMyPlayer::SetupDefaultObject() {
-    oCharacter::SetupDefaultObject();
+void oMyPlayer::upDefaultObject() {
+    oCharacter::upDefaultObject();
 }
 
-void oMyPlayer::Start() {
-    oCharacter::Start();
+void oMyPlayer::start() {
+    oCharacter::start();
     sMyPlayerPtr = std::static_pointer_cast<oMyPlayer>(weak_from_this().lock());
 }
 
@@ -27,21 +27,21 @@ void oMyPlayer::Update(float dt) {
 
     oCharacter::Update(dt);
 
-    LookAtMouse();
+    lookAtMouse();
 
-    Movement(dt);
+    movement(dt);
 
-    Abilities();
+    abilities();
 
-    if (jleCore::core->input->mouse->GetMouseClick(1)) {
-        Attack(_characterDirection);
+    if (jleCore::core->input->mouse->mouseClick(1)) {
+        attack(_characterDirection);
     }
 
     static float lightposz = 0.f;
-    if (jleCore::core->input->keyboard->GetKeyDown('R')) {
+    if (jleCore::core->input->keyboard->keyDown('R')) {
         lightposz += 1.f;
     }
-    if (jleCore::core->input->keyboard->GetKeyDown('F')) {
+    if (jleCore::core->input->keyboard->keyDown('F')) {
         lightposz -= 1.f;
     }
 
@@ -51,50 +51,50 @@ void oMyPlayer::Update(float dt) {
     }
 
     static float depthRng = 127.f; // 127.f when pixelated
-    if (jleCore::core->input->keyboard->GetKeyDown('Y')) {
+    if (jleCore::core->input->keyboard->keyDown('Y')) {
         depthRng += 0.1f;
         LOGV << depthRng;
     }
-    if (jleCore::core->input->keyboard->GetKeyDown('H')) {
+    if (jleCore::core->input->keyboard->keyDown('H')) {
         depthRng -= 0.1f;
         LOGV << depthRng;
     }
 
-    jleQuadRendering::lightPos = _transform->GetWorldXYDepth() + glm::vec3{0, 0, lightposz};
+    jleQuadRendering::lightPos = _transform->worldXYDepth() + glm::vec3{0, 0, lightposz};
     jleQuadRendering::depthRange = depthRng;
 
 }
 
-void oMyPlayer::Attack(oCharacter::oCharacterDirection direction) {
+void oMyPlayer::attack(oCharacter::oCharacterDirection direction) {
     if (!_canAttack) {
         return;
     }
 
-    oCharacter::Attack(direction);
+    oCharacter::attack(direction);
 
-    auto pos = _hexagonItem.GetHexagonItemPlacement();
-    jleNetworking::TryEmitJsonData(
+    auto pos = _hexagonItem.hexagonItemPlacement();
+    jleNetworking::tryEmitJsonData(
             "basic_attack", {{"q", pos.x},
                              {"r", pos.y},
                              {"d", _characterDirection}});
 }
 
-void oMyPlayer::ToJson(nlohmann::json &j_out) {
-    oCharacter::ToJson(j_out);
+void oMyPlayer::toJson(nlohmann::json &j_out) {
+    oCharacter::toJson(j_out);
 }
 
-void oMyPlayer::FromJson(const nlohmann::json &j_in) {
-    oCharacter::FromJson(j_in);
+void oMyPlayer::fromJson(const nlohmann::json &j_in) {
+    oCharacter::fromJson(j_in);
 }
 
-void oMyPlayer::LookAtMouse() {
-    auto x = hexHelperFunctions::GetPixelatedMouseXWorldSpace();
-    auto y = hexHelperFunctions::GetPixelatedMouseYWorldSpace();
+void oMyPlayer::lookAtMouse() {
+    auto x = hexHelperFunctions::pixelatedMouseXWorldSpace();
+    auto y = hexHelperFunctions::pixelatedMouseYWorldSpace();
 
-    LookAtPosition(x, y);
+    lookAtPosition(x, y);
 }
 
-void oMyPlayer::Movement(float dt) {
+void oMyPlayer::movement(float dt) {
 
     static bool canMove = true;
     static float lastMovement = 0.f;
@@ -102,13 +102,13 @@ void oMyPlayer::Movement(float dt) {
     static float currentMoveTime = defaultMoveTime;
 
     if (!canMove) {
-        if (jleCore::core->status->GetCurrentFrameTime() > lastMovement + currentMoveTime) {
+        if (jleCore::core->status->currentFrameTime() > lastMovement + currentMoveTime) {
             canMove = true;
         } else {
             return;
         }
     }
-    const bool f = jleCore::core->input->mouse->GetMouseClick(0);
+    const bool f = jleCore::core->input->mouse->mouseClick(0);
 
     if (!f) {
         return;
@@ -116,20 +116,20 @@ void oMyPlayer::Movement(float dt) {
 
     static bool verticalSide = true;
 
-    auto &&hexagonCoords = _hexagonItem.GetHexagonItemPlacement();
+    auto &&hexagonCoords = _hexagonItem.hexagonItemPlacement();
     const int hexagonQ = hexagonCoords.x;
     const int hexagonR = hexagonCoords.y;
 
     auto *world = oWorld::sWorld;
     const auto TryMoveTo = [&](int q, int r) {
-        if (world->IsHexagonWalkable(q, r)) {
-            SetHexagonPlacementInterp(q, r);
-            jleNetworking::TryEmitJsonData(
+        if (world->isHexagonWalkable(q, r)) {
+            hexagonPlacementInterp(q, r);
+            jleNetworking::tryEmitJsonData(
                     "player_pos", {{"q", q},
                                    {"r", r},
                                    {"d", _characterDirection}});
             canMove = false;
-            lastMovement = jleCore::core->status->GetCurrentFrameTime();
+            lastMovement = jleCore::core->status->currentFrameTime();
             currentMoveTime = defaultMoveTime;
             return true;
         } else {
@@ -221,16 +221,16 @@ void oMyPlayer::Movement_v1(float dt) {
     static float currentMoveTime = defaultMoveTime;
 
     if (!canMove) {
-        if (jleCore::core->status->GetCurrentFrameTime() > lastMovement + currentMoveTime) {
+        if (jleCore::core->status->currentFrameTime() > lastMovement + currentMoveTime) {
             canMove = true;
         } else {
             return;
         }
     }
-    bool w = jleCore::core->input->keyboard->GetKeyDown('W');
-    bool a = jleCore::core->input->keyboard->GetKeyDown('A');
-    bool s = jleCore::core->input->keyboard->GetKeyDown('S');
-    bool d = jleCore::core->input->keyboard->GetKeyDown('D');
+    bool w = jleCore::core->input->keyboard->keyDown('W');
+    bool a = jleCore::core->input->keyboard->keyDown('A');
+    bool s = jleCore::core->input->keyboard->keyDown('S');
+    bool d = jleCore::core->input->keyboard->keyDown('D');
 
     if ((w && a && s && d) || (w && s) || (a && d)) {
         return;
@@ -238,16 +238,16 @@ void oMyPlayer::Movement_v1(float dt) {
 
     static bool verticalSide = true;
 
-    auto &&hexagonCoords = _hexagonItem.GetHexagonItemPlacement();
+    auto &&hexagonCoords = _hexagonItem.hexagonItemPlacement();
     const int hexagonQ = hexagonCoords.x;
     const int hexagonR = hexagonCoords.y;
 
     auto *world = oWorld::sWorld;
     const auto TryMoveTo = [&](int q, int r) {
-        if (world->IsHexagonWalkable(q, r)) {
-            SetHexagonPlacementInterp(q, r);
+        if (world->isHexagonWalkable(q, r)) {
+            hexagonPlacementInterp(q, r);
             canMove = false;
-            lastMovement = jleCore::core->status->GetCurrentFrameTime();
+            lastMovement = jleCore::core->status->currentFrameTime();
             currentMoveTime = defaultMoveTime;
             return true;
         } else {
@@ -329,26 +329,26 @@ void oMyPlayer::Movement_v1(float dt) {
 
 }
 
-void oMyPlayer::Abilities() {
-    bool q = jleCore::core->input->keyboard->GetKeyDown('Q');
-    bool e = jleCore::core->input->keyboard->GetKeyDown('E');
+void oMyPlayer::abilities() {
+    bool q = jleCore::core->input->keyboard->keyDown('Q');
+    bool e = jleCore::core->input->keyboard->keyDown('E');
 
     if (q && _canThrowFireball) {
 
 
-        auto t = _containedInScene->SpawnTemplateObject(jleRelativePath{"GR:otemps/FireballTempl.tmpl"});
+        auto t = _containedInScene->spawnTemplateObject(jleRelativePath{"GR:otemps/FireballTempl.tmpl"});
         const auto fireball = std::static_pointer_cast<oFireball>(t);
-        auto mx = hexHelperFunctions::GetPixelatedMouseXWorldSpace();
-        auto my = hexHelperFunctions::GetPixelatedMouseYWorldSpace();
+        auto mx = hexHelperFunctions::pixelatedMouseXWorldSpace();
+        auto my = hexHelperFunctions::pixelatedMouseYWorldSpace();
 
-        fireball->GetComponent<cTransform>()->SetWorldPositionX(_transform->GetWorldX() - 20.f);
-        fireball->GetComponent<cTransform>()->SetWorldPositionY(_transform->GetWorldY() - 10);
+        fireball->component<cTransform>()->worldPositionX(_transform->worldX() - 20.f);
+        fireball->component<cTransform>()->worldPositionY(_transform->worldY() - 10);
 
 
         auto *world = oWorld::sWorld;
-        auto p = hexHexagonFunctions::PixelToHex(mx, my, world->_hexSizeX, world->_hexSizeY);
+        auto p = hexHexagonFunctions::pixelToHex(mx, my, world->_hexSizeX, world->_hexSizeY);
 
-        fireball->SetTarget(p.x, p.y);
+        fireball->target(p.x, p.y);
 
 
         _canThrowFireball = false;
@@ -359,8 +359,8 @@ void oMyPlayer::Abilities() {
         };
 
         // Can throw fireball again in x seconds
-        jleCore::core->GetTimerManager().
-                ExecuteFuncInSecondsWeakData(0.2, futureFunc, GetWeakPtrToThis());
+        jleCore::core->timerManager().
+                executeFuncInSecondsWeakData(0.2, futureFunc, weakPtrToThis());
 
         return;
     }

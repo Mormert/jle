@@ -24,5 +24,5 @@ private:
     static inline std::weak_ptr<jleObject> selectedObject;
     static inline std::weak_ptr<jleScene> selectedScene;
 
-    void ObjectTreeRecursive(std::shared_ptr<jleObject> object);
+    void objectTreeRecursive(std::shared_ptr<jleObject> object);
 };

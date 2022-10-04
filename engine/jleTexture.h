@@ -22,21 +22,21 @@ public:
     // Utilizes the resource holder such that only one copy of the resource will
     // exists, and if it does not exist, the program will construct it and store
     // it for later use
-    static std::shared_ptr<jleTexture> FromPath(const jleRelativePath& path);
+    static std::shared_ptr<jleTexture> fromPath(const jleRelativePath& path);
 
     ~jleTexture();
 
     // Returns true if this Texture is the globally active texture
-    bool IsActive();
+    bool isActive();
 
     // Set this Texture to be the globally active texture
-    void SetToActiveTexture(int texture_slot = 0);
+    void toActiveTexture(int texture_slot = 0);
 
-    unsigned int GetTextureID();
+    unsigned int textureID();
 
-    int32_t GetWidth();
+    int32_t width();
 
-    int32_t GetHeight();
+    int32_t height();
 
     unsigned int id();
 

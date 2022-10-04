@@ -55,7 +55,7 @@ jleFullscreenRendering::~jleFullscreenRendering() {
     glDeleteBuffers(1, &quadVBO);
 }
 
-void jleFullscreenRendering::RenderFramebufferFullscreen(
+void jleFullscreenRendering::renderFramebufferFullscreen(
     jleFramebuffer& framebuffer,
     unsigned int screenWidth,
     unsigned int screenHeight) {
@@ -75,8 +75,8 @@ void jleFullscreenRendering::RenderFramebufferFullscreen(
     glDisable(GL_DEPTH_TEST);
 
     // Get the texture from the framebuffer
-    glBindTexture(GL_TEXTURE_2D, framebuffer.GetTexture());
-    jleStaticOpenGLState::globalActiveTexture = framebuffer.GetTexture();
+    glBindTexture(GL_TEXTURE_2D, framebuffer.texture());
+    jleStaticOpenGLState::globalActiveTexture = framebuffer.texture();
 
     // Draw quad with framebuffer's texture over the entire screen
     glDrawArrays(GL_TRIANGLES, 0, 6);

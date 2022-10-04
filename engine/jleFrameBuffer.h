@@ -10,21 +10,21 @@ public:
 
     ~jleFramebuffer();
 
-    void CreateFramebuffer(unsigned int width, unsigned int height);
+    void createFramebuffer(unsigned int width, unsigned int height);
 
-    void CreateShadowFramebuffer(unsigned int width, unsigned int height);
+    void createShadowFramebuffer(unsigned int width, unsigned int height);
 
-    void ResizeFramebuffer(unsigned int width, unsigned int height);
+    void resizeFramebuffer(unsigned int width, unsigned int height);
 
-    void BindToFramebuffer();
+    void bindToFramebuffer();
 
-    void BindToDefaultFramebuffer();
+    void bindToDefaultFramebuffer();
 
-    unsigned int GetWidth();
+    unsigned int width();
 
-    unsigned int GetHeight();
+    unsigned int height();
 
-    unsigned int GetTexture();
+    unsigned int texture();
 
 private:
     unsigned int _width{}, _height{};

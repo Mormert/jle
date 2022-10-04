@@ -12,15 +12,15 @@ class cText : public jleComponent {
 public:
     explicit cText(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
-    void Start() override;
+    void start() override;
 
-    void ToJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json& j_out) override;
 
-    void FromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json& j_in) override;
 
     void Update(float dt) override;
 
-    void SetText(const std::string& text);
+    void text(const std::string& text);
 
 private:
     std::shared_ptr<cTransform> _transform{nullptr};

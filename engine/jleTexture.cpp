@@ -29,28 +29,28 @@ jleTexture::~jleTexture() {
     std::cout << "Destroyed texture with id " << _id << '\n';
 }
 
-bool jleTexture::IsActive() {
+bool jleTexture::isActive() {
     return jleStaticOpenGLState::globalActiveTexture == _id;
 }
 
-void jleTexture::SetToActiveTexture(int texture_slot) {
+void jleTexture::toActiveTexture(int texture_slot) {
     glActiveTexture(GL_TEXTURE0 + texture_slot);
     glBindTexture(GL_TEXTURE_2D, _id);
     jleStaticOpenGLState::globalActiveTexture = _id;
 }
 
-unsigned int jleTexture::GetTextureID() { return _id; }
+unsigned int jleTexture::textureID() { return _id; }
 
-int32_t jleTexture::GetWidth() { return _width; }
+int32_t jleTexture::width() { return _width; }
 
-int32_t jleTexture::GetHeight() { return _height; }
+int32_t jleTexture::height() { return _height; }
 
 unsigned int jleTexture::id() { return _id; }
 
 jleTexture::jleTexture(const jleImage& image) {
-    _width = image.GetImageWidth();
-    _height = image.GetImageHeight();
-    _nrChannels = image.GetImageNrChannels();
+    _width = image.imageWidth();
+    _height = image.imageHeight();
+    _nrChannels = image.imageNrChannels();
 
     glGenTextures(1, &_id);
 
@@ -62,13 +62,13 @@ jleTexture::jleTexture(const jleImage& image) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    if (image.GetImageData()) {
+    if (image.imageData()) {
         GLenum format = GL_RGBA;
-        if (image.GetImageNrChannels() == 1)
+        if (image.imageNrChannels() == 1)
             format = GL_RED;
-        else if (image.GetImageNrChannels() == 3)
+        else if (image.imageNrChannels() == 3)
             format = GL_RGB;
-        else if (image.GetImageNrChannels() == 4)
+        else if (image.imageNrChannels() == 4)
             format = GL_RGBA;
 
         glBindTexture(GL_TEXTURE_2D, _id);
@@ -83,12 +83,12 @@ jleTexture::jleTexture(const jleImage& image) {
         glTexImage2D(GL_TEXTURE_2D,
                      0,
                      format,
-                     image.GetImageWidth(),
-                     image.GetImageHeight(),
+                     image.imageWidth(),
+                     image.imageHeight(),
                      0,
                      format,
                      GL_UNSIGNED_BYTE,
-                     image.GetImageData());
+                     image.imageData());
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D,
@@ -102,7 +102,7 @@ jleTexture::jleTexture(const jleImage& image) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         PLOG_VERBOSE << "Generated OpenGL texture " << _id << " ("
-                     << image.GetImageNrChannels() << " channels)";
+                     << image.imageNrChannels() << " channels)";
     }
     else {
         PLOG_ERROR << "Failed to generate OpenGL texture " << _id
@@ -112,17 +112,17 @@ jleTexture::jleTexture(const jleImage& image) {
     jleStaticOpenGLState::globalActiveTexture = 0;
 }
 
-std::shared_ptr<jleTexture> jleTexture::FromPath(const jleRelativePath& path) {
-    if (!jleResourceHolder::IsResourceLoaded(path)) {
+std::shared_ptr<jleTexture> jleTexture::fromPath(const jleRelativePath& path) {
+    if (!jleResourceHolder::isResourceLoaded(path)) {
 
         auto texture = std::make_shared<jleTexture>(
-            *jleResourceHolder::LoadResourceFromFile<jleImage>(path));
+            *jleResourceHolder::loadResourceFromFile<jleImage>(path));
 
-        jleResourceHolder::StoreResource<jleTexture>(texture, path);
+        jleResourceHolder::storeResource<jleTexture>(texture, path);
 
         return texture;
     }
     else {
-        return jleResourceHolder::GetResource<jleTexture>(path);
+        return jleResourceHolder::resource<jleTexture>(path);
     }
 }

@@ -8,13 +8,13 @@
 #include "jleQuadRendering.h"
 #include "jleResourceHolder.h"
 
-void cAseprite::Start() {
-    _transform = _attachedToObject->AddDependencyComponent<cTransform>(this);
+void cAseprite::start() {
+    _transform = _attachedToObject->addDependencyComponent<cTransform>(this);
 
     _aseprites.clear();
     for (auto&& path : _asepritePaths) {
         _aseprites.push_back(
-            jleResourceHolder::LoadResourceFromFile<jleAseprite>(
+            jleResourceHolder::loadResourceFromFile<jleAseprite>(
                 jleRelativePath{path._string}));
     }
 }
@@ -51,23 +51,23 @@ void cAseprite::Update(float dt) {
 
     auto& texture = aseprite->_imageTexture;
     if (texture != nullptr) {
-        TexturedQuad quad{texture};
-        quad.x = _transform->GetWorldX() + _offsetX;
-        quad.y = _transform->GetWorldY() + _offsetY;
+        texturedQuad quad{texture};
+        quad.x = _transform->worldX() + _offsetX;
+        quad.y = _transform->worldY() + _offsetY;
         quad.height = _height;
         quad.width = _width;
         quad.textureX = frame._frame._x + _textureX;
         quad.textureY = frame._frame._y + _textureY;
-        quad.depth = _transform->GetWorldDepth();
+        quad.depth = _transform->worldDepth();
 
         if (quad.texture.get()) {
-            jleCore::core->rendering->quads().SendTexturedQuad(
+            jleCore::core->rendering->quads().sendTexturedQuad(
                 quad, RenderingMethod::Dynamic);
         }
     }
 }
 
-void cAseprite::ToJson(nlohmann::json& j_out) {
+void cAseprite::toJson(nlohmann::json& j_out) {
     j_out = nlohmann::json{{"_asepritePaths_STRVEC", _asepritePaths},
                            {"height", _height},
                            {"width", _width},
@@ -78,7 +78,7 @@ void cAseprite::ToJson(nlohmann::json& j_out) {
                            {"animating", _animating}};
 }
 
-void cAseprite::FromJson(const nlohmann::json& j_in) {
+void cAseprite::fromJson(const nlohmann::json& j_in) {
 
     const auto asepritePaths = j_in.find("_asepritePaths_STRVEC");
     if (asepritePaths != j_in.end()) {
@@ -102,7 +102,7 @@ void cAseprite::FromJson(const nlohmann::json& j_in) {
     _aseprites.clear();
     for (auto&& path : _asepritePaths) {
         _aseprites.push_back(
-            jleResourceHolder::LoadResourceFromFile<jleAseprite>(
+            jleResourceHolder::loadResourceFromFile<jleAseprite>(
                 jleRelativePath{path._string}));
     }
 }
@@ -110,7 +110,7 @@ void cAseprite::FromJson(const nlohmann::json& j_in) {
 cAseprite::cAseprite(jleObject *owner, jleScene *scene)
     : jleComponent(owner, scene) {}
 
-void cAseprite::SetCurrentAseprite(unsigned int index) {
+void cAseprite::currentAseprite(unsigned int index) {
     if (index < _aseprites.size()) {
         _currentlyActiveAseprite = index;
         return;
@@ -118,22 +118,22 @@ void cAseprite::SetCurrentAseprite(unsigned int index) {
     LOGE << "Trying to set active aseprite animation outside bounds!";
 }
 
-unsigned int cAseprite::GetCurrentAsepriteIndex() const {
+unsigned int cAseprite::currentAsepriteIndex() const {
     return _currentlyActiveAseprite;
 }
 
-int cAseprite::AddAsepritePath(const std::string& path) {
+int cAseprite::addAsepritePath(const std::string& path) {
     _asepritePaths.push_back({path});
-    _aseprites.push_back(jleResourceHolder::LoadResourceFromFile<jleAseprite>(
+    _aseprites.push_back(jleResourceHolder::loadResourceFromFile<jleAseprite>(
         jleRelativePath{path}));
     return (int)_aseprites.size() - 1;
 }
 
-jleAseprite& cAseprite::GetActiveAsepriteRef() {
+jleAseprite& cAseprite::activeAsepriteRef() {
     return *_aseprites[_currentlyActiveAseprite];
 }
 
-void cAseprite::SetCurrentAsepriteFrame(unsigned int index) {
+void cAseprite::currentAsepriteFrame(unsigned int index) {
     if (_aseprites.empty()) {
         LOGE << "No found aseprites on this object";
         return;
