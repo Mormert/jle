@@ -39,8 +39,8 @@ public:
                     const jleCamera& camera);
 
     static void renderTargetDimensions(int width,
-                                          int height,
-                                          const jleCamera& camera);
+                                       int height,
+                                       const jleCamera& camera);
 
     static inline glm::mat4 sProj;
 

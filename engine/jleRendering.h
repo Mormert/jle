@@ -17,9 +17,9 @@ public:
     void up();
 
     void viewportDimensions(int x,
-                               int y,
-                               unsigned int width,
-                               unsigned int height);
+                            int y,
+                            unsigned int width,
+                            unsigned int height);
 
     void render(jleFramebuffer& framebufferOut, jleCamera& camera);
 

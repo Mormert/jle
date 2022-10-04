@@ -43,9 +43,7 @@ jleRelativePath::jleRelativePath(const jleAbsolutePath& absolutePath) {
     _relativePath = path;
 }
 
-std::string jleRelativePath::relativePathStr() const {
-    return _relativePath;
-}
+std::string jleRelativePath::relativePathStr() const { return _relativePath; }
 
 std::string jleRelativePath::absolutePathStr() const {
     return jleAbsolutePath{jleRelativePath(_relativePath)}.absolutePathStr();
@@ -118,6 +116,4 @@ std::string jleAbsolutePath::relativePathStr() const {
     return jleRelativePath{jleAbsolutePath(_absolutePath)}.relativePathStr();
 }
 
-std::string jleAbsolutePath::absolutePathStr() const {
-    return _absolutePath;
-}
+std::string jleAbsolutePath::absolutePathStr() const { return _absolutePath; }

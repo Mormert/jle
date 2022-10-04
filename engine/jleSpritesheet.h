@@ -24,11 +24,11 @@ struct jleSpritesheet : jleFileLoadInterface {
 
     jleSpritesheet() = default;
 
-    explicit jleSpritesheet(const std::string &path);
+    explicit jleSpritesheet(const std::string& path);
 
     void loadImage();
 
-    bool loadFromFile(const std::string &path) override;
+    bool loadFromFile(const std::string& path) override;
 
     std::unordered_map<std::string, jleSpritesheetEntity> _spritesheetEntities;
 
@@ -36,12 +36,12 @@ struct jleSpritesheet : jleFileLoadInterface {
     std::string _pathJson;
 };
 
-void from_json(const nlohmann::json &j, jleSpritesheet &s);
+void from_json(const nlohmann::json& j, jleSpritesheet& s);
 
-void from_json(const nlohmann::json &j, jleSpritesheetEntity &s);
+void from_json(const nlohmann::json& j, jleSpritesheetEntity& s);
 
-void from_json(const nlohmann::json &j,
-               jleSpritesheetEntity::jleSpritesheetEntityFrame &s);
+void from_json(const nlohmann::json& j,
+               jleSpritesheetEntity::jleSpritesheetEntityFrame& s);
 
-void from_json(const nlohmann::json &j,
-               jleSpritesheetEntity::jleSpritesheetEntitySource &s);
+void from_json(const nlohmann::json& j,
+               jleSpritesheetEntity::jleSpritesheetEntitySource& s);

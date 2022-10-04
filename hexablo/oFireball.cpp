@@ -2,8 +2,8 @@
 
 #include "oFireball.h"
 #include "hexHexagonFunctions.h"
-#include "oWorld.h"
 #include "jleNetworking.h"
+#include "oWorld.h"
 #include <glm/glm.hpp>
 
 void oFireball::upDefaultObject() {
@@ -11,23 +11,22 @@ void oFireball::upDefaultObject() {
     _aseprite = addCustomComponent<cAseprite>();
 }
 
-void oFireball::start() {
-
-}
+void oFireball::start() {}
 
 void oFireball::update(float dt) {
 
-    const auto lerpVec2 = [](const glm::vec2 &a, const glm::vec2 &b, float alpha) {
-        return a * alpha + b * (1.f - alpha);
-    };
+    const auto lerpVec2 =
+        [](const glm::vec2& a, const glm::vec2& b, float alpha) {
+            return a * alpha + b * (1.f - alpha);
+        };
 
     if (_interpingPosition) {
 
-        auto pos = lerpVec2(
-                {_hexagonPixelX, _hexagonPixelY},
-                {_interpingX, _interpingY}, _interpingAlpha);
+        auto pos = lerpVec2({_hexagonPixelX, _hexagonPixelY},
+                            {_interpingX, _interpingY},
+                            _interpingAlpha);
 
-        _transform->worldPositionXY((int) pos.x, (int) pos.y);
+        _transform->worldPositionXY((int)pos.x, (int)pos.y);
 
         _interpingAlpha += _interpBetweenHexasSpeed * dt;
         if (_interpingAlpha >= 1.f) {
@@ -36,20 +35,19 @@ void oFireball::update(float dt) {
             destroyObject();
         }
     }
-
 }
 
-void oFireball::toJson(nlohmann::json &j_out) {
+void oFireball::toJson(nlohmann::json& j_out) {
     j_out["_movingTowardsR"] = _movingTowardsR;
     j_out["_movingTowardsQ"] = _movingTowardsQ;
 }
 
-void oFireball::fromJson(const nlohmann::json &j_in) {
+void oFireball::fromJson(const nlohmann::json& j_in) {
     JLE_FROM_JSON_IF_EXISTS(j_in, _movingTowardsR, "_movingTowardsR")
     JLE_FROM_JSON_IF_EXISTS(j_in, _movingTowardsQ, "_movingTowardsQ")
 }
 
-void oFireball::fromNet(const nlohmann::json &j_in) {
+void oFireball::fromNet(const nlohmann::json& j_in) {
 
     JLE_FROM_JSON_IF_EXISTS(j_in, _movingTowardsR, "r")
     JLE_FROM_JSON_IF_EXISTS(j_in, _movingTowardsQ, "q")
@@ -58,10 +56,11 @@ void oFireball::fromNet(const nlohmann::json &j_in) {
     JLE_FROM_JSON_WITH_DEFAULT(j_in, x, "x", 0);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, y, "y", 0);
 
-    _transform->worldPositionXY(x,y);
+    _transform->worldPositionXY(x, y);
 
     const auto *world = oWorld::sWorld;
-    auto p = hexHexagonFunctions::hexToPixel(_movingTowardsQ, _movingTowardsR, world->_hexSizeX, world->_hexSizeY);
+    auto p = hexHexagonFunctions::hexToPixel(
+        _movingTowardsQ, _movingTowardsR, world->_hexSizeX, world->_hexSizeY);
 
     _hexagonPixelX = p.x;
     _hexagonPixelY = p.y;
@@ -71,10 +70,9 @@ void oFireball::fromNet(const nlohmann::json &j_in) {
 
     _interpingPosition = true;
     _interpingAlpha = 0.f;
-
 }
 
-void oFireball::toNet(nlohmann::json &j_out) {
+void oFireball::toNet(nlohmann::json& j_out) {
     j_out["r"] = _movingTowardsR;
     j_out["q"] = _movingTowardsQ;
     j_out["x"] = _transform->worldX();
@@ -87,7 +85,8 @@ void oFireball::target(int q, int r) {
     _movingTowardsQ = q;
 
     const auto *world = oWorld::sWorld;
-    auto p = hexHexagonFunctions::hexToPixel(_movingTowardsQ, _movingTowardsR, world->_hexSizeX, world->_hexSizeY);
+    auto p = hexHexagonFunctions::hexToPixel(
+        _movingTowardsQ, _movingTowardsR, world->_hexSizeX, world->_hexSizeY);
 
     _hexagonPixelX = p.x;
     _hexagonPixelY = p.y;
@@ -103,6 +102,4 @@ void oFireball::target(int q, int r) {
     jleNetworking::tryEmitJsonData("oFireball", j);
 }
 
-oFireball::oFireball() {
-    _id = std::rand();
-}
+oFireball::oFireball() { _id = std::rand(); }

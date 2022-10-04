@@ -19,9 +19,9 @@
 #include "plog/Log.h"
 
 void jleRendering::viewportDimensions(int x,
-                                         int y,
-                                         unsigned int width,
-                                         unsigned int height) {
+                                      int y,
+                                      unsigned int width,
+                                      unsigned int height) {
     glViewport(x, y, static_cast<int>(width), static_cast<int>(height));
 }
 

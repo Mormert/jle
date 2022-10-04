@@ -145,8 +145,8 @@ void jleFont::renderText(const std::string& text,
 }
 
 void jleFont::renderTargetDimensions(int width,
-                                        int height,
-                                        const jleCamera& camera) {
+                                     int height,
+                                     const jleCamera& camera) {
 
     sProj = glm::ortho(static_cast<float>(camera.intX()),
                        static_cast<float>(camera.intX() + width),

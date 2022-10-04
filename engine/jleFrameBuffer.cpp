@@ -62,8 +62,11 @@ void jleFramebuffer::createFramebuffer(unsigned int width,
     glBindTexture(GL_TEXTURE_2D, 0);
 
     // attach it to currently bound framebuffer object
-    glFramebufferTexture2D(
-        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texColorBuffer, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER,
+                           GL_COLOR_ATTACHMENT0,
+                           GL_TEXTURE_2D,
+                           _texColorBuffer,
+                           0);
 
     glGenRenderbuffers(1, &_rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, _rbo);

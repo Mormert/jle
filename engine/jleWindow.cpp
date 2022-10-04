@@ -54,8 +54,7 @@ void jleWindow::framebuffer_size_callback(GLFWwindow *window,
         static_cast<unsigned int>(height));
 
     activeWindow->windowSettings.width = static_cast<unsigned int>(width);
-    activeWindow->windowSettings.height =
-        static_cast<unsigned int>(height);
+    activeWindow->windowSettings.height = static_cast<unsigned int>(height);
 
     // Call all subscribed callbacks
     activeWindow->executeResizeCallbacks(width, height);
@@ -106,9 +105,7 @@ void jleWindow::displayCursor(bool enable) {
 
 bool jleWindow::isCursorDisplayed() { return cursorVisible; }
 
-unsigned int jleWindow::GetWindowHeight() {
-    return windowSettings.height;
-}
+unsigned int jleWindow::GetWindowHeight() { return windowSettings.height; }
 
 unsigned int jleWindow::GetWindowWidth() { return windowSettings.width; }
 
@@ -170,13 +167,12 @@ void jleWindow::initWindow(std::shared_ptr<jleRendering> internalRenderingAPI) {
 
     if (!windowSettings.iconPath.empty()) {
         GLFWimage images[1];
-        images[0].pixels = stbi_load(jleAbsolutePath(windowSettings.iconPath)
-                                         .absolutePathStr()
-                                         .c_str(),
-                                     &images[0].width,
-                                     &images[0].height,
-                                     nullptr,
-                                     4);
+        images[0].pixels = stbi_load(
+            jleAbsolutePath(windowSettings.iconPath).absolutePathStr().c_str(),
+            &images[0].width,
+            &images[0].height,
+            nullptr,
+            4);
 #ifndef __linux__
         glfwSetWindowIcon(nativeWindow, 1, images);
 #endif

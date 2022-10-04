@@ -283,10 +283,9 @@ void jleQuadRendering::processTexturedQuads(
 
         if (!key.first->isActive()) {
             key.first->toActiveTexture();
-            quadShaderInstanced.SetVec2(
-                "textureDims",
-                glm::vec2{float(key.first->width()),
-                          float(key.first->height())});
+            quadShaderInstanced.SetVec2("textureDims",
+                                        glm::vec2{float(key.first->width()),
+                                                  float(key.first->height())});
             quadShaderInstanced.SetInt("texture0", 0);
         }
 

@@ -58,8 +58,8 @@ void hexNetScene::processNetMessage(const std::string& event,
         int q = message["q"];
         int r = message["r"];
         int d = message["d"];
-        std::static_pointer_cast<oCharacter>(player)
-            ->hexagonPlacementTeleport(q, r);
+        std::static_pointer_cast<oCharacter>(player)->hexagonPlacementTeleport(
+            q, r);
         std::static_pointer_cast<oCharacter>(player)->attack(
             static_cast<oCharacter::oCharacterDirection>(d));
     }

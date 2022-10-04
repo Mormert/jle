@@ -60,7 +60,7 @@ void cUITransformUpdater::update(float dt) {
     }
     else if (_bottom) {
         _transform->localPositionY(_gameRef._mainCamera._cameraHeight + _y +
-                                      offsetY);
+                                   offsetY);
     }
 
     if (_left) {
@@ -68,6 +68,6 @@ void cUITransformUpdater::update(float dt) {
     }
     else if (_right) {
         _transform->localPositionX(_gameRef._mainCamera._cameraWidth + _x +
-                                      offsetX);
+                                   offsetX);
     }
 }

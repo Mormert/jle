@@ -44,8 +44,7 @@ void jleGameEditorWindow::update(jleGameEngine& ge) {
     const auto& internalInputMouse = jleCore::core->input->mouse;
     const auto& engineFramebufferMain =
         jleGameEngine::gEngine->framebuffer_main;
-    internalInputMouse->screenBeginCoords(_windowPositionX,
-                                             _windowPositionY);
+    internalInputMouse->screenBeginCoords(_windowPositionX, _windowPositionY);
     internalInputMouse->screenSize(width(), height());
 
     if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset ==
@@ -70,8 +69,7 @@ void jleGameEditorWindow::update(jleGameEngine& ge) {
     }
 
     // Get the texture from the framebuffer
-    glBindTexture(GL_TEXTURE_2D,
-                  (unsigned int)ge.framebuffer_main->texture());
+    glBindTexture(GL_TEXTURE_2D, (unsigned int)ge.framebuffer_main->texture());
     jleStaticOpenGLState::globalActiveTexture =
         (unsigned int)ge.framebuffer_main->texture();
     ImGui::Image((void *)(intptr_t)ge.framebuffer_main->texture(),
@@ -87,13 +85,9 @@ void jleGameEditorWindow::update(jleGameEngine& ge) {
     ImGui::End();
 }
 
-int jleGameEditorWindow::width() const {
-    return int(_lastGameWindowWidth);
-}
+int jleGameEditorWindow::width() const { return int(_lastGameWindowWidth); }
 
-int jleGameEditorWindow::height() const {
-    return int(_lastGameWindowHeight);
-}
+int jleGameEditorWindow::height() const { return int(_lastGameWindowHeight); }
 
 int jleGameEditorWindow::x() const { return _windowPositionX; }
 

@@ -33,7 +33,7 @@ void oStaticSprite::upDefaultObject() {
     c->_width = 12;
 
     t->localPosition(25 + (std::rand() % (325 - 25 + 1)),
-                        25 + (std::rand() % (325 - 25 + 1)));
+                     25 + (std::rand() % (325 - 25 + 1)));
 }
 
 void oStaticSprite::start() {}
@@ -50,6 +50,6 @@ void oStaticSprite::update(float dt) {
         c->_width = 12;
 
         t->localPosition(25 + (std::rand() % (325 - 25 + 1)),
-                            25 + (std::rand() % (325 - 25 + 1)));
+                         25 + (std::rand() % (325 - 25 + 1)));
     }
 }

@@ -16,18 +16,18 @@ jleCamera::jleCamera(jleCameraProjection projection) {
 }
 
 void jleCamera::perspectiveProjection(float fov,
-                                         uint32_t screenWidth,
-                                         uint32_t screenHeight,
-                                         float farPlane,
-                                         float nearPlane) {
+                                      uint32_t screenWidth,
+                                      uint32_t screenHeight,
+                                      float farPlane,
+                                      float nearPlane) {
     _projectionMatrix = glm::perspective(
         fov, (float)screenWidth / (float)screenHeight, nearPlane, farPlane);
 }
 
 void jleCamera::orthographicProjection(uint32_t screenWidth,
-                                          uint32_t screenHeight,
-                                          float farPlane,
-                                          float nearPlane) {
+                                       uint32_t screenHeight,
+                                       float farPlane,
+                                       float nearPlane) {
     _projectionMatrix = glm::ortho(static_cast<float>(0.f),
                                    static_cast<float>(screenWidth),
                                    static_cast<float>(screenHeight),

@@ -31,15 +31,15 @@ struct jleCamera {
     float _cameraRotationDegrees{};
 
     void perspectiveProjection(float fov,
-                                  uint32_t screenWidth,
-                                  uint32_t screenHeight,
-                                  float farPlane,
-                                  float nearPlane);
+                               uint32_t screenWidth,
+                               uint32_t screenHeight,
+                               float farPlane,
+                               float nearPlane);
 
     void orthographicProjection(uint32_t screenWidth,
-                                   uint32_t screenHeight,
-                                   float farPlane,
-                                   float nearPlane);
+                                uint32_t screenHeight,
+                                float farPlane,
+                                float nearPlane);
 
     [[nodiscard]] glm::mat4 projectionViewMatrix() const;
 

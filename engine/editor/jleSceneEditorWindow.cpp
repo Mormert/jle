@@ -231,8 +231,8 @@ void jleSceneEditorWindow::update(jleGameEngine& ge) {
         if (ImGui::IsMouseDragging(0)) {
             if (draggingTransformMarker == 1) {
                 transform->worldPosition(mouseCoordinateX,
-                                            mouseCoordinateY,
-                                            transform->worldDepth());
+                                         mouseCoordinateY,
+                                         transform->worldDepth());
             }
             else if (draggingTransformMarker == 2) {
                 transform->worldPositionX(mouseCoordinateX);
@@ -273,8 +273,7 @@ void jleSceneEditorWindow::update(jleGameEngine& ge) {
                           pow(transform->worldY() - mouseCoordinateY, 2)) <
                          (pow(closestTransform->worldX() - mouseCoordinateX,
                               2)) +
-                             pow(closestTransform->worldY() -
-                                     mouseCoordinateY,
+                             pow(closestTransform->worldY() - mouseCoordinateY,
                                  2)) {
                     closestTransform = transform;
                     selectedObject = object;

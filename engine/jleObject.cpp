@@ -170,9 +170,7 @@ void jleObject::updateChildren(float dt) {
 
 jleObject *jleObject::parent() { return _parentObject; }
 
-std::weak_ptr<jleObject> jleObject::weakPtrToThis() {
-    return weak_from_this();
-}
+std::weak_ptr<jleObject> jleObject::weakPtrToThis() { return weak_from_this(); }
 
 void to_json(nlohmann::json& j, const std::shared_ptr<jleObject>& o) {
     // If this object is based on a template object, then only save that
@@ -279,8 +277,7 @@ nlohmann::json jleObject::objectTemplateJson(const jleRelativePath& path) {
         return templateJson;
     }
     else {
-        LOGE << "Failed loading JSON data with path "
-             << path.absolutePathStr();
+        LOGE << "Failed loading JSON data with path " << path.absolutePathStr();
     }
 
     return {};
@@ -293,8 +290,8 @@ void from_json(const nlohmann::json& json, std::shared_ptr<jleObject>& object) {
     if (otemp_it != json.end()) {
         const std::string objectTemplatePath = json.at("_otemp");
         const std::string objectInstanceName = json.at("_instance_name");
-        const auto templateJson = jleObject::objectTemplateJson(
-            jleRelativePath{objectTemplatePath});
+        const auto templateJson =
+            jleObject::objectTemplateJson(jleRelativePath{objectTemplatePath});
         object->_templatePath = objectTemplatePath;
 
         jleObject::processJsonData(templateJson, object);
