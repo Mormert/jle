@@ -5,7 +5,7 @@
 #include "jleCore.h"
 #include "jleScene.h"
 
-void oStaticSprite::upDefaultObject() {
+void oStaticSprite::setupDefaultObject() {
     transform = addComponent<cTransform>();
     sprite = addComponent<cSprite>();
 

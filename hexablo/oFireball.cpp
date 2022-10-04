@@ -6,7 +6,7 @@
 #include "oWorld.h"
 #include <glm/glm.hpp>
 
-void oFireball::upDefaultObject() {
+void oFireball::setupDefaultObject() {
     _transform = addCustomComponent<cTransform>();
     _aseprite = addCustomComponent<cAseprite>();
 }

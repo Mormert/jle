@@ -161,7 +161,7 @@ jleQuadRendering::jleQuadRendering()
 
     glBindVertexArray(0);
 
-    upShaders();
+    setupShaders();
 }
 
 jleQuadRendering::~jleQuadRendering() {
@@ -369,7 +369,7 @@ void jleQuadRendering::processTexturedHeightQuads(
     }
 }
 
-void jleQuadRendering::upShaders() {
+void jleQuadRendering::setupShaders() {
 
     // Set up the angles on the "camera", as it was rendered in 3D software
     static const float xyAngle = 0.f;

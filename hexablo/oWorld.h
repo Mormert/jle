@@ -18,7 +18,7 @@ public:
 
     oWorld();
 
-    void upDefaultObject() override;
+    void setupDefaultObject() override;
 
     void start() override;
 

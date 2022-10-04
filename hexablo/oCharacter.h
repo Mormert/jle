@@ -36,7 +36,7 @@ public:
 
     void hexagonPlacementInterp(int q, int r);
 
-    void upDefaultObject() override;
+    void setupDefaultObject() override;
 
     void start() override;
 

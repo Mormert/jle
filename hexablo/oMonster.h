@@ -7,7 +7,7 @@
 class oMonster : public oCharacter {
     JLE_REGISTER_OBJECT_TYPE(oMonster)
 public:
-    void upDefaultObject() override;
+    void setupDefaultObject() override;
 
     void start() override;
 

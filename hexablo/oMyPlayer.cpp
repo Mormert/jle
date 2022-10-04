@@ -14,7 +14,7 @@
 // TODO: Remove this include:
 #include "jleQuadRendering.h"
 
-void oMyPlayer::upDefaultObject() { oCharacter::upDefaultObject(); }
+void oMyPlayer::setupDefaultObject() { oCharacter::setupDefaultObject(); }
 
 void oMyPlayer::start() {
     oCharacter::start();

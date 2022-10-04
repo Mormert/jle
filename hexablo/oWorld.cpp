@@ -9,7 +9,7 @@
 
 #include "3rdparty/FastNoiseLite/FastNoiseLite.h"
 
-void oWorld::upDefaultObject() {}
+void oWorld::setupDefaultObject() {}
 
 void oWorld::start() {
     if (_aseprite._frames.empty()) {

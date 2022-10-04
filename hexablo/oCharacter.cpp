@@ -6,7 +6,7 @@
 #include "jleCore.h"
 #include "oWorld.h"
 
-void oCharacter::upDefaultObject() {
+void oCharacter::setupDefaultObject() {
     _transform = addCustomComponent<cTransform>();
     _aseprite = addCustomComponent<cAseprite>();
 

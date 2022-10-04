@@ -130,7 +130,7 @@ protected:
 
     jleScene *_containedInScene = nullptr;
 
-    virtual void upDefaultObject() {}
+    virtual void setupDefaultObject() {}
 
     friend void to_json(nlohmann::json& j, const std::shared_ptr<jleObject>& o);
 
