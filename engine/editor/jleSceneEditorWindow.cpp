@@ -137,9 +137,11 @@ void jleSceneEditorWindow::update(jleGameEngine &ge) {
                  ImVec2(1, 0));
 
     if (ImGui::IsWindowHovered()) {
+        auto t = ge.status->deltaFrameTime();
         auto dragDelta = ImGui::GetMouseDragDelta(1);
-        jleEditor::_editorCamera._x += dragDelta.x * 0.001f * zoomValue;
-        jleEditor::_editorCamera._y += dragDelta.y * 0.001f * zoomValue;
+
+        jleEditor::_editorCamera._x += dragDelta.x * 10.f * zoomValue * t;
+        jleEditor::_editorCamera._y += dragDelta.y * 10.f * zoomValue * t;
 
         jleEditor::_editorCamera._xNoOffset =
             jleEditor::_editorCamera._x + _framebuffer->width() * .5;

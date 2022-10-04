@@ -33,7 +33,7 @@ private:
 
     void imguiTheme();
 
-    void AddImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window);
+    void addImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window);
 
     void mainEditorWindowResized(int w, int h);
 

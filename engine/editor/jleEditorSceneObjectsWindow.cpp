@@ -366,7 +366,7 @@ void jleEditorSceneObjectsWindow::objectTreeRecursive(
             ImGui::EndMenu();
         }
 
-        if (ImGui::Button("destroy Object",
+        if (ImGui::Button("Destroy Object",
                           ImVec2(138 * globalImguiScale, 0))) {
             object->destroyObject();
         }
