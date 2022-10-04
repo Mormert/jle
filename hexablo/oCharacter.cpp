@@ -1,21 +1,22 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "oCharacter.h"
-#include "hexHexagonFunctions.h"
 #include "hexHelperFunctions.h"
-#include "oWorld.h"
+#include "hexHexagonFunctions.h"
 #include "jleCore.h"
+#include "oWorld.h"
 
 void oCharacter::upDefaultObject() {
     _transform = addCustomComponent<cTransform>();
     _aseprite = addCustomComponent<cAseprite>();
 
     _healthBarObjPtr = std::static_pointer_cast<oCharacterHealthBar>(
-            spawnChildObjectFromTemplate(jleRelativePath{"GR:otemps/oCharacterHealthBar.tmpl"}));
+        spawnChildObjectFromTemplate(
+            jleRelativePath{"GR:otemps/oCharacterHealthBar.tmpl"}));
 }
 
 void oCharacter::start() {
-    const auto &&placement = _hexagonItem.hexagonItemPlacement();
+    const auto&& placement = _hexagonItem.hexagonItemPlacement();
     hexagonPlacementTeleport(placement.x, placement.y);
 
     _currentHP = _maxHP;
@@ -28,23 +29,25 @@ void oCharacter::start() {
 void oCharacter::update(float dt) {
 
     if (jleCore::core->input->keyboard->keyPressed('T')) {
-        hexagonPlacementInterp(hexHelperFunctions::randInt(0, 10), hexHelperFunctions::randInt(0, 10));
+        hexagonPlacementInterp(hexHelperFunctions::randInt(0, 10),
+                               hexHelperFunctions::randInt(0, 10));
     }
-    const auto lerpVec2 = [](const glm::vec2 &a, const glm::vec2 &b, float alpha) {
-        return a * alpha + b * (1.f - alpha);
-    };
+    const auto lerpVec2 =
+        [](const glm::vec2& a, const glm::vec2& b, float alpha) {
+            return a * alpha + b * (1.f - alpha);
+        };
 
     if (_interpingPosition) {
 
         _aseprite->currentAseprite(_walkAsepriteIndex);
 
-        auto pos = lerpVec2(
-                {_hexagonPixelX, _hexagonPixelY},
-                {_interpingX, _interpingY}, _interpingAlpha);
+        auto pos = lerpVec2({_hexagonPixelX, _hexagonPixelY},
+                            {_interpingX, _interpingY},
+                            _interpingAlpha);
 
         _interpingX = pos.x;
         _interpingY = pos.y;
-        _transform->worldPositionXY((int) _interpingX, (int) _interpingY);
+        _transform->worldPositionXY((int)_interpingX, (int)_interpingY);
 
         _interpingAlpha += _interpBetweenHexasSpeed * dt;
         if (_interpingAlpha >= 1.f) {
@@ -53,58 +56,55 @@ void oCharacter::update(float dt) {
             _aseprite->currentAseprite(_idleAsepriteIndex);
         }
     }
-
 }
 
 void oCharacter::characterDirection(oCharacterDirection direction) {
     _characterDirection = direction;
 
     switch (direction) {
-        case oCharacterDirection::west:
-            _aseprite->_textureX = _westTextureX;
-            _aseprite->_textureY = _westTextureY;
-            break;
-        case oCharacterDirection::northwest:
-            _aseprite->_textureX = _northwestTextureX;
-            _aseprite->_textureY = _northwestTextureY;
-            break;
-        case oCharacterDirection::north:
-            _aseprite->_textureX = _northTextureX;
-            _aseprite->_textureY = _northTextureY;
-            break;
-        case oCharacterDirection::northeast:
-            _aseprite->_textureX = _northeastTextureX;
-            _aseprite->_textureY = _northeastTextureY;
-            break;
-        case oCharacterDirection::east:
-            _aseprite->_textureX = _eastTextureX;
-            _aseprite->_textureY = _eastTextureY;
-            break;
-        case oCharacterDirection::southeast:
-            _aseprite->_textureX = _southeastTextureX;
-            _aseprite->_textureY = _southeastTextureY;
-            break;
-        case oCharacterDirection::south:
-            _aseprite->_textureX = _southTextureX;
-            _aseprite->_textureY = _southTextureY;
-            break;
-        case oCharacterDirection::southwest:
-            _aseprite->_textureX = _southwestTextureX;
-            _aseprite->_textureY = _southwestTextureY;
-            break;
+    case oCharacterDirection::west:
+        _aseprite->_textureX = _westTextureX;
+        _aseprite->_textureY = _westTextureY;
+        break;
+    case oCharacterDirection::northwest:
+        _aseprite->_textureX = _northwestTextureX;
+        _aseprite->_textureY = _northwestTextureY;
+        break;
+    case oCharacterDirection::north:
+        _aseprite->_textureX = _northTextureX;
+        _aseprite->_textureY = _northTextureY;
+        break;
+    case oCharacterDirection::northeast:
+        _aseprite->_textureX = _northeastTextureX;
+        _aseprite->_textureY = _northeastTextureY;
+        break;
+    case oCharacterDirection::east:
+        _aseprite->_textureX = _eastTextureX;
+        _aseprite->_textureY = _eastTextureY;
+        break;
+    case oCharacterDirection::southeast:
+        _aseprite->_textureX = _southeastTextureX;
+        _aseprite->_textureY = _southeastTextureY;
+        break;
+    case oCharacterDirection::south:
+        _aseprite->_textureX = _southTextureX;
+        _aseprite->_textureY = _southTextureY;
+        break;
+    case oCharacterDirection::southwest:
+        _aseprite->_textureX = _southwestTextureX;
+        _aseprite->_textureY = _southwestTextureY;
+        break;
     }
-
 }
-
 
 void oCharacter::hexagonPlacementTeleport(int q, int r) {
     if (!_hexagonItem.tryUpdateHexagonItemPlacement(q, r)) {
         return;
     }
 
-
     const auto *world = oWorld::sWorld;
-    auto p = hexHexagonFunctions::hexToPixel(q, r, world->_hexSizeX, world->_hexSizeY);
+    auto p = hexHexagonFunctions::hexToPixel(
+        q, r, world->_hexSizeX, world->_hexSizeY);
 
     _hexagonPixelX = p.x;
     _hexagonPixelY = p.y;
@@ -119,7 +119,8 @@ void oCharacter::hexagonPlacementInterp(int q, int r) {
     }
 
     const auto *world = oWorld::sWorld;
-    auto p = hexHexagonFunctions::hexToPixel(q, r, world->_hexSizeX, world->_hexSizeY);
+    auto p = hexHexagonFunctions::hexToPixel(
+        q, r, world->_hexSizeX, world->_hexSizeY);
 
     _hexagonPixelX = p.x;
     _hexagonPixelY = p.y;
@@ -131,8 +132,7 @@ void oCharacter::hexagonPlacementInterp(int q, int r) {
     _interpingAlpha = 0.f;
 }
 
-
-void oCharacter::toJson(nlohmann::json &j_out) {
+void oCharacter::toJson(nlohmann::json& j_out) {
     j_out["_hexagonItem"] = _hexagonItem;
 
     j_out["_interpBetweenHexasSpeed"] = _interpBetweenHexasSpeed;
@@ -162,34 +162,47 @@ void oCharacter::toJson(nlohmann::json &j_out) {
     j_out["_southwestTextureY"] = _southwestTextureY;
 }
 
-void oCharacter::fromJson(const nlohmann::json &j_in) {
+void oCharacter::fromJson(const nlohmann::json& j_in) {
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _hexagonItem, "_hexagonItem", {});
 
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _interpBetweenHexasSpeed, "_interpBetweenHexasSpeed", 1.f);
+    JLE_FROM_JSON_WITH_DEFAULT(
+        j_in, _interpBetweenHexasSpeed, "_interpBetweenHexasSpeed", 1.f);
 
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _attackCooldownAfterAnimationMs, "_attackCooldownAfterAnimationMs", 0.f);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in,
+                               _attackCooldownAfterAnimationMs,
+                               "_attackCooldownAfterAnimationMs",
+                               0.f);
 
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _healthBarObjectTemplatePath, "_healthBarObjectTemplatePath", "");
+    JLE_FROM_JSON_WITH_DEFAULT(
+        j_in, _healthBarObjectTemplatePath, "_healthBarObjectTemplatePath", "");
 
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _maxHP, "_maxHP", 50);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _showHpBar, "_showHpBar", true);
 
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _westTextureX, "_westTextureX", 0);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _westTextureY, "_westTextureY", 0);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _northwestTextureX, "_northwestTextureX", 32);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _northwestTextureY, "_northwestTextureY", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(
+        j_in, _northwestTextureX, "_northwestTextureX", 32);
+    JLE_FROM_JSON_WITH_DEFAULT(
+        j_in, _northwestTextureY, "_northwestTextureY", 0);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _northTextureX, "_northTextureX", 64);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _northTextureY, "_northTextureY", 0);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _northeastTextureX, "_northeastTextureX", 96);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _northeastTextureY, "_northeastTextureY", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(
+        j_in, _northeastTextureX, "_northeastTextureX", 96);
+    JLE_FROM_JSON_WITH_DEFAULT(
+        j_in, _northeastTextureY, "_northeastTextureY", 0);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _eastTextureX, "_eastTextureX", 128);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _eastTextureY, "_eastTextureY", 0);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _southeastTextureX, "_southeastTextureX", 160);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _southeastTextureY, "_southeastTextureY", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(
+        j_in, _southeastTextureX, "_southeastTextureX", 160);
+    JLE_FROM_JSON_WITH_DEFAULT(
+        j_in, _southeastTextureY, "_southeastTextureY", 0);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _southTextureX, "_southTextureX", 192);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _southTextureY, "_southTextureY", 0);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _southwestTextureX, "_southwestTextureX", 224);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _southwestTextureY, "_southwestTextureY", 0);
+    JLE_FROM_JSON_WITH_DEFAULT(
+        j_in, _southwestTextureX, "_southwestTextureX", 224);
+    JLE_FROM_JSON_WITH_DEFAULT(
+        j_in, _southwestTextureY, "_southwestTextureY", 0);
 }
 
 void oCharacter::attack(oCharacter::oCharacterDirection dir) {
@@ -203,7 +216,8 @@ void oCharacter::attack(oCharacter::oCharacterDirection dir) {
     _aseprite->currentAseprite(_attackAsepriteIndex);
     _aseprite->currentAsepriteFrame(0);
 
-    const double animationTimeMs = _aseprite->activeAsepriteRef().totalAnimationTimeMs();
+    const double animationTimeMs =
+        _aseprite->activeAsepriteRef().totalAnimationTimeMs();
 
     const auto futureFunc = [](std::weak_ptr<void> data) {
         auto safeThis = std::static_pointer_cast<oCharacter>(data.lock());
@@ -212,19 +226,19 @@ void oCharacter::attack(oCharacter::oCharacterDirection dir) {
     };
 
     // Go back to the default animation
-    jleCore::core->timerManager().
-            executeFuncInSecondsWeakData(animationTimeMs * 0.001, futureFunc, weakPtrToThis());
+    jleCore::core->timerManager().executeFuncInSecondsWeakData(
+        animationTimeMs * 0.001, futureFunc, weakPtrToThis());
 
     // Can not attack again for the animation time + some additional time
-    jleCore::core->timerManager().
-            executeFuncInSecondsWeakData(
-            (animationTimeMs + _attackCooldownAfterAnimationMs) * 0.001, [](std::weak_ptr<void> data) {
-                auto safeThis = std::static_pointer_cast<oCharacter>(data.lock());
-                safeThis->_canAttack = true;
-            }, weakPtrToThis());
+    jleCore::core->timerManager().executeFuncInSecondsWeakData(
+        (animationTimeMs + _attackCooldownAfterAnimationMs) * 0.001,
+        [](std::weak_ptr<void> data) {
+            auto safeThis = std::static_pointer_cast<oCharacter>(data.lock());
+            safeThis->_canAttack = true;
+        },
+        weakPtrToThis());
 
     _canAttack = false;
-
 }
 
 void oCharacter::hp(int hp) {
@@ -233,7 +247,7 @@ void oCharacter::hp(int hp) {
     }
 
     if (_healthBarObjPtr) {
-        _healthBarObjPtr->hP(_maxHP, hp);
+        _healthBarObjPtr->hp(_maxHP, hp);
     }
 }
 
@@ -241,12 +255,14 @@ void oCharacter::lookAtPosition(int x, int y) {
     constexpr int smallXAdjustment = -2;
 
     glm::vec2 target = {x, y};
-    glm::vec2 origin = {_transform->worldX() + smallXAdjustment, _transform->worldY()};
+    glm::vec2 origin = {_transform->worldX() + smallXAdjustment,
+                        _transform->worldY()};
 
     glm::vec2 vector2 = target - origin;
     glm::vec2 vector1{0, 1};
 
-    const double angleRad = atan2(vector2.y, vector2.x) - atan2(vector1.y, vector1.x);
+    const double angleRad =
+        atan2(vector2.y, vector2.x) - atan2(vector1.y, vector1.x);
     const double angleDeg = glm::degrees(angleRad);
 
     if (angleDeg > -240.0 && angleDeg < -180) {
