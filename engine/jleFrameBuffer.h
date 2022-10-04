@@ -27,8 +27,8 @@ public:
     unsigned int GetTexture();
 
 private:
-    unsigned int width{}, height{};
-    unsigned int framebuffer{};
-    unsigned int texColorBuffer{};
-    unsigned int rbo{};
+    unsigned int _width{}, _height{};
+    unsigned int _framebuffer{};
+    unsigned int _texColorBuffer{};
+    unsigned int _rbo{};
 };
