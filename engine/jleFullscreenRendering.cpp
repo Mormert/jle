@@ -68,7 +68,7 @@ void jleFullscreenRendering::renderFramebufferFullscreen(
     // Set viewport to cover the entire screen
     glViewport(0, 0, screenWidth, screenHeight);
 
-    quadScreenShader.Use();
+    quadScreenShader.use();
     glBindVertexArray(quadVAO);
 
     // Disable depth testing for the fullscreen quad

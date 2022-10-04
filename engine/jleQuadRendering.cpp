@@ -259,7 +259,7 @@ void jleQuadRendering::processTexturedQuads(
         vec.push_back(qd);
     }
 
-    quadShaderInstanced.Use();
+    quadShaderInstanced.use();
     quadShaderInstanced.SetMat4("camera", view);
 
     for (auto&& key : quadDataMap) {
@@ -279,7 +279,7 @@ void jleQuadRendering::processTexturedQuads(
                               (void *)(3 * sizeof(float)));
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        quadShaderInstanced.Use();
+        quadShaderInstanced.use();
 
         if (!key.first->isActive()) {
             key.first->toActiveTexture();
@@ -325,7 +325,7 @@ void jleQuadRendering::processTexturedHeightQuads(
         vec.push_back(qd);
     }
 
-    quadHeightmapShaderInstanced.Use();
+    quadHeightmapShaderInstanced.use();
     quadHeightmapShaderInstanced.SetMat4("camera", view);
     quadHeightmapShaderInstanced.SetVec3("viewPos", viewPos);
     quadHeightmapShaderInstanced.SetVec3("light.position", lightPos);
@@ -392,7 +392,7 @@ void jleQuadRendering::upShaders() {
     // value, and it needs modifying.
     static const float magicHeightFactor = 127.f;
 
-    quadHeightmapShaderInstanced.Use();
+    quadHeightmapShaderInstanced.use();
 
     quadHeightmapShaderInstanced.SetFloat("sinZ", sinZ);
     quadHeightmapShaderInstanced.SetFloat("sinZ_inverse", 1.f / sinZ);
@@ -740,7 +740,7 @@ void jleQuadRendering::renderCube(glm::mat4& model, jleShader& shader) {
         glBindVertexArray(0);
     }
 
-    shader.Use();
+    shader.use();
     shader.SetMat4("model", model);
 
     // render Cube
@@ -763,7 +763,7 @@ void jleQuadRendering::renderShadowCubes(glm::mat4& view) {
      glm::vec3(0.0, 1.0, 0.0)); lightSpaceMatrix = lightProjection * lightView;
      // render scene from light's point of view*/
 
-    shadowMappingShader.Use();
+    shadowMappingShader.use();
     shadowMappingShader.SetMat4("lightSpaceMatrix", view);
 
     // static const float zAngle = 90.f - 35.24f;

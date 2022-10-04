@@ -156,7 +156,7 @@ necessery glDeleteShader(vertex); glDeleteShader(fragment);
 
 jleShader::~jleShader() { glDeleteProgram(ID); }
 
-void jleShader::Use() { glUseProgram(ID); }
+void jleShader::use() { glUseProgram(ID); }
 
 void jleShader::SetBool(const std::string& name, bool value) const {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);

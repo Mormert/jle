@@ -46,7 +46,7 @@ void jleFont::Init() {
 
     glm::mat4 projection = glm::ortho(
         0.0f, static_cast<float>(300), 0.0f, static_cast<float>(400));
-    sShader->Use();
+    sShader->use();
     sShader->SetMat4("projection", projection);
 
     glGenVertexArrays(1, &sVAO);
@@ -98,7 +98,7 @@ void jleFont::renderText(const std::string& text,
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    sShader->Use();
+    sShader->use();
     sShader->SetVec3("textColor", color.x, color.y, color.z);
     sShader->SetFloat("depth", depth);
     glActiveTexture(GL_TEXTURE0);
@@ -155,7 +155,7 @@ void jleFont::renderTargetDimensions(int width,
                        -1.f,
                        1.f);
 
-    sShader->Use();
+    sShader->use();
     sShader->SetMat4("projection", sProj);
 
     glViewport(0, 0, width, height);

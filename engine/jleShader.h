@@ -21,7 +21,7 @@ public:
 
     ~jleShader();
 
-    void Use();
+    void use();
 
     void SetBool(const std::string& name, bool value) const;
 
