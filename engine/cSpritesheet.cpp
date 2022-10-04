@@ -5,7 +5,7 @@
 #include "jleGameEngine.h"
 #include "jleQuadRendering.h"
 #include "jleResourceHolder.h"
-
+#include "json.hpp"
 #include <plog/Log.h>
 
 void cSpritesheet::Start() {
@@ -51,8 +51,8 @@ void cSpritesheet::ToJson(nlohmann::json& j_out) {
 void cSpritesheet::FromJson(const nlohmann::json& j_in) {
     _spritesheetPath = j_in["_spritesheetPath"];
     _spriteName = j_in["_spriteName"];
-    _offset.x = j_in["_offsetX"];
-    _offset.y = j_in["_offsetY"];
+    _offset.x = j_in.value("_offsetX", 0);
+    _offset.y = j_in.value("_offsetY", 0);
     _spritesheet = jleResourceHolder::LoadResourceFromFile<jleSpritesheet>(
         jleRelativePath{_spritesheetPath});
 
