@@ -61,7 +61,7 @@ protected:
 
     void update(float dt) override;
 
-    void Render() override;
+    void render() override;
 
     void exiting() override;
 

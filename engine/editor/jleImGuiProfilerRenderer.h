@@ -345,7 +345,7 @@ public:
         avgFrameTime = 1.0f;
     }
 
-    void Render() {
+    void render() {
         fpsFramesCount++;
         auto currFrameTime = std::chrono::system_clock::now();
         {

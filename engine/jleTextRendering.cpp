@@ -39,7 +39,7 @@ void jleTextRendering::sendSimpleText(const std::string& text,
     _simpleTextDatas.push_back(td);
 }
 
-void jleTextRendering::Render(jleFramebuffer& framebufferOut,
+void jleTextRendering::render(jleFramebuffer& framebufferOut,
                               const jleCamera& camera) {
     JLE_SCOPE_PROFILE(jleTextRendering::Render)
     if (_simpleTextDatas.empty() && _fontTextDatas.empty()) {

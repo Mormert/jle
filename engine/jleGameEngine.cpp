@@ -83,7 +83,7 @@ void jleGameEngine::executeNextFrame() {
     auto gameHaltedTemp = gameHalted;
     gameHalted = false;
     update(status->deltaFrameTime());
-    rendering->Render(*framebuffer_main, gameRef()._mainCamera);
+    rendering->render(*framebuffer_main, gameRef()._mainCamera);
     gameHalted = gameHaltedTemp;
 }
 
@@ -146,10 +146,10 @@ void jleGameEngine::update(float dt) {
     }
 }
 
-void jleGameEngine::Render() {
+void jleGameEngine::render() {
     JLE_SCOPE_PROFILE(jleGameEngine::Render)
     if (!gameHalted && game) {
-        rendering->Render(*framebuffer_main.get(), gameRef()._mainCamera);
+        rendering->render(*framebuffer_main.get(), gameRef()._mainCamera);
         rendering->clearBuffersForNextFrame();
         _fullscreen_renderer->renderFramebufferFullscreen(
             *framebuffer_main.get(),

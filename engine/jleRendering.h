@@ -21,7 +21,7 @@ public:
                                unsigned int width,
                                unsigned int height);
 
-    void Render(jleFramebuffer& framebufferOut, jleCamera& camera);
+    void render(jleFramebuffer& framebufferOut, jleCamera& camera);
 
     void clearBuffersForNextFrame();
 

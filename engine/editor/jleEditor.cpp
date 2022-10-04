@@ -113,11 +113,11 @@ void jleEditor::start() {
     startGame();
 }
 
-void jleEditor::Render() {
+void jleEditor::render() {
     JLE_SCOPE_PROFILE(jleEditor::Render)
     if (!gameHalted && game) {
         // Render to game view
-        rendering->Render(*framebuffer_main, game->_mainCamera);
+        rendering->render(*framebuffer_main, game->_mainCamera);
     }
 
     // _editorCamera.perspectiveProjection(90.f,
@@ -128,7 +128,7 @@ void jleEditor::Render() {
                                          10000.f,
                                          -10000.f);
     // Render to editor scene view
-    rendering->Render(*_editorFramebuffer, _editorCamera);
+    rendering->render(*_editorFramebuffer, _editorCamera);
 
     rendering->clearBuffersForNextFrame();
 

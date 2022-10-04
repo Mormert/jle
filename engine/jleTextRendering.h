@@ -36,7 +36,7 @@ public:
                       float b,
                       float a);
 
-    void Render(jleFramebuffer& framebufferOut, const jleCamera& camera);
+    void render(jleFramebuffer& framebufferOut, const jleCamera& camera);
 
     void clearBuffersForNextFrame();
 

@@ -25,10 +25,10 @@ void jleRendering::viewportDimensions(int x,
     glViewport(x, y, static_cast<int>(width), static_cast<int>(height));
 }
 
-void jleRendering::Render(jleFramebuffer& framebufferOut, jleCamera& camera) {
+void jleRendering::render(jleFramebuffer& framebufferOut, jleCamera& camera) {
     JLE_SCOPE_PROFILE(jleRendering::Render)
-    _quads->queueRender(framebufferOut, camera);
-    _texts->Render(framebufferOut, camera);
+    _quads->queuerender(framebufferOut, camera);
+    _texts->render(framebufferOut, camera);
 }
 
 void jleRendering::up() {

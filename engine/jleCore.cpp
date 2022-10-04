@@ -95,7 +95,7 @@ void jleCore::mainLoop() {
 
     update(status->deltaFrameTime());
 
-    Render();
+    render();
     window->updateWindow();
 
     running = !window->windowShouldClose();

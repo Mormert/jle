@@ -83,7 +83,7 @@ protected:
 
     virtual void update(float dt) {}
 
-    virtual void Render() {}
+    virtual void render() {}
 
     virtual void exiting() {}
 

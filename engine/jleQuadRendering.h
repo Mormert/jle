@@ -35,9 +35,9 @@ public:
     void sendColoredQuad(ColoredQuad& coloredQuad,
                          RenderingMethod renderingMethod);
 
-    void queueRender(jleFramebuffer& framebufferOut, jleCamera& camera);
+    void queuerender(jleFramebuffer& framebufferOut, jleCamera& camera);
 
-    void Render(jleFramebuffer& framebufferOut,
+    void render(jleFramebuffer& framebufferOut,
                 jleCamera& camera,
                 const std::vector<texturedQuad>& texturedQuads,
                 const std::vector<texturedHeightQuad>& texturedHeightQuads,

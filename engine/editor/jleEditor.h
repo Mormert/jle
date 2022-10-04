@@ -22,7 +22,7 @@ public:
 
     void start() override;
 
-    void Render() override;
+    void render() override;
 
     std::shared_ptr<jleFramebuffer> _editorFramebuffer;
 

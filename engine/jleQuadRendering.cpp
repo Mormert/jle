@@ -186,9 +186,9 @@ void jleQuadRendering::sendTexturedHeightQuad(
 void jleQuadRendering::sendColoredQuad(ColoredQuad& coloredQuad,
                                        RenderingMethod renderingMethod) {}
 
-void jleQuadRendering::queueRender(jleFramebuffer& framebufferOut,
+void jleQuadRendering::queuerender(jleFramebuffer& framebufferOut,
                                    jleCamera& camera) {
-    Render(framebufferOut,
+    render(framebufferOut,
            camera,
            _queuedTexturedQuads,
            _queuedTexturedHeightQuads,
@@ -200,7 +200,7 @@ void jleQuadRendering::clearBuffersForNextFrame() {
     _queuedTexturedHeightQuads.clear();
 }
 
-void jleQuadRendering::Render(
+void jleQuadRendering::render(
     jleFramebuffer& framebufferOut,
     jleCamera& camera,
     const std::vector<texturedQuad>& texturedQuads,
