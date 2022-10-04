@@ -24,14 +24,14 @@ void cSpritesheet::Update(float dt) {
     if (texture != nullptr && _hasEntity) {
         TexturedQuad quad{texture};
         quad.x = _transform->GetWorldX() +
-                 _spritesheetEntityCache._sourceSize._x - _offset.x;
+                 _spritesheetEntityCache.sourceSize.x - _offset.x;
         quad.y = _transform->GetWorldY() +
-                 _spritesheetEntityCache._sourceSize._y - _offset.y;
+                 _spritesheetEntityCache.sourceSize.y - _offset.y;
 
-        quad.height = _spritesheetEntityCache._frame._height;
-        quad.width = _spritesheetEntityCache._frame._width;
-        quad.textureX = _spritesheetEntityCache._frame._x;
-        quad.textureY = _spritesheetEntityCache._frame._y;
+        quad.height = _spritesheetEntityCache.frame.height;
+        quad.width = _spritesheetEntityCache.frame.width;
+        quad.textureX = _spritesheetEntityCache.frame.x;
+        quad.textureY = _spritesheetEntityCache.frame.y;
         quad.depth = _transform->GetWorldDepth();
 
         if (quad.texture.get()) {
