@@ -227,7 +227,7 @@ void oCharacter::attack(oCharacter::oCharacterDirection dir) {
 
 }
 
-void oCharacter::hP(int hp) {
+void oCharacter::hp(int hp) {
     if (hp > _maxHP) {
         hp = _maxHP;
     }

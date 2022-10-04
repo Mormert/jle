@@ -7,7 +7,7 @@ void oCharacterHealthBar::upDefaultObject() {
     _aseprite = addCustomComponent<cAseprite>();
 }
 
-void oCharacterHealthBar::hP(int maxHP, int currentHP) {
+void oCharacterHealthBar::hp(int maxHP, int currentHP) {
     const auto w = (currentHP / (float)maxHP) * (float)_maxWidth;
     _aseprite->_width = w;
 }

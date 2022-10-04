@@ -28,7 +28,7 @@ public:
 
     virtual void attack(oCharacterDirection direction);
 
-    void hP(int hp);
+    void hp(int hp);
 
     void characterDirection(oCharacterDirection direction);
 

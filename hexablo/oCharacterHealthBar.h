@@ -11,7 +11,7 @@ class oCharacterHealthBar : public jleObject {
 public:
     void upDefaultObject() override;
 
-    void hP(int maxHP, int currentHP);
+    void hp(int maxHP, int currentHP);
 
     void toJson(nlohmann::json& j_out) override {
         j_out["_maxWidth"] = _maxWidth;
