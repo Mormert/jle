@@ -2,7 +2,6 @@
 
 #include "jleSpritesheet.h"
 #include "jleGameEngine.h"
-
 #include <filesystem>
 #include <fstream>
 
@@ -15,15 +14,15 @@ void from_json(const nlohmann::json& j, jleSpritesheetEntity& s) {
     s.frame = j["frame"];
     // TODO: Should backward compatability be handled for this struct?
     s.sourceSize = j.value("spriteSourceSize",
-                            jleSpritesheetEntity::jleSpritesheetEntitySource{});
+                           jleSpritesheetEntity::jleSpritesheetEntitySource{});
 }
 
 void from_json(const nlohmann::json& j,
                jleSpritesheetEntity::jleSpritesheetEntityFrame& s) {
     s.x = j["x"];
     s.y = j["y"];
-    s.width = j["width"];
-    s.height = j["height"];
+    s.width = j["w"];
+    s.height = j["h"];
 }
 
 void from_json(const json& j,
@@ -47,7 +46,7 @@ bool jleSpritesheet::LoadFromFile(const std::string& path) {
         nlohmann::json j;
         i >> j;
 
-        from_json(j, *this);
+        from_json(j["frames"], *this);
         LoadImage();
         return true;
     }
