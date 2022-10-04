@@ -115,7 +115,7 @@ void jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine& ge) {
             ImGui::CalcTextSize("FPS: XXXX, DT: XXXXXXXX, Time: XXXXX").x -
             ImGui::GetScrollX() - 2 * ImGui::GetStyle().ItemSpacing.x);
         ImGui::Text("FPS: %4d, DT: %4f, Time: %4f",
-                    ge.status->fPS(),
+                    ge.status->fps(),
                     ge.status->deltaFrameTime(),
                     ge.status->currentFrameTime());
 

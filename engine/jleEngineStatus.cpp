@@ -4,20 +4,20 @@
 
 #include "GLFW/glfw3.h"
 
-int jleEngineStatus::fps{0};
-double jleEngineStatus::deltaTime{0.0f};
-double jleEngineStatus::currentFrame{0.0f};
-double jleEngineStatus::lastFrame{0.0f};
+int jleEngineStatus::_fps{0};
+double jleEngineStatus::_deltaTime{0.0f};
+double jleEngineStatus::_currentFrame{0.0f};
+double jleEngineStatus::_lastFrame{0.0f};
 
-int jleEngineStatus::GetFps() { return fps; }
+int jleEngineStatus::fps() { return _fps; }
 
-double jleEngineStatus::GetDeltaTime() { return deltaTime; }
+double jleEngineStatus::deltaTime() { return _deltaTime; }
 
-double jleEngineStatus::time() { return currentFrame; }
+double jleEngineStatus::time() { return _currentFrame; }
 
 void jleEngineStatus::updateEngineStatus() {
-    currentFrame = glfwGetTime();
-    deltaTime = currentFrame - lastFrame;
-    lastFrame = currentFrame;
-    fps = static_cast<int>(1.0 / deltaTime);
+    _currentFrame = glfwGetTime();
+    _deltaTime = _currentFrame - _lastFrame;
+    _lastFrame = _currentFrame;
+    _fps = static_cast<int>(1.0 / _deltaTime);
 }

@@ -104,8 +104,8 @@ void jleCore::mainLoop() {
 jleTimerManager& jleCore::timerManager() { return _timerManager; }
 
 void CoreStatus_Internal::refresh() {
-    currentFrame = jleCore::core->coreImpl->windowInternal->time();
-    deltaTime = currentFrame - lastFrame;
-    lastFrame = currentFrame;
-    fps = static_cast<int>(1.0 / deltaTime);
+    _currentFrame = jleCore::core->coreImpl->windowInternal->time();
+    _deltaTime = _currentFrame - _lastFrame;
+    _lastFrame = _currentFrame;
+    _fps = static_cast<int>(1.0 / _deltaTime);
 }

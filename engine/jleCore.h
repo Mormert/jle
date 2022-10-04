@@ -15,21 +15,21 @@ class jleFramebuffer;
 
 struct CoreStatus_Internal {
 public:
-    int fPS() { return fps; }
+    int fps() { return _fps; }
 
-    float deltaFrameTime() { return deltaTime; }
+    float deltaFrameTime() { return _deltaTime; }
 
-    float currentFrameTime() { return currentFrame; }
+    float currentFrameTime() { return _currentFrame; }
 
-    float lastFrameTime() { return lastFrame; }
+    float lastFrameTime() { return _lastFrame; }
 
     void refresh();
 
 private:
-    int fps = 0;
-    float deltaTime = 0;
-    float currentFrame = 0;
-    float lastFrame = 0;
+    int _fps = 0;
+    float _deltaTime = 0;
+    float _currentFrame = 0;
+    float _lastFrame = 0;
 };
 
 // Core part of the jle engine
