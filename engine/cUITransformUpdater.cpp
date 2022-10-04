@@ -42,7 +42,7 @@ void cUITransformUpdater::fromJson(const nlohmann::json& j_in) {
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _y, "_y", false);
 }
 
-void cUITransformUpdater::Update(float dt) {
+void cUITransformUpdater::update(float dt) {
     // TODO: dont do this in update, rely on callback functions instead
     // since the UI gets dirty every frame now...
 

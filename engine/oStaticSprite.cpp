@@ -38,7 +38,7 @@ void oStaticSprite::upDefaultObject() {
 
 void oStaticSprite::start() {}
 
-void oStaticSprite::Update(float dt) {
+void oStaticSprite::update(float dt) {
     if (jleCore::core->input->keyboard->keyDown('Q')) {
         auto spawnedObject = spawnChildObject<jleObject>();
 

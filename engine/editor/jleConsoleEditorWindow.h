@@ -31,7 +31,7 @@ public:
 
     void execCommand(const char *command_line);
 
-    virtual void Update(jleGameEngine& ge) override;
+    virtual void update(jleGameEngine& ge) override;
 
     static int textEditCallbackStub(ImGuiInputTextCallbackData *data);
 

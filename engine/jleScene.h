@@ -33,7 +33,7 @@ public:
 
     void processNewSceneObjects();
 
-    virtual void sceneUpdate() {}
+    virtual void sceneupdate() {}
 
     virtual void onSceneCreation() {}
 

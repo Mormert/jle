@@ -44,7 +44,7 @@ void cSpriteDepth::start() {
     }
 }
 
-void cSpriteDepth::Update(float dt) {
+void cSpriteDepth::update(float dt) {
     quad.x = transform->worldX();
     quad.y = transform->worldY();
 

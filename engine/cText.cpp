@@ -37,7 +37,7 @@ void cText::fromJson(const nlohmann::json& j_in) {
         jleRelativePath{_fontPath});
 }
 
-void cText::Update(float dt) {
+void cText::update(float dt) {
     if (!_font) {
         return;
     }

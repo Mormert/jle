@@ -18,7 +18,7 @@ std::weak_ptr<jleObject>& jleEditorSceneObjectsWindow::GetSelectedObject() {
     return selectedObject;
 }
 
-void jleEditorSceneObjectsWindow::Update(jleGameEngine& ge) {
+void jleEditorSceneObjectsWindow::update(jleGameEngine& ge) {
     if (!isOpened) {
         return;
     }

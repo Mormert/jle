@@ -20,7 +20,7 @@ void oWorld::start() {
     generateVisualWorld();
 }
 
-void oWorld::Update(float dt) {
+void oWorld::update(float dt) {
 
     //  renderVisualWorld(dt);
 

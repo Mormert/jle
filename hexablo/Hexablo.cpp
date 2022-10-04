@@ -14,4 +14,4 @@ void Hexablo::start() {
                            "/scenes/HexabloNetScene.scn");
 }
 
-void Hexablo::Update(float dt) { const auto engine = jleGameEngine::gEngine; }
+void Hexablo::update(float dt) { const auto engine = jleGameEngine::gEngine; }

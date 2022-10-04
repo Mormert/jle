@@ -11,7 +11,7 @@ void hexNetScene::onNetClosed(const std::string& reason) {
     std::cout << "Net closed: " << reason << '\n';
 }
 
-void hexNetScene::sceneUpdate() { jleNetScene::sceneUpdate(); }
+void hexNetScene::sceneupdate() { jleNetScene::sceneupdate(); }
 
 void hexNetScene::processNetMessage(const std::string& event,
                                     const nlohmann::json& message,

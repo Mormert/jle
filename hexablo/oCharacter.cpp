@@ -25,7 +25,7 @@ void oCharacter::start() {
     }
 }
 
-void oCharacter::Update(float dt) {
+void oCharacter::update(float dt) {
 
     if (jleCore::core->input->keyboard->keyPressed('T')) {
         hexagonPlacementInterp(hexHelperFunctions::randInt(0, 10), hexHelperFunctions::randInt(0, 10));

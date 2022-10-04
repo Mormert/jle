@@ -11,7 +11,7 @@ public:
 
     explicit jleNetScene(const std::string& sceneName);
 
-    void sceneUpdate() override;
+    void sceneupdate() override;
 
     void onSceneCreation() override;
 

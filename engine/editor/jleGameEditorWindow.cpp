@@ -23,7 +23,7 @@ jleGameEditorWindow::jleGameEditorWindow(const std::string& window_name)
     gGameEditorWindow = this;
 }
 
-void jleGameEditorWindow::Update(jleGameEngine& ge) {
+void jleGameEditorWindow::update(jleGameEngine& ge) {
     if (!isOpened) {
         return;
     }

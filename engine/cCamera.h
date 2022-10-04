@@ -19,7 +19,7 @@ public:
 
     void fromJson(const nlohmann::json& j_in) override;
 
-    void Update(float dt) override;
+    void update(float dt) override;
 
     float offsetX();
 

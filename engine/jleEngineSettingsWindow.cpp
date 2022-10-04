@@ -19,7 +19,7 @@ jleEngineSettingsWindow::jleEngineSettingsWindow(
     _jsonToImguiES.jsonToImgui(j_es, "Editor Settings");
 }
 
-void jleEngineSettingsWindow::Update(jleGameEngine& ge) {
+void jleEngineSettingsWindow::update(jleGameEngine& ge) {
     if (!isOpened) {
         return;
     }

@@ -18,7 +18,7 @@ class jleGame {
 public:
     virtual ~jleGame() = default;
 
-    virtual void Update(float dt) {}
+    virtual void update(float dt) {}
 
     virtual void start() {}
 

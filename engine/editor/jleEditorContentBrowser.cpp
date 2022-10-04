@@ -136,7 +136,7 @@ void jleEditorContentBrowser::contentHierarchy(std::string directoryPath,
     ImGui::PopStyleVar();
 }
 
-void jleEditorContentBrowser::Update(jleGameEngine& ge) {
+void jleEditorContentBrowser::update(jleGameEngine& ge) {
     if (!isOpened) {
         return;
     }

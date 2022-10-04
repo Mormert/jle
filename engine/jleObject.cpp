@@ -149,7 +149,7 @@ void jleObject::startComponents() {
 
 void jleObject::updateComponents(float dt) {
     for (int i = _components.size() - 1; i >= 0; i--) {
-        _components[i]->Update(dt);
+        _components[i]->update(dt);
     }
 }
 
@@ -160,7 +160,7 @@ void jleObject::updateChildren(float dt) {
             continue;
         }
 
-        _childObjects[i]->Update(dt);
+        _childObjects[i]->update(dt);
         _childObjects[i]->updateComponents(dt);
 
         // Recursively update children after this object has updated

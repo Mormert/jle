@@ -19,7 +19,7 @@ void cAseprite::start() {
     }
 }
 
-void cAseprite::Update(float dt) {
+void cAseprite::update(float dt) {
     if (_aseprites.empty() ||
         _currentlyActiveAseprite + 1 > _aseprites.size()) {
         return;

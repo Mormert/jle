@@ -17,7 +17,7 @@ public:
 
     virtual ~iEditorImGuiWindow() = default;
 
-    virtual void Update(jleGameEngine& ge) = 0;
+    virtual void update(jleGameEngine& ge) = 0;
 
     virtual void openWindow() { isOpened = true; }
 

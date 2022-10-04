@@ -44,7 +44,7 @@ jleSceneEditorWindow::jleSceneEditorWindow(
     _texturedQuad.textureY = 0;
 }
 
-void jleSceneEditorWindow::Update(jleGameEngine& ge) {
+void jleSceneEditorWindow::update(jleGameEngine& ge) {
     if (!isOpened) {
         return;
     }

@@ -10,7 +10,7 @@ class jleEditorContentBrowser : public iEditorImGuiWindow {
 public:
     explicit jleEditorContentBrowser(const std::string &window_name);
 
-    void Update(jleGameEngine &ge) override;
+    void update(jleGameEngine &ge) override;
 
 private:
     std::shared_ptr<jleTexture> _fileIcon;

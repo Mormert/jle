@@ -11,7 +11,7 @@ public:
 
     void start() override;
 
-    void Update(float dt) override;
+    void update(float dt) override;
 
     void toJson(nlohmann::json& j_out) override;
 

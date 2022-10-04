@@ -17,9 +17,9 @@ public:
 
     virtual void start() {}
 
-    virtual void Update(float dt) {}
+    virtual void update(float dt) {}
 
-    [[maybe_unused]] virtual void editorUpdate(float dt) {}
+    [[maybe_unused]] virtual void editorupdate(float dt) {}
 
     void destroy();
 

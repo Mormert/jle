@@ -26,7 +26,7 @@ public:
 
     virtual void start() override;
 
-    virtual void Update(float dt) override;
+    virtual void update(float dt) override;
 
     virtual void toJson(nlohmann::json& j_out) override;
 

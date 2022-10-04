@@ -18,7 +18,7 @@ jleEditorGameControllerWidget::jleEditorGameControllerWidget(
         jleTexture::fromPath(jleRelativePath{"ED:/icons/next_frame.png"});
 }
 
-void jleEditorGameControllerWidget::Update(jleGameEngine& ge) {
+void jleEditorGameControllerWidget::update(jleGameEngine& ge) {
 
     const ImVec2 iconSize{ImGui::GetWindowHeight() - 3,
                           ImGui::GetWindowHeight() - 3};

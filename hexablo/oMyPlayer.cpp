@@ -23,9 +23,9 @@ void oMyPlayer::start() {
     sMyPlayerPtr = std::static_pointer_cast<oMyPlayer>(weak_from_this().lock());
 }
 
-void oMyPlayer::Update(float dt) {
+void oMyPlayer::update(float dt) {
 
-    oCharacter::Update(dt);
+    oCharacter::update(dt);
 
     lookAtMouse();
 

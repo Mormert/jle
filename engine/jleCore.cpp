@@ -93,7 +93,7 @@ void jleCore::mainLoop() {
 
     _timerManager.process();
 
-    Update(status->deltaFrameTime());
+    update(status->deltaFrameTime());
 
     Render();
     window->updateWindow();

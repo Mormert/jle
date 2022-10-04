@@ -22,7 +22,7 @@ public:
 
     virtual void start() {}
 
-    virtual void Update(float dt) {}
+    virtual void update(float dt) {}
 
     jleObject();
 

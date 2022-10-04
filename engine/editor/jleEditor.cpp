@@ -149,7 +149,7 @@ void jleEditor::Render() {
 
         // Update loop for all ImGui windows
         for (auto window : ImGuiWindows) {
-            window->Update(*this);
+            window->update(*this);
         }
 
         ImGui::Render();

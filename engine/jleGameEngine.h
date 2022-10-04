@@ -59,7 +59,7 @@ private:
 protected:
     void start() override;
 
-    void Update(float dt) override;
+    void update(float dt) override;
 
     void Render() override;
 

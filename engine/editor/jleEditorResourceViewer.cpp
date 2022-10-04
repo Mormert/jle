@@ -4,7 +4,7 @@
 #include "ImGui/imgui.h"
 #include "jleResourceHolder.h"
 
-void jleEditorResourceViewer::Update(jleGameEngine& ge) {
+void jleEditorResourceViewer::update(jleGameEngine& ge) {
     if (!isOpened) {
         return;
     }

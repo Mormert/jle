@@ -12,8 +12,8 @@ void oMonster::start() {
     oCharacter::start();
 }
 
-void oMonster::Update(float dt) {
-    oCharacter::Update(dt);
+void oMonster::update(float dt) {
+    oCharacter::update(dt);
 
     lookAtPlayer();
 }

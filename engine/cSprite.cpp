@@ -35,7 +35,7 @@ void cSprite::start() {
     }
 }
 
-void cSprite::Update(float dt) {
+void cSprite::update(float dt) {
     quad.x = transform->worldX();
     quad.y = transform->worldY();
 

@@ -82,7 +82,7 @@ void jleGameEngine::executeNextFrame() {
     LOG_VERBOSE << "Next frame dt: " << status->deltaFrameTime();
     auto gameHaltedTemp = gameHalted;
     gameHalted = false;
-    Update(status->deltaFrameTime());
+    update(status->deltaFrameTime());
     rendering->Render(*framebuffer_main, gameRef()._mainCamera);
     gameHalted = gameHaltedTemp;
 }
@@ -138,10 +138,10 @@ void jleGameEngine::framebufferResizeEvent(unsigned int width,
     game->_mainCamera._cameraHeight = dims.second;
 }
 
-void jleGameEngine::Update(float dt) {
+void jleGameEngine::update(float dt) {
     JLE_SCOPE_PROFILE(jleGameEngine::Update)
     if (!gameHalted && game) {
-        game->Update(dt);
+        game->update(dt);
         game->updateActiveScenes(dt);
     }
 }

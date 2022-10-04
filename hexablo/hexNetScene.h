@@ -7,7 +7,7 @@
 
 class hexNetScene : public jleNetScene {
 public:
-    void sceneUpdate() override;
+    void sceneupdate() override;
 
     void onNetConnected() override;
 

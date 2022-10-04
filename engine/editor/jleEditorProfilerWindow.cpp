@@ -6,7 +6,7 @@
 jleEditorProfilerWindow::jleEditorProfilerWindow(const std::string& window_name)
     : iEditorImGuiWindow{window_name} {}
 
-void jleEditorProfilerWindow::Update(jleGameEngine& ge) {
+void jleEditorProfilerWindow::update(jleGameEngine& ge) {
     if (!isOpened) {
         return;
     }

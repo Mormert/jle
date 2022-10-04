@@ -26,7 +26,7 @@ void jleScene::updateSceneObjects(float dt) {
             continue;
         }
 
-        _sceneObjects[i]->Update(dt);
+        _sceneObjects[i]->update(dt);
         _sceneObjects[i]->updateComponents(dt);
         _sceneObjects[i]->updateChildren(dt);
     }

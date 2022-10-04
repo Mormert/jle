@@ -15,7 +15,7 @@ void oFireball::start() {
 
 }
 
-void oFireball::Update(float dt) {
+void oFireball::update(float dt) {
 
     const auto lerpVec2 = [](const glm::vec2 &a, const glm::vec2 &b, float alpha) {
         return a * alpha + b * (1.f - alpha);

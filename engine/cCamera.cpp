@@ -13,7 +13,7 @@ void cCamera::start() {
     }
 }
 
-void cCamera::Update(float dt) {
+void cCamera::update(float dt) {
     auto& game = ((jleGameEngine *)jleCore::core)->gameRef();
 
     game._mainCamera._x = _transform->worldX() + _offsetX;
