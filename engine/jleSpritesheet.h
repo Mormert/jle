@@ -12,12 +12,12 @@
 
 struct jleSpritesheetEntity {
     struct jleSpritesheetEntityFrame {
-        int _x, _y, _width, _height;
-    } _frame;
+        int x, y, width, height;
+    } frame;
 
     struct jleSpritesheetEntitySource {
-        int _x, _y, _width, _height;
-    } _sourceSize;
+        int x, y, width, height;
+    } sourceSize;
 };
 
 struct jleSpritesheet : jleFileLoadInterface {

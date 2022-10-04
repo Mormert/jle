@@ -12,26 +12,26 @@ void from_json(const nlohmann::json& j, jleSpritesheet& s) {
 }
 
 void from_json(const nlohmann::json& j, jleSpritesheetEntity& s) {
-    s._frame = j["frame"];
+    s.frame = j["frame"];
     // TODO: Should backward compatability be handled for this struct?
-    s._sourceSize = j.value("spriteSourceSize",
+    s.sourceSize = j.value("spriteSourceSize",
                             jleSpritesheetEntity::jleSpritesheetEntitySource{});
 }
 
 void from_json(const nlohmann::json& j,
                jleSpritesheetEntity::jleSpritesheetEntityFrame& s) {
-    s._x = j["x"];
-    s._y = j["y"];
-    s._width = j["width"];
-    s._height = j["height"];
+    s.x = j["x"];
+    s.y = j["y"];
+    s.width = j["width"];
+    s.height = j["height"];
 }
 
 void from_json(const json& j,
                jleSpritesheetEntity::jleSpritesheetEntitySource& s) {
-    s._x = j["x"];
-    s._y = j["y"];
-    s._width = j["w"];
-    s._height = j["h"];
+    s.x = j["x"];
+    s.y = j["y"];
+    s.width = j["w"];
+    s.height = j["h"];
 }
 
 void jleSpritesheet::LoadImage() {
