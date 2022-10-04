@@ -9,10 +9,10 @@
 
 class jleSceneEditorWindow : public iEditorImGuiWindow {
 public:
-    jleSceneEditorWindow(const std::string& window_name,
-                         std::shared_ptr<jleFramebuffer>& framebuffer);
+    jleSceneEditorWindow(const std::string &window_name,
+                         std::shared_ptr<jleFramebuffer> &framebuffer);
 
-    void update(jleGameEngine& ge) override;
+    void update(jleGameEngine &ge) override;
 
 private:
     float _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;

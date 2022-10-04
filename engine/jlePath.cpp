@@ -3,11 +3,11 @@
 #include "jlePath.h"
 #include "jlePathDefines.h"
 
-jleRelativePath::jleRelativePath(const std::string& relativePath) {
+jleRelativePath::jleRelativePath(const std::string &relativePath) {
     _relativePath = relativePath;
 }
 
-jleRelativePath::jleRelativePath(const jleAbsolutePath& absolutePath) {
+jleRelativePath::jleRelativePath(const jleAbsolutePath &absolutePath) {
     const std::string gameResourcesStr{"GameResources"};
 
     std::string path = absolutePath._absolutePath;
@@ -53,11 +53,11 @@ const std::string jleRelativePath::pathPrefix() const {
     return _relativePath.substr(0, 3);
 }
 
-jleAbsolutePath::jleAbsolutePath(const std::string& absoultePath) {
+jleAbsolutePath::jleAbsolutePath(const std::string &absoultePath) {
     _absolutePath = absoultePath;
 }
 
-jleAbsolutePath::jleAbsolutePath(const jleRelativePath& relativePath) {
+jleAbsolutePath::jleAbsolutePath(const jleRelativePath &relativePath) {
     std::string path = relativePath._relativePath;
 
     // Correct the path's slashes
@@ -66,7 +66,7 @@ jleAbsolutePath::jleAbsolutePath(const jleRelativePath& relativePath) {
     }
 
     jleRootFolder rootFolder = jleRootFolder::None;
-    const auto&& prefixString = path.substr(0, 3);
+    const auto &&prefixString = path.substr(0, 3);
 
     if (prefixString == GAME_RESOURCES_PREFIX) {
         rootFolder = jleRootFolder::GameResources;

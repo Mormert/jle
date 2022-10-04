@@ -26,7 +26,7 @@ public:
                                           int width,
                                           int height);
 
-    void settings(WindowSettings& windowSettings);
+    void settings(WindowSettings &windowSettings);
 
     void displayCursor(bool enable);
 

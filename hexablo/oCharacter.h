@@ -42,9 +42,9 @@ public:
 
     void update(float dt) override;
 
-    void toJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json &j_out) override;
 
-    void fromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json &j_in) override;
 
     std::shared_ptr<cTransform> _transform{nullptr};
     std::shared_ptr<cAseprite> _aseprite{nullptr};

@@ -69,7 +69,7 @@ int resize_canvas_js(int width, int height) {
 
     printf("Change window size: %d, %d", width, height);
 
-    const auto& window = jleWindow::activeWindow;
+    const auto &window = jleWindow::activeWindow;
 
     jleWindow::framebuffer_size_callback(nullptr, width, height);
 
@@ -89,7 +89,7 @@ jleWindow::~jleWindow() {
     glfwTerminate();
 }
 
-void jleWindow::settings(WindowSettings& windowSettings) {
+void jleWindow::settings(WindowSettings &windowSettings) {
     this->windowSettings = windowSettings;
 }
 
@@ -228,7 +228,7 @@ void jleWindow::removeWindowResizeCallback(unsigned int callback_id) {
 }
 
 void jleWindow::executeResizeCallbacks(int w, int h) {
-    for (const auto& callback : activeWindow->windowResizedCallbacks) {
+    for (const auto &callback : activeWindow->windowResizedCallbacks) {
         callback.second(w, h);
     }
 }

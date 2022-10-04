@@ -7,15 +7,15 @@ void hexNetScene::onNetConnected() { std::cout << "Net connected\n"; }
 
 void hexNetScene::onNetFailed() { std::cout << "Net failure\n"; }
 
-void hexNetScene::onNetClosed(const std::string& reason) {
+void hexNetScene::onNetClosed(const std::string &reason) {
     std::cout << "Net closed: " << reason << '\n';
 }
 
 void hexNetScene::sceneupdate() { jleNetScene::sceneupdate(); }
 
-void hexNetScene::processNetMessage(const std::string& event,
-                                    const nlohmann::json& message,
-                                    const std::string& sender) {
+void hexNetScene::processNetMessage(const std::string &event,
+                                    const nlohmann::json &message,
+                                    const std::string &sender) {
     jleNetScene::processNetMessage(event, message, sender);
 
     if (event == "player_connect") {
@@ -71,7 +71,7 @@ void hexNetScene::processNetMessage(const std::string& event,
     }
 }
 
-std::weak_ptr<jleObject> hexNetScene::playerFromId(const std::string& id) {
+std::weak_ptr<jleObject> hexNetScene::playerFromId(const std::string &id) {
     auto it = _players.find(id);
     if (it == _players.end() ||
         (it != _players.end() && it->second.expired())) {

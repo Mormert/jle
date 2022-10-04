@@ -7,17 +7,17 @@
 #include "ImGui/imgui.h"
 #include "plog/Log.h"
 
-jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string& window_name)
+jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name)
     : iEditorImGuiWindow{window_name}, _gameController{"Game Controller"} {}
 
-void jleEditorWindowsPanel::update(jleGameEngine& ge) { dockspaceupdate(ge); }
+void jleEditorWindowsPanel::update(jleGameEngine &ge) { dockspaceupdate(ge); }
 
 void jleEditorWindowsPanel::addWindow(
     std::shared_ptr<iEditorImGuiWindow> window) {
     windows.push_back(window);
 }
 
-void jleEditorWindowsPanel::dockspaceupdate(jleGameEngine& ge) {
+void jleEditorWindowsPanel::dockspaceupdate(jleGameEngine &ge) {
 
     static bool opt_fullscreen = true;
     static bool opt_padding = false;
@@ -71,7 +71,7 @@ void jleEditorWindowsPanel::dockspaceupdate(jleGameEngine& ge) {
         ImGui::PopStyleVar(2);
 
     // Submit the DockSpace
-    ImGuiIO& io = ImGui::GetIO();
+    ImGuiIO &io = ImGui::GetIO();
     if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
         ImGuiID dockspace_id = ImGui::GetID("DockSpaceID");
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
@@ -82,10 +82,10 @@ void jleEditorWindowsPanel::dockspaceupdate(jleGameEngine& ge) {
     ImGui::End();
 }
 
-void jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine& ge) {
+void jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine &ge) {
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("Manage Windows")) {
-            for (auto&& window : windows) {
+            for (auto &&window : windows) {
                 if (window->opened()) {
                     if (ImGui::MenuItem(
                             ("Close " + window->windowName()).c_str())) {

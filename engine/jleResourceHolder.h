@@ -21,7 +21,7 @@ public:
     // loaded copy of that resource
     template <typename T>
     static std::shared_ptr<T> loadResourceFromFile(
-        const jleRelativePath& path) {
+        const jleRelativePath &path) {
         static_assert(std::is_base_of<jleFileLoadInterface, T>::value,
                       "T must derive from FileLoadInterface");
 
@@ -48,7 +48,7 @@ public:
     // Stores a resource with a certain path to be reused later
     template <typename T>
     static void storeResource(std::shared_ptr<T> resource,
-                              const jleRelativePath& path) {
+                              const jleRelativePath &path) {
         const auto prefix = path.pathPrefix();
 
         _resources[prefix].erase(path.relativePathStr());
@@ -60,14 +60,14 @@ public:
 
     // Get a resource that is already loaded
     template <typename T>
-    static std::shared_ptr<T> resource(const jleRelativePath& path) {
+    static std::shared_ptr<T> resource(const jleRelativePath &path) {
         const auto prefix = path.pathPrefix();
         return std::static_pointer_cast<T>(
             _resources[prefix].at(path.relativePathStr()));
     }
 
     // Check to see if a resource is loaded
-    static bool isResourceLoaded(const jleRelativePath& path) {
+    static bool isResourceLoaded(const jleRelativePath &path) {
         const auto prefix = path.pathPrefix();
         auto it = _resources[prefix].find(path.relativePathStr());
         if (it == _resources[prefix].end()) {
@@ -78,20 +78,20 @@ public:
 
     // Unload all resources from in-memory in the given drive.
     // If the resources have no other users, they will be deleted
-    static void unloadAllResources(const std::string& drive) {
+    static void unloadAllResources(const std::string &drive) {
         LOG_VERBOSE << "Unloading in-memory file resources on drive " << drive
                     << ' ' << _resources[drive].size();
         _resources[drive].clear();
     }
 
-    static void unloadResource(const jleRelativePath& path) {
+    static void unloadResource(const jleRelativePath &path) {
         _resources[path.pathPrefix()].erase(path.relativePathStr());
     }
 
     static const std::unordered_map<
         std::string,
-        std::unordered_map<std::string, std::shared_ptr<void>>>&
-    resourcesMap() {
+        std::unordered_map<std::string, std::shared_ptr<void>>>
+        &resourcesMap() {
         return _resources;
     }
 
@@ -111,8 +111,8 @@ private:
             std::vector<std::string> keys_for_removal;
 
             // TODO: Only clean up the drive that is being used, not all of them
-            for (auto&& drives : _resources) {
-                for (auto&& res_kvp : drives.second) {
+            for (auto &&drives : _resources) {
+                for (auto &&res_kvp : drives.second) {
                     // If the use count is 1, it means that no other place is
                     // the resource used other than inside the unordered map,
                     // which means that it is time to delete it from memory.
@@ -122,7 +122,7 @@ private:
                 }
             }
 
-            for (auto&& key : keys_for_removal) {
+            for (auto &&key : keys_for_removal) {
                 _resources.erase(key);
             }
         }

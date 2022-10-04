@@ -20,7 +20,7 @@ public:
 
         auto p = _attachedToObject->parent();
         while (p) {
-            if (auto&& t = p->component<cTransform>()) {
+            if (auto &&t = p->component<cTransform>()) {
                 _x -= t->_x;
                 _y -= t->_y;
                 _depth -= t->_depth;
@@ -43,7 +43,7 @@ public:
 
         auto p = _attachedToObject->parent();
         while (p) {
-            if (auto&& t = p->component<cTransform>()) {
+            if (auto &&t = p->component<cTransform>()) {
                 _x -= t->_x;
                 _y -= t->_y;
             }
@@ -62,7 +62,7 @@ public:
 
         auto p = _attachedToObject->parent();
         while (p) {
-            if (auto&& t = p->component<cTransform>()) {
+            if (auto &&t = p->component<cTransform>()) {
                 _x -= t->_x;
             }
 
@@ -80,7 +80,7 @@ public:
 
         auto p = _attachedToObject->parent();
         while (p) {
-            if (auto&& t = p->component<cTransform>()) {
+            if (auto &&t = p->component<cTransform>()) {
                 _y -= t->_y;
             }
 
@@ -159,8 +159,8 @@ public:
         _dirty = true;
 
         // Also set all the child transforms dirty
-        auto& children = _attachedToObject->childObjects();
-        for (auto&& child : children) {
+        auto &children = _attachedToObject->childObjects();
+        for (auto &&child : children) {
             if (auto t = child->component<cTransform>()) {
                 t->_dirty = true;
                 t->dirty();
@@ -168,9 +168,9 @@ public:
         }
     }
 
-    void toJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json &j_out) override;
 
-    void fromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json &j_in) override;
 
 private:
     inline void refreshWorldCoordinates() {
@@ -179,7 +179,7 @@ private:
         _worldDepth = _depth;
         auto p = _attachedToObject->parent();
         while (p) {
-            if (auto&& t = p->component<cTransform>()) {
+            if (auto &&t = p->component<cTransform>()) {
                 _worldX += t->_x;
                 _worldY += t->_y;
                 _worldDepth += t->_depth;

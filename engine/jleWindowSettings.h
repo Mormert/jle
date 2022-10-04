@@ -24,7 +24,7 @@ struct WindowSettings {
 
 using json = nlohmann::json;
 
-inline void to_json(json& j, const WindowSettings& ws) {
+inline void to_json(json &j, const WindowSettings &ws) {
     j = json{{"window_title", ws.WindowTitle},
              {"window_width", ws.width},
              {"window_height", ws.height},
@@ -36,7 +36,7 @@ inline void to_json(json& j, const WindowSettings& ws) {
              {"windowCappedFps", ws.isCappedFps}};
 }
 
-inline void from_json(const json& j, WindowSettings& ws) {
+inline void from_json(const json &j, WindowSettings &ws) {
     j.at("window_title").get_to(ws.WindowTitle);
     j.at("window_width").get_to(ws.width);
     j.at("window_height").get_to(ws.height);

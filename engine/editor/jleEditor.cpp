@@ -155,7 +155,7 @@ void jleEditor::render() {
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        auto&& io = ImGui::GetIO();
+        auto &&io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
             GLFWwindow *backup_current_context = glfwGetCurrentContext();
             ImGui::UpdatePlatformWindows();
@@ -174,7 +174,7 @@ void jleEditor::initImgui() {
                                           sizeof(ImDrawVert),
                                           sizeof(ImDrawIdx));
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
+    ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     io.ConfigWindowsMoveFromTitleBarOnly = true;
@@ -213,7 +213,7 @@ void jleEditor::imguiTheme() {
     // text
 #define TEXT(v) ImVec4(0.860f, 0.930f, 0.890f, v)
 
-    auto& style = ImGui::GetStyle();
+    auto &style = ImGui::GetStyle();
     style.Colors[ImGuiCol_Text] = TEXT(0.78f);
     style.Colors[ImGuiCol_TextDisabled] = TEXT(0.28f);
     style.Colors[ImGuiCol_WindowBg] = ImVec4(0.13f, 0.14f, 0.17f, 1.00f);
@@ -281,6 +281,6 @@ void jleEditor::AddImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window) {
 }
 
 void jleEditor::mainEditorWindowResized(int w, int h) {
-    auto&& io = ImGui::GetIO();
+    auto &&io = ImGui::GetIO();
     io.FontGlobalScale = w / 1920.f;
 }

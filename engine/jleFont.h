@@ -18,7 +18,7 @@
 class jleFont : jleFileLoadInterface {
 
 public:
-    explicit jleFont(const std::string& path);
+    explicit jleFont(const std::string &path);
 
     jleFont() = default;
 
@@ -26,21 +26,21 @@ public:
 
     void addFontSizePixels(uint32_t sizePixels);
 
-    bool loadFromFile(const std::string& path) override;
+    bool loadFromFile(const std::string &path) override;
 
     // TODO: Move rendering to Text Rendering engine subsystem
     // TODO: Add scale as param
-    void renderText(const std::string& text,
+    void renderText(const std::string &text,
                     uint32_t fontSize,
                     float x,
                     float y,
                     float depth,
                     glm::vec3 color,
-                    const jleCamera& camera);
+                    const jleCamera &camera);
 
     static void renderTargetDimensions(int width,
                                        int height,
-                                       const jleCamera& camera);
+                                       const jleCamera &camera);
 
     static inline glm::mat4 sProj;
 

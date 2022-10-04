@@ -6,9 +6,9 @@
 
 jleNetScene::jleNetScene() : jleScene() {}
 
-jleNetScene::jleNetScene(const std::string& sceneName) : jleScene(sceneName) {}
+jleNetScene::jleNetScene(const std::string &sceneName) : jleScene(sceneName) {}
 
-void jleNetScene::toJson(nlohmann::json& j_out) {
+void jleNetScene::toJson(nlohmann::json &j_out) {
     jleScene::toJson(j_out);
     j_out["_connectAddress"] = _connectAddress;
 
@@ -17,7 +17,7 @@ void jleNetScene::toJson(nlohmann::json& j_out) {
     }
 }
 
-void jleNetScene::fromJson(const nlohmann::json& j_in) {
+void jleNetScene::fromJson(const nlohmann::json &j_in) {
     jleScene::fromJson(j_in);
     JLE_FROM_JSON_IF_EXISTS(j_in, _connectAddress, "_connectAddress");
 }
@@ -52,7 +52,7 @@ void jleNetScene::onSceneCreation() {
     _networking.connect(
         _connectAddress,
         [&]() { onNetConnected(); },
-        [&](int const& reason) {
+        [&](int const &reason) {
             if (reason == 1) {
                 onNetClosed("drop");
             }
@@ -65,9 +65,9 @@ void jleNetScene::onSceneCreation() {
 
 void jleNetScene::onSceneDestruction() { _networking.disconnect(); }
 
-void jleNetScene::processNetMessage(const std::string& event,
-                                    const nlohmann::json& message,
-                                    const std::string& sender) {
+void jleNetScene::processNetMessage(const std::string &event,
+                                    const nlohmann::json &message,
+                                    const std::string &sender) {
     if (event == "you_r_host") {
         _isHost = true;
         return;

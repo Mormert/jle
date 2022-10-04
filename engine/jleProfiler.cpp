@@ -27,7 +27,7 @@ void jleProfiler::NewFrame() {
     sProfilerData.clear();
 }
 
-std::vector<jleProfiler::jleProfilerData>& jleProfiler::
-    profilerDataLastFrame() {
+std::vector<jleProfiler::jleProfilerData>
+    &jleProfiler::profilerDataLastFrame() {
     return sProfilerDataLastFrame;
 }

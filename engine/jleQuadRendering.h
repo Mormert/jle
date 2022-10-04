@@ -26,21 +26,21 @@ public:
     ~jleQuadRendering();
 
     // Inherited via iQuadRenderingInternal
-    void sendTexturedQuad(texturedQuad& texturedQuad,
+    void sendTexturedQuad(texturedQuad &texturedQuad,
                           RenderingMethod renderingMethod);
 
-    void sendTexturedHeightQuad(texturedHeightQuad& texturedHeightQuad,
+    void sendTexturedHeightQuad(texturedHeightQuad &texturedHeightQuad,
                                 RenderingMethod renderingMethod);
 
-    void sendColoredQuad(ColoredQuad& coloredQuad,
+    void sendColoredQuad(ColoredQuad &coloredQuad,
                          RenderingMethod renderingMethod);
 
-    void queuerender(jleFramebuffer& framebufferOut, jleCamera& camera);
+    void queuerender(jleFramebuffer &framebufferOut, jleCamera &camera);
 
-    void render(jleFramebuffer& framebufferOut,
-                jleCamera& camera,
-                const std::vector<texturedQuad>& texturedQuads,
-                const std::vector<texturedHeightQuad>& texturedHeightQuads,
+    void render(jleFramebuffer &framebufferOut,
+                jleCamera &camera,
+                const std::vector<texturedQuad> &texturedQuads,
+                const std::vector<texturedHeightQuad> &texturedHeightQuads,
                 bool clearDepthColor);
 
     void clearBuffersForNextFrame();
@@ -51,12 +51,12 @@ private:
 
     void setupShaders();
 
-    void processTexturedQuads(const std::vector<texturedQuad>& texturedQuads,
-                              glm::mat4& view);
+    void processTexturedQuads(const std::vector<texturedQuad> &texturedQuads,
+                              glm::mat4 &view);
 
     void processTexturedHeightQuads(
-        const std::vector<texturedHeightQuad>& texturedHeightQuads,
-        glm::mat4& view,
+        const std::vector<texturedHeightQuad> &texturedHeightQuads,
+        glm::mat4 &view,
         glm::vec3 viewPos);
 
     float xyAngle = 0.f;
@@ -67,12 +67,12 @@ private:
     const float sinZ = sin(zAngle * glm::pi<float>() / 180.0);
 
     // --- For shadow purposes only (WIP)
-    void renderCube(glm::mat4& model, jleShader& shader);
+    void renderCube(glm::mat4 &model, jleShader &shader);
 
     jleShader shadowMappingShader;
     std::unique_ptr<jleFramebuffer> shadowMapBuffer;
 
-    void renderShadowCubes(glm::mat4& view);
+    void renderShadowCubes(glm::mat4 &view);
     // ---
 
     // Instanced version

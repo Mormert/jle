@@ -27,7 +27,7 @@ template <typename T>
 }
 
 inline std::shared_ptr<jleObject> jleTypeReflectionUtils::
-    instantiateObjectByString(const std::string& str) {
+    instantiateObjectByString(const std::string &str) {
     auto it = registeredObjectsRef().find(str);
     if (it == registeredObjectsRef().end()) {
         return nullptr;
@@ -36,7 +36,7 @@ inline std::shared_ptr<jleObject> jleTypeReflectionUtils::
 }
 
 inline std::shared_ptr<jleComponent> jleTypeReflectionUtils::
-    instantiateComponentByString(const std::string& str) {
+    instantiateComponentByString(const std::string &str) {
     auto it = registeredComponentsRef().find(str);
     if (it == registeredComponentsRef().end()) {
         return nullptr;
@@ -44,8 +44,8 @@ inline std::shared_ptr<jleComponent> jleTypeReflectionUtils::
     return it->second();
 }
 
-inline std::map<std::string, std::function<std::shared_ptr<jleObject>()>>&
-jleTypeReflectionUtils::registeredObjectsRef() {
+inline std::map<std::string, std::function<std::shared_ptr<jleObject>()>>
+    &jleTypeReflectionUtils::registeredObjectsRef() {
     if (!_registeredObjectsPtr) {
         _registeredObjectsPtr = std::make_unique<
             std::map<std::string,
@@ -54,8 +54,8 @@ jleTypeReflectionUtils::registeredObjectsRef() {
     return *_registeredObjectsPtr;
 }
 
-inline std::map<std::string, std::function<std::shared_ptr<jleComponent>()>>&
-jleTypeReflectionUtils::registeredComponentsRef() {
+inline std::map<std::string, std::function<std::shared_ptr<jleComponent>()>>
+    &jleTypeReflectionUtils::registeredComponentsRef() {
     if (!_registeredComponentsPtr) {
         _registeredComponentsPtr = std::make_unique<
             std::map<std::string,
@@ -66,7 +66,7 @@ jleTypeReflectionUtils::registeredComponentsRef() {
 
 template <typename T>
 inline jleObjectTypeRegistrator<T>::jleObjectTypeRegistrator(
-    const std::string& oName) {
+    const std::string &oName) {
 #ifndef NDEBUG
     std::cout << oName << " object registered.\n";
 #endif
@@ -80,7 +80,7 @@ inline jleObjectTypeRegistrator<T>::jleObjectTypeRegistrator(
 
 template <typename T>
 inline jleComponentTypeRegistrator<T>::jleComponentTypeRegistrator(
-    const std::string& cName) {
+    const std::string &cName) {
 #ifndef NDEBUG
     std::cout << cName << " component registered.\n";
 #endif

@@ -45,7 +45,7 @@ public:
 
     bool isGameHalted();
 
-    jleGame& gameRef();
+    jleGame &gameRef();
 
     static inline jleGameEngine *gEngine;
 

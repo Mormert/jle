@@ -9,9 +9,9 @@
 
 class jleProfilerWindow : public iEditorImGuiWindow {
 public:
-    jleProfilerWindow(const std::string& window_name);
+    jleProfilerWindow(const std::string &window_name);
 
-    virtual void update(jleGameEngine& ge) override;
+    virtual void update(jleGameEngine &ge) override;
 
     profilersWindow _profilersWindow;
 };

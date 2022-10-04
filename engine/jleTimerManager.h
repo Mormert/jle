@@ -12,13 +12,13 @@ public:
     // lifetime
     void executeFuncInSecondsSharedData(double seconds,
                                         void (*f)(std::shared_ptr<void>),
-                                        const std::shared_ptr<void>& data);
+                                        const std::shared_ptr<void> &data);
 
     // Will not run if data is invalid when called (no crash), and also not
     // impact object lifetime
     void executeFuncInSecondsWeakData(double seconds,
                                       void (*f)(std::weak_ptr<void>),
-                                      const std::weak_ptr<void>& data);
+                                      const std::weak_ptr<void> &data);
 
 private:
     friend class jleCore;

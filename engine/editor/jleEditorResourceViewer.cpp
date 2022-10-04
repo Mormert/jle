@@ -4,7 +4,7 @@
 #include "ImGui/imgui.h"
 #include "jleResourceHolder.h"
 
-void jleEditorResourceViewer::update(jleGameEngine& ge) {
+void jleEditorResourceViewer::update(jleGameEngine &ge) {
     if (!isOpened) {
         return;
     }
@@ -13,7 +13,7 @@ void jleEditorResourceViewer::update(jleGameEngine& ge) {
     ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_NoCollapse);
 
     std::vector<std::string> resourcesToBeUnloaded;
-    for (auto&& drive : jleResourceHolder::resourcesMap()) {
+    for (auto &&drive : jleResourceHolder::resourcesMap()) {
         const std::string treeNodeStr =
             drive.first + " (" + std::to_string(drive.second.size()) + ")";
 
@@ -26,7 +26,7 @@ void jleEditorResourceViewer::update(jleGameEngine& ge) {
         }
         if (open) {
 
-            for (auto&& path : drive.second) {
+            for (auto &&path : drive.second) {
                 const std::string pathStr =
                     path.first + " (" +
                     std::to_string(path.second.use_count() - 1) + " users)";
@@ -43,12 +43,12 @@ void jleEditorResourceViewer::update(jleGameEngine& ge) {
     }
 
     // Postpone the unloading to outside the loop
-    for (auto&& resource : resourcesToBeUnloaded) {
+    for (auto &&resource : resourcesToBeUnloaded) {
         jleResourceHolder::unloadResource(jleRelativePath{resource});
     }
 
     ImGui::End();
 }
 
-jleEditorResourceViewer::jleEditorResourceViewer(const std::string& window_name)
+jleEditorResourceViewer::jleEditorResourceViewer(const std::string &window_name)
     : iEditorImGuiWindow{window_name} {}

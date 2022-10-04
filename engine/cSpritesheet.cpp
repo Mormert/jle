@@ -20,7 +20,7 @@ void cSpritesheet::update(float dt) {
         return;
     }
 
-    auto& texture = _spritesheet->_imageTexture;
+    auto &texture = _spritesheet->_imageTexture;
     if (texture != nullptr && _hasEntity) {
         texturedQuad quad{texture};
         quad.x = _transform->worldX() + _spritesheetEntityCache.sourceSize.x -
@@ -41,14 +41,14 @@ void cSpritesheet::update(float dt) {
     }
 }
 
-void cSpritesheet::toJson(nlohmann::json& j_out) {
+void cSpritesheet::toJson(nlohmann::json &j_out) {
     j_out["_spritesheetPath"] = _spritesheetPath;
     j_out["_spriteName"] = _spriteName;
     j_out["_offsetX"] = _offset.x;
     j_out["_offsetY"] = _offset.y;
 }
 
-void cSpritesheet::fromJson(const nlohmann::json& j_in) {
+void cSpritesheet::fromJson(const nlohmann::json &j_in) {
     _spritesheetPath = j_in["_spritesheetPath"];
     _spriteName = j_in["_spriteName"];
     _offset.x = j_in.value("_offsetX", 0);
@@ -59,7 +59,7 @@ void cSpritesheet::fromJson(const nlohmann::json& j_in) {
     entity(_spriteName);
 }
 
-void cSpritesheet::entity(const std::string& entityName) {
+void cSpritesheet::entity(const std::string &entityName) {
     if (!_spritesheet) {
         return;
     }

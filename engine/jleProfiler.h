@@ -32,7 +32,7 @@ public:
         int _parentIndex;
     };
 
-    static std::vector<jleProfilerData>& profilerDataLastFrame();
+    static std::vector<jleProfilerData> &profilerDataLastFrame();
 
 private:
     static inline int sCurrentProfilerData = -1;

@@ -37,7 +37,7 @@ public:
 
     explicit profilerGraph(size_t framesCount) {
         frames.resize(framesCount);
-        for (auto& frame : frames)
+        for (auto &frame : frames)
             frame.tasks.reserve(100);
         frameWidth = 3;
         frameSpacing = 1;
@@ -45,7 +45,7 @@ public:
     }
 
     void loadFrameData(const ProfilerTask *tasks, size_t count) {
-        auto& currFrame = frames[currFrameIndex];
+        auto &currFrame = frames[currFrameIndex];
         currFrame.tasks.resize(0);
         for (size_t taskIndex = 0; taskIndex < count; taskIndex++) {
             if (taskIndex == 0)
@@ -64,7 +64,7 @@ public:
 
         for (size_t taskIndex = 0; taskIndex < currFrame.tasks.size();
              taskIndex++) {
-            auto& task = currFrame.tasks[taskIndex];
+            auto &task = currFrame.tasks[taskIndex];
             auto it = taskNameToStatsIndex.find(task.name);
             if (it == taskNameToStatsIndex.end()) {
                 taskNameToStatsIndex[task.name] = taskStats.size();
@@ -99,7 +99,7 @@ public:
 
 private:
     void rebuildTaskStats(size_t endFrame, size_t framesCount) {
-        for (auto& taskStat : taskStats) {
+        for (auto &taskStat : taskStats) {
             taskStat.maxTime = -1.0f;
             taskStat.priorityOrder = size_t(-1);
             taskStat.onScreenIndex = size_t(-1);
@@ -108,11 +108,11 @@ private:
         for (size_t frameNumber = 0; frameNumber < framesCount; frameNumber++) {
             size_t frameIndex =
                 (endFrame - 1 - frameNumber + frames.size()) % frames.size();
-            auto& frame = frames[frameIndex];
+            auto &frame = frames[frameIndex];
             for (size_t taskIndex = 0; taskIndex < frame.tasks.size();
                  taskIndex++) {
-                auto& task = frame.tasks[taskIndex];
-                auto& stats = taskStats[frame.taskStatsIndex[taskIndex]];
+                auto &task = frame.tasks[taskIndex];
+                auto &stats = taskStats[frame.taskStatsIndex[taskIndex]];
                 stats.maxTime =
                     std::max(stats.maxTime, task.endTime - task.startTime);
             }
@@ -156,8 +156,8 @@ private:
             if (framePos.x < graphPos.x + 1)
                 break;
             glm::vec2 taskPos = framePos + glm::vec2(0.0f, 0.0f);
-            auto& frame = frames[frameIndex];
-            for (const auto& task : frame.tasks) {
+            auto &frame = frames[frameIndex];
+            for (const auto &task : frame.tasks) {
                 float taskStartHeight =
                     (float(task.startTime) / maxFrameTime) * graphSize.y;
                 float taskEndHeight =
@@ -187,13 +187,13 @@ private:
         float nameOffset = 30.0f;
         glm::vec2 textMargin = glm::vec2(5.0f, -3.0f);
 
-        auto& currFrame =
+        auto &currFrame =
             frames[(currFrameIndex - frameIndexOffset - 1 + 2 * frames.size()) %
                    frames.size()];
         auto maxTasksCount = size_t(
             legendSize.y / (markerRightRectHeight + markerRightRectSpacing));
 
-        for (auto& taskStat : taskStats) {
+        for (auto &taskStat : taskStats) {
             taskStat.onScreenIndex = size_t(-1);
         }
 
@@ -201,8 +201,8 @@ private:
         size_t tasksShownCount = 0;
         for (size_t taskIndex = 0; taskIndex < currFrame.tasks.size();
              taskIndex++) {
-            auto& task = currFrame.tasks[taskIndex];
-            auto& stat = taskStats[currFrame.taskStatsIndex[taskIndex]];
+            auto &task = currFrame.tasks[taskIndex];
+            auto &stat = taskStats[currFrame.taskStatsIndex[taskIndex]];
 
             if (stat.priorityOrder >= tasksToShow)
                 continue;

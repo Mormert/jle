@@ -15,11 +15,11 @@ public:
 
     void update(float dt) override;
 
-    void toJson(nlohmann::json& j_out) override;
+    void toJson(nlohmann::json &j_out) override;
 
-    void fromJson(const nlohmann::json& j_in) override;
+    void fromJson(const nlohmann::json &j_in) override;
 
-    int addAsepritePath(const std::string& path);
+    int addAsepritePath(const std::string &path);
 
     void currentAseprite(unsigned int index);
 
@@ -27,7 +27,7 @@ public:
 
     [[nodiscard]] unsigned int currentAsepriteIndex() const;
 
-    [[nodiscard]] jleAseprite& activeAsepriteRef();
+    [[nodiscard]] jleAseprite &activeAsepriteRef();
 
     std::vector<jleJsonString> _asepritePaths;
 

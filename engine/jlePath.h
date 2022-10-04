@@ -16,10 +16,10 @@ public:
     friend class jleAbsolutePath;
 
     // Constructs a relative path directly
-    explicit jleRelativePath(const std::string& relativePath);
+    explicit jleRelativePath(const std::string &relativePath);
 
     // Constructs a relative path from an absolute path
-    explicit jleRelativePath(const jleAbsolutePath& absolutePath);
+    explicit jleRelativePath(const jleAbsolutePath &absolutePath);
 
     // Returns the drive, like "GR:"
     const std::string pathPrefix() const;
@@ -40,10 +40,10 @@ public:
     friend class jleRelativePath;
 
     // Constructs an absolute path directly
-    explicit jleAbsolutePath(const std::string& absoultePath);
+    explicit jleAbsolutePath(const std::string &absoultePath);
 
     // Constructs an absolute path from a relative path
-    explicit jleAbsolutePath(const jleRelativePath& relativePath);
+    explicit jleAbsolutePath(const jleRelativePath &relativePath);
 
     [[nodiscard]] std::string relativePathStr() const;
 

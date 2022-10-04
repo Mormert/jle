@@ -21,12 +21,12 @@ public:
                             unsigned int width,
                             unsigned int height);
 
-    void render(jleFramebuffer& framebufferOut, jleCamera& camera);
+    void render(jleFramebuffer &framebufferOut, jleCamera &camera);
 
     void clearBuffersForNextFrame();
 
-    jleQuadRendering& quads();
-    jleTextRendering& texts();
+    jleQuadRendering &quads();
+    jleTextRendering &texts();
 
 private:
     std::unique_ptr<jleQuadRendering> _quads;

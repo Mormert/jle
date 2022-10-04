@@ -17,7 +17,7 @@ public:
 
     virtual ~iEditorImGuiWindow() = default;
 
-    virtual void update(jleGameEngine& ge) = 0;
+    virtual void update(jleGameEngine &ge) = 0;
 
     virtual void openWindow() { isOpened = true; }
 
@@ -25,7 +25,7 @@ public:
 
     bool opened() const { return isOpened; }
 
-    const std::string& windowName() { return window_name; }
+    const std::string &windowName() { return window_name; }
 
 protected:
     std::string window_name;

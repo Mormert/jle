@@ -16,7 +16,7 @@ void oCharacter::setupDefaultObject() {
 }
 
 void oCharacter::start() {
-    const auto&& placement = _hexagonItem.hexagonItemPlacement();
+    const auto &&placement = _hexagonItem.hexagonItemPlacement();
     hexagonPlacementTeleport(placement.x, placement.y);
 
     _currentHP = _maxHP;
@@ -33,7 +33,7 @@ void oCharacter::update(float dt) {
                                hexHelperFunctions::randInt(0, 10));
     }
     const auto lerpVec2 =
-        [](const glm::vec2& a, const glm::vec2& b, float alpha) {
+        [](const glm::vec2 &a, const glm::vec2 &b, float alpha) {
             return a * alpha + b * (1.f - alpha);
         };
 
@@ -132,7 +132,7 @@ void oCharacter::hexagonPlacementInterp(int q, int r) {
     _interpingAlpha = 0.f;
 }
 
-void oCharacter::toJson(nlohmann::json& j_out) {
+void oCharacter::toJson(nlohmann::json &j_out) {
     j_out["_hexagonItem"] = _hexagonItem;
 
     j_out["_interpBetweenHexasSpeed"] = _interpBetweenHexasSpeed;
@@ -162,7 +162,7 @@ void oCharacter::toJson(nlohmann::json& j_out) {
     j_out["_southwestTextureY"] = _southwestTextureY;
 }
 
-void oCharacter::fromJson(const nlohmann::json& j_in) {
+void oCharacter::fromJson(const nlohmann::json &j_in) {
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _hexagonItem, "_hexagonItem", {});
 
     JLE_FROM_JSON_WITH_DEFAULT(

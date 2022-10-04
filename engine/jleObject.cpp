@@ -34,15 +34,15 @@ void jleObject::destroyObject() { _pendingKill = true; }
 
 int jleObject::componentCount() { return _components.size(); }
 
-std::vector<std::shared_ptr<jleComponent>>& jleObject::customComponents() {
+std::vector<std::shared_ptr<jleComponent>> &jleObject::customComponents() {
     return _dynamicCustomComponents;
 }
 
-std::vector<std::shared_ptr<jleObject>>& jleObject::childObjects() {
+std::vector<std::shared_ptr<jleObject>> &jleObject::childObjects() {
     return _childObjects;
 }
 
-void jleObject::attachChildObject(const std::shared_ptr<jleObject>& object) {
+void jleObject::attachChildObject(const std::shared_ptr<jleObject> &object) {
     // The objects must live in the same scene
     assert(object->_containedInScene == _containedInScene);
     if (object->_parentObject) {
@@ -78,7 +78,7 @@ void jleObject::detachObjectFromParent() {
     if (_parentObject) {
         int i = 0;
         std::shared_ptr<jleObject> thiz;
-        for (auto&& o : _parentObject->_childObjects) {
+        for (auto &&o : _parentObject->_childObjects) {
             if (o.get() == this) {
                 thiz = o;
                 _parentObject->_childObjects.erase(
@@ -96,7 +96,7 @@ void jleObject::detachObjectFromParent() {
 
 jleObject::jleObject(jleScene *scene) : _containedInScene{scene} {}
 
-void jleObject::saveObjectTemplate(jleRelativePath& path) {
+void jleObject::saveObjectTemplate(jleRelativePath &path) {
     std::string sceneSavePath;
     if (!path.relativePathStr().empty()) {
         sceneSavePath = path.absolutePathStr();
@@ -115,14 +115,14 @@ void jleObject::saveObjectTemplate(jleRelativePath& path) {
     sceneSave.close();
 }
 
-void jleObject::injectTemplate(const nlohmann::json& json) {
-    auto&& thiz = shared_from_this();
+void jleObject::injectTemplate(const nlohmann::json &json) {
+    auto &&thiz = shared_from_this();
     from_json(json, thiz);
     fromJson(json);
 }
 
 std::shared_ptr<jleObject> jleObject::spawnChildObjectFromTemplate(
-    const jleRelativePath& path) {
+    const jleRelativePath &path) {
     std::ifstream i(path.absolutePathStr());
     if (i.good()) {
         nlohmann::json j;
@@ -172,7 +172,7 @@ jleObject *jleObject::parent() { return _parentObject; }
 
 std::weak_ptr<jleObject> jleObject::weakPtrToThis() { return weak_from_this(); }
 
-void to_json(nlohmann::json& j, const std::shared_ptr<jleObject>& o) {
+void to_json(nlohmann::json &j, const std::shared_ptr<jleObject> &o) {
     // If this object is based on a template object, then only save that
     // reference
     if (o->_templatePath.has_value()) {
@@ -190,13 +190,13 @@ void to_json(nlohmann::json& j, const std::shared_ptr<jleObject>& o) {
 }
 
 std::shared_ptr<jleObject> jleObject::processChildJsonData(
-    const nlohmann::json& j, std::shared_ptr<jleObject>& o) {
+    const nlohmann::json &j, std::shared_ptr<jleObject> &o) {
     std::string objectsName, instanceName;
     j.at("__obj_name").get_to(objectsName);
     j.at("_instance_name").get_to(instanceName);
 
     std::optional<std::shared_ptr<jleObject>> existingObject;
-    for (auto&& existing_object : o->childObjects()) {
+    for (auto &&existing_object : o->childObjects()) {
         if (existing_object->_instanceName == instanceName) {
             existingObject = existing_object;
             break;
@@ -223,16 +223,16 @@ void jleObject::DuplicateObject_Editor() {
     _containedInScene->spawnObject(j);
 }
 
-void jleObject::processJsonData(const nlohmann::json& j,
-                                std::shared_ptr<jleObject>& o) {
+void jleObject::processJsonData(const nlohmann::json &j,
+                                std::shared_ptr<jleObject> &o) {
     JLE_FROM_JSON_IF_EXISTS(j, o->_instanceName, "_instance_name")
 
-    for (auto&& custom_components_json : j.at("_custom_components")) {
+    for (auto &&custom_components_json : j.at("_custom_components")) {
         std::string componentName;
         custom_components_json.at("_comp_name").get_to(componentName);
 
         std::optional<std::shared_ptr<jleComponent>> existingComponent;
-        for (auto&& existing_component : o->customComponents()) {
+        for (auto &&existing_component : o->customComponents()) {
             if (existing_component->componentName() == componentName) {
                 existingComponent = existing_component;
                 break;
@@ -267,7 +267,7 @@ void jleObject::processJsonData(const nlohmann::json& j,
     }
 }
 
-nlohmann::json jleObject::objectTemplateJson(const jleRelativePath& path) {
+nlohmann::json jleObject::objectTemplateJson(const jleRelativePath &path) {
 
     // TODO: use caching
     std::ifstream i(path.absolutePathStr());
@@ -283,7 +283,7 @@ nlohmann::json jleObject::objectTemplateJson(const jleRelativePath& path) {
     return {};
 }
 
-void from_json(const nlohmann::json& json, std::shared_ptr<jleObject>& object) {
+void from_json(const nlohmann::json &json, std::shared_ptr<jleObject> &object) {
 
     // Check if this object is based on an object template
     const auto otemp_it = json.find("_otemp");

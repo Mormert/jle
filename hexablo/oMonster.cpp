@@ -14,16 +14,16 @@ void oMonster::update(float dt) {
     lookAtPlayer();
 }
 
-void oMonster::toJson(nlohmann::json& j_out) { oCharacter::toJson(j_out); }
+void oMonster::toJson(nlohmann::json &j_out) { oCharacter::toJson(j_out); }
 
-void oMonster::fromJson(const nlohmann::json& j_in) {
+void oMonster::fromJson(const nlohmann::json &j_in) {
     oCharacter::fromJson(j_in);
 }
 
 void oMonster::lookAtPlayer() {
 
-    if (auto&& p = oMyPlayer::sMyPlayerPtr.lock()) {
-        auto&& transform = p->component<cTransform>();
+    if (auto &&p = oMyPlayer::sMyPlayerPtr.lock()) {
+        auto &&transform = p->component<cTransform>();
         lookAtPosition(transform->worldX(), transform->worldY());
     }
 }

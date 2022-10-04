@@ -16,7 +16,7 @@ void oFireball::start() {}
 void oFireball::update(float dt) {
 
     const auto lerpVec2 =
-        [](const glm::vec2& a, const glm::vec2& b, float alpha) {
+        [](const glm::vec2 &a, const glm::vec2 &b, float alpha) {
             return a * alpha + b * (1.f - alpha);
         };
 
@@ -37,17 +37,17 @@ void oFireball::update(float dt) {
     }
 }
 
-void oFireball::toJson(nlohmann::json& j_out) {
+void oFireball::toJson(nlohmann::json &j_out) {
     j_out["_movingTowardsR"] = _movingTowardsR;
     j_out["_movingTowardsQ"] = _movingTowardsQ;
 }
 
-void oFireball::fromJson(const nlohmann::json& j_in) {
+void oFireball::fromJson(const nlohmann::json &j_in) {
     JLE_FROM_JSON_IF_EXISTS(j_in, _movingTowardsR, "_movingTowardsR")
     JLE_FROM_JSON_IF_EXISTS(j_in, _movingTowardsQ, "_movingTowardsQ")
 }
 
-void oFireball::fromNet(const nlohmann::json& j_in) {
+void oFireball::fromNet(const nlohmann::json &j_in) {
 
     JLE_FROM_JSON_IF_EXISTS(j_in, _movingTowardsR, "r")
     JLE_FROM_JSON_IF_EXISTS(j_in, _movingTowardsQ, "q")
@@ -72,7 +72,7 @@ void oFireball::fromNet(const nlohmann::json& j_in) {
     _interpingAlpha = 0.f;
 }
 
-void oFireball::toNet(nlohmann::json& j_out) {
+void oFireball::toNet(nlohmann::json &j_out) {
     j_out["r"] = _movingTowardsR;
     j_out["q"] = _movingTowardsQ;
     j_out["x"] = _transform->worldX();

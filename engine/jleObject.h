@@ -35,10 +35,10 @@ public:
     std::shared_ptr<T> addCustomComponent(bool start_immediate = false);
 
     std::shared_ptr<jleComponent> addComponent(
-        const std::string& component_name);
+        const std::string &component_name);
 
     std::shared_ptr<jleComponent> addCustomComponent(
-        const std::string& component_name, bool start_immediate = false);
+        const std::string &component_name, bool start_immediate = false);
 
     template <typename T>
     std::shared_ptr<T> component();
@@ -52,14 +52,14 @@ public:
     // Has bad performance since it uses JSON, should only be used in the editor
     void DuplicateObject_Editor();
 
-    std::shared_ptr<jleObject> spawnChildObject(const std::string& objName);
+    std::shared_ptr<jleObject> spawnChildObject(const std::string &objName);
 
-    void saveObjectTemplate(jleRelativePath& path);
+    void saveObjectTemplate(jleRelativePath &path);
 
     std::shared_ptr<jleObject> spawnChildObjectFromTemplate(
-        const jleRelativePath& path);
+        const jleRelativePath &path);
 
-    void injectTemplate(const nlohmann::json& json);
+    void injectTemplate(const nlohmann::json &json);
 
     // Called from components
     void destroyComponent(jleComponent *component);
@@ -68,29 +68,29 @@ public:
 
     int componentCount();
 
-    std::vector<std::shared_ptr<jleComponent>>& customComponents();
+    std::vector<std::shared_ptr<jleComponent>> &customComponents();
 
-    void attachChildObject(const std::shared_ptr<jleObject>& object);
+    void attachChildObject(const std::shared_ptr<jleObject> &object);
 
     void detachObjectFromParent();
 
-    std::vector<std::shared_ptr<jleObject>>& childObjects();
+    std::vector<std::shared_ptr<jleObject>> &childObjects();
 
-    void toJson(nlohmann::json& j_out) override {}
+    void toJson(nlohmann::json &j_out) override {}
 
-    void fromJson(const nlohmann::json& j_in) override {}
+    void fromJson(const nlohmann::json &j_in) override {}
 
     jleObject *parent();
 
     [[nodiscard]] std::weak_ptr<jleObject> weakPtrToThis();
 
-    static void processJsonData(const nlohmann::json& j,
-                                std::shared_ptr<jleObject>& o);
+    static void processJsonData(const nlohmann::json &j,
+                                std::shared_ptr<jleObject> &o);
 
     static std::shared_ptr<jleObject> processChildJsonData(
-        const nlohmann::json& j, std::shared_ptr<jleObject>& o);
+        const nlohmann::json &j, std::shared_ptr<jleObject> &o);
 
-    static nlohmann::json objectTemplateJson(const jleRelativePath& path);
+    static nlohmann::json objectTemplateJson(const jleRelativePath &path);
 
     // If this object is based on a template
     std::optional<std::string> _templatePath{};
@@ -132,14 +132,14 @@ protected:
 
     virtual void setupDefaultObject() {}
 
-    friend void to_json(nlohmann::json& j, const std::shared_ptr<jleObject>& o);
+    friend void to_json(nlohmann::json &j, const std::shared_ptr<jleObject> &o);
 
-    friend void from_json(const nlohmann::json& j,
-                          std::shared_ptr<jleObject>& o);
+    friend void from_json(const nlohmann::json &j,
+                          std::shared_ptr<jleObject> &o);
 };
 
-void to_json(nlohmann::json& j, const std::shared_ptr<jleObject>& o);
+void to_json(nlohmann::json &j, const std::shared_ptr<jleObject> &o);
 
-void from_json(const nlohmann::json& j, std::shared_ptr<jleObject>& o);
+void from_json(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
 
 #include "jleObject.inl"

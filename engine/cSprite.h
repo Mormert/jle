@@ -16,7 +16,7 @@ class cSprite : public jleComponent {
 public:
     cSprite(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
-    void createAndSetTextureFromPath(const std::string& path);
+    void createAndSetTextureFromPath(const std::string &path);
 
     void texture(std::shared_ptr<jleTexture> texture);
 
@@ -28,9 +28,9 @@ public:
 
     virtual void update(float dt) override;
 
-    virtual void toJson(nlohmann::json& j_out) override;
+    virtual void toJson(nlohmann::json &j_out) override;
 
-    virtual void fromJson(const nlohmann::json& j_in) override;
+    virtual void fromJson(const nlohmann::json &j_in) override;
 
 private:
     std::string texturePath = "";

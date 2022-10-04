@@ -38,12 +38,12 @@ void hexHexagonItem::hexagonItemPlacement(int q, int r) {
     _hexagonR = r;
 }
 
-void to_json(nlohmann::json& j, const hexHexagonItem& h) {
+void to_json(nlohmann::json &j, const hexHexagonItem &h) {
     j["_hexagonQ"] = h._hexagonQ;
     j["_hexagonR"] = h._hexagonR;
 }
 
-void from_json(const nlohmann::json& j, hexHexagonItem& h) {
+void from_json(const nlohmann::json &j, hexHexagonItem &h) {
     JLE_FROM_JSON_WITH_DEFAULT(j, h._hexagonQ, "_hexagonQ", 0.f);
     JLE_FROM_JSON_WITH_DEFAULT(j, h._hexagonR, "_hexagonR", 0.f);
 }

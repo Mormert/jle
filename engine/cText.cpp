@@ -12,7 +12,7 @@ void cText::start() {
     _transform = _attachedToObject->addDependencyComponent<cTransform>(this);
 }
 
-void cText::toJson(nlohmann::json& j_out) {
+void cText::toJson(nlohmann::json &j_out) {
     j_out = nlohmann::json{
         {"fontPath", _fontPath},
         {"text", _text},
@@ -24,7 +24,7 @@ void cText::toJson(nlohmann::json& j_out) {
     };
 }
 
-void cText::fromJson(const nlohmann::json& j_in) {
+void cText::fromJson(const nlohmann::json &j_in) {
     _fontPath = j_in.at("fontPath");
     _text = j_in.at("text");
     _fontSize = j_in.at("fontSize");
@@ -54,4 +54,4 @@ void cText::update(float dt) {
                                                    _colorA);
 }
 
-void cText::text(const std::string& text) { _text = text; }
+void cText::text(const std::string &text) { _text = text; }

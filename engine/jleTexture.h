@@ -11,18 +11,18 @@ class jleImage;
 
 class jleTexture {
 public:
-    jleTexture(const jleTexture&) = delete;
-    jleTexture& operator=(const jleTexture&) = delete;
-    jleTexture(jleTexture&& e) = delete;
-    jleTexture& operator=(jleTexture&& e) = delete;
+    jleTexture(const jleTexture &) = delete;
+    jleTexture &operator=(const jleTexture &) = delete;
+    jleTexture(jleTexture &&e) = delete;
+    jleTexture &operator=(jleTexture &&e) = delete;
 
     jleTexture() = default;
-    explicit jleTexture(const jleImage& image);
+    explicit jleTexture(const jleImage &image);
 
     // Utilizes the resource holder such that only one copy of the resource will
     // exists, and if it does not exist, the program will construct it and store
     // it for later use
-    static std::shared_ptr<jleTexture> fromPath(const jleRelativePath& path);
+    static std::shared_ptr<jleTexture> fromPath(const jleRelativePath &path);
 
     ~jleTexture();
 

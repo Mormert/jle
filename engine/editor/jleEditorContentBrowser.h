@@ -8,9 +8,9 @@
 
 class jleEditorContentBrowser : public iEditorImGuiWindow {
 public:
-    explicit jleEditorContentBrowser(const std::string& window_name);
+    explicit jleEditorContentBrowser(const std::string &window_name);
 
-    void update(jleGameEngine& ge) override;
+    void update(jleGameEngine &ge) override;
 
 private:
     std::shared_ptr<jleTexture> _fileIcon;
@@ -27,18 +27,18 @@ private:
     std::filesystem::path _fileSelected;
 
     std::pair<bool, uint32_t> directoryTreeViewRecursive(
-        const std::filesystem::path& path,
+        const std::filesystem::path &path,
         uint32_t *count,
         int *selection_mask);
 
     void contentHierarchy(std::string directoryPath,
-                          const std::string& folderName);
+                          const std::string &folderName);
 
     void contentBrowser();
 
-    void selectedFilePopup(std::filesystem::path& file);
+    void selectedFilePopup(std::filesystem::path &file);
 
-    void selectedFilePopupScene(std::filesystem::path& file);
+    void selectedFilePopupScene(std::filesystem::path &file);
 
-    void selectedFilePopupObjectTemplate(std::filesystem::path& file);
+    void selectedFilePopupObjectTemplate(std::filesystem::path &file);
 };

@@ -45,7 +45,7 @@ int32_t jleTexture::height() { return _height; }
 
 unsigned int jleTexture::id() { return _id; }
 
-jleTexture::jleTexture(const jleImage& image) {
+jleTexture::jleTexture(const jleImage &image) {
     _width = image.width();
     _height = image.height();
     _nrChannels = image.nrChannels();
@@ -110,7 +110,7 @@ jleTexture::jleTexture(const jleImage& image) {
     jleStaticOpenGLState::globalActiveTexture = 0;
 }
 
-std::shared_ptr<jleTexture> jleTexture::fromPath(const jleRelativePath& path) {
+std::shared_ptr<jleTexture> jleTexture::fromPath(const jleRelativePath &path) {
     if (!jleResourceHolder::isResourceLoaded(path)) {
 
         auto texture = std::make_shared<jleTexture>(

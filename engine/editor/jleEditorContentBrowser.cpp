@@ -11,7 +11,7 @@
 #include <fstream>
 #include <string>
 
-jleEditorContentBrowser::jleEditorContentBrowser(const std::string& window_name)
+jleEditorContentBrowser::jleEditorContentBrowser(const std::string &window_name)
     : iEditorImGuiWindow(window_name) {
     _directoryIcon =
         jleTexture::fromPath(jleRelativePath{"ED:/icons/directory.png"});
@@ -33,7 +33,7 @@ jleEditorContentBrowser::jleEditorContentBrowser(const std::string& window_name)
 #define BIT(x) (1 << x)
 
 std::pair<bool, uint32_t> jleEditorContentBrowser::directoryTreeViewRecursive(
-    const std::filesystem::path& path, uint32_t *count, int *selection_mask) {
+    const std::filesystem::path &path, uint32_t *count, int *selection_mask) {
     ImGuiTreeNodeFlags base_flags =
         ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
         ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_SpanFullWidth;
@@ -41,7 +41,7 @@ std::pair<bool, uint32_t> jleEditorContentBrowser::directoryTreeViewRecursive(
     bool any_node_clicked = false;
     uint32_t node_clicked = 0;
 
-    for (const auto& entry : std::filesystem::directory_iterator(path)) {
+    for (const auto &entry : std::filesystem::directory_iterator(path)) {
         ImGuiTreeNodeFlags node_flags = base_flags;
         const bool is_selected = (*selection_mask & BIT(*count)) != 0;
         if (is_selected)
@@ -88,7 +88,7 @@ std::pair<bool, uint32_t> jleEditorContentBrowser::directoryTreeViewRecursive(
                 ImGui::TreePop();
             }
             else {
-                for (const auto& e :
+                for (const auto &e :
                      std::filesystem::recursive_directory_iterator(
                          entry.path()))
                     (*count)--;
@@ -100,14 +100,14 @@ std::pair<bool, uint32_t> jleEditorContentBrowser::directoryTreeViewRecursive(
 }
 
 void jleEditorContentBrowser::contentHierarchy(std::string directoryPath,
-                                               const std::string& folderName) {
+                                               const std::string &folderName) {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0.0f, 0.0f});
 
     ImGui::Begin("Content Hierarchy");
 
     if (ImGui::CollapsingHeader(folderName.c_str())) {
         uint32_t count = 0;
-        for (const auto& entry :
+        for (const auto &entry :
              std::filesystem::recursive_directory_iterator(directoryPath))
             count++;
 
@@ -136,7 +136,7 @@ void jleEditorContentBrowser::contentHierarchy(std::string directoryPath,
     ImGui::PopStyleVar();
 }
 
-void jleEditorContentBrowser::update(jleGameEngine& ge) {
+void jleEditorContentBrowser::update(jleGameEngine &ge) {
     if (!isOpened) {
         return;
     }
@@ -189,7 +189,7 @@ void jleEditorContentBrowser::contentBrowser() {
         int buttonID = 1;
         bool isFileSelected = false;
 
-        for (auto const& dir_entry :
+        for (auto const &dir_entry :
              std::filesystem::directory_iterator(_selectedDirectory)) {
             if (!(dir_entry.is_regular_file() || dir_entry.is_directory())) {
                 continue;
@@ -268,7 +268,7 @@ void jleEditorContentBrowser::contentBrowser() {
     ImGui::End();
 }
 
-void jleEditorContentBrowser::selectedFilePopup(std::filesystem::path& file) {
+void jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file) {
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
@@ -383,7 +383,7 @@ void jleEditorContentBrowser::selectedFilePopup(std::filesystem::path& file) {
 }
 
 void jleEditorContentBrowser::selectedFilePopupScene(
-    std::filesystem::path& file) {
+    std::filesystem::path &file) {
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
@@ -396,7 +396,7 @@ void jleEditorContentBrowser::selectedFilePopupScene(
             sceneName.resize(dot);
         }
 
-        auto& game = ((jleGameEngine *)jleCore::core)->gameRef();
+        auto &game = ((jleGameEngine *)jleCore::core)->gameRef();
 
         if (!game.checkSceneIsActive(sceneName)) {
             auto scene = game.createScene<jleScene>();
@@ -416,7 +416,7 @@ void jleEditorContentBrowser::selectedFilePopupScene(
 }
 
 void jleEditorContentBrowser::selectedFilePopupObjectTemplate(
-    std::filesystem::path& file) {
+    std::filesystem::path &file) {
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
 
@@ -428,7 +428,7 @@ void jleEditorContentBrowser::selectedFilePopupObjectTemplate(
             objectName.resize(dot);
         }
 
-        if (auto&& scene =
+        if (auto &&scene =
                 jleEditorSceneObjectsWindow::GetSelectedScene().lock()) {
             scene->spawnTemplateObject(
                 jleRelativePath{jleAbsolutePath{file.string()}});

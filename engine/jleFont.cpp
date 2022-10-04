@@ -22,7 +22,7 @@
 #include <cassert>
 #include <iostream>
 
-jleFont::jleFont(const std::string& path) { loadFromFile(path); }
+jleFont::jleFont(const std::string &path) { loadFromFile(path); }
 
 jleFont::~jleFont() {
     if (sInitialized && _fontLoaded) {
@@ -71,13 +71,13 @@ void jleFont::deInit() {
     sInitialized = false;
 }
 
-void jleFont::renderText(const std::string& text,
+void jleFont::renderText(const std::string &text,
                          uint32_t fontSize,
                          float x,
                          float y,
                          float depth,
                          glm::vec3 color,
-                         const jleCamera& camera) {
+                         const jleCamera &camera) {
 
     if (!_fontLoaded) {
         return;
@@ -146,7 +146,7 @@ void jleFont::renderText(const std::string& text,
 
 void jleFont::renderTargetDimensions(int width,
                                      int height,
-                                     const jleCamera& camera) {
+                                     const jleCamera &camera) {
 
     sProj = glm::ortho(static_cast<float>(camera.intX()),
                        static_cast<float>(camera.intX() + width),
@@ -161,7 +161,7 @@ void jleFont::renderTargetDimensions(int width,
     glViewport(0, 0, width, height);
 }
 
-bool jleFont::loadFromFile(const std::string& path) {
+bool jleFont::loadFromFile(const std::string &path) {
     if (!sInitialized) {
         init();
     }
