@@ -6,13 +6,11 @@
 #include <GLFW/glfw3.h>
 #include <utility>
 
-jleMouseInput::jleMouseInput(
-    std::shared_ptr<jleWindow> windowInternal) {
+jleMouseInput::jleMouseInput(std::shared_ptr<jleWindow> windowInternal) {
     this->windowInternal = std::move(windowInternal);
 }
 
-void jleMouseInput::linkWindow(
-    std::shared_ptr<jleWindow> windowInternal) {
+void jleMouseInput::linkWindow(std::shared_ptr<jleWindow> windowInternal) {
     this->windowInternal = windowInternal;
 }
 
@@ -36,13 +34,9 @@ float jleMouseInput::mouseXDelta() { return 0; }
 
 float jleMouseInput::mouseYDelta() { return 0; }
 
-float jleMouseInput::GetScrollX() {
-    return windowInternal->GetScrollX();
-}
+float jleMouseInput::GetScrollX() { return windowInternal->scrollX(); }
 
-float jleMouseInput::GetScrollY() {
-    return windowInternal->GetScrollY();
-}
+float jleMouseInput::GetScrollY() { return windowInternal->scrollY(); }
 
 void jleMouseInput::screenBeginCoords(int x, int y) {
     _screenBeginX = x;

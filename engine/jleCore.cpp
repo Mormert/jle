@@ -40,7 +40,7 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings>& cs)
     coreImpl->windowInternal = window;
     coreImpl->statusInternal = status;
 
-    coreImpl->windowInternal->SetWindowSettings(cs->windowSettings);
+    coreImpl->windowInternal->settings(cs->windowSettings);
 
     jleSoLoud::init();
 
