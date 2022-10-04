@@ -81,16 +81,16 @@ int resize_canvas_js(int width, int height) {
 
 float jleWindow::time() { return static_cast<float>(glfwGetTime()); }
 
-float jleWindow::GetScrollX() { return activeWindow->currentScrollX; }
+float jleWindow::scrollX() { return activeWindow->currentScrollX; }
 
-float jleWindow::GetScrollY() { return activeWindow->currentScrollY; }
+float jleWindow::scrollY() { return activeWindow->currentScrollY; }
 
 jleWindow::~jleWindow() {
     glfwDestroyWindow(nativeWindow);
     glfwTerminate();
 }
 
-void jleWindow::SetWindowSettings(WindowSettings& windowSettings) {
+void jleWindow::settings(WindowSettings& windowSettings) {
     this->windowSettings = windowSettings;
 }
 

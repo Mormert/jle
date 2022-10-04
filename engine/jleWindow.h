@@ -26,7 +26,7 @@ public:
                                           int width,
                                           int height);
 
-    void SetWindowSettings(WindowSettings& windowSettings);
+    void settings(WindowSettings& windowSettings);
 
     void displayCursor(bool enable);
 
@@ -59,15 +59,15 @@ public:
 
     bool keyReleased(char key);
 
-    float GetScrollX();
+    float scrollX();
 
-    float GetScrollY();
+    float scrollY();
 
     std::pair<int, int> cursor();
 
     static jleWindow *activeWindow;
 
-    GLFWwindow *gLFWWindow() { return nativeWindow; }
+    GLFWwindow *glfwWindow() { return nativeWindow; }
 
 protected:
     // Native handle to GLFW window
