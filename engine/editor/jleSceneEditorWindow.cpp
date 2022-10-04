@@ -121,6 +121,7 @@ void jleSceneEditorWindow::update(jleGameEngine &ge) {
                                                      jleEditor::_editorCamera,
                                                      texturedQuads,
                                                      {},
+                                                     {},
                                                      false);
         }
     }

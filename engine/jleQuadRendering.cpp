@@ -41,6 +41,13 @@ jleQuadRendering::jleQuadRendering()
               .c_str(),
           std::string{JLE_ENGINE_PATH_SHADERS + "/quadHeightmapInstanced.frag"}
               .c_str()},
+      quadHeightmapShaderInstancedSimple{
+          std::string{JLE_ENGINE_PATH_SHADERS +
+                      "/quadHeightmapInstancedSimple.vert"}
+              .c_str(),
+          std::string{JLE_ENGINE_PATH_SHADERS +
+                      "/quadHeightmapInstancedSimple.frag"}
+              .c_str()},
       shadowMappingShader{
           std::string{JLE_ENGINE_PATH_SHADERS + "/shadowMapping.vert"}.c_str(),
           std::string{JLE_ENGINE_PATH_SHADERS + "/shadowMapping.frag"}
@@ -173,18 +180,19 @@ jleQuadRendering::~jleQuadRendering() {
     glDeleteVertexArrays(1, &quadVAO_Instanced);
 }
 
-void jleQuadRendering::sendTexturedQuad(texturedQuad &texturedQuad,
-                                        RenderingMethod renderingMethod) {
+void jleQuadRendering::sendTexturedQuad(texturedQuad &texturedQuad) {
     _queuedTexturedQuads.push_back(texturedQuad);
 }
 
 void jleQuadRendering::sendTexturedHeightQuad(
-    texturedHeightQuad &texturedHeightQuad, RenderingMethod renderingMethod) {
+    texturedHeightQuad &texturedHeightQuad) {
     _queuedTexturedHeightQuads.push_back(texturedHeightQuad);
 }
 
-void jleQuadRendering::sendColoredQuad(ColoredQuad &coloredQuad,
-                                       RenderingMethod renderingMethod) {}
+void jleQuadRendering::sendSimpleTexturedHeightQuad(
+    texturedHeightQuad &texturedHeightQuad) {
+    _queuedSimpleTexturedHeightQuads.push_back(texturedHeightQuad);
+}
 
 void jleQuadRendering::queuerender(jleFramebuffer &framebufferOut,
                                    jleCamera &camera) {
@@ -192,12 +200,14 @@ void jleQuadRendering::queuerender(jleFramebuffer &framebufferOut,
            camera,
            _queuedTexturedQuads,
            _queuedTexturedHeightQuads,
+           _queuedSimpleTexturedHeightQuads,
            true);
 }
 
 void jleQuadRendering::clearBuffersForNextFrame() {
     _queuedTexturedQuads.clear();
     _queuedTexturedHeightQuads.clear();
+    _queuedSimpleTexturedHeightQuads.clear();
 }
 
 void jleQuadRendering::render(
@@ -205,6 +215,7 @@ void jleQuadRendering::render(
     jleCamera &camera,
     const std::vector<texturedQuad> &texturedQuads,
     const std::vector<texturedHeightQuad> &texturedHeightQuads,
+    const std::vector<texturedHeightQuad> &texturedSimpleHeightQuads,
     bool clearDepthColor) {
 
     JLE_SCOPE_PROFILE(jleQuadRendering::Render)
@@ -233,6 +244,11 @@ void jleQuadRendering::render(
     processTexturedQuads(texturedQuads, view);
     processTexturedHeightQuads(
         texturedHeightQuads,
+        view,
+        glm::vec3{camera._xNoOffset, camera._yNoOffset, 0.f});
+
+    processSimpleTexturedHeightQuads(
+        texturedSimpleHeightQuads,
         view,
         glm::vec3{camera._xNoOffset, camera._yNoOffset, 0.f});
 
@@ -369,6 +385,76 @@ void jleQuadRendering::processTexturedHeightQuads(
     }
 }
 
+void jleQuadRendering::processSimpleTexturedHeightQuads(
+    const std::vector<texturedHeightQuad> &texturedHeightQuads,
+    glm::mat4 &view,
+    glm::vec3 viewPos) {
+    JLE_SCOPE_PROFILE(jleQuadRendering::processSimpleTexturedHeightQuads)
+
+    std::unordered_map<std::shared_ptr<TextureWithHeightmap>,
+                       std::vector<QuadData>>
+        quadDataMap;
+
+    static const glm::vec3 cameraPositionPixels{0.f, 500.f, 500.f};
+    viewPos += cameraPositionPixels;
+
+    for (auto &&quad : texturedHeightQuads) {
+        QuadData qd;
+        qd.depth = quad.depth;
+        qd.tex_h = quad.height;
+        qd.tex_w = quad.width;
+        qd.tex_x = quad.textureX;
+        qd.tex_y = quad.textureY;
+        qd.x = quad.x;
+        qd.y = quad.y;
+        auto &vec = quadDataMap[quad.mtextureWithHeightmap];
+        vec.push_back(qd);
+    }
+
+    quadHeightmapShaderInstanced.use();
+    quadHeightmapShaderInstanced.SetMat4("camera", view);
+    quadHeightmapShaderInstanced.SetVec3("viewPos", viewPos);
+
+    for (auto &&key : quadDataMap) {
+
+        glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+        glBufferData(GL_ARRAY_BUFFER,
+                     sizeof(QuadData) * key.second.size(),
+                     &key.second[0],
+                     GL_STATIC_DRAW);
+        glVertexAttribPointer(
+            2, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)0);
+        glVertexAttribPointer(3,
+                              4,
+                              GL_FLOAT,
+                              GL_FALSE,
+                              7 * sizeof(float),
+                              (void *)(3 * sizeof(float)));
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        if (!key.first->texture->isActive()) {
+            key.first->texture->setActive(0);
+            key.first->heightmap->setActive(1);
+            key.first->normalmap->setActive(2);
+            quadHeightmapShaderInstanced.SetVec2(
+                "textureDims",
+                glm::vec2{float(key.first->texture->width()),
+                          float(key.first->texture->height())});
+
+            quadHeightmapShaderInstanced.SetInt("texture_albedo", 0);
+            quadHeightmapShaderInstanced.SetInt("texture_heightmap", 1);
+            quadHeightmapShaderInstanced.SetInt("texture_normal", 2);
+        }
+
+        glBindVertexArray(quadVAO_Instanced);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+        glDrawElementsInstanced(
+            GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (void *)0, key.second.size());
+        glBindVertexArray(0);
+    }
+}
+
 void jleQuadRendering::setupShaders() {
 
     // Set up the angles on the "camera", as it was rendered in 3D software
@@ -406,6 +492,12 @@ void jleQuadRendering::setupShaders() {
     quadHeightmapShaderInstanced.SetFloat("light.constant", 1.0f);
     quadHeightmapShaderInstanced.SetFloat("light.linear", 0.0009f);
     quadHeightmapShaderInstanced.SetFloat("light.quadratic", 0.00032f);
+
+    quadHeightmapShaderInstancedSimple.SetFloat("sinZ", sinZ);
+    quadHeightmapShaderInstancedSimple.SetFloat("sinZ_inverse", 1.f / sinZ);
+    quadHeightmapShaderInstancedSimple.SetFloat("magicHeightFactor",
+                                                magicHeightFactor);
+    quadHeightmapShaderInstancedSimple.SetMat3("cartToIso", cartToIso);
 }
 
 void jleQuadRendering::renderCube(glm::mat4 &model, jleShader &shader) {

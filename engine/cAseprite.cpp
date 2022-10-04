@@ -61,8 +61,7 @@ void cAseprite::update(float dt) {
         quad.depth = _transform->worldDepth();
 
         if (quad.texture.get()) {
-            jleCore::core->rendering->quads().sendTexturedQuad(
-                quad, RenderingMethod::Dynamic);
+            jleCore::core->rendering->quads().sendTexturedQuad(quad);
         }
     }
 }

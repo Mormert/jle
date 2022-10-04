@@ -12,8 +12,6 @@
 #include <utility>
 #include <vector>
 
-enum class RenderingMethod { Dynamic, Static };
-
 class jleFramebuffer;
 
 class jleQuadRendering {
@@ -26,22 +24,21 @@ public:
     ~jleQuadRendering();
 
     // Inherited via iQuadRenderingInternal
-    void sendTexturedQuad(texturedQuad &texturedQuad,
-                          RenderingMethod renderingMethod);
+    void sendTexturedQuad(texturedQuad &texturedQuad);
 
-    void sendTexturedHeightQuad(texturedHeightQuad &texturedHeightQuad,
-                                RenderingMethod renderingMethod);
+    void sendTexturedHeightQuad(texturedHeightQuad &texturedHeightQuad);
 
-    void sendColoredQuad(ColoredQuad &coloredQuad,
-                         RenderingMethod renderingMethod);
+    void sendSimpleTexturedHeightQuad(texturedHeightQuad &texturedHeightQuad);
 
     void queuerender(jleFramebuffer &framebufferOut, jleCamera &camera);
 
-    void render(jleFramebuffer &framebufferOut,
-                jleCamera &camera,
-                const std::vector<texturedQuad> &texturedQuads,
-                const std::vector<texturedHeightQuad> &texturedHeightQuads,
-                bool clearDepthColor);
+    void render(
+        jleFramebuffer &framebufferOut,
+        jleCamera &camera,
+        const std::vector<texturedQuad> &texturedQuads,
+        const std::vector<texturedHeightQuad> &texturedHeightQuads,
+        const std::vector<texturedHeightQuad> &texturedSimpleHeightQuads,
+        bool clearDepthColor);
 
     void clearBuffersForNextFrame();
 
@@ -55,6 +52,11 @@ private:
                               glm::mat4 &view);
 
     void processTexturedHeightQuads(
+        const std::vector<texturedHeightQuad> &texturedHeightQuads,
+        glm::mat4 &view,
+        glm::vec3 viewPos);
+
+    void processSimpleTexturedHeightQuads(
         const std::vector<texturedHeightQuad> &texturedHeightQuads,
         glm::mat4 &view,
         glm::vec3 viewPos);
@@ -78,9 +80,11 @@ private:
     // Instanced version
     jleShader quadShaderInstanced;
     jleShader quadHeightmapShaderInstanced;
+    jleShader quadHeightmapShaderInstancedSimple;
     unsigned int quadVBO_Instanced, quadVAO_Instanced, instanceVBO,
         elementbuffer;
 
     std::vector<texturedQuad> _queuedTexturedQuads;
     std::vector<texturedHeightQuad> _queuedTexturedHeightQuads;
+    std::vector<texturedHeightQuad> _queuedSimpleTexturedHeightQuads;
 };
