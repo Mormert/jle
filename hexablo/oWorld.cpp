@@ -203,7 +203,7 @@ void oWorld::renderVisualWorld(float dt) {
             quad.x = realCoords.x - hexagonTile._width / 2;
             quad.y = realCoords.y - hexagonTile._height / 2;
             quad.depth = hexagonTile._depth;
-            _quadRenderingPtr->sendTexturedQuad(quad, RenderingMethod::Dynamic);
+            _quadRenderingPtr->sendTexturedQuad(quad);
         }
     }
 }
