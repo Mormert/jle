@@ -67,6 +67,8 @@ public:
 
     jleResources &resources() { return *_resources; }
 
+    const jleCoreSettings &settings() const { return *_settings; }
+
 private:
     void loop();
 
@@ -82,7 +84,6 @@ private:
 
     friend struct CoreStatus_Internal;
 
-protected:
     virtual void start() {}
 
     virtual void update(float dt) {}
@@ -91,7 +92,7 @@ protected:
 
     virtual void exiting() {}
 
-    std::shared_ptr<jleCoreSettings> core_settings;
+    std::shared_ptr<jleCoreSettings> _settings;
     std::unique_ptr<jleResources> _resources;
 
     jleTimerManager _timerManager;

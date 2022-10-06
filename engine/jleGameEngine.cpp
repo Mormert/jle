@@ -59,12 +59,12 @@ void jleGameEngine::startGame() {
 
 void jleGameEngine::restartGame() {
     game.reset();
-    _timerManager.clearTimers();
+    timerManager().clearTimers();
     startGame();
 }
 
 void jleGameEngine::killGame() {
-    _timerManager.clearTimers();
+    timerManager().clearTimers();
     game.reset();
 }
 
@@ -99,15 +99,15 @@ bool jleGameEngine::isGameHalted() { return gameHalted; }
 jleGame &jleGameEngine::gameRef() { return *game; }
 
 void jleGameEngine::start() {
-    auto dims = framebufferDimensions(core_settings->windowSettings.width,
-                                      core_settings->windowSettings.height);
+    auto dims = framebufferDimensions(gameSettings->windowSettings.width,
+                                      gameSettings->windowSettings.height);
     framebuffer_main =
         std::make_shared<jleFramebuffer>(dims.first, dims.second);
 
     const auto &internalInputMouse = jleCore::core->input->mouse;
     internalInputMouse->pixelatedScreenSize(dims.first, dims.second);
-    internalInputMouse->screenSize(core_settings->windowSettings.width,
-                                   core_settings->windowSettings.height);
+    internalInputMouse->screenSize(gameSettings->windowSettings.width,
+                                   gameSettings->windowSettings.height);
 
     _fullscreen_renderer = std::make_unique<jleFullscreenRendering>();
 

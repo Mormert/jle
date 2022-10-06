@@ -46,7 +46,7 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings> &cs)
 
     jleSoLoud::init();
 
-    core_settings = cs;
+    _settings = cs;
 }
 
 jleCore::~jleCore() {
