@@ -71,10 +71,10 @@ private:
 struct jleFontData {
     jleFontData();
     ~jleFontData();
-    unsigned int VAO = 0, VBO = 0;
-    std::unique_ptr<jleShader> Shader;
+    unsigned int vao = 0, vbo = 0;
+    std::unique_ptr<jleShader> shader;
 
-    FT_Library FreeTypeLibrary;
+    FT_Library freeTypeLibrary;
 
     static inline jleFontData *data = nullptr;
 };
