@@ -25,50 +25,9 @@
 jleFont::jleFont(const std::string &path) { loadFromFile(path); }
 
 jleFont::~jleFont() {
-    if (sInitialized && _fontLoaded) {
+    if (jleFontData::data && _fontLoaded) {
         FT_Done_Face(_face);
     }
-}
-
-void jleFont::init() {
-    if (sInitialized) {
-        return;
-    }
-
-    if (FT_Init_FreeType(&sFreeTypeLibrary)) {
-        LOGE << "Could not init FreeType Library!";
-        std::exit(EXIT_FAILURE);
-    }
-
-    sShader = std::make_unique<jleShader>(
-        std::string{JLE_ENGINE_PATH_SHADERS + "/font.vert"}.c_str(),
-        std::string{JLE_ENGINE_PATH_SHADERS + "/font.frag"}.c_str());
-
-    glm::mat4 projection = glm::ortho(
-        0.0f, static_cast<float>(300), 0.0f, static_cast<float>(400));
-    sShader->use();
-    sShader->SetMat4("projection", projection);
-
-    glGenVertexArrays(1, &sVAO);
-    glGenBuffers(1, &sVBO);
-    glBindVertexArray(sVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, sVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(
-        0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    sInitialized = true;
-}
-
-void jleFont::deInit() {
-    if (sFreeTypeLibrary != nullptr) {
-        FT_Done_FreeType(sFreeTypeLibrary);
-    }
-    sFreeTypeLibrary = nullptr;
-    sInitialized = false;
 }
 
 void jleFont::renderText(const std::string &text,
@@ -98,11 +57,11 @@ void jleFont::renderText(const std::string &text,
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    sShader->use();
-    sShader->SetVec3("textColor", color.x, color.y, color.z);
-    sShader->SetFloat("depth", depth);
+    jleFontData::data->Shader->use();
+    jleFontData::data->Shader->SetVec3("textColor", color.x, color.y, color.z);
+    jleFontData::data->Shader->SetFloat("depth", depth);
     glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(sVAO);
+    glBindVertexArray(jleFontData::data->VAO);
 
     const auto ySizeOffset = _face->size->metrics.y_ppem;
 
@@ -129,7 +88,7 @@ void jleFont::renderText(const std::string &text,
         // render glyph texture over quad
         glBindTexture(GL_TEXTURE_2D, ch._textureID);
         // update content of VBO memory
-        glBindBuffer(GL_ARRAY_BUFFER, sVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, jleFontData::data->VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         // render quad
@@ -155,18 +114,19 @@ void jleFont::renderTargetDimensions(int width,
                        -1.f,
                        1.f);
 
-    sShader->use();
-    sShader->SetMat4("projection", sProj);
+    jleFontData::data->Shader->use();
+    jleFontData::data->Shader->SetMat4("projection", sProj);
 
     glViewport(0, 0, width, height);
 }
 
 bool jleFont::loadFromFile(const std::string &path) {
-    if (!sInitialized) {
-        init();
+    if (!jleFontData::data) {
+        throw std::runtime_error{"font not loaded"};
     }
 
-    if (FT_New_Face(sFreeTypeLibrary, path.c_str(), 0, &_face)) {
+    if (FT_New_Face(
+            jleFontData::data->FreeTypeLibrary, path.c_str(), 0, &_face)) {
         LOGE << "Failed to load font: " << path;
         return false;
     }
@@ -240,4 +200,45 @@ void jleFont::addFontSizePixels(uint32_t sizePixels) {
     }
 
     _fontSizeLookup[sizePixels] = fontSize;
+}
+
+jleFontData::jleFontData() {
+    if (data) {
+        return;
+    }
+
+    data = this;
+
+    if (FT_Init_FreeType(&FreeTypeLibrary)) {
+        LOGE << "Could not init FreeType Library!";
+        std::exit(EXIT_FAILURE);
+    }
+
+    Shader = std::make_unique<jleShader>(
+        std::string{JLE_ENGINE_PATH_SHADERS + "/font.vert"}.c_str(),
+        std::string{JLE_ENGINE_PATH_SHADERS + "/font.frag"}.c_str());
+
+    glm::mat4 projection = glm::ortho(
+        0.0f, static_cast<float>(300), 0.0f, static_cast<float>(400));
+    Shader->use();
+    Shader->SetMat4("projection", projection);
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(
+        0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+jleFontData::~jleFontData() {
+
+    if (FreeTypeLibrary != nullptr) {
+        FT_Done_FreeType(FreeTypeLibrary);
+    }
+    FreeTypeLibrary = nullptr;
+    data = nullptr;
 }

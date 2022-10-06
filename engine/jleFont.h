@@ -15,6 +15,8 @@
 #include "jleFileLoadInterface.h"
 #include "jleShader.h"
 
+class jleFontData;
+
 class jleFont : jleFileLoadInterface {
 
 public:
@@ -61,15 +63,18 @@ private:
     bool _fontLoaded = false;
     std::unordered_map<uint32_t, jleFontSize> _fontSizeLookup;
 
-    static inline unsigned int sVAO, sVBO;
-    static inline std::unique_ptr<jleShader> sShader;
-
-    static inline FT_Library sFreeTypeLibrary;
-    static inline bool sInitialized{false};
-
-    static void init();
-
-    static void deInit();
-
     friend class jleCore;
+    friend class jleFontData;
+};
+
+// Handle data shared between font instances
+struct jleFontData {
+    jleFontData();
+    ~jleFontData();
+    unsigned int VAO = 0, VBO = 0;
+    std::unique_ptr<jleShader> Shader;
+
+    FT_Library FreeTypeLibrary;
+
+    static inline jleFontData *data = nullptr;
 };

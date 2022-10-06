@@ -49,10 +49,7 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings> &cs)
     _settings = cs;
 }
 
-jleCore::~jleCore() {
-    jleSoLoud::deInit();
-    jleFont::deInit();
-}
+jleCore::~jleCore() { jleSoLoud::deInit(); }
 
 void jleCore::run() {
     if (core != nullptr) {
@@ -64,7 +61,7 @@ void jleCore::run() {
     PLOG_INFO << "Initializing the window";
     coreImpl->windowInternal->initWindow(coreImpl->renderingInternal);
 
-    jleFont::init();
+    _fontData = std::make_unique<jleFontData>();
 
     PLOG_INFO << "Setting up rendering internals";
     coreImpl->renderingInternal->setup();
