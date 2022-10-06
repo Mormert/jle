@@ -5,6 +5,7 @@
 #include "jleKeyboardInput.h"
 #include "jleMouseInput.h"
 #include "jleRendering.h"
+#include "jleResourceHolder.h"
 #include "jleSoLoud.h"
 #include "jleStaticOpenGLState.h"
 #include "jleTexture.h"
@@ -18,7 +19,7 @@
 
 #include <iostream>
 
-jleCore *jleCore::core{nullptr};
+jleCore *jleCore::core = nullptr;
 
 struct jleCore::jleCoreInternalImpl {
     std::shared_ptr<jleRendering> renderingInternal;
@@ -33,7 +34,8 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings> &cs)
 
               window))},
       rendering{std::make_shared<jleRendering>()},
-      status{std::make_shared<CoreStatus_Internal>()} {
+      status{std::make_shared<CoreStatus_Internal>()},
+      _resources{std::make_unique<jleResourceHolder>()} {
     PLOG_INFO << "Starting the core";
     coreImpl = std::make_unique<jleCoreInternalImpl>();
     coreImpl->renderingInternal = rendering;

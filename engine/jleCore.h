@@ -12,6 +12,7 @@
 #include <memory>
 
 class jleFramebuffer;
+class jleResourceHolder;
 
 struct CoreStatus_Internal {
 public:
@@ -63,6 +64,8 @@ public:
 
     jleTimerManager &timerManager();
 
+    jleResourceHolder &resources() { return *_resources; }
+
 private:
     void loop();
 
@@ -88,6 +91,7 @@ protected:
     virtual void exiting() {}
 
     std::shared_ptr<jleCoreSettings> core_settings;
+    std::shared_ptr<jleResourceHolder> _resources;
 
     jleTimerManager _timerManager;
 };
