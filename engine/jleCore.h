@@ -13,6 +13,7 @@
 
 class jleFramebuffer;
 class jleResources;
+class jleFont;
 
 struct CoreStatus_Internal {
 public:
@@ -91,7 +92,7 @@ protected:
     virtual void exiting() {}
 
     std::shared_ptr<jleCoreSettings> core_settings;
-    std::shared_ptr<jleResources> _resources;
+    std::unique_ptr<jleResources> _resources;
 
     jleTimerManager _timerManager;
 };
