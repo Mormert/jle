@@ -17,7 +17,7 @@
 
 #include "jleCore.h"
 #include "jleImage.h"
-#include "jleResourceHolder.h"
+#include "jleResource.h"
 #include "jleStaticOpenGLState.h"
 #include "plog/Log.h"
 #include <iostream>

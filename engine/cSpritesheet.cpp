@@ -4,7 +4,7 @@
 #include "jleCore.h"
 #include "jleGameEngine.h"
 #include "jleQuadRendering.h"
-#include "jleResourceHolder.h"
+#include "jleResource.h"
 #include "json.hpp"
 #include <plog/Log.h>
 

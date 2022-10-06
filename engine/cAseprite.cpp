@@ -7,7 +7,7 @@
 #include "jlePath.h"
 #include "jlePathDefines.h"
 #include "jleQuadRendering.h"
-#include "jleResourceHolder.h"
+#include "jleResource.h"
 
 void cAseprite::start() {
     _transform = _attachedToObject->addDependencyComponent<cTransform>(this);

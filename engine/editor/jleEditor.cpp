@@ -69,7 +69,7 @@ void jleEditor::start() {
     menu->addWindow(gameWindow);
 
     auto console = std::make_shared<jleConsoleEditorWindow>("Console Window");
-    plog::get<0>()->addAppender(&*console);
+    plog::get<0>()->addAppender(&console->appender());
     addImGuiWindow(console);
     menu->addWindow(console);
 

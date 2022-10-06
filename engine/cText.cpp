@@ -4,7 +4,7 @@
 #include "jleGameEngine.h"
 #include "jleObject.h"
 #include "jlePathDefines.h"
-#include "jleResourceHolder.h"
+#include "jleResource.h"
 
 cText::cText(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 

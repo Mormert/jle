@@ -3,7 +3,7 @@
 #include "jleEditorResourceViewer.h"
 #include "ImGui/imgui.h"
 #include "jleCore.h"
-#include "jleResourceHolder.h"
+#include "jleResource.h"
 
 void jleEditorResourceViewer::update(jleGameEngine &ge) {
     if (!isOpened) {

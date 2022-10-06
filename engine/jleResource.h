@@ -15,8 +15,14 @@
 #include <unordered_map>
 #include <vector>
 
-class jleResourceHolder {
+class jleResources {
 public:
+    jleResources() = default;
+    jleResources(const jleResources &) = delete;
+    jleResources(jleResources &&) = delete;
+    jleResources &operator=(const jleResources &) = delete;
+    jleResources &operator=(jleResources &&) = delete;
+
     // Gets a shared_ptr to a resource from file, or a shared_ptr to an already
     // loaded copy of that resource
     template <typename T>
