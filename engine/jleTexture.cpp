@@ -15,8 +15,9 @@
 
 #endif
 
+#include "jleCore.h"
 #include "jleImage.h"
-#include "jleResourceHolder.h"
+#include "jleResource.h"
 #include "jleStaticOpenGLState.h"
 #include "plog/Log.h"
 #include <iostream>
@@ -111,16 +112,17 @@ jleTexture::jleTexture(const jleImage &image) {
 }
 
 std::shared_ptr<jleTexture> jleTexture::fromPath(const jleRelativePath &path) {
-    if (!jleResourceHolder::isResourceLoaded(path)) {
+    auto &resources = jleCore::core->resources();
+    if (!resources.isResourceLoaded(path)) {
 
         auto texture = std::make_shared<jleTexture>(
-            *jleResourceHolder::loadResourceFromFile<jleImage>(path));
+            *resources.loadResourceFromFile<jleImage>(path));
 
-        jleResourceHolder::storeResource<jleTexture>(texture, path);
+        resources.storeResource<jleTexture>(texture, path);
 
         return texture;
     }
     else {
-        return jleResourceHolder::resource<jleTexture>(path);
+        return resources.resource<jleTexture>(path);
     }
 }

@@ -46,8 +46,8 @@ void jleEditor::start() {
 
     initImgui();
 
-    auto dims = framebufferDimensions(core_settings->windowSettings.width,
-                                      core_settings->windowSettings.height);
+    auto dims = framebufferDimensions(settings().windowSettings.width,
+                                      settings().windowSettings.height);
     framebuffer_main =
         std::make_shared<jleFramebuffer>(dims.first, dims.second);
 
@@ -69,7 +69,7 @@ void jleEditor::start() {
     menu->addWindow(gameWindow);
 
     auto console = std::make_shared<jleConsoleEditorWindow>("Console Window");
-    plog::get<0>()->addAppender(&*console);
+    plog::get<0>()->addAppender(&console->appender());
     addImGuiWindow(console);
     menu->addWindow(console);
 

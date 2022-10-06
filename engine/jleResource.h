@@ -15,13 +15,18 @@
 #include <unordered_map>
 #include <vector>
 
-class jleResourceHolder {
+class jleResources {
 public:
+    jleResources() = default;
+    jleResources(const jleResources &) = delete;
+    jleResources(jleResources &&) = delete;
+    jleResources &operator=(const jleResources &) = delete;
+    jleResources &operator=(jleResources &&) = delete;
+
     // Gets a shared_ptr to a resource from file, or a shared_ptr to an already
     // loaded copy of that resource
     template <typename T>
-    static std::shared_ptr<T> loadResourceFromFile(
-        const jleRelativePath &path) {
+    std::shared_ptr<T> loadResourceFromFile(const jleRelativePath &path) {
         static_assert(std::is_base_of<jleFileLoadInterface, T>::value,
                       "T must derive from FileLoadInterface");
 
@@ -32,23 +37,23 @@ public:
             return std::static_pointer_cast<T>(it->second);
         }
 
-        std::shared_ptr<T> new_resource = std::make_shared<T>();
+        std::shared_ptr<T> newResource = std::make_shared<T>();
 
-        new_resource->loadFromFile(path.absolutePathStr());
+        newResource->loadFromFile(path.absolutePathStr());
 
         _resources[prefix].erase(path.relativePathStr());
         _resources[prefix].insert(
-            std::make_pair(path.relativePathStr(), new_resource));
+            std::make_pair(path.relativePathStr(), newResource));
 
         periodicResourcesCleanUp();
 
-        return new_resource;
+        return newResource;
     }
 
     // Stores a resource with a certain path to be reused later
     template <typename T>
-    static void storeResource(std::shared_ptr<T> resource,
-                              const jleRelativePath &path) {
+    void storeResource(std::shared_ptr<T> resource,
+                       const jleRelativePath &path) {
         const auto prefix = path.pathPrefix();
 
         _resources[prefix].erase(path.relativePathStr());
@@ -60,14 +65,14 @@ public:
 
     // Get a resource that is already loaded
     template <typename T>
-    static std::shared_ptr<T> resource(const jleRelativePath &path) {
+    std::shared_ptr<T> resource(const jleRelativePath &path) {
         const auto prefix = path.pathPrefix();
         return std::static_pointer_cast<T>(
             _resources[prefix].at(path.relativePathStr()));
     }
 
     // Check to see if a resource is loaded
-    static bool isResourceLoaded(const jleRelativePath &path) {
+    bool isResourceLoaded(const jleRelativePath &path) {
         const auto prefix = path.pathPrefix();
         auto it = _resources[prefix].find(path.relativePathStr());
         if (it == _resources[prefix].end()) {
@@ -78,17 +83,17 @@ public:
 
     // Unload all resources from in-memory in the given drive.
     // If the resources have no other users, they will be deleted
-    static void unloadAllResources(const std::string &drive) {
+    void unloadAllResources(const std::string &drive) {
         LOG_VERBOSE << "Unloading in-memory file resources on drive " << drive
                     << ' ' << _resources[drive].size();
         _resources[drive].clear();
     }
 
-    static void unloadResource(const jleRelativePath &path) {
+    void unloadResource(const jleRelativePath &path) {
         _resources[path.pathPrefix()].erase(path.relativePathStr());
     }
 
-    static const std::unordered_map<
+    const std::unordered_map<
         std::string,
         std::unordered_map<std::string, std::shared_ptr<void>>>
         &resourcesMap() {
@@ -98,14 +103,13 @@ public:
 private:
     // Maps a drive like "GR:" to a resource map that contains paths such as
     // "GR:Folder/MyFile.txt" and points to the resource in memory.
-    static inline std::unordered_map<
-        std::string,
-        std::unordered_map<std::string, std::shared_ptr<void>>>
+    std::unordered_map<std::string,
+                       std::unordered_map<std::string, std::shared_ptr<void>>>
         _resources{};
 
     static inline int _periodicCleanCounter{0};
 
-    static void periodicResourcesCleanUp() {
+    void periodicResourcesCleanUp() {
         // Clean every 10th time that this method is called
         if (++_periodicCleanCounter % 10 == 0) {
             std::vector<std::string> keys_for_removal;
