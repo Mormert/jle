@@ -69,7 +69,7 @@ int resize_canvas_js(int width, int height) {
 
     const auto &window = jleWindow::activeWindow;
 
-    jleWindow::framebuffer_size_callback(nullptr, width, height);
+    jleWindow::glfwFramebufferSizeCallback(nullptr, width, height);
 
     return 1;
 }
