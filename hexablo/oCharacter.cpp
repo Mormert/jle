@@ -28,7 +28,7 @@ void oCharacter::start() {
 
 void oCharacter::update(float dt) {
 
-    if (jleCore::core->input->keyboard->keyPressed('T')) {
+    if (gCore->input().keyboard->keyPressed('T')) {
         hexagonPlacementInterp(hexHelperFunctions::randInt(0, 10),
                                hexHelperFunctions::randInt(0, 10));
     }
@@ -226,11 +226,11 @@ void oCharacter::attack(oCharacter::oCharacterDirection dir) {
     };
 
     // Go back to the default animation
-    jleCore::core->timerManager().executeFuncInSecondsWeakData(
+    gCore->timerManager().executeFuncInSecondsWeakData(
         animationTimeMs * 0.001, futureFunc, weakPtrToThis());
 
     // Can not attack again for the animation time + some additional time
-    jleCore::core->timerManager().executeFuncInSecondsWeakData(
+    gCore->timerManager().executeFuncInSecondsWeakData(
         (animationTimeMs + _attackCooldownAfterAnimationMs) * 0.001,
         [](std::weak_ptr<void> data) {
             auto safeThis = std::static_pointer_cast<oCharacter>(data.lock());

@@ -8,9 +8,9 @@ class jleWindow;
 
 class jleKeyboardInput {
 public:
-    explicit jleKeyboardInput(std::shared_ptr<jleWindow> windowInternal);
+    explicit jleKeyboardInput(std::shared_ptr<jleWindow> window);
 
-    void linkWindow(std::shared_ptr<jleWindow> windowInternal);
+    void linkWindow(std::shared_ptr<jleWindow> window);
 
     bool keyPressed(char key);
 

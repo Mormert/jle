@@ -396,7 +396,7 @@ void jleEditorContentBrowser::selectedFilePopupScene(
             sceneName.resize(dot);
         }
 
-        auto &game = ((jleGameEngine *)jleCore::core)->gameRef();
+        auto &game = ((jleGameEngine *)gCore)->gameRef();
 
         if (!game.checkSceneIsActive(sceneName)) {
             auto scene = game.createScene<jleScene>();

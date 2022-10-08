@@ -2,14 +2,15 @@
 
 #include "jleKeyboardInput.h"
 #include "jleWindow.h"
-#include <GLFW/glfw3.h>
 
-jleKeyboardInput::jleKeyboardInput(std::shared_ptr<jleWindow> windowInternal) {
-    this->windowInternal = windowInternal;
+#include <utility>
+
+jleKeyboardInput::jleKeyboardInput(std::shared_ptr<jleWindow> window) {
+    this->windowInternal = std::move(window);
 }
 
-void jleKeyboardInput::linkWindow(std::shared_ptr<jleWindow> windowInternal) {
-    this->windowInternal = windowInternal;
+void jleKeyboardInput::linkWindow(std::shared_ptr<jleWindow> window) {
+    this->windowInternal = std::move(window);
 }
 
 bool jleKeyboardInput::keyPressed(char key) {

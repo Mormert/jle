@@ -19,7 +19,7 @@ public:
 
     virtual void update(float dt) {}
 
-    [[maybe_unused]] virtual void editorupdate(float dt) {}
+    [[maybe_unused]] virtual void editorUpdate(float dt) {}
 
     void destroy();
 

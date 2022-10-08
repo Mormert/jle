@@ -102,7 +102,7 @@ void jleEditor::start() {
     addImGuiWindow(profilerWindow);
     menu->addWindow(profilerWindow);
 
-    jleCore::window->addWindowResizeCallback(
+    gCore->window().addWindowResizeCallback(
         std::bind(&jleEditor::mainEditorWindowResized,
                   this,
                   std::placeholders::_1,
@@ -117,7 +117,7 @@ void jleEditor::render() {
     JLE_SCOPE_PROFILE(jleEditor::Render)
     if (!gameHalted && game) {
         // Render to game view
-        rendering->render(*framebuffer_main, game->_mainCamera);
+        rendering().render(*framebuffer_main, game->_mainCamera);
     }
 
     // _editorCamera.perspectiveProjection(90.f,
@@ -128,9 +128,9 @@ void jleEditor::render() {
                                          10000.f,
                                          -10000.f);
     // Render to editor scene view
-    rendering->render(*_editorFramebuffer, _editorCamera);
+    rendering().render(*_editorFramebuffer, _editorCamera);
 
-    rendering->clearBuffersForNextFrame();
+    rendering().clearBuffersForNextFrame();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -138,7 +138,7 @@ void jleEditor::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Set viewport to cover the entire screen
-    glViewport(0, 0, window->GetWindowWidth(), window->GetWindowHeight());
+    glViewport(0, 0, window().width(), window().height());
 
     {
         JLE_SCOPE_PROFILE(ImGui::Render())
@@ -183,7 +183,7 @@ void jleEditor::initImgui() {
     io.IniFilename = iniFile.c_str();
 
     // up Platform/Renderer bindings
-    ImGui_ImplGlfw_InitForOpenGL(window->glfwWindow(), true);
+    ImGui_ImplGlfw_InitForOpenGL(window().glfwWindow(), true);
 
 #ifdef BUILD_OPENGLES30
     ImGui_ImplOpenGL3_Init("#version 300 es");

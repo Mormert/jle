@@ -8,12 +8,12 @@
 #include <memory>
 #include <utility>
 
-class jleInputAPI {
+class jleInput {
 public:
-    ~jleInputAPI() = default;
+    ~jleInput() = default;
 
-    jleInputAPI(std::shared_ptr<jleKeyboardInput> ki,
-                std::shared_ptr<jleMouseInput> mi)
+    jleInput(std::shared_ptr<jleKeyboardInput> ki,
+             std::shared_ptr<jleMouseInput> mi)
         : keyboard{std::move(std::move(ki))}, mouse{std::move(std::move(mi))} {}
 
     std::shared_ptr<jleKeyboardInput> keyboard;

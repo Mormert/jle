@@ -27,7 +27,7 @@ jleTexture::~jleTexture() {
     if (_id != UINT_MAX) {
         glDeleteTextures(1, &_id);
     }
-    std::cout << "Destroyed texture with id " << _id << '\n';
+    LOGV << "Destroyed texture with id " << _id;
 }
 
 bool jleTexture::isActive() {
@@ -112,7 +112,7 @@ jleTexture::jleTexture(const jleImage &image) {
 }
 
 std::shared_ptr<jleTexture> jleTexture::fromPath(const jleRelativePath &path) {
-    auto &resources = jleCore::core->resources();
+    auto &resources = gCore->resources();
     if (!resources.isResourceLoaded(path)) {
 
         auto texture = std::make_shared<jleTexture>(

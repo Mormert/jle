@@ -15,7 +15,7 @@ void oWorld::start() {
     if (_aseprite._frames.empty()) {
         loadTilesTexture();
     }
-    _quadRenderingPtr = &jleCore::core->rendering->quads();
+    _quadRenderingPtr = &gCore->quadRendering();
 
     generateVisualWorld();
 }
@@ -75,7 +75,7 @@ void oWorld::loadTilesTexture() {
         _aseprite.loadFromFile(
             jleRelativePath{_worldHexTilesAsepritePath}.absolutePathStr());
         //_worldHexTilesTexture =
-        // jleCore::core->texture_creator->LoadTextureFromPath(truePath);
+        // gCore->texture_creator->LoadTextureFromPath(truePath);
     }
 }
 

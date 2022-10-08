@@ -35,7 +35,7 @@ void cSpritesheet::update(float dt) {
         quad.depth = _transform->worldDepth();
 
         if (quad.texture.get()) {
-            jleCore::core->rendering->quads().sendTexturedQuad(quad);
+            gCore->quadRendering().sendTexturedQuad(quad);
         }
     }
 }
@@ -52,9 +52,8 @@ void cSpritesheet::fromJson(const nlohmann::json &j_in) {
     _spriteName = j_in["_spriteName"];
     _offset.x = j_in.value("_offsetX", 0);
     _offset.y = j_in.value("_offsetY", 0);
-    _spritesheet =
-        jleCore::core->resources().loadResourceFromFile<jleSpritesheet>(
-            jleRelativePath{_spritesheetPath});
+    _spritesheet = gCore->resources().loadResourceFromFile<jleSpritesheet>(
+        jleRelativePath{_spritesheetPath});
 
     entity(_spriteName);
 }

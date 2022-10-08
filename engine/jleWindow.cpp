@@ -20,10 +20,10 @@
 jleWindow *jleWindow::activeWindow{nullptr};
 
 void jleWindow::error_callback(int error, const char *description) {
-    std::cerr << "GLFW ERROR: " << description << '\n';
+    LOGE << "GLFW ERROR: " << description << '\n';
 }
 
-void jleWindow::key_callback(
+void jleWindow::glfwKeyCallback(
     GLFWwindow *window, int key, int scancode, int action, int mods) {
 
     if (action == GLFW_PRESS) {
@@ -35,17 +35,17 @@ void jleWindow::key_callback(
     }
 }
 
-void jleWindow::scroll_callback(GLFWwindow *window,
-                                double xoffset,
-                                double yoffset) {
+void jleWindow::glfwScrollCallback(GLFWwindow *window,
+                                   double xoffset,
+                                   double yoffset) {
     activeWindow->currentScrollX = static_cast<float>(xoffset);
     activeWindow->currentScrollY = static_cast<float>(yoffset);
 }
 
-void jleWindow::framebuffer_size_callback(GLFWwindow *window,
-                                          int width,
-                                          int height) {
-    activeWindow->internalRenderingAPI->viewportDimensions(
+void jleWindow::glfwFramebufferSizeCallback(GLFWwindow *window,
+                                            int width,
+                                            int height) {
+    activeWindow->rendering->viewportDimensions(
         0,
         0,
         static_cast<unsigned int>(width),
@@ -101,19 +101,19 @@ void jleWindow::displayCursor(bool enable) {
     cursorVisible = enable;
 }
 
-bool jleWindow::isCursorDisplayed() { return cursorVisible; }
+bool jleWindow::isCursorDisplayed() const { return cursorVisible; }
 
-unsigned int jleWindow::GetWindowHeight() { return windowSettings.height; }
+unsigned int jleWindow::height() const { return windowSettings.height; }
 
-unsigned int jleWindow::GetWindowWidth() { return windowSettings.width; }
+unsigned int jleWindow::width() const { return windowSettings.width; }
 
-void jleWindow::initWindow(std::shared_ptr<jleRendering> internalRenderingAPI) {
-    if (!internalRenderingAPI) {
+void jleWindow::initWindow(std::shared_ptr<jleRendering> rendering) {
+    if (!rendering) {
         std::cerr << "Rendering API is null!\n";
         exit(1);
     }
 
-    this->internalRenderingAPI = internalRenderingAPI;
+    this->rendering = rendering;
 
     activeWindow = this;
     glfwSetErrorCallback(error_callback);
@@ -135,9 +135,9 @@ void jleWindow::initWindow(std::shared_ptr<jleRendering> internalRenderingAPI) {
                      windowSettings.height,
                      windowSettings.WindowTitle.c_str()));
 
-    glfwSetKeyCallback(nativeWindow, key_callback);
-    glfwSetScrollCallback(nativeWindow, scroll_callback);
-    glfwSetFramebufferSizeCallback(nativeWindow, framebuffer_size_callback);
+    glfwSetKeyCallback(nativeWindow, glfwKeyCallback);
+    glfwSetScrollCallback(nativeWindow, glfwScrollCallback);
+    glfwSetFramebufferSizeCallback(nativeWindow, glfwFramebufferSizeCallback);
 
     glfwSetWindowSizeLimits(nativeWindow,
                             windowSettings.widthMin,
@@ -160,7 +160,7 @@ void jleWindow::initWindow(std::shared_ptr<jleRendering> internalRenderingAPI) {
 
     int w, h;
     glfwGetFramebufferSize(nativeWindow, &w, &h);
-    internalRenderingAPI->viewportDimensions(
+    rendering->viewportDimensions(
         0, 0, static_cast<unsigned int>(w), static_cast<unsigned int>(h));
 
     if (!windowSettings.iconPath.empty()) {

@@ -31,7 +31,6 @@ add_library(engine STATIC
         "oStaticSprite.cpp"
         "cAseprite.cpp"
         "cCamera.cpp"
-        "jleSoLoud.cpp"
         "jleFont.cpp"
         "cText.cpp"
         "jleTimerManager.cpp"

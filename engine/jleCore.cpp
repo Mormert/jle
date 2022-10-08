@@ -6,12 +6,11 @@
 #include "jleMouseInput.h"
 #include "jleRendering.h"
 #include "jleResource.h"
-#include "jleSoLoud.h"
-#include "jleStaticOpenGLState.h"
 #include "jleTexture.h"
 #include "jleWindow.h"
 
 #include <plog/Log.h>
+#include <soloud.h>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -19,59 +18,50 @@
 
 #include <iostream>
 
-jleCore *jleCore::core = nullptr;
-
-struct jleCore::jleCoreInternalImpl {
-    std::shared_ptr<jleRendering> renderingInternal;
-    std::shared_ptr<jleWindow> windowInternal;
-    std::shared_ptr<CoreStatus_Internal> statusInternal;
-};
 jleCore::jleCore(const std::shared_ptr<jleCoreSettings> &cs)
-    : window{std::make_unique<jleWindow>()},
-      input{std::make_shared<jleInputAPI>(
-          std::make_shared<jleKeyboardInput>(window),
-          std::make_shared<jleMouseInput>(
-
-              window))},
-      rendering{std::make_shared<jleRendering>()},
-      status{std::make_shared<CoreStatus_Internal>()},
-      _resources{std::make_unique<jleResources>()} {
+    : _window{std::make_unique<jleWindow>()},
+      _input{std::make_shared<jleInput>(
+          std::make_shared<jleKeyboardInput>(_window),
+          std::make_shared<jleMouseInput>(_window))},
+      _rendering{std::make_shared<jleRendering>()},
+      _resources{std::make_unique<jleResources>()},
+      _soLoud{std::make_unique<SoLoud::Soloud>()} {
     PLOG_INFO << "Starting the core";
-    coreImpl = std::make_unique<jleCoreInternalImpl>();
-    coreImpl->renderingInternal = rendering;
-    coreImpl->windowInternal = window;
-    coreImpl->statusInternal = status;
 
-    coreImpl->windowInternal->settings(cs->windowSettings);
+    _window->settings(cs->windowSettings);
 
-    jleSoLoud::init();
+    PLOG_INFO << "Starting the sound engine";
+    _soLoud->init();
 
     _settings = cs;
 }
 
-jleCore::~jleCore() { jleSoLoud::deInit(); }
+jleCore::~jleCore() {
+    PLOG_INFO << "Destroying the sound engine";
+    _soLoud->deinit();
+}
 
 void jleCore::run() {
-    if (core != nullptr) {
+    if (gCore != nullptr) {
         std::cerr << "Error: Multiple instances of jleCore\n";
         exit(1);
     }
-    core = this;
+
+    gCore = this;
 
     PLOG_INFO << "Initializing the window";
-    coreImpl->windowInternal->initWindow(coreImpl->renderingInternal);
-
-    _fontData = std::make_unique<jleFontData>();
+    _window->initWindow(_rendering);
 
     PLOG_INFO << "Setting up rendering internals";
-    coreImpl->renderingInternal->setup();
+    _rendering->setup();
+    _fontData = std::make_unique<jleFontData>();
 
     PLOG_INFO << "Starting the game loop";
 
     running = true;
     start();
 #ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop(main_loop, 0, true);
+    emscripten_set_main_loop(mainLoopEmscripten, 0, true);
 #else
     loop();
 #endif
@@ -88,22 +78,22 @@ void jleCore::mainLoop() {
     jleProfiler::NewFrame();
     JLE_SCOPE_PROFILE(mainLoop)
 
-    coreImpl->statusInternal->refresh();
+    refreshDeltaTimes();
 
     _timerManager.process();
 
-    update(status->deltaFrameTime());
+    update(deltaFrameTime());
 
     render();
-    window->updateWindow();
+    _window->updateWindow();
 
-    running = !window->windowShouldClose();
+    running = !_window->windowShouldClose();
 }
 
 jleTimerManager &jleCore::timerManager() { return _timerManager; }
 
-void CoreStatus_Internal::refresh() {
-    _currentFrame = jleCore::core->coreImpl->windowInternal->time();
+void jleCore::refreshDeltaTimes() {
+    _currentFrame = _window->time();
     _deltaTime = _currentFrame - _lastFrame;
     _lastFrame = _currentFrame;
     _fps = static_cast<int>(1.0 / _deltaTime);

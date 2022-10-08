@@ -21,9 +21,9 @@ public:
 
     void update(float dt) override;
 
-    float offsetX();
+    [[nodiscard]] float offsetX() const;
 
-    float offsetY();
+    [[nodiscard]] float offsetY() const;
 
 private:
     std::shared_ptr<cTransform> _transform{nullptr};

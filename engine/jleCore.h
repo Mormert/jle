@@ -3,7 +3,7 @@
 #pragma once
 
 #include "jleCoreSettings.h"
-#include "jleInputAPI.h"
+#include "jleInput.h"
 #include "jleNetworking.h"
 #include "jleProfiler.h"
 #include "jleRendering.h"
@@ -11,30 +11,18 @@
 
 #include <memory>
 
+namespace SoLoud {
+class Soloud;
+};
+
 class jleFramebuffer;
 class jleResources;
 class jleFontData;
 
-struct CoreStatus_Internal {
-public:
-    int fps() { return _fps; }
+class jleCore;
+inline jleCore *gCore;
 
-    float deltaFrameTime() { return _deltaTime; }
-
-    float currentFrameTime() { return _currentFrame; }
-
-    float lastFrameTime() { return _lastFrame; }
-
-    void refresh();
-
-private:
-    int _fps = 0;
-    float _deltaTime = 0;
-    float _currentFrame = 0;
-    float _lastFrame = 0;
-};
-
-// Core part of the jle engine
+// Core class jle
 class jleCore {
 public:
     jleCore(const jleCore &) = delete;
@@ -48,26 +36,35 @@ public:
 
     void run();
 
-    // Singleton
-    static jleCore *core;
-
-    // Entry point for a user to access the windowing API
-    const std::shared_ptr<jleWindow> window;
-
-    // Entry point for a user to access the input API
-    const std::shared_ptr<jleInputAPI> input;
-
-    // Entry point for a user to do fundamental rendering
-    const std::shared_ptr<jleRendering> rendering;
-
-    // Entry point for a user to get core status
-    const std::shared_ptr<CoreStatus_Internal> status;
-
     jleTimerManager &timerManager();
 
-    jleResources &resources() { return *_resources; }
+    inline SoLoud::Soloud &soLoud() { return *_soLoud; }
 
-    const jleCoreSettings &settings() const { return *_settings; }
+    inline jleResources &resources() { return *_resources; }
+
+    inline jleWindow &window() { return *_window; }
+
+    inline jleInput &input() { return *_input; }
+
+    inline jleRendering &rendering() { return *_rendering; }
+
+    inline jleQuadRendering &quadRendering() { return _rendering->quads(); }
+
+    inline jleTextRendering &textRendering() { return _rendering->texts(); }
+
+    [[nodiscard]] inline const jleCoreSettings &settings() const {
+        return *_settings;
+    }
+
+    [[nodiscard]] inline int fps() const { return _fps; }
+
+    [[nodiscard]] inline float deltaFrameTime() const { return _deltaTime; }
+
+    [[nodiscard]] inline float currentFrameTime() const {
+        return _currentFrame;
+    }
+
+    [[nodiscard]] inline float lastFrameTime() const { return _lastFrame; }
 
 private:
     void loop();
@@ -76,13 +73,7 @@ private:
 
     bool running{false};
 
-    static void main_loop() { jleCore::core->mainLoop(); }
-
-    // Internal impl data
-    struct jleCoreInternalImpl;
-    std::unique_ptr<jleCoreInternalImpl> coreImpl;
-
-    friend struct CoreStatus_Internal;
+    static void mainLoopEmscripten() { gCore->mainLoop(); }
 
     virtual void start() {}
 
@@ -95,6 +86,17 @@ private:
     std::shared_ptr<jleCoreSettings> _settings;
     std::unique_ptr<jleResources> _resources;
     std::unique_ptr<jleFontData> _fontData;
+    const std::shared_ptr<jleWindow> _window;
+    const std::shared_ptr<jleInput> _input;
+    const std::shared_ptr<jleRendering> _rendering;
+    const std::unique_ptr<SoLoud::Soloud> _soLoud;
 
     jleTimerManager _timerManager;
+
+    void refreshDeltaTimes();
+
+    int _fps = 0;
+    float _deltaTime = 0;
+    float _currentFrame = 0;
+    float _lastFrame = 0;
 };

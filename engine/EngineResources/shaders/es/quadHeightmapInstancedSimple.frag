@@ -23,7 +23,7 @@ void main()
 {
     // Calculate the actual pixel coordinates on the texture
     vec2 texture_coordinate = texCoords * vec2(uvs.z/texDims.x, uvs.w/texDims.y) + vec2(uvs.x/texDims.x, uvs.y/texDims.y);
-    vec4 col = vec4(light.ambient, 1.0) * texture(texture_albedo, texture_coordinate.xy);
+    vec4 col = texture(texture_albedo, texture_coordinate.xy);
 
     if (col.a < 0.01)
     {

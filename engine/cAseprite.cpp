@@ -15,7 +15,7 @@ void cAseprite::start() {
     _aseprites.clear();
     for (auto &&path : _asepritePaths) {
         _aseprites.push_back(
-            jleCore::core->resources().loadResourceFromFile<jleAseprite>(
+            gCore->resources().loadResourceFromFile<jleAseprite>(
                 jleRelativePath{path._string}));
     }
 }
@@ -62,7 +62,7 @@ void cAseprite::update(float dt) {
         quad.depth = _transform->worldDepth();
 
         if (quad.texture.get()) {
-            jleCore::core->rendering->quads().sendTexturedQuad(quad);
+            gCore->quadRendering().sendTexturedQuad(quad);
         }
     }
 }
@@ -102,7 +102,7 @@ void cAseprite::fromJson(const nlohmann::json &j_in) {
     _aseprites.clear();
     for (auto &&path : _asepritePaths) {
         _aseprites.push_back(
-            jleCore::core->resources().loadResourceFromFile<jleAseprite>(
+            gCore->resources().loadResourceFromFile<jleAseprite>(
                 jleRelativePath{path._string}));
     }
 }
@@ -124,9 +124,8 @@ unsigned int cAseprite::currentAsepriteIndex() const {
 
 int cAseprite::addAsepritePath(const std::string &path) {
     _asepritePaths.push_back({path});
-    _aseprites.push_back(
-        jleCore::core->resources().loadResourceFromFile<jleAseprite>(
-            jleRelativePath{path}));
+    _aseprites.push_back(gCore->resources().loadResourceFromFile<jleAseprite>(
+        jleRelativePath{path}));
     return (int)_aseprites.size() - 1;
 }
 

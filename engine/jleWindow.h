@@ -15,26 +15,26 @@ public:
 
     static void error_callback(int error, const char *description);
 
-    static void key_callback(
+    static void glfwKeyCallback(
         GLFWwindow *window, int key, int scancode, int action, int mods);
 
-    static void scroll_callback(GLFWwindow *window,
-                                double xoffset,
-                                double yoffset);
+    static void glfwScrollCallback(GLFWwindow *window,
+                                   double xoffset,
+                                   double yoffset);
 
-    static void framebuffer_size_callback(GLFWwindow *window,
-                                          int width,
-                                          int height);
+    static void glfwFramebufferSizeCallback(GLFWwindow *window,
+                                            int width,
+                                            int height);
 
     void settings(WindowSettings &windowSettings);
 
     void displayCursor(bool enable);
 
-    bool isCursorDisplayed();
+    bool isCursorDisplayed() const;
 
-    unsigned int GetWindowHeight();
+    [[nodiscard]] unsigned int height() const;
 
-    unsigned int GetWindowWidth();
+    [[nodiscard]] unsigned int width() const;
 
     void initWindow(std::shared_ptr<jleRendering> internalRenderingAPI);
 
@@ -84,7 +84,7 @@ private:
     inline static bool sPressedKeys[256];
     inline static bool sReleasedKeys[256];
 
-    std::shared_ptr<jleRendering> internalRenderingAPI;
+    std::shared_ptr<jleRendering> rendering;
 
     std::map<unsigned int, std::function<void(unsigned int, unsigned int)>>
         windowResizedCallbacks;

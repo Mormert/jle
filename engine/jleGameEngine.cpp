@@ -79,11 +79,11 @@ void jleGameEngine::unhaltGame() {
 }
 
 void jleGameEngine::executeNextFrame() {
-    LOG_VERBOSE << "Next frame dt: " << status->deltaFrameTime();
+    LOG_VERBOSE << "Next frame dt: " << gCore->deltaFrameTime();
     auto gameHaltedTemp = gameHalted;
     gameHalted = false;
-    update(status->deltaFrameTime());
-    rendering->render(*framebuffer_main, gameRef()._mainCamera);
+    update(deltaFrameTime());
+    rendering().render(*framebuffer_main, gameRef()._mainCamera);
     gameHalted = gameHaltedTemp;
 }
 
@@ -104,14 +104,14 @@ void jleGameEngine::start() {
     framebuffer_main =
         std::make_shared<jleFramebuffer>(dims.first, dims.second);
 
-    const auto &internalInputMouse = jleCore::core->input->mouse;
+    const auto &internalInputMouse = gCore->input().mouse;
     internalInputMouse->pixelatedScreenSize(dims.first, dims.second);
     internalInputMouse->screenSize(gameSettings->windowSettings.width,
                                    gameSettings->windowSettings.height);
 
     _fullscreen_renderer = std::make_unique<jleFullscreenRendering>();
 
-    window->addWindowResizeCallback(
+    window().addWindowResizeCallback(
         std::bind(&jleGameEngine::framebufferResizeEvent,
                   this,
                   std::placeholders::_1,
@@ -130,7 +130,7 @@ void jleGameEngine::framebufferResizeEvent(unsigned int width,
     framebuffer_main->resize(dims.first, dims.second);
 
     const auto &internalInputMouse =
-        std::static_pointer_cast<jleMouseInput>(jleCore::core->input->mouse);
+        std::static_pointer_cast<jleMouseInput>(gCore->input().mouse);
     internalInputMouse->pixelatedScreenSize(dims.first, dims.second);
     internalInputMouse->screenSize(width, height);
 
@@ -149,12 +149,10 @@ void jleGameEngine::update(float dt) {
 void jleGameEngine::render() {
     JLE_SCOPE_PROFILE(jleGameEngine::Render)
     if (!gameHalted && game) {
-        rendering->render(*framebuffer_main.get(), gameRef()._mainCamera);
-        rendering->clearBuffersForNextFrame();
+        rendering().render(*framebuffer_main.get(), gameRef()._mainCamera);
+        rendering().clearBuffersForNextFrame();
         _fullscreen_renderer->renderFramebufferFullscreen(
-            *framebuffer_main.get(),
-            window->GetWindowWidth(),
-            window->GetWindowHeight());
+            *framebuffer_main, window().width(), window().height());
     }
 }
 

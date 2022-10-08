@@ -61,7 +61,7 @@ void jleEditorSceneObjectsWindow::update(jleGameEngine &ge) {
             "scene pane", ImVec2(150 * globalImguiScale, 0), true);
 
         auto &activeScenes =
-            ((jleGameEngine *)jleCore::core)->gameRef().activeScenesRef();
+            ((jleGameEngine *)gCore)->gameRef().activeScenesRef();
 
         for (auto scene : activeScenes) {
             if (ImGui::Selectable(scene->_sceneName.c_str(),

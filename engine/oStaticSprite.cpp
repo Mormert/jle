@@ -39,7 +39,7 @@ void oStaticSprite::setupDefaultObject() {
 void oStaticSprite::start() {}
 
 void oStaticSprite::update(float dt) {
-    if (jleCore::core->input->keyboard->keyDown('Q')) {
+    if (gCore->input().keyboard->keyDown('Q')) {
         auto spawnedObject = spawnChildObject<jleObject>();
 
         auto t = spawnedObject->addCustomComponent<cTransform>();

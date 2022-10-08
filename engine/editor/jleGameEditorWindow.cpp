@@ -41,7 +41,7 @@ void jleGameEditorWindow::update(jleGameEngine &ge) {
     _windowPositionX = cursorScreenPos.x - viewport->Pos.x;
     _windowPositionY = cursorScreenPos.y - viewport->Pos.y;
 
-    const auto &internalInputMouse = jleCore::core->input->mouse;
+    const auto &internalInputMouse = gCore->input().mouse;
     const auto &engineFramebufferMain =
         jleGameEngine::gEngine->framebuffer_main;
     internalInputMouse->screenBeginCoords(_windowPositionX, _windowPositionY);
@@ -63,7 +63,7 @@ void jleGameEditorWindow::update(jleGameEngine &ge) {
         ge.framebuffer_main->resize(dims.first, dims.second);
         internalInputMouse->pixelatedScreenSize(dims.first, dims.second);
 
-        auto &game = ((jleGameEngine *)jleCore::core)->gameRef();
+        auto &game = ((jleGameEngine *)gCore)->gameRef();
         game._mainCamera._cameraWidth = dims.first;
         game._mainCamera._cameraHeight = dims.second;
     }
@@ -79,7 +79,7 @@ void jleGameEditorWindow::update(jleGameEngine &ge) {
 
     if (ImGui::IsWindowFocused() != _wasFocused) {
         _wasFocused = ImGui::IsWindowFocused();
-        ge.input->inputEnabled(_wasFocused);
+        ge.input().inputEnabled(_wasFocused);
     }
 
     ImGui::End();

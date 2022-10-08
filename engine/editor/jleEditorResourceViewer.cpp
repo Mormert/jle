@@ -13,7 +13,7 @@ void jleEditorResourceViewer::update(jleGameEngine &ge) {
     ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_NoCollapse);
 
-    auto &resources = jleCore::core->resources();
+    auto &resources = gCore->resources();
 
     std::vector<std::string> resourcesToBeUnloaded;
     for (auto &&drive : resources.resourcesMap()) {

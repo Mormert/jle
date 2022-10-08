@@ -65,7 +65,7 @@ void jleSceneEditorWindow::update(jleGameEngine &ge) {
         int32_t(cursorScreenPos.y) - viewport->Pos.y;
 
     const auto previousFrameCursorPos = _lastCursorPos;
-    _lastCursorPos = jleCore::core->window->cursor();
+    _lastCursorPos = gCore->window().cursor();
     const int32_t mouseX = _lastCursorPos.first;
     const int32_t mouseY = _lastCursorPos.second;
     const int32_t mouseDeltaX = mouseX - previousFrameCursorPos.first;
@@ -117,12 +117,12 @@ void jleSceneEditorWindow::update(jleGameEngine &ge) {
             _texturedQuad.x = transform->worldX() - 64.f;
             _texturedQuad.y = transform->worldY() - 64.f;
             std::vector<texturedQuad> texturedQuads{_texturedQuad};
-            jleCore::core->rendering->quads().render(*_framebuffer,
-                                                     jleEditor::_editorCamera,
-                                                     texturedQuads,
-                                                     {},
-                                                     {},
-                                                     false);
+            gCore->quadRendering().render(*_framebuffer,
+                                          jleEditor::_editorCamera,
+                                          texturedQuads,
+                                          {},
+                                          {},
+                                          false);
         }
     }
 
@@ -137,7 +137,7 @@ void jleSceneEditorWindow::update(jleGameEngine &ge) {
                  ImVec2(1, 0));
 
     if (ImGui::IsWindowHovered()) {
-        auto t = ge.status->deltaFrameTime();
+        auto t = ge.deltaFrameTime();
         auto dragDelta = ImGui::GetMouseDragDelta(1);
 
         jleEditor::_editorCamera._x += dragDelta.x * 10.f * zoomValue * t;
@@ -153,30 +153,30 @@ void jleSceneEditorWindow::update(jleGameEngine &ge) {
 
         if (ImGui::IsKeyDown(ImGuiKey_W)) {
             jleEditor::_editorCamera.movePerspectiveForward(
-                115.f * ge.status->deltaFrameTime());
+                115.f * ge.deltaFrameTime());
         }
         if (ImGui::IsKeyDown(ImGuiKey_S)) {
             jleEditor::_editorCamera.movePerspectiveBackward(
-                115.f * ge.status->deltaFrameTime());
+                115.f * ge.deltaFrameTime());
         }
         if (ImGui::IsKeyDown(ImGuiKey_D)) {
-            jleEditor::_editorCamera.movePerspectiveRight(
-                115.f * ge.status->deltaFrameTime());
+            jleEditor::_editorCamera.movePerspectiveRight(115.f *
+                                                          ge.deltaFrameTime());
         }
         if (ImGui::IsKeyDown(ImGuiKey_A)) {
-            jleEditor::_editorCamera.movePerspectiveLeft(
-                115.f * ge.status->deltaFrameTime());
+            jleEditor::_editorCamera.movePerspectiveLeft(115.f *
+                                                         ge.deltaFrameTime());
         }
         if (ImGui::IsKeyDown(ImGuiKey_Space)) {
-            jleEditor::_editorCamera.movePerspectiveUp(
-                115.f * ge.status->deltaFrameTime());
+            jleEditor::_editorCamera.movePerspectiveUp(115.f *
+                                                       ge.deltaFrameTime());
         }
         if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl)) {
-            jleEditor::_editorCamera.movePerspectiveDown(
-                115.f * ge.status->deltaFrameTime());
+            jleEditor::_editorCamera.movePerspectiveDown(115.f *
+                                                         ge.deltaFrameTime());
         }
 
-        auto currentScroll = jleCore::core->input->mouse->scrollY();
+        auto currentScroll = gCore->input().mouse->scrollY();
         if (currentScroll != 0.f) {
             zoomValue -= currentScroll * 0.1f;
             zoomValue = glm::clamp(zoomValue, 0.25f, 5.f);
@@ -246,7 +246,7 @@ void jleSceneEditorWindow::update(jleGameEngine &ge) {
 
         if (!draggingTransformMarker && ImGui::IsMouseClicked(0)) {
             // Select closest object from mouse click
-            auto &game = ((jleGameEngine *)jleCore::core)->gameRef();
+            auto &game = ((jleGameEngine *)gCore)->gameRef();
             const auto &scenes = game.activeScenesRef();
 
             std::unordered_map<std::shared_ptr<cTransform>,

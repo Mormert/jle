@@ -33,7 +33,7 @@ void cText::fromJson(const nlohmann::json &j_in) {
     _colorB = j_in.at("colorB");
     _colorA = j_in.at("colorA");
 
-    _font = jleCore::core->resources().loadResourceFromFile<jleFont>(
+    _font = gCore->resources().loadResourceFromFile<jleFont>(
         jleRelativePath{_fontPath});
 }
 
@@ -42,16 +42,16 @@ void cText::update(float dt) {
         return;
     }
 
-    jleCore::core->rendering->texts().sendFontText(_font.get(),
-                                                   _text,
-                                                   _fontSize,
-                                                   _transform->worldX(),
-                                                   _transform->worldY(),
-                                                   _transform->worldDepth(),
-                                                   _colorR,
-                                                   _colorG,
-                                                   _colorB,
-                                                   _colorA);
+    gCore->textRendering().sendFontText(_font.get(),
+                                        _text,
+                                        _fontSize,
+                                        _transform->worldX(),
+                                        _transform->worldY(),
+                                        _transform->worldDepth(),
+                                        _colorR,
+                                        _colorG,
+                                        _colorB,
+                                        _colorA);
 }
 
 void cText::text(const std::string &text) { _text = text; }

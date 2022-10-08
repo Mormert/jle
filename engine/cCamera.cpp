@@ -14,7 +14,7 @@ void cCamera::start() {
 }
 
 void cCamera::update(float dt) {
-    auto &game = ((jleGameEngine *)jleCore::core)->gameRef();
+    auto &game = ((jleGameEngine *)gCore)->gameRef();
 
     game._mainCamera._x = _transform->worldX() + _offsetX;
     game._mainCamera._y = _transform->worldY() + _offsetY;
@@ -40,6 +40,6 @@ cCamera::cCamera(jleObject *owner, jleScene *scene)
 
 cCamera::~cCamera() { sInstanceCounter--; }
 
-float cCamera::offsetX() { return _offsetX; }
+float cCamera::offsetX() const { return _offsetX; }
 
-float cCamera::offsetY() { return _offsetY; }
+float cCamera::offsetY() const { return _offsetY; }
