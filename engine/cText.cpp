@@ -4,7 +4,7 @@
 #include "jleGameEngine.h"
 #include "jleObject.h"
 #include "jlePathDefines.h"
-#include "jleResourceHolder.h"
+#include "jleResource.h"
 
 cText::cText(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 
@@ -33,7 +33,7 @@ void cText::fromJson(const nlohmann::json &j_in) {
     _colorB = j_in.at("colorB");
     _colorA = j_in.at("colorA");
 
-    _font = jleResourceHolder::loadResourceFromFile<jleFont>(
+    _font = jleCore::core->resources().loadResourceFromFile<jleFont>(
         jleRelativePath{_fontPath});
 }
 

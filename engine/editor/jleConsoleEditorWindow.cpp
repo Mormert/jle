@@ -8,8 +8,63 @@
 #include <algorithm>
 #include <locale>
 
+namespace {
+
+std::string recordToString(const plog::Record &record) {
+
+    std::wostringstream woss;
+    woss << PLOG_NSTR("<") << plog::severityToString(record.getSeverity())
+         << PLOG_NSTR("> ") << record.getFunc() << PLOG_NSTR("@")
+         << record.getLine() << PLOG_NSTR(": ") << record.getMessage()
+         << PLOG_NSTR("\n");
+    auto wstr = woss.str();
+
+    // DEPRECATED C++ 14 CODE BELOW
+    // Conversion from wstring to string is required
+    //  using convert_type = std::codecvt_utf8<wchar_t>;
+    //  static std::wstring_convert<convert_type, wchar_t> converter;
+    //  std::string converted_str = converter.to_bytes(wstr);
+
+    // C++ 17 VERSION:
+
+    std::string converted_str(wstr.length(), 0);
+    std::transform(wstr.begin(),
+                   wstr.end(),
+                   converted_str.begin(),
+                   [](wchar_t c) { return (char)c; });
+
+    return converted_str;
+}
+
+// This is done because consolewindow might be unloaded before all logging is
+// finished
+struct ConsoleAppender : public plog::IAppender {
+    jleConsoleEditorWindow *window = nullptr;
+    void write(const plog::Record &record) override {
+        if (window) {
+            window->write(record);
+        }
+        else {
+            std::cerr << recordToString(record) << "\n";
+        }
+    }
+};
+
+ConsoleAppender &consoleAppender() {
+    static auto appender = ConsoleAppender{};
+
+    return appender;
+}
+
+} // namespace
+
+plog::IAppender &jleConsoleEditorWindow::appender() {
+    return consoleAppender();
+}
+
 jleConsoleEditorWindow::jleConsoleEditorWindow(const std::string &window_name)
     : iEditorImGuiWindow{window_name} {
+    consoleAppender().window = this;
     clearLog();
     memset(InputBuf, 0, sizeof(InputBuf));
     HistoryPos = -1;
@@ -25,6 +80,7 @@ jleConsoleEditorWindow::jleConsoleEditorWindow(const std::string &window_name)
 }
 
 jleConsoleEditorWindow::~jleConsoleEditorWindow() {
+    consoleAppender().window = nullptr;
     clearLog();
     for (int i = 0; i < History.Size; i++)
         free(History[i]);
@@ -391,26 +447,5 @@ int jleConsoleEditorWindow::textEditCallback(ImGuiInputTextCallbackData *data) {
 }
 
 void jleConsoleEditorWindow::write(const plog::Record &record) {
-    std::wostringstream woss;
-    woss << PLOG_NSTR("<") << plog::severityToString(record.getSeverity())
-         << PLOG_NSTR("> ") << record.getFunc() << PLOG_NSTR("@")
-         << record.getLine() << PLOG_NSTR(": ") << record.getMessage()
-         << PLOG_NSTR("\n");
-    auto wstr = woss.str();
-
-    // DEPRECATED C++ 14 CODE BELOW
-    // Conversion from wstring to string is required
-    //  using convert_type = std::codecvt_utf8<wchar_t>;
-    //  static std::wstring_convert<convert_type, wchar_t> converter;
-    //  std::string converted_str = converter.to_bytes(wstr);
-
-    // C++ 17 VERSION:
-
-    std::string converted_str(wstr.length(), 0);
-    std::transform(wstr.begin(),
-                   wstr.end(),
-                   converted_str.begin(),
-                   [](wchar_t c) { return (char)c; });
-
-    addLog("%s", converted_str.c_str());
+    addLog("%s", recordToString(record).c_str());
 }

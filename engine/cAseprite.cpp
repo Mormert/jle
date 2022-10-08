@@ -1,12 +1,13 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "cAseprite.h"
+#include "jleCore.h"
 #include "jleGameEngine.h"
 #include "jleObject.h"
 #include "jlePath.h"
 #include "jlePathDefines.h"
 #include "jleQuadRendering.h"
-#include "jleResourceHolder.h"
+#include "jleResource.h"
 
 void cAseprite::start() {
     _transform = _attachedToObject->addDependencyComponent<cTransform>(this);
@@ -14,7 +15,7 @@ void cAseprite::start() {
     _aseprites.clear();
     for (auto &&path : _asepritePaths) {
         _aseprites.push_back(
-            jleResourceHolder::loadResourceFromFile<jleAseprite>(
+            jleCore::core->resources().loadResourceFromFile<jleAseprite>(
                 jleRelativePath{path._string}));
     }
 }
@@ -101,7 +102,7 @@ void cAseprite::fromJson(const nlohmann::json &j_in) {
     _aseprites.clear();
     for (auto &&path : _asepritePaths) {
         _aseprites.push_back(
-            jleResourceHolder::loadResourceFromFile<jleAseprite>(
+            jleCore::core->resources().loadResourceFromFile<jleAseprite>(
                 jleRelativePath{path._string}));
     }
 }
@@ -123,8 +124,9 @@ unsigned int cAseprite::currentAsepriteIndex() const {
 
 int cAseprite::addAsepritePath(const std::string &path) {
     _asepritePaths.push_back({path});
-    _aseprites.push_back(jleResourceHolder::loadResourceFromFile<jleAseprite>(
-        jleRelativePath{path}));
+    _aseprites.push_back(
+        jleCore::core->resources().loadResourceFromFile<jleAseprite>(
+            jleRelativePath{path}));
     return (int)_aseprites.size() - 1;
 }
 

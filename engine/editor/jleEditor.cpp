@@ -46,8 +46,8 @@ void jleEditor::start() {
 
     initImgui();
 
-    auto dims = framebufferDimensions(core_settings->windowSettings.width,
-                                      core_settings->windowSettings.height);
+    auto dims = framebufferDimensions(settings().windowSettings.width,
+                                      settings().windowSettings.height);
     framebuffer_main =
         std::make_shared<jleFramebuffer>(dims.first, dims.second);
 
@@ -57,25 +57,25 @@ void jleEditor::start() {
     // Note: Important that menu comes first here, since the others are
     // dependent on the menu's dockspace.
     auto menu = std::make_shared<jleEditorWindowsPanel>("Menu");
-    AddImGuiWindow(menu);
+    addImGuiWindow(menu);
 
     auto sceneWindow = std::make_shared<jleSceneEditorWindow>(
         "Scene Window", _editorFramebuffer);
-    AddImGuiWindow(sceneWindow);
+    addImGuiWindow(sceneWindow);
     menu->addWindow(sceneWindow);
 
     auto gameWindow = std::make_shared<jleGameEditorWindow>("Game Window");
-    AddImGuiWindow(gameWindow);
+    addImGuiWindow(gameWindow);
     menu->addWindow(gameWindow);
 
     auto console = std::make_shared<jleConsoleEditorWindow>("Console Window");
-    plog::get<0>()->addAppender(&*console);
-    AddImGuiWindow(console);
+    plog::get<0>()->addAppender(&console->appender());
+    addImGuiWindow(console);
     menu->addWindow(console);
 
     auto settingsWindow = std::make_shared<jleEngineSettingsWindow>(
         "Engine Settings", gameSettings, editor_settings);
-    AddImGuiWindow(settingsWindow);
+    addImGuiWindow(settingsWindow);
     menu->addWindow(settingsWindow);
 
     // auto gameController =
@@ -85,21 +85,21 @@ void jleEditor::start() {
 
     auto editorSceneObjects =
         std::make_shared<jleEditorSceneObjectsWindow>("Scene Objects");
-    AddImGuiWindow(editorSceneObjects);
+    addImGuiWindow(editorSceneObjects);
     menu->addWindow(editorSceneObjects);
 
     auto contentBrowser =
         std::make_shared<jleEditorContentBrowser>("Content Browser");
-    AddImGuiWindow(contentBrowser);
+    addImGuiWindow(contentBrowser);
     menu->addWindow(contentBrowser);
 
     auto resourceViewer =
         std::make_shared<jleEditorResourceViewer>("Resource Viewer");
-    AddImGuiWindow(resourceViewer);
+    addImGuiWindow(resourceViewer);
     menu->addWindow(resourceViewer);
 
     auto profilerWindow = std::make_shared<jleEditorProfilerWindow>("Profiler");
-    AddImGuiWindow(profilerWindow);
+    addImGuiWindow(profilerWindow);
     menu->addWindow(profilerWindow);
 
     jleCore::window->addWindowResizeCallback(
@@ -276,7 +276,7 @@ void jleEditor::imguiTheme() {
     style.WindowBorderSize = 1.0f;
 }
 
-void jleEditor::AddImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window) {
+void jleEditor::addImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window) {
     ImGuiWindows.push_back(window);
 }
 
