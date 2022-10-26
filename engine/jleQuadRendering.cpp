@@ -185,12 +185,12 @@ void jleQuadRendering::sendTexturedQuad(texturedQuad &texturedQuad) {
 }
 
 void jleQuadRendering::sendTexturedHeightQuad(
-    texturedHeightQuad &texturedHeightQuad) {
+    jleTexturedHeightQuad &texturedHeightQuad) {
     _queuedTexturedHeightQuads.push_back(texturedHeightQuad);
 }
 
 void jleQuadRendering::sendSimpleTexturedHeightQuad(
-    texturedHeightQuad &texturedHeightQuad) {
+    jleTexturedHeightQuad &texturedHeightQuad) {
     _queuedSimpleTexturedHeightQuads.push_back(texturedHeightQuad);
 }
 
@@ -214,8 +214,8 @@ void jleQuadRendering::render(
     jleFramebuffer &framebufferOut,
     jleCamera &camera,
     const std::vector<texturedQuad> &texturedQuads,
-    const std::vector<texturedHeightQuad> &texturedHeightQuads,
-    const std::vector<texturedHeightQuad> &texturedSimpleHeightQuads,
+    const std::vector<jleTexturedHeightQuad> &texturedHeightQuads,
+    const std::vector<jleTexturedHeightQuad> &texturedSimpleHeightQuads,
     bool clearDepthColor) {
 
     JLE_SCOPE_PROFILE(jleQuadRendering::Render)
@@ -315,7 +315,7 @@ void jleQuadRendering::processTexturedQuads(
 }
 
 void jleQuadRendering::processTexturedHeightQuads(
-    const std::vector<texturedHeightQuad> &texturedHeightQuads,
+    const std::vector<jleTexturedHeightQuad> &texturedHeightQuads,
     glm::mat4 &view,
     glm::vec3 viewPos) {
     JLE_SCOPE_PROFILE(jleQuadRendering::processTexturedHeightQuads)
@@ -386,7 +386,7 @@ void jleQuadRendering::processTexturedHeightQuads(
 }
 
 void jleQuadRendering::processSimpleTexturedHeightQuads(
-    const std::vector<texturedHeightQuad> &texturedHeightQuads,
+    const std::vector<jleTexturedHeightQuad> &texturedHeightQuads,
     glm::mat4 &view,
     glm::vec3 viewPos) {
     JLE_SCOPE_PROFILE(jleQuadRendering::processSimpleTexturedHeightQuads)
@@ -411,9 +411,9 @@ void jleQuadRendering::processSimpleTexturedHeightQuads(
         vec.push_back(qd);
     }
 
-    quadHeightmapShaderInstanced.use();
-    quadHeightmapShaderInstanced.SetMat4("camera", view);
-    quadHeightmapShaderInstanced.SetVec3("viewPos", viewPos);
+    quadHeightmapShaderInstancedSimple.use();
+    quadHeightmapShaderInstancedSimple.SetMat4("camera", view);
+    quadHeightmapShaderInstancedSimple.SetVec3("viewPos", viewPos);
 
     for (auto &&key : quadDataMap) {
 
@@ -435,15 +435,13 @@ void jleQuadRendering::processSimpleTexturedHeightQuads(
         if (!key.first->texture->isActive()) {
             key.first->texture->setActive(0);
             key.first->heightmap->setActive(1);
-            key.first->normalmap->setActive(2);
-            quadHeightmapShaderInstanced.SetVec2(
+            quadHeightmapShaderInstancedSimple.SetVec2(
                 "textureDims",
                 glm::vec2{float(key.first->texture->width()),
                           float(key.first->texture->height())});
 
-            quadHeightmapShaderInstanced.SetInt("texture_albedo", 0);
-            quadHeightmapShaderInstanced.SetInt("texture_heightmap", 1);
-            quadHeightmapShaderInstanced.SetInt("texture_normal", 2);
+            quadHeightmapShaderInstancedSimple.SetInt("texture_albedo", 0);
+            quadHeightmapShaderInstancedSimple.SetInt("texture_heightmap", 1);
         }
 
         glBindVertexArray(quadVAO_Instanced);
@@ -459,7 +457,7 @@ void jleQuadRendering::setupShaders() {
 
     // Set up the angles on the "camera", as it was rendered in 3D software
     static const float xyAngle = 0.f;
-    static const float zAngle = 90.f - 35.24f;
+    static const float zAngle = 90 - 60.f;
     static const float cosXY = cos(xyAngle * glm::pi<float>() / 180.0);
     static const float sinXY = sin(xyAngle * glm::pi<float>() / 180.0);
     static const float cosZ = cos(zAngle * glm::pi<float>() / 180.0);
@@ -486,7 +484,7 @@ void jleQuadRendering::setupShaders() {
     quadHeightmapShaderInstanced.SetMat3("cartToIso", cartToIso);
     quadHeightmapShaderInstanced.SetBool("gamma", true);
 
-    quadHeightmapShaderInstanced.SetVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+    quadHeightmapShaderInstanced.SetVec3("light.ambient", 0.8f, 0.8f, 0.8f);
     quadHeightmapShaderInstanced.SetVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
     quadHeightmapShaderInstanced.SetVec3("light.specular", 1.0f, 1.0f, 1.0f);
     quadHeightmapShaderInstanced.SetFloat("light.constant", 1.0f);

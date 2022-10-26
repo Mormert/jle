@@ -40,6 +40,7 @@ add_library(engine STATIC
         "jleNetworkingJS.cpp"
         "jleNetScene.cpp"
         "jleSpritesheet.cpp"
+        "cSpritesheetDepth.cpp"
         "cSpritesheet.cpp"
         "jlePath.cpp"
         "jleProfiler.cpp"

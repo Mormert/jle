@@ -22,7 +22,7 @@ public:
 
     void entity(const std::string &entityName);
 
-private:
+protected:
     std::shared_ptr<cTransform> _transform{nullptr};
     std::shared_ptr<jleSpritesheet> _spritesheet;
 

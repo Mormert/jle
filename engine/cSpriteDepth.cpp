@@ -20,8 +20,10 @@ void cSpriteDepth::createAndSetTextureFromPath(const std::string &pathDiffuse,
         jleTexture::fromPath(jleRelativePath{pathDiffuse});
     quad.mtextureWithHeightmap->heightmap =
         jleTexture::fromPath(jleRelativePath{pathHeight});
-    quad.mtextureWithHeightmap->normalmap =
-        jleTexture::fromPath(jleRelativePath{pathNormal});
+    if (!pathNormal.empty()) {
+        quad.mtextureWithHeightmap->normalmap =
+            jleTexture::fromPath(jleRelativePath{pathNormal});
+    }
 }
 
 void cSpriteDepth::rectangleDimensions(int width, int height) {
@@ -37,8 +39,7 @@ void cSpriteDepth::textureBeginCoordinates(int x, int y) {
 void cSpriteDepth::start() {
     transform = _attachedToObject->addDependencyComponent<cTransform>(this);
 
-    if (texturePathHeight != "" && texturePathDiffuse != "" &&
-        texturePathNormal != "") {
+    if (texturePathHeight != "" && texturePathDiffuse != "") {
         createAndSetTextureFromPath(
             texturePathDiffuse, texturePathHeight, texturePathNormal);
     }
@@ -52,8 +53,11 @@ void cSpriteDepth::update(float dt) {
         return;
     }
 
-    if (quad.mtextureWithHeightmap->texture) {
+    if (quad.mtextureWithHeightmap->normalmap) {
         gCore->quadRendering().sendTexturedHeightQuad(*&quad);
+    }
+    else {
+        gCore->quadRendering().sendSimpleTexturedHeightQuad(*&quad);
     }
 }
 

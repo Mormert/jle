@@ -38,6 +38,6 @@ private:
     std::string texturePathHeight = "";
     std::string texturePathNormal = "";
 
-    texturedHeightQuad quad;
+    jleTexturedHeightQuad quad;
     std::shared_ptr<cTransform> transform;
 };

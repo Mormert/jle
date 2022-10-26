@@ -26,9 +26,10 @@ public:
     // Inherited via iQuadRenderingInternal
     void sendTexturedQuad(texturedQuad &texturedQuad);
 
-    void sendTexturedHeightQuad(texturedHeightQuad &texturedHeightQuad);
+    void sendTexturedHeightQuad(jleTexturedHeightQuad &texturedHeightQuad);
 
-    void sendSimpleTexturedHeightQuad(texturedHeightQuad &texturedHeightQuad);
+    void sendSimpleTexturedHeightQuad(
+        jleTexturedHeightQuad &texturedHeightQuad);
 
     void queuerender(jleFramebuffer &framebufferOut, jleCamera &camera);
 
@@ -36,8 +37,8 @@ public:
         jleFramebuffer &framebufferOut,
         jleCamera &camera,
         const std::vector<texturedQuad> &texturedQuads,
-        const std::vector<texturedHeightQuad> &texturedHeightQuads,
-        const std::vector<texturedHeightQuad> &texturedSimpleHeightQuads,
+        const std::vector<jleTexturedHeightQuad> &texturedHeightQuads,
+        const std::vector<jleTexturedHeightQuad> &texturedSimpleHeightQuads,
         bool clearDepthColor);
 
     void clearBuffersForNextFrame();
@@ -52,12 +53,12 @@ private:
                               glm::mat4 &view);
 
     void processTexturedHeightQuads(
-        const std::vector<texturedHeightQuad> &texturedHeightQuads,
+        const std::vector<jleTexturedHeightQuad> &texturedHeightQuads,
         glm::mat4 &view,
         glm::vec3 viewPos);
 
     void processSimpleTexturedHeightQuads(
-        const std::vector<texturedHeightQuad> &texturedHeightQuads,
+        const std::vector<jleTexturedHeightQuad> &texturedHeightQuads,
         glm::mat4 &view,
         glm::vec3 viewPos);
 
@@ -85,6 +86,6 @@ private:
         elementbuffer;
 
     std::vector<texturedQuad> _queuedTexturedQuads;
-    std::vector<texturedHeightQuad> _queuedTexturedHeightQuads;
-    std::vector<texturedHeightQuad> _queuedSimpleTexturedHeightQuads;
+    std::vector<jleTexturedHeightQuad> _queuedTexturedHeightQuads;
+    std::vector<jleTexturedHeightQuad> _queuedSimpleTexturedHeightQuads;
 };

@@ -116,6 +116,7 @@ void jleSceneEditorWindow::update(jleGameEngine &ge) {
         if (transform) {
             _texturedQuad.x = transform->worldX() - 64.f;
             _texturedQuad.y = transform->worldY() - 64.f;
+            _texturedQuad.depth = -10000.f;
             std::vector<texturedQuad> texturedQuads{_texturedQuad};
             gCore->quadRendering().render(*_framebuffer,
                                           jleEditor::_editorCamera,

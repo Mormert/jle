@@ -11,6 +11,7 @@
 #include "cSprite.h"
 #include "cSpriteDepth.h"
 #include "cSpritesheet.h"
+#include "cSpritesheetDepth.h"
 #include "cText.h"
 #include "cTransform.h"
 #include "cUITransformUpdater.h"
