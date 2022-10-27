@@ -12,150 +12,54 @@ class cTransform : public jleComponent {
 public:
     explicit cTransform(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
-    inline void worldPosition(float x, float y, float depth) {
-
-        _x = 0.f;
-        _y = 0.f;
-        _depth = 0.f;
+    inline void worldPosition(const glm::vec3 &position) {
+        glm::vec3 newPos{0.f};
 
         auto p = _attachedToObject->parent();
         while (p) {
             if (auto &&t = p->component<cTransform>()) {
-                _x -= t->_x;
-                _y -= t->_y;
-                _depth -= t->_depth;
+                const auto parentLocalPos = t->localPosition();
+                newPos -= parentLocalPos;
             }
-
             p = p->parent();
         }
 
-        _x += x;
-        _y += y;
-        _depth += depth;
+        newPos += position;
+        _transformMatLocal[3][0] = newPos.x;
+        _transformMatLocal[3][1] = newPos.y;
+        _transformMatLocal[3][2] = newPos.z;
 
-        dirty();
+        flagDirty();
     }
 
-    inline void worldPositionXY(float x, float y) {
+    inline void localPosition(const glm::vec3 &position) {
+        _transformMatLocal[3][0] = position.x;
+        _transformMatLocal[3][1] = position.y;
+        _transformMatLocal[3][2] = position.z;
 
-        _x = 0.f;
-        _y = 0.f;
-
-        auto p = _attachedToObject->parent();
-        while (p) {
-            if (auto &&t = p->component<cTransform>()) {
-                _x -= t->_x;
-                _y -= t->_y;
-            }
-
-            p = p->parent();
-        }
-
-        _x += x;
-        _y += y;
-
-        dirty();
+        flagDirty();
     }
 
-    inline void worldPositionX(float x) {
-        _x = 0.f;
+    inline void addLocalPosition(const glm::vec3 position) {
+        _transformMatLocal[3][0] += position.x;
+        _transformMatLocal[3][1] += position.y;
+        _transformMatLocal[3][2] += position.z;
 
-        auto p = _attachedToObject->parent();
-        while (p) {
-            if (auto &&t = p->component<cTransform>()) {
-                _x -= t->_x;
-            }
-
-            p = p->parent();
-        }
-
-        _x += x;
-
-        dirty();
+        flagDirty();
     }
 
-    inline void worldPositionY(float y) {
-
-        _y = 0.f;
-
-        auto p = _attachedToObject->parent();
-        while (p) {
-            if (auto &&t = p->component<cTransform>()) {
-                _y -= t->_y;
-            }
-
-            p = p->parent();
-        }
-
-        _y += y;
-
-        dirty();
+    [[nodiscard]] inline glm::vec3 localPosition() {
+        return glm::vec3{_transformMatLocal[3]};
     }
 
-    inline void localPosition(float x, float y, float depth = 0.f) {
-        _x = x, _y = y;
-        _depth = depth;
-
-        dirty();
-    }
-
-    inline void addLocalPosition(float x, float y, float depth = 0.f) {
-        _x += x;
-        _y += y;
-        _depth += depth;
-
-        dirty();
-    }
-
-    inline void localPositionX(float x) {
-        _x = x;
-        dirty();
-    }
-
-    inline void localPositionY(float y) {
-        _y = y;
-        dirty();
-    }
-
-    [[nodiscard]] inline float worldX() {
+    [[nodiscard]] inline glm::vec3 worldPosition() {
         if (_dirty) {
             refreshWorldCoordinates();
         }
-
-        return _worldX;
+        return glm::vec3{_transformMatWorld[3]};
     }
 
-    [[nodiscard]] inline float worldY() {
-        if (_dirty) {
-            refreshWorldCoordinates();
-        }
-
-        return _worldY;
-    }
-
-    [[nodiscard]] inline float worldDepth() {
-        if (_dirty) {
-            refreshWorldCoordinates();
-        }
-
-        return _worldDepth;
-    }
-
-    [[nodiscard]] inline glm::vec3 worldXYDepth() {
-        if (_dirty) {
-            refreshWorldCoordinates();
-        }
-
-        return {_x, _y, _depth};
-    }
-
-    [[nodiscard]] inline float localX() const { return _x; }
-
-    [[nodiscard]] inline float localY() const { return _y; }
-
-    [[nodiscard]] inline float localDepth() const { return _depth; }
-
-    inline void dirty() {
+    inline void flagDirty() {
         _dirty = true;
 
         // Also set all the child transforms dirty
@@ -163,7 +67,7 @@ public:
         for (auto &&child : children) {
             if (auto t = child->component<cTransform>()) {
                 t->_dirty = true;
-                t->dirty();
+                t->flagDirty();
             }
         }
     }
@@ -174,15 +78,12 @@ public:
 
 private:
     inline void refreshWorldCoordinates() {
-        _worldX = _x;
-        _worldY = _y;
-        _worldDepth = _depth;
+        _transformMatWorld = _transformMatLocal;
         auto p = _attachedToObject->parent();
         while (p) {
             if (auto &&t = p->component<cTransform>()) {
-                _worldX += t->_x;
-                _worldY += t->_y;
-                _worldDepth += t->_depth;
+                const auto parentMat = t->_transformMatLocal;
+                _transformMatWorld *= parentMat;
             }
 
             p = p->parent();
@@ -190,8 +91,8 @@ private:
         _dirty = false;
     }
 
-    float _x = 0.f, _y = 0.f, _depth = 0.f;
+    glm::mat4 _transformMatLocal{1.f};
+    glm::mat4 _transformMatWorld{1.f};
 
-    float _worldX{}, _worldY{}, _worldDepth{};
     bool _dirty = true;
 };

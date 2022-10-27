@@ -17,16 +17,16 @@ void cSpritesheetDepth::update(float dt) {
 
     auto &texture = _spritesheet->_imageTexture;
     if (texture != nullptr && _hasEntity) {
-        _quad.x = _transform->worldX() + _spritesheetEntityCache.sourceSize.x -
-                  _offset.x;
-        _quad.y = _transform->worldY() + _spritesheetEntityCache.sourceSize.y -
-                  _offset.y;
+        _quad.x = _transform->worldPosition().x +
+                  _spritesheetEntityCache.sourceSize.x - _offset.x;
+        _quad.y = _transform->worldPosition().y +
+                  _spritesheetEntityCache.sourceSize.y - _offset.y;
 
         _quad.height = _spritesheetEntityCache.frame.height;
         _quad.width = _spritesheetEntityCache.frame.width;
         _quad.textureX = _spritesheetEntityCache.frame.x;
         _quad.textureY = _spritesheetEntityCache.frame.y;
-        _quad.depth = _transform->worldDepth();
+        _quad.depth = _transform->worldPosition().z;
 
         if (_quad.mtextureWithHeightmap->normalmap) {
             gCore->quadRendering().sendTexturedHeightQuad(*&_quad);

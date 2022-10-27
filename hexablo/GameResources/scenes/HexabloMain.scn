@@ -5,10 +5,10 @@
             "_childObjects": [],
             "_custom_components": [
                 {
+                    "_asepritePaths_STRVEC": [],
                     "_comp_name": "cAseprite",
                     "animating": true,
                     "height": 0,
-                    "_asepritePaths_STRVEC": [],
                     "offsetX": 0,
                     "offsetY": 0,
                     "textureX": 0,
@@ -17,9 +17,32 @@
                 },
                 {
                     "_comp_name": "cTransform",
-                    "depth": 0.0,
-                    "x": 6.0,
-                    "y": -86.0
+                    "transform": {
+                        "v0": {
+                            "w": 0.0,
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "v1": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "v2": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 1.0
+                        },
+                        "v3": {
+                            "w": 1.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    }
                 }
             ],
             "_instance_name": "apple"
@@ -29,10 +52,10 @@
             "_childObjects": [],
             "_custom_components": [
                 {
+                    "_asepritePaths_STRVEC": [],
                     "_comp_name": "cAseprite",
                     "animating": true,
                     "height": 0,
-                    "_asepritePaths_STRVEC": [],
                     "offsetX": 0,
                     "offsetY": 0,
                     "textureX": 0,
@@ -41,9 +64,32 @@
                 },
                 {
                     "_comp_name": "cTransform",
-                    "depth": 0.0,
-                    "x": 89.0,
-                    "y": 18.0
+                    "transform": {
+                        "v0": {
+                            "w": 0.0,
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "v1": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "v2": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 1.0
+                        },
+                        "v3": {
+                            "w": 1.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    }
                 }
             ],
             "_instance_name": "characterAnims"
@@ -64,15 +110,39 @@
                 },
                 {
                     "_comp_name": "cTransform",
-                    "depth": 0.0,
-                    "x": 3.0,
-                    "y": 207.0
+                    "transform": {
+                        "v0": {
+                            "w": 0.0,
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "v1": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "v2": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 1.0
+                        },
+                        "v3": {
+                            "w": 1.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    }
                 }
             ],
             "_instance_name": "helloworldtext"
         },
         {
             "__obj_name": "oMyPlayer",
+            "_attackCooldownAfterAnimationMs": 250.0,
             "_childObjects": [
                 {
                     "_instance_name": "oCharacterHealthBar",
@@ -86,14 +156,34 @@
             "_custom_components": [
                 {
                     "_comp_name": "cTransform",
-                    "depth": 0.0,
-                    "x": 777.0,
-                    "y": -243.0
+                    "transform": {
+                        "v0": {
+                            "w": 0.0,
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "v1": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "v2": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 1.0
+                        },
+                        "v3": {
+                            "w": 1.0,
+                            "x": 777.0,
+                            "y": -243.0,
+                            "z": 0.0
+                        }
+                    }
                 },
                 {
-                    "_comp_name": "cAseprite",
-                    "animating": true,
-                    "height": 48,
                     "_asepritePaths_STRVEC": [
                         {
                             "_string": "GR:gfx/conceptart/3DCharacter/spritesheet.json"
@@ -105,9 +195,12 @@
                             "_string": "GR:gfx/conceptart/3DCharacter/walk/walk.json"
                         }
                     ],
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "height": 48,
                     "offsetX": -32,
                     "offsetY": -40,
-                    "textureX": 288,
+                    "textureX": 240,
                     "textureY": 0,
                     "width": 48
                 },
@@ -117,8 +210,6 @@
                     "offsetY": -120.0
                 }
             ],
-            "_instance_name": "oMyPlayer_12",
-            "_attackCooldownAfterAnimationMs": 250.0,
             "_eastTextureX": 288,
             "_eastTextureY": 0,
             "_healthBarObjectTemplatePath": "GR:otemps/oCharacterHealthBar.tmpl",
@@ -126,6 +217,7 @@
                 "_hexagonQ": 55,
                 "_hexagonR": -27
             },
+            "_instance_name": "oMyPlayer_12",
             "_interpBetweenHexasSpeed": 4.0,
             "_maxHP": 50,
             "_northTextureX": 64,
@@ -146,6 +238,7 @@
         },
         {
             "__obj_name": "oMonster",
+            "_attackCooldownAfterAnimationMs": 0.0,
             "_childObjects": [
                 {
                     "_instance_name": "oCharacterHealthBar",
@@ -155,19 +248,42 @@
             "_custom_components": [
                 {
                     "_comp_name": "cTransform",
-                    "depth": 0.0,
-                    "x": 140.0,
-                    "y": 72.0
+                    "transform": {
+                        "v0": {
+                            "w": 0.0,
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "v1": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "v2": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 1.0
+                        },
+                        "v3": {
+                            "w": 1.0,
+                            "x": 140.0,
+                            "y": 72.0,
+                            "z": 0.0
+                        }
+                    }
                 },
                 {
-                    "_comp_name": "cAseprite",
-                    "animating": true,
-                    "height": 86,
                     "_asepritePaths_STRVEC": [
                         {
                             "_string": "GR:/gfx/conceptart/Monster/raptor.json"
                         }
                     ],
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "height": 86,
                     "offsetX": -48,
                     "offsetY": -48,
                     "textureX": 0,
@@ -175,8 +291,6 @@
                     "width": 86
                 }
             ],
-            "_instance_name": "oCharacter_Raptor",
-            "_attackCooldownAfterAnimationMs": 0.0,
             "_eastTextureX": 0,
             "_eastTextureY": 0,
             "_healthBarObjectTemplatePath": "",
@@ -184,6 +298,7 @@
                 "_hexagonQ": 10,
                 "_hexagonR": 8
             },
+            "_instance_name": "oCharacter_Raptor",
             "_interpBetweenHexasSpeed": 1.0,
             "_maxHP": 0,
             "_northTextureX": 64,
@@ -204,6 +319,7 @@
         },
         {
             "__obj_name": "oMonster",
+            "_attackCooldownAfterAnimationMs": 0.0,
             "_childObjects": [
                 {
                     "_instance_name": "oCharacterHealthBar",
@@ -211,6 +327,7 @@
                 },
                 {
                     "__obj_name": "oMonster",
+                    "_attackCooldownAfterAnimationMs": 0.0,
                     "_childObjects": [
                         {
                             "_instance_name": "oCharacterHealthBar",
@@ -220,24 +337,45 @@
                     "_custom_components": [
                         {
                             "_comp_name": "cTransform",
-                            "depth": 0.0,
-                            "x": -497.0,
-                            "y": -171.0
+                            "transform": {
+                                "v0": {
+                                    "w": 0.0,
+                                    "x": 1.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "v1": {
+                                    "w": 0.0,
+                                    "x": 0.0,
+                                    "y": 1.0,
+                                    "z": 0.0
+                                },
+                                "v2": {
+                                    "w": 0.0,
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 1.0
+                                },
+                                "v3": {
+                                    "w": 1.0,
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                }
+                            }
                         },
                         {
+                            "_asepritePaths_STRVEC": [],
                             "_comp_name": "cAseprite",
                             "animating": false,
                             "height": 0,
-                            "_asepritePaths_STRVEC": [],
                             "offsetX": 0,
                             "offsetY": 0,
-                            "textureX": 128,
+                            "textureX": 96,
                             "textureY": 0,
                             "width": 0
                         }
                     ],
-                    "_instance_name": "oMonster_59",
-                    "_attackCooldownAfterAnimationMs": 0.0,
                     "_eastTextureX": 128,
                     "_eastTextureY": 0,
                     "_healthBarObjectTemplatePath": "",
@@ -245,6 +383,7 @@
                         "_hexagonQ": 0,
                         "_hexagonR": 0
                     },
+                    "_instance_name": "oMonster_59",
                     "_interpBetweenHexasSpeed": 1.0,
                     "_maxHP": 0,
                     "_northTextureX": 64,
@@ -267,19 +406,42 @@
             "_custom_components": [
                 {
                     "_comp_name": "cTransform",
-                    "depth": 0.0,
-                    "x": 497.0,
-                    "y": 171.0
+                    "transform": {
+                        "v0": {
+                            "w": 0.0,
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "v1": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "v2": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 1.0
+                        },
+                        "v3": {
+                            "w": 1.0,
+                            "x": 497.0,
+                            "y": 171.0,
+                            "z": 0.0
+                        }
+                    }
                 },
                 {
-                    "_comp_name": "cAseprite",
-                    "animating": true,
-                    "height": 86,
                     "_asepritePaths_STRVEC": [
                         {
                             "_string": "GR:/gfx/conceptart/Monster/raptor.json"
                         }
                     ],
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "height": 86,
                     "offsetX": -48,
                     "offsetY": -48,
                     "textureX": 86,
@@ -287,8 +449,6 @@
                     "width": 86
                 }
             ],
-            "_instance_name": "oCharacter_Raptor",
-            "_attackCooldownAfterAnimationMs": 0.0,
             "_eastTextureX": 0,
             "_eastTextureY": 0,
             "_healthBarObjectTemplatePath": "",
@@ -296,6 +456,7 @@
                 "_hexagonQ": 35,
                 "_hexagonR": 19
             },
+            "_instance_name": "oCharacter_Raptor",
             "_interpBetweenHexasSpeed": 1.0,
             "_maxHP": 0,
             "_northTextureX": 64,
@@ -316,6 +477,7 @@
         },
         {
             "__obj_name": "oMonster",
+            "_attackCooldownAfterAnimationMs": 0.0,
             "_childObjects": [
                 {
                     "_instance_name": "oCharacterHealthBar",
@@ -325,28 +487,49 @@
             "_custom_components": [
                 {
                     "_comp_name": "cTransform",
-                    "depth": 0.0,
-                    "x": 839.0,
-                    "y": -286.0
+                    "transform": {
+                        "v0": {
+                            "w": 0.0,
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "v1": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "v2": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 1.0
+                        },
+                        "v3": {
+                            "w": 1.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    }
                 },
                 {
-                    "_comp_name": "cAseprite",
-                    "animating": true,
-                    "height": 86,
                     "_asepritePaths_STRVEC": [
                         {
                             "_string": "GR:/gfx/conceptart/Monster/raptor.json"
                         }
                     ],
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "height": 86,
                     "offsetX": -48,
                     "offsetY": -48,
-                    "textureX": 344,
+                    "textureX": 0,
                     "textureY": 0,
                     "width": 86
                 }
             ],
-            "_instance_name": "oCharacter_Raptor",
-            "_attackCooldownAfterAnimationMs": 0.0,
             "_eastTextureX": 0,
             "_eastTextureY": 0,
             "_healthBarObjectTemplatePath": "",
@@ -354,6 +537,7 @@
                 "_hexagonQ": 35,
                 "_hexagonR": 19
             },
+            "_instance_name": "oCharacter_Raptor",
             "_interpBetweenHexasSpeed": 1.0,
             "_maxHP": 0,
             "_northTextureX": 64,
@@ -374,6 +558,7 @@
         },
         {
             "__obj_name": "oMonster",
+            "_attackCooldownAfterAnimationMs": 0.0,
             "_childObjects": [
                 {
                     "_instance_name": "oCharacterHealthBar",
@@ -383,28 +568,49 @@
             "_custom_components": [
                 {
                     "_comp_name": "cTransform",
-                    "depth": 0.0,
-                    "x": 863.0,
-                    "y": -188.0
+                    "transform": {
+                        "v0": {
+                            "w": 0.0,
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "v1": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "v2": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 1.0
+                        },
+                        "v3": {
+                            "w": 1.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    }
                 },
                 {
-                    "_comp_name": "cAseprite",
-                    "animating": true,
-                    "height": 86,
                     "_asepritePaths_STRVEC": [
                         {
                             "_string": "GR:/gfx/conceptart/Monster/raptor.json"
                         }
                     ],
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "height": 86,
                     "offsetX": -48,
                     "offsetY": -48,
-                    "textureX": 172,
+                    "textureX": 0,
                     "textureY": 0,
                     "width": 86
                 }
             ],
-            "_instance_name": "oCharacter_Raptor",
-            "_attackCooldownAfterAnimationMs": 0.0,
             "_eastTextureX": 0,
             "_eastTextureY": 0,
             "_healthBarObjectTemplatePath": "",
@@ -412,6 +618,7 @@
                 "_hexagonQ": 35,
                 "_hexagonR": 19
             },
+            "_instance_name": "oCharacter_Raptor",
             "_interpBetweenHexasSpeed": 1.0,
             "_maxHP": 0,
             "_northTextureX": 64,

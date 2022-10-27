@@ -308,7 +308,7 @@ void jleEditorSceneObjectsWindow::update(jleGameEngine &ge) {
                 }
                 else {
 
-                    if (ImGui::Button("refresh Object")) {
+                    if (ImGui::Button("Refresh Object")) {
                         lastSelectedObject.reset();
                     }
                     ImGui::SameLine();

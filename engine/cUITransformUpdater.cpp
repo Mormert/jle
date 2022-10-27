@@ -52,22 +52,21 @@ void cUITransformUpdater::update(float dt) {
         offsetY = (int)c->offsetY();
     }
 
-    _transform->localPositionX(_x);
-    _transform->localPositionY(_y);
+    _transform->localPosition({_x, _y, 0.f});
 
     if (_top) {
-        _transform->localPositionY(_y + offsetY);
+        _transform->localPosition({_x, _y + offsetY, 0.f});
     }
     else if (_bottom) {
-        _transform->localPositionY(_gameRef._mainCamera._cameraHeight + _y +
-                                   offsetY);
+        _transform->localPosition(
+            {_x, _gameRef._mainCamera._cameraHeight + _y + offsetY, 0.f});
     }
 
     if (_left) {
-        _transform->localPositionX(_x + offsetX);
+        _transform->localPosition({_x + offsetX, _y, 0.f});
     }
     else if (_right) {
-        _transform->localPositionX(_gameRef._mainCamera._cameraWidth + _x +
-                                   offsetX);
+        _transform->localPosition(
+            {_gameRef._mainCamera._cameraWidth + _x + offsetX, _y, 0.f});
     }
 }

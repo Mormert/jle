@@ -53,13 +53,13 @@ void cAseprite::update(float dt) {
     auto &texture = aseprite->_imageTexture;
     if (texture != nullptr) {
         texturedQuad quad{texture};
-        quad.x = _transform->worldX() + _offsetX;
-        quad.y = _transform->worldY() + _offsetY;
+        quad.x = _transform->worldPosition().x + _offsetX;
+        quad.y = _transform->worldPosition().y + _offsetY;
         quad.height = _height;
         quad.width = _width;
         quad.textureX = frame._frame._x + _textureX;
         quad.textureY = frame._frame._y + _textureY;
-        quad.depth = _transform->worldDepth();
+        quad.depth = _transform->worldPosition().z;
 
         if (quad.texture.get()) {
             gCore->quadRendering().sendTexturedQuad(quad);

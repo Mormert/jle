@@ -58,7 +58,7 @@ void oMyPlayer::update(float dt) {
     }
 
     jleQuadRendering::lightPos =
-        _transform->worldXYDepth() + glm::vec3{0, 0, lightposz};
+        _transform->worldPosition().z + glm::vec3{0, 0, lightposz};
     jleQuadRendering::depthRange = depthRng;
 }
 
@@ -398,10 +398,10 @@ void oMyPlayer::abilities() {
         auto mx = hexHelperFunctions::pixelatedMouseXWorldSpace();
         auto my = hexHelperFunctions::pixelatedMouseYWorldSpace();
 
-        fireball->component<cTransform>()->worldPositionX(_transform->worldX() -
-                                                          20.f);
-        fireball->component<cTransform>()->worldPositionY(_transform->worldY() -
-                                                          10);
+        fireball->component<cTransform>()->worldPosition(
+            {_transform->worldPosition().x - 20.f,
+             _transform->worldPosition().y - 10,
+             0.f});
 
         auto *world = oWorld::sWorld;
         auto p = hexHexagonFunctions::pixelToHex(

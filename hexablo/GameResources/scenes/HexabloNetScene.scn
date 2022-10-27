@@ -1,4 +1,5 @@
 {
+    "_connectAddress": "",
     "_objects": [
         {
             "__obj_name": "jleObject",
@@ -16,9 +17,32 @@
                 },
                 {
                     "_comp_name": "cTransform",
-                    "depth": 0.0,
-                    "x": 720.0,
-                    "y": -172.0
+                    "transform": {
+                        "v0": {
+                            "w": 0.0,
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "v1": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "v2": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 1.0
+                        },
+                        "v3": {
+                            "w": 1.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    }
                 }
             ],
             "_instance_name": "jleObject_36"
@@ -28,14 +52,14 @@
             "_childObjects": [],
             "_custom_components": [
                 {
-                    "_comp_name": "cAseprite",
-                    "animating": true,
-                    "height": 64,
                     "_asepritePaths_STRVEC": [
                         {
                             "_string": "GR:gfx/conceptart/Vfx/fireball-sheet.json"
                         }
                     ],
+                    "_comp_name": "cAseprite",
+                    "animating": true,
+                    "height": 64,
                     "offsetX": 0,
                     "offsetY": 0,
                     "textureX": 0,
@@ -44,9 +68,32 @@
                 },
                 {
                     "_comp_name": "cTransform",
-                    "depth": 0.0,
-                    "x": 881.0,
-                    "y": -333.0
+                    "transform": {
+                        "v0": {
+                            "w": 0.0,
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "v1": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "v2": {
+                            "w": 0.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 1.0
+                        },
+                        "v3": {
+                            "w": 1.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    }
                 }
             ],
             "_instance_name": "jleObject_38"
@@ -60,6 +107,5 @@
             "_otemp": "GR:/otemps/otherPlayer.tmpl"
         }
     ],
-    "_sceneName": "HexabloNetScene",
-    "_connectAddress": ""
+    "_sceneName": "HexabloNetScene"
 }

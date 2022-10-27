@@ -46,8 +46,8 @@ void cSpriteDepth::start() {
 }
 
 void cSpriteDepth::update(float dt) {
-    quad.x = transform->worldX();
-    quad.y = transform->worldY();
+    quad.x = transform->worldPosition().x;
+    quad.y = transform->worldPosition().y;
 
     if (!quad.mtextureWithHeightmap) {
         return;

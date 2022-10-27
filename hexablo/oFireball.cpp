@@ -26,7 +26,7 @@ void oFireball::update(float dt) {
                             {_interpingX, _interpingY},
                             _interpingAlpha);
 
-        _transform->worldPositionXY((int)pos.x, (int)pos.y);
+        _transform->worldPosition({(int)pos.x, (int)pos.y, 0.f});
 
         _interpingAlpha += _interpBetweenHexasSpeed * dt;
         if (_interpingAlpha >= 1.f) {
@@ -56,7 +56,7 @@ void oFireball::fromNet(const nlohmann::json &j_in) {
     JLE_FROM_JSON_WITH_DEFAULT(j_in, x, "x", 0);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, y, "y", 0);
 
-    _transform->worldPositionXY(x, y);
+    _transform->worldPosition({x, y, 0.f});
 
     const auto *world = oWorld::sWorld;
     auto p = hexHexagonFunctions::hexToPixel(
@@ -65,8 +65,8 @@ void oFireball::fromNet(const nlohmann::json &j_in) {
     _hexagonPixelX = p.x;
     _hexagonPixelY = p.y;
 
-    _interpingX = _transform->worldX();
-    _interpingY = _transform->worldY();
+    _interpingX = _transform->worldPosition().x;
+    _interpingY = _transform->worldPosition().y;
 
     _interpingPosition = true;
     _interpingAlpha = 0.f;
@@ -75,8 +75,8 @@ void oFireball::fromNet(const nlohmann::json &j_in) {
 void oFireball::toNet(nlohmann::json &j_out) {
     j_out["r"] = _movingTowardsR;
     j_out["q"] = _movingTowardsQ;
-    j_out["x"] = _transform->worldX();
-    j_out["y"] = _transform->worldY();
+    j_out["x"] = _transform->worldPosition().x;
+    j_out["y"] = _transform->worldPosition().y;
     j_out["id"] = _id;
 }
 
@@ -91,8 +91,8 @@ void oFireball::target(int q, int r) {
     _hexagonPixelX = p.x;
     _hexagonPixelY = p.y;
 
-    _interpingX = _transform->worldX();
-    _interpingY = _transform->worldY();
+    _interpingX = _transform->worldPosition().x;
+    _interpingY = _transform->worldPosition().y;
 
     _interpingPosition = true;
     _interpingAlpha = 0.f;

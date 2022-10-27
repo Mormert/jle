@@ -36,8 +36,8 @@ void cSprite::start() {
 }
 
 void cSprite::update(float dt) {
-    quad.x = transform->worldX();
-    quad.y = transform->worldY();
+    quad.x = transform->worldPosition().x;
+    quad.y = transform->worldPosition().y;
 
     if (quad.texture.get()) {
         gCore->quadRendering().sendTexturedQuad(*&quad);

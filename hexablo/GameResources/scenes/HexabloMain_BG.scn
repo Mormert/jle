@@ -4,7 +4,6 @@
             "__obj_name": "oWorld",
             "_childObjects": [],
             "_custom_components": [],
-            "_instance_name": "oWorldMain",
             "_hexSizeX": 14,
             "_hexSizeY": 9,
             "_hexagonTiles": [
@@ -44,6 +43,7 @@
                     "_width": 15
                 }
             ],
+            "_instance_name": "oWorldMain",
             "_worldHexTilesAsepritePath": "GR:gfx/world/worldHexTiles.json"
         }
     ],

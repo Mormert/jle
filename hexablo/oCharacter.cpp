@@ -47,7 +47,7 @@ void oCharacter::update(float dt) {
 
         _interpingX = pos.x;
         _interpingY = pos.y;
-        _transform->worldPositionXY((int)_interpingX, (int)_interpingY);
+        _transform->worldPosition({(int)_interpingX, (int)_interpingY, 0.f});
 
         _interpingAlpha += _interpBetweenHexasSpeed * dt;
         if (_interpingAlpha >= 1.f) {
@@ -109,7 +109,7 @@ void oCharacter::hexagonPlacementTeleport(int q, int r) {
     _hexagonPixelX = p.x;
     _hexagonPixelY = p.y;
 
-    _transform->worldPositionXY(_hexagonPixelX, _hexagonPixelY);
+    _transform->worldPosition({_hexagonPixelX, _hexagonPixelY, 0.f});
     _interpingPosition = false;
 }
 
@@ -125,8 +125,8 @@ void oCharacter::hexagonPlacementInterp(int q, int r) {
     _hexagonPixelX = p.x;
     _hexagonPixelY = p.y;
 
-    _interpingX = _transform->worldX();
-    _interpingY = _transform->worldY();
+    _interpingX = _transform->worldPosition().x;
+    _interpingY = _transform->worldPosition().y;
 
     _interpingPosition = true;
     _interpingAlpha = 0.f;
@@ -255,8 +255,8 @@ void oCharacter::lookAtPosition(int x, int y) {
     constexpr int smallXAdjustment = -2;
 
     glm::vec2 target = {x, y};
-    glm::vec2 origin = {_transform->worldX() + smallXAdjustment,
-                        _transform->worldY()};
+    glm::vec2 origin = {_transform->worldPosition().x + smallXAdjustment,
+                        _transform->worldPosition().y};
 
     glm::vec2 vector2 = target - origin;
     glm::vec2 vector1{0, 1};

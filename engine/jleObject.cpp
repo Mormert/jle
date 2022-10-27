@@ -70,7 +70,7 @@ void jleObject::attachChildObject(const std::shared_ptr<jleObject> &object) {
     _childObjects.push_back(object);
 
     if (auto t = object->component<cTransform>()) {
-        t->dirty();
+        t->flagDirty();
     }
 }
 
