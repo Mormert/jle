@@ -194,8 +194,9 @@ void jleQuadRendering::sendSimpleTexturedHeightQuad(
     _queuedSimpleTexturedHeightQuads.push_back(texturedHeightQuad);
 }
 
-void jleQuadRendering::queuerender(jleFramebuffer &framebufferOut,
-                                   jleCamera &camera) {
+void
+jleQuadRendering::queuerender(jleFramebuffer &framebufferOut, const jleCamera &camera)
+{
     render(framebufferOut,
            camera,
            _queuedTexturedQuads,
@@ -210,24 +211,20 @@ void jleQuadRendering::clearBuffersForNextFrame() {
     _queuedSimpleTexturedHeightQuads.clear();
 }
 
-void jleQuadRendering::render(
-    jleFramebuffer &framebufferOut,
-    jleCamera &camera,
-    const std::vector<texturedQuad> &texturedQuads,
-    const std::vector<jleTexturedHeightQuad> &texturedHeightQuads,
-    const std::vector<jleTexturedHeightQuad> &texturedSimpleHeightQuads,
-    bool clearDepthColor) {
+void jleQuadRendering::render(jleFramebuffer &framebufferOut,
+                         const jleCamera &camera,
+                         const std::vector<texturedQuad> &texturedQuads,
+                         const std::vector<jleTexturedHeightQuad> &texturedHeightQuads,
+                         const std::vector<jleTexturedHeightQuad> &texturedSimpleHeightQuads,
+                         bool clearDepthColor)
+{
 
     JLE_SCOPE_PROFILE(jleQuadRendering::Render)
 
     const int viewportWidth = framebufferOut.width();
     const int viewportHeight = framebufferOut.height();
 
-    camera._position = glm::vec3{-camera._x, -camera._y, 0.f};
-    camera.orthographicProjection(
-        viewportWidth, viewportHeight, -10000.f, 10000.f);
-
-    glm::mat4 view = camera.projectionViewMatrix();
+    glm::mat4 view = camera.getProjectionViewMatrix();
 
     framebufferOut.bind();
 
@@ -242,15 +239,12 @@ void jleQuadRendering::render(
     glViewport(0, 0, viewportWidth, viewportHeight);
 
     processTexturedQuads(texturedQuads, view);
-    processTexturedHeightQuads(
-        texturedHeightQuads,
-        view,
-        glm::vec3{camera._xNoOffset, camera._yNoOffset, 0.f});
 
-    processSimpleTexturedHeightQuads(
-        texturedSimpleHeightQuads,
-        view,
-        glm::vec3{camera._xNoOffset, camera._yNoOffset, 0.f});
+    processTexturedHeightQuads(texturedHeightQuads, view, camera.getViewPosition());
+
+    processSimpleTexturedHeightQuads(texturedSimpleHeightQuads, view, camera.getViewPosition());
+
+    renderShadowCubes(camera.getProjectionViewMatrix());
 
     framebufferOut.bindDefault();
 }
@@ -838,10 +832,12 @@ void jleQuadRendering::renderCube(glm::mat4 &model, jleShader &shader) {
     glBindVertexArray(0);
 }
 
-void jleQuadRendering::renderShadowCubes(glm::mat4 &view) {
+void
+jleQuadRendering::renderShadowCubes(const glm::mat4 &view)
+{
 
-    std::random_device rd;  // obtain a random number from hardware
-    std::mt19937 gen(rd()); // seed the generator
+    std::random_device rd;                              // obtain a random number from hardware
+    std::mt19937 gen(rd());                             // seed the generator
     std::uniform_int_distribution<> distr(-30.f, 30.f); // define the range
 
     /* glm::mat4 lightProjection, lightView;
@@ -864,9 +860,8 @@ void jleQuadRendering::renderShadowCubes(glm::mat4 &view) {
     // model = glm::rotate(model, glm::radians(90-35.24f), glm::vec3{1.f, 0.f,
     // 0.f});
     model = glm::translate(model, vec3);
-    model = glm::rotate(
-        model, glm::radians(45.f), glm::normalize(glm::vec3(0.0, 0.0, 1.0)));
-    model = glm::scale(model, glm::vec3(20.f));
+    model = glm::rotate(model, glm::radians(45.f), glm::normalize(glm::vec3(0.0, 0.0, 1.0)));
+    model = glm::scale(model, glm::vec3(5.f));
 
     renderCube(model, shadowMappingShader);
 

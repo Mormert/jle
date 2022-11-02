@@ -5,62 +5,82 @@
 #include <plog/Log.h>
 
 jleCamera::jleCamera(jleCameraProjection projection) {
-    _projectionType = projection;
-
     if (projection == jleCameraProjection::Orthographic) {
-        orthographicProjection(512, 512, 1000.f, -1000.f);
+        setOrthographicProjection(512, 512, 1000.f, -1000.f);
     }
     else {
-        perspectiveProjection(90.f, 512, 512, 1000.f, -1000.f);
+        setPerspectiveProjection(90.f, 512, 512, 1000.f, -1000.f);
     }
 }
 
-void jleCamera::perspectiveProjection(float fov,
-                                      uint32_t screenWidth,
-                                      uint32_t screenHeight,
-                                      float farPlane,
-                                      float nearPlane) {
-    _projectionMatrix = glm::perspective(
-        fov, (float)screenWidth / (float)screenHeight, nearPlane, farPlane);
+void
+jleCamera::setPerspectiveProjection(
+    float fov, uint32_t screenWidth, uint32_t screenHeight, float farPlane, float nearPlane)
+{
+    _projectionMatrix =
+        glm::perspective(glm::radians(fov), (float)screenWidth / (float)screenHeight, nearPlane, farPlane);
+
+    // Flip the Y coordinate
+    _projectionMatrix[1][1] *= -1.f;
 }
 
-void jleCamera::orthographicProjection(uint32_t screenWidth,
-                                       uint32_t screenHeight,
-                                       float farPlane,
-                                       float nearPlane) {
-    _projectionMatrix = glm::ortho(static_cast<float>(0.f),
-                                   static_cast<float>(screenWidth),
-                                   static_cast<float>(screenHeight),
-                                   static_cast<float>(0.f),
+void
+jleCamera::setOrthographicProjection(uint32_t screenWidth, uint32_t screenHeight, float farPlane, float nearPlane)
+{
+
+    _projectionMatrix = glm::ortho(-((float)screenWidth / 2.0f),
+                                   ((float)screenWidth / 2.0f),
+                                   ((float)screenHeight / 2.0f),
+                                   -((float)screenHeight / 2.0f),
                                    nearPlane,
                                    farPlane);
 }
 
-glm::mat4 jleCamera::projectionViewMatrix() const {
-    switch (_projectionType) {
-    case jleCameraProjection::Perspective: {
-        const glm::mat4 view = glm::lookAt(_position, _position + _front, _up);
-        return _projectionMatrix * view;
-    }
-    case jleCameraProjection::Orthographic: {
-        glm::mat4 view{1.f};
-        view = glm::translate(view, _position);
-        // view = glm::rotate(view, glm::radians(_cameraRotationDegrees),
-        // glm::vec3{}) view = glm::scale(view, glm::vec3{1.f});
-        // TODO: Support camera rotation, zooming?
-        return _projectionMatrix * view;
-    }
-    }
-
-    return glm::identity<glm::mat4>();
+void
+jleCamera::setViewMatrix(const glm::mat4 &view)
+{
+    _viewMatrix = view;
 }
 
-void jleCamera::perspectiveMouseSensitivity(float sensitivity) {
+glm::mat4
+jleCamera::getProjectionViewMatrix() const
+{
+    return _projectionMatrix * _viewMatrix;
+}
+glm::mat4
+jleCamera::getProjectionMatrix() const
+{
+    return _projectionMatrix;
+}
+
+glm::mat4
+jleCamera::getViewMatrix() const
+{
+    return _viewMatrix;
+}
+
+glm::vec3
+jleCamera::getViewPosition() const
+{
+    return _viewMatrix[3];
+}
+
+glm::mat4
+jleCameraSimpleFPVController::getLookAtViewMatrix() const
+{
+    return glm::lookAt(position, position + _front, _up);
+}
+
+void
+jleCameraSimpleFPVController::setPerspectiveMouseSensitivity(float sensitivity)
+{
     _mouseSensitivity = sensitivity;
 }
 
-void jleCamera::applyPerspectiveMouseMovementDelta(glm::vec2 delta) {
-    delta *= _mouseSensitivity;
+void
+jleCameraSimpleFPVController::applyPerspectiveMouseMovementDelta(glm::vec2 delta, float factor)
+{
+    delta *= _mouseSensitivity * factor;
     _yaw = glm::mod(_yaw + delta.x, 360.0f);
     _pitch += delta.y;
 
@@ -72,7 +92,9 @@ void jleCamera::applyPerspectiveMouseMovementDelta(glm::vec2 delta) {
 // TODO:
 // https://gitlab.com/muffinman007/OpenGL_360_Camera_Quarternion/blob/master/Camera.h
 
-void jleCamera::calculatePerspectiveVectors() {
+void
+jleCameraSimpleFPVController::calculatePerspectiveVectors()
+{
     glm::vec3 front;
     front.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
     front.y = sin(glm::radians(_pitch));
@@ -86,22 +108,66 @@ void jleCamera::calculatePerspectiveVectors() {
     }
 }
 
-void jleCamera::movePerspectiveForward(float speed) {
-    _position += _front * speed;
+void
+jleCameraSimpleFPVController::moveForward(float speed)
+{
+    position += _front * speed;
 }
 
-void jleCamera::movePerspectiveBackward(float speed) {
-    _position -= _front * speed;
+void
+jleCameraSimpleFPVController::moveBackward(float speed)
+{
+    position -= _front * speed;
 }
 
-void jleCamera::movePerspectiveRight(float speed) {
-    _position += _right * speed;
+void
+jleCameraSimpleFPVController::moveRight(float speed)
+{
+    position -= _right * speed;
 }
 
-void jleCamera::movePerspectiveLeft(float speed) {
-    _position -= _right * speed;
+void
+jleCameraSimpleFPVController::moveLeft(float speed)
+{
+    position += _right * speed;
 }
 
-void jleCamera::movePerspectiveUp(float speed) { _position += _up * speed; }
+void
+jleCameraSimpleFPVController::moveUp(float speed)
+{
+    position -= _up * speed;
+}
 
-void jleCamera::movePerspectiveDown(float speed) { _position -= _up * speed; }
+void
+jleCameraSimpleFPVController::moveDown(float speed)
+{
+    position += _up * speed;
+}
+
+void
+jleCameraSimpleFPVController::move(glm::vec3 v)
+{
+    position += v;
+}
+
+void
+jleCameraSimpleFPVController::backToOrigin()
+{
+    position = {0.f, 0.f, 0.f};
+    _front = {0.0f, 0.0f, -1.0f};
+    _up = {0.0f, 1.0f, 0.0f};
+    _right = glm::vec3{};
+    _yaw = -90.f;
+    _pitch = 0.f;
+    applyPerspectiveMouseMovementDelta({0, 0}, 0.f);
+}
+void
+jleCameraSimpleFPVController::setPitch(float pitch)
+{
+    _pitch = pitch;
+}
+void
+jleCameraSimpleFPVController::setYaw(float yaw)
+{
+    _yaw = yaw;
+}

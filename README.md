@@ -25,9 +25,11 @@ The game engine 'jle' is written in C++, uses OpenGL ES 3.0 or OpenGL Core 3.3. 
 
 ## The Editor
 
-Games made with jle can be started as standalone programs, or in the jle editor. In the editor, the user can compose scenes, object hierarchies, create object templates, modify data on objects and components in the scene. All of this can be done during the runtime of the game. 
+Games made with jle can be started as standalone programs, or in the jle editor. In the editor, the user can compose
+scenes, object hierarchies, create object templates, modify data on objects and components in the scene. All of this can
+be done during the runtime of the game.
 
-![Editor Showcase](https://mormert.com/hexablo-press/jle_editor.png)
+![Editor Showcase](https://mormert.com/hexablo-press/jle_editor_demo.png)
 
 ### Feature overview
 - Edit any object or component in runtime

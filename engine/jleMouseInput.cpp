@@ -38,17 +38,23 @@ float jleMouseInput::scrollX() { return windowInternal->scrollX(); }
 
 float jleMouseInput::scrollY() { return windowInternal->scrollY(); }
 
-void jleMouseInput::screenBeginCoords(int x, int y) {
+void
+jleMouseInput::setScreenBeginCoords(int x, int y)
+{
     _screenBeginX = x;
     _screenBeginY = y;
 }
 
-void jleMouseInput::screenSize(int width, int height) {
+void
+jleMouseInput::setScreenSize(int width, int height)
+{
     _screenWidth = width;
     _screenHeight = height;
 }
 
-void jleMouseInput::pixelatedScreenSize(int width, int height) {
+void
+jleMouseInput::setPixelatedScreenSize(int width, int height)
+{
     _pixelatedScreenWidth = width;
     _pixelatedScreenHeight = height;
 }

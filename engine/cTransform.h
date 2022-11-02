@@ -12,13 +12,15 @@ class cTransform : public jleComponent {
 public:
     explicit cTransform(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
-    inline void worldPosition(const glm::vec3 &position) {
+    inline void
+    setWorldPosition(const glm::vec3 &position)
+    {
         glm::vec3 newPos{0.f};
 
         auto p = _attachedToObject->parent();
         while (p) {
             if (auto &&t = p->component<cTransform>()) {
-                const auto parentLocalPos = t->localPosition();
+                const auto parentLocalPos = t->getLocalPosition();
                 newPos -= parentLocalPos;
             }
             p = p->parent();
@@ -32,7 +34,9 @@ public:
         flagDirty();
     }
 
-    inline void localPosition(const glm::vec3 &position) {
+    inline void
+    setLocalPosition(const glm::vec3 &position)
+    {
         _transformMatLocal[3][0] = position.x;
         _transformMatLocal[3][1] = position.y;
         _transformMatLocal[3][2] = position.z;
@@ -48,18 +52,42 @@ public:
         flagDirty();
     }
 
-    [[nodiscard]] inline glm::vec3 localPosition() {
+    [[nodiscard]] inline glm::vec3
+    getLocalPosition()
+    {
         return glm::vec3{_transformMatLocal[3]};
     }
 
-    [[nodiscard]] inline glm::vec3 worldPosition() {
+    [[nodiscard]] inline glm::vec3
+    getWorldPosition()
+    {
         if (_dirty) {
             refreshWorldCoordinates();
         }
         return glm::vec3{_transformMatWorld[3]};
     }
 
-    inline void flagDirty() {
+    [[nodiscard]] inline const glm::mat4 &
+    getWorldMatrix()
+    {
+        if (_dirty) {
+            refreshWorldCoordinates();
+        }
+        return _transformMatWorld;
+    }
+
+    [[nodiscard]] inline const glm::mat4 &
+    getLocalMatrix()
+    {
+        if (_dirty) {
+            refreshWorldCoordinates();
+        }
+        return _transformMatLocal;
+    }
+
+    inline void
+    flagDirty()
+    {
         _dirty = true;
 
         // Also set all the child transforms dirty

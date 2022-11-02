@@ -8,20 +8,16 @@
 #include "jleCoreSettings.h"
 #include "plog/Log.h"
 
-// Specifies which axis to be fixed, and the other scales depending on window
-// aspect ratio
-enum class FIXED_AXIS { same_as_window, width, height };
-
 struct jleGameSettings : public jleCoreSettings {
-    struct jleFramebufferSettings {
+    /*struct jleFramebufferSettings {
         FIXED_AXIS fixedAxis{FIXED_AXIS::same_as_window};
         unsigned int fixedAxisPixels{0};
-    } framebufferSettings;
+    } framebufferSettings;*/
 
     ~jleGameSettings() override = default;
 };
 
-#pragma region jleFramebufferSettings to / from json
+/*#pragma region jleFramebufferSettings to / from json
 using json = nlohmann::json;
 
 #pragma region FramebufferSettings to / from json
@@ -52,4 +48,4 @@ inline void from_json(const nlohmann::json &j, jleGameSettings &gs) {
     j.at("framebuffer_settings").get_to(gs.framebufferSettings);
 }
 
-#pragma endregion
+#pragma endregion*/

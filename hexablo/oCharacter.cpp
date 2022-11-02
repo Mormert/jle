@@ -47,7 +47,7 @@ void oCharacter::update(float dt) {
 
         _interpingX = pos.x;
         _interpingY = pos.y;
-        _transform->worldPosition({(int)_interpingX, (int)_interpingY, 0.f});
+        _transform->setWorldPosition({(int)_interpingX, (int)_interpingY, 0.f});
 
         _interpingAlpha += _interpBetweenHexasSpeed * dt;
         if (_interpingAlpha >= 1.f) {
@@ -109,7 +109,7 @@ void oCharacter::hexagonPlacementTeleport(int q, int r) {
     _hexagonPixelX = p.x;
     _hexagonPixelY = p.y;
 
-    _transform->worldPosition({_hexagonPixelX, _hexagonPixelY, 0.f});
+    _transform->setWorldPosition({_hexagonPixelX, _hexagonPixelY, 0.f});
     _interpingPosition = false;
 }
 
@@ -119,14 +119,13 @@ void oCharacter::hexagonPlacementInterp(int q, int r) {
     }
 
     const auto *world = oWorld::sWorld;
-    auto p = hexHexagonFunctions::hexToPixel(
-        q, r, world->_hexSizeX, world->_hexSizeY);
+    auto p = hexHexagonFunctions::hexToPixel(q, r, world->_hexSizeX, world->_hexSizeY);
 
     _hexagonPixelX = p.x;
     _hexagonPixelY = p.y;
 
-    _interpingX = _transform->worldPosition().x;
-    _interpingY = _transform->worldPosition().y;
+    _interpingX = _transform->getWorldPosition().x;
+    _interpingY = _transform->getWorldPosition().y;
 
     _interpingPosition = true;
     _interpingAlpha = 0.f;
@@ -251,18 +250,17 @@ void oCharacter::hp(int hp) {
     }
 }
 
-void oCharacter::lookAtPosition(int x, int y) {
+void oCharacter::lookAtPosition(int x, int y)
+{
     constexpr int smallXAdjustment = -2;
 
     glm::vec2 target = {x, y};
-    glm::vec2 origin = {_transform->worldPosition().x + smallXAdjustment,
-                        _transform->worldPosition().y};
+    glm::vec2 origin = {_transform->getWorldPosition().x + smallXAdjustment, _transform->getWorldPosition().y};
 
     glm::vec2 vector2 = target - origin;
     glm::vec2 vector1{0, 1};
 
-    const double angleRad =
-        atan2(vector2.y, vector2.x) - atan2(vector1.y, vector1.x);
+    const double angleRad = atan2(vector2.y, vector2.x) - atan2(vector1.y, vector1.x);
     const double angleDeg = glm::degrees(angleRad);
 
     if (angleDeg > -240.0 && angleDeg < -180) {

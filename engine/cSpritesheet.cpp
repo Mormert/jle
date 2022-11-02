@@ -23,16 +23,14 @@ void cSpritesheet::update(float dt) {
     auto &texture = _spritesheet->_imageTexture;
     if (texture != nullptr && _hasEntity) {
         texturedQuad quad{texture};
-        quad.x = _transform->worldPosition().x +
-                 _spritesheetEntityCache.sourceSize.x - _offset.x;
-        quad.y = _transform->worldPosition().y +
-                 _spritesheetEntityCache.sourceSize.y - _offset.y;
+        quad.x = _transform->getWorldPosition().x + _spritesheetEntityCache.sourceSize.x - _offset.x;
+        quad.y = _transform->getWorldPosition().y + _spritesheetEntityCache.sourceSize.y - _offset.y;
 
         quad.height = _spritesheetEntityCache.frame.height;
         quad.width = _spritesheetEntityCache.frame.width;
         quad.textureX = _spritesheetEntityCache.frame.x;
         quad.textureY = _spritesheetEntityCache.frame.y;
-        quad.depth = _transform->worldPosition().z;
+        quad.depth = _transform->getWorldPosition().z;
 
         if (quad.texture.get()) {
             gCore->quadRendering().sendTexturedQuad(quad);

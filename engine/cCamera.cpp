@@ -3,43 +3,105 @@
 #include "cCamera.h"
 #include "jleGameEngine.h"
 #include "jleObject.h"
+#include "jleWindow.h"
 
-void cCamera::start() {
+void
+cCamera::start()
+{
     _transform = _attachedToObject->addDependencyComponent<cTransform>(this);
     sInstanceCounter++;
 
     if (sInstanceCounter > 1) {
         LOG_ERROR << "More than one camera detected!";
     }
+
+    _framebufferCallbackId = gEngine->addGameWindowResizeCallback([this](auto &&PH1, auto &&PH2) {
+        framebufferResizeCallback(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
+    });
 }
 
-void cCamera::update(float dt) {
+void
+cCamera::framebufferResizeCallback(unsigned int width, unsigned int height)
+{
+    glm::ivec2 dimensions{width, height};
+    if (_framebufferUseFixedAxis) {
+        if (_framebufferFixedAxis == jleFramebuffer::FIXED_AXIS::width) {
+            const auto aspect = static_cast<float>(height) / static_cast<float>(width);
+            dimensions = jleFramebuffer::fixedAxisDimensions(_framebufferFixedAxis, aspect, _framebufferSizeX);
+        } else if (_framebufferFixedAxis == jleFramebuffer::FIXED_AXIS::height) {
+            const auto aspect = static_cast<float>(width) / static_cast<float>(height);
+
+            dimensions = jleFramebuffer::fixedAxisDimensions(_framebufferFixedAxis, aspect, _framebufferSizeY);
+        }
+    } else {
+        dimensions = {width, height};
+    }
+
+    if (_matchFramebufferToWindowSize) {
+        dimensions = {width, height};
+    }
+
+    gEngine->resizeMainFramebuffer(dimensions.x, dimensions.y);
+}
+
+void
+cCamera::update(float dt)
+{
     auto &game = ((jleGameEngine *)gCore)->gameRef();
 
-    game._mainCamera._x = _transform->worldPosition().x + _offsetX;
-    game._mainCamera._y = _transform->worldPosition().y + _offsetY;
+    if (_perspective) {
+        game.mainCamera.setPerspectiveProjection(_perspectiveFov,
+                                                 gEngine->mainFramebuffer->width(),
+                                                 gEngine->mainFramebuffer->height(),
+                                                 _farPlane,
+                                                 _nearPlane);
+    } else {
+        game.mainCamera.setOrthographicProjection(
+            gEngine->mainFramebuffer->width(), gEngine->mainFramebuffer->height(), _farPlane, _nearPlane);
+    }
 
-    game._mainCamera._xNoOffset = _transform->worldPosition().x;
-    game._mainCamera._yNoOffset = _transform->worldPosition().y;
+    jleCameraSimpleFPVController c;
+    c.position = _transform->getWorldPosition();
+
+    // TODO: handle rotation
+
+    game.mainCamera.setViewMatrix(c.getLookAtViewMatrix());
 }
 
-void cCamera::toJson(nlohmann::json &j_out) {
+void
+cCamera::toJson(nlohmann::json &j_out)
+{
     j_out = nlohmann::json{
-        {"offsetX", _offsetX},
-        {"offsetY", _offsetY},
+        {"perspective", _perspective},
+        {"farPlane", _farPlane},
+        {"nearPlane", _nearPlane},
+        {"fov", _perspectiveFov},
+        {"framebufferSizeX", _framebufferSizeX},
+        {"framebufferSizeY", _framebufferSizeY},
+        {"framebufferFixedAxis", _framebufferFixedAxis},
+        {"framebufferUseFixedAxis", _framebufferUseFixedAxis},
+        {"matchFramebufferToWindowSize", _matchFramebufferToWindowSize},
     };
 }
 
-void cCamera::fromJson(const nlohmann::json &j_in) {
-    _offsetX = j_in.at("offsetX");
-    _offsetY = j_in.at("offsetY");
+void
+cCamera::fromJson(const nlohmann::json &j_in)
+{
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _perspective, "perspective", false);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _farPlane, "farPlane", 10000.f);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _nearPlane, "nearPlane", 0.1f);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferSizeX, "framebufferSizeX", 1024);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferSizeY, "framebufferSizeY", 1024);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferUseFixedAxis, "framebufferUseFixedAxis", false);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferFixedAxis, "framebufferFixedAxis", jleFramebuffer::FIXED_AXIS::width);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferUseFixedAxis, "framebufferUseFixedAxis", false);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _matchFramebufferToWindowSize, "matchFramebufferToWindowSize", false);
 }
 
-cCamera::cCamera(jleObject *owner, jleScene *scene)
-    : jleComponent(owner, scene) {}
+cCamera::cCamera(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 
-cCamera::~cCamera() { sInstanceCounter--; }
-
-float cCamera::offsetX() const { return _offsetX; }
-
-float cCamera::offsetY() const { return _offsetY; }
+cCamera::~cCamera()
+{
+    sInstanceCounter--;
+    gEngine->removeGameWindowResizeCallback(_framebufferCallbackId);
+}

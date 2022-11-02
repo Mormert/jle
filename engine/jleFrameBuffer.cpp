@@ -13,23 +13,23 @@
 
 #endif
 
+#include "glm/glm.hpp"
 #include "jleStaticOpenGLState.h"
 #include "plog/Log.h"
 
 #include <iostream>
 
-jleFramebuffer::jleFramebuffer(unsigned int width,
-                               unsigned int height,
-                               bool shadowBuffer) {
+jleFramebuffer::jleFramebuffer(unsigned int width, unsigned int height, bool shadowBuffer)
+{
     if (shadowBuffer) {
         createShadowFramebuffer(width, height);
-    }
-    else {
+    } else {
         createFramebuffer(width, height);
     }
 }
 
-jleFramebuffer::~jleFramebuffer() {
+jleFramebuffer::~jleFramebuffer()
+{
     glDeleteFramebuffers(1, &_framebuffer);
     glDeleteRenderbuffers(1, &_rbo);
     glDeleteTextures(1, &_texColorBuffer);
@@ -37,8 +37,9 @@ jleFramebuffer::~jleFramebuffer() {
     std::cout << "Deleted Framebuffer with id " << _framebuffer << "!\n";
 }
 
-void jleFramebuffer::createFramebuffer(unsigned int width,
-                                       unsigned int height) {
+void
+jleFramebuffer::createFramebuffer(unsigned int width, unsigned int height)
+{
     this->_width = width;
     this->_height = height;
 
@@ -48,45 +49,33 @@ void jleFramebuffer::createFramebuffer(unsigned int width,
     // generate texture
     glGenTextures(1, &_texColorBuffer);
     glBindTexture(GL_TEXTURE_2D, _texColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 GL_RGB,
-                 width,
-                 height,
-                 0,
-                 GL_RGB,
-                 GL_UNSIGNED_BYTE,
-                 nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     // attach it to currently bound framebuffer object
-    glFramebufferTexture2D(GL_FRAMEBUFFER,
-                           GL_COLOR_ATTACHMENT0,
-                           GL_TEXTURE_2D,
-                           _texColorBuffer,
-                           0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texColorBuffer, 0);
 
     glGenRenderbuffers(1, &_rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, _rbo);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-    glFramebufferRenderbuffer(
-        GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _rbo);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _rbo);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         LOG_ERROR << "Framebuffer is not complete!";
-    }
-    else {
+    } else {
         LOG_VERBOSE << "Created Framebuffer with id " << _framebuffer << "!";
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void jleFramebuffer::resize(unsigned int width, unsigned int height) {
+void
+jleFramebuffer::resize(unsigned int width, unsigned int height)
+{
 
     // LOG_VERBOSE << "Resized Framebuffer " << framebuffer << ": " << width <<
     // ", " << height;
@@ -97,15 +86,7 @@ void jleFramebuffer::resize(unsigned int width, unsigned int height) {
     // resize texture
     glBindTexture(GL_TEXTURE_2D, _texColorBuffer);
     jleStaticOpenGLState::globalActiveTexture = _texColorBuffer;
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 GL_RGB,
-                 width,
-                 height,
-                 0,
-                 GL_RGB,
-                 GL_UNSIGNED_BYTE,
-                 nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     // resize renderbuffer
@@ -114,18 +95,42 @@ void jleFramebuffer::resize(unsigned int width, unsigned int height) {
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
-void jleFramebuffer::bind() { glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer); }
+void
+jleFramebuffer::bind()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
+}
 
-void jleFramebuffer::bindDefault() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+void
+jleFramebuffer::bindDefault()
+{
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    jleStaticOpenGLState::globalActiveTexture = 0;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
 
-unsigned int jleFramebuffer::width() { return _width; }
+unsigned int
+jleFramebuffer::width()
+{
+    return _width;
+}
 
-unsigned int jleFramebuffer::height() { return _height; }
+unsigned int
+jleFramebuffer::height()
+{
+    return _height;
+}
 
-unsigned int jleFramebuffer::texture() { return _texColorBuffer; }
+unsigned int
+jleFramebuffer::texture()
+{
+    return _texColorBuffer;
+}
 
-void jleFramebuffer::createShadowFramebuffer(unsigned int width,
-                                             unsigned int height) {
+void
+jleFramebuffer::createShadowFramebuffer(unsigned int width, unsigned int height)
+{
     this->_width = width;
     this->_height = height;
 
@@ -135,24 +140,27 @@ void jleFramebuffer::createShadowFramebuffer(unsigned int width,
     // generate texture
     glGenTextures(1, &_texColorBuffer);
     glBindTexture(GL_TEXTURE_2D, _texColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 GL_DEPTH_COMPONENT,
-                 width,
-                 height,
-                 0,
-                 GL_DEPTH_COMPONENT,
-                 GL_FLOAT,
-                 NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
-    glFramebufferTexture2D(
-        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _texColorBuffer, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _texColorBuffer, 0);
     glDrawBuffers(GL_NONE, nullptr);
     glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+glm::ivec2
+jleFramebuffer::fixedAxisDimensions(jleFramebuffer::FIXED_AXIS fixedAxis, float aspect, unsigned int fixedAxisPixels)
+{
+    if (fixedAxis == FIXED_AXIS::height) {
+        auto w = static_cast<unsigned int>((float)fixedAxisPixels * aspect);
+        return {w, fixedAxisPixels};
+    } else {
+        auto h = static_cast<unsigned int>((float)fixedAxisPixels * aspect);
+        return {fixedAxisPixels, h};
+    }
 }

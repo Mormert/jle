@@ -34,33 +34,30 @@
 #include "jleWindow.h"
 #include "plog/Log.h"
 
-jleEditor::jleEditor(std::shared_ptr<jleGameSettings> gs,
-                     std::shared_ptr<jleEditorSettings> es)
-    : jleGameEngine{gs}, editor_settings{es} {}
+jleEditor::jleEditor(std::shared_ptr<jleGameSettings> gs, std::shared_ptr<jleEditorSettings> es)
+    : jleGameEngine{gs}, _editorSettings{es}
+{
+}
 
-void jleEditor::startEditor() {}
-
-void jleEditor::start() {
+void jleEditor::start()
+{
 
     LOG_INFO << "Starting the editor";
 
     initImgui();
 
-    auto dims = framebufferDimensions(settings().windowSettings.width,
-                                      settings().windowSettings.height);
-    framebuffer_main =
-        std::make_shared<jleFramebuffer>(dims.first, dims.second);
+    constexpr int initialScreenX = 1024;
+    constexpr int initialScreenY = 1024;
+    mainFramebuffer = std::make_shared<jleFramebuffer>(initialScreenX, initialScreenY);
 
-    _editorFramebuffer =
-        std::make_shared<jleFramebuffer>(dims.first, dims.second);
+    editorFramebuffer = std::make_shared<jleFramebuffer>(initialScreenX, initialScreenY);
 
     // Note: Important that menu comes first here, since the others are
     // dependent on the menu's dockspace.
     auto menu = std::make_shared<jleEditorWindowsPanel>("Menu");
     addImGuiWindow(menu);
 
-    auto sceneWindow = std::make_shared<jleSceneEditorWindow>(
-        "Scene Window", _editorFramebuffer);
+    auto sceneWindow = std::make_shared<jleSceneEditorWindow>("Scene Window", editorFramebuffer);
     addImGuiWindow(sceneWindow);
     menu->addWindow(sceneWindow);
 
@@ -73,8 +70,7 @@ void jleEditor::start() {
     addImGuiWindow(console);
     menu->addWindow(console);
 
-    auto settingsWindow = std::make_shared<jleEngineSettingsWindow>(
-        "Engine Settings", gameSettings, editor_settings);
+    auto settingsWindow = std::make_shared<jleEngineSettingsWindow>("Engine Settings", gameSettings, _editorSettings);
     addImGuiWindow(settingsWindow);
     menu->addWindow(settingsWindow);
 
@@ -113,22 +109,24 @@ void jleEditor::start() {
     startGame();
 }
 
-void jleEditor::render() {
+void jleEditor::render()
+{
     JLE_SCOPE_PROFILE(jleEditor::Render)
     if (!gameHalted && game) {
         // Render to game view
-        rendering().render(*framebuffer_main, game->_mainCamera);
+        rendering().render(*mainFramebuffer, game->mainCamera);
     }
 
-    // _editorCamera.perspectiveProjection(90.f,
-    // _editorFramebuffer->width(), _editorFramebuffer->height(), 50000.f,
-    // 0.1f);
-    _editorCamera.orthographicProjection(_editorFramebuffer->width(),
-                                         _editorFramebuffer->height(),
-                                         10000.f,
-                                         -10000.f);
+    if (projectionType == jleCameraProjection::Orthographic) {
+        editorCamera.setOrthographicProjection(
+            editorFramebuffer->width(), editorFramebuffer->height(), 10000.f, -10000.f);
+    } else {
+        editorCamera.setPerspectiveProjection(
+            45.f, editorFramebuffer->width(), editorFramebuffer->height(), 10000.f, 0.1f);
+    }
+
     // Render to editor scene view
-    rendering().render(*_editorFramebuffer, _editorCamera);
+    rendering().render(*editorFramebuffer, editorCamera);
 
     rendering().clearBuffersForNextFrame();
 
@@ -148,7 +146,7 @@ void jleEditor::render() {
         ImGui::NewFrame();
 
         // Update loop for all ImGui windows
-        for (auto window : ImGuiWindows) {
+        for (auto window : _imGuiWindows) {
             window->update(*this);
         }
 
@@ -277,7 +275,7 @@ void jleEditor::imguiTheme() {
 }
 
 void jleEditor::addImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window) {
-    ImGuiWindows.push_back(window);
+    _imGuiWindows.push_back(window);
 }
 
 void jleEditor::mainEditorWindowResized(int w, int h) {

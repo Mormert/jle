@@ -23,4 +23,6 @@ private:
     jleImage _transformMarkerImage;
     std::shared_ptr<jleTexture> _transformMarkerTexture;
     texturedQuad _texturedQuad;
+
+    jleCameraSimpleFPVController _fpvCamController;
 };

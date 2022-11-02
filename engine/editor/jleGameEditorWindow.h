@@ -6,7 +6,8 @@
 
 #include "jleGameEngine.h"
 
-class jleGameEditorWindow : public iEditorImGuiWindow {
+class jleGameEditorWindow : public iEditorImGuiWindow
+{
 public:
     explicit jleGameEditorWindow(const std::string &window_name);
 

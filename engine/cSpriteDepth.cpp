@@ -45,9 +45,10 @@ void cSpriteDepth::start() {
     }
 }
 
-void cSpriteDepth::update(float dt) {
-    quad.x = transform->worldPosition().x;
-    quad.y = transform->worldPosition().y;
+void cSpriteDepth::update(float dt)
+{
+    quad.x = transform->getWorldPosition().x;
+    quad.y = transform->getWorldPosition().y;
 
     if (!quad.mtextureWithHeightmap) {
         return;
@@ -55,8 +56,7 @@ void cSpriteDepth::update(float dt) {
 
     if (quad.mtextureWithHeightmap->normalmap) {
         gCore->quadRendering().sendTexturedHeightQuad(*&quad);
-    }
-    else {
+    } else {
         gCore->quadRendering().sendSimpleTexturedHeightQuad(*&quad);
     }
 }

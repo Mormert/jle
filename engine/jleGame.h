@@ -72,7 +72,7 @@ public:
 
     std::vector<std::shared_ptr<jleScene>> &activeScenesRef();
 
-    jleCamera _mainCamera{jleCameraProjection::Orthographic};
+    jleCamera mainCamera{jleCameraProjection::Orthographic};
 
 protected:
     std::vector<std::shared_ptr<jleScene>> _activeScenes;

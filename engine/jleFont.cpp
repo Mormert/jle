@@ -107,12 +107,7 @@ void jleFont::renderTargetDimensions(int width,
                                      int height,
                                      const jleCamera &camera) {
 
-    sProj = glm::ortho(static_cast<float>(camera.intX()),
-                       static_cast<float>(camera.intX() + width),
-                       static_cast<float>(camera.intY() + height),
-                       static_cast<float>(camera.intY()),
-                       -1.f,
-                       1.f);
+    sProj = camera.getProjectionMatrix();
 
     jleFontData::data->shader->use();
     jleFontData::data->shader->SetMat4("projection", sProj);

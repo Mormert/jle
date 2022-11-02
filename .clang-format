@@ -1,15 +1,15 @@
 Language: Cpp
 BasedOnStyle: LLVM
 IndentWidth: 4
-SortIncludes: true
+ColumnLimit: 120
 AccessModifierOffset: -4
-AlwaysBreakTemplateDeclarations: true
+AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
-BreakBeforeBraces: Custom
+BreakBeforeBraces: Linux
 BraceWrapping:
   BeforeCatch: true
   BeforeElse: true
 
-AlwaysBreakAfterReturnType: None
+AlwaysBreakAfterReturnType: AllDefinitions
 PenaltyReturnTypeOnItsOwnLine: 1000000

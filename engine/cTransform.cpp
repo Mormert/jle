@@ -38,7 +38,9 @@ void cTransform::toJson(nlohmann::json &j_out) {
     j_out = nlohmann::json{{"transform", _transformMatLocal}};
 }
 
-void cTransform::fromJson(const nlohmann::json &j_in) {
-    JLE_FROM_JSON_WITH_DEFAULT(
-        j_in, _transformMatLocal, "transform", glm::mat4{1.f});
+void cTransform::fromJson(const nlohmann::json &j_in)
+{
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _transformMatLocal, "transform", glm::mat4{1.f});
+
+    flagDirty();
 }

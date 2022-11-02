@@ -31,15 +31,14 @@ public:
     void sendSimpleTexturedHeightQuad(
         jleTexturedHeightQuad &texturedHeightQuad);
 
-    void queuerender(jleFramebuffer &framebufferOut, jleCamera &camera);
+    void queuerender(jleFramebuffer &framebufferOut, const jleCamera &camera);
 
-    void render(
-        jleFramebuffer &framebufferOut,
-        jleCamera &camera,
-        const std::vector<texturedQuad> &texturedQuads,
-        const std::vector<jleTexturedHeightQuad> &texturedHeightQuads,
-        const std::vector<jleTexturedHeightQuad> &texturedSimpleHeightQuads,
-        bool clearDepthColor);
+    void render(jleFramebuffer &framebufferOut,
+                const jleCamera &camera,
+                const std::vector<texturedQuad> &texturedQuads,
+                const std::vector<jleTexturedHeightQuad> &texturedHeightQuads,
+                const std::vector<jleTexturedHeightQuad> &texturedSimpleHeightQuads,
+                bool clearDepthColor);
 
     void clearBuffersForNextFrame();
 
@@ -75,7 +74,7 @@ private:
     jleShader shadowMappingShader;
     std::unique_ptr<jleFramebuffer> shadowMapBuffer;
 
-    void renderShadowCubes(glm::mat4 &view);
+    void renderShadowCubes(const glm::mat4 &view);
     // ---
 
     // Instanced version

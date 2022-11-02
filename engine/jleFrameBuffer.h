@@ -2,11 +2,12 @@
 
 #pragma once
 
-class jleFramebuffer {
+#include <glm/glm.hpp>
+
+class jleFramebuffer
+{
 public:
-    jleFramebuffer(unsigned int width,
-                   unsigned int height,
-                   bool shadowBuffer = false);
+    jleFramebuffer(unsigned int width, unsigned int height, bool shadowBuffer = false);
 
     ~jleFramebuffer();
 
@@ -16,6 +17,12 @@ public:
 
     void resize(unsigned int width, unsigned int height);
 
+    // Specifies which axis to be fixed, and the other scales depending on window aspect ratio
+    enum class FIXED_AXIS { width, height };
+
+    static glm::ivec2 fixedAxisDimensions(jleFramebuffer::FIXED_AXIS fixedAxis,
+                                          float aspect,
+                                          unsigned int fixedAxisPixels);
     void bind();
 
     void bindDefault();

@@ -46,27 +46,21 @@ void cUITransformUpdater::update(float dt) {
     // TODO: dont do this in update, rely on callback functions instead
     // since the UI gets dirty every frame now...
 
-    int offsetX{0}, offsetY{0};
-    if (auto c = _camera.lock()) {
-        offsetX = (int)c->offsetX();
-        offsetY = (int)c->offsetY();
-    }
+    const auto framebuffer = ((jleGameEngine *)(gCore))->mainFramebuffer;
 
-    _transform->localPosition({_x, _y, 0.f});
+    _transform->setLocalPosition({_x, _y, 0.f});
 
     if (_top) {
-        _transform->localPosition({_x, _y + offsetY, 0.f});
+        _transform->setLocalPosition({_x, _y, 0.f});
     }
     else if (_bottom) {
-        _transform->localPosition(
-            {_x, _gameRef._mainCamera._cameraHeight + _y + offsetY, 0.f});
+        _transform->setLocalPosition({_x, framebuffer->height() + _y, 0.f});
     }
 
     if (_left) {
-        _transform->localPosition({_x + offsetX, _y, 0.f});
+        _transform->setLocalPosition({_x, _y, 0.f});
     }
     else if (_right) {
-        _transform->localPosition(
-            {_gameRef._mainCamera._cameraWidth + _x + offsetX, _y, 0.f});
+        _transform->setLocalPosition({framebuffer->width() + _x, _y, 0.f});
     }
 }

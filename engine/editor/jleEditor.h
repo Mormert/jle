@@ -15,18 +15,17 @@ class jleFramebuffer;
 
 class jleEditor : public jleGameEngine {
 public:
-    jleEditor(std::shared_ptr<jleGameSettings>,
-              std::shared_ptr<jleEditorSettings>);
-
-    void startEditor();
+    jleEditor(std::shared_ptr<jleGameSettings>, std::shared_ptr<jleEditorSettings>);
 
     void start() override;
 
     void render() override;
 
-    std::shared_ptr<jleFramebuffer> _editorFramebuffer;
+    std::shared_ptr<jleFramebuffer> editorFramebuffer;
 
-    static inline jleCamera _editorCamera{jleCameraProjection::Orthographic};
+    static inline jleCameraProjection projectionType;
+
+    static inline jleCamera editorCamera{jleCameraProjection::Orthographic};
 
 private:
     void initImgui();
@@ -37,7 +36,7 @@ private:
 
     void mainEditorWindowResized(int w, int h);
 
-    std::vector<std::shared_ptr<iEditorImGuiWindow>> ImGuiWindows;
+    std::vector<std::shared_ptr<iEditorImGuiWindow>> _imGuiWindows;
 
-    std::shared_ptr<jleEditorSettings> editor_settings;
+    std::shared_ptr<jleEditorSettings> _editorSettings;
 };

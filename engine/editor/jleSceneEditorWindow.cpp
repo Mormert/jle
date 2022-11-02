@@ -27,14 +27,11 @@
 
 #include <GLFW/glfw3.h>
 
-jleSceneEditorWindow::jleSceneEditorWindow(
-    const std::string &window_name,
-    std::shared_ptr<jleFramebuffer> &framebuffer)
-    : iEditorImGuiWindow(window_name),
-      _transformMarkerImage("EditorResources/icons/transform_marker.png") {
+jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name, std::shared_ptr<jleFramebuffer> &framebuffer)
+    : iEditorImGuiWindow(window_name), _transformMarkerImage("EditorResources/icons/transform_marker.png")
+{
     _framebuffer = framebuffer;
-    _transformMarkerTexture =
-        std::make_unique<jleTexture>(_transformMarkerImage);
+    _transformMarkerTexture = std::make_unique<jleTexture>(_transformMarkerImage);
 
     _texturedQuad.texture = _transformMarkerTexture;
     _texturedQuad.width = 128;
@@ -42,9 +39,13 @@ jleSceneEditorWindow::jleSceneEditorWindow(
     _texturedQuad.depth = 1000.f;
     _texturedQuad.textureX = 0;
     _texturedQuad.textureY = 0;
+
+    _fpvCamController.position = {0.f, 0.f, 250.f};
 }
 
-void jleSceneEditorWindow::update(jleGameEngine &ge) {
+void
+jleSceneEditorWindow::update(jleGameEngine &ge)
+{
     if (!isOpened) {
         return;
     }
@@ -59,10 +60,8 @@ void jleSceneEditorWindow::update(jleGameEngine &ge) {
 
     const auto &cursorScreenPos = ImGui::GetCursorScreenPos();
     const auto viewport = ImGui::GetMainViewport();
-    const int32_t windowPositionX =
-        int32_t(cursorScreenPos.x) - viewport->Pos.x;
-    const int32_t windowPositionY =
-        int32_t(cursorScreenPos.y) - viewport->Pos.y;
+    const int32_t windowPositionX = int32_t(cursorScreenPos.x) - viewport->Pos.x;
+    const int32_t windowPositionY = int32_t(cursorScreenPos.y) - viewport->Pos.y;
 
     const auto previousFrameCursorPos = _lastCursorPos;
     _lastCursorPos = gCore->window().cursor();
@@ -72,64 +71,51 @@ void jleSceneEditorWindow::update(jleGameEngine &ge) {
     const int32_t mouseDeltaY = mouseY - previousFrameCursorPos.second;
 
     const auto getPixelatedMousePosX = [&]() -> int32_t {
-        const float ratio =
-            float(_framebuffer->width()) / float(_lastGameWindowWidth);
+        const float ratio = float(_framebuffer->width()) / float(_lastGameWindowWidth);
         return int(ratio * float(mouseX - windowPositionX));
     };
 
     const auto getPixelatedMousePosY = [&]() -> int32_t {
-        const float ratio =
-            float(_framebuffer->height()) / float(_lastGameWindowHeight);
+        const float ratio = float(_framebuffer->height()) / float(_lastGameWindowHeight);
         return int(ratio * float(mouseY - windowPositionY));
     };
 
     const auto mouseCoordinateX =
-        getPixelatedMousePosX() + jleEditor::_editorCamera.intX();
+        getPixelatedMousePosX() + static_cast<int>(jleEditor::editorCamera.getViewPosition().x);
     const auto mouseCoordinateY =
-        getPixelatedMousePosY() + jleEditor::_editorCamera.intY();
+        getPixelatedMousePosY() + static_cast<int>(jleEditor::editorCamera.getViewPosition().y);
 
     static float zoomValue = 1.f;
 
-    if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset ==
-              _lastGameWindowWidth &&
-          ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y -
-                  negYOffset ==
-              _lastGameWindowHeight)) {
-        _lastGameWindowWidth =
-            ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset;
-        _lastGameWindowHeight = ImGui::GetWindowHeight() -
-                                ImGui::GetCursorStartPos().y - negYOffset;
+    if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset == _lastGameWindowWidth &&
+          ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset == _lastGameWindowHeight)) {
+        _lastGameWindowWidth = ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset;
+        _lastGameWindowHeight = ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset;
 
-        auto dims = ge.framebufferDimensions(
-            static_cast<unsigned int>(ImGui::GetWindowWidth()),
-            static_cast<unsigned int>(ImGui::GetWindowHeight()));
-        _framebuffer->resize(dims.first * zoomValue, dims.second * zoomValue);
+        const auto aspect = static_cast<float>(_lastGameWindowHeight) / static_cast<float>(_lastGameWindowWidth);
+        auto dims = jleFramebuffer::fixedAxisDimensions(
+            jleFramebuffer::FIXED_AXIS::width, aspect, static_cast<unsigned int>(ImGui::GetWindowHeight()));
+
+        _framebuffer->resize(dims.x * zoomValue, dims.y * zoomValue);
     }
 
-    const auto &selectedObject =
-        jleEditorSceneObjectsWindow::GetSelectedObject();
+    const auto &selectedObject = jleEditorSceneObjectsWindow::GetSelectedObject();
     std::shared_ptr<cTransform> transform{nullptr};
 
     // Render the transform marker only in the editor window
     if (auto object = selectedObject.lock()) {
         transform = object->component<cTransform>();
         if (transform) {
-            _texturedQuad.x = transform->worldPosition().x - 64.f;
-            _texturedQuad.y = transform->worldPosition().y - 64.f;
+            _texturedQuad.x = transform->getWorldPosition().x - 64.f;
+            _texturedQuad.y = transform->getWorldPosition().y - 64.f;
             _texturedQuad.depth = -10000.f;
             std::vector<texturedQuad> texturedQuads{_texturedQuad};
-            gCore->quadRendering().render(*_framebuffer,
-                                          jleEditor::_editorCamera,
-                                          texturedQuads,
-                                          {},
-                                          {},
-                                          false);
+            gCore->quadRendering().render(*_framebuffer, jleEditor::editorCamera, texturedQuads, {}, {}, false);
         }
     }
 
     glBindTexture(GL_TEXTURE_2D, (unsigned int)_framebuffer->texture());
-    jleStaticOpenGLState::globalActiveTexture =
-        (unsigned int)_framebuffer->texture();
+    jleStaticOpenGLState::globalActiveTexture = (unsigned int)_framebuffer->texture();
 
     // Render the framebuffer as an image
     ImGui::Image((void *)(intptr_t)_framebuffer->texture(),
@@ -137,91 +123,110 @@ void jleSceneEditorWindow::update(jleGameEngine &ge) {
                  ImVec2(0, 1),
                  ImVec2(1, 0));
 
+    const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
+
+    // Move the Perspective button up slightly
+    auto y = ImGui::GetCursorPosY();
+    ImGui::SetCursorPosY(y - 25 * globalImguiScale);
+    auto x = ImGui::GetCursorPosX();
+    ImGui::SetCursorPosX(x + 5 * globalImguiScale);
+
+    if (jleEditor::projectionType == jleCameraProjection::Orthographic) {
+        if (ImGui::Button("Orthographic")) {
+            jleEditor::projectionType = jleCameraProjection::Perspective;
+        }
+    } else {
+        if (ImGui::Button("Perspective")) {
+            jleEditor::projectionType = jleCameraProjection::Orthographic;
+        }
+    }
+
+    ImGui::SameLine();
+
+    ImGui::Text(
+        "(%f, %f, %f)", _fpvCamController.position.x, _fpvCamController.position.y, _fpvCamController.position.z);
+
+    ImGui::SameLine();
+
+    if (ImGui::SmallButton("R")) {
+        _fpvCamController.backToOrigin();
+    }
+
+    ImGui::SameLine();
+
+    ImGui::Text("[%d, %d]", _framebuffer->width(), _framebuffer->height());
+
     if (ImGui::IsWindowHovered()) {
         auto t = ge.deltaFrameTime();
         auto dragDelta = ImGui::GetMouseDragDelta(1);
 
-        jleEditor::_editorCamera._x += dragDelta.x * 10.f * zoomValue * t;
-        jleEditor::_editorCamera._y += dragDelta.y * 10.f * zoomValue * t;
+        if (jleEditor::projectionType == jleCameraProjection::Perspective || ImGui::IsKeyDown(ImGuiKey_LeftShift)) {
+            _fpvCamController.applyPerspectiveMouseMovementDelta(glm::vec2{dragDelta.x, dragDelta.y}, t * 100.f);
+        } else {
+            _fpvCamController.move(glm::vec3{dragDelta.x, dragDelta.y, 0.f} * t * 5.f);
+        }
 
-        jleEditor::_editorCamera._xNoOffset =
-            jleEditor::_editorCamera._x + _framebuffer->width() * .5;
-        jleEditor::_editorCamera._yNoOffset =
-            jleEditor::_editorCamera._y + _framebuffer->height() * .5;
-
-        jleEditor::_editorCamera.applyPerspectiveMouseMovementDelta(
-            glm::vec2{dragDelta.x, -dragDelta.y});
-
+        constexpr float moveSpeed = 350.f;
         if (ImGui::IsKeyDown(ImGuiKey_W)) {
-            jleEditor::_editorCamera.movePerspectiveForward(
-                115.f * ge.deltaFrameTime());
+            if (jleEditor::projectionType == jleCameraProjection::Orthographic) {
+                _fpvCamController.moveUp(moveSpeed * t);
+            } else {
+                _fpvCamController.moveForward(moveSpeed * t);
+            }
         }
         if (ImGui::IsKeyDown(ImGuiKey_S)) {
-            jleEditor::_editorCamera.movePerspectiveBackward(
-                115.f * ge.deltaFrameTime());
+            if (jleEditor::projectionType == jleCameraProjection::Orthographic) {
+                _fpvCamController.moveDown(moveSpeed * t);
+            } else {
+                _fpvCamController.moveBackward(moveSpeed * t);
+            }
         }
         if (ImGui::IsKeyDown(ImGuiKey_D)) {
-            jleEditor::_editorCamera.movePerspectiveRight(115.f *
-                                                          ge.deltaFrameTime());
+            _fpvCamController.moveRight(moveSpeed * t);
         }
         if (ImGui::IsKeyDown(ImGuiKey_A)) {
-            jleEditor::_editorCamera.movePerspectiveLeft(115.f *
-                                                         ge.deltaFrameTime());
+            _fpvCamController.moveLeft(moveSpeed * t);
         }
         if (ImGui::IsKeyDown(ImGuiKey_Space)) {
-            jleEditor::_editorCamera.movePerspectiveUp(115.f *
-                                                       ge.deltaFrameTime());
+            _fpvCamController.moveUp(moveSpeed * t);
         }
         if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl)) {
-            jleEditor::_editorCamera.movePerspectiveDown(115.f *
-                                                         ge.deltaFrameTime());
+            _fpvCamController.moveDown(moveSpeed * t);
         }
+
+        jleEditor::editorCamera.setViewMatrix(_fpvCamController.getLookAtViewMatrix());
 
         auto currentScroll = gCore->input().mouse->scrollY();
         if (currentScroll != 0.f) {
             zoomValue -= currentScroll * 0.1f;
             zoomValue = glm::clamp(zoomValue, 0.25f, 5.f);
-            auto dims = ge.framebufferDimensions(
-                static_cast<unsigned int>(ImGui::GetWindowWidth()),
-                static_cast<unsigned int>(ImGui::GetWindowHeight()));
 
-            const auto oldWidth = _framebuffer->width();
-            const auto oldHeight = _framebuffer->height();
-            const auto widthDiff = dims.first * zoomValue - oldWidth;
-            const auto heightDiff = dims.second * zoomValue - oldHeight;
-            jleEditor::_editorCamera._x -= widthDiff * .5f;
-            jleEditor::_editorCamera._y -= heightDiff * .5f;
-            _framebuffer->resize(dims.first * zoomValue,
-                                 dims.second * zoomValue);
+            const auto aspect = static_cast<float>(_lastGameWindowHeight) / static_cast<float>(_lastGameWindowWidth);
+            auto dims = jleFramebuffer::fixedAxisDimensions(
+                jleFramebuffer::FIXED_AXIS::width, aspect, static_cast<unsigned int>(ImGui::GetWindowHeight()));
+
+            _framebuffer->resize(dims.x * zoomValue, dims.y * zoomValue);
         }
 
         static int draggingTransformMarker = 0;
         if (ImGui::IsMouseClicked(0)) {
-            if ((mouseCoordinateX >= _texturedQuad.x &&
-                 mouseCoordinateX <= _texturedQuad.x + 128) &&
-                (mouseCoordinateY >= _texturedQuad.y &&
-                 mouseCoordinateY <= _texturedQuad.y + 128)) {
-                LOGV << "Inside AABB " << mouseCoordinateX - _texturedQuad.x
-                     << ' ' << mouseCoordinateY - _texturedQuad.y;
+            if ((mouseCoordinateX >= _texturedQuad.x && mouseCoordinateX <= _texturedQuad.x + 128) &&
+                (mouseCoordinateY >= _texturedQuad.y && mouseCoordinateY <= _texturedQuad.y + 128)) {
+                LOGV << "Inside AABB " << mouseCoordinateX - _texturedQuad.x << ' '
+                     << mouseCoordinateY - _texturedQuad.y;
 
-                constexpr std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>
-                    redPart = {217, 87, 99, 255};
-                constexpr std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>
-                    greenPart = {153, 229, 80, 255};
-                constexpr std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>
-                    bluePart = {99, 155, 255, 255};
+                constexpr std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> redPart = {217, 87, 99, 255};
+                constexpr std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> greenPart = {153, 229, 80, 255};
+                constexpr std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> bluePart = {99, 155, 255, 255};
 
-                const auto pixels = _transformMarkerImage.pixelAtLocation(
-                    mouseCoordinateX - _texturedQuad.x,
-                    mouseCoordinateY - _texturedQuad.y);
+                const auto pixels = _transformMarkerImage.pixelAtLocation(mouseCoordinateX - _texturedQuad.x,
+                                                                          mouseCoordinateY - _texturedQuad.y);
 
                 if (pixels == redPart) {
                     draggingTransformMarker = 1;
-                }
-                else if (pixels == greenPart) {
+                } else if (pixels == greenPart) {
                     draggingTransformMarker = 2;
-                }
-                else if (pixels == bluePart) {
+                } else if (pixels == bluePart) {
                     draggingTransformMarker = 3;
                 }
             }
@@ -233,17 +238,13 @@ void jleSceneEditorWindow::update(jleGameEngine &ge) {
 
         if (ImGui::IsMouseDragging(0)) {
             if (draggingTransformMarker == 1) {
-                transform->worldPosition({mouseCoordinateX,
-                                          mouseCoordinateY,
-                                          transform->worldPosition().z});
-            }
-            else if (draggingTransformMarker == 2) {
-                const auto t = transform->worldPosition();
-                transform->worldPosition({mouseCoordinateX, t.y, t.z});
-            }
-            else if (draggingTransformMarker == 3) {
-                const auto t = transform->worldPosition();
-                transform->worldPosition({t.x, mouseCoordinateY, t.z});
+                transform->setWorldPosition({mouseCoordinateX, mouseCoordinateY, transform->getWorldPosition().z});
+            } else if (draggingTransformMarker == 2) {
+                const auto t = transform->getWorldPosition();
+                transform->setWorldPosition({mouseCoordinateX, t.y, t.z});
+            } else if (draggingTransformMarker == 3) {
+                const auto t = transform->getWorldPosition();
+                transform->setWorldPosition({t.x, mouseCoordinateY, t.z});
             }
         }
 
@@ -252,15 +253,12 @@ void jleSceneEditorWindow::update(jleGameEngine &ge) {
             auto &game = ((jleGameEngine *)gCore)->gameRef();
             const auto &scenes = game.activeScenesRef();
 
-            std::unordered_map<std::shared_ptr<cTransform>,
-                               std::shared_ptr<jleObject>>
-                transformsMap;
+            std::unordered_map<std::shared_ptr<cTransform>, std::shared_ptr<jleObject>> transformsMap;
             for (auto &scene : scenes) {
                 for (auto &object : scene->sceneObjects()) {
                     auto objectsTransform = object->component<cTransform>();
                     if (objectsTransform) {
-                        transformsMap.insert(
-                            std::make_pair(objectsTransform, object));
+                        transformsMap.insert(std::make_pair(objectsTransform, object));
                     }
                 }
             }
@@ -273,17 +271,10 @@ void jleSceneEditorWindow::update(jleGameEngine &ge) {
                 if (closestTransform == nullptr) {
                     closestTransform = transform;
                     selectedObject = object;
-                }
-                else if ((pow(transform->worldPosition().x - mouseCoordinateX,
-                              2) +
-                          pow(transform->worldPosition().y - mouseCoordinateY,
-                              2)) <
-                         (pow(closestTransform->worldPosition().x -
-                                  mouseCoordinateX,
-                              2)) +
-                             pow(closestTransform->worldPosition().y -
-                                     mouseCoordinateY,
-                                 2)) {
+                } else if ((pow(transform->getWorldPosition().x - mouseCoordinateX, 2) +
+                            pow(transform->getWorldPosition().y - mouseCoordinateY, 2)) <
+                           (pow(closestTransform->getWorldPosition().x - mouseCoordinateX, 2)) +
+                               pow(closestTransform->getWorldPosition().y - mouseCoordinateY, 2)) {
                     closestTransform = transform;
                     selectedObject = object;
                 }

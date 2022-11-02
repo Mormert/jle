@@ -10,24 +10,32 @@
 class jleFullscreenRendering;
 class jleFramebuffer;
 
-class jleGameEngine : public jleCore {
+class jleGameEngine;
+inline jleGameEngine *gEngine;
+
+class jleGameEngine : public jleCore
+{
 public:
     ~jleGameEngine() override;
 
     explicit jleGameEngine(std::shared_ptr<jleGameSettings> gs);
 
     template <class T>
-    void setGame() {
+    void
+    setGame()
+    {
         _gameCreator = []() { return std::make_unique<T>(); };
     }
 
-    // Main framebuffer
-    std::shared_ptr<jleFramebuffer> framebuffer_main;
+    std::shared_ptr<jleFramebuffer> mainFramebuffer;
 
-    void SetGameDimsPixels(FIXED_AXIS fa, unsigned int pixels);
+    void resizeMainFramebuffer(unsigned int width, unsigned int height);
 
-    std::pair<unsigned int, unsigned int> framebufferDimensions(
-        unsigned int windowWidth, unsigned int windowHeight);
+    int addGameWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback);
+
+    void removeGameWindowResizeCallback(unsigned int callbackId);
+
+    void executeGameWindowResizedCallbacks(unsigned int w, unsigned int h);
 
     void startGame();
 
@@ -41,20 +49,21 @@ public:
 
     void executeNextFrame();
 
-    bool isGameKilled();
+    [[nodiscard]] bool isGameKilled() const;
 
-    bool isGameHalted();
+    [[nodiscard]] bool isGameHalted() const;
 
     jleGame &gameRef();
-
-    static inline jleGameEngine *gEngine;
 
 private:
     std::function<std::unique_ptr<jleGame>()> _gameCreator;
 
     std::unique_ptr<jleFullscreenRendering> _fullscreen_renderer;
 
-    void framebufferResizeEvent(unsigned int width, unsigned int height);
+    friend class jleGameEditorWindow;
+    void gameWindowResizedEvent(unsigned int w, unsigned int h);
+
+    std::map<unsigned int, std::function<void(unsigned int, unsigned int)>> gameWindowResizedCallbacks;
 
 protected:
     void start() override;
@@ -64,11 +73,6 @@ protected:
     void render() override;
 
     void exiting() override;
-
-    FIXED_AXIS fixed_axis;
-
-    // Game dimensions in pixels, along axis specified by fixed_axis.
-    unsigned int gameDimsPixels;
 
     std::shared_ptr<jleGameSettings> gameSettings;
 

@@ -226,7 +226,7 @@ void jleWindow::removeWindowResizeCallback(unsigned int callback_id) {
 }
 
 void jleWindow::executeResizeCallbacks(int w, int h) {
-    for (const auto &callback : activeWindow->windowResizedCallbacks) {
+    for (const auto &callback : windowResizedCallbacks) {
         callback.second(w, h);
     }
 }

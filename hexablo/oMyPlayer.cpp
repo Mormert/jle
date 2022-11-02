@@ -57,8 +57,7 @@ void oMyPlayer::update(float dt) {
         LOGV << depthRng;
     }
 
-    jleQuadRendering::lightPos =
-        _transform->worldPosition().z + glm::vec3{0, 0, lightposz};
+    jleQuadRendering::lightPos = _transform->getWorldPosition().z + glm::vec3{0, 0, lightposz};
     jleQuadRendering::depthRange = depthRng;
 }
 
@@ -392,20 +391,16 @@ void oMyPlayer::abilities() {
 
     if (q && _canThrowFireball) {
 
-        auto t = _containedInScene->spawnTemplateObject(
-            jleRelativePath{"GR:otemps/FireballTempl.tmpl"});
+        auto t = _containedInScene->spawnTemplateObject(jleRelativePath{"GR:otemps/FireballTempl.tmpl"});
         const auto fireball = std::static_pointer_cast<oFireball>(t);
         auto mx = hexHelperFunctions::pixelatedMouseXWorldSpace();
         auto my = hexHelperFunctions::pixelatedMouseYWorldSpace();
 
-        fireball->component<cTransform>()->worldPosition(
-            {_transform->worldPosition().x - 20.f,
-             _transform->worldPosition().y - 10,
-             0.f});
+        fireball->component<cTransform>()->setWorldPosition(
+            {_transform->getWorldPosition().x - 20.f, _transform->getWorldPosition().y - 10, 0.f});
 
         auto *world = oWorld::sWorld;
-        auto p = hexHexagonFunctions::pixelToHex(
-            mx, my, world->_hexSizeX, world->_hexSizeY);
+        auto p = hexHexagonFunctions::pixelToHex(mx, my, world->_hexSizeX, world->_hexSizeY);
 
         fireball->target(p.x, p.y);
 

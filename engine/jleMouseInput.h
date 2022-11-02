@@ -30,11 +30,11 @@ public:
 
     bool mouseClick(int button);
 
-    void screenBeginCoords(int x, int y);
+    void setScreenBeginCoords(int x, int y);
 
-    void screenSize(int width, int height);
+    void setScreenSize(int width, int height);
 
-    void pixelatedScreenSize(int width, int height);
+    void setPixelatedScreenSize(int width, int height);
 
     void isEnabled(bool value);
 

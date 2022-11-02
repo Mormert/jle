@@ -6,19 +6,39 @@
 
 enum class jleCameraProjection { Orthographic, Perspective };
 
-struct jleCamera {
+struct jleCameraSimpleFPVController {
 
-    explicit jleCamera() = default;
+    void setPerspectiveMouseSensitivity(float sensitivity);
 
-    explicit jleCamera(jleCameraProjection projection);
+    void applyPerspectiveMouseMovementDelta(glm::vec2 delta, float factor);
 
-    jleCameraProjection _projectionType = jleCameraProjection::Orthographic;
+    void moveForward(float speed);
 
-    glm::vec3 _position{0.f, 24.f, 0.f};
+    void moveBackward(float speed);
 
-    glm::mat4 _projectionMatrix{};
+    void moveRight(float speed);
 
-    // For perspective projection
+    void moveLeft(float speed);
+
+    void moveUp(float speed);
+
+    void moveDown(float speed);
+
+    void move(glm::vec3 v);
+
+    void setYaw(float yaw);
+
+    void setPitch(float pitch);
+
+    [[nodiscard]] glm::mat4 getLookAtViewMatrix() const;
+
+    glm::vec3 position{0.f, 0.f, 0.f};
+
+    void backToOrigin();
+
+private:
+    void calculatePerspectiveVectors();
+
     glm::vec3 _front{0.0f, 0.0f, -1.0f};
     glm::vec3 _up{0.0f, 1.0f, 0.0f};
     glm::vec3 _right{};
@@ -26,47 +46,30 @@ struct jleCamera {
     float _yaw{-90.f};
     float _pitch{0.f};
     float _mouseSensitivity{0.001f};
+};
 
-    // For orthographic projection
-    float _cameraRotationDegrees{};
+struct jleCamera {
 
-    void perspectiveProjection(float fov,
-                               uint32_t screenWidth,
-                               uint32_t screenHeight,
-                               float farPlane,
-                               float nearPlane);
+    explicit jleCamera() = default;
 
-    void orthographicProjection(uint32_t screenWidth,
-                                uint32_t screenHeight,
-                                float farPlane,
-                                float nearPlane);
+    explicit jleCamera(jleCameraProjection projection);
 
-    [[nodiscard]] glm::mat4 projectionViewMatrix() const;
+    void setPerspectiveProjection(
+        float fov, uint32_t screenWidth, uint32_t screenHeight, float farPlane, float nearPlane);
 
-    void perspectiveMouseSensitivity(float sensitivity);
+    void setOrthographicProjection(uint32_t screenWidth, uint32_t screenHeight, float farPlane, float nearPlane);
 
-    void applyPerspectiveMouseMovementDelta(glm::vec2 delta);
+    void setViewMatrix(const glm::mat4 &view);
 
-    void calculatePerspectiveVectors();
+    [[nodiscard]] glm::vec3 getViewPosition() const;
 
-    void movePerspectiveForward(float speed);
+    [[nodiscard]] glm::mat4 getProjectionViewMatrix() const;
 
-    void movePerspectiveBackward(float speed);
+    [[nodiscard]] glm::mat4 getProjectionMatrix() const;
 
-    void movePerspectiveRight(float speed);
+    [[nodiscard]] glm::mat4 getViewMatrix() const;
 
-    void movePerspectiveLeft(float speed);
-
-    void movePerspectiveUp(float speed);
-
-    void movePerspectiveDown(float speed);
-
-    float _x = 0.f, _y = 0.f;
-    float _xNoOffset = 0.f, _yNoOffset = 0.f;
-
-    int _cameraWidth{}, _cameraHeight{};
-
-    [[nodiscard]] int32_t intX() const { return int32_t(_x); }
-
-    [[nodiscard]] int32_t intY() const { return int32_t(_y); }
+private:
+    glm::mat4 _projectionMatrix{1.f};
+    glm::mat4 _viewMatrix{1.f};
 };

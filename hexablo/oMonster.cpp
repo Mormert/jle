@@ -24,7 +24,6 @@ void oMonster::lookAtPlayer() {
 
     if (auto &&p = oMyPlayer::sMyPlayerPtr.lock()) {
         auto &&transform = p->component<cTransform>();
-        lookAtPosition(transform->worldPosition().x,
-                       transform->worldPosition().y);
+        lookAtPosition(transform->getWorldPosition().x, transform->getWorldPosition().y);
     }
 }

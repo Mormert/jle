@@ -63,7 +63,8 @@ void jleTextRendering::render(jleFramebuffer &framebufferOut,
         }
     }
 
-    if (!_simpleTextDatas.empty()) {
+    // DEPRECATED SIMPLE TEXT
+    /*if (!_simpleTextDatas.empty()) {
         gltBeginDraw();
 
         for (auto &&textData : _simpleTextDatas) {
@@ -75,7 +76,7 @@ void jleTextRendering::render(jleFramebuffer &framebufferOut,
         }
 
         gltEndDraw();
-    }
+    }*/
 
     framebufferOut.bindDefault();
 }
