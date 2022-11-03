@@ -73,8 +73,7 @@ void jleEditorSceneObjectsWindow::update(jleGameEngine &ge) {
 
                 { // destroy Scene
                     static bool opened = false;
-                    if (ImGui::Button("destroy Scene",
-                                      ImVec2(138 * globalImguiScale, 0))) {
+                    if (ImGui::Button("Destroy Scene", ImVec2(138 * globalImguiScale, 0))) {
                         opened = true;
                         ImGui::OpenPopup("Confirm Scene destroy");
                     }

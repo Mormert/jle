@@ -25,7 +25,7 @@ jobs:
           version: 3.1.9
 
       - name: Configure CMake with Emscripten SDK
-        run: emcmake cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -DBUILD_EMSCRIPTEN=ON
+        run: emcmake cmake gametemplate -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -DBUILD_EMSCRIPTEN=ON
 
       - name: Build
         run:

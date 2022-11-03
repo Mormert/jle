@@ -1,0 +1,17 @@
+{
+  "engine_abstractions": {
+    "rendering_api": 0,
+    "windowing_api": 0
+  },
+  "window_settings": {
+    "windowCappedFps": false,
+    "window_display_cursor": true,
+    "window_height": 1000,
+    "window_height_min": 250,
+    "window_icon_path": "C:/dev/sixmonths/hexablo/engine//EditorResources/jle_default_icon.png",
+    "window_is_rezisable": true,
+    "window_title": "empty project",
+    "window_width": 1600,
+    "window_width_min": 250
+  }
+}
