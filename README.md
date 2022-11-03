@@ -1,22 +1,27 @@
-# Hexablo
+# Cross-Platform 2D & 3D Game Engine
 
-Hexablo is a work-in-progress game inspired by the Diablo game franchise, developed together with the jle engine.
+A simple, yet powerful custom-made C++ game engine intended for PC games. It is developed alongside an
+old-school-inspired multiplayer Action-RPG, similar to games like Diablo II and Titan Quest.
 
-![Game Showcase](https://mormert.com/hexablo-press/prototype.png)
+![Game Showcase](https://mormert.com/jle-media/jle-logo-crop.png)
 
 ## Build status
+
 [![CMake-Linux](https://github.com/Mormert/hexablo/actions/workflows/cmake-linux.yml/badge.svg)](https://github.com/Mormert/hexablo/actions/workflows/cmake-linux.yml)
 [![CMake-MacOS](https://github.com/Mormert/hexablo/actions/workflows/cmake-macos.yml/badge.svg)](https://github.com/Mormert/hexablo/actions/workflows/cmake-macos.yml)
 [![CMake-Windows](https://github.com/Mormert/hexablo/actions/workflows/cmake-windows.yml/badge.svg)](https://github.com/Mormert/hexablo/actions/workflows/cmake-windows.yml)
 [![CMake-Wasm](https://github.com/Mormert/hexablo/actions/workflows/cmake-wasm.yml/badge.svg)](https://github.com/Mormert/hexablo/actions/workflows/cmake-wasm.yml)
 
-# Engine: "jle"
+# Engine: jle
 
-The game engine 'jle' is written in C++, uses OpenGL ES 3.0 or OpenGL Core 3.3. It has the ability to deploy games targeting Windows, Mac and Linux, as well as browsers using WebAssembly via Emscripten and WebGL 2. It's primarily thought to be used for games with low resolution graphics, where the pixels are clearly visible.
+The game engine jle is written in C++, uses OpenGL ES 3.0 or OpenGL Core 3.3. It has the ability to build games
+targeting Windows, Mac and Linux, as well as browsers using WebAssembly via Emscripten and WebGL 2.
 
 ### Feature overview
-- Runs on Windows, Linux, Mac and WebGL enabled browsers
+
+- Runs on Windows, Linux, Mac and WebGL-enabled browsers
 - Pixel perfect 2D rendering
+- Isometric 2.5D rendering
 - Pixel perfect font rendering
 - C++ Scripting for objects & components
 - Resource management
