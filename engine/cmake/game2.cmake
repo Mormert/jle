@@ -43,4 +43,11 @@ if (BUILD_EMSCRIPTEN)
     set_target_properties(${JLE_GAME_BUILD} PROPERTIES OUTPUT_NAME "index")
 endif ()
 
-FILE(COPY GameResources DESTINATION ${JLE_GAME_BUILD})
+
+if (BUILD_EMSCRIPTEN)
+    # When building with Emscripten, it needs to find the pre-loaded assets
+    # at the same location as the 'binary'
+    FILE(COPY GameResources DESTINATION ${PROJECT_BINARY_DIR})
+else ()
+    FILE(COPY GameResources DESTINATION ${JLE_GAME_BUILD})
+endif ()

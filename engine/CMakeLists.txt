@@ -108,5 +108,12 @@ target_include_directories(engine SYSTEM PUBLIC
 
 target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-FILE(COPY EditorResources DESTINATION ${PROJECT_BINARY_DIR}/${JLE_GAME_BUILD})
-FILE(COPY EngineResources DESTINATION ${PROJECT_BINARY_DIR}/${JLE_GAME_BUILD})
+if (BUILD_EMSCRIPTEN)
+    # When building with Emscripten, it needs to find the pre-loaded assets
+    # at the same location as the 'binary'
+    FILE(COPY EditorResources DESTINATION ${PROJECT_BINARY_DIR})
+    FILE(COPY EngineResources DESTINATION ${PROJECT_BINARY_DIR})
+else ()
+    FILE(COPY EditorResources DESTINATION ${PROJECT_BINARY_DIR}/${JLE_GAME_BUILD})
+    FILE(COPY EngineResources DESTINATION ${PROJECT_BINARY_DIR}/${JLE_GAME_BUILD})
+endif ()
