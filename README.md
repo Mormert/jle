@@ -68,7 +68,7 @@ sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-
 ## Fetching the Source
 No external dependencies needed, everything is included.
 ```shell
-git clone https://github.com/Mormert/hexablo.git --recurse-submodules
+git clone https://github.com/Mormert/jle.git --recurse-submodules
 ```
 
 ## Building with CMake
