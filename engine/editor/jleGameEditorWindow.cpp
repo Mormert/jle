@@ -1,6 +1,8 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jleGameEditorWindow.h"
+#include "jleWindow.h"
+#include <GLFW/glfw3.h>
 
 #include "ImGui/imgui.h"
 
@@ -72,6 +74,12 @@ jleGameEditorWindow::update(jleGameEngine &ge)
     if (ImGui::IsWindowFocused() != _wasFocused) {
         _wasFocused = ImGui::IsWindowFocused();
         ge.input().inputEnabled(_wasFocused);
+    }
+
+    if (ImGui::IsWindowFocused() && ge.input().mouse->isFpsMode() && ImGui::IsKeyPressed(ImGuiKey_Tab)) {
+        ge.input().mouse->setFpsMode(false);
+    } else if (ImGui::IsKeyPressed(ImGuiKey_Tab)) {
+        ge.input().mouse->setFpsMode(true);
     }
 
     ImGui::End();

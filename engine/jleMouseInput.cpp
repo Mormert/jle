@@ -30,9 +30,17 @@ int jleMouseInput::mouseY() {
 #endif
 }
 
-float jleMouseInput::xDelta() { return 0; }
+float
+jleMouseInput::xDelta()
+{
+    return _deltaX;
+}
 
-float jleMouseInput::yDelta() { return 0; }
+float
+jleMouseInput::yDelta()
+{
+    return _deltaY;
+}
 
 float jleMouseInput::scrollX() { return windowInternal->scrollX(); }
 
@@ -71,9 +79,33 @@ int jleMouseInput::pixelatedMouseY() {
     return int(ratio * float(mouseY()));
 }
 
-bool jleMouseInput::mouseClick(int button) {
+bool
+jleMouseInput::mouseClick(int button)
+{
     if (_isEnabled) {
         return windowInternal->mouseClick(button);
     }
     return false;
+}
+
+void
+jleMouseInput::setFpsMode(bool fpsMode)
+{
+    _fpsMode = fpsMode;
+    windowInternal->displayCursor(fpsMode);
+}
+
+bool
+jleMouseInput::isFpsMode() const
+{
+    return _fpsMode;
+}
+void
+jleMouseInput::updateDeltas()
+{
+    auto c = windowInternal->cursor();
+    _deltaX = c.first - _lastMouseX;
+    _deltaY = c.second - _lastMouseY;
+    _lastMouseX = c.first;
+    _lastMouseY = c.second;
 }

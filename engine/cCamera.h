@@ -24,7 +24,7 @@ public:
 
     void framebufferResizeCallback(unsigned int width, unsigned int height);
 
-private:
+protected:
     std::shared_ptr<cTransform> _transform{nullptr};
 
     float _perspectiveFov{90.f};

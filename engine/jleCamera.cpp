@@ -64,6 +64,17 @@ jleCamera::getViewPosition() const
 {
     return _viewMatrix[3];
 }
+void
+jleCamera::setBackgroundColor(const glm::vec3 &color)
+{
+    _backgroundColor = color;
+}
+
+glm::vec3
+jleCamera::getBackgroundColor() const
+{
+    return _backgroundColor;
+}
 
 glm::mat4
 jleCameraSimpleFPVController::getLookAtViewMatrix() const

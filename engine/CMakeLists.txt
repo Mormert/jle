@@ -44,7 +44,9 @@ add_library(engine STATIC
         "cSpritesheet.cpp"
         "jlePath.cpp"
         "jleProfiler.cpp"
-        "jleCamera.cpp")
+        "jleCamera.cpp"
+        "jle3DRenderer.cpp"
+        "cCameraFPV.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE

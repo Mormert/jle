@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "jle3DRenderer.h"
 #include "jleCamera.h"
 #include "jleFrameBuffer.h"
 #include "jleQuadRendering.h"
@@ -21,14 +22,16 @@ public:
                             unsigned int width,
                             unsigned int height);
 
-    void render(jleFramebuffer &framebufferOut, jleCamera &camera);
+    void render(jleFramebuffer &framebufferOut, const jleCamera &camera);
 
     void clearBuffersForNextFrame();
 
     jleQuadRendering &quads();
+    jle3DRenderer &rendering3d();
     jleTextRendering &texts();
 
 private:
     std::unique_ptr<jleQuadRendering> _quads;
     std::unique_ptr<jleTextRendering> _texts;
+    std::unique_ptr<jle3DRenderer> _3dRenderer;
 };

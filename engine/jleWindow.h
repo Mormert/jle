@@ -22,9 +22,7 @@ public:
                                    double xoffset,
                                    double yoffset);
 
-    static void glfwFramebufferSizeCallback(GLFWwindow *window,
-                                            int width,
-                                            int height);
+    static void glfwFramebufferSizeCallback(GLFWwindow *window, int width, int height);
 
     void settings(WindowSettings &windowSettings);
 
@@ -32,14 +30,15 @@ public:
 
     bool isCursorDisplayed() const;
 
+    void setCursorPosition(int x, int y);
+
     [[nodiscard]] unsigned int height() const;
 
     [[nodiscard]] unsigned int width() const;
 
     void initWindow(std::shared_ptr<jleRendering> internalRenderingAPI);
 
-    unsigned int addWindowResizeCallback(
-        std::function<void(unsigned int, unsigned int)> callback);
+    unsigned int addWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback);
 
     void removeWindowResizeCallback(unsigned int callback_id);
 

@@ -231,6 +231,13 @@ void jleWindow::executeResizeCallbacks(int w, int h) {
     }
 }
 
-bool jleWindow::mouseClick(int button) {
+bool
+jleWindow::mouseClick(int button)
+{
     return glfwGetMouseButton(nativeWindow, button);
+}
+void
+jleWindow::setCursorPosition(int x, int y)
+{
+    glfwSetCursorPos(nativeWindow, x, y);
 }

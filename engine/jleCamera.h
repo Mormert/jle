@@ -61,7 +61,11 @@ struct jleCamera {
 
     void setViewMatrix(const glm::mat4 &view);
 
+    void setBackgroundColor(const glm::vec3 &color);
+
     [[nodiscard]] glm::vec3 getViewPosition() const;
+
+    [[nodiscard]] glm::vec3 getBackgroundColor() const;
 
     [[nodiscard]] glm::mat4 getProjectionViewMatrix() const;
 
@@ -72,4 +76,5 @@ struct jleCamera {
 private:
     glm::mat4 _projectionMatrix{1.f};
     glm::mat4 _viewMatrix{1.f};
+    glm::vec3 _backgroundColor{0.1f, 0.1f, 0.1f};
 };

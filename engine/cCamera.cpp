@@ -18,6 +18,8 @@ cCamera::start()
     _framebufferCallbackId = gEngine->addGameWindowResizeCallback([this](auto &&PH1, auto &&PH2) {
         framebufferResizeCallback(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
     });
+
+    framebufferResizeCallback(gCore->window().width(), gCore->window().height());
 }
 
 void
@@ -90,7 +92,7 @@ cCamera::fromJson(const nlohmann::json &j_in)
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _perspective, "perspective", false);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _farPlane, "farPlane", 10000.f);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _nearPlane, "nearPlane", 0.1f);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferSizeX, "framebufferSizeX", 1024);
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _perspectiveFov, "fov", 90.f);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferSizeY, "framebufferSizeY", 1024);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferUseFixedAxis, "framebufferUseFixedAxis", false);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferFixedAxis, "framebufferFixedAxis", jleFramebuffer::FIXED_AXIS::width);

@@ -74,13 +74,16 @@ void jleCore::loop() {
     exiting();
 }
 
-void jleCore::mainLoop() {
+void jleCore::mainLoop()
+{
     jleProfiler::NewFrame();
     JLE_SCOPE_PROFILE(mainLoop)
 
     refreshDeltaTimes();
 
     _timerManager.process();
+
+    input().mouse->updateDeltas();
 
     update(deltaFrameTime());
 
