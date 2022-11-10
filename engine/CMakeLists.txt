@@ -3,6 +3,7 @@
 add_library(engine STATIC
         "3rdparty/gltext/gltext.c"
         "3rdparty/stb_image.cpp"
+        "3rdparty/tiny_obj_loader.cpp"
         "jleEngineSettingsWindow.cpp"
         "jleImage.cpp"
         "jleComponent.cpp"
@@ -46,7 +47,11 @@ add_library(engine STATIC
         "jleProfiler.cpp"
         "jleCamera.cpp"
         "jle3DRenderer.cpp"
-        "cCameraFPV.cpp")
+        "cCameraFPV.cpp"
+        "jleMesh.cpp"
+        "cMesh.cpp"
+        "jleSkybox.cpp"
+        "cSkybox.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE

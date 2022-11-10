@@ -25,7 +25,11 @@
 
 jle3DRenderer::jle3DRenderer()
     : _exampleCubeShader{std::string{JLE_ENGINE_PATH_SHADERS + "/exampleCube.vert"}.c_str(),
-                         std::string{JLE_ENGINE_PATH_SHADERS + "/exampleCube.frag"}.c_str()}
+                         std::string{JLE_ENGINE_PATH_SHADERS + "/exampleCube.frag"}.c_str()},
+      _defaultMeshShader{std::string{JLE_ENGINE_PATH_SHADERS + "/defaultMesh.vert"}.c_str(),
+                         std::string{JLE_ENGINE_PATH_SHADERS + "/defaultMesh.frag"}.c_str()},
+      _skyboxShader{std::string{JLE_ENGINE_PATH_SHADERS + "/skybox.vert"}.c_str(),
+                    std::string{JLE_ENGINE_PATH_SHADERS + "/skybox.frag"}.c_str()}
 {
 
     constexpr float exampleCubeData[] = {
@@ -130,15 +134,16 @@ jle3DRenderer::~jle3DRenderer()
 void
 jle3DRenderer::queuerender(jleFramebuffer &framebufferOut, const jleCamera &camera)
 {
-    render(framebufferOut, camera, _queuedExampleCubes);
+    render(framebufferOut, camera, _queuedExampleCubes, _queuedMeshes);
 }
 
 void
 jle3DRenderer::render(jleFramebuffer &framebufferOut,
                       const jleCamera &camera,
-                      const std::vector<glm::mat4> &cubeTransforms)
+                      const std::vector<glm::mat4> &cubeTransforms,
+                      const std::vector<jle3DRendererQueuedMesh> &meshes)
 {
-    JLE_SCOPE_PROFILE(jle3DRenderer::render);
+    JLE_SCOPE_PROFILE(jle3DRenderer::render)
 
     const int viewportWidth = framebufferOut.width();
     const int viewportHeight = framebufferOut.height();
@@ -151,6 +156,10 @@ jle3DRenderer::render(jleFramebuffer &framebufferOut,
     glViewport(0, 0, viewportWidth, viewportHeight);
 
     renderExampleCubes(camera, cubeTransforms);
+
+    renderMeshes(camera, _queuedMeshes);
+
+    renderSkybox(camera);
 
     framebufferOut.bindDefault();
 }
@@ -165,6 +174,7 @@ void
 jle3DRenderer::clearBuffersForNextFrame()
 {
     _queuedExampleCubes.clear();
+    _queuedMeshes.clear();
 }
 
 void
@@ -183,4 +193,59 @@ jle3DRenderer::renderExampleCubes(const jleCamera &camera, const std::vector<glm
     glBufferData(GL_ARRAY_BUFFER, cubeTransforms.size() * sizeof(glm::mat4), &cubeTransforms[0], GL_DYNAMIC_DRAW);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 36, cubeTransforms.size());
     glBindVertexArray(0);
+}
+
+void
+jle3DRenderer::sendMesh(const std::shared_ptr<jleMesh> &mesh, const glm::mat4 &transform)
+{
+    _queuedMeshes.push_back({transform, mesh});
+}
+
+void
+jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRendererQueuedMesh> &meshes)
+{
+    if (meshes.empty()) {
+        return;
+    }
+
+    _defaultMeshShader.use();
+    _defaultMeshShader.SetMat4("projView", camera.getProjectionViewMatrix());
+
+    for (auto &&mesh : meshes) {
+        _defaultMeshShader.SetMat4("model", mesh.transform);
+        glBindVertexArray(mesh.mesh->getVAO());
+        glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+        glBindVertexArray(0);
+    }
+}
+void
+jle3DRenderer::setSkybox(const std::shared_ptr<jleSkybox> &skybox)
+{
+    _skybox = skybox;
+}
+void
+jle3DRenderer::renderSkybox(const jleCamera &camera)
+{
+    if (!_skybox) {
+        return;
+    }
+
+    // Depth testing to draw the skybox behind everything.
+    // We also draw the skybox last, such that it can be early-depth-tested.
+    glDepthFunc(GL_LEQUAL);
+    _skyboxShader.use();
+
+    // Convert the view matrix to mat3 first to remove the translation
+    auto view = glm::mat4(glm::mat3(camera.getViewMatrix()));
+
+    _skyboxShader.SetMat4("view", view);
+    _skyboxShader.SetMat4("projection", camera.getProjectionMatrix());
+    // skybox cube
+    glBindVertexArray(_skybox->getVAO());
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, _skybox->getTextureID());
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+
+    glDepthFunc(GL_LESS);
 }

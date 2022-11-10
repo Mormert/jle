@@ -9,6 +9,8 @@
 #include "cAseprite.h"
 #include "cCamera.h"
 #include "cCameraFPV.h"
+#include "cMesh.h"
+#include "cSkybox.h"
 #include "cSprite.h"
 #include "cSpriteDepth.h"
 #include "cSpritesheet.h"

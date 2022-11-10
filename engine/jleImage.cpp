@@ -10,7 +10,6 @@
 
 bool jleImage::loadFromFile(const std::string &path) {
     this->_path = path;
-    stbi_set_flip_vertically_on_load(false);
     image_data = stbi_load(path.c_str(), &_width, &_height, &_nrChannels, 0);
 
     if (image_data) {
@@ -124,4 +123,9 @@ std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> jleImage::pixelAtLocation(
     LOGV << int(r) << " " << int(g) << " " << int(b) << " " << int(a);
 
     return std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>{r, g, b, a};
+}
+void
+jleImage::setFlipImage(bool flip)
+{
+    stbi_set_flip_vertically_on_load(flip);
 }
