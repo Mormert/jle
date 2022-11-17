@@ -58,8 +58,7 @@ void jleObject::attachChildObject(const std::shared_ptr<jleObject> &object) {
         // a node under this object
         if (object->_isStarted) {
             auto it = std::find(_containedInScene->_sceneObjects.begin(),
-                                _containedInScene->_sceneObjects.end(),
-                                object);
+                                _containedInScene->_sceneObjects.end(), object);
             if (it != _containedInScene->_sceneObjects.end()) {
                 _containedInScene->_sceneObjects.erase(it);
             }
@@ -69,9 +68,9 @@ void jleObject::attachChildObject(const std::shared_ptr<jleObject> &object) {
     object->_parentObject = this;
     _childObjects.push_back(object);
 
-    if (auto t = object->component<cTransform>()) {
-        t->flagDirty();
-    }
+    // if (auto t = object->component<cTransform>()) {
+    // t->flagDirty();
+    // }
 }
 
 void jleObject::detachObjectFromParent() {

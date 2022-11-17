@@ -51,7 +51,8 @@ add_library(engine STATIC
         "jleMesh.cpp"
         "cMesh.cpp"
         "jleSkybox.cpp"
-        "cSkybox.cpp")
+        "cSkybox.cpp"
+        "cLight.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE
@@ -75,7 +76,8 @@ if (BUILD_EDITOR)
             "3rdparty/ImGui/imgui_impl_opengl3.cpp"
             "3rdparty/ImGui/imgui_tables.cpp"
             "3rdparty/ImGui/imgui_widgets.cpp"
-            "3rdparty/ImGui/imgui_stdlib.cpp")
+            "3rdparty/ImGui/imgui_stdlib.cpp"
+            "3rdparty/ImGui/ImGuizmo.cpp")
 endif ()
 
 if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()

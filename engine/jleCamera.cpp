@@ -2,6 +2,7 @@
 #include "jleCamera.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
+#include <glm/gtc/quaternion.hpp>
 #include <plog/Log.h>
 
 jleCamera::jleCamera(jleCameraProjection projection) {
@@ -181,4 +182,13 @@ void
 jleCameraSimpleFPVController::setYaw(float yaw)
 {
     _yaw = yaw;
+}
+void
+jleCameraSimpleFPVController::recalculateVectorsFromViewMatrix(const glm::mat4 &view)
+{
+    glm::quat rotation = glm::quat_cast(view);
+    _yaw = glm::degrees(glm::yaw(rotation));
+    _pitch = glm::degrees(glm::pitch(rotation));
+    LOGV << "YAW: " << _yaw << ", PITCH: " << _pitch;
+    calculatePerspectiveVectors();
 }

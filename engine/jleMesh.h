@@ -4,31 +4,37 @@
 
 #include "jleFileLoadInterface.h"
 #include <glm/glm.hpp>
+#include <vector>
 
 class jleMesh : public jleFileLoadInterface
 {
 public:
+    ~jleMesh() override;
+
     bool loadFromFile(const std::string &path) override;
+
+    // Synchronous OBJ loading
+    bool loadFromObj(const std::string &path);
+
+    // Lays out the attributes in the order:
+    // position (0), normal (1), texcoords (2)
+    void makeMesh(const std::vector<float> &positions,
+                  const std::vector<float> &normals,
+                  const std::vector<float> &texCoords,
+                  const std::vector<unsigned int> &indicies);
 
     unsigned int getVAO();
 
     unsigned int getTrianglesCount();
 
 private:
-    // Synchronous OBJ loading
-    bool loadObj(const std::string &path);
-
-    struct jleMeshTriangle {
-        glm::vec3 position;
-        glm::vec3 normal;
-        glm::vec2 uv;
-    };
+    void destroyOldBuffers();
 
     unsigned int _trianglesCount;
 
     unsigned int _vao{};
     unsigned int _vbo_pos{};
     unsigned int _vbo_normal{};
-    unsigned int _vbo_uv{};
+    unsigned int _vbo_texcoords{};
     unsigned int _ebo{};
 };

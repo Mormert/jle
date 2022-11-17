@@ -36,6 +36,8 @@ struct jleCameraSimpleFPVController {
 
     void backToOrigin();
 
+    void recalculateVectorsFromViewMatrix(const glm::mat4 &view);
+
 private:
     void calculatePerspectiveVectors();
 

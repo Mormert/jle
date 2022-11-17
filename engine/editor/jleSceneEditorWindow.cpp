@@ -55,6 +55,12 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, flags);
 
+    ImGuizmo::SetDrawlist();
+    ImGuizmo::SetRect(ImGui::GetWindowPos().x,
+                      ImGui::GetWindowPos().y,
+                      (float)ImGui::GetWindowWidth(),
+                      (float)ImGui::GetWindowHeight());
+
     constexpr float negYOffset = 6;
     constexpr float negXOffset = 6;
 
@@ -134,10 +140,63 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     if (jleEditor::projectionType == jleCameraProjection::Orthographic) {
         if (ImGui::Button("Orthographic")) {
             jleEditor::projectionType = jleCameraProjection::Perspective;
+            ImGuizmo::SetOrthographic(false);
         }
     } else {
         if (ImGui::Button("Perspective")) {
             jleEditor::projectionType = jleCameraProjection::Orthographic;
+            ImGuizmo::SetOrthographic(true);
+        }
+    }
+
+    const float *viewMatrix = &jleEditor::editorCamera.getViewMatrix()[0][0];
+    const float *projectionMatrix = &jleEditor::editorCamera.getProjectionMatrix()[0][0];
+    static const auto identityMatrix = glm::mat4{1.f};
+    const static float *identityMatrixPtr = &identityMatrix[0][0];
+    ImGuizmo::DrawGrid(viewMatrix, projectionMatrix, identityMatrixPtr, 25.f);
+
+    // The following commented code is for a camera controller "cube" in the top left corner.
+    // It contains a bug, however, and is not really usable at the moment.
+
+    /*static bool isManipulating = false;
+    static glm::mat4 manipulatingMatrix{1.f};
+    static glm::mat4 lastFrameMatrix{1.f};
+
+    if (!isManipulating) {
+        manipulatingMatrix = jleEditor::editorCamera.getViewMatrix();
+    }
+
+    ImGuizmo::ViewManipulate(
+        &manipulatingMatrix[0][0],
+        250.f,
+        ImVec2(ImGui::GetWindowPos().x + 20 * globalImguiScale, ImGui::GetWindowPos().y + 35 * globalImguiScale),
+        ImVec2(128 * globalImguiScale, 128 * globalImguiScale),
+        0x10101010);
+
+    if (manipulatingMatrix != jleEditor::editorCamera.getViewMatrix()) {
+        // The view manipulate function modified the view matrix
+        isManipulating = true;
+    }
+
+    if (isManipulating) {
+        if (lastFrameMatrix == manipulatingMatrix) {
+            isManipulating = false;
+        }
+    }
+
+    if (isManipulating) {
+        _fpvCamController.recalculateVectorsFromViewMatrix(manipulatingMatrix);
+        lastFrameMatrix = manipulatingMatrix;
+    }*/
+
+    ImGui::SetCursorPosY(y - 250 * globalImguiScale);
+
+    if (transform) {
+        glm::mat4 worldMatrixBefore = transform->getWorldMatrix();
+        EditTransform((float *)viewMatrix, (float *)projectionMatrix, (float *)&worldMatrixBefore[0][0], true);
+        glm::mat4 transformMatrix = transform->getWorldMatrix();
+        if (transformMatrix != worldMatrixBefore) {
+            transform->setWorldMatrix(worldMatrixBefore);
         }
     }
 
@@ -156,7 +215,8 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
 
     ImGui::Text("[%d, %d]", _framebuffer->width(), _framebuffer->height());
 
-    if (ImGui::IsWindowHovered()) {
+    // If window is hovered and Gizmo is not being moved/used
+    if (ImGui::IsWindowHovered() && !ImGuizmo::IsUsing()) {
         auto t = ge.deltaFrameTime();
         auto dragDelta = ImGui::GetMouseDragDelta(1);
 
@@ -236,7 +296,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
             draggingTransformMarker = 0;
         }
 
-        if (ImGui::IsMouseDragging(0)) {
+        if (transform && ImGui::IsMouseDragging(0)) {
             if (draggingTransformMarker == 1) {
                 transform->setWorldPosition({mouseCoordinateX, mouseCoordinateY, transform->getWorldPosition().z});
             } else if (draggingTransformMarker == 2) {
@@ -287,4 +347,86 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     }
 
     ImGui::End();
+}
+void
+jleSceneEditorWindow::EditTransform(float *cameraView,
+                                    float *cameraProjection,
+                                    float *matrix,
+                                    bool editTransformDecomposition)
+{
+
+    static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
+    static bool useSnap = false;
+    static float snap[3] = {1.f, 1.f, 1.f};
+    static float bounds[] = {-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f};
+    static float boundsSnap[] = {0.1f, 0.1f, 0.1f};
+    static bool boundSizing = false;
+    static bool boundSizingSnap = false;
+
+    if (editTransformDecomposition) {
+        if (ImGui::IsKeyPressed(ImGuiKey_T))
+            _currentGizmoOperation = ImGuizmo::TRANSLATE;
+        if (ImGui::IsKeyPressed(ImGuiKey_E))
+            _currentGizmoOperation = ImGuizmo::ROTATE;
+        if (ImGui::IsKeyPressed(ImGuiKey_R)) // r Key
+            _currentGizmoOperation = ImGuizmo::SCALE;
+        if (ImGui::RadioButton("Translate", _currentGizmoOperation == ImGuizmo::TRANSLATE))
+            _currentGizmoOperation = ImGuizmo::TRANSLATE;
+        ImGui::SameLine();
+        if (ImGui::RadioButton("Rotate", _currentGizmoOperation == ImGuizmo::ROTATE))
+            _currentGizmoOperation = ImGuizmo::ROTATE;
+        ImGui::SameLine();
+        if (ImGui::RadioButton("Scale", _currentGizmoOperation == ImGuizmo::SCALE))
+            _currentGizmoOperation = ImGuizmo::SCALE;
+        if (ImGui::RadioButton("Universal", _currentGizmoOperation == ImGuizmo::UNIVERSAL))
+            _currentGizmoOperation = ImGuizmo::UNIVERSAL;
+        float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+        ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
+        ImGui::InputFloat3("Tr", matrixTranslation);
+        ImGui::InputFloat3("Rt", matrixRotation);
+        ImGui::InputFloat3("Sc", matrixScale);
+        ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
+
+        if (_currentGizmoOperation != ImGuizmo::SCALE) {
+            if (ImGui::RadioButton("Local", mCurrentGizmoMode == ImGuizmo::LOCAL))
+                mCurrentGizmoMode = ImGuizmo::LOCAL;
+            ImGui::SameLine();
+            if (ImGui::RadioButton("World", mCurrentGizmoMode == ImGuizmo::WORLD))
+                mCurrentGizmoMode = ImGuizmo::WORLD;
+        }
+        if (ImGui::IsKeyPressed(ImGuiKey_S))
+            useSnap = !useSnap;
+        ImGui::Checkbox("##UseSnap", &useSnap);
+        ImGui::SameLine();
+
+        switch (_currentGizmoOperation) {
+        case ImGuizmo::TRANSLATE:
+            ImGui::InputFloat3("Snap", &snap[0]);
+            break;
+        case ImGuizmo::ROTATE:
+            ImGui::InputFloat("Angle Snap", &snap[0]);
+            break;
+        case ImGuizmo::SCALE:
+            ImGui::InputFloat("Scale Snap", &snap[0]);
+            break;
+        }
+        ImGui::Checkbox("Bound Sizing", &boundSizing);
+        if (boundSizing) {
+            ImGui::PushID(3);
+            ImGui::Checkbox("##BoundSizing", &boundSizingSnap);
+            ImGui::SameLine();
+            ImGui::InputFloat3("Snap", boundsSnap);
+            ImGui::PopID();
+        }
+    }
+
+    ImGuizmo::Manipulate(cameraView,
+                         cameraProjection,
+                         _currentGizmoOperation,
+                         mCurrentGizmoMode,
+                         matrix,
+                         NULL,
+                         useSnap ? &snap[0] : NULL,
+                         boundSizing ? bounds : NULL,
+                         boundSizingSnap ? boundsSnap : NULL);
 }

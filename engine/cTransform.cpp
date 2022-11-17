@@ -34,13 +34,21 @@ void from_json(const json &j, mat4 &m) {
 cTransform::cTransform(jleObject *owner, jleScene *scene)
     : jleComponent{owner, scene} {}
 
-void cTransform::toJson(nlohmann::json &j_out) {
-    j_out = nlohmann::json{{"transform", _transformMatLocal}};
+void
+cTransform::toJson(nlohmann::json &j_out)
+{
+    j_out = nlohmann::json{{"transform", _local}};
 }
 
-void cTransform::fromJson(const nlohmann::json &j_in)
+void
+cTransform::fromJson(const nlohmann::json &j_in)
 {
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _transformMatLocal, "transform", glm::mat4{1.f});
+    JLE_FROM_JSON_WITH_DEFAULT(j_in, _local, "transform", glm::mat4{1.f});
+    propagateMatrix();
+}
 
-    flagDirty();
+void
+cTransform::start()
+{
+    propagateMatrix();
 }

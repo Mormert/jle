@@ -19,6 +19,11 @@ public:
         std::shared_ptr<jleMesh> mesh;
     };
 
+    struct jle3DRendererLight {
+        glm::vec3 position;
+        glm::vec3 color;
+    };
+
     jle3DRenderer();
 
     virtual ~jle3DRenderer();
@@ -33,6 +38,8 @@ public:
     void sendExampleCube(const glm::mat4 &transform);
 
     void sendMesh(const std::shared_ptr<jleMesh> &mesh, const glm::mat4 &transform);
+
+    void sendLight(const glm::vec3 &position, const glm::vec3 &color);
 
     void setSkybox(const std::shared_ptr<jleSkybox> &skybox);
 
@@ -54,4 +61,6 @@ private:
     void renderSkybox(const jleCamera &camera);
     jleShader _skyboxShader;
     std::shared_ptr<jleSkybox> _skybox;
+
+    std::vector<jle3DRendererLight> _queuedLights;
 };

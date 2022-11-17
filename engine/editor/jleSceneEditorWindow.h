@@ -3,6 +3,7 @@
 #pragma once
 
 #include "editor/jleEditorImGuiWindowInterface.h"
+#include <ImGui/ImGuizmo.h>
 
 #include "jleGameEngine.h"
 #include "jleImage.h"
@@ -25,4 +26,7 @@ private:
     texturedQuad _texturedQuad;
 
     jleCameraSimpleFPVController _fpvCamController;
+
+    ImGuizmo::OPERATION _currentGizmoOperation{ImGuizmo::TRANSLATE};
+    void EditTransform(float *cameraView, float *cameraProjection, float *matrix, bool editTransformDecomposition);
 };

@@ -175,6 +175,7 @@ jle3DRenderer::clearBuffersForNextFrame()
 {
     _queuedExampleCubes.clear();
     _queuedMeshes.clear();
+    _queuedLights.clear();
 }
 
 void
@@ -248,4 +249,9 @@ jle3DRenderer::renderSkybox(const jleCamera &camera)
     glBindVertexArray(0);
 
     glDepthFunc(GL_LESS);
+}
+void
+jle3DRenderer::sendLight(const glm::vec3 &position, const glm::vec3 &color)
+{
+    _queuedLights.push_back({position, color});
 }

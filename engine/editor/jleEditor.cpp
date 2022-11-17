@@ -4,6 +4,7 @@
 
 #include "jlePathDefines.h"
 
+#include "ImGui/ImGuizmo.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_impl_glfw.h"
 #include "ImGui/imgui_impl_opengl3.h"
@@ -144,6 +145,8 @@ void jleEditor::render()
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+
+        ImGuizmo::BeginFrame();
 
         // Update loop for all ImGui windows
         for (auto window : _imGuiWindows) {
