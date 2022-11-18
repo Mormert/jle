@@ -5,11 +5,11 @@
 #include <glm/gtc/quaternion.hpp>
 #include <plog/Log.h>
 
-jleCamera::jleCamera(jleCameraProjection projection) {
+jleCamera::jleCamera(jleCameraProjection projection)
+{
     if (projection == jleCameraProjection::Orthographic) {
         setOrthographicProjection(512, 512, 1000.f, -1000.f);
-    }
-    else {
+    } else {
         setPerspectiveProjection(90.f, 512, 512, 1000.f, -1000.f);
     }
 }
@@ -18,6 +18,8 @@ void
 jleCamera::setPerspectiveProjection(
     float fov, uint32_t screenWidth, uint32_t screenHeight, float farPlane, float nearPlane)
 {
+    _projectionType = jleCameraProjection::Perspective;
+
     _projectionMatrix =
         glm::perspective(glm::radians(fov), (float)screenWidth / (float)screenHeight, nearPlane, farPlane);
 
@@ -28,7 +30,7 @@ jleCamera::setPerspectiveProjection(
 void
 jleCamera::setOrthographicProjection(uint32_t screenWidth, uint32_t screenHeight, float farPlane, float nearPlane)
 {
-
+    _projectionType = jleCameraProjection::Orthographic;
     _projectionMatrix = glm::ortho(-((float)screenWidth / 2.0f),
                                    ((float)screenWidth / 2.0f),
                                    ((float)screenHeight / 2.0f),
@@ -75,6 +77,12 @@ glm::vec3
 jleCamera::getBackgroundColor() const
 {
     return _backgroundColor;
+}
+
+jleCameraProjection
+jleCamera::getProjectionType() const
+{
+    return _projectionType;
 }
 
 glm::mat4

@@ -29,7 +29,9 @@ jle3DRenderer::jle3DRenderer()
       _defaultMeshShader{std::string{JLE_ENGINE_PATH_SHADERS + "/defaultMesh.vert"}.c_str(),
                          std::string{JLE_ENGINE_PATH_SHADERS + "/defaultMesh.frag"}.c_str()},
       _skyboxShader{std::string{JLE_ENGINE_PATH_SHADERS + "/skybox.vert"}.c_str(),
-                    std::string{JLE_ENGINE_PATH_SHADERS + "/skybox.frag"}.c_str()}
+                    std::string{JLE_ENGINE_PATH_SHADERS + "/skybox.frag"}.c_str()},
+      _pickingShader{std::string{JLE_ENGINE_PATH_SHADERS + "/picking.vert"}.c_str(),
+                     std::string{JLE_ENGINE_PATH_SHADERS + "/picking.frag"}.c_str()}
 {
 
     constexpr float exampleCubeData[] = {
@@ -197,9 +199,9 @@ jle3DRenderer::renderExampleCubes(const jleCamera &camera, const std::vector<glm
 }
 
 void
-jle3DRenderer::sendMesh(const std::shared_ptr<jleMesh> &mesh, const glm::mat4 &transform)
+jle3DRenderer::sendMesh(const std::shared_ptr<jleMesh> &mesh, const glm::mat4 &transform, int instanceId)
 {
-    _queuedMeshes.push_back({transform, mesh});
+    _queuedMeshes.push_back({transform, mesh, instanceId});
 }
 
 void
@@ -231,6 +233,10 @@ jle3DRenderer::renderSkybox(const jleCamera &camera)
         return;
     }
 
+    if (camera.getProjectionType() == jleCameraProjection::Orthographic) {
+        return;
+    }
+
     // Depth testing to draw the skybox behind everything.
     // We also draw the skybox last, such that it can be early-depth-tested.
     glDepthFunc(GL_LEQUAL);
@@ -254,4 +260,38 @@ void
 jle3DRenderer::sendLight(const glm::vec3 &position, const glm::vec3 &color)
 {
     _queuedLights.push_back({position, color});
+}
+
+void
+jle3DRenderer::renderMeshesPicking(jleFramebuffer &framebufferOut, const jleCamera &camera)
+{
+    JLE_SCOPE_PROFILE(jle3DRenderer::renderMeshesPicking)
+
+    const int viewportWidth = framebufferOut.width();
+    const int viewportHeight = framebufferOut.height();
+
+    framebufferOut.bind();
+
+    glEnable(GL_DEPTH_TEST);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Change viewport dimensions to match framebuffer's dimensions
+    glViewport(0, 0, viewportWidth, viewportHeight);
+
+    _pickingShader.use();
+    _pickingShader.SetMat4("projView", camera.getProjectionViewMatrix());
+
+    for (auto &&mesh : _queuedMeshes) {
+        int r = (mesh.instanceId & 0x000000FF) >> 0;
+        int g = (mesh.instanceId & 0x0000FF00) >> 8;
+        int b = (mesh.instanceId & 0x00FF0000) >> 16;
+        _pickingShader.SetVec4("PickingColor", glm::vec4{r / 255.0f, g / 255.0f, b / 255.0f, 1.f});
+        _pickingShader.SetMat4("model", mesh.transform);
+        glBindVertexArray(mesh.mesh->getVAO());
+        glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+        glBindVertexArray(0);
+    }
+
+    framebufferOut.bindDefault();
 }

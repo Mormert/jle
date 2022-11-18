@@ -17,6 +17,7 @@ public:
     struct jle3DRendererQueuedMesh {
         glm::mat4 transform;
         std::shared_ptr<jleMesh> mesh;
+        int instanceId;
     };
 
     struct jle3DRendererLight {
@@ -35,9 +36,11 @@ public:
                 const std::vector<glm::mat4> &cubeTransforms,
                 const std::vector<jle3DRendererQueuedMesh> &meshes);
 
+    void renderMeshesPicking(jleFramebuffer &framebufferOut, const jleCamera &camera);
+
     void sendExampleCube(const glm::mat4 &transform);
 
-    void sendMesh(const std::shared_ptr<jleMesh> &mesh, const glm::mat4 &transform);
+    void sendMesh(const std::shared_ptr<jleMesh> &mesh, const glm::mat4 &transform, int instanceId);
 
     void sendLight(const glm::vec3 &position, const glm::vec3 &color);
 
@@ -53,6 +56,7 @@ private:
     unsigned int _exampleCubeVBO{}, _exampleCubeVAO{}, _exampleCubeInstanceBuffer{};
 
     jleShader _defaultMeshShader;
+    jleShader _pickingShader;
 
     void renderMeshes(const jleCamera &camera, const std::vector<jle3DRendererQueuedMesh> &meshes);
 

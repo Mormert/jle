@@ -15,7 +15,8 @@ cMesh::start()
 void
 cMesh::update(float dt)
 {
-    gCore->rendering().rendering3d().sendMesh(_mesh, _transform.lock()->getWorldMatrix());
+    gCore->rendering().rendering3d().sendMesh(
+        _mesh, _transform.lock()->getWorldMatrix(), _attachedToObject->instanceID());
 }
 
 void

@@ -76,16 +76,23 @@ public:
 
     std::vector<std::shared_ptr<jleObject>> &childObjects();
 
-    void toJson(nlohmann::json &j_out) override {}
+    void tryFindChildWithInstanceId(int instanceId, std::shared_ptr<jleObject> &outObject);
 
-    void fromJson(const nlohmann::json &j_in) override {}
+    void
+    toJson(nlohmann::json &j_out) override
+    {
+    }
+
+    void
+    fromJson(const nlohmann::json &j_in) override
+    {
+    }
 
     jleObject *parent();
 
     [[nodiscard]] std::weak_ptr<jleObject> weakPtrToThis();
 
-    static void processJsonData(const nlohmann::json &j,
-                                std::shared_ptr<jleObject> &o);
+    static void processJsonData(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
 
     static std::shared_ptr<jleObject> processChildJsonData(
         const nlohmann::json &j, std::shared_ptr<jleObject> &o);

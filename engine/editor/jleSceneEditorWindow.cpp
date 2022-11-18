@@ -33,6 +33,8 @@ jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name, std::
     _framebuffer = framebuffer;
     _transformMarkerTexture = std::make_unique<jleTexture>(_transformMarkerImage);
 
+    _pickingFramebuffer = std::make_unique<jleFramebuffer>(_framebuffer->width(), _framebuffer->height());
+
     _texturedQuad.texture = _transformMarkerTexture;
     _texturedQuad.width = 128;
     _texturedQuad.height = 128;
@@ -111,13 +113,6 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     // Render the transform marker only in the editor window
     if (auto object = selectedObject.lock()) {
         transform = object->component<cTransform>();
-        if (transform) {
-            _texturedQuad.x = transform->getWorldPosition().x - 64.f;
-            _texturedQuad.y = transform->getWorldPosition().y - 64.f;
-            _texturedQuad.depth = -10000.f;
-            std::vector<texturedQuad> texturedQuads{_texturedQuad};
-            gCore->quadRendering().render(*_framebuffer, jleEditor::editorCamera, texturedQuads, {}, {});
-        }
     }
 
     glBindTexture(GL_TEXTURE_2D, (unsigned int)_framebuffer->texture());
@@ -128,6 +123,70 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
                  ImVec2(_lastGameWindowWidth, _lastGameWindowHeight),
                  ImVec2(0, 1),
                  ImVec2(1, 0));
+
+    // Picking objects in the scene
+    bool canSelectObject = false;
+    if (!ImGuizmo::IsOver()) {
+        // The mouse is not over any gizmo
+        canSelectObject = true;
+    }
+    if (!selectedObject.lock()) {
+        // No object is currently selected
+        canSelectObject = true;
+    }
+
+    // Note here that the ImGui::Image is the item that is being clicked on!
+    if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && canSelectObject) {
+
+        gCore->rendering().rendering3d().renderMeshesPicking(*_pickingFramebuffer, jleEditor::editorCamera);
+
+        _pickingFramebuffer->bind();
+
+        glFlush();
+        glFinish();
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+        unsigned char data[3];
+        const int mouseY_flipped = (int)_lastGameWindowHeight - (mouseY - windowPositionY);
+
+        // TODO: Read the mouse x, y position but divide with the framebuffer screen size ratio
+        // to be able to find the actual real pixel ....
+
+        int pixelReadX = (mouseX - windowPositionX) * (_pickingFramebuffer->width() / _lastGameWindowWidth);
+        int pixelReadY = mouseY_flipped * (_pickingFramebuffer->height() / _lastGameWindowHeight);
+        glReadPixels(pixelReadX, pixelReadY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+        LOGE << "X: " << pixelReadX << ", Y: " << pixelReadY;
+        LOGE << "COLOR: " << (int)data[0] << ", " << (int)data[1] << ", " << (int)data[2] << ".";
+
+        int pickedID = data[0] + data[1] * 256 + data[2] * 256 * 256;
+        if (pickedID != 0x00ffffff) { // If we did not hit the white background
+            LOGE << "Picked object with id: " << pickedID;
+
+            auto &game = ((jleGameEngine *)gCore)->gameRef();
+            const auto &scenes = game.activeScenesRef();
+
+            for (auto &scene : scenes) {
+                for (auto &object : scene->sceneObjects()) {
+                    std::shared_ptr<jleObject> o{};
+                    object->tryFindChildWithInstanceId(pickedID, o);
+                    if (o) {
+                        if (auto objectsTransform = o->component<cTransform>()) {
+                            jleEditorSceneObjectsWindow::SetSelectedObject(o);
+                        }
+                    }
+                }
+            }
+
+        } else {
+            LOGE << "Picking object fell out into the universe";
+            // jleEditorSceneObjectsWindow::SetSelectedObject(nullptr);
+            //  If clicking on UI on top of the viewport, we accidentally de-select the object...
+        }
+
+        _pickingFramebuffer->bindDefault();
+    }
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
 
@@ -148,6 +207,21 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
             ImGuizmo::SetOrthographic(true);
         }
     }
+
+    ImGui::SameLine();
+
+    ImGui::Text(
+        "(%f, %f, %f)", _fpvCamController.position.x, _fpvCamController.position.y, _fpvCamController.position.z);
+
+    ImGui::SameLine();
+
+    if (ImGui::SmallButton("R")) {
+        _fpvCamController.backToOrigin();
+    }
+
+    ImGui::SameLine();
+
+    ImGui::Text("[%d, %d]", _framebuffer->width(), _framebuffer->height());
 
     const float *viewMatrix = &jleEditor::editorCamera.getViewMatrix()[0][0];
     const float *projectionMatrix = &jleEditor::editorCamera.getProjectionMatrix()[0][0];
@@ -200,21 +274,6 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         }
     }
 
-    ImGui::SameLine();
-
-    ImGui::Text(
-        "(%f, %f, %f)", _fpvCamController.position.x, _fpvCamController.position.y, _fpvCamController.position.z);
-
-    ImGui::SameLine();
-
-    if (ImGui::SmallButton("R")) {
-        _fpvCamController.backToOrigin();
-    }
-
-    ImGui::SameLine();
-
-    ImGui::Text("[%d, %d]", _framebuffer->width(), _framebuffer->height());
-
     // If window is hovered and Gizmo is not being moved/used
     if (ImGui::IsWindowHovered() && !ImGuizmo::IsUsing()) {
         auto t = ge.deltaFrameTime();
@@ -266,83 +325,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
                 jleFramebuffer::FIXED_AXIS::width, aspect, static_cast<unsigned int>(ImGui::GetWindowHeight()));
 
             _framebuffer->resize(dims.x * zoomValue, dims.y * zoomValue);
-        }
-
-        static int draggingTransformMarker = 0;
-        if (ImGui::IsMouseClicked(0)) {
-            if ((mouseCoordinateX >= _texturedQuad.x && mouseCoordinateX <= _texturedQuad.x + 128) &&
-                (mouseCoordinateY >= _texturedQuad.y && mouseCoordinateY <= _texturedQuad.y + 128)) {
-                LOGV << "Inside AABB " << mouseCoordinateX - _texturedQuad.x << ' '
-                     << mouseCoordinateY - _texturedQuad.y;
-
-                constexpr std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> redPart = {217, 87, 99, 255};
-                constexpr std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> greenPart = {153, 229, 80, 255};
-                constexpr std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> bluePart = {99, 155, 255, 255};
-
-                const auto pixels = _transformMarkerImage.pixelAtLocation(mouseCoordinateX - _texturedQuad.x,
-                                                                          mouseCoordinateY - _texturedQuad.y);
-
-                if (pixels == redPart) {
-                    draggingTransformMarker = 1;
-                } else if (pixels == greenPart) {
-                    draggingTransformMarker = 2;
-                } else if (pixels == bluePart) {
-                    draggingTransformMarker = 3;
-                }
-            }
-        }
-
-        if (ImGui::IsMouseReleased(0) && draggingTransformMarker) {
-            draggingTransformMarker = 0;
-        }
-
-        if (transform && ImGui::IsMouseDragging(0)) {
-            if (draggingTransformMarker == 1) {
-                transform->setWorldPosition({mouseCoordinateX, mouseCoordinateY, transform->getWorldPosition().z});
-            } else if (draggingTransformMarker == 2) {
-                const auto t = transform->getWorldPosition();
-                transform->setWorldPosition({mouseCoordinateX, t.y, t.z});
-            } else if (draggingTransformMarker == 3) {
-                const auto t = transform->getWorldPosition();
-                transform->setWorldPosition({t.x, mouseCoordinateY, t.z});
-            }
-        }
-
-        if (!draggingTransformMarker && ImGui::IsMouseClicked(0)) {
-            // Select closest object from mouse click
-            auto &game = ((jleGameEngine *)gCore)->gameRef();
-            const auto &scenes = game.activeScenesRef();
-
-            std::unordered_map<std::shared_ptr<cTransform>, std::shared_ptr<jleObject>> transformsMap;
-            for (auto &scene : scenes) {
-                for (auto &object : scene->sceneObjects()) {
-                    auto objectsTransform = object->component<cTransform>();
-                    if (objectsTransform) {
-                        transformsMap.insert(std::make_pair(objectsTransform, object));
-                    }
-                }
-            }
-
-            std::shared_ptr<cTransform> closestTransform = nullptr;
-            std::shared_ptr<jleObject> selectedObject = nullptr;
-            for (auto &transformPair : transformsMap) {
-                const auto &transform = transformPair.first;
-                const auto &object = transformPair.second;
-                if (closestTransform == nullptr) {
-                    closestTransform = transform;
-                    selectedObject = object;
-                } else if ((pow(transform->getWorldPosition().x - mouseCoordinateX, 2) +
-                            pow(transform->getWorldPosition().y - mouseCoordinateY, 2)) <
-                           (pow(closestTransform->getWorldPosition().x - mouseCoordinateX, 2)) +
-                               pow(closestTransform->getWorldPosition().y - mouseCoordinateY, 2)) {
-                    closestTransform = transform;
-                    selectedObject = object;
-                }
-            }
-
-            if (selectedObject) {
-                jleEditorSceneObjectsWindow::SetSelectedObject(selectedObject);
-            }
+            _pickingFramebuffer->resize(dims.x * zoomValue, dims.y * zoomValue);
         }
     }
 
@@ -364,12 +347,14 @@ jleSceneEditorWindow::EditTransform(float *cameraView,
     static bool boundSizingSnap = false;
 
     if (editTransformDecomposition) {
-        if (ImGui::IsKeyPressed(ImGuiKey_T))
+        if (ImGui::IsKeyPressed(ImGuiKey_T) && !ImGuizmo::IsUsing())
             _currentGizmoOperation = ImGuizmo::TRANSLATE;
-        if (ImGui::IsKeyPressed(ImGuiKey_E))
+        if (ImGui::IsKeyPressed(ImGuiKey_R) && !ImGuizmo::IsUsing())
             _currentGizmoOperation = ImGuizmo::ROTATE;
-        if (ImGui::IsKeyPressed(ImGuiKey_R)) // r Key
+        if (ImGui::IsKeyPressed(ImGuiKey_Z) && !ImGuizmo::IsUsing())
             _currentGizmoOperation = ImGuizmo::SCALE;
+        if (ImGui::IsKeyPressed(ImGuiKey_U) && !ImGuizmo::IsUsing())
+            _currentGizmoOperation = ImGuizmo::UNIVERSAL;
         if (ImGui::RadioButton("Translate", _currentGizmoOperation == ImGuizmo::TRANSLATE))
             _currentGizmoOperation = ImGuizmo::TRANSLATE;
         ImGui::SameLine();
@@ -382,9 +367,9 @@ jleSceneEditorWindow::EditTransform(float *cameraView,
             _currentGizmoOperation = ImGuizmo::UNIVERSAL;
         float matrixTranslation[3], matrixRotation[3], matrixScale[3];
         ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
-        ImGui::InputFloat3("Tr", matrixTranslation);
-        ImGui::InputFloat3("Rt", matrixRotation);
-        ImGui::InputFloat3("Sc", matrixScale);
+        ImGui::InputFloat3("Translation", matrixTranslation);
+        ImGui::InputFloat3("Rotation", matrixRotation);
+        ImGui::InputFloat3("Scaling", matrixScale);
         ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
 
         if (_currentGizmoOperation != ImGuizmo::SCALE) {
@@ -394,8 +379,7 @@ jleSceneEditorWindow::EditTransform(float *cameraView,
             if (ImGui::RadioButton("World", mCurrentGizmoMode == ImGuizmo::WORLD))
                 mCurrentGizmoMode = ImGuizmo::WORLD;
         }
-        if (ImGui::IsKeyPressed(ImGuiKey_S))
-            useSnap = !useSnap;
+
         ImGui::Checkbox("##UseSnap", &useSnap);
         ImGui::SameLine();
 

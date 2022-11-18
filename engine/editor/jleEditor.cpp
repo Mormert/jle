@@ -129,8 +129,6 @@ void jleEditor::render()
     // Render to editor scene view
     rendering().render(*editorFramebuffer, editorCamera);
 
-    rendering().clearBuffersForNextFrame();
-
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glClearColor(0.f, 0.f, 0.f, 1.f);
@@ -164,6 +162,8 @@ void jleEditor::render()
             glfwMakeContextCurrent(backup_current_context);
         }
     }
+
+    rendering().clearBuffersForNextFrame();
 }
 
 void jleEditor::initImgui() {

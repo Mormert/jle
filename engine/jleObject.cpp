@@ -295,10 +295,26 @@ void from_json(const nlohmann::json &json, std::shared_ptr<jleObject> &object) {
 
         jleObject::processJsonData(templateJson, object);
         object->_instanceName = objectInstanceName;
-    }
-    else {
+    } else {
         jleObject::processJsonData(json, object);
     }
 }
 
-int jleObject::instanceID() const { return _instanceID; }
+int
+jleObject::instanceID() const
+{
+    return _instanceID;
+}
+
+void
+jleObject::tryFindChildWithInstanceId(int instanceId, std::shared_ptr<jleObject> &outObject)
+{
+    if (instanceId == instanceID()) {
+        outObject = shared_from_this();
+        return;
+    }
+
+    for (auto &&child : childObjects()) {
+        child->tryFindChildWithInstanceId(instanceId, outObject);
+    }
+}
