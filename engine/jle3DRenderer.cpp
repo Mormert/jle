@@ -213,11 +213,27 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
 
     _defaultMeshShader.use();
     _defaultMeshShader.SetMat4("projView", camera.getProjectionViewMatrix());
+    _defaultMeshShader.SetVec3("CameraPosition", camera.getViewPosition());
+    _defaultMeshShader.SetInt("LightsCount", (int)_queuedLights.size());
+
+    if (_queuedLights.size() > 4) // Limit to 4 lights
+    {
+        _queuedLights.erase(_queuedLights.begin() + 4, _queuedLights.end());
+    }
+
+    for (int l = 0; l < _queuedLights.size(); l++) {
+        _defaultMeshShader.SetVec3("LightPositions[" + std::to_string(l) + "]", _queuedLights[l].position);
+        _defaultMeshShader.SetVec3("LightColors[" + std::to_string(l) + "]", _queuedLights[l].color);
+    }
 
     for (auto &&mesh : meshes) {
         _defaultMeshShader.SetMat4("model", mesh.transform);
         glBindVertexArray(mesh.mesh->getVAO());
-        glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+        if (mesh.mesh->usesIndexing()) {
+            glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+        } else {
+            glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+        }
         glBindVertexArray(0);
     }
 }
@@ -289,7 +305,11 @@ jle3DRenderer::renderMeshesPicking(jleFramebuffer &framebufferOut, const jleCame
         _pickingShader.SetVec4("PickingColor", glm::vec4{r / 255.0f, g / 255.0f, b / 255.0f, 1.f});
         _pickingShader.SetMat4("model", mesh.transform);
         glBindVertexArray(mesh.mesh->getVAO());
-        glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+        if (mesh.mesh->usesIndexing()) {
+            glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+        } else {
+            glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+        }
         glBindVertexArray(0);
     }
 

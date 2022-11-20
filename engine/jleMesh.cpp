@@ -3,6 +3,7 @@
 #include "jleMesh.h"
 #include "plog/Log.h"
 #include "tiny_obj_loader.h"
+#include <stdio.h>
 
 #ifdef __EMSCRIPTEN__
 #include <GLES3/gl3.h>
@@ -40,14 +41,68 @@ jleMesh::loadFromObj(const std::string &path)
     const auto &normals = attrib.normals;
     const auto &texcoords = attrib.texcoords;
 
-    std::vector<unsigned int> vertexIndicies;
-    for (auto &&vertexIndex : shapes[0].mesh.indices) {
-        vertexIndicies.push_back(vertexIndex.vertex_index);
+    std::vector<glm::vec3> in_vertices;
+    std::vector<glm::vec3> in_normals;
+    std::vector<glm::vec2> in_uvs;
+
+    for (int i = 0; i < vertices.size(); i += 3) {
+        in_vertices.push_back({vertices[i], vertices[i + 1], vertices[i + 2]});
     }
 
-    makeMesh(vertices, normals, texcoords, vertexIndicies);
+    for (int i = 0; i < normals.size(); i += 3) {
+        in_normals.push_back({normals[i], normals[i + 1], normals[i + 2]});
+    }
 
-    return true;
+    for (int i = 0; i < texcoords.size(); i += 2) {
+        in_uvs.push_back({texcoords[i], texcoords[i + 1]});
+    }
+
+    // If the OBJ file uses indexing for all attributes, then we simply go thru the
+    // mesh's indicies, and then find the attributes in the correct order, and then
+    // create new attribute arrays. We thus, do not use indexed rendering.
+    if (shapes[0].mesh.indices[0].normal_index >= 0) {
+        std::vector<glm::vec3> out_vertices;
+        std::vector<glm::vec2> out_uvs;
+        std::vector<glm::vec3> out_normals;
+
+        for (auto &&shape : shapes) {
+            for (unsigned int i = 0; i < shape.mesh.indices.size(); i++) {
+
+                // Get the indices of its attributes
+                int vertexIndex = shape.mesh.indices[i].vertex_index;
+                if (vertexIndex != -1) {
+                    glm::vec3 vertex = in_vertices[vertexIndex];
+                    out_vertices.push_back(vertex);
+                }
+
+                int uvIndex = shape.mesh.indices[i].texcoord_index;
+                if (uvIndex != -1) {
+                    glm::vec2 uv = in_uvs[uvIndex];
+                    out_uvs.push_back(uv);
+                }
+
+                int normalIndex = shape.mesh.indices[i].normal_index;
+                if (normalIndex != -1) {
+                    glm::vec3 normal = in_normals[normalIndex];
+                    out_normals.push_back(normal);
+                }
+            }
+        }
+
+        makeMesh(out_vertices, out_normals, out_uvs, {});
+        return true;
+
+    } else { // Else we can use the vertex indices as they are, and thus use indexed rendering
+        std::vector<unsigned int> vertexIndicies;
+        for (auto &&shape : shapes) {
+            for (int i = 0; i < shape.mesh.indices.size(); i++) {
+                vertexIndicies.push_back(shape.mesh.indices[i].vertex_index);
+            }
+        }
+
+        makeMesh(in_vertices, in_normals, in_uvs, vertexIndicies);
+        return true;
+    }
 }
 
 unsigned int
@@ -62,10 +117,10 @@ jleMesh::getTrianglesCount()
 }
 
 void
-jleMesh::makeMesh(const std::vector<float> &positions,
-                  const std::vector<float> &normals,
-                  const std::vector<float> &texCoords,
-                  const std::vector<unsigned int> &indicies)
+jleMesh::makeMesh(const std::vector<glm::vec3> &positions,
+                  const std::vector<glm::vec3> &normals,
+                  const std::vector<glm::vec2> &texCoords,
+                  const std::vector<unsigned int> &indices)
 {
 
     destroyOldBuffers();
@@ -76,7 +131,7 @@ jleMesh::makeMesh(const std::vector<float> &positions,
     if (!positions.empty()) {
         glGenBuffers(1, &_vbo_pos);
         glBindBuffer(GL_ARRAY_BUFFER, _vbo_pos);
-        glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(float), &positions[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(glm::vec3), &positions[0], GL_STATIC_DRAW);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
         glEnableVertexAttribArray(0);
     }
@@ -84,7 +139,7 @@ jleMesh::makeMesh(const std::vector<float> &positions,
     if (!normals.empty()) {
         glGenBuffers(1, &_vbo_normal);
         glBindBuffer(GL_ARRAY_BUFFER, _vbo_normal);
-        glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals[0], GL_STATIC_DRAW);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
         glEnableVertexAttribArray(1);
     }
@@ -92,23 +147,23 @@ jleMesh::makeMesh(const std::vector<float> &positions,
     if (!texCoords.empty()) {
         glGenBuffers(1, &_vbo_texcoords);
         glBindBuffer(GL_ARRAY_BUFFER, _vbo_texcoords);
-        glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), &texCoords[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(glm::vec2), &texCoords[0], GL_STATIC_DRAW);
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
         glEnableVertexAttribArray(2);
     }
 
-    if (!indicies.empty()) {
+    if (!indices.empty()) {
         glGenBuffers(1, &_ebo);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicies.size() * sizeof(unsigned int), &indicies[0], GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
     }
 
     glBindVertexArray(0);
 
-    if (indicies.size() > 0) {
-        _trianglesCount = indicies.size();
+    if (indices.size() > 0) {
+        _trianglesCount = indices.size();
     } else {
-        _trianglesCount = positions.size() / 3;
+        _trianglesCount = positions.size();
     }
 }
 
@@ -137,4 +192,9 @@ jleMesh::destroyOldBuffers()
         glDeleteVertexArrays(1, &_vao);
         _vao = 0;
     }
+}
+bool
+jleMesh::usesIndexing()
+{
+    return _ebo > 0;
 }

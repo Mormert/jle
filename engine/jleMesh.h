@@ -18,10 +18,12 @@ public:
 
     // Lays out the attributes in the order:
     // position (0), normal (1), texcoords (2)
-    void makeMesh(const std::vector<float> &positions,
-                  const std::vector<float> &normals,
-                  const std::vector<float> &texCoords,
-                  const std::vector<unsigned int> &indicies);
+    void makeMesh(const std::vector<glm::vec3> &positions,
+                  const std::vector<glm::vec3> &normals = {},
+                  const std::vector<glm::vec2> &texCoords = {},
+                  const std::vector<unsigned int> &indicies = {});
+
+    bool usesIndexing();
 
     unsigned int getVAO();
 

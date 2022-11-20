@@ -28,19 +28,11 @@
 #include <GLFW/glfw3.h>
 
 jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name, std::shared_ptr<jleFramebuffer> &framebuffer)
-    : iEditorImGuiWindow(window_name), _transformMarkerImage("EditorResources/icons/transform_marker.png")
+    : iEditorImGuiWindow(window_name)
 {
     _framebuffer = framebuffer;
-    _transformMarkerTexture = std::make_unique<jleTexture>(_transformMarkerImage);
 
     _pickingFramebuffer = std::make_unique<jleFramebuffer>(_framebuffer->width(), _framebuffer->height());
-
-    _texturedQuad.texture = _transformMarkerTexture;
-    _texturedQuad.width = 128;
-    _texturedQuad.height = 128;
-    _texturedQuad.depth = 1000.f;
-    _texturedQuad.textureX = 0;
-    _texturedQuad.textureY = 0;
 
     _fpvCamController.position = {0.f, 0.f, 250.f};
 }

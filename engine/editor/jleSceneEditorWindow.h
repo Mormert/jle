@@ -22,9 +22,6 @@ private:
     std::unique_ptr<jleFramebuffer> _pickingFramebuffer;
 
     std::shared_ptr<jleFramebuffer> _framebuffer;
-    jleImage _transformMarkerImage;
-    std::shared_ptr<jleTexture> _transformMarkerTexture;
-    texturedQuad _texturedQuad;
 
     jleCameraSimpleFPVController _fpvCamController;
 

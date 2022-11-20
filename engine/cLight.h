@@ -23,5 +23,5 @@ public:
 
 protected:
     std::shared_ptr<cTransform> _transform{};
-    glm::vec3 _color{};
+    glm::vec3 _color{1.f};
 };
