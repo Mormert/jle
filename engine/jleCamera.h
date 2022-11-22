@@ -61,11 +61,11 @@ struct jleCamera {
 
     void setOrthographicProjection(uint32_t screenWidth, uint32_t screenHeight, float farPlane, float nearPlane);
 
-    void setViewMatrix(const glm::mat4 &view);
+    void setViewMatrix(const glm::mat4 &view, const glm::vec3 &position);
 
     void setBackgroundColor(const glm::vec3 &color);
 
-    [[nodiscard]] glm::vec3 getViewPosition() const;
+    [[nodiscard]] glm::vec3 getPosition() const;
 
     [[nodiscard]] glm::vec3 getBackgroundColor() const;
 
@@ -82,4 +82,5 @@ private:
     glm::mat4 _projectionMatrix{1.f};
     glm::mat4 _viewMatrix{1.f};
     glm::vec3 _backgroundColor{0.1f, 0.1f, 0.1f};
+    glm::vec3 _position;
 };

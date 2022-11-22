@@ -80,10 +80,8 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         return int(ratio * float(mouseY - windowPositionY));
     };
 
-    const auto mouseCoordinateX =
-        getPixelatedMousePosX() + static_cast<int>(jleEditor::editorCamera.getViewPosition().x);
-    const auto mouseCoordinateY =
-        getPixelatedMousePosY() + static_cast<int>(jleEditor::editorCamera.getViewPosition().y);
+    const auto mouseCoordinateX = getPixelatedMousePosX() + static_cast<int>(jleEditor::editorCamera.getPosition().x);
+    const auto mouseCoordinateY = getPixelatedMousePosY() + static_cast<int>(jleEditor::editorCamera.getPosition().y);
 
     static float zoomValue = 1.f;
 
@@ -305,7 +303,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
             _fpvCamController.moveDown(moveSpeed * t);
         }
 
-        jleEditor::editorCamera.setViewMatrix(_fpvCamController.getLookAtViewMatrix());
+        jleEditor::editorCamera.setViewMatrix(_fpvCamController.getLookAtViewMatrix(), _fpvCamController.position);
 
         auto currentScroll = gCore->input().mouse->scrollY();
         if (currentScroll != 0.f) {

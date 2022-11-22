@@ -213,7 +213,7 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
 
     _defaultMeshShader.use();
     _defaultMeshShader.SetMat4("projView", camera.getProjectionViewMatrix());
-    _defaultMeshShader.SetVec3("CameraPosition", camera.getViewPosition());
+    _defaultMeshShader.SetVec3("CameraPosition", camera.getPosition());
     _defaultMeshShader.SetInt("LightsCount", (int)_queuedLights.size());
 
     if (_queuedLights.size() > 4) // Limit to 4 lights

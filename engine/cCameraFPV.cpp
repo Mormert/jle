@@ -63,5 +63,5 @@ cCameraFPV::update(float dt)
     _fpvController.setPerspectiveMouseSensitivity(_mouseSensitivity);
     _fpvController.applyPerspectiveMouseMovementDelta({mouseDeltaX, mouseDeltaY}, dt);
 
-    game.mainCamera.setViewMatrix(_fpvController.getLookAtViewMatrix());
+    game.mainCamera.setViewMatrix(_fpvController.getLookAtViewMatrix(), _fpvController.position);
 }

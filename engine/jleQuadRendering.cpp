@@ -198,9 +198,9 @@ jleQuadRendering::render(jleFramebuffer &framebufferOut,
 
     processTexturedQuads(texturedQuads, view);
 
-    processTexturedHeightQuads(texturedHeightQuads, view, camera.getViewPosition());
+    processTexturedHeightQuads(texturedHeightQuads, view, camera.getPosition());
 
-    processSimpleTexturedHeightQuads(texturedSimpleHeightQuads, view, camera.getViewPosition());
+    processSimpleTexturedHeightQuads(texturedSimpleHeightQuads, view, camera.getPosition());
 
     // renderShadowCubes(camera.getProjectionViewMatrix());
 

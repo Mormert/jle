@@ -67,7 +67,7 @@ cCamera::update(float dt)
 
     // TODO: handle rotation
 
-    game.mainCamera.setViewMatrix(c.getLookAtViewMatrix());
+    game.mainCamera.setViewMatrix(c.getLookAtViewMatrix(), c.position);
 }
 
 void
