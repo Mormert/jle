@@ -8,6 +8,10 @@ in vec2 TexCoords;
 in vec3 WorldPos;
 in vec3 Normal;
 
+
+in vec3 AnisotropicAxis;
+in vec3 CentralAxis;
+
 uniform int LightsCount;
 uniform vec3 LightPositions[4];
 uniform vec3 LightColors[4];
@@ -15,9 +19,11 @@ uniform vec3 LightColors[4];
 uniform vec3 CameraPosition;
 
 const float pi = 3.141592653589;
-const vec3 albedo = vec3(0.0, 0.2, 0.6);
+const vec3 albedo = vec3(0.83, 0.68, 0.22);
 const float metallic = 0.0;
-const float roughness = 0.2;
+const float roughness = 0.3;
+
+const float roughnessY = 0.7;
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -33,8 +39,34 @@ float DistributionGGX(vec3 N, vec3 H, float roughness)
     return nom / denom;
 }
 
+// RTR4 9.53
+// https://google.github.io/filament/Filament.html#listing_anisotropicbrdf
+float DistributionGGX_Aniso(vec3 N, vec3 T, vec3 B, vec3 H, float roughnessX, float roughnessY)
+{
+    float NdotH = dot(N, H);
+    float ab = roughnessX;
+    float at = roughnessY;
+
+    float TdotH = dot(T, H);
+    float BdotH = dot(B, H);
+    float a2 = at * ab;
+    vec3 v = vec3(ab * TdotH, at * BdotH, a2 * NdotH);
+    float v2 = dot(v, v);
+    float w2 = a2 / v2;
+    return a2 * w2 * w2 * (1.0 / pi);
+}
+
 float DistributionBeckmann(vec3 N, vec3 H, float roughness)
 {
+
+    float NdotH = max(dot(N, H), 0.00001);// add some margin to avoid divide-by-zero
+    float cos2Alpha = NdotH * NdotH;
+    float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;
+    float roughness2 = roughness * roughness;
+    float denom = pi * roughness2 * cos2Alpha * cos2Alpha;
+    return exp(tan2Alpha / roughness2) / denom;
+
+    /*
     float a = roughness*roughness;
     float a2 = a*a;
     float NdotH = max(dot(N, H), 0.00001);// add some margin to avoid divide-by-zero
@@ -46,7 +78,7 @@ float DistributionBeckmann(vec3 N, vec3 H, float roughness)
     float nom_exp = NdotH2 - 1.0;
     float denom_exp = a2 * NdotH2;
 
-    return (nom/denom) * exp(nom_exp/denom_exp);
+    return (nom/denom) * exp(nom_exp/denom_exp);*/
 }
 
 float GeometryOriginalCookTorrance(vec3 N, vec3 V, vec3 L)
@@ -90,8 +122,7 @@ vec3 fresnelSchlickApprox(float cosTheta, vec3 F0)
 
 vec3 lambertian_brdf(vec3 in_direction, vec3 out_direction, vec3 normal)
 {
-    float NdotL = dot(normal, in_direction);
-    return max(0.0, NdotL) * albedo;
+    return albedo/pi;
 }
 
 // https://www.shadertoy.com/view/ldBGz3
@@ -113,9 +144,9 @@ vec3 blinn_phong_brdf(vec3 in_direction, vec3 out_direction, vec3 normal){
 
     vec3 halfwayVector = normalize(out_direction + in_direction);
 
-    float kL = 0.9;
-    float kG = 0.1;
-    float s = 100.0;
+    float kL = roughness;
+    float kG = 1.0 - kL;
+    float s = 200.0;
     vec3 pL = albedo;
     vec3 pG = vec3(1.0);
 
@@ -132,11 +163,19 @@ vec3 cook_torrance_brdf(vec3 in_direction, vec3 out_direction, vec3 normal){
 
     vec3 halfwayVector = normalize(out_direction + in_direction);
 
-    float NDF = DistributionBeckmann(normal, halfwayVector, roughness);
-    //float NDF = DistributionGGX(normal, halfwayVector, roughness);
+    //float NDF = DistributionBeckmann(normal, halfwayVector, roughness);
+    float NDF = DistributionGGX(normal, halfwayVector, roughness);
 
-    float G   = GeometryOriginalCookTorrance(normal, out_direction, in_direction);
-    //float G   = GeometrySmith(normal, out_direction, in_direction, roughness);
+    vec3 AnisotropicAxisN = normalize(AnisotropicAxis);
+    vec3 CentralAxisN = normalize(CentralAxis);
+
+    vec3 bitangent = cross(AnisotropicAxisN, CentralAxisN);
+    vec3 tangent = cross(bitangent, normalize(normal));
+
+    //float NDF = DistributionGGX_Aniso(normal, tangent, bitangent, halfwayVector, roughness, roughnessY);
+
+    //float G   = GeometryOriginalCookTorrance(normal, out_direction, in_direction);
+    float G   = GeometrySmith(normal, out_direction, in_direction, roughness);
 
     vec3 F    = fresnelSchlickApprox(clamp(dot(halfwayVector, out_direction), 0.0, 1.0), F0);
 
@@ -175,8 +214,9 @@ void main()
         vec3 radiance = LightColors[l] * attenuation;
 
         // LightOutTotal += radiance * lambertian_brdf(L, V, N) * NdotL;
-        LightOutTotal += radiance * cook_torrance_brdf(L, V, N) * NdotL;
-        // LightOutTotal += radiance * oren_nayar_brdf(L, V, N) * NdotL;
+        LightOutTotal += radiance * blinn_phong_brdf(L, V, N) * NdotL;
+        // LightOutTotal += radiance * cook_torrance_brdf(L, V, N) * NdotL;
+        //LightOutTotal += radiance * albedo * oren_nayar_brdf(L, V, N) * NdotL;
 
     }
 

@@ -212,7 +212,9 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
     }
 
     _defaultMeshShader.use();
-    _defaultMeshShader.SetMat4("projView", camera.getProjectionViewMatrix());
+    //_defaultMeshShader.SetMat4("projView", camera.getProjectionViewMatrix());
+    _defaultMeshShader.SetMat4("view", camera.getViewMatrix());
+    _defaultMeshShader.SetMat4("proj", camera.getProjectionMatrix());
     _defaultMeshShader.SetVec3("CameraPosition", camera.getPosition());
     _defaultMeshShader.SetInt("LightsCount", (int)_queuedLights.size());
 

@@ -8,8 +8,12 @@ out vec2 TexCoords;
 out vec3 WorldPos;
 out vec3 Normal;
 
+out vec3 AnisotropicAxis;
+out vec3 CentralAxis;
+
 uniform mat4 model;
-uniform mat4 projView;
+uniform mat4 view;
+uniform mat4 proj;
 
 void main()
 {
@@ -20,5 +24,10 @@ void main()
 
     WorldPos = vec3(model * vec4(aPos, 1.0));
 
-    gl_Position = projView * model * vec4(aPos, 1.0f);
+
+    AnisotropicAxis = vec3(model * vec4(0.0, 0.0, 1.0, 0.0));
+    CentralAxis = vec3(model * vec4(aPos.xy, 0.0, 0.0));
+
+
+    gl_Position = proj * view * model * vec4(aPos, 1.0f);
 }
