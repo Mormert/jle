@@ -4,9 +4,11 @@
 
 #include "jleCamera.h"
 #include "jleFrameBuffer.h"
+#include "jleFullscreenRendering.h"
 #include "jleGameEngine.h"
 #include "jlePathDefines.h"
 #include "jleProfiler.h"
+#include "jleStaticOpenGLState.h"
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
 
@@ -21,6 +23,7 @@
 
 #endif
 
+#include <glm/ext/matrix_clip_space.hpp>
 #include <random>
 
 jle3DRenderer::jle3DRenderer()
@@ -31,7 +34,11 @@ jle3DRenderer::jle3DRenderer()
       _skyboxShader{std::string{JLE_ENGINE_PATH_SHADERS + "/skybox.vert"}.c_str(),
                     std::string{JLE_ENGINE_PATH_SHADERS + "/skybox.frag"}.c_str()},
       _pickingShader{std::string{JLE_ENGINE_PATH_SHADERS + "/picking.vert"}.c_str(),
-                     std::string{JLE_ENGINE_PATH_SHADERS + "/picking.frag"}.c_str()}
+                     std::string{JLE_ENGINE_PATH_SHADERS + "/picking.frag"}.c_str()},
+      _shadowMappingShader{std::string{JLE_ENGINE_PATH_SHADERS + "/shadowMapping.vert"}.c_str(),
+                           std::string{JLE_ENGINE_PATH_SHADERS + "/shadowMapping.frag"}.c_str()},
+      _debugDepthQuad{std::string{JLE_ENGINE_PATH_SHADERS + "/debugDepthQuad.vert"}.c_str(),
+                      std::string{JLE_ENGINE_PATH_SHADERS + "/debugDepthQuad.frag"}.c_str()}
 {
 
     constexpr float exampleCubeData[] = {
@@ -124,6 +131,16 @@ jle3DRenderer::jle3DRenderer()
     glVertexAttribDivisor(5, 1);
 
     glBindVertexArray(0);
+
+    _shadowMappingFramebuffer = std::make_unique<jleFramebuffer>(2048, 2048, true);
+
+    glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, near_plane, far_plane);
+    jleCameraSimpleFPVController jc;
+    glm::mat4 lightView =
+        glm::lookAt(glm::vec3(-2.0f, 4.0f, -1.0f), glm::vec3(2.0f, 3.0f, 2.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+    lightView[1][1] *= -1.f;
+
+    _lightSpaceMatrix = lightProjection * lightView;
 }
 
 jle3DRenderer::~jle3DRenderer()
@@ -150,18 +167,34 @@ jle3DRenderer::render(jleFramebuffer &framebufferOut,
     const int viewportWidth = framebufferOut.width();
     const int viewportHeight = framebufferOut.height();
 
-    framebufferOut.bind();
-
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CW);
+
+    // Directional light renders to the shadow mapping framebuffer
+    renderDirectionalLight(camera);
+
+    framebufferOut.bind();
 
     // Change viewport dimensions to match framebuffer's dimensions
     glViewport(0, 0, viewportWidth, viewportHeight);
 
-    renderExampleCubes(camera, cubeTransforms);
+    // renderExampleCubes(camera, cubeTransforms);
 
     renderMeshes(camera, _queuedMeshes);
 
     renderSkybox(camera);
+
+    /* // Render shadow map in fullscreen as debug
+    _debugDepthQuad.use();
+    _debugDepthQuad.use();
+    _debugDepthQuad.SetInt("depthMap", 0);
+    _debugDepthQuad.SetFloat("near_plane", near_plane);
+    _debugDepthQuad.SetFloat("far_plane", far_plane);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _shadowMappingFramebuffer->texture());
+    renderFullscreenQuad(); */
 
     framebufferOut.bindDefault();
 }
@@ -207,14 +240,23 @@ jle3DRenderer::sendMesh(const std::shared_ptr<jleMesh> &mesh, const glm::mat4 &t
 void
 jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRendererQueuedMesh> &meshes)
 {
+    JLE_SCOPE_PROFILE(jle3DRenderer::renderMeshes)
+
     if (meshes.empty()) {
         return;
     }
 
+    // Bind to shadow map texture
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _shadowMappingFramebuffer->texture());
+    jleStaticOpenGLState::globalActiveTexture = _shadowMappingFramebuffer->texture();
+
     _defaultMeshShader.use();
-    //_defaultMeshShader.SetMat4("projView", camera.getProjectionViewMatrix());
+    _defaultMeshShader.SetInt("shadowMap", 0);
+
     _defaultMeshShader.SetMat4("view", camera.getViewMatrix());
     _defaultMeshShader.SetMat4("proj", camera.getProjectionMatrix());
+    _defaultMeshShader.SetMat4("lightSpaceMatrix", _lightSpaceMatrix);
     _defaultMeshShader.SetVec3("CameraPosition", camera.getPosition());
     _defaultMeshShader.SetInt("LightsCount", (int)_queuedLights.size());
 
@@ -316,4 +358,68 @@ jle3DRenderer::renderMeshesPicking(jleFramebuffer &framebufferOut, const jleCame
     }
 
     framebufferOut.bindDefault();
+}
+void
+jle3DRenderer::renderDirectionalLight(const jleCamera &camera)
+{
+    JLE_SCOPE_PROFILE(jle3DRenderer::renderDirectionalLight)
+
+    _shadowMappingFramebuffer->bind();
+
+    glDisable(GL_CULL_FACE);
+
+    _shadowMappingShader.use();
+
+    _shadowMappingShader.SetMat4("lightSpaceMatrix", _lightSpaceMatrix);
+
+    glViewport(0, 0, 2048, 2048);
+
+    glClear(GL_DEPTH_BUFFER_BIT);
+    renderShadowMeshes(_queuedMeshes);
+
+    glEnable(GL_CULL_FACE);
+
+    _shadowMappingFramebuffer->bindDefault();
+}
+void
+jle3DRenderer::renderShadowMeshes(const std::vector<jle3DRendererQueuedMesh> &meshes)
+{
+    for (auto &&mesh : meshes) {
+        _shadowMappingShader.SetMat4("model", mesh.transform);
+        glBindVertexArray(mesh.mesh->getVAO());
+        if (mesh.mesh->usesIndexing()) {
+            glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+        } else {
+            glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+        }
+        glBindVertexArray(0);
+    }
+}
+
+void
+jle3DRenderer::renderFullscreenQuad()
+{
+    static unsigned int quadVAO = 0;
+    static unsigned int quadVBO;
+
+    if (quadVAO == 0) {
+        float quadVertices[] = {
+            // positions        // texture Coords
+            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+            1.0f,  1.0f, 0.0f, 1.0f, 1.0f, 1.0f,  -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+        // setup plane VAO
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+    }
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
 }

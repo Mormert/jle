@@ -62,7 +62,7 @@ jleGameEngine::executeNextFrame()
     auto gameHaltedTemp = gameHalted;
     gameHalted = false;
     update(deltaFrameTime());
-    rendering().render(*mainFramebuffer, gameRef().mainCamera);
+    rendering().render(*mainRenderFramebuffer, gameRef().mainCamera);
     gameHalted = gameHaltedTemp;
 }
 
@@ -92,7 +92,7 @@ jleGameEngine::start()
 {
     constexpr int initialScreenX = 1024;
     constexpr int initialScreenY = 1024;
-    mainFramebuffer = std::make_shared<jleFramebuffer>(initialScreenX, initialScreenY);
+    mainRenderFramebuffer = std::make_shared<jleFramebuffer>(initialScreenX, initialScreenY);
 
     const auto &internalInputMouse = gCore->input().mouse;
     internalInputMouse->setPixelatedScreenSize(initialScreenX, initialScreenY);
@@ -113,7 +113,7 @@ jleGameEngine::start()
 void
 jleGameEngine::resizeMainFramebuffer(unsigned int width, unsigned int height)
 {
-    mainFramebuffer->resize(width, height);
+    mainRenderFramebuffer->resize(width, height);
 
     const auto &inputMouse = gCore->input().mouse;
     inputMouse->setPixelatedScreenSize(width, height);
@@ -172,9 +172,9 @@ jleGameEngine::render()
 {
     JLE_SCOPE_PROFILE(jleGameEngine::Render)
     if (!gameHalted && game) {
-        rendering().render(*mainFramebuffer.get(), gameRef().mainCamera);
+        rendering().render(*mainRenderFramebuffer.get(), gameRef().mainCamera);
         rendering().clearBuffersForNextFrame();
-        _fullscreen_renderer->renderFramebufferFullscreen(*mainFramebuffer, window().width(), window().height());
+        _fullscreen_renderer->renderFramebufferFullscreen(*mainRenderFramebuffer, window().width(), window().height());
     }
 }
 

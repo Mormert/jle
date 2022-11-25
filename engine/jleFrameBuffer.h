@@ -11,9 +11,9 @@ public:
 
     ~jleFramebuffer();
 
-    void createFramebuffer(unsigned int width, unsigned int height);
+    void createRenderFramebuffer(unsigned int width, unsigned int height);
 
-    void createShadowFramebuffer(unsigned int width, unsigned int height);
+    void createShadowMappingFramebuffer(unsigned int width, unsigned int height);
 
     void resize(unsigned int width, unsigned int height);
 
@@ -35,7 +35,16 @@ public:
 
 private:
     unsigned int _width{}, _height{};
+
+    // The framebuffer ID
     unsigned int _framebuffer{};
+
+    // The framebuffer's texture ID
     unsigned int _texColorBuffer{};
+
+    // The renderbuffer ID. Used for depth buffering when doing off-screen rendering.
+    // Can be unset.
     unsigned int _rbo{};
+
+    bool _isShadowFramebuffer{false};
 };

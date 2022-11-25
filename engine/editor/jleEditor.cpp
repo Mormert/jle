@@ -49,16 +49,16 @@ void jleEditor::start()
 
     constexpr int initialScreenX = 1024;
     constexpr int initialScreenY = 1024;
-    mainFramebuffer = std::make_shared<jleFramebuffer>(initialScreenX, initialScreenY);
+    mainRenderFramebuffer = std::make_shared<jleFramebuffer>(initialScreenX, initialScreenY);
 
-    editorFramebuffer = std::make_shared<jleFramebuffer>(initialScreenX, initialScreenY);
+    editorRenderFramebuffer = std::make_shared<jleFramebuffer>(initialScreenX, initialScreenY);
 
     // Note: Important that menu comes first here, since the others are
     // dependent on the menu's dockspace.
     auto menu = std::make_shared<jleEditorWindowsPanel>("Menu");
     addImGuiWindow(menu);
 
-    auto sceneWindow = std::make_shared<jleSceneEditorWindow>("Scene Window", editorFramebuffer);
+    auto sceneWindow = std::make_shared<jleSceneEditorWindow>("Scene Window", editorRenderFramebuffer);
     addImGuiWindow(sceneWindow);
     menu->addWindow(sceneWindow);
 
@@ -115,19 +115,19 @@ void jleEditor::render()
     JLE_SCOPE_PROFILE(jleEditor::Render)
     if (!gameHalted && game) {
         // Render to game view
-        rendering().render(*mainFramebuffer, game->mainCamera);
+        rendering().render(*mainRenderFramebuffer, game->mainCamera);
     }
 
     if (projectionType == jleCameraProjection::Orthographic) {
         editorCamera.setOrthographicProjection(
-            editorFramebuffer->width(), editorFramebuffer->height(), 10000.f, -10000.f);
+            editorRenderFramebuffer->width(), editorRenderFramebuffer->height(), 10000.f, -10000.f);
     } else {
         editorCamera.setPerspectiveProjection(
-            45.f, editorFramebuffer->width(), editorFramebuffer->height(), 10000.f, 0.1f);
+            45.f, editorRenderFramebuffer->width(), editorRenderFramebuffer->height(), 10000.f, 0.1f);
     }
 
     // Render to editor scene view
-    rendering().render(*editorFramebuffer, editorCamera);
+    rendering().render(*editorRenderFramebuffer, editorCamera);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

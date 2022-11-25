@@ -22,23 +22,25 @@
 jleFramebuffer::jleFramebuffer(unsigned int width, unsigned int height, bool shadowBuffer)
 {
     if (shadowBuffer) {
-        createShadowFramebuffer(width, height);
+        createShadowMappingFramebuffer(width, height);
     } else {
-        createFramebuffer(width, height);
+        createRenderFramebuffer(width, height);
     }
 }
 
 jleFramebuffer::~jleFramebuffer()
 {
     glDeleteFramebuffers(1, &_framebuffer);
-    glDeleteRenderbuffers(1, &_rbo);
+    if (_rbo) {
+        glDeleteRenderbuffers(1, &_rbo);
+    }
     glDeleteTextures(1, &_texColorBuffer);
 
     std::cout << "Deleted Framebuffer with id " << _framebuffer << "!\n";
 }
 
 void
-jleFramebuffer::createFramebuffer(unsigned int width, unsigned int height)
+jleFramebuffer::createRenderFramebuffer(unsigned int width, unsigned int height)
 {
     this->_width = width;
     this->_height = height;
@@ -46,7 +48,7 @@ jleFramebuffer::createFramebuffer(unsigned int width, unsigned int height)
     glGenFramebuffers(1, &_framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
 
-    // generate texture
+    // Generate color texture
     glGenTextures(1, &_texColorBuffer);
     glBindTexture(GL_TEXTURE_2D, _texColorBuffer);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
@@ -54,14 +56,16 @@ jleFramebuffer::createFramebuffer(unsigned int width, unsigned int height)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    // attach it to currently bound framebuffer object
+    // Attach the texture to the bound framebuffer object
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texColorBuffer, 0);
 
+    // We also need a render buffer object for depth testing, which we create here
     glGenRenderbuffers(1, &_rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, _rbo);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
+    // Attach the depth and stencil attachment to the bound framebuffer object
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _rbo);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -74,25 +78,79 @@ jleFramebuffer::createFramebuffer(unsigned int width, unsigned int height)
 }
 
 void
-jleFramebuffer::resize(unsigned int width, unsigned int height)
+jleFramebuffer::createShadowMappingFramebuffer(unsigned int width, unsigned int height)
 {
 
-    // LOG_VERBOSE << "Resized Framebuffer " << framebuffer << ": " << width <<
-    // ", " << height;
+    _isShadowFramebuffer = true;
 
+    this->_width = width;
+    this->_height = height;
+
+    glGenFramebuffers(1, &_framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
+
+    // Generate texture
+    glGenTextures(1, &_texColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, _texColorBuffer);
+
+    // Attach the texture to the bound framebuffer object as GL_DEPTH_COMPONENT
+#ifdef BUILD_OPENGLES30
+    // OpenGL ES 3.0 uses 16 bit depth component here instead of default 24 bit
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, NULL);
+#else
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+#endif
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER_OES);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER_OES);
+    float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR_OES, borderColor);
+
+    // Render depth values to the texture (GL_DEPTH_ATTACHMENT)
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _texColorBuffer, 0);
+
+    // We only need depth information when rendering the scene from a light's perspective.
+    // Thus, a shadow mapping framebuffer does not have a color buffer.
+    // We need however, to tell OpenGL that we won't have such a buffer, and we do this by
+    // setting the Draw and Read buffers to GL_NONE:
+    glDrawBuffers(GL_NONE, GL_NONE);
+    glReadBuffer(GL_NONE);
+
+    // Make sure that the framebuffer is complete. It will get black when rendered onto otherwise.
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        LOGE << "Error building shadow framebuffer!";
+    } else {
+        LOG_VERBOSE << "Created Shadow Framebuffer with id " << _framebuffer << "!";
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void
+jleFramebuffer::resize(unsigned int width, unsigned int height)
+{
     this->_width = width;
     this->_height = height;
 
     // resize texture
     glBindTexture(GL_TEXTURE_2D, _texColorBuffer);
     jleStaticOpenGLState::globalActiveTexture = _texColorBuffer;
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    if (_isShadowFramebuffer) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    } else {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    }
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    // resize renderbuffer
-    glBindRenderbuffer(GL_RENDERBUFFER, _rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    // resize renderbuffer, if this framebuffer uses one
+    if (_rbo) {
+        glBindRenderbuffer(GL_RENDERBUFFER, _rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    }
 }
 
 void
@@ -126,31 +184,6 @@ unsigned int
 jleFramebuffer::texture()
 {
     return _texColorBuffer;
-}
-
-void
-jleFramebuffer::createShadowFramebuffer(unsigned int width, unsigned int height)
-{
-    this->_width = width;
-    this->_height = height;
-
-    glGenFramebuffers(1, &_framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
-
-    // generate texture
-    glGenTextures(1, &_texColorBuffer);
-    glBindTexture(GL_TEXTURE_2D, _texColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _texColorBuffer, 0);
-    glDrawBuffers(GL_NONE, nullptr);
-    glReadBuffer(GL_NONE);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 glm::ivec2

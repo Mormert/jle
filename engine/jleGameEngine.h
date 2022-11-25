@@ -27,7 +27,7 @@ public:
         _gameCreator = []() { return std::make_unique<T>(); };
     }
 
-    std::shared_ptr<jleFramebuffer> mainFramebuffer;
+    std::shared_ptr<jleFramebuffer> mainRenderFramebuffer;
 
     void resizeMainFramebuffer(unsigned int width, unsigned int height);
 

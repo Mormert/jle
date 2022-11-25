@@ -21,7 +21,7 @@ public:
 
     void render() override;
 
-    std::shared_ptr<jleFramebuffer> editorFramebuffer;
+    std::shared_ptr<jleFramebuffer> editorRenderFramebuffer;
 
     static inline jleCameraProjection projectionType;
 

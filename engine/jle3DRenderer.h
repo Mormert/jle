@@ -49,6 +49,8 @@ public:
     void clearBuffersForNextFrame();
 
 private:
+    void renderFullscreenQuad();
+
     void renderExampleCubes(const jleCamera &camera, const std::vector<glm::mat4> &cubeTransforms);
 
     std::vector<glm::mat4> _queuedExampleCubes;
@@ -57,8 +59,12 @@ private:
 
     jleShader _defaultMeshShader;
     jleShader _pickingShader;
+    jleShader _shadowMappingShader;
+    jleShader _debugDepthQuad;
 
     void renderMeshes(const jleCamera &camera, const std::vector<jle3DRendererQueuedMesh> &meshes);
+
+    void renderShadowMeshes(const std::vector<jle3DRendererQueuedMesh> &meshes);
 
     std::vector<jle3DRendererQueuedMesh> _queuedMeshes;
 
@@ -67,4 +73,10 @@ private:
     std::shared_ptr<jleSkybox> _skybox;
 
     std::vector<jle3DRendererLight> _queuedLights;
+
+    void renderDirectionalLight(const jleCamera &camera);
+    glm::mat4 _lightSpaceMatrix{};
+    float near_plane = -700.0f, far_plane = 700.f;
+
+    std::unique_ptr<jleFramebuffer> _shadowMappingFramebuffer{};
 };

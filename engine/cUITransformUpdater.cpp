@@ -46,7 +46,7 @@ void cUITransformUpdater::update(float dt) {
     // TODO: dont do this in update, rely on callback functions instead
     // since the UI gets dirty every frame now...
 
-    const auto framebuffer = ((jleGameEngine *)(gCore))->mainFramebuffer;
+    const auto framebuffer = ((jleGameEngine *)(gCore))->mainRenderFramebuffer;
 
     _transform->setLocalPosition({_x, _y, 0.f});
 

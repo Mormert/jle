@@ -38,8 +38,8 @@ jleRendering::render(jleFramebuffer &framebufferOut, const jleCamera &camera)
     glEnable(GL_DEPTH_TEST);
 
     _3dRenderer->queuerender(framebufferOut, camera);
-    _quads->queuerender(framebufferOut, camera);
-    _texts->render(framebufferOut, camera);
+    //_quads->queuerender(framebufferOut, camera);
+    //_texts->render(framebufferOut, camera);
 
     framebufferOut.bindDefault();
 }

@@ -46,7 +46,7 @@ jleGameEditorWindow::update(jleGameEngine &ge)
     _windowPositionY = cursorScreenPos.y - viewport->Pos.y;
 
     const auto &internalInputMouse = gCore->input().mouse;
-    const auto &engineFramebufferMain = gEngine->mainFramebuffer;
+    const auto &engineFramebufferMain = gEngine->mainRenderFramebuffer;
     internalInputMouse->setScreenBeginCoords(_windowPositionX, _windowPositionY);
     internalInputMouse->setScreenSize(width(), height());
 
@@ -64,9 +64,9 @@ jleGameEditorWindow::update(jleGameEngine &ge)
     }
 
     // Get the texture from the framebuffer
-    glBindTexture(GL_TEXTURE_2D, (unsigned int)ge.mainFramebuffer->texture());
-    jleStaticOpenGLState::globalActiveTexture = (unsigned int)ge.mainFramebuffer->texture();
-    ImGui::Image((void *)(intptr_t)ge.mainFramebuffer->texture(),
+    glBindTexture(GL_TEXTURE_2D, (unsigned int)ge.mainRenderFramebuffer->texture());
+    jleStaticOpenGLState::globalActiveTexture = (unsigned int)ge.mainRenderFramebuffer->texture();
+    ImGui::Image((void *)(intptr_t)ge.mainRenderFramebuffer->texture(),
                  ImVec2(_lastGameWindowWidth, _lastGameWindowHeight),
                  ImVec2(0, 1),
                  ImVec2(1, 0));
