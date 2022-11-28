@@ -14,8 +14,10 @@
 #include <glm/gtx/matrix_decompose.hpp>
 
 #ifdef __EMSCRIPTEN__
-#include <GLES2/gl2ext.h>
 #include <GLES3/gl3.h>
+
+#include <GLES2/gl2ext.h>
+
 #include <emscripten.h>
 #define GL_GLEXT_PROTOTYPES
 #define EGL_EGLEXT_PROTOTYPES

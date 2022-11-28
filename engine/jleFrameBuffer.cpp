@@ -5,6 +5,7 @@
 #ifdef __EMSCRIPTEN__
 #include <GLES2/gl2ext.h>
 #include <GLES3/gl3.h>
+
 #include <emscripten.h>
 #define GL_GLEXT_PROTOTYPES
 #define EGL_EGLEXT_PROTOTYPES
