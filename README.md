@@ -3,7 +3,7 @@
 A simple, yet powerful custom-made C++ game engine intended for PC games. It is developed alongside an
 old-school-inspired multiplayer Action-RPG, similar to games like Diablo II and Titan Quest.
 
-![Game Showcase](https://mormert.com/jle-media/jle-logo-crop.png)
+![Game Showcase](https://mormert.com/jle-media/jle-logo-cropped2.png)
 
 ## Build status
 
