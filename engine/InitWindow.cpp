@@ -17,7 +17,9 @@
 
 #include <iostream>
 
-void *initWindow(int width, int height, const char *title) {
+void *
+initWindow(int width, int height, const char *title)
+{
 
 #ifdef BUILD_OPENGLES30
     // Runs on OpenGL ES 3.0
@@ -52,12 +54,18 @@ void *initWindow(int width, int height, const char *title) {
     }
 
     glfwMakeContextCurrent(glfwWindow);
-#ifdef __EMSCRIPTEN__
-#else
+#ifndef __EMSCRIPTEN__
+#ifdef BUILD_OPENGLES30
     if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)) {
         std::cerr << "ERROR: Failed to initialize GLAD\n";
         exit(1);
     }
+#else
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "ERROR: Failed to initialize GLAD\n";
+        exit(1);
+    }
+#endif
 #endif
 
     jleStaticOpenGLState::globalOpenGLInitialized = true;

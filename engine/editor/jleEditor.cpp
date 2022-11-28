@@ -40,7 +40,8 @@ jleEditor::jleEditor(std::shared_ptr<jleGameSettings> gs, std::shared_ptr<jleEdi
 {
 }
 
-void jleEditor::start()
+void
+jleEditor::start()
 {
 
     LOG_INFO << "Starting the editor";
@@ -49,9 +50,11 @@ void jleEditor::start()
 
     constexpr int initialScreenX = 1024;
     constexpr int initialScreenY = 1024;
-    mainRenderFramebuffer = std::make_shared<jleFramebuffer>(initialScreenX, initialScreenY);
+    mainRenderFramebuffer = std::make_shared<jleFramebuffer>(
+        initialScreenX, initialScreenY, jleFramebuffer::jleFramebufferType::ScreenRenderBuffer);
 
-    editorRenderFramebuffer = std::make_shared<jleFramebuffer>(initialScreenX, initialScreenY);
+    editorRenderFramebuffer = std::make_shared<jleFramebuffer>(
+        initialScreenX, initialScreenY, jleFramebuffer::jleFramebufferType::ScreenRenderBuffer);
 
     // Note: Important that menu comes first here, since the others are
     // dependent on the menu's dockspace.
@@ -80,18 +83,15 @@ void jleEditor::start()
     // AddImGuiWindow(gameController);
     // menu->addWindow(gameController);
 
-    auto editorSceneObjects =
-        std::make_shared<jleEditorSceneObjectsWindow>("Scene Objects");
+    auto editorSceneObjects = std::make_shared<jleEditorSceneObjectsWindow>("Scene Objects");
     addImGuiWindow(editorSceneObjects);
     menu->addWindow(editorSceneObjects);
 
-    auto contentBrowser =
-        std::make_shared<jleEditorContentBrowser>("Content Browser");
+    auto contentBrowser = std::make_shared<jleEditorContentBrowser>("Content Browser");
     addImGuiWindow(contentBrowser);
     menu->addWindow(contentBrowser);
 
-    auto resourceViewer =
-        std::make_shared<jleEditorResourceViewer>("Resource Viewer");
+    auto resourceViewer = std::make_shared<jleEditorResourceViewer>("Resource Viewer");
     addImGuiWindow(resourceViewer);
     menu->addWindow(resourceViewer);
 
@@ -100,17 +100,15 @@ void jleEditor::start()
     menu->addWindow(profilerWindow);
 
     gCore->window().addWindowResizeCallback(
-        std::bind(&jleEditor::mainEditorWindowResized,
-                  this,
-                  std::placeholders::_1,
-                  std::placeholders::_2));
+        std::bind(&jleEditor::mainEditorWindowResized, this, std::placeholders::_1, std::placeholders::_2));
 
     LOG_INFO << "Starting the game in editor mode";
 
     startGame();
 }
 
-void jleEditor::render()
+void
+jleEditor::render()
 {
     JLE_SCOPE_PROFILE(jleEditor::Render)
     if (!gameHalted && game) {
@@ -166,7 +164,9 @@ void jleEditor::render()
     rendering().clearBuffersForNextFrame();
 }
 
-void jleEditor::initImgui() {
+void
+jleEditor::initImgui()
+{
     ImGui::DebugCheckVersionAndDataLayout(IMGUI_VERSION,
                                           sizeof(ImGuiIO),
                                           sizeof(ImGuiStyle),
@@ -197,14 +197,15 @@ void jleEditor::initImgui() {
     config.OversampleV = 2;
     config.GlyphExtraSpacing.x = 1.0f;
 
-    io.Fonts->AddFontFromFileTTF(
-        "EditorResources/fonts/Roboto-Regular.ttf", 18, &config);
+    io.Fonts->AddFontFromFileTTF("EditorResources/fonts/Roboto-Regular.ttf", 18, &config);
 
     // up Dear ImGui style
     imguiTheme();
 }
 
-void jleEditor::imguiTheme() {
+void
+jleEditor::imguiTheme()
+{
     // cherry colors, 3 intensities
 #define HI(v) ImVec4(0.502f, 0.075f, 0.256f, v)
 #define MED(v) ImVec4(0.455f, 0.198f, 0.301f, v)
@@ -235,8 +236,7 @@ void jleEditor::imguiTheme() {
     style.Colors[ImGuiCol_ScrollbarGrabActive] = MED(1.00f);
     style.Colors[ImGuiCol_CheckMark] = ImVec4(0.71f, 0.22f, 0.27f, 1.00f);
     style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.47f, 0.77f, 0.83f, 0.14f);
-    style.Colors[ImGuiCol_SliderGrabActive] =
-        ImVec4(0.71f, 0.22f, 0.27f, 1.00f);
+    style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.71f, 0.22f, 0.27f, 1.00f);
     style.Colors[ImGuiCol_Button] = ImVec4(0.47f, 0.77f, 0.83f, 0.14f);
     style.Colors[ImGuiCol_ButtonHovered] = MED(0.86f);
     style.Colors[ImGuiCol_ButtonActive] = MED(1.00f);
@@ -277,11 +277,15 @@ void jleEditor::imguiTheme() {
     style.WindowBorderSize = 1.0f;
 }
 
-void jleEditor::addImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window) {
+void
+jleEditor::addImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window)
+{
     _imGuiWindows.push_back(window);
 }
 
-void jleEditor::mainEditorWindowResized(int w, int h) {
+void
+jleEditor::mainEditorWindowResized(int w, int h)
+{
     auto &&io = ImGui::GetIO();
     io.FontGlobalScale = w / 1920.f;
 }

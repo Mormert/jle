@@ -7,13 +7,23 @@
 class jleFramebuffer
 {
 public:
-    jleFramebuffer(unsigned int width, unsigned int height, bool shadowBuffer = false);
+    enum class jleFramebufferType {
+        ScreenRenderBuffer,      // A framebuffer that renders to the screen
+        MultisampleRenderBuffer, // A framebuffer that supports anti-aliasing (MSAA)
+        ShadowMapBuffer          // A framebuffer that light sources render to for shadow mapping
+    };
+
+    jleFramebuffer(unsigned int width, unsigned int height, jleFramebufferType type);
 
     ~jleFramebuffer();
 
-    void createRenderFramebuffer(unsigned int width, unsigned int height);
+    void createScreenRenderFramebuffer(unsigned int width, unsigned int height);
 
     void createShadowMappingFramebuffer(unsigned int width, unsigned int height);
+
+    void createMultisampledRenderFramebuffer(unsigned int width, unsigned int height, unsigned int samples);
+
+    static void blitFramebuffers(jleFramebuffer &source, jleFramebuffer &target);
 
     void resize(unsigned int width, unsigned int height);
 
@@ -34,17 +44,26 @@ public:
     unsigned int texture();
 
 private:
+    void destroyOldBuffers();
+
     unsigned int _width{}, _height{};
 
-    // The framebuffer ID
+    // The framebuffer object ID
     unsigned int _framebuffer{};
 
     // The framebuffer's texture ID
+    // Can be unset.
     unsigned int _texColorBuffer{};
 
     // The renderbuffer ID. Used for depth buffering when doing off-screen rendering.
     // Can be unset.
     unsigned int _rbo{};
 
-    bool _isShadowFramebuffer{false};
+    // Second renderbuffer object. Used for depth buffering or color buffering.
+    // Can be unset.
+    unsigned int _rbo2{};
+
+    jleFramebufferType _type;
+
+    unsigned int _msaaSamples{4};
 };

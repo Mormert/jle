@@ -44,6 +44,12 @@ public:
 
     void sendLight(const glm::vec3 &position, const glm::vec3 &color);
 
+    void enableDirectionalLight();
+
+    void disableDirectionalLight();
+
+    void setDirectionalLight(const glm::mat4 &view, const glm::vec3 &colour);
+
     void setSkybox(const std::shared_ptr<jleSkybox> &skybox);
 
     void clearBuffersForNextFrame();
@@ -79,4 +85,8 @@ private:
     float near_plane = -700.0f, far_plane = 700.f;
 
     std::unique_ptr<jleFramebuffer> _shadowMappingFramebuffer{};
+
+    bool _useDirectionalLight{false};
+    glm::vec3 _directionalLightRotation{};
+    glm::vec3 _directionalLightColour{};
 };

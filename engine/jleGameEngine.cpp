@@ -92,7 +92,8 @@ jleGameEngine::start()
 {
     constexpr int initialScreenX = 1024;
     constexpr int initialScreenY = 1024;
-    mainRenderFramebuffer = std::make_shared<jleFramebuffer>(initialScreenX, initialScreenY);
+    mainRenderFramebuffer = std::make_shared<jleFramebuffer>(
+        initialScreenX, initialScreenY, jleFramebuffer::jleFramebufferType::ScreenRenderBuffer);
 
     const auto &internalInputMouse = gCore->input().mouse;
     internalInputMouse->setPixelatedScreenSize(initialScreenX, initialScreenY);

@@ -29,7 +29,14 @@ jleRendering::render(jleFramebuffer &framebufferOut, const jleCamera &camera)
 {
     JLE_SCOPE_PROFILE(jleRendering::Render)
 
-    framebufferOut.bind();
+    static jleFramebuffer msaa{
+        framebufferOut.width(), framebufferOut.height(), jleFramebuffer::jleFramebufferType::MultisampleRenderBuffer};
+
+    msaa.resize(framebufferOut.width(), framebufferOut.height());
+
+    msaa.bind();
+
+    // framebufferOut.bind();
 
     const auto backgroundColor = camera.getBackgroundColor();
     glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f);
@@ -37,11 +44,14 @@ jleRendering::render(jleFramebuffer &framebufferOut, const jleCamera &camera)
 
     glEnable(GL_DEPTH_TEST);
 
-    _3dRenderer->queuerender(framebufferOut, camera);
+    _3dRenderer->queuerender(msaa, camera);
     //_quads->queuerender(framebufferOut, camera);
     //_texts->render(framebufferOut, camera);
 
-    framebufferOut.bindDefault();
+    // framebufferOut.bindDefault();
+    msaa.bindDefault();
+
+    jleFramebuffer::blitFramebuffers(msaa, framebufferOut);
 }
 
 void

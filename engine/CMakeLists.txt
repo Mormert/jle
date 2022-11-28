@@ -52,7 +52,8 @@ add_library(engine STATIC
         "cMesh.cpp"
         "jleSkybox.cpp"
         "cSkybox.cpp"
-        "cLight.cpp")
+        "cLight.cpp"
+        "cLightDirectional.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE

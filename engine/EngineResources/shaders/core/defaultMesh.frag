@@ -1,6 +1,4 @@
-#version 300 es
-
-precision highp float;
+#version 330 core
 
 out vec4 FragColor;
 

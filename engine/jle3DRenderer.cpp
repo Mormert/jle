@@ -11,8 +11,10 @@
 #include "jleStaticOpenGLState.h"
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 #ifdef __EMSCRIPTEN__
+#include <GLES2/gl2ext.h>
 #include <GLES3/gl3.h>
 #include <emscripten.h>
 #define GL_GLEXT_PROTOTYPES
@@ -132,7 +134,8 @@ jle3DRenderer::jle3DRenderer()
 
     glBindVertexArray(0);
 
-    _shadowMappingFramebuffer = std::make_unique<jleFramebuffer>(2048, 2048, true);
+    _shadowMappingFramebuffer =
+        std::make_unique<jleFramebuffer>(2048, 2048, jleFramebuffer::jleFramebufferType::ShadowMapBuffer);
 
     glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, near_plane, far_plane);
     jleCameraSimpleFPVController jc;
@@ -180,11 +183,16 @@ jle3DRenderer::render(jleFramebuffer &framebufferOut,
     // Change viewport dimensions to match framebuffer's dimensions
     glViewport(0, 0, viewportWidth, viewportHeight);
 
-    // renderExampleCubes(camera, cubeTransforms);
+    renderExampleCubes(camera, cubeTransforms);
+
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    //  glCullFace(GL_FRONT);
+    //  glFrontFace(GL_CCW);
 
     renderMeshes(camera, _queuedMeshes);
 
-    renderSkybox(camera);
+    // renderSkybox(camera);
 
     /* // Render shadow map in fullscreen as debug
     _debugDepthQuad.use();
@@ -253,6 +261,10 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
 
     _defaultMeshShader.use();
     _defaultMeshShader.SetInt("shadowMap", 0);
+
+    _defaultMeshShader.SetBool("UseDirectionalLight", _useDirectionalLight);
+    _defaultMeshShader.SetVec3("DirectionalLightColour", _directionalLightColour);
+    _defaultMeshShader.SetVec3("DirectionalLightDir", _directionalLightRotation);
 
     _defaultMeshShader.SetMat4("view", camera.getViewMatrix());
     _defaultMeshShader.SetMat4("proj", camera.getProjectionMatrix());
@@ -422,4 +434,35 @@ jle3DRenderer::renderFullscreenQuad()
     glBindVertexArray(quadVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glBindVertexArray(0);
+}
+void
+jle3DRenderer::setDirectionalLight(const glm::mat4 &view, const glm::vec3 &colour)
+{
+
+    glm::vec3 scale;
+    glm::quat rotation;
+    glm::vec3 translation;
+    glm::vec3 skew;
+    glm::vec4 perspective;
+    glm::decompose(view, scale, rotation, translation, skew, perspective);
+
+    _directionalLightRotation = rotation * glm::vec3{0.f, 0.f, 1.f};
+    _directionalLightColour = colour;
+
+    glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, near_plane, far_plane);
+    glm::mat4 lightView =
+        glm::lookAt(glm::vec3(-2.0f, 4.0f, -1.0f), rotation * glm::vec3{0.f, -1.f, 0.f}, glm::vec3(0.0f, -1.0f, 0.0f));
+    lightView[1][1] *= -1.f;
+
+    _lightSpaceMatrix = lightProjection * view;
+}
+void
+jle3DRenderer::enableDirectionalLight()
+{
+    _useDirectionalLight = true;
+}
+void
+jle3DRenderer::disableDirectionalLight()
+{
+    _useDirectionalLight = false;
 }

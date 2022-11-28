@@ -1,7 +1,5 @@
 #version 330 core
 
-//precision highp float;
-
 uniform sampler2D texture0;
 
 out vec4 FragColor;

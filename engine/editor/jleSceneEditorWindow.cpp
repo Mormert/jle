@@ -32,7 +32,8 @@ jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name, std::
 {
     _framebuffer = framebuffer;
 
-    _pickingFramebuffer = std::make_unique<jleFramebuffer>(_framebuffer->width(), _framebuffer->height());
+    _pickingFramebuffer = std::make_unique<jleFramebuffer>(
+        _framebuffer->width(), _framebuffer->height(), jleFramebuffer::jleFramebufferType::ScreenRenderBuffer);
 
     _fpvCamController.position = {0.f, 0.f, 250.f};
 }
@@ -139,9 +140,6 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
 
         unsigned char data[3];
         const int mouseY_flipped = (int)_lastGameWindowHeight - (mouseY - windowPositionY);
-
-        // TODO: Read the mouse x, y position but divide with the framebuffer screen size ratio
-        // to be able to find the actual real pixel ....
 
         int pixelReadX = (mouseX - windowPositionX) * (_pickingFramebuffer->width() / _lastGameWindowWidth);
         int pixelReadY = mouseY_flipped * (_pickingFramebuffer->height() / _lastGameWindowHeight);

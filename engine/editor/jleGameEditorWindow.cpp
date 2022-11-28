@@ -2,8 +2,6 @@
 
 #include "jleGameEditorWindow.h"
 #include "jleWindow.h"
-#include <GLFW/glfw3.h>
-
 #include "ImGui/imgui.h"
 
 #include "jleMouseInput.h"
@@ -19,6 +17,8 @@
 #include "glad/glad.h"
 
 #endif
+
+#include <GLFW/glfw3.h>
 
 jleGameEditorWindow::jleGameEditorWindow(const std::string &window_name) : iEditorImGuiWindow{window_name}
 {
