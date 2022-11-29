@@ -147,15 +147,19 @@
 #define IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
 #elif defined(__EMSCRIPTEN__)
 #define IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
-#define glBindVertexArray       glBindVertexArrayOES
-#define glGenVertexArrays       glGenVertexArraysOES
-#define glDeleteVertexArrays    glDeleteVertexArraysOES
+#define glBindVertexArray glBindVertexArrayOES
+#define glGenVertexArrays glGenVertexArraysOES
+#define glDeleteVertexArrays glDeleteVertexArraysOES
 #define GL_VERTEX_ARRAY_BINDING GL_VERTEX_ARRAY_BINDING_OES
 #endif
 
 // Desktop GL 2.0+ has glPolygonMode() which GL ES and WebGL don't have.
 #ifdef GL_POLYGON_MODE
+// <JLE>
+#ifndef BUILD_OPENGLES30
 #define IMGUI_IMPL_HAS_POLYGON_MODE
+#endif
+// </JLE>
 #endif
 
 // Desktop GL 3.2+ has glDrawElementsBaseVertex() which GL ES and WebGL don't have.

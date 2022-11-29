@@ -1,7 +1,6 @@
 # Copyright (c) 2022. Johan Lind
 
 add_library(engine STATIC
-        "3rdparty/gltext/gltext.c"
         "3rdparty/stb_image.cpp"
         "3rdparty/tiny_obj_loader.cpp"
         "jleEngineSettingsWindow.cpp"

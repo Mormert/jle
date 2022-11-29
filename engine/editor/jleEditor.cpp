@@ -2,11 +2,11 @@
 
 #include "jleEditor.h"
 
-#include "jlePathDefines.h"
 #include "ImGui/ImGuizmo.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_impl_glfw.h"
 #include "ImGui/imgui_impl_opengl3.h"
+#include "jlePathDefines.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -158,6 +158,8 @@ jleEditor::render()
         }
     }
 
+    checkGlErrors();
+
     rendering().clearBuffersForNextFrame();
 }
 
@@ -285,4 +287,40 @@ jleEditor::mainEditorWindowResized(int w, int h)
 {
     auto &&io = ImGui::GetIO();
     io.FontGlobalScale = w / 1920.f;
+}
+void
+jleEditor::checkGlErrors()
+{
+    // Goes through all the errors that OpenGL have queued up
+    GLenum errorCode;
+    while ((errorCode = glGetError()) != GL_NO_ERROR) {
+        std::string error;
+        switch (errorCode) {
+        case GL_INVALID_ENUM:
+            error = "INVALID_ENUM";
+            break;
+        case GL_INVALID_VALUE:
+            error = "INVALID_VALUE";
+            break;
+        case GL_INVALID_OPERATION:
+            error = "INVALID_OPERATION";
+            break;
+        case GL_STACK_OVERFLOW:
+            error = "STACK_OVERFLOW";
+            break;
+        case GL_STACK_UNDERFLOW:
+            error = "STACK_UNDERFLOW";
+            break;
+        case GL_OUT_OF_MEMORY:
+            error = "OUT_OF_MEMORY";
+            break;
+        case GL_INVALID_FRAMEBUFFER_OPERATION:
+            error = "INVALID_FRAMEBUFFER_OPERATION";
+            break;
+        default:
+            error = "UNKNOWN_ERROR";
+            break;
+        }
+        LOGE << "Detected OpenGL error somewhere of type: " << error;
+    }
 }

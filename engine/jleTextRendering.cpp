@@ -5,37 +5,14 @@
 #include "jleFrameBufferInterface.h"
 #include "jleProfiler.h"
 
-#include "jleIncludeGL.h"
+jleTextRendering::jleTextRendering() {}
 
-#define GLT_IMPLEMENTATION
-
-#include <gltext/gltext.h>
-
-jleTextRendering::jleTextRendering() { gltInit(); }
-
-jleTextRendering::~jleTextRendering() { gltTerminate(); }
-
-void jleTextRendering::sendSimpleText(const std::string &text,
-                                      float x,
-                                      float y,
-                                      float scale,
-                                      float r,
-                                      float g,
-                                      float b,
-                                      float a) {
-    jleSimpleTextData td{x, y, scale, r, g, b, a};
-    td.gltextPtr = gltCreateText();
-    gltSetText(td.gltextPtr, text.c_str());
-    _simpleTextDatas.push_back(td);
-}
+jleTextRendering::~jleTextRendering() {}
 
 void
 jleTextRendering::render(jleFramebufferInterface &framebufferOut, const jleCamera &camera)
 {
     JLE_SCOPE_PROFILE(jleTextRendering::Render)
-    if (_simpleTextDatas.empty() && _fontTextDatas.empty()) {
-        return;
-    }
 
     framebufferOut.bind();
 
@@ -54,30 +31,11 @@ jleTextRendering::render(jleFramebufferInterface &framebufferOut, const jleCamer
         }
     }
 
-    // DEPRECATED SIMPLE TEXT
-    /*if (!_simpleTextDatas.empty()) {
-        gltBeginDraw();
-
-        for (auto &&textData : _simpleTextDatas) {
-            gltColor(textData.r, textData.g, textData.b, textData.a);
-            gltDrawText2D(textData.gltextPtr,
-                          textData.x - camera.intX(),
-                          textData.y - camera.intY(),
-                          textData.scale);
-        }
-
-        gltEndDraw();
-    }*/
-
     framebufferOut.bindDefault();
 }
 
 void jleTextRendering::clearBuffersForNextFrame() {
     // Clean up after rendering this frame
-    for (auto &&textData : _simpleTextDatas) {
-        gltDeleteText(textData.gltextPtr);
-    }
-    _simpleTextDatas.clear();
     _fontTextDatas.clear();
 }
 

@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-struct GLTtext;
 class jleFont;
 class jleFramebufferInterface;
 
@@ -15,15 +14,6 @@ public:
     jleTextRendering();
 
     ~jleTextRendering();
-
-    void sendSimpleText(const std::string &text,
-                        float x,
-                        float y,
-                        float scale,
-                        float r,
-                        float g,
-                        float b,
-                        float a);
 
     void sendFontText(jleFont *font,
                       const std::string &text,
@@ -41,12 +31,6 @@ public:
     void clearBuffersForNextFrame();
 
 private:
-    struct jleSimpleTextData {
-        float x, y, scale, r, g, b, a;
-        GLTtext *gltextPtr;
-    };
-    std::vector<jleSimpleTextData> _simpleTextDatas;
-
     struct jleFontTextData {
         float x, y, depth, r, g, b, a;
         uint32_t fontSize;
