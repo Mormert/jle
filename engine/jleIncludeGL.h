@@ -6,8 +6,8 @@
 // When building with Emscripten, grab other include files
 // The extensions found in gl2ext are also found in glad.h
 #ifdef __EMSCRIPTEN__
-#include <GLES2/gl2ext.h>
 #include <GLES3/gl3.h>
+#include <GLES2/gl2ext.h>
 #include <emscripten.h>
 
 #define GL_GLEXT_PROTOTYPES
