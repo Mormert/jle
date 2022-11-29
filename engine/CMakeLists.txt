@@ -14,12 +14,14 @@ add_library(engine STATIC
         "jleAseprite.cpp"
         "jleScene.cpp"
         "jleTextRendering.cpp"
-        "InitWindow.cpp"
         "jleStaticOpenGLState.cpp"
         "jleGameEngine.cpp"
         "jleKeyboardInput.cpp"
         "jleMouseInput.cpp"
-        "jleFrameBuffer.cpp"
+        "jleFrameBufferInterface.cpp"
+        "jleFramebufferMultisample.cpp"
+        "jleFramebufferShadowMap.cpp"
+        "jleFramebufferPicking.cpp"
         "jleFullscreenRendering.cpp"
         "jleQuadRendering.cpp"
         "jleRendering.cpp"
@@ -53,7 +55,8 @@ add_library(engine STATIC
         "jleSkybox.cpp"
         "cSkybox.cpp"
         "cLight.cpp"
-        "cLightDirectional.cpp")
+        "cLightDirectional.cpp"
+        "jleFramebufferScreen.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE

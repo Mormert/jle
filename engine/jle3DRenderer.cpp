@@ -3,7 +3,7 @@
 #include "jle3DRenderer.h"
 
 #include "jleCamera.h"
-#include "jleFrameBuffer.h"
+#include "jleFrameBufferInterface.h"
 #include "jleFullscreenRendering.h"
 #include "jleGameEngine.h"
 #include "jlePathDefines.h"
@@ -13,19 +13,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
-#ifdef __EMSCRIPTEN__
-#include <GLES3/gl3.h>
-
-#include <GLES2/gl2ext.h>
-
-#include <emscripten.h>
-#define GL_GLEXT_PROTOTYPES
-#define EGL_EGLEXT_PROTOTYPES
-#else
-
-#include <glad/glad.h>
-
-#endif
+#include "jleIncludeGL.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <random>
@@ -136,8 +124,7 @@ jle3DRenderer::jle3DRenderer()
 
     glBindVertexArray(0);
 
-    _shadowMappingFramebuffer =
-        std::make_unique<jleFramebuffer>(2048, 2048, jleFramebuffer::jleFramebufferType::ShadowMapBuffer);
+    _shadowMappingFramebuffer = std::make_unique<jleFramebufferShadowMap>(2048, 2048);
 
     glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, near_plane, far_plane);
     jleCameraSimpleFPVController jc;
@@ -156,13 +143,13 @@ jle3DRenderer::~jle3DRenderer()
 }
 
 void
-jle3DRenderer::queuerender(jleFramebuffer &framebufferOut, const jleCamera &camera)
+jle3DRenderer::queuerender(jleFramebufferInterface &framebufferOut, const jleCamera &camera)
 {
     render(framebufferOut, camera, _queuedExampleCubes, _queuedMeshes);
 }
 
 void
-jle3DRenderer::render(jleFramebuffer &framebufferOut,
+jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
                       const jleCamera &camera,
                       const std::vector<glm::mat4> &cubeTransforms,
                       const std::vector<jle3DRendererQueuedMesh> &meshes)
@@ -337,7 +324,7 @@ jle3DRenderer::sendLight(const glm::vec3 &position, const glm::vec3 &color)
 }
 
 void
-jle3DRenderer::renderMeshesPicking(jleFramebuffer &framebufferOut, const jleCamera &camera)
+jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut, const jleCamera &camera)
 {
     JLE_SCOPE_PROFILE(jle3DRenderer::renderMeshesPicking)
 
@@ -386,7 +373,7 @@ jle3DRenderer::renderDirectionalLight(const jleCamera &camera)
 
     _shadowMappingShader.SetMat4("lightSpaceMatrix", _lightSpaceMatrix);
 
-    glViewport(0, 0, 2048, 2048);
+    glViewport(0, 0, (int)_shadowMappingFramebuffer->width(), (int)_shadowMappingFramebuffer->height());
 
     glClear(GL_DEPTH_BUFFER_BIT);
     renderShadowMeshes(_queuedMeshes);

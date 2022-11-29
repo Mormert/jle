@@ -15,7 +15,7 @@ namespace SoLoud {
 class Soloud;
 };
 
-class jleFramebuffer;
+class jleFramebufferInterface;
 class jleResources;
 class jleFontData;
 

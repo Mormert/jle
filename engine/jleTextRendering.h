@@ -8,7 +8,7 @@
 
 struct GLTtext;
 class jleFont;
-class jleFramebuffer;
+class jleFramebufferInterface;
 
 class jleTextRendering {
 public:
@@ -36,7 +36,7 @@ public:
                       float b,
                       float a);
 
-    void render(jleFramebuffer &framebufferOut, const jleCamera &camera);
+    void render(jleFramebufferInterface &framebufferOut, const jleCamera &camera);
 
     void clearBuffersForNextFrame();
 

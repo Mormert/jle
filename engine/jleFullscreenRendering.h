@@ -4,7 +4,7 @@
 
 #include "jleShader.h"
 
-class jleFramebuffer;
+class jleFramebufferInterface;
 
 class jleFullscreenRendering {
 public:
@@ -17,7 +17,7 @@ public:
 
     ~jleFullscreenRendering();
 
-    void renderFramebufferFullscreen(jleFramebuffer &framebuffer,
+    void renderFramebufferFullscreen(jleFramebufferInterface &framebuffer,
                                      unsigned int screenWidth,
                                      unsigned int screenHeight);
 

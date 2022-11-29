@@ -27,13 +27,13 @@ cCamera::framebufferResizeCallback(unsigned int width, unsigned int height)
 {
     glm::ivec2 dimensions{width, height};
     if (_framebufferUseFixedAxis) {
-        if (_framebufferFixedAxis == jleFramebuffer::FIXED_AXIS::width) {
+        if (_framebufferFixedAxis == jleFramebufferInterface::FIXED_AXIS::width) {
             const auto aspect = static_cast<float>(height) / static_cast<float>(width);
-            dimensions = jleFramebuffer::fixedAxisDimensions(_framebufferFixedAxis, aspect, _framebufferSizeX);
-        } else if (_framebufferFixedAxis == jleFramebuffer::FIXED_AXIS::height) {
+            dimensions = jleFramebufferInterface::fixedAxisDimensions(_framebufferFixedAxis, aspect, _framebufferSizeX);
+        } else if (_framebufferFixedAxis == jleFramebufferInterface::FIXED_AXIS::height) {
             const auto aspect = static_cast<float>(width) / static_cast<float>(height);
 
-            dimensions = jleFramebuffer::fixedAxisDimensions(_framebufferFixedAxis, aspect, _framebufferSizeY);
+            dimensions = jleFramebufferInterface::fixedAxisDimensions(_framebufferFixedAxis, aspect, _framebufferSizeY);
         }
     } else {
         dimensions = {width, height};
@@ -53,13 +53,13 @@ cCamera::update(float dt)
 
     if (_perspective) {
         game.mainCamera.setPerspectiveProjection(_perspectiveFov,
-                                                 gEngine->mainRenderFramebuffer->width(),
-                                                 gEngine->mainRenderFramebuffer->height(),
+                                                 gEngine->mainScreenFramebuffer->width(),
+                                                 gEngine->mainScreenFramebuffer->height(),
                                                  _farPlane,
                                                  _nearPlane);
     } else {
         game.mainCamera.setOrthographicProjection(
-            gEngine->mainRenderFramebuffer->width(), gEngine->mainRenderFramebuffer->height(), _farPlane, _nearPlane);
+            gEngine->mainScreenFramebuffer->width(), gEngine->mainScreenFramebuffer->height(), _farPlane, _nearPlane);
     }
 
     jleCameraSimpleFPVController c;
@@ -95,7 +95,8 @@ cCamera::fromJson(const nlohmann::json &j_in)
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _perspectiveFov, "fov", 90.f);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferSizeY, "framebufferSizeY", 1024);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferUseFixedAxis, "framebufferUseFixedAxis", false);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferFixedAxis, "framebufferFixedAxis", jleFramebuffer::FIXED_AXIS::width);
+    JLE_FROM_JSON_WITH_DEFAULT(
+        j_in, _framebufferFixedAxis, "framebufferFixedAxis", jleFramebufferInterface::FIXED_AXIS::width);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferUseFixedAxis, "framebufferUseFixedAxis", false);
     JLE_FROM_JSON_WITH_DEFAULT(j_in, _matchFramebufferToWindowSize, "matchFramebufferToWindowSize", false);
 }

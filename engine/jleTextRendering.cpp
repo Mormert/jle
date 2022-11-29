@@ -2,20 +2,10 @@
 
 #include "jleTextRendering.h"
 #include "jleFont.h"
-#include "jleFrameBuffer.h"
+#include "jleFrameBufferInterface.h"
 #include "jleProfiler.h"
 
-#ifdef __EMSCRIPTEN__
-#include <GLES3/gl3.h>
-#include <emscripten.h>
-#define GL_GLEXT_PROTOTYPES
-#define EGL_EGLEXT_PROTOTYPES
-#define __gl3_h_
-#else
-
-#include <glad/glad.h>
-
-#endif
+#include "jleIncludeGL.h"
 
 #define GLT_IMPLEMENTATION
 
@@ -39,8 +29,9 @@ void jleTextRendering::sendSimpleText(const std::string &text,
     _simpleTextDatas.push_back(td);
 }
 
-void jleTextRendering::render(jleFramebuffer &framebufferOut,
-                              const jleCamera &camera) {
+void
+jleTextRendering::render(jleFramebufferInterface &framebufferOut, const jleCamera &camera)
+{
     JLE_SCOPE_PROFILE(jleTextRendering::Render)
     if (_simpleTextDatas.empty() && _fontTextDatas.empty()) {
         return;

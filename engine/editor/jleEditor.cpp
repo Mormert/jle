@@ -3,7 +3,6 @@
 #include "jleEditor.h"
 
 #include "jlePathDefines.h"
-
 #include "ImGui/ImGuizmo.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_impl_glfw.h"
@@ -28,7 +27,7 @@
 #include "editor/jleEditorSceneObjectsWindow.h"
 #include "editor/jleEditorWindowsPanel.h"
 #include "jleEngineSettingsWindow.h"
-#include "jleFrameBuffer.h"
+#include "jleFramebufferScreen.h"
 #include "jleGameEditorWindow.h"
 #include "jleQuadRendering.h"
 #include "jleSceneEditorWindow.h"
@@ -50,18 +49,16 @@ jleEditor::start()
 
     constexpr int initialScreenX = 1024;
     constexpr int initialScreenY = 1024;
-    mainRenderFramebuffer = std::make_shared<jleFramebuffer>(
-        initialScreenX, initialScreenY, jleFramebuffer::jleFramebufferType::ScreenRenderBuffer);
+    mainScreenFramebuffer = std::make_shared<jleFramebufferScreen>(initialScreenX, initialScreenY);
 
-    editorRenderFramebuffer = std::make_shared<jleFramebuffer>(
-        initialScreenX, initialScreenY, jleFramebuffer::jleFramebufferType::ScreenRenderBuffer);
+    editorScreenFramebuffer = std::make_shared<jleFramebufferScreen>(initialScreenX, initialScreenY);
 
     // Note: Important that menu comes first here, since the others are
     // dependent on the menu's dockspace.
     auto menu = std::make_shared<jleEditorWindowsPanel>("Menu");
     addImGuiWindow(menu);
 
-    auto sceneWindow = std::make_shared<jleSceneEditorWindow>("Scene Window", editorRenderFramebuffer);
+    auto sceneWindow = std::make_shared<jleSceneEditorWindow>("Scene Window", editorScreenFramebuffer);
     addImGuiWindow(sceneWindow);
     menu->addWindow(sceneWindow);
 
@@ -113,19 +110,19 @@ jleEditor::render()
     JLE_SCOPE_PROFILE(jleEditor::Render)
     if (!gameHalted && game) {
         // Render to game view
-        rendering().render(*mainRenderFramebuffer, game->mainCamera);
+        rendering().render(*mainScreenFramebuffer, game->mainCamera);
     }
 
     if (projectionType == jleCameraProjection::Orthographic) {
         editorCamera.setOrthographicProjection(
-            editorRenderFramebuffer->width(), editorRenderFramebuffer->height(), 10000.f, -10000.f);
+            editorScreenFramebuffer->width(), editorScreenFramebuffer->height(), 10000.f, -10000.f);
     } else {
         editorCamera.setPerspectiveProjection(
-            45.f, editorRenderFramebuffer->width(), editorRenderFramebuffer->height(), 10000.f, 0.1f);
+            45.f, editorScreenFramebuffer->width(), editorScreenFramebuffer->height(), 10000.f, 0.1f);
     }
 
     // Render to editor scene view
-    rendering().render(*editorRenderFramebuffer, editorCamera);
+    rendering().render(*editorScreenFramebuffer, editorCamera);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

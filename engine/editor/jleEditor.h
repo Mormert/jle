@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-class jleFramebuffer;
+class jleFramebufferInterface;
 
 class jleEditor : public jleGameEngine {
 public:
@@ -21,7 +21,7 @@ public:
 
     void render() override;
 
-    std::shared_ptr<jleFramebuffer> editorRenderFramebuffer;
+    std::shared_ptr<jleFramebufferInterface> editorScreenFramebuffer;
 
     static inline jleCameraProjection projectionType;
 

@@ -30,13 +30,13 @@ cCameraFPV::update(float dt)
 
     if (_perspective) {
         game.mainCamera.setPerspectiveProjection(_perspectiveFov,
-                                                 gEngine->mainRenderFramebuffer->width(),
-                                                 gEngine->mainRenderFramebuffer->height(),
+                                                 gEngine->mainScreenFramebuffer->width(),
+                                                 gEngine->mainScreenFramebuffer->height(),
                                                  _farPlane,
                                                  _nearPlane);
     } else {
         game.mainCamera.setOrthographicProjection(
-            gEngine->mainRenderFramebuffer->width(), gEngine->mainRenderFramebuffer->height(), _farPlane, _nearPlane);
+            gEngine->mainScreenFramebuffer->width(), gEngine->mainScreenFramebuffer->height(), _farPlane, _nearPlane);
     }
 
     const auto &keyboard = gCore->input().keyboard;

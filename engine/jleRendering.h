@@ -4,12 +4,12 @@
 
 #include "jle3DRenderer.h"
 #include "jleCamera.h"
-#include "jleFrameBuffer.h"
+#include "jleFrameBufferInterface.h"
 #include "jleQuadRendering.h"
 #include "jleTextRendering.h"
 #include <memory>
 
-class jleFramebuffer;
+class jleFramebufferInterface;
 
 class jleRendering {
 public:
@@ -22,7 +22,7 @@ public:
                             unsigned int width,
                             unsigned int height);
 
-    void render(jleFramebuffer &framebufferOut, const jleCamera &camera);
+    void render(jleFramebufferInterface &framebufferOut, const jleCamera &camera);
 
     void clearBuffersForNextFrame();
 

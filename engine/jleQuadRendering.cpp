@@ -1,23 +1,14 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jleQuadRendering.h"
-#include "jleFrameBuffer.h"
+#include "jleFrameBufferInterface.h"
 #include "jlePathDefines.h"
 #include "jleProfiler.h"
 #include "plog/Log.h"
 #include <random>
 #include <thread>
 
-#ifdef __EMSCRIPTEN__
-#include <GLES3/gl3.h>
-#include <emscripten.h>
-#define GL_GLEXT_PROTOTYPES
-#define EGL_EGLEXT_PROTOTYPES
-#else
-
-#include <glad/glad.h>
-
-#endif
+#include "jleIncludeGL.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -163,7 +154,7 @@ jleQuadRendering::sendSimpleTexturedHeightQuad(jleTexturedHeightQuad &texturedHe
 }
 
 void
-jleQuadRendering::queuerender(jleFramebuffer &framebufferOut, const jleCamera &camera)
+jleQuadRendering::queuerender(jleFramebufferInterface &framebufferOut, const jleCamera &camera)
 {
     render(framebufferOut, camera, _queuedTexturedQuads, _queuedTexturedHeightQuads, _queuedSimpleTexturedHeightQuads);
 }
@@ -177,7 +168,7 @@ jleQuadRendering::clearBuffersForNextFrame()
 }
 
 void
-jleQuadRendering::render(jleFramebuffer &framebufferOut,
+jleQuadRendering::render(jleFramebufferInterface &framebufferOut,
                          const jleCamera &camera,
                          const std::vector<texturedQuad> &texturedQuads,
                          const std::vector<jleTexturedHeightQuad> &texturedHeightQuads,

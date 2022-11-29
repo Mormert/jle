@@ -8,7 +8,7 @@
 
 #include "cTransform.h"
 #include "glm/common.hpp"
-#include "jleFrameBuffer.h"
+#include "jleFramebufferPicking.h"
 #include "jleQuadRendering.h"
 #include "jleStaticOpenGLState.h"
 #include "jleTexture.h"
@@ -27,13 +27,13 @@
 
 #include <GLFW/glfw3.h>
 
-jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name, std::shared_ptr<jleFramebuffer> &framebuffer)
+jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name,
+                                           std::shared_ptr<jleFramebufferInterface> &framebuffer)
     : iEditorImGuiWindow(window_name)
 {
     _framebuffer = framebuffer;
 
-    _pickingFramebuffer = std::make_unique<jleFramebuffer>(
-        _framebuffer->width(), _framebuffer->height(), jleFramebuffer::jleFramebufferType::ScreenRenderBuffer);
+    _pickingFramebuffer = std::make_unique<jleFramebufferPicking>(_framebuffer->width(), _framebuffer->height());
 
     _fpvCamController.position = {0.f, 0.f, 250.f};
 }
@@ -92,8 +92,8 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         _lastGameWindowHeight = ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset;
 
         const auto aspect = static_cast<float>(_lastGameWindowHeight) / static_cast<float>(_lastGameWindowWidth);
-        auto dims = jleFramebuffer::fixedAxisDimensions(
-            jleFramebuffer::FIXED_AXIS::width, aspect, static_cast<unsigned int>(ImGui::GetWindowHeight()));
+        auto dims = jleFramebufferInterface::fixedAxisDimensions(
+            jleFramebufferInterface::FIXED_AXIS::width, aspect, static_cast<unsigned int>(ImGui::GetWindowHeight()));
 
         _framebuffer->resize(dims.x * zoomValue, dims.y * zoomValue);
     }
@@ -309,8 +309,10 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
             zoomValue = glm::clamp(zoomValue, 0.25f, 5.f);
 
             const auto aspect = static_cast<float>(_lastGameWindowHeight) / static_cast<float>(_lastGameWindowWidth);
-            auto dims = jleFramebuffer::fixedAxisDimensions(
-                jleFramebuffer::FIXED_AXIS::width, aspect, static_cast<unsigned int>(ImGui::GetWindowHeight()));
+            auto dims =
+                jleFramebufferInterface::fixedAxisDimensions(jleFramebufferInterface::FIXED_AXIS::width,
+                                                             aspect,
+                                                             static_cast<unsigned int>(ImGui::GetWindowHeight()));
 
             _framebuffer->resize(dims.x * zoomValue, dims.y * zoomValue);
             _pickingFramebuffer->resize(dims.x * zoomValue, dims.y * zoomValue);

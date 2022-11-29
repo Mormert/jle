@@ -2,18 +2,9 @@
 
 #include "jleFullscreenRendering.h"
 
-#ifdef __EMSCRIPTEN__
-#include <GLES3/gl3.h>
-#include <emscripten.h>
-#define GL_GLEXT_PROTOTYPES
-#define EGL_EGLEXT_PROTOTYPES
-#else
+#include "jleIncludeGL.h"
 
-#include <glad/glad.h>
-
-#endif
-
-#include "jleFrameBuffer.h"
+#include "jleFrameBufferInterface.h"
 #include "jlePathDefines.h"
 #include "jleStaticOpenGLState.h"
 #include <string>
@@ -55,10 +46,11 @@ jleFullscreenRendering::~jleFullscreenRendering() {
     glDeleteBuffers(1, &quadVBO);
 }
 
-void jleFullscreenRendering::renderFramebufferFullscreen(
-    jleFramebuffer &framebuffer,
-    unsigned int screenWidth,
-    unsigned int screenHeight) {
+void
+jleFullscreenRendering::renderFramebufferFullscreen(jleFramebufferInterface &framebuffer,
+                                                    unsigned int screenWidth,
+                                                    unsigned int screenHeight)
+{
     // Back to default screen framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

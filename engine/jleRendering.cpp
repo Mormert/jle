@@ -2,17 +2,9 @@
 
 #include "jleRendering.h"
 
-#ifdef __EMSCRIPTEN__
-#include <GLES3/gl3.h>
-#include <emscripten.h>
-#define GL_GLEXT_PROTOTYPES
-#define EGL_EGLEXT_PROTOTYPES
-#else
+#include "jleIncludeGL.h"
 
-#include <glad/glad.h>
-
-#endif
-
+#include "jleFramebufferMultisample.h"
 #include "jleProfiler.h"
 #include "jleQuadRendering.h"
 #include "jleTextRendering.h"
@@ -25,12 +17,12 @@ jleRendering::viewportDimensions(int x, int y, unsigned int width, unsigned int 
 }
 
 void
-jleRendering::render(jleFramebuffer &framebufferOut, const jleCamera &camera)
+jleRendering::render(jleFramebufferInterface &framebufferOut, const jleCamera &camera)
 {
     JLE_SCOPE_PROFILE(jleRendering::Render)
 
-    static jleFramebuffer msaa{
-        framebufferOut.width(), framebufferOut.height(), jleFramebuffer::jleFramebufferType::MultisampleRenderBuffer};
+    // TODO: Remove this static buffer here and don't resize it all the time...
+    static jleFramebufferMultisample msaa{framebufferOut.width(), framebufferOut.height(), 4};
 
     msaa.resize(framebufferOut.width(), framebufferOut.height());
 
@@ -49,9 +41,9 @@ jleRendering::render(jleFramebuffer &framebufferOut, const jleCamera &camera)
     //_texts->render(framebufferOut, camera);
 
     // framebufferOut.bindDefault();
-    msaa.bindDefault();
+    jleFramebufferInterface::bindDefault();
 
-    jleFramebuffer::blitFramebuffers(msaa, framebufferOut);
+    msaa.blitToOther(framebufferOut);
 }
 
 void

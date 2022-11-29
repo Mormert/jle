@@ -2,10 +2,10 @@
 
 #pragma once
 
+#include "jleFramebufferShadowMap.h"
 #include "jleSkybox.h"
 #include <glm/fwd.hpp>
 #include <jleCamera.h>
-#include <jleFrameBuffer.h>
 #include <jleMesh.h>
 #include <jleShader.h>
 #include <memory>
@@ -29,14 +29,14 @@ public:
 
     virtual ~jle3DRenderer();
 
-    void queuerender(jleFramebuffer &framebufferOut, const jleCamera &camera);
+    void queuerender(jleFramebufferInterface &framebufferOut, const jleCamera &camera);
 
-    void render(jleFramebuffer &framebufferOut,
+    void render(jleFramebufferInterface &framebufferOut,
                 const jleCamera &camera,
                 const std::vector<glm::mat4> &cubeTransforms,
                 const std::vector<jle3DRendererQueuedMesh> &meshes);
 
-    void renderMeshesPicking(jleFramebuffer &framebufferOut, const jleCamera &camera);
+    void renderMeshesPicking(jleFramebufferInterface &framebufferOut, const jleCamera &camera);
 
     void sendExampleCube(const glm::mat4 &transform);
 
@@ -84,7 +84,7 @@ private:
     glm::mat4 _lightSpaceMatrix{};
     float near_plane = -700.0f, far_plane = 700.f;
 
-    std::unique_ptr<jleFramebuffer> _shadowMappingFramebuffer{};
+    std::unique_ptr<jleFramebufferShadowMap> _shadowMappingFramebuffer{};
 
     bool _useDirectionalLight{false};
     glm::vec3 _directionalLightRotation{};

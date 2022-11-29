@@ -8,7 +8,7 @@
 #include "jleGameSettings.h"
 
 class jleFullscreenRendering;
-class jleFramebuffer;
+class jleFramebufferInterface;
 
 class jleGameEngine;
 inline jleGameEngine *gEngine;
@@ -27,7 +27,7 @@ public:
         _gameCreator = []() { return std::make_unique<T>(); };
     }
 
-    std::shared_ptr<jleFramebuffer> mainRenderFramebuffer;
+    std::shared_ptr<jleFramebufferInterface> mainScreenFramebuffer;
 
     void resizeMainFramebuffer(unsigned int width, unsigned int height);
 

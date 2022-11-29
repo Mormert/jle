@@ -66,11 +66,14 @@ public:
 
     static jleWindow *activeWindow;
 
-    GLFWwindow *glfwWindow() { return nativeWindow; }
+    GLFWwindow *
+    glfwWindow()
+    {
+        return _glfwWindow;
+    }
 
 protected:
-    // Native handle to GLFW window
-    GLFWwindow *nativeWindow;
+    GLFWwindow *_glfwWindow;
 
     WindowSettings windowSettings;
 
@@ -80,6 +83,7 @@ protected:
     bool cursorVisible{false};
 
 private:
+    static GLFWwindow *initWindow(int width, int height, const char *title);
     inline static bool sPressedKeys[256];
     inline static bool sReleasedKeys[256];
 

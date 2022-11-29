@@ -4,16 +4,7 @@
 #include "jleStaticOpenGLState.h"
 #include "plog/Log.h"
 
-#ifdef __EMSCRIPTEN__
-#include <GLES3/gl3.h>
-#include <emscripten.h>
-#define GL_GLEXT_PROTOTYPES
-#define EGL_EGLEXT_PROTOTYPES
-#else
-
-#include <glad/glad.h>
-
-#endif
+#include "jleIncludeGL.h"
 
 #include <fstream>
 #include <iostream>

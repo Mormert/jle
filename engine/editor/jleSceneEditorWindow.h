@@ -10,7 +10,7 @@
 
 class jleSceneEditorWindow : public iEditorImGuiWindow {
 public:
-    jleSceneEditorWindow(const std::string &window_name, std::shared_ptr<jleFramebuffer> &framebuffer);
+    jleSceneEditorWindow(const std::string &window_name, std::shared_ptr<jleFramebufferInterface> &framebuffer);
 
     void update(jleGameEngine &ge) override;
 
@@ -19,9 +19,9 @@ private:
     std::pair<int32_t, int32_t> _lastCursorPos;
     bool _wasFocused = false;
 
-    std::unique_ptr<jleFramebuffer> _pickingFramebuffer;
+    std::unique_ptr<jleFramebufferInterface> _pickingFramebuffer;
 
-    std::shared_ptr<jleFramebuffer> _framebuffer;
+    std::shared_ptr<jleFramebufferInterface> _framebuffer;
 
     jleCameraSimpleFPVController _fpvCamController;
 

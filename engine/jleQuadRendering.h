@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-class jleFramebuffer;
+class jleFramebufferInterface;
 
 class jleQuadRendering {
 public:
@@ -31,9 +31,9 @@ public:
     void sendSimpleTexturedHeightQuad(
         jleTexturedHeightQuad &texturedHeightQuad);
 
-    void queuerender(jleFramebuffer &framebufferOut, const jleCamera &camera);
+    void queuerender(jleFramebufferInterface &framebufferOut, const jleCamera &camera);
 
-    void render(jleFramebuffer &framebufferOut,
+    void render(jleFramebufferInterface &framebufferOut,
                 const jleCamera &camera,
                 const std::vector<texturedQuad> &texturedQuads,
                 const std::vector<jleTexturedHeightQuad> &texturedHeightQuads,
@@ -72,7 +72,7 @@ private:
     void renderCube(glm::mat4 &model, jleShader &shader);
 
     jleShader shadowMappingShader;
-    std::unique_ptr<jleFramebuffer> shadowMapBuffer;
+    std::unique_ptr<jleFramebufferInterface> shadowMapBuffer;
 
     // ---
 
