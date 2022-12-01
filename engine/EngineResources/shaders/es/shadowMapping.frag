@@ -2,7 +2,7 @@
 
 precision highp float;
 
-#define BIAS 0.005
+#define BIAS 0.1
 
 void main()
 {
@@ -13,8 +13,8 @@ void main()
     // Another way is to account for peter panning in this shadow mapping shader:
 
     gl_FragDepth = gl_FragCoord.z;
-    gl_FragDepth += gl_FrontFacing ? BIAS : 0.0;// Mitigate shadow acne
+    gl_FragDepth += gl_FrontFacing ? BIAS : 0.0; // Mitigate shadow acne
 
-    // The bias can also be calculated depending on surface normal and light direction
+    // The bias could also be calculated depending on surface normal and light direction
     // float bias = max(0.05 * (1.0 - dot(N, L)), 0.005);
 }

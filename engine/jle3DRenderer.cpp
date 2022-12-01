@@ -160,9 +160,6 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
     const int viewportHeight = framebufferOut.height();
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CW);
 
     // Directional light renders to the shadow mapping framebuffer
     renderDirectionalLight(camera);
@@ -176,8 +173,8 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
-    //  glCullFace(GL_FRONT);
-    //  glFrontFace(GL_CCW);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
 
     renderMeshes(camera, _queuedMeshes);
 

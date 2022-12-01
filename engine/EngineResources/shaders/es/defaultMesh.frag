@@ -222,7 +222,7 @@ float SampleShadowMapLinear(sampler2D shadowMap, vec2 coords, float compare, vec
     return mix(mixA, mixB, fracPart.x);
 }
 
-float ShadowCalculation(vec4 fragPosLightSpace)
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 N, vec3 L)
 {
     // perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -236,15 +236,14 @@ float ShadowCalculation(vec4 fragPosLightSpace)
         return 1.0;
     }
 
-
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
     float closestDepth = texture(shadowMap, projCoords.xy).r;
 
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
 
-    float bias = 0.0;// Bias is implemented in shadow mapping fragment shader instead
-    //float shadow = currentDepth - bias > closestDepth  ? 0.5 : 1.0;
+    // Slightly add bias for mitigating shadow acne further
+    float bias = max(0.001 * (1.0 - dot(N, -L)), 0.00015);
 
     ivec2 textureSize2d = textureSize(shadowMap, 0);
     float sizeTexture = float(textureSize2d.x);
@@ -257,9 +256,6 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     {
         for (int y = -halfkernelWidth; y <= halfkernelWidth; ++y)
         {
-            // float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-            // shadow += currentDepth - bias > pcfDepth ? 0.0 : 1.0;
-
             shadow += SampleShadowMapLinear(shadowMap, projCoords.xy + vec2(x, y) * texelSize, currentDepth - bias, vec2(texelSize));
         }
     }
@@ -303,7 +299,7 @@ void main()
         float NdotL = max(dot(N, L), 0.0);
 
         // Incoming radiance, depends on shadows from other objects
-        vec3 radiance = DirectionalLightColour * ShadowCalculation(FragPosLightSpace);
+        vec3 radiance = DirectionalLightColour * ShadowCalculation(FragPosLightSpace, N, L);
 
         LightOutTotal += radiance * blinn_phong_brdf(L, V, N) * NdotL;
     }
