@@ -29,6 +29,8 @@ jle3DRenderer::jle3DRenderer()
                      std::string{JLE_ENGINE_PATH_SHADERS + "/picking.frag"}.c_str()},
       _shadowMappingShader{std::string{JLE_ENGINE_PATH_SHADERS + "/shadowMapping.vert"}.c_str(),
                            std::string{JLE_ENGINE_PATH_SHADERS + "/shadowMapping.frag"}.c_str()},
+      _shadowMappingPointShader{std::string{JLE_ENGINE_PATH_SHADERS + "/shadowMappingPoint.vert"}.c_str(),
+                                std::string{JLE_ENGINE_PATH_SHADERS + "/shadowMappingPoint.frag"}.c_str()},
       _debugDepthQuad{std::string{JLE_ENGINE_PATH_SHADERS + "/debugDepthQuad.vert"}.c_str(),
                       std::string{JLE_ENGINE_PATH_SHADERS + "/debugDepthQuad.frag"}.c_str()}
 {
@@ -125,6 +127,7 @@ jle3DRenderer::jle3DRenderer()
     glBindVertexArray(0);
 
     _shadowMappingFramebuffer = std::make_unique<jleFramebufferShadowMap>(2048, 2048);
+    _pointsShadowMappingFramebuffer = std::make_unique<jleFramebufferShadowCubeMap>(1024, 1024);
 
     glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, near_plane, far_plane);
     jleCameraSimpleFPVController jc;
@@ -163,6 +166,8 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 
     // Directional light renders to the shadow mapping framebuffer
     renderDirectionalLight(camera);
+
+    renderPointLights(camera);
 
     framebufferOut.bind();
 
@@ -245,8 +250,14 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
     glBindTexture(GL_TEXTURE_2D, _shadowMappingFramebuffer->texture());
     jleStaticOpenGLState::globalActiveTexture = _shadowMappingFramebuffer->texture();
 
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, _pointsShadowMappingFramebuffer->texture());
+
     _defaultMeshShader.use();
     _defaultMeshShader.SetInt("shadowMap", 0);
+    _defaultMeshShader.SetInt("shadowMapPoint", 1); // TODO: multi textures here
+
+    _defaultMeshShader.SetFloat("farPlane", 500.f);
 
     _defaultMeshShader.SetBool("UseDirectionalLight", _useDirectionalLight);
     _defaultMeshShader.SetVec3("DirectionalLightColour", _directionalLightColour);
@@ -278,6 +289,8 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
         }
         glBindVertexArray(0);
     }
+
+    glActiveTexture(GL_TEXTURE0);
 }
 void
 jle3DRenderer::setSkybox(const std::shared_ptr<jleSkybox> &skybox)
@@ -357,10 +370,16 @@ jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut, cons
 
     framebufferOut.bindDefault();
 }
+
 void
 jle3DRenderer::renderDirectionalLight(const jleCamera &camera)
 {
     JLE_SCOPE_PROFILE(jle3DRenderer::renderDirectionalLight)
+
+    if(!_useDirectionalLight)
+    {
+        return;
+    }
 
     _shadowMappingFramebuffer->bind();
 
@@ -373,17 +392,66 @@ jle3DRenderer::renderDirectionalLight(const jleCamera &camera)
     glViewport(0, 0, (int)_shadowMappingFramebuffer->width(), (int)_shadowMappingFramebuffer->height());
 
     glClear(GL_DEPTH_BUFFER_BIT);
-    renderShadowMeshes(_queuedMeshes);
+    renderShadowMeshes(_queuedMeshes, _shadowMappingShader);
 
     glEnable(GL_CULL_FACE);
 
     _shadowMappingFramebuffer->bindDefault();
 }
+
 void
-jle3DRenderer::renderShadowMeshes(const std::vector<jle3DRendererQueuedMesh> &meshes)
+jle3DRenderer::renderPointLights(const jleCamera &camera)
+{
+    JLE_SCOPE_PROFILE(jle3DRenderer::renderPointLights)
+
+    if (_queuedLights.empty()) {
+        return;
+    }
+
+    glCullFace(GL_BACK);
+
+    float aspect = (float)_pointsShadowMappingFramebuffer->width() / (float)_pointsShadowMappingFramebuffer->height();
+    float near = 0.0f;
+    float far = 500.0f;
+    glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
+
+    glm::vec3 lightPos = _queuedLights[0].position;
+
+    std::vector<glm::mat4> shadowTransforms;
+    shadowTransforms.push_back(shadowProj *
+                               glm::lookAt(lightPos, lightPos + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+    shadowTransforms.push_back(shadowProj *
+                               glm::lookAt(lightPos, lightPos + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+    shadowTransforms.push_back(shadowProj *
+                               glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
+    shadowTransforms.push_back(shadowProj *
+                               glm::lookAt(lightPos, lightPos + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+    shadowTransforms.push_back(shadowProj *
+                               glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+    shadowTransforms.push_back(shadowProj *
+                               glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+
+    _shadowMappingPointShader.use();
+    _shadowMappingPointShader.SetVec3("lightPos", lightPos);
+    _shadowMappingPointShader.SetFloat("farPlane", far);
+
+    for (int i = 0; i < 6; i++) {
+        _shadowMappingPointShader.SetMat4("lightSpaceMatrix", shadowTransforms[i]);
+        _pointsShadowMappingFramebuffer->setRenderFace(i);
+        glViewport(0, 0, (int)_pointsShadowMappingFramebuffer->width(), (int)_pointsShadowMappingFramebuffer->height());
+
+        glClear(GL_DEPTH_BUFFER_BIT);
+        renderShadowMeshes(_queuedMeshes, _shadowMappingPointShader);
+    }
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+}
+
+void
+jle3DRenderer::renderShadowMeshes(const std::vector<jle3DRendererQueuedMesh> &meshes, jleShader &shader)
 {
     for (auto &&mesh : meshes) {
-        _shadowMappingShader.SetMat4("model", mesh.transform);
+        shader.SetMat4("model", mesh.transform);
         glBindVertexArray(mesh.mesh->getVAO());
         if (mesh.mesh->usesIndexing()) {
             glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);

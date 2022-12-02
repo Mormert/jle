@@ -68,9 +68,9 @@ jleFramebufferInterface::height() const
 unsigned int
 jleFramebufferInterface::texture() const
 {
-    // Note: the framebuffer doesn't have to keep a color texture!
-    assert(_colorTexture > 0);
-    return _colorTexture;
+    // Note: the framebuffer doesn't have to keep a texture!
+    assert(_texture > 0);
+    return _texture;
 }
 
 glm::ivec2

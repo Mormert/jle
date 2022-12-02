@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "jleFramebufferShadowCubeMap.h"
 #include "jleFramebufferShadowMap.h"
 #include "jleSkybox.h"
 #include <glm/fwd.hpp>
@@ -66,11 +67,12 @@ private:
     jleShader _defaultMeshShader;
     jleShader _pickingShader;
     jleShader _shadowMappingShader;
+    jleShader _shadowMappingPointShader;
     jleShader _debugDepthQuad;
 
     void renderMeshes(const jleCamera &camera, const std::vector<jle3DRendererQueuedMesh> &meshes);
 
-    void renderShadowMeshes(const std::vector<jle3DRendererQueuedMesh> &meshes);
+    void renderShadowMeshes(const std::vector<jle3DRendererQueuedMesh> &meshes, jleShader& shader);
 
     std::vector<jle3DRendererQueuedMesh> _queuedMeshes;
 
@@ -84,7 +86,10 @@ private:
     glm::mat4 _lightSpaceMatrix{};
     float near_plane = -700.0f, far_plane = 700.f;
 
+    void renderPointLights(const jleCamera& camera);
+
     std::unique_ptr<jleFramebufferShadowMap> _shadowMappingFramebuffer{};
+    std::unique_ptr<jleFramebufferShadowCubeMap> _pointsShadowMappingFramebuffer{};
 
     bool _useDirectionalLight{false};
     glm::vec3 _directionalLightRotation{};

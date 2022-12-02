@@ -40,5 +40,5 @@ protected:
 
     // The color texture.
     // Note: It can be 0 and unset, depending on framebuffer type.
-    unsigned int _colorTexture{};
+    unsigned int _texture{};
 };

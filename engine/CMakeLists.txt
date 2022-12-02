@@ -20,6 +20,7 @@ add_library(engine STATIC
         "jleFrameBufferInterface.cpp"
         "jleFramebufferMultisample.cpp"
         "jleFramebufferShadowMap.cpp"
+        "jleFramebufferShadowCubeMap.cpp"
         "jleFramebufferPicking.cpp"
         "jleFullscreenRendering.cpp"
         "jleQuadRendering.cpp"

@@ -24,7 +24,11 @@ jleRendering::render(jleFramebufferInterface &framebufferOut, const jleCamera &c
     // TODO: Remove this static buffer here and don't resize it all the time...
     static jleFramebufferMultisample msaa{framebufferOut.width(), framebufferOut.height(), 4};
 
-    msaa.resize(framebufferOut.width(), framebufferOut.height());
+    {
+        // TODO : Fix this, it takes ~5 MS to resize the MSAA framebuffer!!!
+        JLE_SCOPE_PROFILE(jleRendering::Render-MSAA-RESIZE)
+        msaa.resize(framebufferOut.width(), framebufferOut.height());
+    }
 
     msaa.bind();
 

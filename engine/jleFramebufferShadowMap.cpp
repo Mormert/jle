@@ -13,8 +13,8 @@ jleFramebufferShadowMap::jleFramebufferShadowMap(unsigned int width, unsigned in
     glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
 
     // Generate texture
-    glGenTextures(1, &_colorTexture);
-    glBindTexture(GL_TEXTURE_2D, _colorTexture);
+    glGenTextures(1, &_texture);
+    glBindTexture(GL_TEXTURE_2D, _texture);
 
     // Attach the texture to the bound framebuffer object as GL_DEPTH_COMPONENT
 #ifdef BUILD_OPENGLES30
@@ -47,7 +47,7 @@ jleFramebufferShadowMap::jleFramebufferShadowMap(unsigned int width, unsigned in
 #endif
 
     // Render depth values to the texture (GL_DEPTH_ATTACHMENT)
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _colorTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _texture, 0);
 
     // We only need depth information when rendering the scene from a light's perspective.
     // Thus, a shadow mapping framebuffer does not have a color buffer.
@@ -72,7 +72,7 @@ jleFramebufferShadowMap::resize(unsigned int width, unsigned int height)
     this->_width = width;
     this->_height = height;
 
-    glBindTexture(GL_TEXTURE_2D, _colorTexture);
+    glBindTexture(GL_TEXTURE_2D, _texture);
 #ifdef BUILD_OPENGLES30
     // OpenGL ES 3.0 uses 16 bit depth component here instead of default 24 bit
     glTexImage2D(GL_TEXTURE_2D,
@@ -92,7 +92,7 @@ jleFramebufferShadowMap::resize(unsigned int width, unsigned int height)
 
 jleFramebufferShadowMap::~jleFramebufferShadowMap()
 {
-    if (_colorTexture) {
-        glDeleteTextures(1, &_colorTexture);
+    if (_texture) {
+        glDeleteTextures(1, &_texture);
     }
 }
