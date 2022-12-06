@@ -17,7 +17,7 @@ cMesh::update(float dt)
 {
     if (_mesh) {
         gCore->rendering().rendering3d().sendMesh(
-            _mesh, _transform.lock()->getWorldMatrix(), _attachedToObject->instanceID());
+            _mesh, _material, _transform.lock()->getWorldMatrix(), _attachedToObject->instanceID());
     }
 }
 
@@ -25,13 +25,19 @@ void
 cMesh::toJson(nlohmann::json &j_out)
 {
     j_out["meshPath"] = _meshPath;
+    j_out["materialPath"] = _materialPath;
 }
 
 void
 cMesh::fromJson(const nlohmann::json &j_in)
 {
     _meshPath = j_in["meshPath"];
+    _materialPath = j_in["materialPath"];
+
     if (!_meshPath.empty()) {
         _mesh = gCore->resources().loadResourceFromFile<jleMesh>(jleRelativePath{_meshPath});
+    }
+    if (!_materialPath.empty()) {
+        _material = gCore->resources().loadResourceFromFile<jleMaterial>(jleRelativePath{_materialPath});
     }
 }

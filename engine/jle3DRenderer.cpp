@@ -178,7 +178,7 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
 
     renderMeshes(camera, _queuedMeshes);
@@ -231,9 +231,12 @@ jle3DRenderer::renderExampleCubes(const jleCamera &camera, const std::vector<glm
 }
 
 void
-jle3DRenderer::sendMesh(const std::shared_ptr<jleMesh> &mesh, const glm::mat4 &transform, int instanceId)
+jle3DRenderer::sendMesh(const std::shared_ptr<jleMesh> &mesh,
+                        const std::shared_ptr<jleMaterial> &material,
+                        const glm::mat4 &transform,
+                        int instanceId)
 {
-    _queuedMeshes.push_back({transform, mesh, instanceId});
+    _queuedMeshes.push_back({transform, mesh, material, instanceId});
 }
 
 void
@@ -255,7 +258,9 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
 
     _defaultMeshShader.use();
     _defaultMeshShader.SetInt("shadowMap", 0);
-    _defaultMeshShader.SetInt("shadowMapPoint", 1); // TODO: multi textures here
+    _defaultMeshShader.SetInt("shadowMapPoint", 1);
+    _defaultMeshShader.SetInt("albedoTexture", 2);
+    _defaultMeshShader.SetInt("normalTexture", 3);
 
     _defaultMeshShader.SetFloat("farPlane", 500.f);
 
@@ -281,6 +286,26 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
 
     for (auto &&mesh : meshes) {
         _defaultMeshShader.SetMat4("model", mesh.transform);
+
+        // Set textures
+        if (mesh.material) {
+            if (mesh.material->albedoTexture) {
+                mesh.material->albedoTexture->setActive(2);
+                _defaultMeshShader.SetBool("useAlbedoTexture", true);
+            } else {
+                _defaultMeshShader.SetBool("useAlbedoTexture", false);
+            }
+            if (mesh.material->normalTexture) {
+                mesh.material->normalTexture->setActive(3);
+                _defaultMeshShader.SetBool("useNormalTexture", true);
+            } else {
+                _defaultMeshShader.SetBool("useNormalTexture", false);
+            }
+        } else {
+            _defaultMeshShader.SetBool("useAlbedoTexture", false);
+            _defaultMeshShader.SetBool("useNormalTexture", false);
+        }
+
         glBindVertexArray(mesh.mesh->getVAO());
         if (mesh.mesh->usesIndexing()) {
             glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
@@ -288,6 +313,18 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
             glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
         }
         glBindVertexArray(0);
+
+        // Unset textures
+        if (mesh.material) {
+            if (mesh.material->albedoTexture) {
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D, 0);
+            }
+            if (mesh.material->normalTexture) {
+                glActiveTexture(GL_TEXTURE3);
+                glBindTexture(GL_TEXTURE_2D, 0);
+            }
+        }
     }
 
     glActiveTexture(GL_TEXTURE0);
@@ -376,8 +413,7 @@ jle3DRenderer::renderDirectionalLight(const jleCamera &camera)
 {
     JLE_SCOPE_PROFILE(jle3DRenderer::renderDirectionalLight)
 
-    if(!_useDirectionalLight)
-    {
+    if (!_useDirectionalLight) {
         return;
     }
 

@@ -56,7 +56,8 @@ add_library(engine STATIC
         "cSkybox.cpp"
         "cLight.cpp"
         "cLightDirectional.cpp"
-        "jleFramebufferScreen.cpp")
+        "jleFramebufferScreen.cpp"
+        "jleMaterial.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE

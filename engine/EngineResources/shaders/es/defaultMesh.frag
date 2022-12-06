@@ -4,18 +4,25 @@ precision highp float;
 
 out vec4 FragColor;
 
-in vec2 TexCoords;
-in vec3 WorldPos;
-in vec3 Normal;
-in vec4 FragPosLightSpace;
+in VS_OUT {
+    vec3 WorldFragPos;
+    vec4 WorldFragPosLightSpace;
+    vec3 TangentFragPos;
+    vec3 TangentLightPos[4];
+    vec3 TangentCameraPos;
+    vec2 TexCoords;
+} fs_in;
 
 uniform sampler2D shadowMap;
 uniform samplerCube shadowMapPoint;
 
-uniform float farPlane;
+uniform bool useAlbedoTexture;
+uniform sampler2D albedoTexture;
 
-in vec3 AnisotropicAxis;
-in vec3 CentralAxis;
+uniform bool useNormalTexture;
+uniform sampler2D normalTexture;
+
+uniform float farPlane;
 
 uniform int LightsCount;
 uniform vec3 LightPositions[4];
@@ -25,14 +32,10 @@ uniform bool UseDirectionalLight;
 uniform vec3 DirectionalLightColour;
 uniform vec3 DirectionalLightDir;
 
-uniform vec3 CameraPosition;
-
 const float pi = 3.141592653589;
 const vec3 albedo = vec3(0.83, 0.68, 0.22);
 const float metallic = 0.0;
 const float roughness = 0.3;
-
-const float roughnessY = 0.7;
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -156,7 +159,15 @@ vec3 blinn_phong_brdf(vec3 in_direction, vec3 out_direction, vec3 normal){
     float kL = roughness;
     float kG = 1.0 - kL;
     float s = 200.0;
-    vec3 pL = albedo;
+    vec3 pL;
+    if (useAlbedoTexture)
+    {
+        pL = texture(albedoTexture, fs_in.TexCoords).rgb;
+    }
+    else
+    {
+        pL = albedo;
+    }
     vec3 pG = vec3(1.0);
 
     vec3 retVec = kL * (pL / pi) + kG *(pG*((8.0+s)/(8.0*pi))* pow(max(dot(normal, halfwayVector), 0.0), s));
@@ -174,14 +185,6 @@ vec3 cook_torrance_brdf(vec3 in_direction, vec3 out_direction, vec3 normal){
 
     //float NDF = DistributionBeckmann(normal, halfwayVector, roughness);
     float NDF = DistributionGGX(normal, halfwayVector, roughness);
-
-    vec3 AnisotropicAxisN = normalize(AnisotropicAxis);
-    vec3 CentralAxisN = normalize(CentralAxis);
-
-    vec3 bitangent = cross(AnisotropicAxisN, CentralAxisN);
-    vec3 tangent = cross(bitangent, normalize(normal));
-
-    //float NDF = DistributionGGX_Aniso(normal, tangent, bitangent, halfwayVector, roughness, roughnessY);
 
     //float G   = GeometryOriginalCookTorrance(normal, out_direction, in_direction);
     float G   = GeometrySmith(normal, out_direction, in_direction, roughness);
@@ -226,9 +229,9 @@ float SampleShadowMapLinear(sampler2D shadowMap, vec2 coords, float compare, vec
 }
 
 
-float ShadowCalculationPoint(vec3 lightPos)
+float ShadowCalculationPoint(vec3 fragPos, vec3 lightPos)
 {
-    vec3 worldPosToLight = WorldPos - lightPos;
+    vec3 worldPosToLight = fragPos - lightPos;
 
     // Sample from the cube shadow texture
     float closestDepth = texture(shadowMapPoint, worldPosToLight).r;
@@ -298,21 +301,29 @@ float CalculateAttenuation(float distance, float constant, float linear, float q
 void main()
 {
 
-    vec3 N = normalize(Normal);
-    vec3 V = normalize(CameraPosition - WorldPos);
+    vec3 N;
+    if (useNormalTexture)
+    {
+        vec3 normal = texture(normalTexture, fs_in.TexCoords).rgb;
+        N = normalize(normal * 2.0 - 1.0);
+    } else
+    {
+        N = vec3(0.0, 0.0, 1.0);
+    }
+    vec3 V = normalize(fs_in.TangentCameraPos - fs_in.TangentFragPos);
 
     vec3 LightOutTotal = vec3(0.0);
     for (int l = 0; l < LightsCount; ++l)
     {
-        vec3 L = normalize(LightPositions[l] - WorldPos);
+        vec3 L = normalize(fs_in.TangentLightPos[l] - fs_in.TangentFragPos);
 
         // Incident angle
         float NdotL = max(dot(N, L), 0.0);
 
         // Incoming radiance from the light source
-        float distance = length(LightPositions[l] - WorldPos);
+        float distance = length(fs_in.TangentLightPos[l] - fs_in.TangentFragPos);
         float attenuation = CalculateAttenuation(distance, 1.0, 0.35, 0.44);
-        vec3 radiance = LightColors[l] * attenuation * ShadowCalculationPoint(LightPositions[l]);
+        vec3 radiance = LightColors[l] * attenuation * ShadowCalculationPoint(fs_in.WorldFragPos, LightPositions[l]);
 
         LightOutTotal += radiance * blinn_phong_brdf(L, V, N) * NdotL;
         // LightOutTotal += radiance * lambertian_brdf(L, V, N) * NdotL;
@@ -329,7 +340,7 @@ void main()
         float NdotL = max(dot(N, L), 0.0);
 
         // Incoming radiance, depends on shadows from other objects
-        vec3 radiance = DirectionalLightColour * ShadowCalculation(FragPosLightSpace, N, L);
+        vec3 radiance = DirectionalLightColour * ShadowCalculation(fs_in.WorldFragPosLightSpace, N, L);
 
         LightOutTotal += radiance * blinn_phong_brdf(L, V, N) * NdotL;
     }

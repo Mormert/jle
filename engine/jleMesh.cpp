@@ -21,7 +21,8 @@ jleMesh::loadFromObj(const std::string &path)
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
 
-    bool loaded = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str());
+    const std::string materialPath = path.substr(0, path.find_last_of('/'));
+    bool loaded = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(), materialPath.c_str());
 
     if (!err.empty()) {
         LOGE << err;
@@ -80,7 +81,39 @@ jleMesh::loadFromObj(const std::string &path)
             }
         }
 
-        makeMesh(out_vertices, out_normals, out_uvs, {});
+        std::vector<glm::vec3> out_tangents;
+        std::vector<glm::vec3> out_bitangents;
+        if (!out_uvs.empty()) {
+            for (unsigned int i = 0; i < out_vertices.size(); i += 3) {
+                // Shortcuts for vertices
+                glm::vec3 &v0 = out_vertices[i + 0];
+                glm::vec3 &v1 = out_vertices[i + 1];
+                glm::vec3 &v2 = out_vertices[i + 2];
+
+                glm::vec2 &uv0 = out_uvs[i + 0];
+                glm::vec2 &uv1 = out_uvs[i + 1];
+                glm::vec2 &uv2 = out_uvs[i + 2];
+
+                glm::vec3 deltaPos1 = v1 - v0;
+                glm::vec3 deltaPos2 = v2 - v0;
+
+                glm::vec2 deltaUV1 = uv1 - uv0;
+                glm::vec2 deltaUV2 = uv2 - uv0;
+
+                float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+                glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
+                glm::vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;
+
+                out_tangents.push_back(tangent);
+                out_tangents.push_back(tangent);
+                out_tangents.push_back(tangent);
+                out_bitangents.push_back(bitangent);
+                out_bitangents.push_back(bitangent);
+                out_bitangents.push_back(bitangent);
+            }
+        }
+
+        makeMesh(out_vertices, out_normals, out_uvs, out_tangents, out_bitangents);
         return true;
 
     } else { // Else we can use the vertex indices as they are, and thus use indexed rendering
@@ -91,7 +124,7 @@ jleMesh::loadFromObj(const std::string &path)
             }
         }
 
-        makeMesh(in_vertices, in_normals, in_uvs, vertexIndicies);
+        makeMesh(in_vertices, in_normals, in_uvs, {}, {}, vertexIndicies);
         return true;
     }
 }
@@ -101,6 +134,7 @@ jleMesh::getVAO()
 {
     return _vao;
 }
+
 unsigned int
 jleMesh::getTrianglesCount()
 {
@@ -111,6 +145,8 @@ void
 jleMesh::makeMesh(const std::vector<glm::vec3> &positions,
                   const std::vector<glm::vec3> &normals,
                   const std::vector<glm::vec2> &texCoords,
+                  const std::vector<glm::vec3> &tangents,
+                  const std::vector<glm::vec3> &bitangents,
                   const std::vector<unsigned int> &indices)
 {
 
@@ -141,6 +177,22 @@ jleMesh::makeMesh(const std::vector<glm::vec3> &positions,
         glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(glm::vec2), &texCoords[0], GL_STATIC_DRAW);
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
         glEnableVertexAttribArray(2);
+    }
+
+    if (!tangents.empty()) {
+        glGenBuffers(1, &_vbo_tangent);
+        glBindBuffer(GL_ARRAY_BUFFER, _vbo_tangent);
+        glBufferData(GL_ARRAY_BUFFER, tangents.size() * sizeof(glm::vec3), &tangents[0], GL_STATIC_DRAW);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+        glEnableVertexAttribArray(3);
+    }
+
+    if (!bitangents.empty()) {
+        glGenBuffers(1, &_vbo_bitangent);
+        glBindBuffer(GL_ARRAY_BUFFER, _vbo_bitangent);
+        glBufferData(GL_ARRAY_BUFFER, bitangents.size() * sizeof(glm::vec3), &bitangents[0], GL_STATIC_DRAW);
+        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+        glEnableVertexAttribArray(4);
     }
 
     if (!indices.empty()) {
@@ -175,6 +227,14 @@ jleMesh::destroyOldBuffers()
         glDeleteBuffers(1, &_vbo_texcoords);
         _vbo_texcoords = 0;
     }
+    if (_vbo_tangent) {
+        glDeleteBuffers(1, &_vbo_tangent);
+        _vbo_tangent = 0;
+    }
+    if (_vbo_bitangent) {
+        glDeleteBuffers(1, &_vbo_bitangent);
+        _vbo_bitangent = 0;
+    }
     if (_ebo) {
         glDeleteBuffers(1, &_ebo);
         _ebo = 0;
@@ -184,6 +244,7 @@ jleMesh::destroyOldBuffers()
         _vao = 0;
     }
 }
+
 bool
 jleMesh::usesIndexing()
 {

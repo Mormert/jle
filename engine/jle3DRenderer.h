@@ -5,10 +5,11 @@
 #include "jleFramebufferShadowCubeMap.h"
 #include "jleFramebufferShadowMap.h"
 #include "jleSkybox.h"
+#include "jleCamera.h"
+#include "jleMesh.h"
+#include "jleMaterial.h"
+#include "jleShader.h"
 #include <glm/fwd.hpp>
-#include <jleCamera.h>
-#include <jleMesh.h>
-#include <jleShader.h>
 #include <memory>
 #include <vector>
 
@@ -18,6 +19,7 @@ public:
     struct jle3DRendererQueuedMesh {
         glm::mat4 transform;
         std::shared_ptr<jleMesh> mesh;
+        std::shared_ptr<jleMaterial> material;
         int instanceId;
     };
 
@@ -41,7 +43,7 @@ public:
 
     void sendExampleCube(const glm::mat4 &transform);
 
-    void sendMesh(const std::shared_ptr<jleMesh> &mesh, const glm::mat4 &transform, int instanceId);
+    void sendMesh(const std::shared_ptr<jleMesh> &mesh, const std::shared_ptr<jleMaterial> &material, const glm::mat4 &transform, int instanceId);
 
     void sendLight(const glm::vec3 &position, const glm::vec3 &color);
 
