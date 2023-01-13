@@ -4,17 +4,20 @@ precision highp float;
 
 out vec4 FragColor;
 
-in VS_OUT {
-    vec3 WorldFragPos;
-    vec4 WorldFragPosLightSpace;
-    vec3 TangentFragPos;
-    vec3 TangentLightPos[4];
-    vec3 TangentCameraPos;
-    vec2 TexCoords;
-} fs_in;
+
+in vec3 WorldFragPos;
+in vec4 WorldFragPosLightSpace;
+in vec3 WorldCameraPos;
+in vec3 TangentFragPos;
+in vec3 TangentLightPos[4];
+in vec3 TangentCameraPos;
+in vec2 TexCoords;
+
+in mat3 TBN;
 
 uniform sampler2D shadowMap;
 uniform samplerCube shadowMapPoint;
+uniform samplerCube skyboxTexture;
 
 uniform bool useAlbedoTexture;
 uniform sampler2D albedoTexture;
@@ -29,6 +32,7 @@ uniform vec3 LightPositions[4];
 uniform vec3 LightColors[4];
 
 uniform bool UseDirectionalLight;
+uniform bool UseEnvironmentMapping;
 uniform vec3 DirectionalLightColour;
 uniform vec3 DirectionalLightDir;
 
@@ -162,7 +166,7 @@ vec3 blinn_phong_brdf(vec3 in_direction, vec3 out_direction, vec3 normal){
     vec3 pL;
     if (useAlbedoTexture)
     {
-        pL = texture(albedoTexture, fs_in.TexCoords).rgb;
+        pL = texture(albedoTexture, TexCoords).rgb;
     }
     else
     {
@@ -304,30 +308,30 @@ void main()
     vec3 N;
     if (useNormalTexture)
     {
-        vec3 normal = texture(normalTexture, fs_in.TexCoords).rgb;
+        vec3 normal = texture(normalTexture, TexCoords).rgb;
         N = normalize(normal * 2.0 - 1.0);
     } else
     {
         N = vec3(0.0, 0.0, 1.0);
     }
-    vec3 V = normalize(fs_in.TangentCameraPos - fs_in.TangentFragPos);
+    vec3 V = normalize(TangentCameraPos - TangentFragPos);
 
     vec3 LightOutTotal = vec3(0.0);
     for (int l = 0; l < LightsCount; ++l)
     {
-        vec3 L = normalize(fs_in.TangentLightPos[l] - fs_in.TangentFragPos);
+        vec3 L = normalize(TangentLightPos[l] - TangentFragPos);
 
         // Incident angle
         float NdotL = max(dot(N, L), 0.0);
 
         // Incoming radiance from the light source
-        float distance = length(fs_in.TangentLightPos[l] - fs_in.TangentFragPos);
+        float distance = length(TangentLightPos[l] - TangentFragPos);
         float attenuation = CalculateAttenuation(distance, 1.0, 0.35, 0.44);
-        vec3 radiance = LightColors[l] * attenuation * ShadowCalculationPoint(fs_in.WorldFragPos, LightPositions[l]);
+        vec3 radiance = LightColors[l] * attenuation * ShadowCalculationPoint(WorldFragPos, LightPositions[l]);
 
-        LightOutTotal += radiance * blinn_phong_brdf(L, V, N) * NdotL;
+        // LightOutTotal += radiance * blinn_phong_brdf(L, V, N) * NdotL;
         // LightOutTotal += radiance * lambertian_brdf(L, V, N) * NdotL;
-        // LightOutTotal += radiance * cook_torrance_brdf(L, V, N) * NdotL;
+        LightOutTotal += radiance * cook_torrance_brdf(L, V, N) * NdotL;
         // LightOutTotal += radiance * albedo * oren_nayar_brdf(L, V, N) * NdotL;
 
     }
@@ -340,9 +344,19 @@ void main()
         float NdotL = max(dot(N, L), 0.0);
 
         // Incoming radiance, depends on shadows from other objects
-        vec3 radiance = DirectionalLightColour * ShadowCalculation(fs_in.WorldFragPosLightSpace, N, L);
+        vec3 radiance = DirectionalLightColour * ShadowCalculation(WorldFragPosLightSpace, N, L);
 
         LightOutTotal += radiance * blinn_phong_brdf(L, V, N) * NdotL;
+    }
+
+    if(UseEnvironmentMapping)
+    {
+        vec3 worldView = normalize(WorldCameraPos - WorldFragPos);
+        vec3 worldSpaceNormal = transpose(TBN) * N;
+        vec3 R = reflect(-worldView,normalize(worldSpaceNormal));
+        vec3 environmentColor = texture(skyboxTexture, R).xyz;
+        float reflectanceCoeff = roughness;
+        LightOutTotal = reflectanceCoeff * environmentColor + (1.0-reflectanceCoeff)*LightOutTotal;
     }
 
     // HDR tonemapping

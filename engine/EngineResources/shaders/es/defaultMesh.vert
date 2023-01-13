@@ -6,14 +6,15 @@ layout (location = 2) in vec2 aTexCoords;
 layout (location = 3) in vec3 aTangent;
 layout (location = 4) in vec3 aBitangent;
 
-out VS_OUT {
-    vec3 WorldFragPos;
-    vec4 WorldFragPosLightSpace;
-    vec3 TangentFragPos;
-    vec3 TangentLightPos[4];
-    vec3 TangentCameraPos;
-    vec2 TexCoords;
-} vs_out;
+out vec3 WorldFragPos;
+out vec4 WorldFragPosLightSpace;
+out vec3 WorldCameraPos;
+out vec3 TangentFragPos;
+out vec3 TangentLightPos[4];
+out vec3 TangentCameraPos;
+out vec2 TexCoords;
+
+out mat3 TBN;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -24,7 +25,7 @@ uniform vec3 CameraPosition;
 
 void main()
 {
-    vs_out.TexCoords = aTexCoords;
+    TexCoords = aTexCoords;
 
     // Gram-Schmidt Orthogonalisation
     mat3 normalMatrix = transpose(inverse(mat3(model)));
@@ -33,16 +34,17 @@ void main()
     T = normalize(T - dot(T, N) * N);
     vec3 B = cross(N, T);
 
-    mat3 TBN = transpose(mat3(T, B, N));
+    TBN = transpose(mat3(T, B, N));
 
-    vs_out.WorldFragPos = vec3(model * vec4(aPos, 1.0));
-    vs_out.TangentFragPos = TBN * vs_out.WorldFragPos;
+    WorldFragPos = vec3(model * vec4(aPos, 1.0));
+    TangentFragPos = TBN * WorldFragPos;
     for(int i = 0; i < 4; i++)
     {
-        vs_out.TangentLightPos[i] = TBN * LightPositions[i];
+        TangentLightPos[i] = TBN * LightPositions[i];
     }
-    vs_out.TangentCameraPos = TBN * CameraPosition;
-    vs_out.WorldFragPosLightSpace = lightSpaceMatrix * vec4(vs_out.WorldFragPos, 1.0);
+    TangentCameraPos = TBN * CameraPosition;
+    WorldCameraPos = CameraPosition;
+    WorldFragPosLightSpace = lightSpaceMatrix * vec4(WorldFragPos, 1.0);
 
     gl_Position = proj * view * model * vec4(aPos, 1.0f);
 }

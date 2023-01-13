@@ -94,6 +94,7 @@ private:
     std::unique_ptr<jleFramebufferShadowCubeMap> _pointsShadowMappingFramebuffer{};
 
     bool _useDirectionalLight{false};
+    bool _useEnvironmentMapping{true};
     glm::vec3 _directionalLightRotation{};
     glm::vec3 _directionalLightColour{};
 };

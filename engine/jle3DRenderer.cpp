@@ -183,7 +183,7 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 
     renderMeshes(camera, _queuedMeshes);
 
-    // renderSkybox(camera);
+    renderSkybox(camera);
 
     /* // Render shadow map in fullscreen as debug
     _debugDepthQuad.use();
@@ -256,15 +256,20 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, _pointsShadowMappingFramebuffer->texture());
 
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, _skybox->getTextureID());
+
     _defaultMeshShader.use();
     _defaultMeshShader.SetInt("shadowMap", 0);
     _defaultMeshShader.SetInt("shadowMapPoint", 1);
     _defaultMeshShader.SetInt("albedoTexture", 2);
     _defaultMeshShader.SetInt("normalTexture", 3);
+    _defaultMeshShader.SetInt("skyboxTexture", 4);
 
     _defaultMeshShader.SetFloat("farPlane", 500.f);
 
     _defaultMeshShader.SetBool("UseDirectionalLight", _useDirectionalLight);
+    _defaultMeshShader.SetBool("UseEnvironmentMapping", _useEnvironmentMapping);
     _defaultMeshShader.SetVec3("DirectionalLightColour", _directionalLightColour);
     _defaultMeshShader.SetVec3("DirectionalLightDir", _directionalLightRotation);
 
