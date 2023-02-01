@@ -4,6 +4,7 @@
 
 #include "jleFileLoadInterface.h"
 #include "jlePath.h"
+#include <climits>
 
 #include <cereal/cereal.hpp>
 
