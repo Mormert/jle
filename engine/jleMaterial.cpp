@@ -1,6 +1,10 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jleMaterial.h"
+#include <cereal/archives/binary.hpp>
+#include <cereal/archives/json.hpp>
+#include <cereal/archives/portable_binary.hpp>
+#include <cereal/archives/xml.hpp>
 #include <fstream>
 #include <plog/Log.h>
 
@@ -9,6 +13,15 @@ jleMaterial::~jleMaterial() = default;
 bool
 jleMaterial::loadFromFile(const std::string &path)
 {
+
+    try {
+        std::ifstream i(path);
+        cereal::JSONInputArchive iarchive{i};
+        iarchive(*this);
+    } catch (std::exception &e) {
+        LOGE << "Failed loading material: " << e.what();
+    }
+
     std::ifstream i(path);
     if (i.good()) {
         nlohmann::json j;
@@ -21,19 +34,19 @@ jleMaterial::loadFromFile(const std::string &path)
     }
 
     if (!_albedoPath.empty()) {
-        albedoTexture = jleTexture::fromPath(jleRelativePath{_albedoPath});
+        albedoTexture = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{_albedoPath});
     }
 
     if (!_normalPath.empty()) {
-        normalTexture = jleTexture::fromPath(jleRelativePath{_normalPath});
+        normalTexture = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{_normalPath});
     }
 
     if (!_metallicPath.empty()) {
-        metallicTexture = jleTexture::fromPath(jleRelativePath{_metallicPath});
+        metallicTexture = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{_metallicPath});
     }
 
     if (!_roughnessPath.empty()) {
-        roughnessTexture = jleTexture::fromPath(jleRelativePath{_roughnessPath});
+        roughnessTexture = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{_roughnessPath});
     }
 
     return true;
@@ -55,4 +68,12 @@ from_json(const nlohmann::json &j, jleMaterial &m)
     m._normalPath = j["normalPath"];
     m._metallicPath = j["metallicPath"];
     m._roughnessPath = j["roughnessPath"];
+}
+
+void
+jleMaterial::saveToFile()
+{
+    std::ofstream materialSave{filepath};
+    cereal::JSONOutputArchive outputArchive(materialSave);
+    this->serialize(outputArchive);
 }

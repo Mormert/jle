@@ -11,6 +11,13 @@ class cCameraFPV : public cCamera
 public:
     explicit cCameraFPV(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
+    template <class Archive>
+    void
+    serialize(Archive &ar)
+    {
+        ar(CEREAL_NVP(_moveSpeed), CEREAL_NVP(_mouseSensitivity));
+    }
+
     ~cCameraFPV() override;
 
     void toJson(nlohmann::json &j_out) override;
@@ -25,3 +32,6 @@ protected:
     float _moveSpeed{10.f};
     float _mouseSensitivity{1.f};
 };
+
+CEREAL_REGISTER_TYPE(cCameraFPV)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cCameraFPV)

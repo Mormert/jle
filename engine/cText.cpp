@@ -5,12 +5,11 @@
 #include "jleObject.h"
 #include "jlePathDefines.h"
 #include "jleResource.h"
+#include "jleRendering.h"
 
 cText::cText(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 
-void cText::start() {
-    _transform = _attachedToObject->addDependencyComponent<cTransform>(this);
-}
+void cText::start() {}
 
 void cText::toJson(nlohmann::json &j_out) {
     j_out = nlohmann::json{
@@ -45,9 +44,9 @@ void cText::update(float dt) {
     gCore->textRendering().sendFontText(_font.get(),
                                         _text,
                                         _fontSize,
-                                        _transform->getWorldPosition().x,
-                                        _transform->getWorldPosition().y,
-                                        _transform->getWorldPosition().z,
+                                        getTransform().getWorldPosition().x,
+                                        getTransform().getWorldPosition().y,
+                                        getTransform().getWorldPosition().z,
                                         _colorR,
                                         _colorG,
                                         _colorB,

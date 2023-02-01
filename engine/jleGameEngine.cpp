@@ -2,12 +2,13 @@
 
 #include "jleGameEngine.h"
 
-#include "jleExplicitInclude.h"
 #include "jleFramebufferScreen.h"
 #include "jleFullscreenRendering.h"
 #include "jleMouseInput.h"
 #include "jleRendering.h"
 #include "jleWindow.h"
+#include "jleInput.h"
+#include "jleTimerManager.h"
 #include <plog/Log.h>
 
 jleGameEngine::jleGameEngine(std::shared_ptr<jleGameSettings> gs) : gameSettings{gs}, jleCore{gs} { gEngine = this; }
@@ -94,9 +95,9 @@ jleGameEngine::start()
     constexpr int initialScreenY = 1024;
     mainScreenFramebuffer = std::make_shared<jleFramebufferScreen>(initialScreenX, initialScreenY);
 
-    const auto &internalInputMouse = gCore->input().mouse;
-    internalInputMouse->setPixelatedScreenSize(initialScreenX, initialScreenY);
-    internalInputMouse->setScreenSize(initialScreenX, initialScreenY);
+    const auto &mouse = gCore->input().mouse;
+    mouse->setPixelatedScreenSize(initialScreenX, initialScreenY);
+    mouse->setScreenSize(initialScreenX, initialScreenY);
 
     _fullscreen_renderer = std::make_unique<jleFullscreenRendering>();
 

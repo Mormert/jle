@@ -6,7 +6,7 @@
 
 #include <string>
 
-class jleImage : jleFileLoadInterface {
+class jleImage : public jleFileLoadInterface {
 public:
     jleImage() = default;
 

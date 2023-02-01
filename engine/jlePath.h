@@ -4,16 +4,27 @@
 
 #include <string>
 
-class jleRelativePath;
+#include <cereal/cereal.hpp>
 
+class jleRelativePath;
 class jleAbsolutePath;
 
 // A class that has paths such as for example "ER:SomeFolder/SomeFile.txt", that
 // is actually located in the "EngineResources" folder, that can be located at
 // different places, depending on build configuration, etc
-class jleRelativePath {
+class jleRelativePath
+{
 public:
     friend class jleAbsolutePath;
+
+    jleRelativePath() = default;
+
+    template <class Archive>
+    void
+    serialize(Archive &ar)
+    {
+        ar(CEREAL_NVP(_relativePath));
+    }
 
     // Constructs a relative path directly
     explicit jleRelativePath(const std::string &relativePath);
@@ -28,6 +39,12 @@ public:
 
     [[nodiscard]] std::string absolutePathStr() const;
 
+    bool
+    isEmpty()
+    {
+        return _relativePath.empty();
+    }
+
 private:
     std::string _relativePath;
 };
@@ -35,7 +52,8 @@ private:
 // A class that contains the absolute path to a resource, for example
 // "C:dev/jle/EngineResources/SomeFolder/SomeFile.txt" and can be used to find
 // the relative path "ER:SomeFolder/SomeFile.txt".
-class jleAbsolutePath {
+class jleAbsolutePath
+{
 public:
     friend class jleRelativePath;
 

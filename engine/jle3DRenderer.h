@@ -7,11 +7,12 @@
 #include "jleSkybox.h"
 #include "jleCamera.h"
 #include "jleMesh.h"
-#include "jleMaterial.h"
 #include "jleShader.h"
 #include <glm/fwd.hpp>
 #include <memory>
 #include <vector>
+
+class jleMaterial;
 
 class jle3DRenderer
 {
@@ -43,7 +44,7 @@ public:
 
     void sendExampleCube(const glm::mat4 &transform);
 
-    void sendMesh(const std::shared_ptr<jleMesh> &mesh, const std::shared_ptr<jleMaterial> &material, const glm::mat4 &transform, int instanceId);
+    void sendMesh(std::shared_ptr<jleMesh> &mesh, std::shared_ptr<jleMaterial> &material, const glm::mat4 &transform, int instanceId);
 
     void sendLight(const glm::vec3 &position, const glm::vec3 &color);
 

@@ -1,29 +1,31 @@
 // Copyright (c) 2022. Johan Lind
 
-#pragma once
-
-#include "jleCoreSettings.h"
-#include "jleInput.h"
-#include "jleNetworking.h"
-#include "jleProfiler.h"
-#include "jleRendering.h"
-#include "jleTimerManager.h"
+#ifndef JLE_CORE_H
+#define JLE_CORE_H
 
 #include <memory>
 
-namespace SoLoud {
+namespace SoLoud
+{
 class Soloud;
 };
 
+class jleCoreSettings;
 class jleFramebufferInterface;
 class jleResources;
 class jleFontData;
+class jleInput;
+class jleRendering;
+class jleWindow;
+class jleQuadRendering;
+class jleTextRendering;
+class jleTimerManager;
 
 class jleCore;
 inline jleCore *gCore;
 
-// Core class jle
-class jleCore {
+class jleCore
+{
 public:
     jleCore(const jleCore &) = delete;
     jleCore(jleCore &&) = delete;
@@ -38,33 +40,29 @@ public:
 
     jleTimerManager &timerManager();
 
-    inline SoLoud::Soloud &soLoud() { return *_soLoud; }
+    SoLoud::Soloud &soLoud();
 
-    inline jleResources &resources() { return *_resources; }
+    jleResources &resources();
 
-    inline jleWindow &window() { return *_window; }
+    jleWindow &window();
 
-    inline jleInput &input() { return *_input; }
+    jleInput &input();
 
-    inline jleRendering &rendering() { return *_rendering; }
+    jleRendering &rendering();
 
-    inline jleQuadRendering &quadRendering() { return _rendering->quads(); }
+    jleQuadRendering &quadRendering();
 
-    inline jleTextRendering &textRendering() { return _rendering->texts(); }
+    jleTextRendering &textRendering();
 
-    [[nodiscard]] inline const jleCoreSettings &settings() const {
-        return *_settings;
-    }
+    [[nodiscard]] const jleCoreSettings &settings() const;
 
-    [[nodiscard]] inline int fps() const { return _fps; }
+    [[nodiscard]] int fps() const;
 
-    [[nodiscard]] inline float deltaFrameTime() const { return _deltaTime; }
+    [[nodiscard]] float deltaFrameTime() const;
 
-    [[nodiscard]] inline float currentFrameTime() const {
-        return _currentFrame;
-    }
+    [[nodiscard]] float currentFrameTime() const;
 
-    [[nodiscard]] inline float lastFrameTime() const { return _lastFrame; }
+    [[nodiscard]] float lastFrameTime() const;
 
 private:
     void loop();
@@ -73,25 +71,40 @@ private:
 
     bool running{false};
 
-    static void mainLoopEmscripten() { gCore->mainLoop(); }
+    static void
+    mainLoopEmscripten()
+    {
+        gCore->mainLoop();
+    }
 
-    virtual void start() {}
+    virtual void
+    start()
+    {
+    }
 
-    virtual void update(float dt) {}
+    virtual void
+    update(float dt)
+    {
+    }
 
-    virtual void render() {}
+    virtual void
+    render()
+    {
+    }
 
-    virtual void exiting() {}
+    virtual void
+    exiting()
+    {
+    }
 
     std::shared_ptr<jleCoreSettings> _settings;
     std::unique_ptr<jleResources> _resources;
     std::unique_ptr<jleFontData> _fontData;
+    std::unique_ptr<jleTimerManager> _timerManager;
     const std::shared_ptr<jleWindow> _window;
     const std::shared_ptr<jleInput> _input;
     const std::shared_ptr<jleRendering> _rendering;
     const std::unique_ptr<SoLoud::Soloud> _soLoud;
-
-    jleTimerManager _timerManager;
 
     void refreshDeltaTimes();
 
@@ -100,3 +113,5 @@ private:
     float _currentFrame = 0;
     float _lastFrame = 0;
 };
+
+#endif // JLE_CORE_H

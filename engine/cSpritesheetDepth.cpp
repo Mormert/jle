@@ -17,14 +17,14 @@ void cSpritesheetDepth::update(float dt) {
 
     auto &texture = _spritesheet->_imageTexture;
     if (texture != nullptr && _hasEntity) {
-        _quad.x = _transform->getWorldPosition().x + _spritesheetEntityCache.sourceSize.x - _offset.x;
-        _quad.y = _transform->getWorldPosition().y + _spritesheetEntityCache.sourceSize.y - _offset.y;
+        _quad.x = getTransform().getWorldPosition().x + _spritesheetEntityCache.sourceSize.x - _offset.x;
+        _quad.y = getTransform().getWorldPosition().y + _spritesheetEntityCache.sourceSize.y - _offset.y;
 
         _quad.height = _spritesheetEntityCache.frame.height;
         _quad.width = _spritesheetEntityCache.frame.width;
         _quad.textureX = _spritesheetEntityCache.frame.x;
         _quad.textureY = _spritesheetEntityCache.frame.y;
-        _quad.depth = _transform->getWorldPosition().z;
+        _quad.depth = getTransform().getWorldPosition().z;
 
         if (_quad.mtextureWithHeightmap->normalmap) {
             gCore->quadRendering().sendTexturedHeightQuad(*&_quad);
@@ -66,11 +66,11 @@ void cSpritesheetDepth::createAndSetTextureFromPath(
     }
 
     _quad.mtextureWithHeightmap->texture =
-        jleTexture::fromPath(jleRelativePath{pathDiffuse});
+        gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{pathDiffuse});
     _quad.mtextureWithHeightmap->heightmap =
-        jleTexture::fromPath(jleRelativePath{pathHeight});
+        gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{pathHeight});
     if (!pathNormal.empty()) {
         _quad.mtextureWithHeightmap->normalmap =
-            jleTexture::fromPath(jleRelativePath{pathNormal});
+            gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{pathNormal});
     }
 }

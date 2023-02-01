@@ -2,14 +2,29 @@
 
 #pragma once
 
-#include "cTransform.h"
 #include "jleAseprite.h"
 #include "jleComponent.h"
+#include "jleTransform.h"
 
-class cAseprite : public jleComponent {
+class cAseprite : public jleComponent
+{
     JLE_REGISTER_COMPONENT_TYPE(cAseprite)
 public:
     explicit cAseprite(jleObject *owner = nullptr, jleScene *scene = nullptr);
+
+    template <class Archive>
+    void
+    serialize(Archive &ar)
+    {
+        ar(CEREAL_NVP(_asepritePaths),
+           CEREAL_NVP(_width),
+           CEREAL_NVP(_height),
+           CEREAL_NVP(_textureX),
+           CEREAL_NVP(_textureY),
+           CEREAL_NVP(_offsetX),
+           CEREAL_NVP(_offsetY),
+           CEREAL_NVP(_animating));
+    }
 
     void start() override;
 
@@ -40,9 +55,10 @@ private:
     unsigned int _currentlyActiveAseprite{0};
     std::vector<std::shared_ptr<jleAseprite>> _aseprites{};
 
-    std::shared_ptr<cTransform> _transform{nullptr};
-
     uint32_t _currentFrame = 0;
     uint32_t _currentFrameDurationMs{};
     float _currentFrameTimeSpent = 0.f;
 };
+
+CEREAL_REGISTER_TYPE(cAseprite)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cAseprite)

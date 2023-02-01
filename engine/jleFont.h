@@ -17,7 +17,7 @@
 
 class jleFontData;
 
-class jleFont : jleFileLoadInterface {
+class jleFont : public jleFileLoadInterface {
 
 public:
     explicit jleFont(const std::string &path);

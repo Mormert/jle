@@ -5,6 +5,8 @@
 #include "jleObject.h"
 
 #include "jleGameEngine.h"
+#include "jleResource.h"
+#include "jleRendering.h"
 
 cSpriteDepth::cSpriteDepth(jleObject *owner, jleScene *scene)
     : jleComponent{owner, scene} {}
@@ -17,12 +19,12 @@ void cSpriteDepth::createAndSetTextureFromPath(const std::string &pathDiffuse,
     }
 
     quad.mtextureWithHeightmap->texture =
-        jleTexture::fromPath(jleRelativePath{pathDiffuse});
+        gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{pathDiffuse});
     quad.mtextureWithHeightmap->heightmap =
-        jleTexture::fromPath(jleRelativePath{pathHeight});
+        gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{pathHeight});
     if (!pathNormal.empty()) {
         quad.mtextureWithHeightmap->normalmap =
-            jleTexture::fromPath(jleRelativePath{pathNormal});
+            gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{pathNormal});
     }
 }
 
@@ -37,8 +39,6 @@ void cSpriteDepth::textureBeginCoordinates(int x, int y) {
 }
 
 void cSpriteDepth::start() {
-    transform = _attachedToObject->addDependencyComponent<cTransform>(this);
-
     if (texturePathHeight != "" && texturePathDiffuse != "") {
         createAndSetTextureFromPath(
             texturePathDiffuse, texturePathHeight, texturePathNormal);
@@ -47,8 +47,8 @@ void cSpriteDepth::start() {
 
 void cSpriteDepth::update(float dt)
 {
-    quad.x = transform->getWorldPosition().x;
-    quad.y = transform->getWorldPosition().y;
+    quad.x = getTransform().getWorldPosition().x;
+    quad.y = getTransform().getWorldPosition().y;
 
     if (!quad.mtextureWithHeightmap) {
         return;

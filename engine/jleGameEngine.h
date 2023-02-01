@@ -3,9 +3,7 @@
 #pragma once
 
 #include "jleCore.h"
-
 #include "jleGame.h"
-#include "jleGameSettings.h"
 
 class jleFullscreenRendering;
 class jleFramebufferInterface;

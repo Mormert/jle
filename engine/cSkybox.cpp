@@ -3,6 +3,7 @@
 #include "cSkybox.h"
 #include "jle3DRenderer.h"
 #include "jleCore.h"
+#include "jleRendering.h"
 #include "jleResource.h"
 
 cSkybox::cSkybox(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}

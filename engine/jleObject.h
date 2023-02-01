@@ -1,6 +1,7 @@
 // Copyright (c) 2022. Johan Lind
 
-#pragma once
+#ifndef JLE_OBJECT
+#define JLE_OBJECT
 
 #include <memory>
 #include <optional>
@@ -10,19 +11,53 @@
 
 #include "jleJson.h"
 #include "jlePath.h"
+#include "jleTransform.h"
 #include "json.hpp"
+
+#include <cereal/archives/json.hpp>
+#include <cereal/archives/xml.hpp>
+#include <cereal/types/memory.hpp>
+#include <cereal/types/polymorphic.hpp>
 
 class jleScene;
 
-class jleObject : public jleJsonInterface<nlohmann::json>,
-                  public std::enable_shared_from_this<jleObject> {
+class jleObject : public jleJsonInterface<nlohmann::json>, public std::enable_shared_from_this<jleObject>
+{
     JLE_REGISTER_OBJECT_TYPE(jleObject)
 public:
     std::string _instanceName;
 
-    virtual void start() {}
+    virtual void
+    start()
+    {
+    }
 
-    virtual void update(float dt) {}
+    virtual void
+    update(float dt)
+    {
+    }
+
+    template <class Archive>
+    void
+    serialize(Archive &archive)
+    {
+        archive(CEREAL_NVP(_instanceName),
+                CEREAL_NVP(_instanceID),
+                CEREAL_NVP(_transform),
+                CEREAL_NVP(_childObjects),
+                CEREAL_NVP(_components));
+
+        for (auto &&child : _childObjects) {
+            child->_parentObject = this;
+        }
+
+        // Update the internal world matrix for children
+        getTransform().propagateMatrix();
+
+        for (auto &&component : _components) {
+            component->_attachedToObject = this;
+        }
+    }
 
     jleObject();
 
@@ -31,17 +66,10 @@ public:
     template <typename T>
     std::shared_ptr<T> addComponent();
 
-    template <typename T>
-    std::shared_ptr<T> addCustomComponent(bool start_immediate = false);
-
-    std::shared_ptr<jleComponent> addComponent(
-        const std::string &component_name);
-
-    std::shared_ptr<jleComponent> addCustomComponent(
-        const std::string &component_name, bool start_immediate = false);
+    std::shared_ptr<jleComponent> addComponent(const std::string &component_name);
 
     template <typename T>
-    std::shared_ptr<T> component();
+    std::shared_ptr<T> getComponent();
 
     template <typename T>
     std::shared_ptr<T> addDependencyComponent(const jleComponent *component);
@@ -56,8 +84,7 @@ public:
 
     void saveObjectTemplate(jleRelativePath &path);
 
-    std::shared_ptr<jleObject> spawnChildObjectFromTemplate(
-        const jleRelativePath &path);
+    std::shared_ptr<jleObject> spawnChildObjectFromTemplate(const jleRelativePath &path);
 
     void injectTemplate(const nlohmann::json &json);
 
@@ -94,8 +121,7 @@ public:
 
     static void processJsonData(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
 
-    static std::shared_ptr<jleObject> processChildJsonData(
-        const nlohmann::json &j, std::shared_ptr<jleObject> &o);
+    static std::shared_ptr<jleObject> processChildJsonData(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
 
     static nlohmann::json objectTemplateJson(const jleRelativePath &path);
 
@@ -104,10 +130,14 @@ public:
 
     int instanceID() const;
 
+    jleTransform &getTransform();
+
 private:
     friend class jleScene;
 
     explicit jleObject(jleScene *scene);
+
+    void propagateOwnedByScene(jleScene* scene);
 
     void startComponents();
 
@@ -126,10 +156,7 @@ private:
 protected:
     std::vector<std::shared_ptr<jleComponent>> _components{};
 
-    // Dynamic Custom Components is a subset of _components, containing
-    // components That can be added/removed dynamically, and saved on object
-    // instances in a scene.
-    std::vector<std::shared_ptr<jleComponent>> _dynamicCustomComponents{};
+    jleTransform _transform;
 
     std::vector<std::shared_ptr<jleObject>> _childObjects{};
 
@@ -137,12 +164,14 @@ protected:
 
     jleScene *_containedInScene = nullptr;
 
-    virtual void setupDefaultObject() {}
+    virtual void
+    setupDefaultObject()
+    {
+    }
 
     friend void to_json(nlohmann::json &j, const std::shared_ptr<jleObject> &o);
 
-    friend void from_json(const nlohmann::json &j,
-                          std::shared_ptr<jleObject> &o);
+    friend void from_json(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
 };
 
 void to_json(nlohmann::json &j, const std::shared_ptr<jleObject> &o);
@@ -150,3 +179,5 @@ void to_json(nlohmann::json &j, const std::shared_ptr<jleObject> &o);
 void from_json(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
 
 #include "jleObject.inl"
+
+#endif

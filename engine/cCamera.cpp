@@ -8,7 +8,6 @@
 void
 cCamera::start()
 {
-    _transform = _attachedToObject->addDependencyComponent<cTransform>(this);
     sInstanceCounter++;
 
     if (sInstanceCounter > 1) {
@@ -63,7 +62,7 @@ cCamera::update(float dt)
     }
 
     jleCameraSimpleFPVController c;
-    c.position = _transform->getWorldPosition();
+    c.position = getTransform().getWorldPosition();
 
     // TODO: handle rotation
 

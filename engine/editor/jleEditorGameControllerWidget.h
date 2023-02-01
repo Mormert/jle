@@ -3,6 +3,7 @@
 #pragma once
 
 #include "jleEditorImGuiWindowInterface.h"
+#include "jleTexture.h"
 
 class jleEditorGameControllerWidget : public iEditorImGuiWindow {
 public:

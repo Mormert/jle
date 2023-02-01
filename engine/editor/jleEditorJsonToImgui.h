@@ -16,18 +16,27 @@
 #include "json.hpp"
 #include "plog/Log.h"
 
-class jleEditorJsonToImgui {
+class jleEditorJsonToImgui
+{
 public:
-    void drawAndGetInput() { _rootNode.recursiveDraw(); }
+    void
+    drawAndGetInput()
+    {
+        _rootNode.recursiveDraw();
+    }
 
-    void jsonToImgui(nlohmann::json &j, const std::string &objectName) {
+    void
+    jsonToImgui(nlohmann::json &j, const std::string &objectName)
+    {
         PLOG_VERBOSE << j.dump(4);
         _rootNode._nodes.clear();
         _rootNode._name = objectName;
         _rootNode.recursivelyConstructTree(j);
     }
 
-    nlohmann::json imGuiToJson() {
+    nlohmann::json
+    imGuiToJson()
+    {
         nlohmann::json j;
         _rootNode.constructJson(j);
         PLOG_VERBOSE << j.dump(4);
@@ -41,8 +50,9 @@ private:
 
         virtual ~_iNode() = default;
 
-        void constructChildObject(const std::string &objName,
-                                  const nlohmann::json &jsonObject) {
+        void
+        constructChildObject(const std::string &objName, const nlohmann::json &jsonObject)
+        {
             if (jsonObject.is_object()) {
                 auto oNode = std::make_shared<_iNode>();
                 oNode->_name = objName;
@@ -50,8 +60,7 @@ private:
 
                 // Use recursion if child is a json object
                 oNode->recursivelyConstructTree(jsonObject);
-            }
-            else if (jsonObject.is_array()) {
+            } else if (jsonObject.is_array()) {
                 auto arrayNode = std::make_shared<_NodeArray>();
                 arrayNode->_name = objName;
                 _nodes.push_back(arrayNode);
@@ -71,29 +80,22 @@ private:
                     arrayChild->_name = std::to_string(arrayIndex++);
                     arrayNode->_nodes.push_back(arrayChild);
                 }
-            }
-            else if (jsonObject.is_number_float()) {
+            } else if (jsonObject.is_number_float()) {
                 auto jvalue = jsonObject.get<nlohmann::json::number_float_t>();
-                auto node =
-                    std::make_shared<_NodeFloat>(static_cast<float_t>(jvalue));
+                auto node = std::make_shared<_NodeFloat>(static_cast<float_t>(jvalue));
                 node->_name = objName;
                 _nodes.push_back(node);
-            }
-            else if (jsonObject.is_number_integer()) {
-                auto jvalue =
-                    jsonObject.get<nlohmann::json::number_integer_t>();
-                auto node =
-                    std::make_shared<_NodeInt>(static_cast<int32_t>(jvalue));
+            } else if (jsonObject.is_number_integer()) {
+                auto jvalue = jsonObject.get<nlohmann::json::number_integer_t>();
+                auto node = std::make_shared<_NodeInt>(static_cast<int64_t>(jvalue));
                 node->_name = objName;
                 _nodes.push_back(node);
-            }
-            else if (jsonObject.is_string()) {
+            } else if (jsonObject.is_string()) {
                 auto jvalue = jsonObject.get<nlohmann::json::string_t>();
                 auto node = std::make_shared<_NodeString>(jvalue);
                 node->_name = objName;
                 _nodes.push_back(node);
-            }
-            else if (jsonObject.is_boolean()) {
+            } else if (jsonObject.is_boolean()) {
                 auto jvalue = jsonObject.get<nlohmann::json::boolean_t>();
                 auto node = std::make_shared<_NodeBool>(jvalue);
                 node->_name = objName;
@@ -104,7 +106,9 @@ private:
         // Takes a json object, and depending on what the json object is (float,
         // int, or another json object), use recursion to construct nodes of the
         // json object children, or
-        void recursivelyConstructTree(const nlohmann::json &j) {
+        void
+        recursivelyConstructTree(const nlohmann::json &j)
+        {
             if (j.is_object()) // root needs to be json object
             {
                 auto objHead = j.get<nlohmann::json::object_t>();
@@ -117,7 +121,9 @@ private:
         // Uses recursion to draw the nodes with ImGui
         // It's a ImGui::TreeNode for json objects, and ImGui::DragInt for ints,
         // etc.
-        virtual void recursiveDraw() {
+        virtual void
+        recursiveDraw()
+        {
             if (ImGui::TreeNode(_name.c_str())) {
                 for (auto &nodeChildren : _nodes) {
                     nodeChildren->recursiveDraw();
@@ -128,7 +134,9 @@ private:
         }
 
         // Recursively goes through all children and constructs a json object
-        virtual void constructJson(nlohmann::json &j_out) {
+        virtual void
+        constructJson(nlohmann::json &j_out)
+        {
             for (auto &childNode : _nodes) {
                 nlohmann::json j_inner;
                 childNode->constructJson(j_inner);
@@ -142,19 +150,15 @@ private:
 
         nlohmann::detail::value_t value_type;
 
-        void recursiveDraw() override {
-            if (ImGui::TreeNode(
-                    (_name + " [" + std::to_string(_nodes.size()) + "]")
-                        .c_str())) {
-                const auto endsWith = [](const std::string &mainStr,
-                                         const std::string &toMatch) {
+        void
+        recursiveDraw() override
+        {
+            if (ImGui::TreeNode((_name + " [" + std::to_string(_nodes.size()) + "]").c_str())) {
+                const auto endsWith = [](const std::string &mainStr, const std::string &toMatch) {
                     if (mainStr.size() >= toMatch.size() &&
-                        mainStr.compare(mainStr.size() - toMatch.size(),
-                                        toMatch.size(),
-                                        toMatch) == 0) {
+                        mainStr.compare(mainStr.size() - toMatch.size(), toMatch.size(), toMatch) == 0) {
                         return true;
-                    }
-                    else {
+                    } else {
                         return false;
                     }
                 };
@@ -171,8 +175,7 @@ private:
                         newNode->_nodes.push_back(stringNode);
                         _nodes.push_back(newNode);
                     }
-                }
-                else if (endsWith(_name, "_INTVEC")) {
+                } else if (endsWith(_name, "_INTVEC")) {
                     ImGui::SameLine();
                     if (ImGui::Button("+")) {
                         auto newNode = std::make_shared<_iNode>();
@@ -184,8 +187,7 @@ private:
                         newNode->_nodes.push_back(intNode);
                         _nodes.push_back(newNode);
                     }
-                }
-                else if (endsWith(_name, "_FLOATVEC")) {
+                } else if (endsWith(_name, "_FLOATVEC")) {
                     ImGui::SameLine();
                     if (ImGui::Button("+")) {
                         auto newNode = std::make_shared<_iNode>();
@@ -223,7 +225,9 @@ private:
             }
         }
 
-        void constructJson(nlohmann::json &j_out) override {
+        void
+        constructJson(nlohmann::json &j_out) override
+        {
             j_out = nlohmann::json::array();
             for (auto &childNode : _nodes) {
                 nlohmann::json j_inner;
@@ -238,27 +242,41 @@ private:
 
         float value;
 
-        void recursiveDraw() override {
+        void
+        recursiveDraw() override
+        {
             ImGui::PushItemWidth(100);
-            ImGui::DragFloat(
-                _name.c_str(), &value, 0.02f, -FLT_MAX, FLT_MAX, "%.2f");
+            ImGui::DragFloat(_name.c_str(), &value, 0.02f, -FLT_MAX, FLT_MAX, "%.2f");
         }
 
-        void constructJson(nlohmann::json &j_out) override { j_out = value; }
+        void
+        constructJson(nlohmann::json &j_out) override
+        {
+            j_out = value;
+        }
     };
 
     struct _NodeInt : _iNode {
-        _NodeInt(int i) : value{i} {}
+        _NodeInt(int64_t i) : value{i} {}
 
-        int value;
+        int64_t value;
+        static inline int64_t minV{-99999};
+        static inline int64_t maxV{-99999};
 
-        void recursiveDraw() override {
+        void
+        recursiveDraw() override
+        {
             ImGui::PushItemWidth(100);
-            ImGui::DragInt(
-                _name.c_str(), &value, 0.02f, INT_MIN, INT_MAX, "%.2f");
+            ImGui::DragScalar(_name.c_str(), ImGuiDataType_S64, &value, 0.2f, &minV, &maxV, "%lld");
+            // ImGui::DragInt(
+            //     _name.c_str(), &value, 0.02f, INT_MIN, INT_MAX, "%.2f");
         }
 
-        void constructJson(nlohmann::json &j_out) override { j_out = value; }
+        void
+        constructJson(nlohmann::json &j_out) override
+        {
+            j_out = value;
+        }
     };
 
     struct _NodeBool : _iNode {
@@ -266,12 +284,18 @@ private:
 
         bool value;
 
-        void recursiveDraw() override {
+        void
+        recursiveDraw() override
+        {
             ImGui::PushItemWidth(100);
             ImGui::Checkbox(_name.c_str(), &value);
         }
 
-        void constructJson(nlohmann::json &j_out) override { j_out = value; }
+        void
+        constructJson(nlohmann::json &j_out) override
+        {
+            j_out = value;
+        }
     };
 
     struct _NodeString : _iNode {
@@ -279,12 +303,16 @@ private:
 
         std::string str;
 
-        void recursiveDraw() override {
+        void
+        recursiveDraw() override
+        {
             ImGui::PushItemWidth(250);
             ImGui::InputText(_name.c_str(), &str);
         }
 
-        void constructJson(nlohmann::json &j_out) override {
+        void
+        constructJson(nlohmann::json &j_out) override
+        {
             // TODO: Watch out for buffer overflow here
             j_out = str.data();
         }

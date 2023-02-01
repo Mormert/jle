@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "cTransform.h"
 #include "jleComponent.h"
+#include "jleTransform.h"
 
 #include "jleQuads.h"
 #include "jleTexture.h"
@@ -11,10 +11,25 @@
 #include <memory>
 #include <string>
 
-class cSprite : public jleComponent {
+class cSprite : public jleComponent
+{
     JLE_REGISTER_COMPONENT_TYPE(cSprite)
 public:
-    cSprite(jleObject *owner = nullptr, jleScene *scene = nullptr);
+    explicit cSprite(jleObject *owner = nullptr, jleScene *scene = nullptr);
+
+    template <class Archive>
+    void
+    serialize(Archive &ar)
+    {
+        ar(CEREAL_NVP(texturePath),
+           CEREAL_NVP(quad.x),
+           CEREAL_NVP(quad.y),
+           CEREAL_NVP(quad.depth),
+           CEREAL_NVP(quad.height),
+           CEREAL_NVP(quad.width),
+           CEREAL_NVP(quad.textureX),
+           CEREAL_NVP(quad.textureY));
+    }
 
     void createAndSetTextureFromPath(const std::string &path);
 
@@ -36,5 +51,7 @@ private:
     std::string texturePath = "";
 
     texturedQuad quad;
-    std::shared_ptr<cTransform> transform;
 };
+
+CEREAL_REGISTER_TYPE(cSprite)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cSprite)

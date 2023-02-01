@@ -10,12 +10,11 @@ cUITransformUpdater::cUITransformUpdater(jleObject *owner, jleScene *scene)
 cUITransformUpdater::~cUITransformUpdater() {}
 
 void cUITransformUpdater::start() {
-    _transform = _attachedToObject->addDependencyComponent<cTransform>(this);
 
     jleObject *parent = _attachedToObject;
     do {
 
-        if (auto &&c = parent->component<cCamera>()) {
+        if (auto &&c = parent->getComponent<cCamera>()) {
             _camera = c;
             break;
         }
@@ -48,19 +47,19 @@ void cUITransformUpdater::update(float dt) {
 
     const auto framebuffer = ((jleGameEngine *)(gCore))->mainScreenFramebuffer;
 
-    _transform->setLocalPosition({_x, _y, 0.f});
+    getTransform().setLocalPosition({_x, _y, 0.f});
 
     if (_top) {
-        _transform->setLocalPosition({_x, _y, 0.f});
+        getTransform().setLocalPosition({_x, _y, 0.f});
     }
     else if (_bottom) {
-        _transform->setLocalPosition({_x, framebuffer->height() + _y, 0.f});
+        getTransform().setLocalPosition({_x, framebuffer->height() + _y, 0.f});
     }
 
     if (_left) {
-        _transform->setLocalPosition({_x, _y, 0.f});
+        getTransform().setLocalPosition({_x, _y, 0.f});
     }
     else if (_right) {
-        _transform->setLocalPosition({framebuffer->width() + _x, _y, 0.f});
+        getTransform().setLocalPosition({framebuffer->width() + _x, _y, 0.f});
     }
 }

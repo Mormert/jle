@@ -28,10 +28,9 @@ add_library(engine STATIC
         "jleShader.cpp"
         "jleTexture.cpp"
         "jleWindow.cpp"
+        "jleTransform.cpp"
         "cSprite.cpp"
         "cSpriteDepth.cpp"
-        "cTransform.cpp"
-        "oStaticSprite.cpp"
         "cAseprite.cpp"
         "cCamera.cpp"
         "jleFont.cpp"
@@ -57,7 +56,8 @@ add_library(engine STATIC
         "cLight.cpp"
         "cLightDirectional.cpp"
         "jleFramebufferScreen.cpp"
-        "jleMaterial.cpp")
+        "jleMaterial.cpp"
+        "jleExplicitInclude.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE

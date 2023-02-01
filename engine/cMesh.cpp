@@ -3,13 +3,14 @@
 #include "cMesh.h"
 #include "jleCore.h"
 #include "jleResource.h"
+#include "jleRendering.h"
 
 cMesh::cMesh(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 
 void
 cMesh::start()
 {
-    _transform = addDependencyComponentInStart<cTransform>();
+    //_transform = addDependencyComponentInStart<cTransform>();
 }
 
 void
@@ -17,7 +18,12 @@ cMesh::update(float dt)
 {
     if (_mesh) {
         gCore->rendering().rendering3d().sendMesh(
-            _mesh, _material, _transform.lock()->getWorldMatrix(), _attachedToObject->instanceID());
+            _mesh, _material, getTransform().getWorldMatrix(), _attachedToObject->instanceID());
+    }
+
+    if (_meshRef) {
+        gCore->rendering().rendering3d().sendMesh(
+            _meshRef.get(), _material, getTransform().getWorldMatrix(), _attachedToObject->instanceID());
     }
 }
 

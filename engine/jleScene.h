@@ -1,6 +1,7 @@
 // Copyright (c) 2022. Johan Lind
 
-#pragma once
+#ifndef JLE_SCENE
+#define JLE_SCENE
 
 #include <memory>
 #include <vector>
@@ -9,15 +10,32 @@
 #include "jlePath.h"
 #include <json.hpp>
 
+#include <cereal/archives/json.hpp>
+#include <cereal/archives/xml.hpp>
+#include <cereal/types/memory.hpp>
+#include <cereal/types/vector.hpp>
+
 class jleObject;
 
-class jleScene : public jleJsonInterface<nlohmann::json> {
+class jleScene : public jleJsonInterface<nlohmann::json>
+{
 public:
     jleScene();
 
     explicit jleScene(const std::string &sceneName);
 
     virtual ~jleScene() = default;
+
+    template <class Archive>
+    void
+    serialize(Archive &archive)
+    {
+        archive(CEREAL_NVP(sceneName), CEREAL_NVP(_sceneObjects));
+
+        for (auto &&object : _sceneObjects) {
+            object->propagateOwnedByScene(this);
+        }
+    }
 
     template <typename T>
     std::shared_ptr<T> spawnObject();
@@ -26,18 +44,28 @@ public:
 
     std::shared_ptr<jleObject> spawnObject(const nlohmann::json &j_in);
 
-    std::shared_ptr<jleObject> spawnTemplateObject(
-        const jleRelativePath &templatePath);
+    std::shared_ptr<jleObject> spawnTemplateObject(const jleRelativePath &templatePath);
 
     void updateSceneObjects(float dt);
 
     void processNewSceneObjects();
 
-    virtual void sceneupdate() {}
+    void startObjects();
 
-    virtual void onSceneCreation() {}
+    virtual void
+    sceneupdate()
+    {
+    }
 
-    virtual void onSceneDestruction() {}
+    virtual void
+    onSceneCreation()
+    {
+    }
+
+    virtual void
+    onSceneDestruction()
+    {
+    }
 
     void destroyScene();
 
@@ -49,7 +77,7 @@ public:
 
     std::vector<std::shared_ptr<jleObject>> &sceneObjects();
 
-    std::string _sceneName;
+    std::string sceneName;
 
 protected:
     friend class jleObject;
@@ -62,6 +90,8 @@ protected:
     friend void from_json(const nlohmann::json &j, jleScene &s);
 
 private:
+    void startObject(jleObject *o);
+
     static int _scenesCreatedCount;
 
     void configurateSpawnedObject(const std::shared_ptr<jleObject> &obj);
@@ -72,3 +102,5 @@ void to_json(nlohmann::json &j, jleScene &s);
 void from_json(const nlohmann::json &j, jleScene &s);
 
 #include "jleScene.inl"
+
+#endif

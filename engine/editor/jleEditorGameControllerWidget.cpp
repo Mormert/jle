@@ -2,6 +2,8 @@
 
 #include "jleEditorGameControllerWidget.h"
 
+#include "jleResource.h"
+
 #include "ImGui/imgui.h"
 
 #include "plog/Log.h"
@@ -9,13 +11,13 @@
 jleEditorGameControllerWidget::jleEditorGameControllerWidget(
     const std::string &window_name)
     : iEditorImGuiWindow{window_name} {
-    _playGameIcon = jleTexture::fromPath(jleRelativePath{"ED:/icons/play.png"});
+    _playGameIcon = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/play.png"});
     _restartGameIcon =
-        jleTexture::fromPath(jleRelativePath{"ED:/icons/replay.png"});
+        gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/replay.png"});
     _pauseGameIcon =
-        jleTexture::fromPath(jleRelativePath{"ED:/icons/pause.png"});
+        gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/pause.png"});
     _nextFrameIcon =
-        jleTexture::fromPath(jleRelativePath{"ED:/icons/next_frame.png"});
+        gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/next_frame.png"});
 }
 
 void jleEditorGameControllerWidget::update(jleGameEngine &ge) {

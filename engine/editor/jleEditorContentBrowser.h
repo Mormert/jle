@@ -3,7 +3,7 @@
 #pragma once
 
 #include "jleEditorImGuiWindowInterface.h"
-
+#include "jleTexture.h"
 #include <filesystem>
 
 class jleEditorContentBrowser : public iEditorImGuiWindow {

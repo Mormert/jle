@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jle3DRenderer.h"
-
+#include "jleMaterial.h"
 #include "jleCamera.h"
 #include "jleFrameBufferInterface.h"
 #include "jleFullscreenRendering.h"
@@ -231,8 +231,8 @@ jle3DRenderer::renderExampleCubes(const jleCamera &camera, const std::vector<glm
 }
 
 void
-jle3DRenderer::sendMesh(const std::shared_ptr<jleMesh> &mesh,
-                        const std::shared_ptr<jleMaterial> &material,
+jle3DRenderer::sendMesh(std::shared_ptr<jleMesh> &mesh,
+                        std::shared_ptr<jleMaterial> &material,
                         const glm::mat4 &transform,
                         int instanceId)
 {
@@ -256,8 +256,11 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, _pointsShadowMappingFramebuffer->texture());
 
-    glActiveTexture(GL_TEXTURE4);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, _skybox->getTextureID());
+    if(_skybox)
+    {
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, _skybox->getTextureID());
+    }
 
     _defaultMeshShader.use();
     _defaultMeshShader.SetInt("shadowMap", 0);

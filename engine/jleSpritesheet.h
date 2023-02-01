@@ -20,7 +20,7 @@ struct jleSpritesheetEntity {
     } sourceSize;
 };
 
-struct jleSpritesheet : jleFileLoadInterface {
+struct jleSpritesheet : public jleFileLoadInterface {
 
     jleSpritesheet() = default;
 

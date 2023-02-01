@@ -2,6 +2,7 @@
 
 #include "cCameraFPV.h"
 #include "jleGameEngine.h"
+#include "jleInput.h"
 
 cCameraFPV::cCameraFPV(jleObject *owner, jleScene *scene) : cCamera(owner, scene) {}
 

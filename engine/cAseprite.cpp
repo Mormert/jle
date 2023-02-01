@@ -10,8 +10,6 @@
 #include "jleResource.h"
 
 void cAseprite::start() {
-    _transform = _attachedToObject->addDependencyComponent<cTransform>(this);
-
     _aseprites.clear();
     for (auto &&path : _asepritePaths) {
         _aseprites.push_back(
@@ -28,7 +26,7 @@ void cAseprite::update(float dt) {
 
     auto &&aseprite = _aseprites[_currentlyActiveAseprite];
 
-    if (aseprite->_frames.empty()) {
+    if (aseprite->frames.empty()) {
         return;
     }
 
@@ -36,30 +34,30 @@ void cAseprite::update(float dt) {
         _currentFrameTimeSpent += dt * 1000.f;
         if (_currentFrameTimeSpent >= _currentFrameDurationMs) {
             _currentFrame++;
-            if (_currentFrame >= aseprite->_frames.size()) {
+            if (_currentFrame >= aseprite->frames.size()) {
                 _currentFrame = 0;
             }
             _currentFrameTimeSpent = 0;
             _currentFrameDurationMs =
-                aseprite->_frames.at(_currentFrame)._duration;
+                aseprite->frames.at(_currentFrame).duration;
         }
     }
 
-    if (_currentFrame >= aseprite->_frames.size()) {
-        _currentFrame = aseprite->_frames.size() - 1;
+    if (_currentFrame >= aseprite->frames.size()) {
+        _currentFrame = aseprite->frames.size() - 1;
     }
-    const auto &frame = aseprite->_frames.at(_currentFrame);
+    const auto &frame = aseprite->frames.at(_currentFrame);
 
-    auto &texture = aseprite->_imageTexture;
+    auto &texture = aseprite->imageTexture;
     if (texture != nullptr) {
         texturedQuad quad{texture};
-        quad.x = _transform->getWorldPosition().x + _offsetX;
-        quad.y = _transform->getWorldPosition().y + _offsetY;
+        quad.x = getTransform().getWorldPosition().x + _offsetX;
+        quad.y = getTransform().getWorldPosition().y + _offsetY;
         quad.height = _height;
         quad.width = _width;
-        quad.textureX = frame._frame._x + _textureX;
-        quad.textureY = frame._frame._y + _textureY;
-        quad.depth = _transform->getWorldPosition().z;
+        quad.textureX = frame.frame.x + _textureX;
+        quad.textureY = frame.frame.y + _textureY;
+        quad.depth = getTransform().getWorldPosition().z;
 
         if (quad.texture.get()) {
             gCore->quadRendering().sendTexturedQuad(quad);
@@ -139,7 +137,7 @@ void cAseprite::currentAsepriteFrame(unsigned int index) {
         return;
     }
 
-    const auto frames = _aseprites[_currentlyActiveAseprite]->_frames.size();
+    const auto frames = _aseprites[_currentlyActiveAseprite]->frames.size();
     if (index < frames) {
         _currentFrameDurationMs = 0;
         _currentFrame = index;

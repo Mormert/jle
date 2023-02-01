@@ -2,29 +2,28 @@
 
 #pragma once
 
+#include "jleFileLoadInterface.h"
 #include "jlePath.h"
-#include <climits>
-#include <memory>
-#include <string>
 
-class jleImage;
+#include <cereal/cereal.hpp>
 
-class jleTexture {
+class jleTexture : public jleFileLoadInterface
+{
 public:
-    jleTexture(const jleTexture &) = delete;
-    jleTexture &operator=(const jleTexture &) = delete;
-    jleTexture(jleTexture &&e) = delete;
-    jleTexture &operator=(jleTexture &&e) = delete;
-
     jleTexture() = default;
-    explicit jleTexture(const jleImage &image);
 
-    // Utilizes the resource holder such that only one copy of the resource will
-    // exists, and if it does not exist, the program will construct it and store
-    // it for later use
-    static std::shared_ptr<jleTexture> fromPath(const jleRelativePath &path);
+    template <class Archive>
+    void
+    serialize(Archive &ar)
+    {
+        ar(CEREAL_NVP(imagePath));
+    }
 
-    ~jleTexture();
+    bool loadFromFile(const std::string &path) override;
+
+    void saveToFile() override;
+
+    ~jleTexture() override;
 
     // Returns true if this Texture is the globally active texture
     bool isActive();
@@ -37,6 +36,8 @@ public:
     int32_t height();
 
     unsigned int id();
+
+    jleRelativePath imagePath;
 
 private:
     int32_t _width = 0, _height = 0, _nrChannels = 0;

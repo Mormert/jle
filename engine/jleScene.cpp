@@ -9,12 +9,12 @@
 int jleScene::_scenesCreatedCount{0};
 
 jleScene::jleScene() {
-    _sceneName = "Scene_" + std::to_string(_scenesCreatedCount);
+    sceneName = "Scene_" + std::to_string(_scenesCreatedCount);
     _scenesCreatedCount++;
 }
 
 jleScene::jleScene(const std::string &sceneName) {
-    this->_sceneName = sceneName;
+    this->sceneName = sceneName;
     _scenesCreatedCount++;
 }
 
@@ -104,11 +104,11 @@ void jleScene::configurateSpawnedObject(const std::shared_ptr<jleObject> &obj) {
 
 void jleScene::toJson(nlohmann::json &j_out) {
     j_out["_objects"] = _sceneObjects;
-    j_out["_sceneName"] = _sceneName;
+    j_out["_sceneName"] = sceneName;
 }
 
 void jleScene::fromJson(const nlohmann::json &j_in) {
-    JLE_FROM_JSON_IF_EXISTS(j_in, _sceneName, "_sceneName");
+    JLE_FROM_JSON_IF_EXISTS(j_in, sceneName, "_sceneName");
 
     for (auto object_json : j_in.at("_objects")) {
 
@@ -134,5 +134,27 @@ void jleScene::fromJson(const nlohmann::json &j_in) {
         spawnedObjFromJson->_templatePath = objectTemplatePath;
         from_json(object_json, spawnedObjFromJson);
         spawnedObjFromJson->fromJson(object_json);
+    }
+}
+void
+jleScene::startObjects()
+{
+    for(auto&& o : _sceneObjects)
+    {
+        startObject(&*o);
+    }
+}
+
+void
+jleScene::startObject(jleObject *o)
+{
+    if (!o->_isStarted) {
+        o->start();
+        o->startComponents();
+        o->_isStarted = true;
+        for(auto&& c : o->_childObjects)
+        {
+            startObject(&*c);
+        }
     }
 }

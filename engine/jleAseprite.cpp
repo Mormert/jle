@@ -2,6 +2,7 @@
 
 #include "jleAseprite.h"
 #include "jleGameEngine.h"
+#include "jleResource.h"
 #include "plog/Log.h"
 
 #include <filesystem>
@@ -9,54 +10,54 @@
 
 // jleAsepriteMetaLayer
 void from_json(const nlohmann::json &j, jleAsepriteMetaLayer &a) {
-    a._name = j.at("name");
-    a._opacity = j.at("opacity");
-    a._blendmode = j.at("blendMode");
+    a.name = j.at("name");
+    a.opacity = j.at("opacity");
+    a.blendMode = j.at("blendMode");
 }
 
 // jleAsepriteMeta
 void from_json(const nlohmann::json &j, jleAsepriteMeta &a) {
-    a._app = j.at("app");
-    a._version = j.at("version");
-    a._image = j.at("image");
-    a._format = j.at("format");
-    a._size = j.at("size");
-    a._scale = j.at("scale");
-    a._layers = j.at("layers").get<std::vector<jleAsepriteMetaLayer>>();
+    a.app = j.at("app");
+    a.version = j.at("version");
+    a.image = j.at("image");
+    a.format = j.at("format");
+    a.size = j.at("size");
+    a.scale = j.at("scale");
+    a.layers = j.at("layers").get<std::vector<jleAsepriteMetaLayer>>();
 }
 
 // jleAsepriteFrame
 void from_json(const nlohmann::json &j, jleAsepriteFrame &a) {
-    a._frame = j.at("frame");
-    a._rotated = j.at("rotated");
-    a._trimmed = j.at("trimmed");
-    a._spriteSourceSize = j.at("spriteSourceSize");
-    a._sourceSize = j.at("sourceSize");
-    a._duration = j.at("duration");
+    a.frame = j.at("frame");
+    a.rotated = j.at("rotated");
+    a.trimmed = j.at("trimmed");
+    a.spriteSourceSize = j.at("spriteSourceSize");
+    a.sourceSize = j.at("sourceSize");
+    a.duration = j.at("duration");
 }
 
 // jleAsepriteXY
 void from_json(const nlohmann::json &j, jleAsepriteXY &a) {
-    a._w = j.at("w");
-    a._h = j.at("h");
+    a.w = j.at("w");
+    a.h = j.at("h");
 }
 
 // jleAsepriteXYWH
 void from_json(const nlohmann::json &j, jleAsepriteXYWH &a) {
-    a._x = j.at("x");
-    a._y = j.at("y");
-    a._w = j.at("w");
-    a._h = j.at("h");
+    a.x = j.at("x");
+    a.y = j.at("y");
+    a.w = j.at("w");
+    a.h = j.at("h");
 }
 
 // jleAseprite
 void from_json(const nlohmann::json &j, jleAseprite &a) {
-    a._meta = j.at("meta");
-    a._frames = j.at("frames").get<std::vector<jleAsepriteFrame>>();
+    a.meta = j.at("meta");
+    a.frames = j.at("frames").get<std::vector<jleAsepriteFrame>>();
 }
 
 bool jleAseprite::loadFromFile(const std::string &path) {
-    _path = path;
+    this->path = path;
     std::ifstream i(path);
     if (i.good()) {
         nlohmann::json j;
@@ -73,21 +74,20 @@ bool jleAseprite::loadFromFile(const std::string &path) {
 }
 
 jleAseprite::jleAseprite(const std::string &path) {
-    _path = path;
+    this->path = path;
     loadFromFile(path);
 }
 
 void jleAseprite::loadImage() {
-    std::filesystem::path p{_path};
+    std::filesystem::path p{path};
     p.remove_filename();
-    _imageTexture =
-        jleTexture::fromPath(jleRelativePath{p.string() + _meta._image});
+    imageTexture = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{p.string() + meta.image});
 }
 
 int jleAseprite::totalAnimationTimeMs() {
     int res = 0;
-    for (auto &&frame : _frames) {
-        res += frame._duration;
+    for (auto &&frame : frames) {
+        res += frame.duration;
     }
     return res;
 }

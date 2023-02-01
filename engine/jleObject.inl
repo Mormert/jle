@@ -22,21 +22,6 @@ inline std::shared_ptr<T> jleObject::addComponent() {
     return newComponent;
 };
 
-template <typename T>
-inline std::shared_ptr<T> jleObject::addCustomComponent(bool start_immediate) {
-    static_assert(std::is_base_of<jleComponent, T>::value,
-                  "T must derive from jleComponent");
-
-    std::shared_ptr<T> newCustomComponent = addComponent<T>();
-    _dynamicCustomComponents.push_back(newCustomComponent);
-
-    if (start_immediate) {
-        newCustomComponent->start();
-    }
-
-    return newCustomComponent;
-};
-
 inline std::shared_ptr<jleComponent> jleObject::addComponent(
     const std::string &component_name) {
     auto newComponent =
@@ -49,20 +34,9 @@ inline std::shared_ptr<jleComponent> jleObject::addComponent(
     return newComponent;
 }
 
-inline std::shared_ptr<jleComponent> jleObject::addCustomComponent(
-    const std::string &component_name, bool start_immediate) {
-    auto newCustomComponent = addComponent(component_name);
-    _dynamicCustomComponents.push_back(newCustomComponent);
-
-    if (start_immediate) {
-        newCustomComponent->start();
-    }
-
-    return newCustomComponent;
-}
 
 template <typename T>
-inline std::shared_ptr<T> jleObject::component() {
+inline std::shared_ptr<T> jleObject::getComponent() {
     static_assert(std::is_base_of<jleComponent, T>::value,
                   "T must derive from jleComponent");
 
@@ -81,9 +55,9 @@ inline std::shared_ptr<T> jleObject::addDependencyComponent(
     static_assert(std::is_base_of<jleComponent, T>::value,
                   "T must derive from jleComponent");
 
-    std::shared_ptr<T> c = component->_attachedToObject->component<T>();
+    std::shared_ptr<T> c = component->_attachedToObject->getComponent<T>();
     if (!c) {
-        c = component->_attachedToObject->addCustomComponent<T>();
+        c = component->_attachedToObject->addComponent<T>();
     }
 
     return c;

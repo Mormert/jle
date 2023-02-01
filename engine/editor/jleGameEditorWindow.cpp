@@ -2,6 +2,7 @@
 
 #include "jleGameEditorWindow.h"
 #include "jleWindow.h"
+#include "jleInput.h"
 #include "ImGui/imgui.h"
 
 #include "jleMouseInput.h"

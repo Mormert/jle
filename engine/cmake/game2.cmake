@@ -21,6 +21,11 @@ endif ()
 add_compile_definitions(_JLE_ENGINE_PATH="${JLE_ENGINE_PATH}/")
 add_compile_definitions(_GAME_RESOURCES_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}/GameResources")
 
+if(MSVC)
+    # /bigobj allows us to compile with a heavy amount of templated code
+    add_compile_options(/bigobj)
+endif()
+
 if (BUILD_EDITOR)
     add_definitions(-DBUILD_EDITOR)
 endif ()

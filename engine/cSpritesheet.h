@@ -2,15 +2,23 @@
 
 #pragma once
 
-#include "cTransform.h"
 #include "jleComponent.h"
 #include "jleSpritesheet.h"
+#include "jleTransform.h"
 
-class cSpritesheet : public jleComponent {
+class cSpritesheet : public jleComponent
+{
     JLE_REGISTER_COMPONENT_TYPE(cSpritesheet)
 public:
-    explicit cSpritesheet(jleObject *owner = nullptr,
-                          jleScene *scene = nullptr);
+    explicit cSpritesheet(jleObject *owner = nullptr, jleScene *scene = nullptr);
+
+    template <class Archive>
+    void
+    serialize(Archive &ar)
+    {
+        ar(CEREAL_NVP(_spritesheetPath), CEREAL_NVP(_spriteName), CEREAL_NVP(_offset.x), CEREAL_NVP(_offset.y));
+        // TODO: _spritesheet needs to be loaded based on _spritesheetPath...
+    }
 
     void start() override;
 
@@ -23,7 +31,6 @@ public:
     void entity(const std::string &entityName);
 
 protected:
-    std::shared_ptr<cTransform> _transform{nullptr};
     std::shared_ptr<jleSpritesheet> _spritesheet;
 
     bool _hasEntity = false;
@@ -33,3 +40,6 @@ protected:
     std::string _spriteName;
     glm::vec2 _offset{};
 };
+
+CEREAL_REGISTER_TYPE(cSpritesheet)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cSpritesheet)

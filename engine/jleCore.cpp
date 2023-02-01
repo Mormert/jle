@@ -1,13 +1,17 @@
 // Copyright (c) 2022. Johan Lind
 
 #include "jleCore.h"
+#include "jleExplicitInclude.h"
 #include "jleFont.h"
 #include "jleKeyboardInput.h"
 #include "jleMouseInput.h"
 #include "jleRendering.h"
 #include "jleResource.h"
-#include "jleTexture.h"
 #include "jleWindow.h"
+#include "jleInput.h"
+#include "jleProfiler.h"
+#include "jleCoreSettings.h"
+#include "jleTimerManager.h"
 
 #include <plog/Log.h>
 #include <soloud.h>
@@ -19,13 +23,13 @@
 #include <iostream>
 
 jleCore::jleCore(const std::shared_ptr<jleCoreSettings> &cs)
-    : _window{std::make_unique<jleWindow>()},
-      _input{std::make_shared<jleInput>(
-          std::make_shared<jleKeyboardInput>(_window),
-          std::make_shared<jleMouseInput>(_window))},
+    : _window{std::make_unique<jleWindow>()}, _input{std::make_shared<jleInput>(
+                                                  std::make_shared<jleKeyboardInput>(_window),
+                                                  std::make_shared<jleMouseInput>(_window))},
+      _timerManager{std::make_unique<jleTimerManager>()},
       _rendering{std::make_shared<jleRendering>()},
-      _resources{std::make_unique<jleResources>()},
-      _soLoud{std::make_unique<SoLoud::Soloud>()} {
+      _resources{std::make_unique<jleResources>()}, _soLoud{std::make_unique<SoLoud::Soloud>()}
+{
     PLOG_INFO << "Starting the core";
 
     _window->settings(cs->windowSettings);
@@ -36,12 +40,15 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings> &cs)
     _settings = cs;
 }
 
-jleCore::~jleCore() {
+jleCore::~jleCore()
+{
     PLOG_INFO << "Destroying the sound engine";
     _soLoud->deinit();
 }
 
-void jleCore::run() {
+void
+jleCore::run()
+{
     if (gCore != nullptr) {
         std::cerr << "Error: Multiple instances of jleCore\n";
         exit(1);
@@ -67,21 +74,24 @@ void jleCore::run() {
 #endif
 }
 
-void jleCore::loop() {
+void
+jleCore::loop()
+{
     while (running) {
         mainLoop();
     }
     exiting();
 }
 
-void jleCore::mainLoop()
+void
+jleCore::mainLoop()
 {
     jleProfiler::NewFrame();
     JLE_SCOPE_PROFILE(mainLoop)
 
     refreshDeltaTimes();
 
-    _timerManager.process();
+    _timerManager->process();
 
     input().mouse->updateDeltas();
 
@@ -93,11 +103,88 @@ void jleCore::mainLoop()
     running = !_window->windowShouldClose();
 }
 
-jleTimerManager &jleCore::timerManager() { return _timerManager; }
+jleTimerManager &
+jleCore::timerManager()
+{
+    return *_timerManager;
+}
 
-void jleCore::refreshDeltaTimes() {
+void
+jleCore::refreshDeltaTimes()
+{
     _currentFrame = _window->time();
     _deltaTime = _currentFrame - _lastFrame;
     _lastFrame = _currentFrame;
     _fps = static_cast<int>(1.0 / _deltaTime);
+}
+
+SoLoud::Soloud &
+jleCore::soLoud()
+{
+    return *_soLoud;
+}
+
+jleResources &
+jleCore::resources()
+{
+    return *_resources;
+}
+
+jleWindow &
+jleCore::window()
+{
+    return *_window;
+}
+
+jleInput &
+jleCore::input()
+{
+    return *_input;
+}
+
+jleRendering &
+jleCore::rendering()
+{
+    return *_rendering;
+}
+
+jleQuadRendering &
+jleCore::quadRendering()
+{
+    return _rendering->quads();
+}
+
+jleTextRendering &
+jleCore::textRendering()
+{
+    return _rendering->texts();
+}
+
+const jleCoreSettings &
+jleCore::settings() const
+{
+    return *_settings;
+}
+
+int
+jleCore::fps() const
+{
+    return _fps;
+}
+
+float
+jleCore::deltaFrameTime() const
+{
+    return _deltaTime;
+}
+float
+jleCore::currentFrameTime() const
+{
+    return _currentFrame;
+}
+
+float
+jleCore::lastFrameTime() const
+{
+    return _lastFrame;
 }

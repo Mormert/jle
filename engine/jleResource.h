@@ -40,6 +40,7 @@ public:
         std::shared_ptr<T> newResource = std::make_shared<T>();
 
         newResource->loadFromFile(path.absolutePathStr());
+        newResource->filepath = path.absolutePathStr();
 
         _resources[prefix].erase(path.relativePathStr());
         _resources[prefix].insert(

@@ -1,6 +1,7 @@
 // Copyright (c) 2022. Johan Lind
 
-#pragma once
+#ifndef JLE_COMPONENT
+#define JLE_COMPONENT
 
 #include "jleJson.h"
 #include "jleTypeReflectionUtils.h"
@@ -9,18 +10,41 @@
 
 #include <string_view>
 
+#include <cereal/archives/json.hpp>
+#include <cereal/types/base_class.hpp>
+#include <cereal/types/memory.hpp>
+
 class jleScene;
 class jleComponent;
+class jleTransform;
 
-class jleComponent : public jleJsonInterface<nlohmann::json> {
+class jleComponent
+{
 public:
     jleComponent(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
-    virtual void start() {}
+    virtual ~jleComponent() = default;
 
-    virtual void update(float dt) {}
+    template <class Archive>
+    void
+    serialize(Archive &archive)
+    {
+    }
 
-    [[maybe_unused]] virtual void editorUpdate(float dt) {}
+    virtual void
+    start()
+    {
+    }
+
+    virtual void
+    update(float dt)
+    {
+    }
+
+    [[maybe_unused]] virtual void
+    editorUpdate(float dt)
+    {
+    }
 
     void destroy();
 
@@ -36,6 +60,8 @@ public:
     {
     }
 
+    jleTransform& getTransform();
+
     friend void to_json(nlohmann::json &j, const std::shared_ptr<jleComponent> c);
 
     friend void from_json(const nlohmann::json &j, std::shared_ptr<jleComponent> &c);
@@ -45,6 +71,7 @@ public:
 
 protected:
     friend class jleObject;
+    friend class jleScene;
 
     // The object that owns this component
     jleObject *_attachedToObject;
@@ -58,3 +85,5 @@ void to_json(nlohmann::json &j, const std::shared_ptr<jleComponent> c);
 void from_json(const nlohmann::json &j, std::shared_ptr<jleComponent> &c);
 
 #include "jleComponent.inl"
+
+#endif

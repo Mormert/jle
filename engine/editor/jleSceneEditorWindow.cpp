@@ -3,15 +3,17 @@
 #include "jleSceneEditorWindow.h"
 #include "editor/jleEditorSceneObjectsWindow.h"
 #include "jleEditor.h"
+#include "jleInput.h"
+
 
 #include "ImGui/imgui.h"
 
-#include "cTransform.h"
 #include "glm/common.hpp"
 #include "jleFramebufferPicking.h"
 #include "jleQuadRendering.h"
 #include "jleStaticOpenGLState.h"
 #include "jleTexture.h"
+#include "jleTransform.h"
 #include "jleWindow.h"
 
 #ifdef __EMSCRIPTEN__
@@ -99,12 +101,12 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     }
 
     const auto &selectedObject = jleEditorSceneObjectsWindow::GetSelectedObject();
-    std::shared_ptr<cTransform> transform{nullptr};
+    //jleTransform* transform{nullptr};
 
     // Render the transform marker only in the editor window
-    if (auto object = selectedObject.lock()) {
-        transform = object->component<cTransform>();
-    }
+    //if (auto object = selectedObject.lock()) {
+    //    transform = &object->getTransform();
+    //}
 
     glBindTexture(GL_TEXTURE_2D, (unsigned int)_framebuffer->texture());
     jleStaticOpenGLState::globalActiveTexture = (unsigned int)_framebuffer->texture();
@@ -160,9 +162,9 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
                     std::shared_ptr<jleObject> o{};
                     object->tryFindChildWithInstanceId(pickedID, o);
                     if (o) {
-                        if (auto objectsTransform = o->component<cTransform>()) {
+                        //if (auto objectsTransform = o->component<jleTransform>()) {
                             jleEditorSceneObjectsWindow::SetSelectedObject(o);
-                        }
+                        //}
                     }
                 }
             }
@@ -253,12 +255,12 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
 
     ImGui::SetCursorPosY(y - 250 * globalImguiScale);
 
-    if (transform) {
-        glm::mat4 worldMatrixBefore = transform->getWorldMatrix();
+    if (auto obj = selectedObject.lock()) {
+        glm::mat4 worldMatrixBefore = obj->getTransform().getWorldMatrix();
         EditTransform((float *)viewMatrix, (float *)projectionMatrix, (float *)&worldMatrixBefore[0][0], true);
-        glm::mat4 transformMatrix = transform->getWorldMatrix();
+        glm::mat4 transformMatrix = obj->getTransform().getWorldMatrix();
         if (transformMatrix != worldMatrixBefore) {
-            transform->setWorldMatrix(worldMatrixBefore);
+            obj->getTransform().setWorldMatrix(worldMatrixBefore);
         }
     }
 

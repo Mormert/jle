@@ -10,5 +10,15 @@ class cLightDirectional : public cLight
 public:
     explicit cLightDirectional(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
+    template <class Archive>
+    void
+    serialize(Archive &ar)
+    {
+        ar(cereal::base_class<cLight>(this));
+    }
+
     void update(float dt) override;
 };
+
+CEREAL_REGISTER_TYPE(cLightDirectional)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(cLight, cLightDirectional)

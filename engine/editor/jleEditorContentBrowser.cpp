@@ -4,6 +4,8 @@
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_stdlib.h"
 #include "jleEditorSceneObjectsWindow.h"
+#include "jleResource.h"
+
 #include "plog/Log.h"
 
 #include "jleGame.h"
@@ -14,18 +16,18 @@
 jleEditorContentBrowser::jleEditorContentBrowser(const std::string &window_name)
     : iEditorImGuiWindow(window_name) {
     _directoryIcon =
-        jleTexture::fromPath(jleRelativePath{"ED:/icons/directory.png"});
-    _fileIcon = jleTexture::fromPath(jleRelativePath{"ED:/icons/files.png"});
+        gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/directory.png"});
+    _fileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/files.png"});
     _backDirectoryIcon =
-        jleTexture::fromPath(jleRelativePath{"ED:/icons/back_directory.png"});
+        gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/back_directory.png"});
 
     _sceneFileIcon =
-        jleTexture::fromPath(jleRelativePath{"ED:/icons/scene.png"});
+        gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/scene.png"});
 
     _imageFileIcon =
-        jleTexture::fromPath(jleRelativePath{"ED:/icons/image.png"});
+        gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/image.png"});
 
-    _jsonFileIcon = jleTexture::fromPath(jleRelativePath{"ED:/icons/json.png"});
+    _jsonFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/json.png"});
 
     _selectedDirectory = GAME_RESOURCES_DIRECTORY;
 }
@@ -401,7 +403,7 @@ void jleEditorContentBrowser::selectedFilePopupScene(
         if (!game.checkSceneIsActive(sceneName)) {
             auto scene = game.createScene<jleScene>();
 
-            scene->_sceneName = sceneName;
+            scene->sceneName = sceneName;
 
             std::ifstream i(file);
             nlohmann::json j;

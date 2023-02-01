@@ -2,6 +2,7 @@
 
 #include "jleSpritesheet.h"
 #include "jleGameEngine.h"
+#include "jleResource.h"
 #include <filesystem>
 #include <fstream>
 
@@ -36,7 +37,7 @@ void from_json(const json &j,
 void jleSpritesheet::loadImage() {
     std::string pngPath = _pathJson.substr(0, _pathJson.find(".", 0)) + ".png";
 
-    _imageTexture = jleTexture::fromPath(jleRelativePath{pngPath});
+    _imageTexture = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{pngPath});
 }
 
 bool jleSpritesheet::loadFromFile(const std::string &path) {
