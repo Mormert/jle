@@ -11,7 +11,6 @@
 
 #include "jleJson.h"
 #include "jlePath.h"
-#include "jleComponent.h"
 #include "jleTransform.h"
 #include "json.hpp"
 
@@ -40,25 +39,7 @@ public:
 
     template <class Archive>
     void
-    serialize(Archive &archive)
-    {
-        archive(CEREAL_NVP(_instanceName),
-                CEREAL_NVP(_instanceID),
-                CEREAL_NVP(_transform),
-                CEREAL_NVP(_childObjects),
-                CEREAL_NVP(_components));
-
-        for (auto &&child : _childObjects) {
-            child->_parentObject = this;
-        }
-
-        // Update the internal world matrix for children
-        getTransform().propagateMatrix();
-
-        for (auto &&component : _components) {
-            component->_attachedToObject = this;
-        }
-    }
+    serialize(Archive &archive);
 
     jleObject();
 

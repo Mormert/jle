@@ -1,9 +1,30 @@
 // Copyright (c) 2022. Johan Lind
 
-#include "jleComponent.h"
 #include "jleObject.h"
+#include "jleComponent.h"
 #include "jleScene.h"
 
+template <class Archive>
+void
+jleObject::serialize(Archive &archive)
+{
+    archive(CEREAL_NVP(_instanceName),
+            CEREAL_NVP(_instanceID),
+            CEREAL_NVP(_transform),
+            CEREAL_NVP(_childObjects),
+            CEREAL_NVP(_components));
+
+    for (auto &&child : _childObjects) {
+        child->_parentObject = this;
+    }
+
+    // Update the internal world matrix for children
+    getTransform().propagateMatrix();
+
+    for (auto &&component : _components) {
+        component->_attachedToObject = this;
+    }
+}
 template <typename T>
 inline std::shared_ptr<T> jleObject::addComponent() {
     static_assert(std::is_base_of<jleComponent, T>::value,
