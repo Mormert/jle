@@ -2,6 +2,17 @@
 
 #include "jleObject.h"
 
+template <class Archive>
+void
+jleScene::serialize(Archive &archive)
+{
+    archive(CEREAL_NVP(sceneName), CEREAL_NVP(_sceneObjects));
+
+    for (auto &&object : _sceneObjects) {
+        object->propagateOwnedByScene(this);
+    }
+}
+
 template <typename T>
 inline std::shared_ptr<T> jleScene::spawnObject() {
     static_assert(std::is_base_of<jleObject, T>::value,

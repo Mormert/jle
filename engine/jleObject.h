@@ -11,6 +11,7 @@
 
 #include "jleJson.h"
 #include "jlePath.h"
+#include "jleComponent.h"
 #include "jleTransform.h"
 #include "json.hpp"
 

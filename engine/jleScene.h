@@ -28,14 +28,7 @@ public:
 
     template <class Archive>
     void
-    serialize(Archive &archive)
-    {
-        archive(CEREAL_NVP(sceneName), CEREAL_NVP(_sceneObjects));
-
-        for (auto &&object : _sceneObjects) {
-            object->propagateOwnedByScene(this);
-        }
-    }
+    serialize(Archive &archive);
 
     template <typename T>
     std::shared_ptr<T> spawnObject();
