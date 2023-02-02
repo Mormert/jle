@@ -23,6 +23,7 @@ jleObject::serialize(Archive &archive)
 
     for (auto &&component : _components) {
         component->_attachedToObject = this;
+        component->_containedInScene = _containedInScene;
     }
 }
 template <typename T>

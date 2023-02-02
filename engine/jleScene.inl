@@ -6,7 +6,7 @@ template <class Archive>
 void
 jleScene::serialize(Archive &archive)
 {
-    archive(CEREAL_NVP(sceneName), CEREAL_NVP(_sceneObjects));
+    archive(CEREAL_NVP(sceneName), CEREAL_NVP(_sceneObjects), CEREAL_NVP(_objectsInstantiatedCounter));
 
     for (auto &&object : _sceneObjects) {
         object->propagateOwnedByScene(this);

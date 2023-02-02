@@ -63,7 +63,6 @@ public:
     std::shared_ptr<jleScene>
     loadScene(const std::string &scenePath)
     {
-
         static_assert(std::is_base_of<jleScene, T>::value, "T must derive from jleScene");
 
         if (checkSceneIsActive(scenePath)) {
@@ -74,15 +73,11 @@ public:
         std::ifstream i(scenePath);
         if (i.good()) {
             std::shared_ptr<T> scene = createScene<T>();
-            // nlohmann::json j;
-            // i >> j;
-            // from_json(j, *scene);
 
             try {
                 std::ifstream ix(scenePath);
                 cereal::JSONInputArchive iarchive{ix};
                 scene->serialize(iarchive);
-                //scene->resolveObjectRawPointers();
                 scene->startObjects();
             } catch (std::exception &e) {
                 LOG_ERROR << "Could not load scene with path: " << scenePath << ", err:\n" << e.what();

@@ -96,8 +96,9 @@ void from_json(const nlohmann::json &j, jleScene &s) { s.fromJson(j); }
 void jleScene::configurateSpawnedObject(const std::shared_ptr<jleObject> &obj) {
     obj->_containedInScene = this;
     obj->setupDefaultObject();
+    obj->_instanceID = getNextInstanceId();
     obj->_instanceName = std::string{obj->objectNameVirtual()} + "_" +
-                         std::to_string(obj->sObjectsCreatedCount);
+                         std::to_string(obj->_instanceID);
 
     _newSceneObjects.push_back(obj);
 }
@@ -157,4 +158,10 @@ jleScene::startObject(jleObject *o)
             startObject(&*c);
         }
     }
+}
+
+uint32_t
+jleScene::getNextInstanceId()
+{
+    return _objectsInstantiatedCounter++;
 }

@@ -10,12 +10,7 @@
 #include <fstream>
 #include <optional>
 
-jleObject::jleObject() : _transform{this}
-{
-    _instanceName = "jleObject_" + std::to_string(sObjectsCreatedCount);
-    _instanceID = sObjectsCreatedCount;
-    sObjectsCreatedCount++;
-}
+jleObject::jleObject() : _transform{this} {}
 
 void
 jleObject::destroyComponent(jleComponent *component)
@@ -242,13 +237,36 @@ jleObject::processChildJsonData(const nlohmann::json &j, std::shared_ptr<jleObje
     }
 }
 
-void
-jleObject::DuplicateObject_Editor()
+std::shared_ptr<jleObject>
+jleObject::duplicate(bool childChain)
 {
-    nlohmann::json j;
-    to_json(j, weakPtrToThis().lock());
+    auto duplicated = clone();
 
-    _containedInScene->spawnObject(j);
+    duplicated->_components.clear();
+    duplicated->_childObjects.clear();
+    duplicated->_instanceID = _containedInScene->getNextInstanceId();
+    duplicated->_transform._owner = duplicated.get();
+
+    for (auto &&component : _components) {
+        auto clonedComponent = component->clone();
+        clonedComponent->_containedInScene = _containedInScene;
+        clonedComponent->_attachedToObject = duplicated.get();
+        duplicated->_components.push_back(clonedComponent);
+    }
+
+    for (auto &&object : _childObjects) {
+        auto duplicatedChild = object->duplicate(true);
+        duplicatedChild->_parentObject = duplicated.get();
+        duplicated->_childObjects.push_back(duplicatedChild);
+    }
+
+    _containedInScene->_newSceneObjects.push_back(duplicated);
+
+    if (duplicated->parent() && !childChain) {
+        duplicated->parent()->_childObjects.push_back(duplicated);
+    }
+
+    return duplicated;
 }
 
 void

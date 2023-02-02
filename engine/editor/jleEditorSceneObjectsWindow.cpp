@@ -79,7 +79,7 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                     }
 
                     if (ImGui::BeginPopupModal("Confirm Scene destroy", &opened, 0)) {
-                        if (ImGui::Button("destroy")) {
+                        if (ImGui::Button("Destroy")) {
                             scene->destroyScene();
                         }
                         ImGui::SameLine();
@@ -393,7 +393,7 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
         if (ImGui::Button("Duplicate", ImVec2(138 * globalImguiScale, 0))) {
             jleRelativePath p{""};
             nlohmann::json j;
-            object->DuplicateObject_Editor();
+            object->duplicate();
         }
 
         { // Rename Object

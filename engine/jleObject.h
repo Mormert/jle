@@ -37,6 +37,9 @@ public:
     {
     }
 
+
+    std::shared_ptr<jleObject> duplicate(bool childChain = false);
+
     template <class Archive>
     void
     serialize(Archive &archive);
@@ -58,9 +61,6 @@ public:
 
     template <typename T>
     std::shared_ptr<T> spawnChildObject();
-
-    // Has bad performance since it uses JSON, should only be used in the editor
-    void DuplicateObject_Editor();
 
     std::shared_ptr<jleObject> spawnChildObject(const std::string &objName);
 
@@ -131,9 +131,7 @@ private:
 
     bool _isStarted = false;
 
-    int _instanceID;
-
-    static inline int sObjectsCreatedCount{0};
+    uint32_t _instanceID;
 
 protected:
     std::vector<std::shared_ptr<jleComponent>> _components{};

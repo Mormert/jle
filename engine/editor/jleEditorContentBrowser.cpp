@@ -401,18 +401,10 @@ void jleEditorContentBrowser::selectedFilePopupScene(
         auto &game = ((jleGameEngine *)gCore)->gameRef();
 
         if (!game.checkSceneIsActive(sceneName)) {
-            auto scene = game.createScene<jleScene>();
-
-            scene->sceneName = sceneName;
-
-            std::ifstream i(file);
-            nlohmann::json j;
-            i >> j;
-
-            from_json(j, *scene);
+            game.loadScene<jleScene>(file.string());
         }
         else {
-            LOGE << "Scene with name " << sceneName << " is already active.";
+            LOGE << "Failed to load scene: Scene with name '" << sceneName << "' is already active.";
         }
     }
 }

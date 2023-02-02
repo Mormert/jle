@@ -21,9 +21,11 @@ class jleTransform;
 class jleComponent
 {
 public:
-    jleComponent(jleObject *owner = nullptr, jleScene *scene = nullptr);
+    explicit jleComponent(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
     virtual ~jleComponent() = default;
+
+    [[nodiscard]] virtual std::shared_ptr<jleComponent> clone() const = 0;
 
     template <class Archive>
     void
