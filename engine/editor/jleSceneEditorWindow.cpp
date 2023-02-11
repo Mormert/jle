@@ -47,7 +47,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         return;
     }
 
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, flags);
@@ -58,7 +58,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
                       (float)ImGui::GetWindowWidth(),
                       (float)ImGui::GetWindowHeight());
 
-    constexpr float negYOffset = 6;
+    constexpr float negYOffset = 8;
     constexpr float negXOffset = 6;
 
     const auto &cursorScreenPos = ImGui::GetCursorScreenPos();

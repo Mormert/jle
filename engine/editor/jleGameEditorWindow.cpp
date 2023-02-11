@@ -33,12 +33,12 @@ jleGameEditorWindow::update(jleGameEngine &ge)
         return;
     }
 
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, flags);
 
-    constexpr float negYOffset = 6;
+    constexpr float negYOffset = 8;
     constexpr float negXOffset = 6;
 
     const auto &cursorScreenPos = ImGui::GetCursorScreenPos();
@@ -57,11 +57,6 @@ jleGameEditorWindow::update(jleGameEngine &ge)
         _lastGameWindowHeight = ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset;
 
         gEngine->gameWindowResizedEvent((int)_lastGameWindowWidth, (int)_lastGameWindowHeight);
-
-        /*  auto dims = ge.framebufferDimensions(static_cast<unsigned int>(ImGui::GetWindowWidth()),
-                                               static_cast<unsigned int>(ImGui::GetWindowHeight()));
-          ge.mainFramebuffer->resize(dims.first, dims.second);
-          internalInputMouse->setPixelatedScreenSize(dims.first, dims.second);*/
     }
 
     // Get the texture from the framebuffer

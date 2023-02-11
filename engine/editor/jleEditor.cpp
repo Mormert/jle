@@ -182,6 +182,8 @@ jleEditor::initImgui()
     static const std::string iniFile = GAME_RESOURCES_DIRECTORY + "/imgui.ini";
     io.IniFilename = iniFile.c_str();
 
+    ImGui::Spectrum::StyleColorsSpectrum();
+
     // up Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window().glfwWindow(), true);
 
@@ -196,10 +198,9 @@ jleEditor::initImgui()
     config.OversampleV = 2;
     config.GlyphExtraSpacing.x = 1.0f;
 
-    io.Fonts->AddFontFromFileTTF("EditorResources/fonts/Roboto-Regular.ttf", 18, &config);
+    io.Fonts->Clear();
+    ImGui::Spectrum::LoadFont();
 
-    // up Dear ImGui style
-    imguiTheme();
 }
 
 void
