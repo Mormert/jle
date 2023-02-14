@@ -7,6 +7,7 @@ target_include_directories(${JLE_GAME_BUILD} SYSTEM PUBLIC)
 option(BUILD_EDITOR "Build the game in the editor" ON)
 option(BUILD_EMSCRIPTEN "Build with Emscripten targeting WebAssembly" OFF)
 option(BUILD_OPENGLES30 "Use OpenGL ES 3.0 instead of desktop core 3.3" ON)
+option(BUILD_REMOTERY "Use Remotery profiling" ON)
 
 # Mac OS doesn't support GLES 3.0
 if (APPLE)
@@ -30,9 +31,18 @@ if (BUILD_EDITOR)
     add_definitions(-DBUILD_EDITOR)
 endif ()
 
+if (BUILD_REMOTERY)
+    add_definitions(-DRMT_ENABLED)
+endif ()
+
 if (BUILD_OPENGLES30)
     add_definitions(-DBUILD_OPENGLES30)
-endif ()
+else()
+    if (BUILD_REMOTERY)
+        # We only profile OpenGL on desktop GL, since there was problems in ES
+        add_definitions(-DRMT_USE_OPENGL)
+    endif ()
+endif()
 
 if (BUILD_EMSCRIPTEN)
     # TODO: Remove having to enable exceptions flag '-fexceptions' since not all browser engines supports exceptions?

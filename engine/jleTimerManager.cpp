@@ -6,7 +6,7 @@
 #include "jleProfiler.h"
 
 void jleTimerManager::process() {
-    JLE_SCOPE_PROFILE(jleTimerManager::process)
+    JLE_SCOPE_PROFILE_CPU(jleTimerManager_process)
     const auto timeNow = glfwGetTime();
 
     if (!_functionsSharedData.empty()) {

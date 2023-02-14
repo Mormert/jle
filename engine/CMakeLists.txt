@@ -3,6 +3,7 @@
 add_library(engine STATIC
         "3rdparty/stb_image.cpp"
         "3rdparty/tiny_obj_loader.cpp"
+        "3rdparty/Remotery/Remotery.c"
         "jleEngineSettingsWindow.cpp"
         "jleImage.cpp"
         "jleComponent.cpp"

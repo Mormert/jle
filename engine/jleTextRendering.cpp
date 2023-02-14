@@ -12,7 +12,7 @@ jleTextRendering::~jleTextRendering() {}
 void
 jleTextRendering::render(jleFramebufferInterface &framebufferOut, const jleCamera &camera)
 {
-    JLE_SCOPE_PROFILE(jleTextRendering::Render)
+    JLE_SCOPE_PROFILE_GPU(jleTextRendering_render)
 
     framebufferOut.bind();
 

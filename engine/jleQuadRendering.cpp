@@ -175,7 +175,7 @@ jleQuadRendering::render(jleFramebufferInterface &framebufferOut,
                          const std::vector<jleTexturedHeightQuad> &texturedSimpleHeightQuads)
 {
 
-    JLE_SCOPE_PROFILE(jleQuadRendering::Render)
+    JLE_SCOPE_PROFILE_CPU(jleQuadRendering_render)
 
     const int viewportWidth = framebufferOut.width();
     const int viewportHeight = framebufferOut.height();
@@ -201,7 +201,7 @@ jleQuadRendering::render(jleFramebufferInterface &framebufferOut,
 void
 jleQuadRendering::processTexturedQuads(const std::vector<texturedQuad> &texturedQuads, glm::mat4 &view)
 {
-    JLE_SCOPE_PROFILE(jleQuadRendering::processTexturedQuads)
+    JLE_SCOPE_PROFILE_CPU(jleQuadRendering_processTexturedQuads)
 
     std::unordered_map<std::shared_ptr<jleTexture>, std::vector<QuadData>> quadDataMap;
 
@@ -251,7 +251,7 @@ jleQuadRendering::processTexturedHeightQuads(const std::vector<jleTexturedHeight
                                              glm::mat4 &view,
                                              glm::vec3 viewPos)
 {
-    JLE_SCOPE_PROFILE(jleQuadRendering::processTexturedHeightQuads)
+    JLE_SCOPE_PROFILE_CPU(jleQuadRendering_processTexturedHeightQuads)
 
     std::unordered_map<std::shared_ptr<TextureWithHeightmap>, std::vector<QuadData>> quadDataMap;
 
@@ -309,7 +309,7 @@ jleQuadRendering::processSimpleTexturedHeightQuads(const std::vector<jleTextured
                                                    glm::mat4 &view,
                                                    glm::vec3 viewPos)
 {
-    JLE_SCOPE_PROFILE(jleQuadRendering::processSimpleTexturedHeightQuads)
+    JLE_SCOPE_PROFILE_CPU(jleQuadRendering_processSimpleTexturedHeightQuads)
 
     std::unordered_map<std::shared_ptr<TextureWithHeightmap>, std::vector<QuadData>> quadDataMap;
 

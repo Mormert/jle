@@ -447,5 +447,7 @@ int jleConsoleEditorWindow::textEditCallback(ImGuiInputTextCallbackData *data) {
 }
 
 void jleConsoleEditorWindow::write(const plog::Record &record) {
-    addLog("%s", recordToString(record).c_str());
+    const auto str = recordToString(record);
+    rmt_LogText(str.c_str());
+    addLog("%s", str.c_str());
 }

@@ -15,6 +15,7 @@
 
 #include <plog/Log.h>
 #include <soloud.h>
+#include "Remotery/Remotery.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -30,11 +31,19 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings> &cs)
       _rendering{std::make_shared<jleRendering>()},
       _resources{std::make_unique<jleResources>()}, _soLoud{std::make_unique<SoLoud::Soloud>()}
 {
-    PLOG_INFO << "Starting the core";
+    PLOG_INFO << "Starting the core...";
+
+    PLOG_INFO << "Initializing remote profiling...";
+    rmtError error = rmt_CreateGlobalInstance(&_remotery);
+    if( RMT_ERROR_NONE != error) {
+        PLOG_ERROR << "Error launching Remotery: " << error;
+        std::exit(EXIT_FAILURE);
+    }
+    rmt_SetCurrentThreadName("Main Thread");
 
     _window->settings(cs->windowSettings);
 
-    PLOG_INFO << "Starting the sound engine";
+    PLOG_INFO << "Initializing sound engine...";
     _soLoud->init();
 
     _settings = cs;
@@ -42,8 +51,12 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings> &cs)
 
 jleCore::~jleCore()
 {
-    PLOG_INFO << "Destroying the sound engine";
+    PLOG_INFO << "Destroying the sound engine...";
     _soLoud->deinit();
+
+    PLOG_INFO << "Destroying the remote profiling...";
+    rmt_UnbindOpenGL();
+    rmt_DestroyGlobalInstance(_remotery);
 }
 
 void
@@ -62,6 +75,9 @@ jleCore::run()
     PLOG_INFO << "Setting up rendering internals";
     _rendering->setup();
     _fontData = std::make_unique<jleFontData>();
+
+    PLOG_INFO << "Binding Remotery to OpenGL";
+    rmt_BindOpenGL();
 
     PLOG_INFO << "Starting the game loop";
 
@@ -87,7 +103,7 @@ void
 jleCore::mainLoop()
 {
     jleProfiler::NewFrame();
-    JLE_SCOPE_PROFILE(mainLoop)
+    JLE_SCOPE_PROFILE_CPU(mainLoop)
 
     refreshDeltaTimes();
 

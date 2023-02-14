@@ -9,6 +9,7 @@ namespace SoLoud
 {
 class Soloud;
 };
+class Remotery;
 
 class jleCoreSettings;
 class jleFramebufferInterface;
@@ -105,6 +106,8 @@ private:
     const std::shared_ptr<jleInput> _input;
     const std::shared_ptr<jleRendering> _rendering;
     const std::unique_ptr<SoLoud::Soloud> _soLoud;
+
+    Remotery* _remotery;
 
     void refreshDeltaTimes();
 

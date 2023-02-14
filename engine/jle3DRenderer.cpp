@@ -157,7 +157,7 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
                       const std::vector<glm::mat4> &cubeTransforms,
                       const std::vector<jle3DRendererQueuedMesh> &meshes)
 {
-    JLE_SCOPE_PROFILE(jle3DRenderer::render)
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_render)
 
     const int viewportWidth = framebufferOut.width();
     const int viewportHeight = framebufferOut.height();
@@ -242,7 +242,7 @@ jle3DRenderer::sendMesh(std::shared_ptr<jleMesh> &mesh,
 void
 jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRendererQueuedMesh> &meshes)
 {
-    JLE_SCOPE_PROFILE(jle3DRenderer::renderMeshes)
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes)
 
     if (meshes.empty()) {
         return;
@@ -381,7 +381,7 @@ jle3DRenderer::sendLight(const glm::vec3 &position, const glm::vec3 &color)
 void
 jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut, const jleCamera &camera)
 {
-    JLE_SCOPE_PROFILE(jle3DRenderer::renderMeshesPicking)
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshesPicking)
 
     const int viewportWidth = framebufferOut.width();
     const int viewportHeight = framebufferOut.height();
@@ -419,7 +419,7 @@ jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut, cons
 void
 jle3DRenderer::renderDirectionalLight(const jleCamera &camera)
 {
-    JLE_SCOPE_PROFILE(jle3DRenderer::renderDirectionalLight)
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderDirectionalLight)
 
     if (!_useDirectionalLight) {
         return;
@@ -446,7 +446,7 @@ jle3DRenderer::renderDirectionalLight(const jleCamera &camera)
 void
 jle3DRenderer::renderPointLights(const jleCamera &camera)
 {
-    JLE_SCOPE_PROFILE(jle3DRenderer::renderPointLights)
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderPointLights)
 
     if (_queuedLights.empty()) {
         return;

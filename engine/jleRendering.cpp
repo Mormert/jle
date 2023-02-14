@@ -19,14 +19,14 @@ jleRendering::viewportDimensions(int x, int y, unsigned int width, unsigned int 
 void
 jleRendering::render(jleFramebufferInterface &framebufferOut, const jleCamera &camera)
 {
-    JLE_SCOPE_PROFILE(jleRendering::Render)
+    JLE_SCOPE_PROFILE_CPU(jleRendering_render)
 
     // TODO: Remove this static buffer here and don't resize it all the time...
     static jleFramebufferMultisample msaa{framebufferOut.width(), framebufferOut.height(), 4};
 
     {
         // TODO : Fix this, it takes ~5 MS to resize the MSAA framebuffer!!!
-        JLE_SCOPE_PROFILE(jleRendering::Render-MSAA-RESIZE)
+        JLE_SCOPE_PROFILE_GPU(jleRendering_RenderMSAAResize)
         msaa.resize(framebufferOut.width(), framebufferOut.height());
     }
 

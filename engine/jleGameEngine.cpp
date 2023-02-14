@@ -161,7 +161,7 @@ jleGameEngine::gameWindowResizedEvent(unsigned int w, unsigned int h)
 void
 jleGameEngine::update(float dt)
 {
-    JLE_SCOPE_PROFILE(jleGameEngine::Update)
+    JLE_SCOPE_PROFILE_CPU(jleGameEngine_Update)
     if (!gameHalted && game) {
         game->update(dt);
         game->updateActiveScenes(dt);
@@ -171,7 +171,7 @@ jleGameEngine::update(float dt)
 void
 jleGameEngine::render()
 {
-    JLE_SCOPE_PROFILE(jleGameEngine::Render)
+    JLE_SCOPE_PROFILE_CPU(jleGameEngine_render)
     if (!gameHalted && game) {
         rendering().render(*mainScreenFramebuffer.get(), gameRef().mainCamera);
         rendering().clearBuffersForNextFrame();

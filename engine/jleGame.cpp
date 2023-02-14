@@ -3,7 +3,7 @@
 #include "jleGame.h"
 
 void jleGame::updateActiveScenes(float dt) {
-    JLE_SCOPE_PROFILE(jleGame::updateActiveScenes)
+    JLE_SCOPE_PROFILE_CPU(jleGame_updateActiveScenes)
     for (int i = _activeScenes.size() - 1; i >= 0; i--) {
         if (_activeScenes[i]->bPendingSceneDestruction) {
             _activeScenes.erase(_activeScenes.begin() + i);

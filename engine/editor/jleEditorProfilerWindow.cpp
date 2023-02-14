@@ -3,10 +3,15 @@
 #include "jleEditorProfilerWindow.h"
 #include "ImGui/imgui.h"
 
-jleEditorProfilerWindow::jleEditorProfilerWindow(const std::string &window_name)
-    : iEditorImGuiWindow{window_name} {}
+#ifdef WIN32
+#include <windows.h>
+#endif
 
-void jleEditorProfilerWindow::update(jleGameEngine &ge) {
+jleEditorProfilerWindow::jleEditorProfilerWindow(const std::string &window_name) : iEditorImGuiWindow{window_name} {}
+
+void
+jleEditorProfilerWindow::update(jleGameEngine &ge)
+{
     if (!isOpened) {
         return;
     }
@@ -20,10 +25,28 @@ void jleEditorProfilerWindow::update(jleGameEngine &ge) {
         drawProfilerRecursive(0);
     }
 
+    ImGui::Separator();
+
+#if RMT_ENABLED
+    if (ImGui::Button("Open Remotery Profiling")) {
+#ifdef WIN32
+        const std::string remoteryVisHtml = JLE_ENGINE_PATH + "3rdparty/Remotery/vis/index.html";
+        ShellExecute(NULL, NULL, remoteryVisHtml.c_str(), NULL, NULL, SW_SHOWNORMAL);
+#else
+        const std::string systemOpen = "open " + JLE_ENGINE_PATH + "3rdparty/Remotery/vis/index.html";
+        system(systemOpen.c_str());
+#endif
+    }
+#else
+    ImGui::Text("Remotery profiling disabled. Enable by compiling with -DBUILD_REMOTERY");
+#endif
+
     ImGui::End();
 }
 
-void jleEditorProfilerWindow::drawProfilerRecursive(uint32_t index) {
+void
+jleEditorProfilerWindow::drawProfilerRecursive(uint32_t index)
+{
     auto &&vec = jleProfiler::profilerDataLastFrame();
 
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15, 15));

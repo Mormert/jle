@@ -19,7 +19,7 @@ jleScene::jleScene(const std::string &sceneName) {
 }
 
 void jleScene::updateSceneObjects(float dt) {
-    JLE_SCOPE_PROFILE(jleScene::updateSceneObjects)
+    JLE_SCOPE_PROFILE_CPU(jleScene_updateSceneObjects)
     for (int32_t i = _sceneObjects.size() - 1; i >= 0; i--) {
         if (_sceneObjects[i]->_pendingKill) {
             _sceneObjects.erase(_sceneObjects.begin() + i);
@@ -33,7 +33,7 @@ void jleScene::updateSceneObjects(float dt) {
 }
 
 void jleScene::processNewSceneObjects() {
-    JLE_SCOPE_PROFILE(jleScene::processNewSceneObjects)
+    JLE_SCOPE_PROFILE_CPU(jleScene_processNewSceneObjects)
     if (!_newSceneObjects.empty()) {
         for (const auto &newObject : _newSceneObjects) {
             if (!newObject->_isStarted) {

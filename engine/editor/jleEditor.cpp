@@ -33,6 +33,7 @@
 #include "jleSceneEditorWindow.h"
 #include "jleWindow.h"
 #include "plog/Log.h"
+#include "Remotery/Remotery.h"
 
 jleEditor::jleEditor(std::shared_ptr<jleGameSettings> gs, std::shared_ptr<jleEditorSettings> es)
     : jleGameEngine{gs}, _editorSettings{es}
@@ -107,7 +108,8 @@ jleEditor::start()
 void
 jleEditor::render()
 {
-    JLE_SCOPE_PROFILE(jleEditor::Render)
+    JLE_SCOPE_PROFILE_GPU(EditorRender);
+
     if (!gameHalted && game) {
         // Render to game view
         rendering().render(*mainScreenFramebuffer, game->mainCamera);
@@ -133,7 +135,7 @@ jleEditor::render()
     glViewport(0, 0, window().width(), window().height());
 
     {
-        JLE_SCOPE_PROFILE(ImGui::Render())
+        JLE_SCOPE_PROFILE_GPU(ImGuiRender);
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();

@@ -6,9 +6,10 @@
 #include <chrono>
 #include <string_view>
 
-#include <json.hpp>
+#include "Remotery/Remotery.h"
 
-class jleProfiler {
+class jleProfiler
+{
 public:
     static void NewFrame();
 
@@ -45,11 +46,15 @@ private:
 #define JLE_SCOPE_PROFILE_STRINGIZE(x) #x
 
 #ifdef BUILD_EDITOR
-#define JLE_SCOPE_PROFILE(profile_name)                                        \
-    using namespace std::literals::string_view_literals;                       \
-    jleProfiler::jleProfilerRAII THIS_SCOPE_IS_PROFILED{                       \
-        JLE_SCOPE_PROFILE_CONCAT(JLE_SCOPE_PROFILE_STRINGIZE(profile_name),    \
-                                 sv)};
+#define JLE_SCOPE_PROFILE_CPU(profile_name)                                                                            \
+    using namespace std::literals::string_view_literals;                                                               \
+    jleProfiler::jleProfilerRAII THIS_SCOPE_IS_PROFILED{                                                               \
+        JLE_SCOPE_PROFILE_CONCAT(JLE_SCOPE_PROFILE_STRINGIZE(profile_name), sv)};                                      \
+    rmt_ScopedCPUSample(profile_name, 0);
+
+#define JLE_SCOPE_PROFILE_GPU(profile_name) rmt_ScopedOpenGLSample(profile_name);
+
 #else
-#define JLE_SCOPE_PROFILE(profile_name)
+#define JLE_SCOPE_PROFILE_CPU(profile_name)
+#define JLE_SCOPE_PROFILE_GPU(profile_name)
 #endif
