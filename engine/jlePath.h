@@ -45,9 +45,31 @@ public:
         return _relativePath.empty();
     }
 
+    bool
+    operator==(const jleRelativePath &other) const
+    {
+        return (_relativePath == other._relativePath);
+    }
+
+    friend class std::hash<jleRelativePath>;
+
 private:
     std::string _relativePath;
 };
+
+namespace std
+{
+
+template <>
+struct hash<jleRelativePath> {
+    std::size_t
+    operator()(const jleRelativePath &path) const
+    {
+        return hash<std::string>()(path._relativePath);
+    }
+};
+
+} // namespace std
 
 // A class that contains the absolute path to a resource, for example
 // "C:dev/jle/EngineResources/SomeFolder/SomeFile.txt" and can be used to find

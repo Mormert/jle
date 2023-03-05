@@ -4,6 +4,7 @@
 
 #include <climits>
 #include <memory>
+#include <set>
 #include <sstream>
 #include <utility>
 #include <vector>
@@ -31,7 +32,7 @@ public:
         PLOG_VERBOSE << j.dump(4);
         _rootNode._nodes.clear();
         _rootNode._name = objectName;
-        _rootNode.recursivelyConstructTree(j);
+        _rootNode.recursivelyConstructTree(j, this);
     }
 
     nlohmann::json
@@ -43,23 +44,32 @@ public:
         return j;
     }
 
+    void
+    skipDraw(const std::vector<std::string> &names)
+    {
+        for (auto &&name : names) {
+            _skipDraw.insert(name);
+        }
+    }
+
 private:
     struct _iNode {
         std::string _name = "root";
         std::vector<std::shared_ptr<_iNode>> _nodes;
-
+        jleEditorJsonToImgui *_owner;
         virtual ~_iNode() = default;
 
         void
-        constructChildObject(const std::string &objName, const nlohmann::json &jsonObject)
+        constructChildObject(const std::string &objName, const nlohmann::json &jsonObject, jleEditorJsonToImgui *owner)
         {
+            _owner = owner;
             if (jsonObject.is_object()) {
                 auto oNode = std::make_shared<_iNode>();
                 oNode->_name = objName;
                 _nodes.push_back(oNode);
 
                 // Use recursion if child is a json object
-                oNode->recursivelyConstructTree(jsonObject);
+                oNode->recursivelyConstructTree(jsonObject, _owner);
             } else if (jsonObject.is_array()) {
                 auto arrayNode = std::make_shared<_NodeArray>();
                 arrayNode->_name = objName;
@@ -76,7 +86,7 @@ private:
 
                 for (auto &&json_element_in_array : json_array) {
                     auto arrayChild = std::make_shared<_iNode>();
-                    arrayChild->recursivelyConstructTree(json_element_in_array);
+                    arrayChild->recursivelyConstructTree(json_element_in_array, _owner);
                     arrayChild->_name = std::to_string(arrayIndex++);
                     arrayNode->_nodes.push_back(arrayChild);
                 }
@@ -84,36 +94,40 @@ private:
                 auto jvalue = jsonObject.get<nlohmann::json::number_float_t>();
                 auto node = std::make_shared<_NodeFloat>(static_cast<float_t>(jvalue));
                 node->_name = objName;
+                node->_owner = _owner;
                 _nodes.push_back(node);
             } else if (jsonObject.is_number_integer()) {
                 auto jvalue = jsonObject.get<nlohmann::json::number_integer_t>();
                 auto node = std::make_shared<_NodeInt>(static_cast<int64_t>(jvalue));
                 node->_name = objName;
+                node->_owner = _owner;
                 _nodes.push_back(node);
             } else if (jsonObject.is_string()) {
                 auto jvalue = jsonObject.get<nlohmann::json::string_t>();
                 auto node = std::make_shared<_NodeString>(jvalue);
                 node->_name = objName;
+                node->_owner = _owner;
                 _nodes.push_back(node);
             } else if (jsonObject.is_boolean()) {
                 auto jvalue = jsonObject.get<nlohmann::json::boolean_t>();
                 auto node = std::make_shared<_NodeBool>(jvalue);
                 node->_name = objName;
+                node->_owner = _owner;
                 _nodes.push_back(node);
             }
         }
 
         // Takes a json object, and depending on what the json object is (float,
         // int, or another json object), use recursion to construct nodes of the
-        // json object children, or
+        // json object children
         void
-        recursivelyConstructTree(const nlohmann::json &j)
+        recursivelyConstructTree(const nlohmann::json &j, jleEditorJsonToImgui *owner)
         {
             if (j.is_object()) // root needs to be json object
             {
                 auto objHead = j.get<nlohmann::json::object_t>();
                 for (auto &objChildren : objHead) {
-                    constructChildObject(objChildren.first, objChildren.second);
+                    constructChildObject(objChildren.first, objChildren.second, owner);
                 }
             }
         }
@@ -124,6 +138,14 @@ private:
         virtual void
         recursiveDraw()
         {
+            if (_owner->_skipDraw.count(_name)) {
+
+                for (auto &nodeChildren : _nodes) {
+                    nodeChildren->recursiveDraw();
+                }
+                return;
+            }
+
             if (ImGui::TreeNode(_name.c_str())) {
                 for (auto &nodeChildren : _nodes) {
                     nodeChildren->recursiveDraw();
@@ -245,6 +267,10 @@ private:
         void
         recursiveDraw() override
         {
+            if (_owner->_skipDraw.count(_name)) {
+                return;
+            }
+
             ImGui::PushItemWidth(100);
             ImGui::DragFloat(_name.c_str(), &value, 0.02f, -FLT_MAX, FLT_MAX, "%.2f");
         }
@@ -266,10 +292,12 @@ private:
         void
         recursiveDraw() override
         {
+            if (_owner->_skipDraw.count(_name)) {
+                return;
+            }
+
             ImGui::PushItemWidth(100);
             ImGui::DragScalar(_name.c_str(), ImGuiDataType_S64, &value, 0.2f, &minV, &maxV, "%lld");
-            // ImGui::DragInt(
-            //     _name.c_str(), &value, 0.02f, INT_MIN, INT_MAX, "%.2f");
         }
 
         void
@@ -287,6 +315,10 @@ private:
         void
         recursiveDraw() override
         {
+            if (_owner->_skipDraw.count(_name)) {
+                return;
+            }
+
             ImGui::PushItemWidth(100);
             ImGui::Checkbox(_name.c_str(), &value);
         }
@@ -306,6 +338,10 @@ private:
         void
         recursiveDraw() override
         {
+            if (_owner->_skipDraw.count(_name)) {
+                return;
+            }
+
             ImGui::PushItemWidth(250);
             ImGui::InputText(_name.c_str(), &str);
         }
@@ -319,4 +355,5 @@ private:
     };
 
     _iNode _rootNode;
+    std::set<std::string> _skipDraw;
 };

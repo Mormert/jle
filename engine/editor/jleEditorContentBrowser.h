@@ -6,9 +6,13 @@
 #include "jleTexture.h"
 #include <filesystem>
 
-class jleEditorContentBrowser : public iEditorImGuiWindow {
+class jleEditorTextEdit;
+
+class jleEditorContentBrowser : public iEditorImGuiWindow
+{
 public:
-    explicit jleEditorContentBrowser(const std::string &window_name);
+    explicit jleEditorContentBrowser(const std::string &window_name,
+                                     const std::shared_ptr<jleEditorTextEdit> &editorTextEdit);
 
     void update(jleGameEngine &ge) override;
 
@@ -26,13 +30,11 @@ private:
     // File selected for File Popup
     std::filesystem::path _fileSelected;
 
-    std::pair<bool, uint32_t> directoryTreeViewRecursive(
-        const std::filesystem::path &path,
-        uint32_t *count,
-        int *selection_mask);
+    std::pair<bool, uint32_t> directoryTreeViewRecursive(const std::filesystem::path &path,
+                                                         uint32_t *count,
+                                                         int *selection_mask);
 
-    void contentHierarchy(std::string directoryPath,
-                          const std::string &folderName);
+    void contentHierarchy(std::string directoryPath, const std::string &folderName);
 
     void contentBrowser();
 
@@ -41,4 +43,8 @@ private:
     void selectedFilePopupScene(std::filesystem::path &file);
 
     void selectedFilePopupObjectTemplate(std::filesystem::path &file);
+
+    void openAsText(std::filesystem::path &file);
+
+    std::shared_ptr<jleEditorTextEdit> _editorTextEdit;
 };

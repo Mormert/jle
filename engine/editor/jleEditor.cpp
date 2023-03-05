@@ -19,6 +19,7 @@
 #endif
 
 #include "GLFW/glfw3.h"
+#include "Remotery/Remotery.h"
 #include "editor/jleConsoleEditorWindow.h"
 #include "editor/jleEditorContentBrowser.h"
 #include "editor/jleEditorGameControllerWidget.h"
@@ -26,6 +27,7 @@
 #include "editor/jleEditorResourceViewer.h"
 #include "editor/jleEditorSceneObjectsWindow.h"
 #include "editor/jleEditorWindowsPanel.h"
+#include "jleEditorTextEdit.h"
 #include "jleEngineSettingsWindow.h"
 #include "jleFramebufferScreen.h"
 #include "jleGameEditorWindow.h"
@@ -33,7 +35,6 @@
 #include "jleSceneEditorWindow.h"
 #include "jleWindow.h"
 #include "plog/Log.h"
-#include "Remotery/Remotery.h"
 
 jleEditor::jleEditor(std::shared_ptr<jleGameSettings> gs, std::shared_ptr<jleEditorSettings> es)
     : jleGameEngine{gs}, _editorSettings{es}
@@ -58,6 +59,10 @@ jleEditor::start()
     // dependent on the menu's dockspace.
     auto menu = std::make_shared<jleEditorWindowsPanel>("Menu");
     addImGuiWindow(menu);
+
+    auto textEditWindow = std::make_shared<jleEditorTextEdit>("Text Editor");
+    addImGuiWindow(textEditWindow);
+    textEditWindow->open(jleRelativePath{"GR:imgui.ini"});
 
     auto sceneWindow = std::make_shared<jleSceneEditorWindow>("Scene Window", editorScreenFramebuffer);
     addImGuiWindow(sceneWindow);
@@ -85,7 +90,7 @@ jleEditor::start()
     addImGuiWindow(editorSceneObjects);
     menu->addWindow(editorSceneObjects);
 
-    auto contentBrowser = std::make_shared<jleEditorContentBrowser>("Content Browser");
+    auto contentBrowser = std::make_shared<jleEditorContentBrowser>("Content Browser", textEditWindow);
     addImGuiWindow(contentBrowser);
     menu->addWindow(contentBrowser);
 
@@ -202,7 +207,6 @@ jleEditor::initImgui()
 
     io.Fonts->Clear();
     ImGui::Spectrum::LoadFont();
-
 }
 
 void

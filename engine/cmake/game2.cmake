@@ -17,6 +17,7 @@ endif ()
 if (BUILD_EMSCRIPTEN)
     set(BUILD_EDITOR OFF)
     set(BUILD_OPENGLES30 ON)
+    set(BUILD_REMOTERY OFF)
 endif ()
 
 add_compile_definitions(_JLE_ENGINE_PATH="${JLE_ENGINE_PATH}/")

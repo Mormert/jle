@@ -75,6 +75,8 @@ if (BUILD_EDITOR)
             "editor/jleEditorContentBrowser.cpp"
             "editor/jleProfilerWindow.cpp"
             "editor/jleEditorWindowsPanel.cpp"
+            "editor/jleEditorTextEdit.cpp"
+            "3rdparty/ImGuiColorTextEdit/TextEditor.cpp"
             "3rdparty/ImGui/imgui.cpp"
             "3rdparty/ImGui/imgui_spectrum.cpp"
             "3rdparty/ImGui/imgui_demo.cpp"

@@ -14,6 +14,7 @@
 jleEditorSceneObjectsWindow::jleEditorSceneObjectsWindow(const std::string &window_name)
     : iEditorImGuiWindow{window_name}
 {
+    _jsonToImgui.skipDraw({"_instanceID", "_instanceName", "ptr_wrapper", "data", "polymorphic_id", "id", "path"});
 }
 
 std::weak_ptr<jleObject> &
@@ -264,8 +265,8 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                 if (selectedObjectSafePtr->_templatePath.has_value()) {
                     if (ImGui::Button("Update Template")) {
                         auto pushedObjectJson = _jsonToImgui.imGuiToJson();
-                       // from_json(pushedObjectJson, selectedObjectSafePtr);
-                       // selectedObjectSafePtr->fromJson(pushedObjectJson);
+                        // from_json(pushedObjectJson, selectedObjectSafePtr);
+                        // selectedObjectSafePtr->fromJson(pushedObjectJson);
 
                         auto j = _jsonToImgui.imGuiToJson();
                         std::stringstream s;
@@ -311,27 +312,23 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                     }
                     ImGui::SameLine();
                     if (ImGui::Button("Push Object Changes")) {
-                        //auto pushedObjectJson = _jsonToImgui.imGuiToJson();
-                        //from_json(pushedObjectJson, selectedObjectSafePtr);
-                        //selectedObjectSafePtr->fromJson(pushedObjectJson);
-
+                        // auto pushedObjectJson = _jsonToImgui.imGuiToJson();
+                        // from_json(pushedObjectJson, selectedObjectSafePtr);
+                        // selectedObjectSafePtr->fromJson(pushedObjectJson);
 
                         auto j = _jsonToImgui.imGuiToJson();
                         std::stringstream s;
                         s << j.dump();
 
-                        try{
+                        try {
                             cereal::JSONInputArchive iarchive{s};
                             selectedObjectSafePtr->serialize(iarchive);
-                            //selectedScene.lock()->resolvePointer(selectedObjectSafePtr.get());
-                        }catch (std::exception& e)
-                        {
+                            // selectedScene.lock()->resolvePointer(selectedObjectSafePtr.get());
+                        } catch (std::exception &e) {
                             std::cerr << "Error pushing obj: " << e.what() << std::endl;
                         }
 
                         std::cout << j.dump(4) << std::endl;
-
-
                     }
                 }
             }
