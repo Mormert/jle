@@ -1,4 +1,4 @@
-// Copyright (c) 2022. Johan Lind
+// Copyright (c) 2023. Johan Lind
 
 #include "jleTimerManager.h"
 #include <GLFW/glfw3.h>

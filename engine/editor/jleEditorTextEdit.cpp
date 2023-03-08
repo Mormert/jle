@@ -1,4 +1,4 @@
-// Copyright (c) 2022. Johan Lind
+// Copyright (c) 2023. Johan Lind
 
 #include "jleEditorTextEdit.h"
 jleEditorTextEdit::jleEditorTextEdit(const std::string &window_name) : iEditorImGuiWindow(window_name) {}

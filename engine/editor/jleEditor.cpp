@@ -1,4 +1,4 @@
-// Copyright (c) 2022. Johan Lind
+// Copyright (c) 2023. Johan Lind
 
 #include "jleEditor.h"
 
@@ -62,7 +62,6 @@ jleEditor::start()
 
     auto textEditWindow = std::make_shared<jleEditorTextEdit>("Text Editor");
     addImGuiWindow(textEditWindow);
-    textEditWindow->open(jleRelativePath{"GR:imgui.ini"});
 
     auto sceneWindow = std::make_shared<jleSceneEditorWindow>("Scene Window", editorScreenFramebuffer);
     addImGuiWindow(sceneWindow);
