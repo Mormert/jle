@@ -1,4 +1,4 @@
-// Copyright (c) 2022. Johan Lind
+// Copyright (c) 2023. Johan Lind
 
 #ifndef JLE_INCLUDE_GL
 #define JLE_INCLUDE_GL

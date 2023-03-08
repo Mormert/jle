@@ -1,4 +1,4 @@
-// Copyright (c) 2022. Johan Lind
+// Copyright (c) 2023. Johan Lind
 
 // This header file is used to enforce inclusion of object and components, to
 // make sure that they are registered and can be seen in the editor. It needs to

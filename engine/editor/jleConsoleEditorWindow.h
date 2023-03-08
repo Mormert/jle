@@ -1,4 +1,4 @@
-// Copyright (c) 2022. Johan Lind
+// Copyright (c) 2023. Johan Lind
 
 // ConsoleEditorWindow is based on examples found in ImGui demo source code
 

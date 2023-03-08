@@ -1,4 +1,4 @@
-// Copyright (c) 2022. Johan Lind
+// Copyright (c) 2023. Johan Lind
 
 #ifndef JLE_MATERIAL_H
 #define JLE_MATERIAL_H

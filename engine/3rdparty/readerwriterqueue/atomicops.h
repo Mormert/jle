@@ -1,5 +1,3 @@
-// Copyright (c) 2022. Johan Lind
-
 // ©2013-2016 Cameron Desrochers.
 // Distributed under the simplified BSD license (see the license file that
 // should have come with this header).
