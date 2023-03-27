@@ -18,7 +18,6 @@ public:
     static std::weak_ptr<jleScene> &GetSelectedScene();
 
 private:
-    jleEditorJsonToImgui _jsonToImgui;
 
     // Using a static weak_ptr here so that it won't impact deletion
     static inline std::weak_ptr<jleObject> selectedObject;

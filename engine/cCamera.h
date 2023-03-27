@@ -23,7 +23,7 @@ public:
            CEREAL_NVP(_perspectiveFov),
            CEREAL_NVP(_framebufferSizeX),
            CEREAL_NVP(_framebufferSizeY),
-           CEREAL_NVP(_framebufferFixedAxis),
+           //CEREAL_NVP(_framebufferFixedAxis),
            CEREAL_NVP(_framebufferUseFixedAxis),
            CEREAL_NVP(_matchFramebufferToWindowSize));
     }

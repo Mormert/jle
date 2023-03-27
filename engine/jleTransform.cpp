@@ -98,3 +98,9 @@ jleTransform::propagateMatrix()
         child->getTransform().propagateMatrix();
     }
 }
+void
+jleTransform::setLocalMatrix(const glm::mat4 &matrix)
+{
+    _local = matrix;
+    propagateMatrix();
+}

@@ -4,8 +4,11 @@
 
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_stdlib.h"
+#include "jleImGuiCerealArchive.h"
 #include "jleNetScene.h"
 #include "jleTypeReflectionUtils.h"
+
+#include <cereal/archives/json.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -14,7 +17,6 @@
 jleEditorSceneObjectsWindow::jleEditorSceneObjectsWindow(const std::string &window_name)
     : iEditorImGuiWindow{window_name}
 {
-    _jsonToImgui.skipDraw({"_instanceID", "_instanceName", "ptr_wrapper", "data", "polymorphic_id", "id", "path"});
 }
 
 std::weak_ptr<jleObject> &
@@ -191,33 +193,8 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                             ImGui::NewLine();
                         }
 
-                        // Check to see if a new object has been selected
-                        if (selectedObjectSafePtr != lastSelectedObject.lock()) {
-                            nlohmann::json selectedObjectJson;
-                            selectedObjectSafePtr->toJson(selectedObjectJson);
-
-                            selectedObjectJson["_custom_components"] = selectedObjectSafePtr->customComponents();
-                            // selectedObjectJson["_childObjects"] =
-                            // selectedObjectSafePtr->childObjects();
-
-                            lastSelectedObject = selectedObjectSafePtr;
-
-                            std::stringstream ss;
-                            {
-                                cereal::JSONOutputArchive outputArchive(ss);
-                                selectedObjectSafePtr->serialize(outputArchive);
-                            }
-                            std::string s = ss.str();
-                            std::cout << s << std::endl;
-                            nlohmann::json j = nlohmann::json::parse(s);
-                            std::string s2 = j.dump(4);
-
-                            _jsonToImgui.jsonToImgui(j, {std::string{selectedObjectSafePtr->objectNameVirtual()}});
-                        }
-
-                        // This does calls to ImGui:: to draw the editable
-                        // object properties
-                        _jsonToImgui.drawAndGetInput();
+                        cereal::jleImGuiCerealArchive ar1;
+                        ar1(*selectedObjectSafePtr);
 
                         ImGui::EndTabItem();
                     }
@@ -261,77 +238,6 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
             }
 
             ImGui::EndChild();
-            if (hasAnObjectSelected) {
-                if (selectedObjectSafePtr->_templatePath.has_value()) {
-                    if (ImGui::Button("Update Template")) {
-                        auto pushedObjectJson = _jsonToImgui.imGuiToJson();
-                        // from_json(pushedObjectJson, selectedObjectSafePtr);
-                        // selectedObjectSafePtr->fromJson(pushedObjectJson);
-
-                        auto j = _jsonToImgui.imGuiToJson();
-                        std::stringstream s;
-                        s << j.dump();
-
-                        {
-                            cereal::JSONInputArchive iarchive{s};
-                            selectedObjectSafePtr->serialize(iarchive);
-                        }
-
-                        // Haxx: remove the template field, and add it back
-                        // again after :>
-                        const auto templatePathTempSave = selectedObjectSafePtr->_templatePath.value();
-                        selectedObjectSafePtr->_templatePath.reset();
-                        jleRelativePath relPath{templatePathTempSave};
-                        selectedObjectSafePtr->saveObjectTemplate(relPath);
-                        selectedObjectSafePtr->_templatePath = templatePathTempSave;
-                    }
-                    ImGui::SameLine();
-
-                    { // Unlink Template
-                        static bool opened = false;
-                        if (ImGui::Button("Unlink Template", ImVec2(138 * globalImguiScale, 0))) {
-                            opened = true;
-                            ImGui::OpenPopup("Confirm Template Unlinking");
-                        }
-
-                        if (ImGui::BeginPopupModal("Confirm Template Unlinking", &opened, 0)) {
-                            if (ImGui::Button("Unlink")) {
-                                selectedObjectSafePtr->_templatePath.reset();
-                            }
-                            ImGui::SameLine();
-                            if (ImGui::Button("Cancel")) {
-                                opened = false;
-                            }
-                            ImGui::EndPopup();
-                        }
-                    }
-                } else {
-
-                    if (ImGui::Button("Refresh Object")) {
-                        lastSelectedObject.reset();
-                    }
-                    ImGui::SameLine();
-                    if (ImGui::Button("Push Object Changes")) {
-                        // auto pushedObjectJson = _jsonToImgui.imGuiToJson();
-                        // from_json(pushedObjectJson, selectedObjectSafePtr);
-                        // selectedObjectSafePtr->fromJson(pushedObjectJson);
-
-                        auto j = _jsonToImgui.imGuiToJson();
-                        std::stringstream s;
-                        s << j.dump();
-
-                        try {
-                            cereal::JSONInputArchive iarchive{s};
-                            selectedObjectSafePtr->serialize(iarchive);
-                            // selectedScene.lock()->resolvePointer(selectedObjectSafePtr.get());
-                        } catch (std::exception &e) {
-                            std::cerr << "Error pushing obj: " << e.what() << std::endl;
-                        }
-
-                        std::cout << j.dump(4) << std::endl;
-                    }
-                }
-            }
 
             ImGui::EndGroup();
         }

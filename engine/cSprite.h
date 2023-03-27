@@ -21,7 +21,8 @@ public:
     void
     serialize(Archive &ar)
     {
-        ar(CEREAL_NVP(texturePath),
+        ar(cereal::base_class<jleComponent>(this),
+           CEREAL_NVP(texturePath),
            CEREAL_NVP(quad.x),
            CEREAL_NVP(quad.y),
            CEREAL_NVP(quad.depth),

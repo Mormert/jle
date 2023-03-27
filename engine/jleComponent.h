@@ -21,16 +21,21 @@ class jleTransform;
 class jleComponent
 {
 public:
-    explicit jleComponent(jleObject *owner = nullptr, jleScene *scene = nullptr);
+    explicit jleComponent(jleObject *owner, jleScene *scene);
+
+    jleComponent(){};
 
     virtual ~jleComponent() = default;
 
     [[nodiscard]] virtual std::shared_ptr<jleComponent> clone() const = 0;
 
+    int HELLOTHERE = 5;
+
     template <class Archive>
     void
     serialize(Archive &archive)
     {
+        archive(CEREAL_NVP(HELLOTHERE));
     }
 
     virtual void
@@ -76,15 +81,17 @@ protected:
     friend class jleScene;
 
     // The object that owns this component
-    jleObject *_attachedToObject;
+    jleObject *_attachedToObject{};
 
     // The scene in which this component's object lives
-    jleScene *_containedInScene;
+    jleScene *_containedInScene{};
 };
 
 void to_json(nlohmann::json &j, const std::shared_ptr<jleComponent> c);
 
 void from_json(const nlohmann::json &j, std::shared_ptr<jleComponent> &c);
+
+CEREAL_REGISTER_TYPE(jleComponent)
 
 #include "jleComponent.inl"
 

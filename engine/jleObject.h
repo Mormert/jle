@@ -14,7 +14,7 @@
 #include "jleTransform.h"
 #include "json.hpp"
 
-#include <cereal/archives/json.hpp>
+//#include <cereal/archives/json.hpp>
 #include <cereal/archives/xml.hpp>
 #include <cereal/types/memory.hpp>
 #include <cereal/types/polymorphic.hpp>
@@ -131,14 +131,14 @@ private:
 
     bool _isStarted = false;
 
-    uint32_t _instanceID;
+    uint32_t __instanceID;
 
 protected:
     std::vector<std::shared_ptr<jleComponent>> _components{};
 
     jleTransform _transform;
 
-    std::vector<std::shared_ptr<jleObject>> _childObjects{};
+    std::vector<std::shared_ptr<jleObject>> __childObjects{};
 
     jleObject *_parentObject = nullptr;
 

@@ -27,6 +27,8 @@ public:
 
     void setLocalPosition(const glm::vec3 &position);
 
+    void setLocalMatrix(const glm::mat4& matrix);
+
     void addLocalTranslation(const glm::vec3& position);
 
     [[nodiscard]] glm::vec3 getLocalPosition();

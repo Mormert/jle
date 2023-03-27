@@ -43,7 +43,7 @@ jleObject::customComponents()
 std::vector<std::shared_ptr<jleObject>> &
 jleObject::childObjects()
 {
-    return _childObjects;
+    return __childObjects;
 }
 
 void
@@ -54,8 +54,8 @@ jleObject::attachChildObject(const std::shared_ptr<jleObject> &object)
     if (object->_parentObject) {
         // Remove the object from previous parent, if any
         auto it =
-            std::find(object->_parentObject->_childObjects.begin(), object->_parentObject->_childObjects.end(), object);
-        object->_parentObject->_childObjects.erase(it);
+            std::find(object->_parentObject->__childObjects.begin(), object->_parentObject->__childObjects.end(), object);
+        object->_parentObject->__childObjects.erase(it);
     } else {
         // Else the object is directly in the scene
         // Remove the object from existing directly in the scene, and instead as
@@ -70,7 +70,7 @@ jleObject::attachChildObject(const std::shared_ptr<jleObject> &object)
     }
 
     object->_parentObject = this;
-    _childObjects.push_back(object);
+    __childObjects.push_back(object);
 
     // if (auto t = object->component<cTransform>()) {
     // t->flagDirty();
@@ -83,10 +83,10 @@ jleObject::detachObjectFromParent()
     if (_parentObject) {
         int i = 0;
         std::shared_ptr<jleObject> thiz;
-        for (auto &&o : _parentObject->_childObjects) {
+        for (auto &&o : _parentObject->__childObjects) {
             if (o.get() == this) {
                 thiz = o;
-                _parentObject->_childObjects.erase(_parentObject->_childObjects.begin() + i);
+                _parentObject->__childObjects.erase(_parentObject->__childObjects.begin() + i);
                 break;
             }
             i++;
@@ -167,17 +167,17 @@ jleObject::updateComponents(float dt)
 void
 jleObject::updateChildren(float dt)
 {
-    for (int32_t i = _childObjects.size() - 1; i >= 0; i--) {
-        if (_childObjects[i]->_pendingKill) {
-            _childObjects.erase(_childObjects.begin() + i);
+    for (int32_t i = __childObjects.size() - 1; i >= 0; i--) {
+        if (__childObjects[i]->_pendingKill) {
+            __childObjects.erase(__childObjects.begin() + i);
             continue;
         }
 
-        _childObjects[i]->update(dt);
-        _childObjects[i]->updateComponents(dt);
+        __childObjects[i]->update(dt);
+        __childObjects[i]->updateComponents(dt);
 
         // Recursively update children after this object has updated
-        _childObjects[i]->updateChildren(dt);
+        __childObjects[i]->updateChildren(dt);
     }
 }
 
@@ -205,7 +205,7 @@ to_json(nlohmann::json &j, const std::shared_ptr<jleObject> &o)
 
     j = nlohmann::json{{"__obj_name", o->objectNameVirtual()},
                        {"_instance_name", o->_instanceName},
-                       {"_childObjects", o->_childObjects}};
+                       {"__childObjects", o->__childObjects}};
 
     o->toJson(j);
 }
@@ -243,8 +243,8 @@ jleObject::duplicate(bool childChain)
     auto duplicated = clone();
 
     duplicated->_components.clear();
-    duplicated->_childObjects.clear();
-    duplicated->_instanceID = _containedInScene->getNextInstanceId();
+    duplicated->__childObjects.clear();
+    duplicated->__instanceID = _containedInScene->getNextInstanceId();
     duplicated->_transform._owner = duplicated.get();
 
     for (auto &&component : _components) {
@@ -254,16 +254,16 @@ jleObject::duplicate(bool childChain)
         duplicated->_components.push_back(clonedComponent);
     }
 
-    for (auto &&object : _childObjects) {
+    for (auto &&object : __childObjects) {
         auto duplicatedChild = object->duplicate(true);
         duplicatedChild->_parentObject = duplicated.get();
-        duplicated->_childObjects.push_back(duplicatedChild);
+        duplicated->__childObjects.push_back(duplicatedChild);
     }
 
     _containedInScene->_newSceneObjects.push_back(duplicated);
 
     if (duplicated->parent() && !childChain) {
-        duplicated->parent()->_childObjects.push_back(duplicated);
+        duplicated->parent()->__childObjects.push_back(duplicated);
     }
 
     return duplicated;
@@ -294,8 +294,8 @@ jleObject::processJsonData(const nlohmann::json &j, std::shared_ptr<jleObject> &
         }
     }
 
-    if (j.find("_childObjects") != j.end()) {
-        for (auto object_json : j.at("_childObjects")) {
+    if (j.find("__childObjects") != j.end()) {
+        for (auto object_json : j.at("__childObjects")) {
             if (object_json.find("_otemp") != object_json.end()) {
                 const std::string objectTemplatePath = object_json.at("_otemp");
                 const std::string objectInstanceName = object_json.at("_instance_name");
@@ -349,7 +349,7 @@ from_json(const nlohmann::json &json, std::shared_ptr<jleObject> &object)
 int
 jleObject::instanceID() const
 {
-    return _instanceID;
+    return __instanceID;
 }
 
 void
@@ -375,7 +375,7 @@ void
 jleObject::propagateOwnedByScene(jleScene *scene)
 {
     _containedInScene = scene;
-    for (auto child : _childObjects) {
+    for (auto child : __childObjects) {
         child->propagateOwnedByScene(scene);
     }
 }

@@ -9,12 +9,12 @@ void
 jleObject::serialize(Archive &archive)
 {
     archive(CEREAL_NVP(_instanceName),
-            CEREAL_NVP(_instanceID),
+            CEREAL_NVP(__instanceID),
             CEREAL_NVP(_transform),
-            CEREAL_NVP(_childObjects),
+            CEREAL_NVP(__childObjects),
             CEREAL_NVP(_components));
 
-    for (auto &&child : _childObjects) {
+    for (auto &&child : __childObjects) {
         child->_parentObject = this;
     }
 

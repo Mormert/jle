@@ -10,7 +10,7 @@
 #include "jlePath.h"
 #include <json.hpp>
 
-#include <cereal/archives/json.hpp>
+//#include <cereal/archives/json.hpp>
 #include <cereal/archives/xml.hpp>
 #include <cereal/types/memory.hpp>
 #include <cereal/types/vector.hpp>

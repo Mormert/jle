@@ -53,7 +53,8 @@ public:
 
     friend class std::hash<jleRelativePath>;
 
-private:
+    // Note: should actually be private!
+    // Don't modify!
     std::string _relativePath;
 };
 
