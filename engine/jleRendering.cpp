@@ -21,18 +21,7 @@ jleRendering::render(jleFramebufferInterface &framebufferOut, const jleCamera &c
 {
     JLE_SCOPE_PROFILE_CPU(jleRendering_render)
 
-    // TODO: Remove this static buffer here and don't resize it all the time...
-    static jleFramebufferMultisample msaa{framebufferOut.width(), framebufferOut.height(), 4};
-
-    {
-        // TODO : Fix this, it takes ~5 MS to resize the MSAA framebuffer!!!
-        JLE_SCOPE_PROFILE_GPU(jleRendering_RenderMSAAResize)
-        msaa.resize(framebufferOut.width(), framebufferOut.height());
-    }
-
-    msaa.bind();
-
-    // framebufferOut.bind();
+    framebufferOut.bind();
 
     const auto backgroundColor = camera.getBackgroundColor();
     glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f);
@@ -40,14 +29,21 @@ jleRendering::render(jleFramebufferInterface &framebufferOut, const jleCamera &c
 
     glEnable(GL_DEPTH_TEST);
 
-    _3dRenderer->queuerender(msaa, camera);
-    //_quads->queuerender(framebufferOut, camera);
-    //_texts->render(framebufferOut, camera);
+    _3dRenderer->queuerender(framebufferOut, camera);
 
-    // framebufferOut.bindDefault();
-    jleFramebufferInterface::bindDefault();
+}
 
-    msaa.blitToOther(framebufferOut);
+void
+jleRendering::renderMSAA(jleFramebufferInterface &framebufferOut,
+                         jleFramebufferMultisample &msaaIn,
+                         const jleCamera &camera)
+{
+
+    JLE_SCOPE_PROFILE_CPU(jleRendering_renderMSAA)
+
+    render(msaaIn, camera);
+
+    msaaIn.blitToOther(framebufferOut);
 }
 
 void

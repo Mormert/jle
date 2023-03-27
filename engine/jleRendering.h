@@ -5,6 +5,7 @@
 #include "jle3DRenderer.h"
 #include "jleCamera.h"
 #include "jleFrameBufferInterface.h"
+#include "jleFramebufferMultisample.h"
 #include "jleQuadRendering.h"
 #include "jleTextRendering.h"
 #include <memory>
@@ -23,6 +24,8 @@ public:
                             unsigned int height);
 
     void render(jleFramebufferInterface &framebufferOut, const jleCamera &camera);
+
+    void renderMSAA(jleFramebufferInterface &framebufferOut, jleFramebufferMultisample& msaaIn, const jleCamera &camera);
 
     void clearBuffersForNextFrame();
 

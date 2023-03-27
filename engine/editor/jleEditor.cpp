@@ -1,6 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleEditor.h"
+#include <jleFramebufferMultisample.h>
 
 #include "ImGui/ImGuizmo.h"
 #include "ImGui/imgui.h"
@@ -116,7 +117,14 @@ jleEditor::render()
 
     if (!gameHalted && game) {
         // Render to game view
-        rendering().render(*mainScreenFramebuffer, game->mainCamera);
+        static jleFramebufferMultisample msaa{mainScreenFramebuffer->width(), mainScreenFramebuffer->height(), 4};
+
+        if(mainScreenFramebuffer->width() != msaa.width() || mainScreenFramebuffer->height() != msaa.height())
+        {
+            msaa.resize(mainScreenFramebuffer->width(), mainScreenFramebuffer->height());
+        }
+
+        rendering().renderMSAA(*mainScreenFramebuffer, msaa, game->mainCamera);
     }
 
     if (projectionType == jleCameraProjection::Orthographic) {
@@ -127,8 +135,15 @@ jleEditor::render()
             45.f, editorScreenFramebuffer->width(), editorScreenFramebuffer->height(), 10000.f, 0.1f);
     }
 
+    static jleFramebufferMultisample msaa{editorScreenFramebuffer->width(), editorScreenFramebuffer->height(), 4};
+
+    if(editorScreenFramebuffer->width() != msaa.width() || editorScreenFramebuffer->height() != msaa.height())
+    {
+        msaa.resize(editorScreenFramebuffer->width(), editorScreenFramebuffer->height());
+    }
+
     // Render to editor scene view
-    rendering().render(*editorScreenFramebuffer, editorCamera);
+    rendering().renderMSAA(*editorScreenFramebuffer, msaa, editorCamera);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
