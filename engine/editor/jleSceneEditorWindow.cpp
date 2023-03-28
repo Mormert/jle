@@ -101,12 +101,6 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     }
 
     const auto &selectedObject = jleEditorSceneObjectsWindow::GetSelectedObject();
-    // jleTransform* transform{nullptr};
-
-    // Render the transform marker only in the editor window
-    // if (auto object = selectedObject.lock()) {
-    //    transform = &object->getTransform();
-    //}
 
     glBindTexture(GL_TEXTURE_2D, (unsigned int)_framebuffer->texture());
     jleStaticOpenGLState::globalActiveTexture = (unsigned int)_framebuffer->texture();
@@ -182,9 +176,9 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
 
     // Move the Perspective button up slightly
     auto y = ImGui::GetCursorPosY();
-    ImGui::SetCursorPosY(y - 25 * globalImguiScale);
+    ImGui::SetCursorPosY(y - 30 * globalImguiScale);
     auto x = ImGui::GetCursorPosX();
-    ImGui::SetCursorPosX(x + 5 * globalImguiScale);
+    ImGui::SetCursorPosX(x + 8 * globalImguiScale);
 
     if (jleEditor::projectionType == jleCameraProjection::Orthographic) {
         if (ImGui::Button("Orthographic")) {
@@ -219,10 +213,11 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     const static float *identityMatrixPtr = &identityMatrix[0][0];
     ImGuizmo::DrawGrid(viewMatrix, projectionMatrix, identityMatrixPtr, 25.f);
 
+    /*
     // The following commented code is for a camera controller "cube" in the top left corner.
     // It contains a bug, however, and is not really usable at the moment.
 
-    /*static bool isManipulating = false;
+    static bool isManipulating = false;
     static glm::mat4 manipulatingMatrix{1.f};
     static glm::mat4 lastFrameMatrix{1.f};
 
@@ -251,9 +246,13 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     if (isManipulating) {
         _fpvCamController.recalculateVectorsFromViewMatrix(manipulatingMatrix);
         lastFrameMatrix = manipulatingMatrix;
-    }*/
+    }
+    */
 
-    ImGui::SetCursorPosY(y - 250 * globalImguiScale);
+    ImGui::SetCursorPosY(ImGui::GetCursorStartPos().y + 5 * globalImguiScale);
+    ImGui::SetCursorPosX(ImGui::GetCursorStartPos().x + 5 * globalImguiScale);
+
+    ImGui::BeginGroup();
 
     if (auto obj = selectedObject.lock()) {
         glm::mat4 worldMatrixBefore = obj->getTransform().getWorldMatrix();
@@ -263,6 +262,8 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
             obj->getTransform().setWorldMatrix(worldMatrixBefore);
         }
     }
+
+    ImGui::EndGroup();
 
     // If window is hovered and Gizmo is not being moved/used
     if (ImGui::IsWindowHovered() && !ImGuizmo::IsUsing()) {
@@ -357,12 +358,6 @@ jleSceneEditorWindow::EditTransform(float *cameraView,
             _currentGizmoOperation = ImGuizmo::SCALE;
         if (ImGui::RadioButton("Universal", _currentGizmoOperation == ImGuizmo::UNIVERSAL))
             _currentGizmoOperation = ImGuizmo::UNIVERSAL;
-        float matrixTranslation[3], matrixRotation[3], matrixScale[3];
-        ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
-        ImGui::InputFloat3("Translation", matrixTranslation);
-        ImGui::InputFloat3("Rotation", matrixRotation);
-        ImGui::InputFloat3("Scaling", matrixScale);
-        ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
 
         if (_currentGizmoOperation != ImGuizmo::SCALE) {
             if (ImGui::RadioButton("Local", mCurrentGizmoMode == ImGuizmo::LOCAL))
@@ -372,6 +367,7 @@ jleSceneEditorWindow::EditTransform(float *cameraView,
                 mCurrentGizmoMode = ImGuizmo::WORLD;
         }
 
+        /*
         ImGui::Checkbox("##UseSnap", &useSnap);
         ImGui::SameLine();
 
@@ -393,7 +389,7 @@ jleSceneEditorWindow::EditTransform(float *cameraView,
             ImGui::SameLine();
             ImGui::InputFloat3("Snap", boundsSnap);
             ImGui::PopID();
-        }
+        }*/
     }
 
     ImGuizmo::Manipulate(cameraView,
