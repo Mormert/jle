@@ -12,7 +12,10 @@
 #include "jleScene.h"
 
 #include <cereal/archives/json.hpp>
+
+#ifdef BUILD_EDITOR
 #include "editor/jleImGuiCerealArchive.h"
+#endif
 
 
 #include <fstream>

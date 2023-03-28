@@ -9,11 +9,8 @@
 #include "jleTypeReflectionUtils.h"
 #include "jleEditor.h"
 
-#include <cereal/archives/json.hpp>
-
 #include <filesystem>
 #include <fstream>
-#include <sstream>
 
 jleEditorSceneObjectsWindow::jleEditorSceneObjectsWindow(const std::string &window_name)
     : iEditorImGuiWindow{window_name}

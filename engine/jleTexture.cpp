@@ -12,7 +12,6 @@
 #include "jleStaticOpenGLState.h"
 #include "plog/Log.h"
 #include <cereal/archives/json.hpp>
-#include "editor/jleImGuiCerealArchive.h"
 
 #include <fstream>
 #include <iostream>
