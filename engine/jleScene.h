@@ -10,14 +10,14 @@
 #include "jlePath.h"
 #include <json.hpp>
 
-//#include <cereal/archives/json.hpp>
+// #include <cereal/archives/json.hpp>
 #include <cereal/archives/xml.hpp>
 #include <cereal/types/memory.hpp>
 #include <cereal/types/vector.hpp>
 
 class jleObject;
 
-class jleScene : public jleJsonInterface<nlohmann::json>
+class jleScene : public jleJsonInterface<nlohmann::json>, public std::enable_shared_from_this<jleScene>
 {
 public:
     jleScene();
@@ -27,8 +27,7 @@ public:
     virtual ~jleScene() = default;
 
     template <class Archive>
-    void
-    serialize(Archive &archive);
+    void serialize(Archive &archive);
 
     template <typename T>
     std::shared_ptr<T> spawnObject();
@@ -41,12 +40,23 @@ public:
 
     void updateSceneObjects(float dt);
 
+    void updateSceneObejctsEditor(float dt);
+
     void processNewSceneObjects();
 
     void startObjects();
 
+    static std::shared_ptr<jleScene> loadScene(const std::string &scenePath);
+
+    void saveScene();
+
     virtual void
-    sceneupdate()
+    updateScene()
+    {
+    }
+
+    virtual void
+    updateSceneEditor()
     {
     }
 

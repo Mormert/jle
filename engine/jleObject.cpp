@@ -165,6 +165,14 @@ jleObject::updateComponents(float dt)
 }
 
 void
+jleObject::updateComponentsEditor(float dt)
+{
+    for (int i = _components.size() - 1; i >= 0; i--) {
+        _components[i]->editorUpdate(dt);
+    }
+}
+
+void
 jleObject::updateChildren(float dt)
 {
     for (int32_t i = __childObjects.size() - 1; i >= 0; i--) {
@@ -178,6 +186,23 @@ jleObject::updateChildren(float dt)
 
         // Recursively update children after this object has updated
         __childObjects[i]->updateChildren(dt);
+    }
+}
+
+void
+jleObject::updateChildrenEditor(float dt)
+{
+    for (int32_t i = __childObjects.size() - 1; i >= 0; i--) {
+        if (__childObjects[i]->_pendingKill) {
+            __childObjects.erase(__childObjects.begin() + i);
+            continue;
+        }
+
+        __childObjects[i]->editorUpdate(dt);
+        __childObjects[i]->updateComponentsEditor(dt);
+
+        // Recursively update children after this object has updated
+        __childObjects[i]->updateChildrenEditor(dt);
     }
 }
 

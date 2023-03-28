@@ -22,7 +22,7 @@ void jleNetScene::fromJson(const nlohmann::json &j_in) {
     JLE_FROM_JSON_IF_EXISTS(j_in, _connectAddress, "_connectAddress");
 }
 
-void jleNetScene::sceneupdate() {
+void jleNetScene::updateScene() {
     nlohmann::json j;
     // Sync data back to game thread, and process the network message
     if (_networking.tryReceiveMessagePack(j)) {

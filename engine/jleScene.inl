@@ -1,6 +1,8 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleObject.h"
+#include <fstream>
+#include <plog/Log.h>
 
 template <class Archive>
 void

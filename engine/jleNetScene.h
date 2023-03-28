@@ -11,7 +11,14 @@ public:
 
     explicit jleNetScene(const std::string &sceneName);
 
-    void sceneupdate() override;
+    template <class Archive>
+    void
+    serialize(Archive &ar)
+    {
+        ar(cereal::base_class<jleScene>(this));
+    }
+
+    void updateScene() override;
 
     void onSceneCreation() override;
 
@@ -44,3 +51,6 @@ protected:
 
     bool _isHost = false;
 };
+
+CEREAL_REGISTER_TYPE(jleNetScene)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleScene, jleNetScene)

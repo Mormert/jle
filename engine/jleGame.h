@@ -61,36 +61,24 @@ public:
         return newScene;
     }
 
-    template <typename T>
     std::shared_ptr<jleScene>
     loadScene(const std::string &scenePath)
     {
-        static_assert(std::is_base_of<jleScene, T>::value, "T must derive from jleScene");
-
         if (checkSceneIsActive(scenePath)) {
             LOG_WARNING << "Loaded scene is already loaded";
             return nullptr;
         }
 
-        std::ifstream i(scenePath);
-        if (i.good()) {
-            std::shared_ptr<T> scene = createScene<T>();
-
-            try {
-                std::ifstream ix(scenePath);
-                cereal::JSONInputArchive iarchive{ix};
-                scene->serialize(iarchive);
-                scene->startObjects();
-            } catch (std::exception &e) {
-                LOG_ERROR << "Could not load scene with path: " << scenePath << ", err:\n" << e.what();
-                return nullptr;
-            }
-
-            return scene;
-        } else {
-            LOG_ERROR << "Could not load scene with path: " << scenePath;
-            return nullptr;
+        auto scene = jleScene::loadScene(scenePath);
+        if(scene)
+        {
+            _activeScenes.push_back(scene);
+            scene->onSceneCreation();
+            scene->startObjects();
         }
+
+
+        return scene;
     }
 
     std::vector<std::shared_ptr<jleScene>> &activeScenesRef();

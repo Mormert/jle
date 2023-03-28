@@ -22,6 +22,8 @@ public:
         ar(CEREAL_NVP(_meshRef), CEREAL_NVP(_materialRef), CEREAL_NVP(_meshPath), CEREAL_NVP(_materialPath));
     }
 
+    void editorUpdate(float dt) override;
+
     void start() override;
 
     void update(float dt) override;

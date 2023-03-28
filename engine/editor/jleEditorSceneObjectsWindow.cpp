@@ -7,6 +7,7 @@
 #include "jleImGuiCerealArchive.h"
 #include "jleNetScene.h"
 #include "jleTypeReflectionUtils.h"
+#include "jleEditor.h"
 
 #include <cereal/archives/json.hpp>
 
@@ -65,16 +66,14 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
         const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
         ImGui::BeginChild("scene pane", ImVec2(150 * globalImguiScale, 0), true);
 
-        auto &activeScenes = ((jleGameEngine *)gCore)->gameRef().activeScenesRef();
-
-        for (auto scene : activeScenes) {
-            if (ImGui::Selectable(scene->sceneName.c_str(), selectedScene.lock() == scene)) {
+        const auto sceneUi = [&](std::shared_ptr<jleScene> scene, const std::string& scenePostfix){
+            if (ImGui::Selectable(std::string(scene->sceneName + scenePostfix).c_str(), selectedScene.lock() == scene)) {
                 selectedScene = scene;
             }
 
             if (selectedScene.lock() == scene) {
 
-                { // destroy Scene
+                { // Destroy Scene
                     static bool opened = false;
                     if (ImGui::Button("Destroy Scene", ImVec2(138 * globalImguiScale, 0))) {
                         opened = true;
@@ -114,32 +113,24 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
 
                 { // Save Scene
                     if (ImGui::Button("Save Scene", ImVec2(138 * globalImguiScale, 0))) {
-                        std::filesystem::create_directories(GAME_RESOURCES_DIRECTORY + "/scenes");
-                        std::ofstream sceneSave{GAME_RESOURCES_DIRECTORY + "/scenes/" + scene->sceneName + ".scn"};
-                        nlohmann::json j;
-                        to_json(j, *scene);
-                        // sceneSave << j.dump(4);
-                        // sceneSave.close();
-
-                        std::stringstream outputSS;
-
-                        {
-                            cereal::JSONOutputArchive outputArchive(sceneSave);
-                            scene->serialize(outputArchive);
-                        }
-
-                        // DEBUG SCENE SAVE...
-
-                        std::cout << "JSON:\n";
-                        std::cout << j.dump(4) << std::endl;
-
-                        std::cout << "CEREAL:\n";
-                        std::string outputStr = outputSS.str();
-                        std::cout << outputStr << std::endl;
+                        scene->saveScene();
                     }
                 }
             }
+        };
+
+        if(!gEngine->isGameKilled())
+        {
+            for (auto scene : gEngine->gameRef().activeScenesRef()) {
+                sceneUi(scene, " (game)");
+            }
         }
+
+        for(auto scene : gEditor->getEditorScenes())
+        {
+            sceneUi(scene, " (editor)");
+        }
+
 
         ImGui::EndChild();
         ImGui::EndGroup();

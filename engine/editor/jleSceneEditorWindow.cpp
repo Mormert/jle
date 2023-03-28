@@ -5,7 +5,6 @@
 #include "jleEditor.h"
 #include "jleInput.h"
 
-
 #include "ImGui/imgui.h"
 
 #include "glm/common.hpp"
@@ -47,7 +46,8 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         return;
     }
 
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+    ImGuiWindowFlags flags =
+        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, flags);
@@ -101,10 +101,10 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     }
 
     const auto &selectedObject = jleEditorSceneObjectsWindow::GetSelectedObject();
-    //jleTransform* transform{nullptr};
+    // jleTransform* transform{nullptr};
 
     // Render the transform marker only in the editor window
-    //if (auto object = selectedObject.lock()) {
+    // if (auto object = selectedObject.lock()) {
     //    transform = &object->getTransform();
     //}
 
@@ -147,32 +147,32 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         int pixelReadY = mouseY_flipped * (_pickingFramebuffer->height() / _lastGameWindowHeight);
         glReadPixels(pixelReadX, pixelReadY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, data);
 
-        LOGE << "X: " << pixelReadX << ", Y: " << pixelReadY;
-        LOGE << "COLOR: " << (int)data[0] << ", " << (int)data[1] << ", " << (int)data[2] << ".";
+        //LOGE << "X: " << pixelReadX << ", Y: " << pixelReadY;
+        //LOGE << "COLOR: " << (int)data[0] << ", " << (int)data[1] << ", " << (int)data[2] << ".";
 
         int pickedID = data[0] + data[1] * 256 + data[2] * 256 * 256;
         if (pickedID != 0x00ffffff) { // If we did not hit the white background
             LOGE << "Picked object with id: " << pickedID;
 
-            auto &game = ((jleGameEngine *)gCore)->gameRef();
-            const auto &scenes = game.activeScenesRef();
+            std::vector<std::shared_ptr<jleScene>> scenes;
+            if (!gEngine->isGameKilled()) {
+                auto &game = ((jleGameEngine *)gCore)->gameRef();
+                scenes = game.activeScenesRef();
+            }
+
+            scenes.insert(scenes.end(), gEditor->getEditorScenes().begin(), gEditor->getEditorScenes().end());
 
             for (auto &scene : scenes) {
                 for (auto &object : scene->sceneObjects()) {
                     std::shared_ptr<jleObject> o{};
                     object->tryFindChildWithInstanceId(pickedID, o);
                     if (o) {
-                        //if (auto objectsTransform = o->component<jleTransform>()) {
-                            jleEditorSceneObjectsWindow::SetSelectedObject(o);
-                        //}
+                        jleEditorSceneObjectsWindow::SetSelectedObject(o);
                     }
                 }
             }
-
         } else {
             LOGE << "Picking object fell out into the universe";
-            // jleEditorSceneObjectsWindow::SetSelectedObject(nullptr);
-            //  If clicking on UI on top of the viewport, we accidentally de-select the object...
         }
 
         _pickingFramebuffer->bindDefault();

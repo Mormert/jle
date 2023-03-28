@@ -47,3 +47,9 @@ cMesh::fromJson(const nlohmann::json &j_in)
         _material = gCore->resources().loadResourceFromFile<jleMaterial>(jleRelativePath{_materialPath});
     }
 }
+
+void
+cMesh::editorUpdate(float dt)
+{
+    update(dt);
+}

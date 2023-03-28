@@ -5,6 +5,7 @@
 #include "jleProfiler.h"
 
 #include <iostream>
+#include <filesystem>
 
 int jleScene::_scenesCreatedCount{0};
 
@@ -30,6 +31,24 @@ void jleScene::updateSceneObjects(float dt) {
         _sceneObjects[i]->updateComponents(dt);
         _sceneObjects[i]->updateChildren(dt);
     }
+}
+
+void
+jleScene::updateSceneObejctsEditor(float dt)
+{
+
+    JLE_SCOPE_PROFILE_CPU(jleScene_updateSceneObejctsEditor)
+    for (int32_t i = _sceneObjects.size() - 1; i >= 0; i--) {
+        if (_sceneObjects[i]->_pendingKill) {
+            _sceneObjects.erase(_sceneObjects.begin() + i);
+            continue;
+        }
+
+        _sceneObjects[i]->editorUpdate(dt);
+        _sceneObjects[i]->updateComponentsEditor(dt);
+        _sceneObjects[i]->updateChildrenEditor(dt);
+    }
+
 }
 
 void jleScene::processNewSceneObjects() {
@@ -165,3 +184,38 @@ jleScene::getNextInstanceId()
 {
     return _objectsInstantiatedCounter++;
 }
+
+std::shared_ptr<jleScene>
+jleScene::loadScene(const std::string &scenePath)
+{
+    std::ifstream i(scenePath);
+    if (i.good()) {
+        std::shared_ptr<jleScene> scene;
+
+        try {
+            std::ifstream ix(scenePath);
+            cereal::JSONInputArchive iarchive{ix};
+            iarchive(scene);
+        } catch (std::exception &e) {
+            LOG_ERROR << "Could not load scene with path: " << scenePath << ", err:\n" << e.what();
+            return nullptr;
+        }
+
+        return scene;
+    } else {
+        LOG_ERROR << "Could not load scene with path: " << scenePath;
+        return nullptr;
+    }
+}
+
+void
+jleScene::saveScene()
+{
+    std::filesystem::create_directories(GAME_RESOURCES_DIRECTORY + "/scenes");
+    std::ofstream sceneSave{GAME_RESOURCES_DIRECTORY + "/scenes/" + sceneName + ".scn"};
+
+    auto &&thiz = shared_from_this();
+    cereal::JSONOutputArchive outputArchive(sceneSave);
+    outputArchive(thiz);
+}
+

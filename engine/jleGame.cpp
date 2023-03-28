@@ -10,7 +10,7 @@ void jleGame::updateActiveScenes(float dt) {
             continue;
         }
 
-        _activeScenes[i]->sceneupdate();
+        _activeScenes[i]->updateScene();
         _activeScenes[i]->processNewSceneObjects();
         _activeScenes[i]->updateSceneObjects(dt);
     }

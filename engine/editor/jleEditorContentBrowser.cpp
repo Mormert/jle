@@ -3,6 +3,7 @@
 #include "jleEditorContentBrowser.h"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_stdlib.h"
+#include "jleEditor.h"
 #include "jleEditorSceneObjectsWindow.h"
 #include "jleEditorTextEdit.h"
 #include "jleResource.h"
@@ -373,21 +374,30 @@ jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file)
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
 
-    if (ImGui::Button("Load Scene", size)) {
+    if (!gEngine->isGameKilled()) {
+        if (ImGui::Button("Load Scene (Game)", size)) {
 
+            std::string sceneName = file.filename().string();
+            int dot = sceneName.rfind(file.extension().string());
+            if (dot != std::string::npos) {
+                sceneName.resize(dot);
+            }
+
+            auto &game = ((jleGameEngine *)gCore)->gameRef();
+            auto scene = game.loadScene(file.string());
+
+            game.activeScenesRef().push_back(scene);
+        }
+    }
+
+    if (ImGui::Button("Load Scene (Editor)", size)) {
         std::string sceneName = file.filename().string();
         int dot = sceneName.rfind(file.extension().string());
         if (dot != std::string::npos) {
             sceneName.resize(dot);
         }
 
-        auto &game = ((jleGameEngine *)gCore)->gameRef();
-
-        if (!game.checkSceneIsActive(sceneName)) {
-            game.loadScene<jleScene>(file.string());
-        } else {
-            LOGE << "Failed to load scene: Scene with name '" << sceneName << "' is already active.";
-        }
+        gEditor->loadScene(file.string());
     }
 }
 

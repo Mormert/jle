@@ -13,7 +13,11 @@
 
 class jleFramebufferInterface;
 
-class jleEditor : public jleGameEngine {
+class jleEditor;
+inline jleEditor *gEditor;
+
+class jleEditor : public jleGameEngine
+{
 public:
     jleEditor(std::shared_ptr<jleGameSettings>, std::shared_ptr<jleEditorSettings>);
 
@@ -21,11 +25,46 @@ public:
 
     void render() override;
 
+    void update(float dt) override;
+
     std::shared_ptr<jleFramebufferInterface> editorScreenFramebuffer;
 
     static inline jleCameraProjection projectionType;
 
     static inline jleCamera editorCamera{jleCameraProjection::Orthographic};
+
+    void updateEditorLoadedScenes(float dt);
+
+    std::vector<std::shared_ptr<jleScene>> &getEditorScenes();
+
+    bool
+    checkSceneIsActiveEditor(const std::string &sceneName) {
+        for (auto &&scene : _editorScenes) {
+            if (sceneName == scene->sceneName) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    std::shared_ptr<jleScene>
+    loadScene(const std::string &scenePath)
+    {
+        if (checkSceneIsActiveEditor(scenePath)) {
+            LOG_WARNING << "Loaded scene is already loaded";
+            return nullptr;
+        }
+
+        auto scene = jleScene::loadScene(scenePath);
+
+        if(scene)
+        {
+            _editorScenes.push_back(scene);
+        }
+
+        return scene;
+    }
 
 private:
     void initImgui();
@@ -41,4 +80,6 @@ private:
     std::vector<std::shared_ptr<iEditorImGuiWindow>> _imGuiWindows;
 
     std::shared_ptr<jleEditorSettings> _editorSettings;
+
+    std::vector<std::shared_ptr<jleScene>> _editorScenes;
 };

@@ -37,6 +37,11 @@ public:
     {
     }
 
+    virtual void
+    editorUpdate(float dt)
+    {
+    }
+
 
     std::shared_ptr<jleObject> duplicate(bool childChain = false);
 
@@ -125,7 +130,11 @@ private:
 
     void updateComponents(float dt);
 
+    void updateComponentsEditor(float dt);
+
     void updateChildren(float dt);
+
+    void updateChildrenEditor(float dt);
 
     bool _pendingKill = false;
 

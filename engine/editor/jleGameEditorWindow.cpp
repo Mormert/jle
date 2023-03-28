@@ -1,9 +1,9 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleGameEditorWindow.h"
-#include "jleWindow.h"
-#include "jleInput.h"
 #include "ImGui/imgui.h"
+#include "jleInput.h"
+#include "jleWindow.h"
 
 #include "jleMouseInput.h"
 #include "jleStaticOpenGLState.h"
@@ -33,10 +33,31 @@ jleGameEditorWindow::update(jleGameEngine &ge)
         return;
     }
 
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+    ImGuiWindowFlags flags =
+        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, flags);
+
+    if (ge.isGameKilled()) {
+        ImGuiStyle &style = ImGui::GetStyle();
+
+        float size = ImGui::CalcTextSize("   Start Game   ").x + style.FramePadding.x * 2.0f;
+        float avail = ImGui::GetContentRegionAvail().x;
+
+        float off = (avail - size) * 0.5f;
+        if (off > 0.0f)
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+
+        ImGui::SetCursorPosY(ImGui::GetWindowHeight() / 2.f);
+
+        if (ImGui::Button("   Start Game   ")) {
+            gEngine->startGame();
+        }
+
+        ImGui::End();
+        return;
+    }
 
     constexpr float negYOffset = 8;
     constexpr float negXOffset = 6;

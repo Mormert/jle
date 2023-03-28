@@ -40,6 +40,7 @@
 jleEditor::jleEditor(std::shared_ptr<jleGameSettings> gs, std::shared_ptr<jleEditorSettings> es)
     : jleGameEngine{gs}, _editorSettings{es}
 {
+    gEditor = this;
 }
 
 void
@@ -119,8 +120,7 @@ jleEditor::render()
         // Render to game view
         static jleFramebufferMultisample msaa{mainScreenFramebuffer->width(), mainScreenFramebuffer->height(), 4};
 
-        if(mainScreenFramebuffer->width() != msaa.width() || mainScreenFramebuffer->height() != msaa.height())
-        {
+        if (mainScreenFramebuffer->width() != msaa.width() || mainScreenFramebuffer->height() != msaa.height()) {
             msaa.resize(mainScreenFramebuffer->width(), mainScreenFramebuffer->height());
         }
 
@@ -137,8 +137,7 @@ jleEditor::render()
 
     static jleFramebufferMultisample msaa{editorScreenFramebuffer->width(), editorScreenFramebuffer->height(), 4};
 
-    if(editorScreenFramebuffer->width() != msaa.width() || editorScreenFramebuffer->height() != msaa.height())
-    {
+    if (editorScreenFramebuffer->width() != msaa.width() || editorScreenFramebuffer->height() != msaa.height()) {
         msaa.resize(editorScreenFramebuffer->width(), editorScreenFramebuffer->height());
     }
 
@@ -343,5 +342,37 @@ jleEditor::checkGlErrors()
             break;
         }
         LOGE << "Detected OpenGL error somewhere of type: " << error;
+    }
+}
+
+std::vector<std::shared_ptr<jleScene>> &
+jleEditor::getEditorScenes()
+{
+    return _editorScenes;
+}
+
+void
+jleEditor::updateEditorLoadedScenes(float dt)
+{
+    JLE_SCOPE_PROFILE_CPU(jleEditor_updateEditorLoadedScenes)
+    for (int i = _editorScenes.size() - 1; i >= 0; i--) {
+        if (_editorScenes[i]->bPendingSceneDestruction) {
+            _editorScenes.erase(_editorScenes.begin() + i);
+            continue;
+        }
+
+        _editorScenes[i]->updateSceneEditor();
+        _editorScenes[i]->processNewSceneObjects();
+        _editorScenes[i]->updateSceneObejctsEditor(dt);
+    }
+}
+
+void
+jleEditor::update(float dt)
+{
+    jleGameEngine::update(dt);
+    if(isGameKilled())
+    {
+        updateEditorLoadedScenes(dt);
     }
 }

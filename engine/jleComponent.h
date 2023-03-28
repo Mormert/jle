@@ -29,13 +29,10 @@ public:
 
     [[nodiscard]] virtual std::shared_ptr<jleComponent> clone() const = 0;
 
-    int HELLOTHERE = 5;
-
     template <class Archive>
     void
     serialize(Archive &archive)
     {
-        archive(CEREAL_NVP(HELLOTHERE));
     }
 
     virtual void

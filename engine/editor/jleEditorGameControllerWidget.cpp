@@ -26,7 +26,7 @@ void jleEditorGameControllerWidget::update(jleGameEngine &ge) {
                           ImGui::GetWindowHeight() - 3};
 
     if (ge.isGameKilled()) {
-        if (ImGui::Button(("start Game"))) {
+        if (ImGui::Button(("Start Game"))) {
             LOG_VERBOSE << "Starting the game.";
             ge.startGame();
         }
@@ -35,6 +35,10 @@ void jleEditorGameControllerWidget::update(jleGameEngine &ge) {
         if (ImGui::Button(("Restart Game"))) {
             LOG_VERBOSE << "Restarting the game.";
             ge.restartGame();
+        }
+        if (ImGui::Button(("Kill Game"))) {
+            LOG_VERBOSE << "Killing the game.";
+            ge.killGame();
         }
     }
 
