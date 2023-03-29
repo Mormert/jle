@@ -4,10 +4,10 @@
 
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_stdlib.h"
+#include "jleEditor.h"
 #include "jleImGuiCerealArchive.h"
 #include "jleNetScene.h"
 #include "jleTypeReflectionUtils.h"
-#include "jleEditor.h"
 
 #include <filesystem>
 #include <fstream>
@@ -63,8 +63,9 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
         const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
         ImGui::BeginChild("scene pane", ImVec2(150 * globalImguiScale, 0), true);
 
-        const auto sceneUi = [&](std::shared_ptr<jleScene> scene, const std::string& scenePostfix){
-            if (ImGui::Selectable(std::string(scene->sceneName + scenePostfix).c_str(), selectedScene.lock() == scene)) {
+        const auto sceneUi = [&](std::shared_ptr<jleScene> scene, const std::string &scenePostfix, bool canSaveScene) {
+            if (ImGui::Selectable(std::string(scene->sceneName + scenePostfix).c_str(),
+                                  selectedScene.lock() == scene)) {
                 selectedScene = scene;
             }
 
@@ -109,25 +110,24 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                 }
 
                 { // Save Scene
-                    if (ImGui::Button("Save Scene", ImVec2(138 * globalImguiScale, 0))) {
-                        scene->saveScene();
+                    if (canSaveScene) {
+                        if (ImGui::Button("Save Scene", ImVec2(138 * globalImguiScale, 0))) {
+                            scene->saveScene();
+                        }
                     }
                 }
             }
         };
 
-        if(!gEngine->isGameKilled())
-        {
+        if (!gEngine->isGameKilled()) {
             for (auto scene : gEngine->gameRef().activeScenesRef()) {
-                sceneUi(scene, " (game)");
+                sceneUi(scene, " (game)", false);
+            }
+        } else {
+            for (auto scene : gEditor->getEditorScenes()) {
+                sceneUi(scene, " (editor)", true);
             }
         }
-
-        for(auto scene : gEditor->getEditorScenes())
-        {
-            sceneUi(scene, " (editor)");
-        }
-
 
         ImGui::EndChild();
         ImGui::EndGroup();
