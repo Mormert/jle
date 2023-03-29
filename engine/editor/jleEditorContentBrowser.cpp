@@ -384,21 +384,22 @@ jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file)
             }
 
             auto &game = ((jleGameEngine *)gCore)->gameRef();
-            auto scene = game.loadScene(file.string());
+            game.loadScene(file.string());
+        }
+    }else
+    {
+        if (ImGui::Button("Load Scene (Editor)", size)) {
+            std::string sceneName = file.filename().string();
+            int dot = sceneName.rfind(file.extension().string());
+            if (dot != std::string::npos) {
+                sceneName.resize(dot);
+            }
 
-            game.activeScenesRef().push_back(scene);
+            gEditor->loadScene(file.string());
         }
     }
 
-    if (ImGui::Button("Load Scene (Editor)", size)) {
-        std::string sceneName = file.filename().string();
-        int dot = sceneName.rfind(file.extension().string());
-        if (dot != std::string::npos) {
-            sceneName.resize(dot);
-        }
 
-        gEditor->loadScene(file.string());
-    }
 }
 
 void
