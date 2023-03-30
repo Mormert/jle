@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include "jleFileLoadInterface.h"
+#include "jleResourceInterface.h"
 
 #include <string>
 
-class jleImage : public jleFileLoadInterface {
+class jleImage : public jleResourceInterface
+{
 public:
     jleImage() = default;
 

@@ -91,8 +91,8 @@ std::shared_ptr<jleObject> jleScene::spawnTemplateObject(
 
     auto spawnedObjFromJson = spawnObject(objectsName);
     spawnedObjFromJson->_templatePath = templatePath.relativePathStr();
-    from_json(j, spawnedObjFromJson);
-    spawnedObjFromJson->fromJson(j);
+    //from_json(j, spawnedObjFromJson);
+    //spawnedObjFromJson->fromJson(j);
 
     return spawnedObjFromJson;
 }
@@ -102,15 +102,11 @@ std::shared_ptr<jleObject> jleScene::spawnObject(const nlohmann::json &j_in) {
     j_in.at("__obj_name").get_to(objectsName);
 
     auto spawnedObjFromJson = spawnObject(objectsName);
-    from_json(j_in, spawnedObjFromJson);
-    spawnedObjFromJson->fromJson(j_in);
+    //from_json(j_in, spawnedObjFromJson);
+    //spawnedObjFromJson->fromJson(j_in);
 
     return spawnedObjFromJson;
 }
-
-void to_json(nlohmann::json &j, jleScene &s) { s.toJson(j); }
-
-void from_json(const nlohmann::json &j, jleScene &s) { s.fromJson(j); }
 
 void jleScene::configurateSpawnedObject(const std::shared_ptr<jleObject> &obj) {
     obj->_containedInScene = this;
@@ -122,40 +118,6 @@ void jleScene::configurateSpawnedObject(const std::shared_ptr<jleObject> &obj) {
     _newSceneObjects.push_back(obj);
 }
 
-void jleScene::toJson(nlohmann::json &j_out) {
-    j_out["_objects"] = _sceneObjects;
-    j_out["_sceneName"] = sceneName;
-}
-
-void jleScene::fromJson(const nlohmann::json &j_in) {
-    JLE_FROM_JSON_IF_EXISTS(j_in, sceneName, "_sceneName");
-
-    for (auto object_json : j_in.at("_objects")) {
-
-        std::optional<std::string> objectTemplatePath{};
-        // Is this object based on a template?
-        if (object_json.find("_otemp") != object_json.end()) {
-            const std::string path = object_json.at("_otemp");
-            const std::string objectInstanceName =
-                object_json.at("_instance_name");
-            const auto templateJson =
-                jleObject::objectTemplateJson(jleRelativePath{path});
-            object_json =
-                templateJson; // replace with template object json instead
-            object_json["_instance_name"] =
-                objectInstanceName; // overwrite instance name
-            objectTemplatePath = path;
-        }
-
-        std::string objectsName;
-        object_json.at("__obj_name").get_to(objectsName);
-
-        auto spawnedObjFromJson = spawnObject(objectsName);
-        spawnedObjFromJson->_templatePath = objectTemplatePath;
-        from_json(object_json, spawnedObjFromJson);
-        spawnedObjFromJson->fromJson(object_json);
-    }
-}
 void
 jleScene::startObjects()
 {

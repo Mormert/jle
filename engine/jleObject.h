@@ -9,7 +9,6 @@
 
 #include "jleTypeReflectionUtils.h"
 
-#include "jleJson.h"
 #include "jlePath.h"
 #include "jleTransform.h"
 #include "json.hpp"
@@ -21,7 +20,7 @@
 
 class jleScene;
 
-class jleObject : public jleJsonInterface<nlohmann::json>, public std::enable_shared_from_this<jleObject>
+class jleObject : public std::enable_shared_from_this<jleObject>
 {
     JLE_REGISTER_OBJECT_TYPE(jleObject)
 public:
@@ -51,7 +50,7 @@ public:
 
     jleObject();
 
-    ~jleObject() override = default;
+    ~jleObject() = default;
 
     template <typename T>
     std::shared_ptr<T> addComponent();
@@ -91,16 +90,6 @@ public:
     std::vector<std::shared_ptr<jleObject>> &childObjects();
 
     void tryFindChildWithInstanceId(int instanceId, std::shared_ptr<jleObject> &outObject);
-
-    void
-    toJson(nlohmann::json &j_out) override
-    {
-    }
-
-    void
-    fromJson(const nlohmann::json &j_in) override
-    {
-    }
 
     jleObject *parent();
 
@@ -158,9 +147,6 @@ protected:
     {
     }
 
-    friend void to_json(nlohmann::json &j, const std::shared_ptr<jleObject> &o);
-
-    friend void from_json(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
 };
 
 void to_json(nlohmann::json &j, const std::shared_ptr<jleObject> &o);

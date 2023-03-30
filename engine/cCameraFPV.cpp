@@ -9,22 +9,6 @@ cCameraFPV::cCameraFPV(jleObject *owner, jleScene *scene) : cCamera(owner, scene
 cCameraFPV::~cCameraFPV() {}
 
 void
-cCameraFPV::toJson(nlohmann::json &j_out)
-{
-    cCamera::toJson(j_out);
-    j_out["moveSpeed"] = _moveSpeed;
-    j_out["mouseSensitivity"] = _mouseSensitivity;
-}
-
-void
-cCameraFPV::fromJson(const nlohmann::json &j_in)
-{
-    cCamera::fromJson(j_in);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _moveSpeed, "moveSpeed", 10.f);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _mouseSensitivity, "mouseSensitivity", 1.f);
-}
-
-void
 cCameraFPV::update(float dt)
 {
     auto &game = gEngine->gameRef();

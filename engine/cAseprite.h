@@ -30,10 +30,6 @@ public:
 
     void update(float dt) override;
 
-    void toJson(nlohmann::json &j_out) override;
-
-    void fromJson(const nlohmann::json &j_in) override;
-
     int addAsepritePath(const std::string &path);
 
     void currentAseprite(unsigned int index);
@@ -44,7 +40,7 @@ public:
 
     [[nodiscard]] jleAseprite &activeAsepriteRef();
 
-    std::vector<jleJsonString> _asepritePaths;
+    std::vector<std::string> _asepritePaths;
 
     uint32_t _width{}, _height{}, _textureX{}, _textureY{};
     int32_t _offsetX{}, _offsetY{};

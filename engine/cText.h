@@ -29,10 +29,6 @@ public:
 
     void start() override;
 
-    void toJson(nlohmann::json &j_out) override;
-
-    void fromJson(const nlohmann::json &j_in) override;
-
     void update(float dt) override;
 
     void text(const std::string &text);

@@ -14,7 +14,7 @@ void cAseprite::start() {
     for (auto &&path : _asepritePaths) {
         _aseprites.push_back(
             gCore->resources().loadResourceFromFile<jleAseprite>(
-                jleRelativePath{path._string}));
+                jleRelativePath{path}));
     }
 }
 
@@ -65,45 +65,6 @@ void cAseprite::update(float dt) {
     }
 }
 
-void cAseprite::toJson(nlohmann::json &j_out) {
-    j_out = nlohmann::json{{"_asepritePaths_STRVEC", _asepritePaths},
-                           {"height", _height},
-                           {"width", _width},
-                           {"textureX", _textureX},
-                           {"textureY", _textureY},
-                           {"offsetX", _offsetX},
-                           {"offsetY", _offsetY},
-                           {"animating", _animating}};
-}
-
-void cAseprite::fromJson(const nlohmann::json &j_in) {
-
-    const auto asepritePaths = j_in.find("_asepritePaths_STRVEC");
-    if (asepritePaths != j_in.end()) {
-        _asepritePaths =
-            j_in.at("_asepritePaths_STRVEC").get<std::vector<jleJsonString>>();
-    }
-
-    _height = j_in.at("height");
-    _width = j_in.at("width");
-    _textureX = j_in.at("textureX");
-    _textureY = j_in.at("textureY");
-    _offsetX = j_in.at("offsetX");
-    _offsetY = j_in.at("offsetY");
-    _animating = j_in.at("animating");
-
-    // Make sure to reset current frame to not cause out of bounds crash
-    _currentFrame = 0;
-    _currentFrameTimeSpent = 0.f;
-    _currentlyActiveAseprite = 0;
-
-    _aseprites.clear();
-    for (auto &&path : _asepritePaths) {
-        _aseprites.push_back(
-            gCore->resources().loadResourceFromFile<jleAseprite>(
-                jleRelativePath{path._string}));
-    }
-}
 
 cAseprite::cAseprite(jleObject *owner, jleScene *scene)
     : jleComponent(owner, scene) {}

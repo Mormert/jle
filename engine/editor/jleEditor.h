@@ -5,7 +5,6 @@
 #include "jlePathDefines.h"
 
 #include "editor/jleEditorImGuiWindowInterface.h"
-#include "editor/jleEditorSettings.h"
 #include "jleGameEngine.h"
 #include "jleImage.h"
 #include <memory>
@@ -19,7 +18,7 @@ inline jleEditor *gEditor;
 class jleEditor : public jleGameEngine
 {
 public:
-    jleEditor(std::shared_ptr<jleGameSettings>, std::shared_ptr<jleEditorSettings>);
+    jleEditor();
 
     void start() override;
 
@@ -66,6 +65,8 @@ public:
         return scene;
     }
 
+    jleResourceRef<jleEngineSettings> &getEngineSettingsResourceRef();
+
 private:
     void initImgui();
 
@@ -78,8 +79,6 @@ private:
     void checkGlErrors();
 
     std::vector<std::shared_ptr<iEditorImGuiWindow>> _imGuiWindows;
-
-    std::shared_ptr<jleEditorSettings> _editorSettings;
 
     std::vector<std::shared_ptr<jleScene>> _editorScenes;
 };

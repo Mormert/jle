@@ -6,34 +6,6 @@
 #include <filesystem>
 #include <fstream>
 
-void from_json(const nlohmann::json &j, jleSpritesheet &s) {
-    s._spritesheetEntities =
-        j.get<std::unordered_map<std::string, jleSpritesheetEntity>>();
-}
-
-void from_json(const nlohmann::json &j, jleSpritesheetEntity &s) {
-    s.frame = j["frame"];
-    // TODO: Should backward compatability be handled for this struct?
-    s.sourceSize = j.value("spriteSourceSize",
-                           jleSpritesheetEntity::jleSpritesheetEntitySource{});
-}
-
-void from_json(const nlohmann::json &j,
-               jleSpritesheetEntity::jleSpritesheetEntityFrame &s) {
-    s.x = j["x"];
-    s.y = j["y"];
-    s.width = j["w"];
-    s.height = j["h"];
-}
-
-void from_json(const json &j,
-               jleSpritesheetEntity::jleSpritesheetEntitySource &s) {
-    s.x = j["x"];
-    s.y = j["y"];
-    s.width = j["w"];
-    s.height = j["h"];
-}
-
 void jleSpritesheet::loadImage() {
     std::string pngPath = _pathJson.substr(0, _pathJson.find(".", 0)) + ".png";
 

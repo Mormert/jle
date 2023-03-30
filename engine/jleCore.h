@@ -3,6 +3,11 @@
 #ifndef JLE_CORE_H
 #define JLE_CORE_H
 
+#include "jleResourceInterface.h"
+#include "jleResourceRef.h"
+
+#include "jleEngineSettings.h"
+#include "jleTexture.h"
 #include <memory>
 
 namespace SoLoud
@@ -11,7 +16,6 @@ class Soloud;
 };
 class Remotery;
 
-class jleCoreSettings;
 class jleFramebufferInterface;
 class jleResources;
 class jleFontData;
@@ -33,7 +37,7 @@ public:
     jleCore &operator=(const jleCore &) = delete;
     jleCore &operator=(jleCore &&) = delete;
 
-    explicit jleCore(const std::shared_ptr<jleCoreSettings> &cs);
+    explicit jleCore();
 
     virtual ~jleCore();
 
@@ -55,7 +59,7 @@ public:
 
     jleTextRendering &textRendering();
 
-    [[nodiscard]] const jleCoreSettings &settings() const;
+    [[nodiscard]] jleEngineSettings &settings();
 
     [[nodiscard]] int fps() const;
 
@@ -98,7 +102,7 @@ private:
     {
     }
 
-    std::shared_ptr<jleCoreSettings> _settings;
+protected:
     std::unique_ptr<jleResources> _resources;
     std::unique_ptr<jleFontData> _fontData;
     std::unique_ptr<jleTimerManager> _timerManager;
@@ -106,8 +110,9 @@ private:
     const std::shared_ptr<jleInput> _input;
     const std::shared_ptr<jleRendering> _rendering;
     const std::unique_ptr<SoLoud::Soloud> _soLoud;
+    jleResourceRef<jleEngineSettings> _settingsRef;
 
-    Remotery* _remotery;
+    Remotery *_remotery;
 
     void refreshDeltaTimes();
 

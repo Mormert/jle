@@ -5,24 +5,31 @@
 
 #include <cereal/cereal.hpp>
 
-#include "jleCore.h"
 #include "jlePath.h"
 #include "jleResource.h"
 
 template <typename T>
 struct jleResourceRef {
 
-    static_assert(std::is_base_of<jleFileLoadInterface, T>::value, "T must derive from FileLoadInterface");
+    static_assert(std::is_base_of<jleResourceInterface, T>::value, "T must derive from jleResourceInterface");
 
     jleResourceRef() = default;
 
     explicit jleResourceRef(const jleRelativePath &path) : path{path} {};
 
+    // Serialization save
     template <class Archive>
     void save(Archive &ar) const;
 
+    // Serialization load
     template <class Archive>
     void load(Archive &ar);
+
+    // Load resource from file
+    void loadResource();
+
+    // Save resource to file, if the resource implementation have a save function
+    void saveResource();
 
     template <class OTHER>
     jleResourceRef &
@@ -34,10 +41,10 @@ struct jleResourceRef {
 
     explicit operator bool() const { return ptr.get(); }
 
-    std::shared_ptr<T> &
+    std::shared_ptr<T>
     get()
     {
-        return ptr;
+        return std::static_pointer_cast<T>(ptr);;
     }
 
     explicit
@@ -51,7 +58,7 @@ struct jleResourceRef {
     jleRelativePath path{};
 
 private:
-    std::shared_ptr<T> ptr{};
+    std::shared_ptr<jleResourceInterface> ptr{};
 };
 
 #include "jleResourceRef.inl"

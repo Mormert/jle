@@ -28,8 +28,8 @@
 #include "editor/jleEditorResourceViewer.h"
 #include "editor/jleEditorSceneObjectsWindow.h"
 #include "editor/jleEditorWindowsPanel.h"
+#include "jleEditorSettingsWindow.h"
 #include "jleEditorTextEdit.h"
-#include "jleEngineSettingsWindow.h"
 #include "jleFramebufferScreen.h"
 #include "jleGameEditorWindow.h"
 #include "jleQuadRendering.h"
@@ -37,8 +37,7 @@
 #include "jleWindow.h"
 #include "plog/Log.h"
 
-jleEditor::jleEditor(std::shared_ptr<jleGameSettings> gs, std::shared_ptr<jleEditorSettings> es)
-    : jleGameEngine{gs}, _editorSettings{es}
+jleEditor::jleEditor()
 {
     gEditor = this;
 }
@@ -78,7 +77,7 @@ jleEditor::start()
     addImGuiWindow(console);
     menu->addWindow(console);
 
-    auto settingsWindow = std::make_shared<jleEngineSettingsWindow>("Engine Settings", gameSettings, _editorSettings);
+    auto settingsWindow = std::make_shared<jleEditorSettingsWindow>("Engine Settings");
     addImGuiWindow(settingsWindow);
     menu->addWindow(settingsWindow);
 
@@ -375,4 +374,10 @@ jleEditor::update(float dt)
     {
         updateEditorLoadedScenes(dt);
     }
+}
+
+jleResourceRef<jleEngineSettings> &
+jleEditor::getEngineSettingsResourceRef()
+{
+    return _settingsRef;
 }

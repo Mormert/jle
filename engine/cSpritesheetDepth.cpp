@@ -35,28 +35,6 @@ void cSpritesheetDepth::update(float dt) {
     }
 }
 
-void cSpritesheetDepth::toJson(nlohmann::json &j_out) {
-    cSpritesheet::toJson(j_out);
-    j_out["_spritesheetPathDepth"] = _spritesheetPathDepth;
-    j_out["_spritesheetPathDiffuse"] = _spritesheetPathDiffuse;
-    j_out["_spritesheetPathNormal"] = _spritesheetPathNormal;
-}
-
-void cSpritesheetDepth::fromJson(const nlohmann::json &j_in) {
-    JLE_FROM_JSON_WITH_DEFAULT(
-        j_in, _spritesheetPathNormal, "_spritesheetPathNormal", "");
-    JLE_FROM_JSON_WITH_DEFAULT(
-        j_in, _spritesheetPathDiffuse, "_spritesheetPathDiffuse", "");
-    JLE_FROM_JSON_WITH_DEFAULT(
-        j_in, _spritesheetPathDepth, "_spritesheetPathDepth", "");
-    cSpritesheet::fromJson(j_in);
-
-    if (_spritesheetPathDepth != "" && _spritesheetPathDiffuse != "") {
-        createAndSetTextureFromPath(_spritesheetPathDiffuse,
-                                    _spritesheetPathDepth,
-                                    _spritesheetPathNormal);
-    }
-}
 void cSpritesheetDepth::createAndSetTextureFromPath(
     const std::string &pathDiffuse,
     const std::string &pathHeight,

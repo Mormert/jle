@@ -277,13 +277,10 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
         }
 
         if (ImGui::Button("Save Template", ImVec2(138 * globalImguiScale, 0))) {
-            jleRelativePath p{""};
-            object->saveObjectTemplate(p);
+           // object->saveObjectTemplate(p);
         }
 
         if (ImGui::Button("Duplicate", ImVec2(138 * globalImguiScale, 0))) {
-            jleRelativePath p{""};
-            nlohmann::json j;
             object->duplicate();
         }
 

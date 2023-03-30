@@ -5,9 +5,7 @@
 #include <memory>
 #include <vector>
 
-#include "editor/jleEditorSettings.h"
 #include "jleCamera.h"
-#include "jleGameSettings.h"
 #include "jleProfiler.h"
 #include "jleScene.h"
 
@@ -33,16 +31,6 @@ public:
 
     virtual void
     start()
-    {
-    }
-
-    static void
-    overrideGameSettings(jleGameSettings &gs)
-    {
-    }
-
-    static void
-    overrideGameEditorSettings(jleGameSettings &gs, jleEditorSettings &es)
     {
     }
 

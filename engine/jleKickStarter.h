@@ -3,7 +3,6 @@
 #pragma once
 
 #include "editor/jleEditor.h"
-#include "jleConfigUtils.h"
 #include "jleGameEngine.h"
 #include <plog/Appenders/ColorConsoleAppender.h>
 #include <plog/Appenders/RollingFileAppender.h>
@@ -16,14 +15,7 @@ void kickStartGame() {
     static_assert(std::is_base_of<jleGame, T>::value,
                   "T must derive from jleGame");
 
-    auto gameSettings = std::make_shared<jleGameSettings>();
-
-    cfg::loadEngineConfig<jleGameSettings>(
-        GAME_RESOURCES_DIRECTORY + "/jle_gs_config.json", *gameSettings);
-
-    T::overrideGameSettings(*gameSettings);
-
-    auto gameEngine = std::make_unique<jleGameEngine>(gameSettings);
+    auto gameEngine = std::make_unique<jleGameEngine>();
     gameEngine->setGame<T>();
     gameEngine->run();
 }
@@ -34,19 +26,8 @@ void kickStartGameInEditor() {
     static_assert(std::is_base_of<jleGame, T>::value,
                   "T must derive from jleGame");
 
-    auto gameSettings = std::make_shared<jleGameSettings>();
-    auto gameEditorSettings = std::make_shared<jleEditorSettings>();
-
-    cfg::loadEngineConfig<jleGameSettings>(
-        GAME_RESOURCES_DIRECTORY + "/jle_gs_config.json", *gameSettings);
-    cfg::loadEngineConfig<jleEditorSettings>(
-        GAME_RESOURCES_DIRECTORY + "/jle_es_config.json", *gameEditorSettings);
-
-    T::overrideGameSettings(*gameSettings);
-    T::overrideGameEditorSettings(*gameSettings, *gameEditorSettings);
-
     auto gameEngineInEditor =
-        std::make_unique<jleEditor>(gameSettings, gameEditorSettings);
+        std::make_unique<jleEditor>();
     gameEngineInEditor->setGame<T>();
     gameEngineInEditor->run();
 }

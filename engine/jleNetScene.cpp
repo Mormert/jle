@@ -8,20 +8,6 @@ jleNetScene::jleNetScene() : jleScene() {}
 
 jleNetScene::jleNetScene(const std::string &sceneName) : jleScene(sceneName) {}
 
-void jleNetScene::toJson(nlohmann::json &j_out) {
-    jleScene::toJson(j_out);
-    j_out["_connectAddress"] = _connectAddress;
-
-    if (_isHost) {
-        _networking.emitJsonData("SceneSync", j_out);
-    }
-}
-
-void jleNetScene::fromJson(const nlohmann::json &j_in) {
-    jleScene::fromJson(j_in);
-    JLE_FROM_JSON_IF_EXISTS(j_in, _connectAddress, "_connectAddress");
-}
-
 void jleNetScene::updateScene() {
     nlohmann::json j;
     // Sync data back to game thread, and process the network message
@@ -77,13 +63,13 @@ void jleNetScene::processNetMessage(const std::string &event,
         _sceneObjects.clear();
         _newSceneObjects.clear();
 
-        jleScene::fromJson(message);
+      //  jleScene::fromJson(message);
         return;
     }
 
     if (event == "player_connect" && _isHost) {
         nlohmann::json j;
-        toJson(j);
+       // toJson(j);
         _networking.emitJsonData("SceneSync", j, sender);
     }
 

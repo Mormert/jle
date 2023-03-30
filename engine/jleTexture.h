@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include "jleFileLoadInterface.h"
 #include "jlePath.h"
+#include "jleResourceInterface.h"
 #include <climits>
 
 #include <cereal/cereal.hpp>
 
-class jleTexture : public jleFileLoadInterface
+class jleTexture : public jleResourceInterface
 {
 public:
     jleTexture() = default;

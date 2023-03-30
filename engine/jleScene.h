@@ -6,7 +6,6 @@
 #include <memory>
 #include <vector>
 
-#include "jleJson.h"
 #include "jlePath.h"
 #include <json.hpp>
 
@@ -17,7 +16,7 @@
 
 class jleObject;
 
-class jleScene : public jleJsonInterface<nlohmann::json>, public std::enable_shared_from_this<jleScene>
+class jleScene : public std::enable_shared_from_this<jleScene>
 {
 public:
     jleScene();
@@ -72,10 +71,6 @@ public:
 
     void destroyScene();
 
-    void toJson(nlohmann::json &j_out) override;
-
-    void fromJson(const nlohmann::json &j_in) override;
-
     bool bPendingSceneDestruction = false;
 
     std::vector<std::shared_ptr<jleObject>> &sceneObjects();
@@ -90,10 +85,6 @@ protected:
     std::vector<std::shared_ptr<jleObject>> _sceneObjects;
     std::vector<std::shared_ptr<jleObject>> _newSceneObjects;
 
-    friend void to_json(nlohmann::json &j, jleScene &s);
-
-    friend void from_json(const nlohmann::json &j, jleScene &s);
-
 private:
     void startObject(jleObject *o);
 
@@ -103,10 +94,6 @@ private:
 
     void configurateSpawnedObject(const std::shared_ptr<jleObject> &obj);
 };
-
-void to_json(nlohmann::json &j, jleScene &s);
-
-void from_json(const nlohmann::json &j, jleScene &s);
 
 #include "jleScene.inl"
 

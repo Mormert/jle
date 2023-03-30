@@ -69,37 +69,6 @@ cCamera::update(float dt)
     game.mainCamera.setViewMatrix(c.getLookAtViewMatrix(), c.position);
 }
 
-void
-cCamera::toJson(nlohmann::json &j_out)
-{
-    j_out = nlohmann::json{
-        {"perspective", _perspective},
-        {"farPlane", _farPlane},
-        {"nearPlane", _nearPlane},
-        {"fov", _perspectiveFov},
-        {"framebufferSizeX", _framebufferSizeX},
-        {"framebufferSizeY", _framebufferSizeY},
-        {"framebufferFixedAxis", _framebufferFixedAxis},
-        {"framebufferUseFixedAxis", _framebufferUseFixedAxis},
-        {"matchFramebufferToWindowSize", _matchFramebufferToWindowSize},
-    };
-}
-
-void
-cCamera::fromJson(const nlohmann::json &j_in)
-{
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _perspective, "perspective", false);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _farPlane, "farPlane", 10000.f);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _nearPlane, "nearPlane", 0.1f);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _perspectiveFov, "fov", 90.f);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferSizeY, "framebufferSizeY", 1024);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferUseFixedAxis, "framebufferUseFixedAxis", false);
-    JLE_FROM_JSON_WITH_DEFAULT(
-        j_in, _framebufferFixedAxis, "framebufferFixedAxis", jleFramebufferInterface::FIXED_AXIS::width);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _framebufferUseFixedAxis, "framebufferUseFixedAxis", false);
-    JLE_FROM_JSON_WITH_DEFAULT(j_in, _matchFramebufferToWindowSize, "matchFramebufferToWindowSize", false);
-}
-
 cCamera::cCamera(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 
 cCamera::~cCamera()

@@ -11,7 +11,7 @@
 #include "jleTimerManager.h"
 #include <plog/Log.h>
 
-jleGameEngine::jleGameEngine(std::shared_ptr<jleGameSettings> gs) : gameSettings{gs}, jleCore{gs} { gEngine = this; }
+jleGameEngine::jleGameEngine() : jleCore() { gEngine = this; }
 
 jleGameEngine::~jleGameEngine() { gEngine = nullptr; }
 

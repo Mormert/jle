@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "jleFileLoadInterface.h"
 #include "jlePath.h"
+#include "jleResourceInterface.h"
 #include <plog/Log.h>
 
 #include <chrono>
@@ -27,7 +27,7 @@ public:
     // loaded copy of that resource
     template <typename T>
     std::shared_ptr<T> loadResourceFromFile(const jleRelativePath &path) {
-        static_assert(std::is_base_of<jleFileLoadInterface, T>::value,
+        static_assert(std::is_base_of<jleResourceInterface, T>::value,
                       "T must derive from FileLoadInterface");
 
         const auto prefix = path.pathPrefix();

@@ -16,7 +16,7 @@ class jleGameEngine : public jleCore
 public:
     ~jleGameEngine() override;
 
-    explicit jleGameEngine(std::shared_ptr<jleGameSettings> gs);
+    explicit jleGameEngine();
 
     template <class T>
     void
@@ -71,8 +71,6 @@ protected:
     void render() override;
 
     void exiting() override;
-
-    std::shared_ptr<jleGameSettings> gameSettings;
 
     std::unique_ptr<jleGame> game;
     bool gameHalted = false;

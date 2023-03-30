@@ -3,7 +3,7 @@
 #ifndef JLE_MATERIAL_H
 #define JLE_MATERIAL_H
 
-#include "jleFileLoadInterface.h"
+#include "jleResourceInterface.h"
 
 #include "jleResourceRef.h"
 #include "jleTexture.h"
@@ -13,7 +13,7 @@
 #include <cereal/archives/binary.hpp>
 
 
-class jleMaterial : public jleFileLoadInterface
+class jleMaterial : public jleResourceInterface
 {
 public:
     ~jleMaterial() override;
@@ -43,9 +43,6 @@ public:
     std::shared_ptr<jleTexture> normalTexture{};
     std::shared_ptr<jleTexture> metallicTexture{};
     std::shared_ptr<jleTexture> roughnessTexture{};
-
-    friend void to_json(nlohmann::json &j, const jleMaterial &m);
-    friend void from_json(const nlohmann::json &j, jleMaterial &m);
 
 protected:
     std::string _albedoPath;

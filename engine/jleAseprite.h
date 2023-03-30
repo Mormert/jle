@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "jleFileLoadInterface.h"
+#include "jleResourceInterface.h"
 #include "jleTexture.h"
 
 #include "json.hpp"
@@ -92,7 +92,7 @@ struct jleAsepriteMeta {
     std::string scale;
 };
 
-struct jleAseprite : public jleFileLoadInterface {
+struct jleAseprite : public jleResourceInterface {
 
     jleAseprite() = default;
 

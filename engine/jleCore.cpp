@@ -3,15 +3,14 @@
 #include "jleCore.h"
 #include "jleExplicitInclude.h"
 #include "jleFont.h"
+#include "jleInput.h"
 #include "jleKeyboardInput.h"
 #include "jleMouseInput.h"
+#include "jleProfiler.h"
 #include "jleRendering.h"
 #include "jleResource.h"
-#include "jleWindow.h"
-#include "jleInput.h"
-#include "jleProfiler.h"
-#include "jleCoreSettings.h"
 #include "jleTimerManager.h"
+#include "jleWindow.h"
 
 #include <plog/Log.h>
 #include <soloud.h>
@@ -23,7 +22,7 @@
 
 #include <iostream>
 
-jleCore::jleCore(const std::shared_ptr<jleCoreSettings> &cs)
+jleCore::jleCore()
     : _window{std::make_unique<jleWindow>()}, _input{std::make_shared<jleInput>(
                                                   std::make_shared<jleKeyboardInput>(_window),
                                                   std::make_shared<jleMouseInput>(_window))},
@@ -41,12 +40,8 @@ jleCore::jleCore(const std::shared_ptr<jleCoreSettings> &cs)
     }
     rmt_SetCurrentThreadName("Main Thread");
 
-    _window->settings(cs->windowSettings);
-
     PLOG_INFO << "Initializing sound engine...";
     _soLoud->init();
-
-    _settings = cs;
 }
 
 jleCore::~jleCore()
@@ -69,7 +64,11 @@ jleCore::run()
 
     gCore = this;
 
+    _settingsRef.path = jleRelativePath{"GR:settings/enginesettings.json"};
+    _settingsRef.loadResource();
+
     PLOG_INFO << "Initializing the window";
+    _window->settings(settings().windowSettings);
     _window->initWindow(_rendering);
 
     PLOG_INFO << "Setting up rendering internals";
@@ -176,10 +175,10 @@ jleCore::textRendering()
     return _rendering->texts();
 }
 
-const jleCoreSettings &
-jleCore::settings() const
+jleEngineSettings &
+jleCore::settings()
 {
-    return *_settings;
+    return *_settingsRef.get();
 }
 
 int

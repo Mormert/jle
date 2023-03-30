@@ -12,12 +12,13 @@
 #include FT_FREETYPE_H
 
 #include "jleCamera.h"
-#include "jleFileLoadInterface.h"
+#include "jleResourceInterface.h"
 #include "jleShader.h"
 
 class jleFontData;
 
-class jleFont : public jleFileLoadInterface {
+class jleFont : public jleResourceInterface
+{
 
 public:
     explicit jleFont(const std::string &path);
@@ -58,7 +59,6 @@ private:
 
         std::map<char, jleFontCharacter> _characters;
     };
-
     FT_Face _face{};
     bool _fontLoaded = false;
     std::unordered_map<uint32_t, jleFontSize> _fontSizeLookup;

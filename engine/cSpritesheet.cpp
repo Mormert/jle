@@ -37,24 +37,6 @@ void cSpritesheet::update(float dt) {
     }
 }
 
-void cSpritesheet::toJson(nlohmann::json &j_out) {
-    j_out["_spritesheetPath"] = _spritesheetPath;
-    j_out["_spriteName"] = _spriteName;
-    j_out["_offsetX"] = _offset.x;
-    j_out["_offsetY"] = _offset.y;
-}
-
-void cSpritesheet::fromJson(const nlohmann::json &j_in) {
-    _spritesheetPath = j_in["_spritesheetPath"];
-    _spriteName = j_in["_spriteName"];
-    _offset.x = j_in.value("_offsetX", 0);
-    _offset.y = j_in.value("_offsetY", 0);
-    _spritesheet = gCore->resources().loadResourceFromFile<jleSpritesheet>(
-        jleRelativePath{_spritesheetPath});
-
-    entity(_spriteName);
-}
-
 void cSpritesheet::entity(const std::string &entityName) {
     if (!_spritesheet) {
         return;

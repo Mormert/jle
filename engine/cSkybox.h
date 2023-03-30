@@ -20,10 +20,6 @@ public:
 
     void update(float dt) override;
 
-    void toJson(nlohmann::json &j_out) override;
-
-    void fromJson(const nlohmann::json &j_in) override;
-
 protected:
     std::shared_ptr<jleSkybox> _skybox;
     std::string _skyboxPath;

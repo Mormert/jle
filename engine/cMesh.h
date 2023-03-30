@@ -28,10 +28,6 @@ public:
 
     void update(float dt) override;
 
-    void toJson(nlohmann::json &j_out) override;
-
-    void fromJson(const nlohmann::json &j_in) override;
-
 protected:
     std::shared_ptr<jleMesh> _mesh;
     std::shared_ptr<jleMaterial> _material;

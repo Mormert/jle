@@ -44,27 +44,3 @@ void cSprite::update(float dt)
         gCore->quadRendering().sendTexturedQuad(*&quad);
     }
 }
-
-void cSprite::toJson(nlohmann::json &j_out) {
-    j_out = nlohmann::json{{"path", texturePath},
-                           {"x", quad.x},
-                           {"y", quad.y},
-                           {"depth", quad.depth},
-                           {"height", quad.height},
-                           {"width", quad.width},
-                           {"textureX", quad.textureX},
-                           {"textureY", quad.textureY}};
-}
-
-void cSprite::fromJson(const nlohmann::json &j_in) {
-    texturePath = j_in.at("path");
-    quad.x = j_in.at("x");
-    quad.y = j_in.at("y");
-    quad.depth = j_in.at("depth");
-    quad.height = j_in.at("height");
-    quad.width = j_in.at("width");
-    quad.textureX = j_in.at("textureX");
-    quad.textureY = j_in.at("textureY");
-
-    createAndSetTextureFromPath(texturePath);
-}

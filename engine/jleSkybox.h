@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "jleFileLoadInterface.h"
+#include "jleResourceInterface.h"
 
-class jleSkybox : public jleFileLoadInterface
+class jleSkybox : public jleResourceInterface
 {
 public:
     bool loadFromFile(const std::string &path) override;

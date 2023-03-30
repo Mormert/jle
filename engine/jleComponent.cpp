@@ -12,18 +12,6 @@ jleComponent::destroy()
     _attachedToObject->destroyComponent(this);
 }
 
-void
-to_json(nlohmann::json &j, const std::shared_ptr<jleComponent> c)
-{
-    c->toJson(j);
-    j += {"_comp_name", c->componentName()};
-}
-
-void
-from_json(const nlohmann::json &j, std::shared_ptr<jleComponent> &c)
-{
-}
-
 jleTransform &
 jleComponent::getTransform()
 {

@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "jleFileLoadInterface.h"
+#include "jleResourceInterface.h"
 #include <glm/glm.hpp>
 #include <vector>
 
-class jleMesh : public jleFileLoadInterface
+class jleMesh : public jleResourceInterface
 {
 public:
     ~jleMesh() override;

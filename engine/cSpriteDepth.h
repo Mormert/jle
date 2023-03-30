@@ -45,10 +45,6 @@ public:
 
     virtual void update(float dt) override;
 
-    virtual void toJson(nlohmann::json &j_out) override;
-
-    virtual void fromJson(const nlohmann::json &j_in) override;
-
 private:
     std::string texturePathDiffuse = "";
     std::string texturePathHeight = "";

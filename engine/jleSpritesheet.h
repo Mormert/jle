@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "jleFileLoadInterface.h"
+#include "jleResourceInterface.h"
 #include "jleTexture.h"
 
 #include "json.hpp"
@@ -20,7 +20,7 @@ struct jleSpritesheetEntity {
     } sourceSize;
 };
 
-struct jleSpritesheet : public jleFileLoadInterface {
+struct jleSpritesheet : public jleResourceInterface {
 
     jleSpritesheet() = default;
 
