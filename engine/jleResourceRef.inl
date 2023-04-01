@@ -1,7 +1,9 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleResourceRef.h"
+
 #include "jleCore.h"
+#include "jleResource.h"
 
 template <typename T>
 template <class Archive>
@@ -17,7 +19,6 @@ void
 jleResourceRef<T>::load(Archive &ar)
 {
     ar(CEREAL_NVP(path));
-
     ptr = nullptr;
     if (!path.isEmpty()) {
         ptr = gCore->resources().loadResourceFromFile<T>(path);

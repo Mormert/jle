@@ -12,8 +12,4 @@ public:
     jleEditorSettingsWindow(const std::string &window_name);
 
     virtual void update(jleGameEngine &ge) override;
-
-private:
-    jleEditorJsonToImgui _jsonToImguiGS;
-    jleEditorJsonToImgui _jsonToImguiES;
 };

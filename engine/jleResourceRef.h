@@ -6,7 +6,6 @@
 #include <cereal/cereal.hpp>
 
 #include "jlePath.h"
-#include "jleResource.h"
 
 template <typename T>
 struct jleResourceRef {

@@ -3,8 +3,6 @@
 #ifndef JLE_CORE_H
 #define JLE_CORE_H
 
-#include "jleResourceInterface.h"
-#include "jleResourceRef.h"
 
 #include "jleEngineSettings.h"
 #include "jleTexture.h"
@@ -110,7 +108,6 @@ protected:
     const std::shared_ptr<jleInput> _input;
     const std::shared_ptr<jleRendering> _rendering;
     const std::unique_ptr<SoLoud::Soloud> _soLoud;
-    jleResourceRef<jleEngineSettings> _settingsRef;
 
     Remotery *_remotery;
 

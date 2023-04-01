@@ -22,6 +22,8 @@
 
 #include <iostream>
 
+jleResourceRef<jleEngineSettings> g_CoreSettingsRef;
+
 jleCore::jleCore()
     : _window{std::make_unique<jleWindow>()}, _input{std::make_shared<jleInput>(
                                                   std::make_shared<jleKeyboardInput>(_window),
@@ -64,8 +66,8 @@ jleCore::run()
 
     gCore = this;
 
-    _settingsRef.path = jleRelativePath{"GR:settings/enginesettings.json"};
-    _settingsRef.loadResource();
+    g_CoreSettingsRef.path = jleRelativePath{"GR:settings/enginesettings.json"};
+    g_CoreSettingsRef.loadResource();
 
     PLOG_INFO << "Initializing the window";
     _window->settings(settings().windowSettings);
@@ -178,7 +180,7 @@ jleCore::textRendering()
 jleEngineSettings &
 jleCore::settings()
 {
-    return *_settingsRef.get();
+    return *g_CoreSettingsRef.get();
 }
 
 int

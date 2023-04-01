@@ -2,6 +2,7 @@
 
 #include "jleMaterial.h"
 #include "jleCore.h"
+#include "jleResource.h"
 #include <cereal/archives/binary.hpp>
 #include <cereal/archives/json.hpp>
 
