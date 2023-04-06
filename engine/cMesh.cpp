@@ -22,8 +22,9 @@ cMesh::update(float dt)
     }
 
     if (_meshRef) {
+        std::shared_ptr<jleMesh> mesh = _meshRef.get();
         gCore->rendering().rendering3d().sendMesh(
-            _meshRef.get(), _material, getTransform().getWorldMatrix(), _attachedToObject->instanceID());
+            mesh, _material, getTransform().getWorldMatrix(), _attachedToObject->instanceID());
     }
 }
 
