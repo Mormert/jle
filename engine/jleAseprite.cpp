@@ -56,32 +56,32 @@ void from_json(const nlohmann::json &j, jleAseprite &a) {
     a.frames = j.at("frames").get<std::vector<jleAsepriteFrame>>();
 }
 
-bool jleAseprite::loadFromFile(const std::string &path) {
-    this->path = path;
-    std::ifstream i(path);
+jleLoadFromFileSuccessCode jleAseprite::loadFromFile(const jlePath &path) {
+    this->path = path.getRealPath();
+    std::ifstream i(path.getRealPath());
     if (i.good()) {
         nlohmann::json j;
         i >> j;
 
         from_json(j, *this);
         loadImage();
-        return true;
+        return jleLoadFromFileSuccessCode::SUCCESS;
     }
     else {
-        LOG_ERROR << "Could not load Aseprite json file " << path;
-        return false;
+        LOG_ERROR << "Could not load Aseprite json file " << path.getRealPath();
+        return jleLoadFromFileSuccessCode::FAIL;
     }
 }
 
-jleAseprite::jleAseprite(const std::string &path) {
-    this->path = path;
+jleAseprite::jleAseprite(const jlePath &path) {
+    this->path = path.getRealPath();
     loadFromFile(path);
 }
 
 void jleAseprite::loadImage() {
     std::filesystem::path p{path};
     p.remove_filename();
-    imageTexture = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{p.string() + meta.image});
+    imageTexture = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{p.string() + meta.image});
 }
 
 int jleAseprite::totalAnimationTimeMs() {

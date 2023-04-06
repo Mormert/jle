@@ -7,23 +7,41 @@
 #include <vector>
 
 #include "jlePath.h"
+#include "jleResourceInterface.h"
 #include <json.hpp>
 
-// #include <cereal/archives/json.hpp>
 #include <cereal/archives/xml.hpp>
 #include <cereal/types/memory.hpp>
 #include <cereal/types/vector.hpp>
 
 class jleObject;
 
-class jleScene : public std::enable_shared_from_this<jleScene>
+class jleScene : public jleResourceInterface, public std::enable_shared_from_this<jleScene>
 {
 public:
     jleScene();
 
+    void
+    saveToFile() override
+    {
+        if (filepath.empty()) {
+            jlePath path{"GR:scenes/" + sceneName + ".scn"};
+            filepath = path.getRealPath();
+        }
+        std::ofstream save{filepath};
+        cereal::JSONOutputArchive outputArchive(save);
+        outputArchive(shared_from_this());
+    };
+
+    jleLoadFromFileSuccessCode
+    loadFromFile(const jlePath &path) override
+    {
+        return jleLoadFromFileSuccessCode::IMPLEMENT_POLYMORPHIC_CEREAL;
+    };
+
     explicit jleScene(const std::string &sceneName);
 
-    virtual ~jleScene() = default;
+    ~jleScene() override = default;
 
     template <class Archive>
     void serialize(Archive &archive);
@@ -33,9 +51,9 @@ public:
 
     std::shared_ptr<jleObject> spawnObject(const std::string &objName);
 
-    std::shared_ptr<jleObject> spawnObject(const nlohmann::json &j_in);
+    // std::shared_ptr<jleObject> spawnObject(const nlohmann::json &j_in);
 
-    std::shared_ptr<jleObject> spawnTemplateObject(const jleRelativePath &templatePath);
+    //  std::shared_ptr<jleObject> spawnTemplateObject(const jlePath &templatePath);
 
     void updateSceneObjects(float dt);
 
@@ -44,8 +62,6 @@ public:
     void processNewSceneObjects();
 
     void startObjects();
-
-    static std::shared_ptr<jleScene> loadScene(const std::string &scenePath);
 
     void saveScene();
 

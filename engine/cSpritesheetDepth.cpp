@@ -44,11 +44,11 @@ void cSpritesheetDepth::createAndSetTextureFromPath(
     }
 
     _quad.mtextureWithHeightmap->texture =
-        gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{pathDiffuse});
+        gCore->resources().loadResourceFromFile<jleTexture>(jlePath{pathDiffuse});
     _quad.mtextureWithHeightmap->heightmap =
-        gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{pathHeight});
+        gCore->resources().loadResourceFromFile<jleTexture>(jlePath{pathHeight});
     if (!pathNormal.empty()) {
         _quad.mtextureWithHeightmap->normalmap =
-            gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{pathNormal});
+            gCore->resources().loadResourceFromFile<jleTexture>(jlePath{pathNormal});
     }
 }

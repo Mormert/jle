@@ -183,7 +183,7 @@ jleWindow::initWindow(std::shared_ptr<jleRendering> rendering)
 
     if (!windowSettings.iconPath.empty()) {
         GLFWimage images[1];
-        images[0].pixels = stbi_load(jleAbsolutePath(windowSettings.iconPath).absolutePathStr().c_str(),
+        images[0].pixels = stbi_load(windowSettings.iconPath.c_str(),
                                      &images[0].width,
                                      &images[0].height,
                                      nullptr,

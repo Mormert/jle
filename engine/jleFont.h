@@ -21,7 +21,7 @@ class jleFont : public jleResourceInterface
 {
 
 public:
-    explicit jleFont(const std::string &path);
+    explicit jleFont(const jlePath& path);
 
     jleFont() = default;
 
@@ -29,7 +29,7 @@ public:
 
     void addFontSizePixels(uint32_t sizePixels);
 
-    bool loadFromFile(const std::string &path) override;
+    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
 
     // TODO: Move rendering to Text Rendering engine subsystem
     // TODO: Add scale as param

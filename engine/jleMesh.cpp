@@ -7,22 +7,29 @@
 
 #include "jleIncludeGL.h"
 
-bool
-jleMesh::loadFromFile(const std::string &path)
+jleLoadFromFileSuccessCode
+jleMesh::loadFromFile(const jlePath &path)
 {
-    return loadFromObj(path);
+    bool ret = loadFromObj(path);
+    if(ret)
+    {
+        return jleLoadFromFileSuccessCode::SUCCESS;
+    }else
+    {
+        return jleLoadFromFileSuccessCode::FAIL;
+    }
 }
 
 bool
-jleMesh::loadFromObj(const std::string &path)
+jleMesh::loadFromObj(const jlePath &path)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
 
-    const std::string materialPath = path.substr(0, path.find_last_of('/'));
-    bool loaded = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(), materialPath.c_str());
+    const std::string materialPath = path.getRealPath().substr(0, path.getRealPath().find_last_of('/'));
+    bool loaded = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.getRealPath().c_str(), materialPath.c_str());
 
     if (!err.empty()) {
         LOGE << err;

@@ -7,7 +7,7 @@
 class jleSkybox : public jleResourceInterface
 {
 public:
-    bool loadFromFile(const std::string &path) override;
+    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
 
     unsigned int getTextureID();
 

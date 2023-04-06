@@ -7,11 +7,11 @@ void
 jleEditorTextEdit::update(jleGameEngine &ge)
 {
 
-    std::vector<jleRelativePath> toBeClosed;
+    std::vector<jlePath> toBeClosed;
 
     for (auto &[path, textEditorPtr] : _textEditorsMap) {
         auto &textEditor = *textEditorPtr.get();
-        auto tabName = "File: " + path.relativePathStr();
+        auto tabName = "File: " + path.getVirtualPath();
         bool truebool = true;
         ImGui::SetNextWindowSize(ImVec2(500, 700), ImGuiCond_FirstUseEver);
         if (ImGui::Begin(tabName.c_str(), &truebool, ImGuiWindowFlags_MenuBar)) {
@@ -20,17 +20,17 @@ jleEditorTextEdit::update(jleGameEngine &ge)
                 if (ImGui::BeginMenu("File")) {
                     if (ImGui::MenuItem("Save", "Ctrl-S")) {
                         auto textToSave = textEditor.GetText();
-                        std::ofstream stream{path.absolutePathStr()};
+                        std::ofstream stream{path.getRealPath()};
                         stream << textToSave;
                     }
                     if (ImGui::MenuItem("Reload", "Ctrl-R")) {
-                        std::ifstream i(path.absolutePathStr());
+                        std::ifstream i(path.getRealPath());
                         if (i.good()) {
                             std::stringstream buffer;
                             buffer << i.rdbuf();
                             _textEditorsMap[path].get()->SetText(buffer.str());
                         } else {
-                            LOGE << "Failed to open file with absolute path:" << path.absolutePathStr();
+                            LOGE << "Failed to open file with absolute path:" << path.getRealPath();
                         }
                     }
                     if (ImGui::MenuItem("Close")) {
@@ -89,8 +89,8 @@ jleEditorTextEdit::update(jleGameEngine &ge)
                         textEditor.IsOverwrite() ? "Ovr" : "Ins",
                         textEditor.CanUndo() ? "*" : " ",
                         textEditor.GetLanguageDefinition().mName.c_str(),
-                        path.absolutePathStr().c_str(),
-                        path.relativePathStr().c_str());
+                        path.getRealPath().c_str(),
+                        path.getVirtualPath().c_str());
 
             textEditor.Render(tabName.c_str(), ImVec2(), true);
         }
@@ -104,7 +104,7 @@ jleEditorTextEdit::update(jleGameEngine &ge)
 }
 
 void
-jleEditorTextEdit::open(const jleRelativePath &path)
+jleEditorTextEdit::open(const jlePath &path)
 {
     if (_textEditorsMap.find(path) != _textEditorsMap.end()) {
         return;
@@ -118,7 +118,7 @@ jleEditorTextEdit::open(const jleRelativePath &path)
         return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
     };
 
-    auto pathStr = path.relativePathStr();
+    auto pathStr = path.getVirtualPath();
     if (ends_with(pathStr, ".frag") || ends_with(pathStr, ".vert")) {
         e->SetLanguageDefinition(TextEditor::LanguageDefinition::GLSL());
     } else if (ends_with(pathStr, ".cpp") || ends_with(pathStr, ".h") || ends_with(pathStr, ".c")) {
@@ -127,13 +127,13 @@ jleEditorTextEdit::open(const jleRelativePath &path)
         e->SetLanguageDefinition(TextEditor::LanguageDefinition::RegularText());
     }
 
-    std::ifstream i(path.absolutePathStr());
+    std::ifstream i(path.getRealPath());
     if (i.good()) {
         std::stringstream buffer;
         buffer << i.rdbuf();
         e->SetText(buffer.str());
     } else {
-        LOGE << "Failed to open file with absolute path:" << path.absolutePathStr();
+        LOGE << "Failed to open file with real path: " << path.getRealPath();
     }
 
     _textEditorsMap.insert(std::make_pair(path, std::move(e)));

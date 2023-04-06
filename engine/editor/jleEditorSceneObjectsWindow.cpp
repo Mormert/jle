@@ -34,12 +34,31 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
     if (ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_MenuBar)) {
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("Create Scene")) {
-                if (ImGui::MenuItem("jleScene")) {
-                    ge.gameRef().createScene<jleScene>();
+                if(!ge.isGameKilled())
+                {
+                    if (ImGui::MenuItem("jleScene")) {
+                        ge.gameRef().createScene<jleScene>();
+                    }
+                    if (ImGui::MenuItem("jleNetScene")) {
+                        ge.gameRef().createScene<jleNetScene>();
+                    }
+                }else
+                {
+                    if (ImGui::MenuItem("jleScene")) {
+
+                        std::shared_ptr<jleScene> newScene = std::make_shared<jleScene>();
+                        gEditor->getEditorScenes().push_back(newScene);
+
+                        newScene->onSceneCreation();
+                    }
+                    if (ImGui::MenuItem("jleNetScene")) {
+                        std::shared_ptr<jleScene> newScene = std::make_shared<jleNetScene>();
+                        gEditor->getEditorScenes().push_back(newScene);
+
+                        newScene->onSceneCreation();
+                    }
                 }
-                if (ImGui::MenuItem("jleNetScene")) {
-                    ge.gameRef().createScene<jleNetScene>();
-                }
+
 
                 ImGui::EndMenu();
             }

@@ -30,7 +30,7 @@ public:
            CEREAL_NVP(roughnessTextureRef));
     }
 
-    bool loadFromFile(const std::string &path) override;
+    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
 
     void saveToFile() override;
 

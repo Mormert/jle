@@ -24,11 +24,11 @@ struct jleSpritesheet : public jleResourceInterface {
 
     jleSpritesheet() = default;
 
-    explicit jleSpritesheet(const std::string &path);
+    explicit jleSpritesheet(const jlePath &path);
 
     void loadImage();
 
-    bool loadFromFile(const std::string &path) override;
+    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
 
     std::unordered_map<std::string, jleSpritesheetEntity> _spritesheetEntities;
 

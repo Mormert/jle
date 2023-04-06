@@ -13,8 +13,7 @@ void cAseprite::start() {
     _aseprites.clear();
     for (auto &&path : _asepritePaths) {
         _aseprites.push_back(
-            gCore->resources().loadResourceFromFile<jleAseprite>(
-                jleRelativePath{path}));
+            gCore->resources().loadResourceFromFile<jleAseprite>(jlePath{path}));
     }
 }
 
@@ -83,8 +82,7 @@ unsigned int cAseprite::currentAsepriteIndex() const {
 
 int cAseprite::addAsepritePath(const std::string &path) {
     _asepritePaths.push_back({path});
-    _aseprites.push_back(gCore->resources().loadResourceFromFile<jleAseprite>(
-        jleRelativePath{path}));
+    _aseprites.push_back(gCore->resources().loadResourceFromFile<jleAseprite>(jlePath{path}));
     return (int)_aseprites.size() - 1;
 }
 

@@ -13,7 +13,7 @@
 #include <cassert>
 #include <iostream>
 
-jleFont::jleFont(const std::string &path) { loadFromFile(path); }
+jleFont::jleFont(const jlePath& path) { loadFromFile(path); }
 
 jleFont::~jleFont() {
     if (jleFontData::data && _fontLoaded) {
@@ -106,19 +106,19 @@ void jleFont::renderTargetDimensions(int width,
     glViewport(0, 0, width, height);
 }
 
-bool jleFont::loadFromFile(const std::string &path) {
+jleLoadFromFileSuccessCode jleFont::loadFromFile(const jlePath &path) {
     if (!jleFontData::data) {
         throw std::runtime_error{"font not loaded"};
     }
 
     if (FT_New_Face(
-            jleFontData::data->freeTypeLibrary, path.c_str(), 0, &_face)) {
-        LOGE << "Failed to load font: " << path;
-        return false;
+            jleFontData::data->freeTypeLibrary, path.getRealPath().c_str(), 0, &_face)) {
+        LOGE << "Failed to load font: " << path.getRealPath();
+        return jleLoadFromFileSuccessCode::FAIL;
     }
 
     _fontLoaded = true;
-    return true;
+    return jleLoadFromFileSuccessCode::SUCCESS;
 }
 
 void jleFont::addFontSizePixels(uint32_t sizePixels) {
@@ -220,6 +220,7 @@ jleFontData::jleFontData() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
+
 jleFontData::~jleFontData() {
 
     if (freeTypeLibrary != nullptr) {

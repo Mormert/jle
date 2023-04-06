@@ -96,7 +96,7 @@ struct jleAseprite : public jleResourceInterface {
 
     jleAseprite() = default;
 
-    explicit jleAseprite(const std::string &path);
+    explicit jleAseprite(const jlePath &path);
 
     template <class Archive>
     void
@@ -108,7 +108,7 @@ struct jleAseprite : public jleResourceInterface {
     // Finds and sets the image resource reference for this jleAseprite
     void loadImage();
 
-    bool loadFromFile(const std::string &path) override;
+    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
 
     // This format expects Aseprite exporting to use 'Array' and not 'Hash'
     std::vector<jleAsepriteFrame> frames;

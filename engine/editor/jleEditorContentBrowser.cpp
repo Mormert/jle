@@ -20,16 +20,16 @@ jleEditorContentBrowser::jleEditorContentBrowser(const std::string &window_name,
                                                  const std::shared_ptr<jleEditorTextEdit> &editorTextEdit)
     : iEditorImGuiWindow(window_name)
 {
-    _directoryIcon = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/directory.png"});
-    _fileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/files.png"});
+    _directoryIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/directory.png"});
+    _fileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/files.png"});
     _backDirectoryIcon =
-        gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/back_directory.png"});
+        gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/back_directory.png"});
 
-    _sceneFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/scene.png"});
+    _sceneFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/scene.png"});
 
-    _imageFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/image.png"});
+    _imageFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/image.png"});
 
-    _jsonFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{"ED:/icons/json.png"});
+    _jsonFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/json.png"});
 
     _selectedDirectory = GAME_RESOURCES_DIRECTORY;
 
@@ -384,7 +384,7 @@ jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file)
             }
 
             auto &game = ((jleGameEngine *)gCore)->gameRef();
-            game.loadScene(file.string());
+            game.loadScene(jlePath{file.string(), false});
         }
     }else
     {
@@ -395,11 +395,9 @@ jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file)
                 sceneName.resize(dot);
             }
 
-            gEditor->loadScene(file.string());
+            gEditor->loadScene(jlePath{file.string(), false});
         }
     }
-
-
 }
 
 void
@@ -417,7 +415,7 @@ jleEditorContentBrowser::selectedFilePopupObjectTemplate(std::filesystem::path &
         }
 
         if (auto &&scene = jleEditorSceneObjectsWindow::GetSelectedScene().lock()) {
-            scene->spawnTemplateObject(jleRelativePath{jleAbsolutePath{file.string()}});
+           // scene->spawnTemplateObject(jlePath{jleAbsolutePath{file.string()}});
         }
     }
 }
@@ -429,7 +427,6 @@ jleEditorContentBrowser::openAsText(std::filesystem::path &file)
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
 
     if (ImGui::Button("Open As Text", size)) {
-        jleAbsolutePath absolutePath{file.string()};
-        _editorTextEdit->open(jleRelativePath{absolutePath});
+        _editorTextEdit->open(jlePath{file.string(), false});
     }
 }

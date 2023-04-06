@@ -12,7 +12,7 @@ void
 cSkybox::start()
 {
     if (!_skyboxPath.empty()) {
-        _skybox = gCore->resources().loadResourceFromFile<jleSkybox>(jleRelativePath{_skyboxPath});
+        _skybox = gCore->resources().loadResourceFromFile<jleSkybox>(jlePath{_skyboxPath});
         if (_skybox) {
             gCore->rendering().rendering3d().setSkybox(_skybox);
         }

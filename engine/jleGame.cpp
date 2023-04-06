@@ -19,13 +19,3 @@ void jleGame::updateActiveScenes(float dt) {
 std::vector<std::shared_ptr<jleScene>> &jleGame::activeScenesRef() {
     return _activeScenes;
 }
-
-bool jleGame::checkSceneIsActive(const std::string &sceneName) {
-    for (auto &&scene : _activeScenes) {
-        if (sceneName == scene->sceneName) {
-            return true;
-        }
-    }
-
-    return false;
-}

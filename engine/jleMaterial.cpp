@@ -13,44 +13,44 @@
 
 jleMaterial::~jleMaterial() = default;
 
-bool
-jleMaterial::loadFromFile(const std::string &path)
+jleLoadFromFileSuccessCode
+jleMaterial::loadFromFile(const jlePath &path)
 {
 
     try {
-        std::ifstream i(path);
+        std::ifstream i(path.getRealPath());
         cereal::JSONInputArchive iarchive{i};
         iarchive(*this);
     } catch (std::exception &e) {
         LOGE << "Failed loading material: " << e.what();
     }
 
-    std::ifstream i(path);
+    std::ifstream i(path.getRealPath());
     if (i.good()) {
 
 
     } else {
         LOG_ERROR << "Could not load scene with path: ";
-        return false;
+        return jleLoadFromFileSuccessCode::FAIL;
     }
 
     if (!_albedoPath.empty()) {
-        albedoTexture = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{_albedoPath});
+        albedoTexture = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{_albedoPath});
     }
 
     if (!_normalPath.empty()) {
-        normalTexture = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{_normalPath});
+        normalTexture = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{_normalPath});
     }
 
     if (!_metallicPath.empty()) {
-        metallicTexture = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{_metallicPath});
+        metallicTexture = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{_metallicPath});
     }
 
     if (!_roughnessPath.empty()) {
-        roughnessTexture = gCore->resources().loadResourceFromFile<jleTexture>(jleRelativePath{_roughnessPath});
+        roughnessTexture = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{_roughnessPath});
     }
 
-    return true;
+    return jleLoadFromFileSuccessCode::SUCCESS;
 }
 
 void

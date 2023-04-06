@@ -5,6 +5,8 @@
 #include <memory>
 #include <vector>
 
+#include "jleCore.h"
+#include "jleResource.h"
 #include "jleCamera.h"
 #include "jleProfiler.h"
 #include "jleScene.h"
@@ -36,8 +38,6 @@ public:
 
     void updateActiveScenes(float dt);
 
-    bool checkSceneIsActive(const std::string &sceneName);
-
     template <typename T>
     std::shared_ptr<T>
     createScene()
@@ -53,21 +53,22 @@ public:
     }
 
     std::shared_ptr<jleScene>
-    loadScene(const std::string &scenePath)
+    loadScene(const jlePath &scenePath)
     {
-        if (checkSceneIsActive(scenePath)) {
-            LOG_WARNING << "Loaded scene is already loaded";
-            return nullptr;
-        }
-
-        auto scene = jleScene::loadScene(scenePath);
+        std::shared_ptr<jleScene> scene = gCore->resources().loadResourceFromFile<jleScene>(scenePath, true);
         if(scene)
         {
-            _activeScenes.push_back(scene);
-            scene->onSceneCreation();
-            scene->startObjects();
+            auto it = std::find(_activeScenes.begin(), _activeScenes.end(), scene);
+            if(it == _activeScenes.end())
+            {
+                _activeScenes.push_back(scene);
+                scene->onSceneCreation();
+                scene->startObjects();
+            }else
+            {
+                LOG_WARNING << "Loaded scene is already loaded";
+            }
         }
-
 
         return scene;
     }

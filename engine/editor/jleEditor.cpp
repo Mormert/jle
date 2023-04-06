@@ -375,9 +375,3 @@ jleEditor::update(float dt)
         updateEditorLoadedScenes(dt);
     }
 }
-
-jleResourceRef<jleEngineSettings> &
-jleEditor::getEngineSettingsResourceRef()
-{
-    return _settingsRef;
-}

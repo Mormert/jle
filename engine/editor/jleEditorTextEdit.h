@@ -17,10 +17,10 @@ public:
 
     void update(jleGameEngine &ge) override;
 
-    void open(const jleRelativePath &path);
+    void open(const jlePath &path);
 
 private:
-    std::unordered_map<jleRelativePath, std::unique_ptr<TextEditor>> _textEditorsMap;
+    std::unordered_map<jlePath, std::unique_ptr<TextEditor>> _textEditorsMap;
 };
 
 #endif // JLEEDITORTEXTEDIT_H

@@ -176,9 +176,9 @@ private:
     {
         ImGui::PushID(elementCount++);
 
-        std::string copy = value.path._relativePath;
-        draw_ui(ar, std::string{name + std::string{" (ref)"}}.c_str(), value.path._relativePath);
-        if (copy != value.path._relativePath) {
+        std::string copy = value.path._virtualPath;
+        draw_ui(ar, std::string{name + std::string{" (ref)"}}.c_str(), value.path._virtualPath);
+        if (copy != value.path._virtualPath) {
             value.load(ar);
         }
 

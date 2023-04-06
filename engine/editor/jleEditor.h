@@ -37,7 +37,8 @@ public:
     std::vector<std::shared_ptr<jleScene>> &getEditorScenes();
 
     bool
-    checkSceneIsActiveEditor(const std::string &sceneName) {
+    checkSceneIsActiveEditor(const std::string &sceneName)
+    {
         for (auto &&scene : _editorScenes) {
             if (sceneName == scene->sceneName) {
                 return true;
@@ -48,24 +49,22 @@ public:
     }
 
     std::shared_ptr<jleScene>
-    loadScene(const std::string &scenePath)
+    loadScene(const jlePath &scenePath)
     {
-        if (checkSceneIsActiveEditor(scenePath)) {
-            LOG_WARNING << "Loaded scene is already loaded";
-            return nullptr;
-        }
+        auto scene = gCore->resources().loadResourceFromFile<jleScene>(scenePath, true);
 
-        auto scene = jleScene::loadScene(scenePath);
-
-        if(scene)
-        {
+        auto it = std::find(_editorScenes.begin(), _editorScenes.end(), scene);
+        if (it == _editorScenes.end()) {
             _editorScenes.push_back(scene);
+            scene->onSceneCreation();
+            scene->startObjects();
+        } else {
+            LOG_WARNING << "Loaded scene is already loaded";
         }
 
         return scene;
     }
 
-    jleResourceRef<jleEngineSettings> &getEngineSettingsResourceRef();
 
 private:
     void initImgui();

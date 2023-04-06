@@ -82,8 +82,9 @@ void jleScene::destroyScene() {
     onSceneDestruction();
 }
 
+/*
 std::shared_ptr<jleObject> jleScene::spawnTemplateObject(
-    const jleRelativePath &templatePath) {
+    const jlePath &templatePath) {
     auto j = jleObject::objectTemplateJson(templatePath);
 
     std::string objectsName;
@@ -106,7 +107,7 @@ std::shared_ptr<jleObject> jleScene::spawnObject(const nlohmann::json &j_in) {
     //spawnedObjFromJson->fromJson(j_in);
 
     return spawnedObjFromJson;
-}
+}*/
 
 void jleScene::configurateSpawnedObject(const std::shared_ptr<jleObject> &obj) {
     obj->_containedInScene = this;
@@ -147,37 +148,9 @@ jleScene::getNextInstanceId()
     return _objectsInstantiatedCounter++;
 }
 
-std::shared_ptr<jleScene>
-jleScene::loadScene(const std::string &scenePath)
-{
-    std::ifstream i(scenePath);
-    if (i.good()) {
-        std::shared_ptr<jleScene> scene;
-
-        try {
-            std::ifstream ix(scenePath);
-            cereal::JSONInputArchive iarchive{ix};
-            iarchive(scene);
-        } catch (std::exception &e) {
-            LOG_ERROR << "Could not load scene with path: " << scenePath << ", err:\n" << e.what();
-            return nullptr;
-        }
-
-        return scene;
-    } else {
-        LOG_ERROR << "Could not load scene with path: " << scenePath;
-        return nullptr;
-    }
-}
-
 void
 jleScene::saveScene()
 {
-    std::filesystem::create_directories(GAME_RESOURCES_DIRECTORY + "/scenes");
-    std::ofstream sceneSave{GAME_RESOURCES_DIRECTORY + "/scenes/" + sceneName + ".scn"};
-
-    auto &&thiz = shared_from_this();
-    cereal::JSONOutputArchive outputArchive(sceneSave);
-    outputArchive(thiz);
+    saveToFile();
 }
 

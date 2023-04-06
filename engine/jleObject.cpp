@@ -53,8 +53,8 @@ jleObject::attachChildObject(const std::shared_ptr<jleObject> &object)
     assert(object->_containedInScene == _containedInScene);
     if (object->_parentObject) {
         // Remove the object from previous parent, if any
-        auto it =
-            std::find(object->_parentObject->__childObjects.begin(), object->_parentObject->__childObjects.end(), object);
+        auto it = std::find(
+            object->_parentObject->__childObjects.begin(), object->_parentObject->__childObjects.end(), object);
         object->_parentObject->__childObjects.erase(it);
     } else {
         // Else the object is directly in the scene
@@ -100,8 +100,9 @@ jleObject::detachObjectFromParent()
 
 jleObject::jleObject(jleScene *scene) : _containedInScene{scene}, _transform{this} {}
 
+/*
 void
-jleObject::saveObjectTemplate(jleRelativePath &path)
+jleObject::saveObjectTemplate(jlePath &path)
 {
     std::string sceneSavePath;
     if (!path.relativePathStr().empty()) {
@@ -126,7 +127,7 @@ jleObject::injectTemplate(const nlohmann::json &json)
 }
 
 std::shared_ptr<jleObject>
-jleObject::spawnChildObjectFromTemplate(const jleRelativePath &path)
+jleObject::spawnChildObjectFromTemplate(const jlePath &path)
 {
     std::ifstream i(path.absolutePathStr());
     if (i.good()) {
@@ -144,7 +145,7 @@ jleObject::spawnChildObjectFromTemplate(const jleRelativePath &path)
         return spawnedObjFromJson;
     }
     return nullptr;
-}
+}*/
 
 void
 jleObject::startComponents()
@@ -248,8 +249,9 @@ jleObject::duplicate(bool childChain)
     return duplicated;
 }
 
+/*
 nlohmann::json
-jleObject::objectTemplateJson(const jleRelativePath &path)
+jleObject::objectTemplateJson(const jlePath &path)
 {
 
     // TODO: use caching
@@ -263,8 +265,7 @@ jleObject::objectTemplateJson(const jleRelativePath &path)
     }
 
     return {};
-}
-
+} */
 
 int
 jleObject::instanceID() const

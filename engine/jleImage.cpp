@@ -8,18 +8,16 @@
 
 #include <algorithm>
 
-bool jleImage::loadFromFile(const std::string &path) {
-    this->_path = path;
-    image_data = stbi_load(path.c_str(), &_width, &_height, &_nrChannels, 0);
+jleLoadFromFileSuccessCode jleImage::loadFromFile(const jlePath &path) {
+    image_data = stbi_load(path.getRealPath().c_str(), &_width, &_height, &_nrChannels, 0);
 
     if (image_data) {
-        return true;
+        return jleLoadFromFileSuccessCode::SUCCESS;
     }
-    return false;
+    return jleLoadFromFileSuccessCode::FAIL;
 }
 
-jleImage::jleImage(const std::string &path) {
-    this->_path = path;
+jleImage::jleImage(const jlePath &path) {
     loadFromFile(path);
 }
 
@@ -96,8 +94,6 @@ unsigned int jleImage::nrChannels() const { return _nrChannels; }
 unsigned char *jleImage::data() const { return image_data; }
 
 unsigned int jleImage::width() const { return _width; }
-
-const std::string &jleImage::path() const { return _path; }
 
 std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> jleImage::pixelAtLocation(
     uint32_t x, uint32_t y) const {

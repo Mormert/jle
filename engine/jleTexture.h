@@ -20,7 +20,7 @@ public:
         ar(CEREAL_NVP(imagePath));
     }
 
-    bool loadFromFile(const std::string &path) override;
+    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
 
     void saveToFile() override;
 
@@ -38,7 +38,7 @@ public:
 
     unsigned int id();
 
-    jleRelativePath imagePath;
+    jlePath imagePath;
 
 private:
     int32_t _width = 0, _height = 0, _nrChannels = 0;

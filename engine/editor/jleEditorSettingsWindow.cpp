@@ -1,17 +1,15 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleEditorSettingsWindow.h"
+#include "ImGui/imgui.h"
 #include "jleEditor.h"
 #include "jleImGuiCerealArchive.h"
-#include "ImGui/imgui.h"
 
-jleEditorSettingsWindow::jleEditorSettingsWindow(
-    const std::string &window_name)
-    : iEditorImGuiWindow{window_name} {
-}
+jleEditorSettingsWindow::jleEditorSettingsWindow(const std::string &window_name) : iEditorImGuiWindow{window_name} {}
 
 void
-jleEditorSettingsWindow::update(jleGameEngine &ge) {
+jleEditorSettingsWindow::update(jleGameEngine &ge)
+{
     if (!isOpened) {
         return;
     }
@@ -20,17 +18,16 @@ jleEditorSettingsWindow::update(jleGameEngine &ge) {
 
     ImGui::Begin(window_name.c_str(), &isOpened, flags);
 
-    ImGui::BeginChild(
-        "settings hierarchy view",
-        ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+    ImGui::BeginChild("settings hierarchy view",
+                      ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 
     cereal::jleImGuiCerealArchive archive;
-    archive(*gEditor->getEngineSettingsResourceRef().get());
+    archive(gCore->settings());
 
     ImGui::EndChild();
 
     if (ImGui::Button("Save Settings")) {
-        gEditor->getEngineSettingsResourceRef().saveResource();
+        gCore->settings().saveToFile();
     }
 
     ImGui::SameLine();

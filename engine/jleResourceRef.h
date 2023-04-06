@@ -7,6 +7,8 @@
 
 #include "jlePath.h"
 
+class jleResourceInterface;
+
 template <typename T>
 struct jleResourceRef {
 
@@ -14,7 +16,7 @@ struct jleResourceRef {
 
     jleResourceRef() = default;
 
-    explicit jleResourceRef(const jleRelativePath &path) : path{path} {};
+    explicit jleResourceRef(const jlePath &path) : path{path} {};
 
     // Serialization save
     template <class Archive>
@@ -54,7 +56,7 @@ struct jleResourceRef {
 
     explicit operator const T &() const { return *ptr; }
 
-    jleRelativePath path{};
+    jlePath path{};
 
 private:
     std::shared_ptr<jleResourceInterface> ptr{};

@@ -68,11 +68,11 @@ public:
 
     std::shared_ptr<jleObject> spawnChildObject(const std::string &objName);
 
-    void saveObjectTemplate(jleRelativePath &path);
+   /* void saveObjectTemplate(jlePath &path);
 
-    std::shared_ptr<jleObject> spawnChildObjectFromTemplate(const jleRelativePath &path);
+    std::shared_ptr<jleObject> spawnChildObjectFromTemplate(const jlePath &path);
 
-    void injectTemplate(const nlohmann::json &json);
+    void injectTemplate(const nlohmann::json &json); */
 
     // Called from components
     void destroyComponent(jleComponent *component);
@@ -95,11 +95,11 @@ public:
 
     [[nodiscard]] std::weak_ptr<jleObject> weakPtrToThis();
 
-    static void processJsonData(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
+   // static void processJsonData(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
 
-    static std::shared_ptr<jleObject> processChildJsonData(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
+   // static std::shared_ptr<jleObject> processChildJsonData(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
 
-    static nlohmann::json objectTemplateJson(const jleRelativePath &path);
+    // static nlohmann::json objectTemplateJson(const jlePath &path);
 
     // If this object is based on a template
     std::optional<std::string> _templatePath{};

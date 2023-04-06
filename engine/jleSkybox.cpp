@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-bool
-jleSkybox::loadFromFile(const std::string &path)
+jleLoadFromFileSuccessCode
+jleSkybox::loadFromFile(const jlePath &path)
 {
 
     constexpr float skyboxVertices[] = {// positions
@@ -42,12 +42,13 @@ jleSkybox::loadFromFile(const std::string &path)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 
     std::vector<std::string> faces;
-    faces.push_back(path + "_right.jpg");
-    faces.push_back(path + "_left.jpg");
-    faces.push_back(path + "_bottom.jpg");
-    faces.push_back(path + "_top.jpg");
-    faces.push_back(path + "_front.jpg");
-    faces.push_back(path + "_back.jpg");
+    auto pathStr = path.getRealPath();
+    faces.push_back(pathStr + "_right.jpg");
+    faces.push_back(pathStr + "_left.jpg");
+    faces.push_back(pathStr + "_bottom.jpg");
+    faces.push_back(pathStr + "_top.jpg");
+    faces.push_back(pathStr + "_front.jpg");
+    faces.push_back(pathStr + "_back.jpg");
 
     glGenTextures(1, &_textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, _textureID);
@@ -55,7 +56,7 @@ jleSkybox::loadFromFile(const std::string &path)
     int i = 0;
     jleImage::setFlipImage(true);
     for (auto &&face : faces) {
-        auto image2d = gCore->resources().loadResourceFromFile<jleImage>(jleRelativePath{face});
+        auto image2d = gCore->resources().loadResourceFromFile<jleImage>(jlePath{face});
         if (image2d) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                          0,
@@ -76,7 +77,7 @@ jleSkybox::loadFromFile(const std::string &path)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-    return true;
+    return jleLoadFromFileSuccessCode::SUCCESS;
 }
 unsigned int
 jleSkybox::getTextureID()

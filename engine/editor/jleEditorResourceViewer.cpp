@@ -15,7 +15,7 @@ void jleEditorResourceViewer::update(jleGameEngine &ge) {
 
     auto &resources = gCore->resources();
 
-    std::vector<std::string> resourcesToBeUnloaded;
+    std::vector<jlePath> resourcesToBeUnloaded;
     for (auto &&drive : resources.resourcesMap()) {
         const std::string treeNodeStr =
             drive.first + " (" + std::to_string(drive.second.size()) + ")";
@@ -31,7 +31,7 @@ void jleEditorResourceViewer::update(jleGameEngine &ge) {
 
             for (auto &&path : drive.second) {
                 const std::string pathStr =
-                    path.first + " (" +
+                    path.first.getVirtualPath() + " (" +
                     std::to_string(path.second.use_count() - 1) + " users)";
 
                 if (ImGui::TreeNode(pathStr.c_str())) {
@@ -46,8 +46,8 @@ void jleEditorResourceViewer::update(jleGameEngine &ge) {
     }
 
     // Postpone the unloading to outside the loop
-    for (auto &&resource : resourcesToBeUnloaded) {
-        resources.unloadResource(jleRelativePath{resource});
+    for (auto &&resourcePath : resourcesToBeUnloaded) {
+        resources.unloadResource(resourcePath);
     }
 
     ImGui::End();

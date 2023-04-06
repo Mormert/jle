@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "jlePath.h"
 #include "jleResourceInterface.h"
 
 #include <string>
@@ -11,9 +12,9 @@ class jleImage : public jleResourceInterface
 public:
     jleImage() = default;
 
-    explicit jleImage(const std::string &path);
+    explicit jleImage(const jlePath &path);
 
-    bool loadFromFile(const std::string &path) override;
+    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
 
     jleImage(const jleImage &i);
 
@@ -35,13 +36,9 @@ public:
 
     [[nodiscard]] std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> pixelAtLocation(uint32_t x, uint32_t y) const;
 
-    [[nodiscard]] const std::string &path() const;
-
     static void setFlipImage(bool flip);
 
 private:
     unsigned char *image_data{nullptr};
     int _width = 0, _height = 0, _nrChannels = 0;
-
-    std::string _path;
 };
