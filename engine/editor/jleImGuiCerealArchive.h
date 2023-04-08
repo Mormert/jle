@@ -329,7 +329,7 @@ private:
         float width = ImGui::CalcItemWidth();
 
         float x = ImGui::GetCursorPosX();
-        ImGui::Text(label);
+        ImGui::Text("%s", label);
         ImGui::SameLine();
         ImGui::SetCursorPosX(x + width * 0.3f + ImGui::GetStyle().ItemInnerSpacing.x);
         ImGui::SetNextItemWidth(-1);
