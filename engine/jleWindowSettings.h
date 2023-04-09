@@ -14,8 +14,7 @@ public:
     unsigned int width = 1920, height = 1080;
     unsigned int widthMin = 500, heightMin = 500;
 
-    std::string iconPath{JLE_ENGINE_PATH +
-                         "/EditorResources/jle_default_icon.png"};
+    jlePath iconPath{"ED:jle_default_icon.png"};
 
     bool isRezisable = true;
     bool shouldDisplayCursor = true;

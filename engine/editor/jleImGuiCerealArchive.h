@@ -186,6 +186,21 @@ private:
     }
 
     void
+    draw_ui(jleImGuiCerealArchive &ar, const char *name, jlePath& value)
+    {
+        ImGui::PushID(elementCount++);
+
+        std::string copy = value._virtualPath;
+        draw_ui(ar, std::string{name + std::string{" (path)"}}.c_str(), value._virtualPath);
+        if (copy != value._virtualPath) {
+            // Assign value to "itself", re-creating the real path
+            value = jlePath{value._virtualPath};
+        }
+
+        ImGui::PopID();
+    }
+
+    void
     draw_ui(jleImGuiCerealArchive &ar, const char *name, uint32_t &value)
     {
         ImGui::PushID(elementCount++);

@@ -181,9 +181,9 @@ jleWindow::initWindow(std::shared_ptr<jleRendering> rendering)
     glfwGetFramebufferSize(_glfwWindow, &w, &h);
     rendering->viewportDimensions(0, 0, static_cast<unsigned int>(w), static_cast<unsigned int>(h));
 
-    if (!windowSettings.iconPath.empty()) {
+    if (!windowSettings.iconPath.isEmpty()) {
         GLFWimage images[1];
-        images[0].pixels = stbi_load(windowSettings.iconPath.c_str(),
+        images[0].pixels = stbi_load(windowSettings.iconPath.getRealPath().c_str(),
                                      &images[0].width,
                                      &images[0].height,
                                      nullptr,
