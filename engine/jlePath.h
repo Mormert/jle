@@ -18,6 +18,7 @@ public:
     serialize(Archive &ar)
     {
         ar(CEREAL_NVP(_virtualPath));
+        _realPath = findRealPathFromVirtualPath(_virtualPath);
     }
 
     explicit jlePath(const std::string &path, bool virtualPath = true);

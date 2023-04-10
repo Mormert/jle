@@ -2,7 +2,9 @@
 
 #include "jleObject.h"
 
+#include "jleCore.h"
 #include "jlePathDefines.h"
+#include "jleResource.h"
 #include "jleScene.h"
 #include "jleTransform.h"
 
@@ -99,53 +101,6 @@ jleObject::detachObjectFromParent()
 }
 
 jleObject::jleObject(jleScene *scene) : _containedInScene{scene}, _transform{this} {}
-
-/*
-void
-jleObject::saveObjectTemplate(jlePath &path)
-{
-    std::string sceneSavePath;
-    if (!path.relativePathStr().empty()) {
-        sceneSavePath = path.absolutePathStr();
-    } else {
-        sceneSavePath = GAME_RESOURCES_DIRECTORY + "/otemps/" + _instanceName + ".tmpl";
-    }
-
-    std::filesystem::create_directories(GAME_RESOURCES_DIRECTORY + "/otemps");
-    std::ofstream sceneSave{sceneSavePath};
-
-    //nlohmann::json j;
-    //to_json(j, weakPtrToThis().lock());
-    //sceneSave << j.dump(4);
-    sceneSave.close();
-}
-
-void
-jleObject::injectTemplate(const nlohmann::json &json)
-{
-    auto &&thiz = shared_from_this();
-}
-
-std::shared_ptr<jleObject>
-jleObject::spawnChildObjectFromTemplate(const jlePath &path)
-{
-    std::ifstream i(path.absolutePathStr());
-    if (i.good()) {
-        nlohmann::json j;
-        i >> j;
-
-        std::string objectsName;
-        j.at("__obj_name").get_to(objectsName);
-        std::cout << objectsName;
-
-        auto spawnedObjFromJson = spawnChildObject(objectsName);
-        spawnedObjFromJson->injectTemplate(j);
-        spawnedObjFromJson->_templatePath = path.relativePathStr();
-
-        return spawnedObjFromJson;
-    }
-    return nullptr;
-}*/
 
 void
 jleObject::startComponents()
@@ -249,23 +204,42 @@ jleObject::duplicate(bool childChain)
     return duplicated;
 }
 
-/*
-nlohmann::json
-jleObject::objectTemplateJson(const jlePath &path)
+std::shared_ptr<jleObject>
+jleObject::duplicateTemplate(bool childChain)
 {
+    auto duplicated = clone();
 
-    // TODO: use caching
-    std::ifstream i(path.absolutePathStr());
-    if (i.good()) {
-        nlohmann::json templateJson;
-        i >> templateJson;
-        return templateJson;
-    } else {
-        LOGE << "Failed loading JSON data with path " << path.absolutePathStr();
+    duplicated->_components.clear();
+    duplicated->__childObjects.clear();
+    duplicated->__instanceID = 0;
+    duplicated->_transform._owner = duplicated.get();
+
+    for (auto &&component : _components) {
+        auto clonedComponent = component->clone();
+        clonedComponent->_attachedToObject = duplicated.get();
+        duplicated->_components.push_back(clonedComponent);
     }
 
-    return {};
-} */
+    for (auto &&object : __childObjects) {
+        auto duplicatedChild = object->duplicate(true);
+        duplicatedChild->_parentObject = duplicated.get();
+        duplicated->__childObjects.push_back(duplicatedChild);
+    }
+
+    if (duplicated->parent() && !childChain) {
+        duplicated->parent()->__childObjects.push_back(duplicated);
+    }
+
+    return duplicated;
+}
+
+void
+jleObject::saveAsObjectTemplate()
+{
+    std::ofstream save{jlePath{"GR:otemps/" + _instanceName}.getRealPath() + ".jobj"};
+    cereal::JSONOutputArchive outputArchive(save);
+    outputArchive(shared_from_this());
+}
 
 int
 jleObject::instanceID() const
@@ -298,5 +272,29 @@ jleObject::propagateOwnedByScene(jleScene *scene)
     _containedInScene = scene;
     for (auto child : __childObjects) {
         child->propagateOwnedByScene(scene);
+    }
+}
+
+void
+jleObject::replaceChildrenWithTemplate()
+{
+    for (auto &&object : __childObjects) {
+        // Replace child object with template object, if it is based on one
+        if (object->__templatePath.has_value()) {
+            auto path = object->__templatePath;
+            try {
+                auto original = gCore->resources().loadResourceFromFile<jleObject>(object->__templatePath.value());
+
+                auto copy = original->duplicateTemplate();
+                object = copy;
+
+                object->__templatePath = path;
+                object->__instanceID = _containedInScene->getNextInstanceId();
+            } catch (std::exception &e) {
+                LOGE << "Failed to load object template: " << e.what();
+            }
+        }
+
+        object->replaceChildrenWithTemplate();
     }
 }

@@ -34,16 +34,14 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
     if (ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_MenuBar)) {
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("Create Scene")) {
-                if(!ge.isGameKilled())
-                {
+                if (!ge.isGameKilled()) {
                     if (ImGui::MenuItem("jleScene")) {
                         ge.gameRef().createScene<jleScene>();
                     }
                     if (ImGui::MenuItem("jleNetScene")) {
                         ge.gameRef().createScene<jleNetScene>();
                     }
-                }else
-                {
+                } else {
                     if (ImGui::MenuItem("jleScene")) {
 
                         std::shared_ptr<jleScene> newScene = std::make_shared<jleScene>();
@@ -58,7 +56,6 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                         newScene->onSceneCreation();
                     }
                 }
-
 
                 ImGui::EndMenu();
             }
@@ -195,13 +192,22 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                     if (ImGui::BeginTabItem("Object Properties")) {
 
                         // If this is an object template
-                        if (selectedObjectSafePtr->_templatePath.has_value()) {
-                            ImGui::Text("Object template: %s", selectedObjectSafePtr->_templatePath->c_str());
+                        if (selectedObjectSafePtr->__templatePath.has_value()) {
+                            ImGui::Text("Object template: %s",
+                                        selectedObjectSafePtr->__templatePath->getVirtualPath().c_str());
                             ImGui::NewLine();
+                            if (ImGui::Button("Edit Template")) {
+                            }
+                            ImGui::NewLine();
+                            if (ImGui::Button("Refresh Template")) {
+                            }
+                            if (ImGui::Button("Make Scene Object")) {
+                                selectedObjectSafePtr->__templatePath.reset();
+                            }
+                        } else {
+                            cereal::jleImGuiCerealArchive ar1;
+                            ar1(*selectedObjectSafePtr);
                         }
-
-                        cereal::jleImGuiCerealArchive ar1;
-                        ar1(*selectedObjectSafePtr);
 
                         ImGui::EndTabItem();
                     }
@@ -264,7 +270,7 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
 
     std::string instanceDisplayName = object->_instanceName;
-    if (object->_templatePath.has_value()) {
+    if (object->__templatePath.has_value()) {
         instanceDisplayName += " [T]";
     }
 
@@ -296,7 +302,7 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
         }
 
         if (ImGui::Button("Save Template", ImVec2(138 * globalImguiScale, 0))) {
-           // object->saveObjectTemplate(p);
+            object->saveAsObjectTemplate();
         }
 
         if (ImGui::Button("Duplicate", ImVec2(138 * globalImguiScale, 0))) {

@@ -10,17 +10,18 @@
 #include "jleTypeReflectionUtils.h"
 
 #include "jlePath.h"
+#include "jleResourceInterface.h"
 #include "jleTransform.h"
 #include "json.hpp"
 
-//#include <cereal/archives/json.hpp>
+// #include <cereal/archives/json.hpp>
 #include <cereal/archives/xml.hpp>
 #include <cereal/types/memory.hpp>
 #include <cereal/types/polymorphic.hpp>
 
 class jleScene;
 
-class jleObject : public std::enable_shared_from_this<jleObject>
+class jleObject : public jleResourceInterface, public std::enable_shared_from_this<jleObject>
 {
     JLE_REGISTER_OBJECT_TYPE(jleObject)
 public:
@@ -41,12 +42,30 @@ public:
     {
     }
 
+    void
+    saveToFile() override
+    {
+        if (__templatePath.has_value()) {
+            std::ofstream save{__templatePath->getRealPath()};
+            cereal::JSONOutputArchive outputArchive(save);
+            outputArchive(shared_from_this());
+        } else {
+            LOGE << "Can't save an object that doesn't have a template path set!";
+        }
+    };
+
+    jleLoadFromFileSuccessCode
+    loadFromFile(const jlePath &path) override
+    {
+        return jleLoadFromFileSuccessCode::IMPLEMENT_POLYMORPHIC_CEREAL;
+    };
 
     std::shared_ptr<jleObject> duplicate(bool childChain = false);
 
+    std::shared_ptr<jleObject> duplicateTemplate(bool childChain = false);
+
     template <class Archive>
-    void
-    serialize(Archive &archive);
+    void serialize(Archive &archive);
 
     jleObject();
 
@@ -68,11 +87,7 @@ public:
 
     std::shared_ptr<jleObject> spawnChildObject(const std::string &objName);
 
-   /* void saveObjectTemplate(jlePath &path);
-
-    std::shared_ptr<jleObject> spawnChildObjectFromTemplate(const jlePath &path);
-
-    void injectTemplate(const nlohmann::json &json); */
+    void saveAsObjectTemplate();
 
     // Called from components
     void destroyComponent(jleComponent *component);
@@ -95,14 +110,8 @@ public:
 
     [[nodiscard]] std::weak_ptr<jleObject> weakPtrToThis();
 
-   // static void processJsonData(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
-
-   // static std::shared_ptr<jleObject> processChildJsonData(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
-
-    // static nlohmann::json objectTemplateJson(const jlePath &path);
-
     // If this object is based on a template
-    std::optional<std::string> _templatePath{};
+    std::optional<jlePath> __templatePath{};
 
     int instanceID() const;
 
@@ -113,7 +122,9 @@ private:
 
     explicit jleObject(jleScene *scene);
 
-    void propagateOwnedByScene(jleScene* scene);
+    void propagateOwnedByScene(jleScene *scene);
+
+    void replaceChildrenWithTemplate();
 
     void startComponents();
 
@@ -141,12 +152,6 @@ protected:
     jleObject *_parentObject = nullptr;
 
     jleScene *_containedInScene = nullptr;
-
-    virtual void
-    setupDefaultObject()
-    {
-    }
-
 };
 
 void to_json(nlohmann::json &j, const std::shared_ptr<jleObject> &o);

@@ -22,8 +22,7 @@ jleEditorContentBrowser::jleEditorContentBrowser(const std::string &window_name,
 {
     _directoryIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/directory.png"});
     _fileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/files.png"});
-    _backDirectoryIcon =
-        gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/back_directory.png"});
+    _backDirectoryIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/back_directory.png"});
 
     _sceneFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/scene.png"});
 
@@ -276,7 +275,7 @@ jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file)
         selectedFilePopupScene(file);
     }
 
-    if (fileExtension == ".tmpl") {
+    if (fileExtension == ".jobj") {
         selectedFilePopupObjectTemplate(file);
     }
 
@@ -386,8 +385,7 @@ jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file)
             auto &game = ((jleGameEngine *)gCore)->gameRef();
             game.loadScene(jlePath{file.string(), false});
         }
-    }else
-    {
+    } else {
         if (ImGui::Button("Load Scene (Editor)", size)) {
             std::string sceneName = file.filename().string();
             int dot = sceneName.rfind(file.extension().string());
@@ -406,7 +404,7 @@ jleEditorContentBrowser::selectedFilePopupObjectTemplate(std::filesystem::path &
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
 
-    if (ImGui::Button("Spawn Template", size)) {
+    if (ImGui::Button("Add Template", size)) {
 
         std::string objectName = file.filename().string();
         int dot = objectName.rfind(file.extension().string());
@@ -415,7 +413,17 @@ jleEditorContentBrowser::selectedFilePopupObjectTemplate(std::filesystem::path &
         }
 
         if (auto &&scene = jleEditorSceneObjectsWindow::GetSelectedScene().lock()) {
-           // scene->spawnTemplateObject(jlePath{jleAbsolutePath{file.string()}});
+            try {
+                std::shared_ptr<jleObject> object;
+
+                std::ifstream i(file);
+                cereal::JSONInputArchive iarchive{i};
+                iarchive(object);
+                object->__templatePath = jlePath{file.string(), false};
+                scene->spawnObject(object);
+            } catch (std::exception &e) {
+                LOGE << "Failed to load object template: " << e.what();
+            }
         }
     }
 }

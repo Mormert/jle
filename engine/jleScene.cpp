@@ -111,11 +111,11 @@ std::shared_ptr<jleObject> jleScene::spawnObject(const nlohmann::json &j_in) {
 
 void jleScene::configurateSpawnedObject(const std::shared_ptr<jleObject> &obj) {
     obj->_containedInScene = this;
-    obj->setupDefaultObject();
     obj->__instanceID = getNextInstanceId();
     obj->_instanceName = std::string{obj->objectNameVirtual()} + "_" +
                          std::to_string(obj->__instanceID);
 
+    obj->replaceChildrenWithTemplate();
     _newSceneObjects.push_back(obj);
 }
 
@@ -154,3 +154,8 @@ jleScene::saveScene()
     saveToFile();
 }
 
+void
+jleScene::spawnObject(std::shared_ptr<jleObject> object)
+{
+    configurateSpawnedObject(object);
+}

@@ -51,6 +51,8 @@ public:
 
     std::shared_ptr<jleObject> spawnObject(const std::string &objName);
 
+    void spawnObject(std::shared_ptr<jleObject> object);
+
     // std::shared_ptr<jleObject> spawnObject(const nlohmann::json &j_in);
 
     //  std::shared_ptr<jleObject> spawnTemplateObject(const jlePath &templatePath);
@@ -109,6 +111,8 @@ private:
     uint32_t _objectsInstantiatedCounter{0};
 
     void configurateSpawnedObject(const std::shared_ptr<jleObject> &obj);
+
+    void replaceTemplateObjectsRecursively();
 };
 
 #include "jleScene.inl"
