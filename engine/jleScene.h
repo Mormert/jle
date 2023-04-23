@@ -9,6 +9,7 @@
 #include "jlePath.h"
 #include "jleResourceInterface.h"
 #include <json.hpp>
+#include "jleResource.h"
 
 #include <cereal/archives/xml.hpp>
 #include <cereal/types/memory.hpp>
@@ -112,8 +113,6 @@ private:
     uint32_t _objectsInstantiatedCounter{0};
 
     void configurateSpawnedObject(const std::shared_ptr<jleObject> &obj);
-
-    void replaceTemplateObjectsRecursively();
 };
 
 CEREAL_REGISTER_TYPE(jleScene)

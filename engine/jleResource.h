@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "jleObject.h"
 #include "jlePath.h"
 #include "jleResourceInterface.h"
 #include <plog/Log.h>
@@ -55,9 +54,10 @@ public:
             try {
                 std::ifstream i(path.getRealPath());
                 cereal::JSONInputArchive iarchive{i};
-                std::shared_ptr<T> newResourceT = std::static_pointer_cast<T>(newResource);
-                iarchive(newResourceT);
-                newResource = newResourceT;
+                //std::shared_ptr<T> newResourceT = std::static_pointer_cast<T>(newResource);
+                //iarchive(newResourceT);
+                iarchive(newResource);
+                //newResource = newResourceT;
                 loadSuccess = jleLoadFromFileSuccessCode::SUCCESS;
             } catch (std::exception &e) {
                 LOGE << "Failed loading resource file: " << e.what();
