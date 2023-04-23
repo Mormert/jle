@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "jleObject.h"
 #include "jlePath.h"
 #include "jleResourceInterface.h"
 #include <plog/Log.h>
@@ -15,8 +16,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include <cereal/cereal.hpp>
 #include <cereal/archives/json.hpp>
+#include <cereal/cereal.hpp>
 #include <cereal/types/memory.hpp>
 #include <cereal/types/polymorphic.hpp>
 
@@ -33,7 +34,7 @@ public:
     // loaded copy of that resource
     template <typename T>
     std::shared_ptr<T>
-    loadResourceFromFile(const jlePath &path, const bool forceReload = false)
+    loadResourceFromFile(const jlePath &path, const bool forceReload = false, const bool serializedResource = false)
     {
         static_assert(std::is_base_of<jleResourceInterface, T>::value, "T must derive from jleResourceInterface");
 
@@ -50,7 +51,7 @@ public:
 
         jleLoadFromFileSuccessCode loadSuccess = newResource->loadFromFile(path);
 
-        if (loadSuccess == jleLoadFromFileSuccessCode::IMPLEMENT_POLYMORPHIC_CEREAL) {
+        if (loadSuccess == jleLoadFromFileSuccessCode::IMPLEMENT_POLYMORPHIC_CEREAL || serializedResource) {
             try {
                 std::ifstream i(path.getRealPath());
                 cereal::JSONInputArchive iarchive{i};
@@ -76,6 +77,35 @@ public:
         periodicResourcesCleanUp();
 
         return std::static_pointer_cast<T>(newResource);
+    }
+
+    std::shared_ptr<jleResourceInterface>
+    loadSerializedResourceFromFile(const jlePath &path)
+    {
+        const auto prefix = path.getPathPrefix();
+
+        std::shared_ptr<jleResourceInterface> ptr{};
+
+        auto it = _resources[prefix].find(path);
+        if (it != _resources[prefix].end()) {
+            return std::static_pointer_cast<jleResourceInterface>(it->second);
+        }
+
+        try {
+            std::ifstream i(path.getRealPath());
+            cereal::JSONInputArchive iarchive{i};
+            iarchive(ptr);
+
+            ptr->filepath = path.getRealPath();
+
+            _resources[prefix].erase(path);
+            _resources[prefix].insert(std::make_pair(path, ptr));
+
+        } catch (std::exception &e) {
+            LOGE << "Failed loading serialized resource file: " << e.what();
+        }
+
+        return ptr;
     }
 
     // Stores a resource with a certain path to be reused later

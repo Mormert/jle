@@ -59,6 +59,8 @@ public:
 
     [[nodiscard]] jleEngineSettings &settings();
 
+    [[nodiscard]] std::shared_ptr<jleEngineSettings> settingsPtr();
+
     [[nodiscard]] int fps() const;
 
     [[nodiscard]] float deltaFrameTime() const;

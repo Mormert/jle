@@ -34,6 +34,15 @@
         outputArchive(*this);                                                                                          \
     };
 
+#define SAVE_SHARED_THIS_SERIALIZED_JSON(PTR_TYPE)                                                                     \
+    void saveToFile() override                                                                                         \
+    {                                                                                                                  \
+        std::ofstream save{filepath};                                                                                  \
+        cereal::JSONOutputArchive outputArchive(save);                                                                 \
+        std::shared_ptr<PTR_TYPE> thiz = shared_from_this();                                                           \
+        outputArchive(thiz);                                                                                           \
+    };
+
 enum class jleLoadFromFileSuccessCode : uint8_t { SUCCESS, FAIL, IMPLEMENT_POLYMORPHIC_CEREAL };
 
 class jleResourceInterface
@@ -44,10 +53,15 @@ public:
     virtual ~jleResourceInterface() = default;
 
     template <class Archive>
-    void serialize(Archive &archive){}
+    void
+    serialize(Archive &archive)
+    {
+    }
 
     // Should implement logic for loading data from file into derived class
-    virtual jleLoadFromFileSuccessCode loadFromFile(const jlePath &path){
+    virtual jleLoadFromFileSuccessCode
+    loadFromFile(const jlePath &path)
+    {
         return jleLoadFromFileSuccessCode::FAIL;
     };
 

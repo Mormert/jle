@@ -154,9 +154,8 @@ protected:
     jleScene *_containedInScene = nullptr;
 };
 
-void to_json(nlohmann::json &j, const std::shared_ptr<jleObject> &o);
-
-void from_json(const nlohmann::json &j, std::shared_ptr<jleObject> &o);
+CEREAL_REGISTER_TYPE(jleObject)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleResourceInterface, jleObject)
 
 #include "jleObject.inl"
 

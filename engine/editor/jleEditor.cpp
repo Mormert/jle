@@ -28,6 +28,7 @@
 #include "editor/jleEditorResourceViewer.h"
 #include "editor/jleEditorSceneObjectsWindow.h"
 #include "editor/jleEditorWindowsPanel.h"
+#include "jleEditorResourceEdit.h"
 #include "jleEditorSettingsWindow.h"
 #include "jleEditorTextEdit.h"
 #include "jleFramebufferScreen.h"
@@ -64,6 +65,10 @@ jleEditor::start()
     auto textEditWindow = std::make_shared<jleEditorTextEdit>("Text Editor");
     addImGuiWindow(textEditWindow);
 
+    auto resourceEditor = std::make_shared<jleEditorResourceEdit>("Resource Edit");
+    addImGuiWindow(resourceEditor);
+    menu->addWindow(resourceEditor);
+
     auto sceneWindow = std::make_shared<jleSceneEditorWindow>("Scene Window", editorScreenFramebuffer);
     addImGuiWindow(sceneWindow);
     menu->addWindow(sceneWindow);
@@ -90,7 +95,7 @@ jleEditor::start()
     addImGuiWindow(editorSceneObjects);
     menu->addWindow(editorSceneObjects);
 
-    auto contentBrowser = std::make_shared<jleEditorContentBrowser>("Content Browser", textEditWindow);
+    auto contentBrowser = std::make_shared<jleEditorContentBrowser>("Content Browser", textEditWindow, resourceEditor);
     addImGuiWindow(contentBrowser);
     menu->addWindow(contentBrowser);
 

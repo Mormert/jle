@@ -10,6 +10,9 @@ template <class Archive>
 void
 jleObject::serialize(Archive &archive)
 {
+
+    cereal::base_class<jleResourceInterface>(this);
+
     try {
         archive(CEREAL_NVP(__templatePath));
     } catch (std::exception &e) {

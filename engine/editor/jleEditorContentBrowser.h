@@ -3,6 +3,7 @@
 #pragma once
 
 #include "jleEditorImGuiWindowInterface.h"
+#include "jleEditorResourceEdit.h"
 #include "jleTexture.h"
 #include <filesystem>
 
@@ -12,7 +13,8 @@ class jleEditorContentBrowser : public iEditorImGuiWindow
 {
 public:
     explicit jleEditorContentBrowser(const std::string &window_name,
-                                     const std::shared_ptr<jleEditorTextEdit> &editorTextEdit);
+                                     const std::shared_ptr<jleEditorTextEdit> &editorTextEdit,
+                                     const std::shared_ptr<jleEditorResourceEdit> &editorResourceEdit);
 
     void update(jleGameEngine &ge) override;
 
@@ -46,5 +48,9 @@ private:
 
     void openAsText(std::filesystem::path &file);
 
+    void openAsResource(std::filesystem::path &file);
+
     std::shared_ptr<jleEditorTextEdit> _editorTextEdit;
+
+    std::shared_ptr<jleEditorResourceEdit> _editorResourceEdit;
 };

@@ -17,7 +17,8 @@
 #include <utility>
 
 jleEditorContentBrowser::jleEditorContentBrowser(const std::string &window_name,
-                                                 const std::shared_ptr<jleEditorTextEdit> &editorTextEdit)
+                                                 const std::shared_ptr<jleEditorTextEdit> &editorTextEdit,
+                                                 const std::shared_ptr<jleEditorResourceEdit> &editorResourceEdit)
     : iEditorImGuiWindow(window_name)
 {
     _directoryIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/directory.png"});
@@ -33,6 +34,8 @@ jleEditorContentBrowser::jleEditorContentBrowser(const std::string &window_name,
     _selectedDirectory = GAME_RESOURCES_DIRECTORY;
 
     _editorTextEdit = std::move(editorTextEdit);
+
+    _editorResourceEdit = std::move(editorResourceEdit);
 }
 
 #define BIT(x) (1 << x)
@@ -281,6 +284,8 @@ jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file)
 
     openAsText(file);
 
+    openAsResource(file);
+
     { // Delete File
         static bool opened = false;
         if (ImGui::Button("Delete", size)) {
@@ -436,5 +441,16 @@ jleEditorContentBrowser::openAsText(std::filesystem::path &file)
 
     if (ImGui::Button("Open As Text", size)) {
         _editorTextEdit->open(jlePath{file.string(), false});
+    }
+}
+
+void
+jleEditorContentBrowser::openAsResource(std::filesystem::path &file)
+{
+    const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
+    const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
+
+    if (ImGui::Button("Open As Resource", size)) {
+        _editorResourceEdit->tryOpen(jlePath{file.string(), false});
     }
 }

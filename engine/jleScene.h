@@ -30,7 +30,8 @@ public:
         }
         std::ofstream save{filepath};
         cereal::JSONOutputArchive outputArchive(save);
-        outputArchive(shared_from_this());
+        std::shared_ptr<jleResourceInterface> thiz = shared_from_this();
+        outputArchive(thiz);
     };
 
     jleLoadFromFileSuccessCode
@@ -114,6 +115,9 @@ private:
 
     void replaceTemplateObjectsRecursively();
 };
+
+CEREAL_REGISTER_TYPE(jleScene)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleResourceInterface, jleScene)
 
 #include "jleScene.inl"
 

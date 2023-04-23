@@ -205,3 +205,9 @@ jleCore::lastFrameTime() const
 {
     return _lastFrame;
 }
+
+std::shared_ptr<jleEngineSettings>
+jleCore::settingsPtr()
+{
+    return g_CoreSettingsRef.get();
+}
