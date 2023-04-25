@@ -4,6 +4,7 @@
 #define JLE_MATERIAL_H
 
 #include "jleResourceInterface.h"
+#include "jleTypeReflectionUtils.h"
 
 #include "jleResourceRef.h"
 #include "jleTexture.h"
@@ -13,10 +14,13 @@
 #include <cereal/archives/binary.hpp>
 
 
-class jleMaterial : public jleResourceInterface
+class jleMaterial : public jleResourceInterface, public std::enable_shared_from_this<jleMaterial>
 {
 public:
-    ~jleMaterial() override;
+
+    JLE_REGISTER_RESOURCE_TYPE(jleMaterial, mat)
+
+    virtual ~jleMaterial() = default;
 
     jleMaterial() = default;
 
@@ -30,9 +34,13 @@ public:
            CEREAL_NVP(roughnessTextureRef));
     }
 
-    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
+    SAVE_SHARED_THIS_SERIALIZED_JSON(jleResourceInterface)
 
-    void saveToFile() override;
+    jleLoadFromFileSuccessCode
+    loadFromFile(const jlePath &path) override
+    {
+        return jleLoadFromFileSuccessCode::IMPLEMENT_POLYMORPHIC_CEREAL;
+    };
 
     jleResourceRef<jleTexture> albedoTextureRef;
     jleResourceRef<jleTexture> normalTextureRef;
@@ -50,5 +58,8 @@ protected:
     std::string _metallicPath;
     std::string _roughnessPath;
 };
+
+CEREAL_REGISTER_TYPE(jleMaterial)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleResourceInterface, jleMaterial)
 
 #endif // JLE_MATERIAL_H

@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 
+#include "jleTypeReflectionUtils.h"
 #include "jlePath.h"
 #include "jleResourceInterface.h"
 #include <json.hpp>
@@ -20,13 +21,15 @@ class jleObject;
 class jleScene : public jleResourceInterface, public std::enable_shared_from_this<jleScene>
 {
 public:
+    JLE_REGISTER_RESOURCE_TYPE(jleScene, scn)
+
     jleScene();
 
     void
     saveToFile() override
     {
         if (filepath.empty()) {
-            jlePath path{"GR:scenes/" + sceneName + ".scn"};
+            jlePath path{"GR:scenes/" + sceneName + getDotFileExtension()};
             filepath = path.getRealPath();
         }
         std::ofstream save{filepath};

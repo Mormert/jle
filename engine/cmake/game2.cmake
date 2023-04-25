@@ -25,7 +25,7 @@ add_compile_definitions(_GAME_RESOURCES_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}/G
 
 if(MSVC)
     # /bigobj allows us to compile with a heavy amount of templated code
-    add_compile_options(/bigobj)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 endif()
 
 if (BUILD_EDITOR)

@@ -68,6 +68,18 @@ public:
     // Optionally implement logic for saving data to file
     [[maybe_unused]] virtual void saveToFile(){};
 
+    virtual std::string
+    getFileExtension()
+    {
+        return "";
+    }
+
+    std::string
+    getDotFileExtension()
+    {
+        return "." + getFileExtension();
+    }
+
     // This will be set to the absolute path to the file
     std::string filepath;
 };

@@ -20,8 +20,6 @@ jleEditorResourceEdit::update(jleGameEngine &ge)
     cereal::jleImGuiCerealArchiveInternal ar1;
     ar1(resource);
 
-    ImGui::Text("helo");
-
     ImGui::End();
 }
 

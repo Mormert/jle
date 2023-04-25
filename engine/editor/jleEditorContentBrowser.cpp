@@ -13,6 +13,7 @@
 #include "jleGame.h"
 
 #include <fstream>
+#include <string.h>
 #include <string>
 #include <utility>
 
@@ -152,12 +153,89 @@ jleEditorContentBrowser::update(jleGameEngine &ge)
 void
 jleEditorContentBrowser::contentBrowser()
 {
-    ImGui::Begin(window_name.c_str(), &isOpened);
+    ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_MenuBar);
 
     static float iconScaleSliderValue = 1.f;
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     const ImVec2 fileSize{92 * globalImguiScale * iconScaleSliderValue, 92 * globalImguiScale * iconScaleSliderValue};
+
+    { // Create new resource
+        static bool openedNewResource = false;
+        static bool openedNewFolder = false;
+        static char newFileName[256];
+        static std::function<std::shared_ptr<jleResourceInterface>()> newResourceFunction;
+        bool willOpenNewResource = false;
+        bool willOpenNewFolder = false;
+        if (ImGui::BeginMenuBar()) {
+            if (ImGui::BeginMenu("Add New")) {
+                if(ImGui::BeginMenu("Resource"))
+                {
+                    for (auto &&resourceType : jleTypeReflectionUtils::registeredResourcesRef()) {
+                        if (ImGui::MenuItem(resourceType.first.c_str())) {
+                            willOpenNewResource = true;
+                            newResourceFunction = resourceType.second.creationFunction;
+                            std::string newFileNameStr = resourceType.first + "." + resourceType.second.filenameExtension;
+                            strcpy_s(newFileName, newFileNameStr.c_str());
+                            break;
+                        }
+                    }
+                    ImGui::EndMenu();
+                }
+
+                if(ImGui::MenuItem("Folder"))
+                {
+                    strcpy_s(newFileName, std::string{"NewFolder"}.c_str());
+                    willOpenNewFolder = true;
+                }
+
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenuBar();
+        }
+        if (willOpenNewResource) {
+            ImGui::OpenPopup("Add New Resource");
+            openedNewResource = true;
+        }
+
+        if (willOpenNewFolder) {
+            ImGui::OpenPopup("Add New Folder");
+            openedNewFolder = true;
+        }
+
+        if (ImGui::BeginPopupModal("Add New Resource", &openedNewResource, 0)) {
+            ImGui::InputText("File Name", newFileName, sizeof(newFileName));
+
+            if (ImGui::Button("Create")) {
+                auto createdResource = newResourceFunction();
+                jlePath path = jlePath{_selectedDirectory.string() + "/" + std::string{newFileName}, false};
+                createdResource->filepath = path.getRealPath();
+                createdResource->saveToFile();
+                openedNewResource = false;
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel")) {
+                openedNewResource = false;
+            }
+            ImGui::EndPopup();
+        }
+
+        if (ImGui::BeginPopupModal("Add New Folder", &openedNewFolder, 0)) {
+            ImGui::InputText("Folder Name", newFileName, sizeof(newFileName));
+
+            if (ImGui::Button("Create")) {
+                std::filesystem::create_directory(_selectedDirectory.string() + "/" + std::string{newFileName});
+                openedNewFolder = false;
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel")) {
+                openedNewFolder = false;
+            }
+            ImGui::EndPopup();
+        }
+    }
 
     if (_selectedDirectory != GAME_RESOURCES_DIRECTORY && !_selectedDirectory.empty()) {
         if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(_backDirectoryIcon->id()),
@@ -298,7 +376,7 @@ jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file)
                 try {
                     std::filesystem::remove(file);
                     LOGV << "Deleted file: " << file.string();
-                } catch (std::exception e) {
+                } catch (std::exception& e) {
                     LOGE << "Could not delete file: " << file.string();
                 }
                 file = std::filesystem::path();

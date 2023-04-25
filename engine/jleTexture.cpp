@@ -124,11 +124,3 @@ jleTexture::id()
 {
     return _id;
 }
-
-void
-jleTexture::saveToFile()
-{
-    std::ofstream textureSave{filepath};
-    cereal::JSONOutputArchive outputArchive(textureSave);
-    this->serialize(outputArchive);
-}

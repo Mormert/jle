@@ -4,14 +4,18 @@
 
 #include "jlePath.h"
 #include "jleResourceInterface.h"
+#include "jleTypeReflectionUtils.h"
+
 #include <climits>
 
 #include <cereal/cereal.hpp>
 
-class jleTexture : public jleResourceInterface
+class jleTexture : public jleResourceInterface, public std::enable_shared_from_this<jleTexture>
 {
 public:
     jleTexture() = default;
+
+    JLE_REGISTER_RESOURCE_TYPE(jleTexture, tex)
 
     template <class Archive>
     void
@@ -22,7 +26,7 @@ public:
 
     jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
 
-    void saveToFile() override;
+    SAVE_SHARED_THIS_SERIALIZED_JSON(jleResourceInterface)
 
     ~jleTexture() override;
 
@@ -44,3 +48,6 @@ private:
     int32_t _width = 0, _height = 0, _nrChannels = 0;
     unsigned int _id = UINT_MAX; // OpenGL Texture ID
 };
+
+CEREAL_REGISTER_TYPE(jleTexture)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleResourceInterface, jleTexture)

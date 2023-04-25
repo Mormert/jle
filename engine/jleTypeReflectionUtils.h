@@ -22,16 +22,28 @@ private:
 
 #define JLE_REGISTER_COMPONENT_TYPE(component_name)                                                                    \
     const std::string_view componentName() const override { return #component_name; }                                  \
-    static inline const jleComponentTypeRegistrator<component_name> object_name_Reg{#component_name};                  \
+    static inline const jleComponentTypeRegistrator<component_name> component_name_Reg{#component_name};               \
                                                                                                                        \
 public:                                                                                                                \
     std::shared_ptr<jleComponent> clone() const override { return std::make_shared<component_name>(*this); }           \
                                                                                                                        \
 private:
 
+#define JLE_REGISTER_RESOURCE_TYPE(resource_name, filename_extension)                                                  \
+    static inline const jleResourceTypeRegistrator<resource_name> resource_name_Reg{#resource_name,                    \
+                                                                                    #filename_extension};              \
+    virtual std::string getFileExtension()                                                                             \
+    {                                                                                                                  \
+        static_assert(std::is_base_of<jleResourceInterface, resource_name>::value,                                     \
+                      "Resource must derive from jleResourceInterface");                                               \
+        return #filename_extension;                                                                                    \
+    }
+
 class jleObject;
 
 class jleComponent;
+
+class jleResourceInterface;
 
 class jleTypeReflectionUtils
 {
@@ -50,6 +62,14 @@ public:
 
     static std::map<std::string, std::function<std::shared_ptr<jleComponent>()>> &registeredComponentsRef();
 
+    struct jleRegisteredResourceInterfaceData {
+        std::string filenameExtension;
+        std::function<std::shared_ptr<jleResourceInterface>()> creationFunction;
+    };
+
+    static std::map<std::string, jleRegisteredResourceInterfaceData> &registeredResourcesRef();
+
+private:
     // Should always be accessed via registeredObjectsRef()
     static inline std::unique_ptr<std::map<std::string, std::function<std::shared_ptr<jleObject>()>>>
         _registeredObjectsPtr{nullptr};
@@ -57,6 +77,10 @@ public:
     // Should always be accessed via registeredComponentsRef()
     static inline std::unique_ptr<std::map<std::string, std::function<std::shared_ptr<jleComponent>()>>>
         _registeredComponentsPtr{nullptr};
+
+    // Should always be accessed via registeredResourcesRef()
+    static inline std::unique_ptr<std::map<std::string, jleRegisteredResourceInterfaceData>> _registeredResourcesPtr{
+        nullptr};
 };
 
 template <typename T>
@@ -71,6 +95,13 @@ class jleComponentTypeRegistrator
 {
 public:
     explicit jleComponentTypeRegistrator(const std::string &cName);
+};
+
+template <typename T>
+class jleResourceTypeRegistrator
+{
+public:
+    explicit jleResourceTypeRegistrator(const std::string &rName, const std::string &fileExtension);
 };
 
 #include "jleTypeReflectionUtils.inl"
