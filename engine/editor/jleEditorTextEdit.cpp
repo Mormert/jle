@@ -12,10 +12,13 @@ jleEditorTextEdit::update(jleGameEngine &ge)
     for (auto &[path, textEditorPtr] : _textEditorsMap) {
         auto &textEditor = *textEditorPtr.get();
         auto tabName = "File: " + path.getVirtualPath();
-        bool truebool = true;
+        bool shouldBeOpened = true;
         ImGui::SetNextWindowSize(ImVec2(500, 700), ImGuiCond_FirstUseEver);
-        if (ImGui::Begin(tabName.c_str(), &truebool, ImGuiWindowFlags_MenuBar)) {
+        if (ImGui::Begin(tabName.c_str(), &shouldBeOpened, ImGuiWindowFlags_MenuBar)) {
             auto cpos = textEditor.GetCursorPosition();
+            if (!shouldBeOpened) {
+                toBeClosed.push_back(path);
+            }
             if (ImGui::BeginMenuBar()) {
                 if (ImGui::BeginMenu("File")) {
                     if (ImGui::MenuItem("Save", "Ctrl-S")) {

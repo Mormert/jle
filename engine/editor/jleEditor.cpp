@@ -67,7 +67,6 @@ jleEditor::start()
 
     auto resourceEditor = std::make_shared<jleEditorResourceEdit>("Resource Edit");
     addImGuiWindow(resourceEditor);
-    menu->addWindow(resourceEditor);
 
     auto sceneWindow = std::make_shared<jleSceneEditorWindow>("Scene Window", editorScreenFramebuffer);
     addImGuiWindow(sceneWindow);

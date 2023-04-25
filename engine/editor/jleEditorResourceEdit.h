@@ -20,7 +20,7 @@ public:
 
 private:
 
-    std::shared_ptr<jleResourceInterface> resource{};
+    std::unordered_map<jlePath, std::shared_ptr<jleResourceInterface>> _resources;
 
 };
 
