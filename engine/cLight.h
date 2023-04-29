@@ -23,6 +23,8 @@ public:
 
     void update(float dt) override;
 
+    void editorUpdate(float dt) override;
+
 protected:
     glm::vec3 _color{1.f};
 };

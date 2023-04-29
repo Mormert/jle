@@ -15,3 +15,9 @@ cLight::update(float dt)
 {
     gCore->rendering().rendering3d().sendLight(getTransform().getWorldPosition(), _color);
 }
+
+void
+cLight::editorUpdate(float dt)
+{
+    update(dt);
+}

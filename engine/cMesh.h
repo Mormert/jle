@@ -19,7 +19,7 @@ public:
     void
     serialize(Archive &ar)
     {
-        ar(CEREAL_NVP(_meshRef), CEREAL_NVP(_materialRef), CEREAL_NVP(_meshPath), CEREAL_NVP(_materialPath));
+        ar(CEREAL_NVP(_meshRef), CEREAL_NVP(_materialRef));
     }
 
     void editorUpdate(float dt) override;
@@ -29,16 +29,10 @@ public:
     void update(float dt) override;
 
 protected:
-    std::shared_ptr<jleMesh> _mesh;
-    std::shared_ptr<jleMaterial> _material;
 
     jleResourceRef<jleMesh> _meshRef;
     jleResourceRef<jleMaterial> _materialRef;
 
-    std::string _meshPath;
-    std::string _materialPath;
-
-    //std::weak_ptr<cTransform> _transform;
 };
 
 CEREAL_REGISTER_TYPE(cMesh)

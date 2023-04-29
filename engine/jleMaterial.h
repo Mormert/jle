@@ -46,17 +46,6 @@ public:
     jleResourceRef<jleTexture> normalTextureRef;
     jleResourceRef<jleTexture> metallicTextureRef;
     jleResourceRef<jleTexture> roughnessTextureRef;
-
-    std::shared_ptr<jleTexture> albedoTexture{};
-    std::shared_ptr<jleTexture> normalTexture{};
-    std::shared_ptr<jleTexture> metallicTexture{};
-    std::shared_ptr<jleTexture> roughnessTexture{};
-
-protected:
-    std::string _albedoPath;
-    std::string _normalPath;
-    std::string _metallicPath;
-    std::string _roughnessPath;
 };
 
 CEREAL_REGISTER_TYPE(jleMaterial)

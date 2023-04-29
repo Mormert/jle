@@ -329,9 +329,9 @@ void main()
         float attenuation = CalculateAttenuation(distance, 1.0, 0.35, 0.44);
         vec3 radiance = LightColors[l] * attenuation * ShadowCalculationPoint(WorldFragPos, LightPositions[l]);
 
-        // LightOutTotal += radiance * blinn_phong_brdf(L, V, N) * NdotL;
+        LightOutTotal += radiance * blinn_phong_brdf(L, V, N) * NdotL;
         // LightOutTotal += radiance * lambertian_brdf(L, V, N) * NdotL;
-        LightOutTotal += radiance * cook_torrance_brdf(L, V, N) * NdotL;
+        // LightOutTotal += radiance * cook_torrance_brdf(L, V, N) * NdotL;
         // LightOutTotal += radiance * albedo * oren_nayar_brdf(L, V, N) * NdotL;
 
     }

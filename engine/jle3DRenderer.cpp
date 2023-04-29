@@ -297,14 +297,14 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
 
         // Set textures
         if (mesh.material) {
-            if (mesh.material->albedoTexture) {
-                mesh.material->albedoTexture->setActive(2);
+            if (mesh.material->albedoTextureRef) {
+                mesh.material->albedoTextureRef.get()->setActive(2);
                 _defaultMeshShader.SetBool("useAlbedoTexture", true);
             } else {
                 _defaultMeshShader.SetBool("useAlbedoTexture", false);
             }
-            if (mesh.material->normalTexture) {
-                mesh.material->normalTexture->setActive(3);
+            if (mesh.material->normalTextureRef) {
+                mesh.material->normalTextureRef.get()->setActive(3);
                 _defaultMeshShader.SetBool("useNormalTexture", true);
             } else {
                 _defaultMeshShader.SetBool("useNormalTexture", false);
@@ -324,11 +324,11 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
 
         // Unset textures
         if (mesh.material) {
-            if (mesh.material->albedoTexture) {
+            if (mesh.material->albedoTextureRef) {
                 glActiveTexture(GL_TEXTURE2);
                 glBindTexture(GL_TEXTURE_2D, 0);
             }
-            if (mesh.material->normalTexture) {
+            if (mesh.material->normalTextureRef) {
                 glActiveTexture(GL_TEXTURE3);
                 glBindTexture(GL_TEXTURE_2D, 0);
             }

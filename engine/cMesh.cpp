@@ -9,22 +9,16 @@ cMesh::cMesh(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 
 void
 cMesh::start()
-{
-    //_transform = addDependencyComponentInStart<cTransform>();
-}
+{}
 
 void
 cMesh::update(float dt)
 {
-    if (_mesh) {
-        gCore->rendering().rendering3d().sendMesh(
-            _mesh, _material, getTransform().getWorldMatrix(), _attachedToObject->instanceID());
-    }
-
     if (_meshRef) {
         std::shared_ptr<jleMesh> mesh = _meshRef.get();
+        std::shared_ptr<jleMaterial> material = _materialRef.get();
         gCore->rendering().rendering3d().sendMesh(
-            mesh, _material, getTransform().getWorldMatrix(), _attachedToObject->instanceID());
+            mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID());
     }
 }
 
