@@ -32,6 +32,18 @@ jleEditorContentBrowser::jleEditorContentBrowser(const std::string &window_name,
 
     _jsonFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/json.png"});
 
+    _shaderShFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/shader_sh.png"});
+
+    _shaderVsFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/shader_vs.png"});
+
+    _shaderFsFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/shader_fs.png"});
+
+    _materialFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/material.png"});
+
+    _objTemplateFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/obj_template.png"});
+
+    _obj3dFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/object.png"});
+
     _selectedDirectory = GAME_RESOURCES_DIRECTORY;
 
     _editorTextEdit = std::move(editorTextEdit);
@@ -312,10 +324,32 @@ jleEditorContentBrowser::contentBrowser()
                     std::shared_ptr<jleTexture> iconTexture;
                     if (dir_entry.path().extension() == ".scn") {
                         iconTexture = _sceneFileIcon;
-                    } else if (dir_entry.path().extension() == ".png") {
-                        iconTexture = _imageFileIcon;
+                    } else if (dir_entry.path().extension() == ".png" || dir_entry.path().extension() == ".jpg" ||
+                               dir_entry.path().extension() == ".tga" || dir_entry.path().extension() == ".bmp") {
+                        static std::unordered_map<jlePath, std::shared_ptr<jleTexture>> referencedTextures;
+                        auto path = jlePath{dir_entry.path().string(), false};
+                        auto it = referencedTextures.find(path);
+                        if (it != referencedTextures.end()) {
+                            iconTexture = it->second;
+                        } else {
+                            iconTexture = gCore->resources().loadResourceFromFile<jleTexture>(
+                                jlePath{dir_entry.path().string(), false});
+                            referencedTextures.insert(std::make_pair(path, iconTexture));
+                        }
                     } else if (dir_entry.path().extension() == ".json") {
                         iconTexture = _jsonFileIcon;
+                    } else if (dir_entry.path().extension() == ".sh") {
+                        iconTexture = _shaderShFileIcon;
+                    } else if (dir_entry.path().extension() == ".frag") {
+                        iconTexture = _shaderFsFileIcon;
+                    } else if (dir_entry.path().extension() == ".vert") {
+                        iconTexture = _shaderVsFileIcon;
+                    } else if (dir_entry.path().extension() == ".mat") {
+                        iconTexture = _materialFileIcon;
+                    } else if (dir_entry.path().extension() == ".jobj") {
+                        iconTexture = _objTemplateFileIcon;
+                    } else if (dir_entry.path().extension() == ".obj") {
+                        iconTexture = _obj3dFileIcon;
                     } else {
                         iconTexture = _fileIcon;
                     }

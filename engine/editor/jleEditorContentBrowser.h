@@ -25,6 +25,12 @@ private:
     std::shared_ptr<jleTexture> _sceneFileIcon;
     std::shared_ptr<jleTexture> _imageFileIcon;
     std::shared_ptr<jleTexture> _jsonFileIcon;
+    std::shared_ptr<jleTexture> _shaderShFileIcon;
+    std::shared_ptr<jleTexture> _shaderVsFileIcon;
+    std::shared_ptr<jleTexture> _shaderFsFileIcon;
+    std::shared_ptr<jleTexture> _materialFileIcon;
+    std::shared_ptr<jleTexture> _objTemplateFileIcon;
+    std::shared_ptr<jleTexture> _obj3dFileIcon;
 
     // Selected directory to show files in
     std::filesystem::path _selectedDirectory;

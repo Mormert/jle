@@ -20,7 +20,7 @@ void jleEditorResourceViewer::update(jleGameEngine &ge) {
         const std::string treeNodeStr =
             drive.first + " (" + std::to_string(drive.second.size()) + ")";
 
-        const bool open = ImGui::TreeNode(treeNodeStr.c_str());
+        const bool open = ImGui::TreeNodeEx(treeNodeStr.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
         if (ImGui::BeginPopupContextItem()) {
             if (ImGui::Button("Unload Everything")) {
                 resources.unloadAllResources(drive.first);
