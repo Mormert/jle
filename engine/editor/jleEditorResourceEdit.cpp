@@ -34,6 +34,12 @@ jleEditorResourceEdit::update(jleGameEngine &ge)
             resource->saveToFile();
         }
 
+        ImGui::SameLine();
+
+        if (resource && ImGui::Button("Reload Resource")) {
+            gCore->resources().reloadSerializedResource(resource);
+        }
+
         ImGui::End();
     }
 

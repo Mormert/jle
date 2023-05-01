@@ -16,7 +16,12 @@ struct jleResourceRef {
 
     jleResourceRef() = default;
 
-    explicit jleResourceRef(const jlePath &path) : path{path} {};
+    explicit jleResourceRef(const jlePath &path, bool loadLater = false) : path{path}
+    {
+        if (!loadLater) {
+            loadResource();
+        }
+    };
 
     // Serialization save
     template <class Archive>
@@ -45,7 +50,7 @@ struct jleResourceRef {
     std::shared_ptr<T>
     get()
     {
-        return std::static_pointer_cast<T>(ptr);;
+        return std::static_pointer_cast<T>(ptr);
     }
 
     explicit
@@ -55,6 +60,19 @@ struct jleResourceRef {
     }
 
     explicit operator const T &() const { return *ptr; }
+
+    T &
+    operator*() const noexcept
+    {
+        return *ptr;
+    }
+
+    T *
+    operator->() const noexcept
+    {
+        T *p = static_cast<T *>(ptr.get());
+        return p;
+    }
 
     jlePath path{};
 

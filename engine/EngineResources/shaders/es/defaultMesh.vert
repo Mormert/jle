@@ -13,6 +13,7 @@ out vec3 TangentFragPos;
 out vec3 TangentLightPos[4];
 out vec3 TangentCameraPos;
 out vec2 TexCoords;
+out vec3 localNormal;
 
 out mat3 TBN;
 
@@ -34,6 +35,7 @@ void main()
     T = normalize(T - dot(T, N) * N);
     vec3 B = cross(N, T);
 
+    localNormal = normalize(aNormal);
     TBN = transpose(mat3(T, B, N));
 
     WorldFragPos = vec3(model * vec4(aPos, 1.0));

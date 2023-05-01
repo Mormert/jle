@@ -2,12 +2,13 @@
 
 #pragma once
 
+#include "jleCamera.h"
 #include "jleFramebufferShadowCubeMap.h"
 #include "jleFramebufferShadowMap.h"
-#include "jleSkybox.h"
-#include "jleCamera.h"
 #include "jleMesh.h"
+#include "jleResourceRef.h"
 #include "jleShader.h"
+#include "jleSkybox.h"
 #include <glm/fwd.hpp>
 #include <memory>
 #include <vector>
@@ -44,7 +45,10 @@ public:
 
     void sendExampleCube(const glm::mat4 &transform);
 
-    void sendMesh(std::shared_ptr<jleMesh> &mesh, std::shared_ptr<jleMaterial> &material, const glm::mat4 &transform, int instanceId);
+    void sendMesh(std::shared_ptr<jleMesh> &mesh,
+                  std::shared_ptr<jleMaterial> &material,
+                  const glm::mat4 &transform,
+                  int instanceId);
 
     void sendLight(const glm::vec3 &position, const glm::vec3 &color);
 
@@ -64,23 +68,31 @@ private:
     void renderExampleCubes(const jleCamera &camera, const std::vector<glm::mat4> &cubeTransforms);
 
     std::vector<glm::mat4> _queuedExampleCubes;
-    jleShader _exampleCubeShader;
     unsigned int _exampleCubeVBO{}, _exampleCubeVAO{}, _exampleCubeInstanceBuffer{};
 
+    /*
+    jleShader _exampleCubeShader;
     jleShader _defaultMeshShader;
     jleShader _pickingShader;
     jleShader _shadowMappingShader;
     jleShader _shadowMappingPointShader;
-    jleShader _debugDepthQuad;
+    jleShader _debugDepthQuad;*/
+
+    jleResourceRef<jleShader> _exampleCubeShader;
+    jleResourceRef<jleShader> _defaultMeshShader;
+    jleResourceRef<jleShader> _pickingShader;
+    jleResourceRef<jleShader> _shadowMappingShader;
+    jleResourceRef<jleShader> _shadowMappingPointShader;
+    jleResourceRef<jleShader> _debugDepthQuad;
 
     void renderMeshes(const jleCamera &camera, const std::vector<jle3DRendererQueuedMesh> &meshes);
 
-    void renderShadowMeshes(const std::vector<jle3DRendererQueuedMesh> &meshes, jleShader& shader);
+    void renderShadowMeshes(const std::vector<jle3DRendererQueuedMesh> &meshes, jleShader &shader);
 
     std::vector<jle3DRendererQueuedMesh> _queuedMeshes;
 
     void renderSkybox(const jleCamera &camera);
-    jleShader _skyboxShader;
+    jleResourceRef<jleShader> _skyboxShader;
     std::shared_ptr<jleSkybox> _skybox;
 
     std::vector<jle3DRendererLight> _queuedLights;
@@ -89,7 +101,7 @@ private:
     glm::mat4 _lightSpaceMatrix{};
     float near_plane = -700.0f, far_plane = 700.f;
 
-    void renderPointLights(const jleCamera& camera);
+    void renderPointLights(const jleCamera &camera);
 
     std::unique_ptr<jleFramebufferShadowMap> _shadowMappingFramebuffer{};
     std::unique_ptr<jleFramebufferShadowCubeMap> _pointsShadowMappingFramebuffer{};

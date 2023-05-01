@@ -5,12 +5,16 @@
 
 jlePath::jlePath(const std::string &path, bool virtualPath)
 {
+
+    std::string processedPath = path;
+    fixSlashes(processedPath);
+
     if (virtualPath) {
-        _virtualPath = path;
-        _realPath = findRealPathFromVirtualPath(path);
+        _virtualPath = processedPath;
+        _realPath = findRealPathFromVirtualPath(processedPath);
     } else {
-        _realPath = path;
-        _virtualPath = findVirtualPathFromRealPath(path);
+        _realPath = processedPath;
+        _virtualPath = findVirtualPathFromRealPath(processedPath);
     }
 }
 
@@ -64,11 +68,6 @@ jlePath::findRealPathFromVirtualPath(const std::string &virtualPath)
 {
     std::string path = virtualPath;
     std::string realPath;
-
-    // Correct the path's slashes
-    if (path.find("\\") != std::string::npos) {
-        std::replace(path.begin(), path.end(), '\\', '/');
-    }
 
     jleRootFolder rootFolder = jleRootFolder::None;
     const auto &&prefixString = path.substr(0, 3);
@@ -152,4 +151,20 @@ std::string
 jlePath::getRealPath() const
 {
     return _realPath;
+}
+
+void
+jlePath::fixSlashes(std::string &str)
+{
+    const auto str_replace = [](std::string &str, const std::string &oldStr, const std::string &newStr) {
+        std::string::size_type pos = 0u;
+        while ((pos = str.find(oldStr, pos)) != std::string::npos) {
+            str.replace(pos, oldStr.length(), newStr);
+            pos += newStr.length();
+        }
+    };
+
+    str_replace(str, ":", ":/");
+    str_replace(str, "\\", "/");
+    str_replace(str, "//", "/");
 }

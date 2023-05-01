@@ -1,25 +1,65 @@
 // Copyright (c) 2023. Johan Lind
 
-#pragma once
+#ifndef JLE_SHADER_H
+#define JLE_SHADER_H
+
+#include "jleResourceInterface.h"
+#include "jleTypeReflectionUtils.h"
+
+#include <cereal/cereal.hpp>
 
 #include <glm/glm.hpp>
 
 #include <string>
 
-class jleShader {
+class jleShader : public jleResourceInterface, public std::enable_shared_from_this<jleShader>
+{
 public:
     unsigned int ID;
 
+    JLE_REGISTER_RESOURCE_TYPE(jleShader, sh)
+
+    template <class Archive>
+    void
+    save(Archive &ar) const
+    {
+        ar(CEREAL_NVP(_vertexPath), CEREAL_NVP(_fragPath));
+    }
+
+    template <class Archive>
+    void
+    load(Archive &ar)
+    {
+        jlePath beforeVertex = _vertexPath;
+        jlePath beforeFrag = _fragPath;
+
+        ar(CEREAL_NVP(_vertexPath), CEREAL_NVP(_fragPath));
+
+        if(beforeVertex == _vertexPath && beforeFrag == _fragPath)
+        {
+            return;
+        }
+
+        if(!_vertexPath.isEmpty() && !_fragPath.isEmpty())
+        {
+            CreateFromSources(_vertexPath.getRealPath().c_str(), _fragPath.getRealPath().c_str());
+        }
+    }
+
+    SAVE_SHARED_THIS_SERIALIZED_JSON(jleResourceInterface)
+
+    jleLoadFromFileSuccessCode
+    loadFromFile(const jlePath &path) override
+    {
+        return jleLoadFromFileSuccessCode::IMPLEMENT_POLYMORPHIC_CEREAL;
+    };
+
+    jleShader() = default;
+
     // Create shader from file
-    jleShader(const char *vertexPath,
-              const char *fragmentPath,
-              const char *geometryPath = nullptr);
+    jleShader(const char *vertexPath, const char *fragmentPath, const char *geometryPath = nullptr);
 
-    // Create shader from string containing the shader code
-    // explicit Shader_OpenGL(std::string vertexCode, std::string fragmentCode,
-    // std::string geometryCode = "");
-
-    ~jleShader();
+    ~jleShader() override;
 
     void use();
 
@@ -48,8 +88,24 @@ public:
     void SetMat4(const std::string &name, const glm::mat4 &mat) const;
 
 private:
+    void CreateFromSources(const char *vertexPath, const char *fragmentPath, const char *geometryPath = nullptr);
+
     void checkCompileErrors(unsigned int shader, std::string type);
 
-    std::string vertexCode;
-    std::string fragCode;
+    jlePath _vertexPath;
+    jlePath _fragPath;
 };
+
+CEREAL_REGISTER_TYPE(jleShader)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleResourceInterface, jleShader)
+
+namespace cereal
+{
+// This struct specialization will tell cereal to use the load/save pair, which we need to do since we're inheriting
+// from a class that has serialize()
+template <class Archive>
+struct specialize<Archive, jleShader, cereal::specialization::member_load_save> {
+};
+} // namespace cereal
+
+#endif // JLE_SHADER_H

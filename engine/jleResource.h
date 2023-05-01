@@ -54,10 +54,10 @@ public:
             try {
                 std::ifstream i(path.getRealPath());
                 cereal::JSONInputArchive iarchive{i};
-                //std::shared_ptr<T> newResourceT = std::static_pointer_cast<T>(newResource);
-                //iarchive(newResourceT);
+                // std::shared_ptr<T> newResourceT = std::static_pointer_cast<T>(newResource);
+                // iarchive(newResourceT);
                 iarchive(newResource);
-                //newResource = newResourceT;
+                // newResource = newResourceT;
                 loadSuccess = jleLoadFromFileSuccessCode::SUCCESS;
             } catch (std::exception &e) {
                 LOGE << "Failed loading resource file: " << e.what();
@@ -79,16 +79,37 @@ public:
         return std::static_pointer_cast<T>(newResource);
     }
 
+    void
+    reloadSerializedResource(const std::shared_ptr<jleResourceInterface> &resource)
+    {
+        jlePath path = jlePath{resource->filepath, false};
+        try {
+            std::ifstream i(path.getRealPath());
+            std::shared_ptr<jleResourceInterface> f = std::const_pointer_cast<jleResourceInterface>(resource);
+            cereal::JSONInputArchive archive{i};
+            archive(f);
+
+            const auto prefix = path.getPathPrefix();
+
+            _resources[prefix].erase(path);
+            _resources[prefix].insert(std::make_pair(path, resource));
+        } catch (std::exception &e) {
+            LOGE << "Failed reloading serialized resource file: " << e.what();
+        }
+    }
+
     std::shared_ptr<jleResourceInterface>
-    loadSerializedResourceFromFile(const jlePath &path)
+    loadSerializedResourceFromFile(const jlePath &path, bool forceReload = false)
     {
         const auto prefix = path.getPathPrefix();
 
         std::shared_ptr<jleResourceInterface> ptr{};
 
-        auto it = _resources[prefix].find(path);
-        if (it != _resources[prefix].end()) {
-            return std::static_pointer_cast<jleResourceInterface>(it->second);
+        if (!forceReload) {
+            auto it = _resources[prefix].find(path);
+            if (it != _resources[prefix].end()) {
+                return std::static_pointer_cast<jleResourceInterface>(it->second);
+            }
         }
 
         try {

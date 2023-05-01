@@ -15,6 +15,7 @@ public:
     void
     serialize(Archive &ar)
     {
+        ar(cereal::base_class<cCamera>(this));
         ar(CEREAL_NVP(_moveSpeed), CEREAL_NVP(_mouseSensitivity));
     }
 

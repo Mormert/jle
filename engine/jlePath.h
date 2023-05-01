@@ -18,6 +18,7 @@ public:
     serialize(Archive &ar)
     {
         ar(CEREAL_NVP(_virtualPath));
+        fixSlashes(_virtualPath);
         _realPath = findRealPathFromVirtualPath(_virtualPath);
     }
 
@@ -47,6 +48,8 @@ private:
 private:
     static std::string findVirtualPathFromRealPath(const std::string &realPath);
     static std::string findRealPathFromVirtualPath(const std::string &virtualPath);
+
+    void fixSlashes(std::string& str);
 };
 
 namespace std

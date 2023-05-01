@@ -11,7 +11,6 @@
 #include "json.hpp"
 
 #include <cereal/cereal.hpp>
-#include <cereal/archives/binary.hpp>
 
 
 class jleMaterial : public jleResourceInterface, public std::enable_shared_from_this<jleMaterial>
@@ -20,7 +19,7 @@ public:
 
     JLE_REGISTER_RESOURCE_TYPE(jleMaterial, mat)
 
-    virtual ~jleMaterial() = default;
+    ~jleMaterial() override = default;
 
     jleMaterial() = default;
 

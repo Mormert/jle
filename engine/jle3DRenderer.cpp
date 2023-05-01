@@ -19,20 +19,13 @@
 #include <random>
 
 jle3DRenderer::jle3DRenderer()
-    : _exampleCubeShader{std::string{JLE_ENGINE_PATH_SHADERS + "/exampleCube.vert"}.c_str(),
-                         std::string{JLE_ENGINE_PATH_SHADERS + "/exampleCube.frag"}.c_str()},
-      _defaultMeshShader{std::string{JLE_ENGINE_PATH_SHADERS + "/defaultMesh.vert"}.c_str(),
-                         std::string{JLE_ENGINE_PATH_SHADERS + "/defaultMesh.frag"}.c_str()},
-      _skyboxShader{std::string{JLE_ENGINE_PATH_SHADERS + "/skybox.vert"}.c_str(),
-                    std::string{JLE_ENGINE_PATH_SHADERS + "/skybox.frag"}.c_str()},
-      _pickingShader{std::string{JLE_ENGINE_PATH_SHADERS + "/picking.vert"}.c_str(),
-                     std::string{JLE_ENGINE_PATH_SHADERS + "/picking.frag"}.c_str()},
-      _shadowMappingShader{std::string{JLE_ENGINE_PATH_SHADERS + "/shadowMapping.vert"}.c_str(),
-                           std::string{JLE_ENGINE_PATH_SHADERS + "/shadowMapping.frag"}.c_str()},
-      _shadowMappingPointShader{std::string{JLE_ENGINE_PATH_SHADERS + "/shadowMappingPoint.vert"}.c_str(),
-                                std::string{JLE_ENGINE_PATH_SHADERS + "/shadowMappingPoint.frag"}.c_str()},
-      _debugDepthQuad{std::string{JLE_ENGINE_PATH_SHADERS + "/debugDepthQuad.vert"}.c_str(),
-                      std::string{JLE_ENGINE_PATH_SHADERS + "/debugDepthQuad.frag"}.c_str()}
+    : _exampleCubeShader{jlePath{"ER:shaders/exampleCube.sh"}},
+      _defaultMeshShader{jlePath{"ER:shaders/defaultMesh.sh"}},
+      _skyboxShader{jlePath{"ER:shaders/skybox.sh"}},
+      _pickingShader{jlePath{"ER:shaders/picking.sh"}},
+      _shadowMappingShader{jlePath{"ER:shaders/shadowMapping.sh"}},
+      _shadowMappingPointShader{jlePath{"ER:shaders/shadowMappingPoint.sh"}},
+      _debugDepthQuad{jlePath{"ER:shaders/depthDebug.sh"}}
 {
 
     constexpr float exampleCubeData[] = {
@@ -219,8 +212,8 @@ jle3DRenderer::renderExampleCubes(const jleCamera &camera, const std::vector<glm
         return;
     }
 
-    _exampleCubeShader.use();
-    _exampleCubeShader.SetMat4("projView", camera.getProjectionViewMatrix());
+    _exampleCubeShader->use();
+    _exampleCubeShader->SetMat4("projView", camera.getProjectionViewMatrix());
 
     glBindVertexArray(_exampleCubeVAO);
 
@@ -262,25 +255,22 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
         glBindTexture(GL_TEXTURE_CUBE_MAP, _skybox->getTextureID());
     }
 
-    _defaultMeshShader.use();
-    _defaultMeshShader.SetInt("shadowMap", 0);
-    _defaultMeshShader.SetInt("shadowMapPoint", 1);
-    _defaultMeshShader.SetInt("albedoTexture", 2);
-    _defaultMeshShader.SetInt("normalTexture", 3);
-    _defaultMeshShader.SetInt("skyboxTexture", 4);
-
-    _defaultMeshShader.SetFloat("farPlane", 500.f);
-
-    _defaultMeshShader.SetBool("UseDirectionalLight", _useDirectionalLight);
-    _defaultMeshShader.SetBool("UseEnvironmentMapping", _useEnvironmentMapping);
-    _defaultMeshShader.SetVec3("DirectionalLightColour", _directionalLightColour);
-    _defaultMeshShader.SetVec3("DirectionalLightDir", _directionalLightRotation);
-
-    _defaultMeshShader.SetMat4("view", camera.getViewMatrix());
-    _defaultMeshShader.SetMat4("proj", camera.getProjectionMatrix());
-    _defaultMeshShader.SetMat4("lightSpaceMatrix", _lightSpaceMatrix);
-    _defaultMeshShader.SetVec3("CameraPosition", camera.getPosition());
-    _defaultMeshShader.SetInt("LightsCount", (int)_queuedLights.size());
+    _defaultMeshShader->use();
+    _defaultMeshShader->SetInt("shadowMap", 0);
+    _defaultMeshShader->SetInt("shadowMapPoint", 1);
+    _defaultMeshShader->SetInt("albedoTexture", 2);
+    _defaultMeshShader->SetInt("normalTexture", 3);
+    _defaultMeshShader->SetInt("skyboxTexture", 4);
+    _defaultMeshShader->SetFloat("farPlane", 500.f);
+    _defaultMeshShader->SetBool("UseDirectionalLight", _useDirectionalLight);
+    _defaultMeshShader->SetBool("UseEnvironmentMapping", _useEnvironmentMapping);
+    _defaultMeshShader->SetVec3("DirectionalLightColour", _directionalLightColour);
+    _defaultMeshShader->SetVec3("DirectionalLightDir", _directionalLightRotation);
+    _defaultMeshShader->SetMat4("view", camera.getViewMatrix());
+    _defaultMeshShader->SetMat4("proj", camera.getProjectionMatrix());
+    _defaultMeshShader->SetMat4("lightSpaceMatrix", _lightSpaceMatrix);
+    _defaultMeshShader->SetVec3("CameraPosition", camera.getPosition());
+    _defaultMeshShader->SetInt("LightsCount", (int)_queuedLights.size());
 
     if (_queuedLights.size() > 4) // Limit to 4 lights
     {
@@ -288,30 +278,30 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
     }
 
     for (int l = 0; l < _queuedLights.size(); l++) {
-        _defaultMeshShader.SetVec3("LightPositions[" + std::to_string(l) + "]", _queuedLights[l].position);
-        _defaultMeshShader.SetVec3("LightColors[" + std::to_string(l) + "]", _queuedLights[l].color);
+        _defaultMeshShader->SetVec3("LightPositions[" + std::to_string(l) + "]", _queuedLights[l].position);
+        _defaultMeshShader->SetVec3("LightColors[" + std::to_string(l) + "]", _queuedLights[l].color);
     }
 
     for (auto &&mesh : meshes) {
-        _defaultMeshShader.SetMat4("model", mesh.transform);
+        _defaultMeshShader->SetMat4("model", mesh.transform);
 
         // Set textures
         if (mesh.material) {
             if (mesh.material->albedoTextureRef) {
                 mesh.material->albedoTextureRef.get()->setActive(2);
-                _defaultMeshShader.SetBool("useAlbedoTexture", true);
+                _defaultMeshShader->SetBool("useAlbedoTexture", true);
             } else {
-                _defaultMeshShader.SetBool("useAlbedoTexture", false);
+                _defaultMeshShader->SetBool("useAlbedoTexture", false);
             }
             if (mesh.material->normalTextureRef) {
                 mesh.material->normalTextureRef.get()->setActive(3);
-                _defaultMeshShader.SetBool("useNormalTexture", true);
+                _defaultMeshShader->SetBool("useNormalTexture", true);
             } else {
-                _defaultMeshShader.SetBool("useNormalTexture", false);
+                _defaultMeshShader->SetBool("useNormalTexture", false);
             }
         } else {
-            _defaultMeshShader.SetBool("useAlbedoTexture", false);
-            _defaultMeshShader.SetBool("useNormalTexture", false);
+            _defaultMeshShader->SetBool("useAlbedoTexture", false);
+            _defaultMeshShader->SetBool("useNormalTexture", false);
         }
 
         glBindVertexArray(mesh.mesh->getVAO());
@@ -356,13 +346,13 @@ jle3DRenderer::renderSkybox(const jleCamera &camera)
     // Depth testing to draw the skybox behind everything.
     // We also draw the skybox last, such that it can be early-depth-tested.
     glDepthFunc(GL_LEQUAL);
-    _skyboxShader.use();
+    _skyboxShader->use();
 
     // Convert the view matrix to mat3 first to remove the translation
     auto view = glm::mat4(glm::mat3(camera.getViewMatrix()));
 
-    _skyboxShader.SetMat4("view", view);
-    _skyboxShader.SetMat4("projection", camera.getProjectionMatrix());
+    _skyboxShader->SetMat4("view", view);
+    _skyboxShader->SetMat4("projection", camera.getProjectionMatrix());
     // skybox cube
     glBindVertexArray(_skybox->getVAO());
     glActiveTexture(GL_TEXTURE0);
@@ -395,15 +385,15 @@ jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut, cons
     // Change viewport dimensions to match framebuffer's dimensions
     glViewport(0, 0, viewportWidth, viewportHeight);
 
-    _pickingShader.use();
-    _pickingShader.SetMat4("projView", camera.getProjectionViewMatrix());
+    _pickingShader->use();
+    _pickingShader->SetMat4("projView", camera.getProjectionViewMatrix());
 
     for (auto &&mesh : _queuedMeshes) {
         int r = (mesh.instanceId & 0x000000FF) >> 0;
         int g = (mesh.instanceId & 0x0000FF00) >> 8;
         int b = (mesh.instanceId & 0x00FF0000) >> 16;
-        _pickingShader.SetVec4("PickingColor", glm::vec4{r / 255.0f, g / 255.0f, b / 255.0f, 1.f});
-        _pickingShader.SetMat4("model", mesh.transform);
+        _pickingShader->SetVec4("PickingColor", glm::vec4{r / 255.0f, g / 255.0f, b / 255.0f, 1.f});
+        _pickingShader->SetMat4("model", mesh.transform);
         glBindVertexArray(mesh.mesh->getVAO());
         if (mesh.mesh->usesIndexing()) {
             glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
@@ -429,14 +419,14 @@ jle3DRenderer::renderDirectionalLight(const jleCamera &camera)
 
     glDisable(GL_CULL_FACE);
 
-    _shadowMappingShader.use();
+    _shadowMappingShader->use();
 
-    _shadowMappingShader.SetMat4("lightSpaceMatrix", _lightSpaceMatrix);
+    _shadowMappingShader->SetMat4("lightSpaceMatrix", _lightSpaceMatrix);
 
     glViewport(0, 0, (int)_shadowMappingFramebuffer->width(), (int)_shadowMappingFramebuffer->height());
 
     glClear(GL_DEPTH_BUFFER_BIT);
-    renderShadowMeshes(_queuedMeshes, _shadowMappingShader);
+    renderShadowMeshes(_queuedMeshes, *_shadowMappingShader.get());
 
     glEnable(GL_CULL_FACE);
 
@@ -475,17 +465,17 @@ jle3DRenderer::renderPointLights(const jleCamera &camera)
     shadowTransforms.push_back(shadowProj *
                                glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
 
-    _shadowMappingPointShader.use();
-    _shadowMappingPointShader.SetVec3("lightPos", lightPos);
-    _shadowMappingPointShader.SetFloat("farPlane", far);
+    _shadowMappingPointShader->use();
+    _shadowMappingPointShader->SetVec3("lightPos", lightPos);
+    _shadowMappingPointShader->SetFloat("farPlane", far);
 
     for (int i = 0; i < 6; i++) {
-        _shadowMappingPointShader.SetMat4("lightSpaceMatrix", shadowTransforms[i]);
+        _shadowMappingPointShader->SetMat4("lightSpaceMatrix", shadowTransforms[i]);
         _pointsShadowMappingFramebuffer->setRenderFace(i);
         glViewport(0, 0, (int)_pointsShadowMappingFramebuffer->width(), (int)_pointsShadowMappingFramebuffer->height());
 
         glClear(GL_DEPTH_BUFFER_BIT);
-        renderShadowMeshes(_queuedMeshes, _shadowMappingPointShader);
+        renderShadowMeshes(_queuedMeshes, *_shadowMappingPointShader.get());
     }
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);

@@ -169,13 +169,13 @@ jleEditorContentBrowser::contentBrowser()
         bool willOpenNewFolder = false;
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("Add New")) {
-                if(ImGui::BeginMenu("Resource"))
-                {
+                if (ImGui::BeginMenu("Resource")) {
                     for (auto &&resourceType : jleTypeReflectionUtils::registeredResourcesRef()) {
                         if (ImGui::MenuItem(resourceType.first.c_str())) {
                             willOpenNewResource = true;
                             newResourceFunction = resourceType.second.creationFunction;
-                            std::string newFileNameStr = resourceType.first + "." + resourceType.second.filenameExtension;
+                            std::string newFileNameStr =
+                                resourceType.first + "." + resourceType.second.filenameExtension;
                             strcpy_s(newFileName, newFileNameStr.c_str());
                             break;
                         }
@@ -183,8 +183,7 @@ jleEditorContentBrowser::contentBrowser()
                     ImGui::EndMenu();
                 }
 
-                if(ImGui::MenuItem("Folder"))
-                {
+                if (ImGui::MenuItem("Folder")) {
                     strcpy_s(newFileName, std::string{"NewFolder"}.c_str());
                     willOpenNewFolder = true;
                 }
@@ -237,17 +236,49 @@ jleEditorContentBrowser::contentBrowser()
         }
     }
 
-    if (_selectedDirectory != GAME_RESOURCES_DIRECTORY && !_selectedDirectory.empty()) {
+    if (_selectedDirectory != GAME_RESOURCES_DIRECTORY && _selectedDirectory != JLE_ENGINE_RESOURCES_PATH &&
+        _selectedDirectory != JLE_EDITOR_RESOURCES_PATH && !_selectedDirectory.empty()) {
         if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(_backDirectoryIcon->id()),
                                ImVec2{19 * globalImguiScale, 16 * globalImguiScale})) {
             _selectedDirectory = _selectedDirectory.parent_path();
         }
         ImGui::SameLine();
+    } else {
+        const char *items[] = {"Game Resources", "Editor Resources", "Engine Resources"};
+        static const char *current_item = items[0];
+
+        ImGui::PushItemWidth(200.f * globalImguiScale);
+        if (ImGui::BeginCombo("##combo", current_item)) {
+            for (auto &item : items) {
+                bool is_selected = (current_item == item);
+                if (ImGui::Selectable(item, is_selected)) {
+                    current_item = item;
+                    if (current_item[0] == 'G') // Game Resources
+                    {
+                        _selectedDirectory = GAME_RESOURCES_DIRECTORY;
+                    } else if (current_item[0] == 'E' && current_item[1] == 'd') // Editor Resources
+                    {
+                        _selectedDirectory = JLE_EDITOR_RESOURCES_PATH;
+                    } else if (current_item[0] == 'E' && current_item[1] == 'n') // Engine Resources
+                    {
+                        _selectedDirectory = JLE_ENGINE_RESOURCES_PATH;
+                    }
+                }
+                if (is_selected) {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::PopItemWidth();
+
+        ImGui::SameLine();
     }
 
     {
         auto text = _selectedDirectory.wstring();
-        ImGui::Text("%.*ls", static_cast<int>(text.size()), text.data());
+        auto virtualPath = jlePath{_selectedDirectory.string(), false}.getVirtualPath();
+        ImGui::Text("%.*ls (%s)", static_cast<int>(text.size()), text.data(), virtualPath.c_str());
     }
 
     ImGui::BeginGroup();
@@ -376,7 +407,7 @@ jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file)
                 try {
                     std::filesystem::remove(file);
                     LOGV << "Deleted file: " << file.string();
-                } catch (std::exception& e) {
+                } catch (std::exception &e) {
                     LOGE << "Could not delete file: " << file.string();
                 }
                 file = std::filesystem::path();

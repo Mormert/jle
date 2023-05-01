@@ -12,6 +12,7 @@ in vec3 TangentFragPos;
 in vec3 TangentLightPos[4];
 in vec3 TangentCameraPos;
 in vec2 TexCoords;
+in vec3 localNormal;
 
 in mat3 TBN;
 
@@ -39,7 +40,7 @@ uniform vec3 DirectionalLightDir;
 const float pi = 3.141592653589;
 const vec3 albedo = vec3(0.83, 0.68, 0.22);
 const float metallic = 0.0;
-const float roughness = 0.3;
+const float roughness = 0.5;
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -138,7 +139,14 @@ vec3 fresnelSchlickApprox(float cosTheta, vec3 F0)
 
 vec3 lambertian_brdf(vec3 in_direction, vec3 out_direction, vec3 normal)
 {
-    return albedo/pi;
+    if (useAlbedoTexture)
+    {
+        return texture(albedoTexture, TexCoords).rgb/pi;
+    }
+    else
+    {
+        return albedo/pi;
+    }
 }
 
 // https://www.shadertoy.com/view/ldBGz3
@@ -162,7 +170,7 @@ vec3 blinn_phong_brdf(vec3 in_direction, vec3 out_direction, vec3 normal){
 
     float kL = roughness;
     float kG = 1.0 - kL;
-    float s = 200.0;
+    float s = 16.0;
     vec3 pL;
     if (useAlbedoTexture)
     {
@@ -336,23 +344,25 @@ void main()
 
     }
 
+    vec3 worldView = normalize(WorldCameraPos - WorldFragPos);
+    vec3 worldSpaceNormal = transpose(TBN) * N;
+
     if (UseDirectionalLight)
     {
         vec3 L = normalize(DirectionalLightDir);
 
         // Incident angle
-        float NdotL = max(dot(N, L), 0.0);
+        float NdotL = max(dot(worldSpaceNormal, L), 0.0);
 
         // Incoming radiance, depends on shadows from other objects
-        vec3 radiance = DirectionalLightColour * ShadowCalculation(WorldFragPosLightSpace, N, L);
+        vec3 radiance = DirectionalLightColour;// * ShadowCalculation(WorldFragPosLightSpace, N, L);
 
-        LightOutTotal += radiance * blinn_phong_brdf(L, V, N) * NdotL;
+        LightOutTotal += radiance * blinn_phong_brdf(L, worldView, worldSpaceNormal) * NdotL;
+
     }
 
     if(UseEnvironmentMapping)
     {
-        vec3 worldView = normalize(WorldCameraPos - WorldFragPos);
-        vec3 worldSpaceNormal = transpose(TBN) * N;
         vec3 R = reflect(-worldView,normalize(worldSpaceNormal));
         vec3 environmentColor = texture(skyboxTexture, R).xyz;
         float reflectanceCoeff = roughness;
@@ -360,10 +370,11 @@ void main()
     }
 
     // HDR tonemapping
-    LightOutTotal = LightOutTotal / (LightOutTotal + vec3(1.0));
+    //LightOutTotal = LightOutTotal / (LightOutTotal + vec3(1.0));
 
     // Gamma correction
-    LightOutTotal = pow(LightOutTotal, vec3(1.0/2.2));
+    //LightOutTotal = pow(LightOutTotal, vec3(1.0/2.2));
 
     FragColor = vec4(LightOutTotal, 1.0);
 }
+
