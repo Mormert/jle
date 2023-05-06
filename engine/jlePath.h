@@ -35,6 +35,8 @@ public:
 
     bool isEmpty();
 
+    std::string getFileEnding() const;
+
     bool operator==(const jlePath &other) const;
 
     friend class std::hash<jlePath>;

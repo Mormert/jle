@@ -11,13 +11,6 @@
 jleEditorGameControllerWidget::jleEditorGameControllerWidget(
     const std::string &window_name)
     : iEditorImGuiWindow{window_name} {
-    _playGameIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/play.png"});
-    _restartGameIcon =
-        gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/replay.png"});
-    _pauseGameIcon =
-        gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/pause.png"});
-    _nextFrameIcon =
-        gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/next_frame.png"});
 }
 
 void jleEditorGameControllerWidget::update(jleGameEngine &ge) {

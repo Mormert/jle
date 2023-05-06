@@ -5,10 +5,15 @@
 
 #include "jleSerializedResource.h"
 #include "jleWindowSettings.h"
+#include "jleTypeReflectionUtils.h"
+
 
 class jleEngineSettings : public jleSerializedResource, public std::enable_shared_from_this<jleEngineSettings>
 {
 public:
+
+    JLE_REGISTER_RESOURCE_TYPE(jleEngineSettings, es)
+
     WindowSettings windowSettings;
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)

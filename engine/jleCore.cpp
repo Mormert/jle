@@ -66,7 +66,7 @@ jleCore::run()
 
     gCore = this;
 
-    g_CoreSettingsRef.path = jlePath{"GR:settings/enginesettings.json"};
+    g_CoreSettingsRef.path = jlePath{"GR:settings/enginesettings.es"};
     g_CoreSettingsRef.loadResource();
 
     PLOG_INFO << "Initializing the window";

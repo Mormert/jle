@@ -11,9 +11,7 @@
 #include "jleResource.h"
 #include "jleStaticOpenGLState.h"
 #include "plog/Log.h"
-#include <cereal/archives/json.hpp>
 
-#include <fstream>
 #include <iostream>
 #include <memory>
 
@@ -28,13 +26,10 @@ jleTexture::~jleTexture()
 jleLoadFromFileSuccessCode
 jleTexture::loadFromFile(const jlePath &path)
 {
-    try {
-        std::ifstream i(path.getRealPath());
-        cereal::JSONInputArchive iarchive{i};
-        iarchive(*this);
-    } catch (std::exception &e) {
-        LOGE << "Failed to load texture, using image directly from path: " << path.getVirtualPath() << " instead.";
-        imagePath = jlePath{path};
+    auto fe = path.getFileEnding();
+    if(fe != "tex")
+    {
+        imagePath = path;
     }
 
     auto image = gCore->resources().loadResourceFromFile<jleImage>(imagePath);

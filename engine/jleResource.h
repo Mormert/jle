@@ -53,24 +53,21 @@ public:
 
         if constexpr(std::is_base_of<jleSerializedResource, T>::value)
         {
-            try {
-                std::ifstream i(path.getRealPath());
-                cereal::JSONInputArchive iarchive{i};
-                // std::shared_ptr<T> newResourceT = std::static_pointer_cast<T>(newResource);
-                // iarchive(newResourceT);
-                iarchive(newResource);
-                // newResource = newResourceT;
-                loadSuccess = jleLoadFromFileSuccessCode::SUCCESS;
-            } catch (std::exception &e) {
-                LOGE << "Failed loading serialized resource file: " << e.what();
-                loadSuccess = jleLoadFromFileSuccessCode::FAIL;
+            if(newResource->getFileExtension() == path.getFileEnding())
+            {
+                try {
+                    std::ifstream i(path.getRealPath());
+                    cereal::JSONInputArchive iarchive{i};
+                    iarchive(newResource);
+                    loadSuccess = jleLoadFromFileSuccessCode::SUCCESS;
+                } catch (std::exception &e) {
+                    LOGE << "Failed loading " << path.getVirtualPath() << " - " << e.what();
+                    loadSuccess = jleLoadFromFileSuccessCode::FAIL;
+                }
             }
         }
 
-
         loadSuccess = newResource->loadFromFile(path);
-
-
 
         newResource->filepath = path.getRealPath();
 
