@@ -4,6 +4,7 @@
 
 #include "jlePath.h"
 #include "jleResourceInterface.h"
+#include "jleSerializedResource.h"
 #include <plog/Log.h>
 
 #include <chrono>
@@ -33,7 +34,7 @@ public:
     // loaded copy of that resource
     template <typename T>
     std::shared_ptr<T>
-    loadResourceFromFile(const jlePath &path, const bool forceReload = false, const bool serializedResource = false)
+    loadResourceFromFile(const jlePath &path, const bool forceReload = false)
     {
         static_assert(std::is_base_of<jleResourceInterface, T>::value, "T must derive from jleResourceInterface");
 
@@ -48,9 +49,10 @@ public:
 
         std::shared_ptr<jleResourceInterface> newResource = std::make_shared<T>();
 
-        jleLoadFromFileSuccessCode loadSuccess = newResource->loadFromFile(path);
+        jleLoadFromFileSuccessCode loadSuccess{jleLoadFromFileSuccessCode::FAIL};
 
-        if (loadSuccess == jleLoadFromFileSuccessCode::IMPLEMENT_POLYMORPHIC_CEREAL || serializedResource) {
+        if constexpr(std::is_base_of<jleSerializedResource, T>::value)
+        {
             try {
                 std::ifstream i(path.getRealPath());
                 cereal::JSONInputArchive iarchive{i};
@@ -60,10 +62,15 @@ public:
                 // newResource = newResourceT;
                 loadSuccess = jleLoadFromFileSuccessCode::SUCCESS;
             } catch (std::exception &e) {
-                LOGE << "Failed loading resource file: " << e.what();
+                LOGE << "Failed loading serialized resource file: " << e.what();
                 loadSuccess = jleLoadFromFileSuccessCode::FAIL;
             }
         }
+
+
+        loadSuccess = newResource->loadFromFile(path);
+
+
 
         newResource->filepath = path.getRealPath();
 
@@ -88,6 +95,7 @@ public:
             std::shared_ptr<jleResourceInterface> f = std::const_pointer_cast<jleResourceInterface>(resource);
             cereal::JSONInputArchive archive{i};
             archive(f);
+            f->loadFromFile(path);
 
             const auto prefix = path.getPathPrefix();
 
@@ -118,6 +126,10 @@ public:
             iarchive(ptr);
 
             ptr->filepath = path.getRealPath();
+
+            if(ptr->loadFromFile(path) == jleLoadFromFileSuccessCode::FAIL){
+                LOGE << "Failed loading serialized resource's internals";
+            }
 
             _resources[prefix].erase(path);
             _resources[prefix].insert(std::make_pair(path, ptr));

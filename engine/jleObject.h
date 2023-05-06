@@ -10,7 +10,7 @@
 #include "jleTypeReflectionUtils.h"
 
 #include "jlePath.h"
-#include "jleResourceInterface.h"
+#include "jleSerializedResource.h"
 #include "jleTransform.h"
 #include "json.hpp"
 
@@ -21,7 +21,7 @@
 
 class jleScene;
 
-class jleObject : public jleResourceInterface, public std::enable_shared_from_this<jleObject>
+class jleObject : public jleSerializedResource, public std::enable_shared_from_this<jleObject>
 {
     JLE_REGISTER_OBJECT_TYPE(jleObject)
 public:
@@ -52,12 +52,6 @@ public:
         } else {
             LOGE << "Can't save an object that doesn't have a template path set!";
         }
-    };
-
-    jleLoadFromFileSuccessCode
-    loadFromFile(const jlePath &path) override
-    {
-        return jleLoadFromFileSuccessCode::IMPLEMENT_POLYMORPHIC_CEREAL;
     };
 
     std::shared_ptr<jleObject> duplicate(bool childChain = false);
@@ -155,7 +149,7 @@ protected:
 };
 
 CEREAL_REGISTER_TYPE(jleObject)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleResourceInterface, jleObject)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleObject)
 
 #include "jleObject.inl"
 

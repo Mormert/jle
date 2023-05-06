@@ -3,7 +3,7 @@
 #ifndef JLE_SHADER_H
 #define JLE_SHADER_H
 
-#include "jleResourceInterface.h"
+#include "jleSerializedResource.h"
 #include "jleTypeReflectionUtils.h"
 
 #include <cereal/cereal.hpp>
@@ -12,7 +12,7 @@
 
 #include <string>
 
-class jleShader : public jleResourceInterface, public std::enable_shared_from_this<jleShader>
+class jleShader : public jleSerializedResource, public std::enable_shared_from_this<jleShader>
 {
 public:
     unsigned int ID;
@@ -46,13 +46,7 @@ public:
         }
     }
 
-    SAVE_SHARED_THIS_SERIALIZED_JSON(jleResourceInterface)
-
-    jleLoadFromFileSuccessCode
-    loadFromFile(const jlePath &path) override
-    {
-        return jleLoadFromFileSuccessCode::IMPLEMENT_POLYMORPHIC_CEREAL;
-    };
+    SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
 
     jleShader() = default;
 
@@ -97,7 +91,7 @@ private:
 };
 
 CEREAL_REGISTER_TYPE(jleShader)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleResourceInterface, jleShader)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleShader)
 
 namespace cereal
 {

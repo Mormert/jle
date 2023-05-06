@@ -3,14 +3,14 @@
 #pragma once
 
 #include "jlePath.h"
-#include "jleResourceInterface.h"
+#include "jleSerializedResource.h"
 #include "jleTypeReflectionUtils.h"
 
 #include <climits>
 
 #include <cereal/cereal.hpp>
 
-class jleTexture : public jleResourceInterface, public std::enable_shared_from_this<jleTexture>
+class jleTexture : public jleSerializedResource, public std::enable_shared_from_this<jleTexture>
 {
 public:
     jleTexture() = default;
@@ -26,7 +26,7 @@ public:
 
     jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
 
-    SAVE_SHARED_THIS_SERIALIZED_JSON(jleResourceInterface)
+    SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
 
     ~jleTexture() override;
 
@@ -50,4 +50,4 @@ private:
 };
 
 CEREAL_REGISTER_TYPE(jleTexture)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleResourceInterface, jleTexture)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleTexture)

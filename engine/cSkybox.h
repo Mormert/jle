@@ -1,7 +1,10 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleComponent.h"
+#include "jleResourceRef.h"
 #include "jleSkybox.h"
+#include "jleRendering.h"
+#include "jle3DRenderer.h"
 
 class cSkybox : public jleComponent
 {
@@ -13,7 +16,12 @@ public:
     void
     serialize(Archive &ar)
     {
-        ar(CEREAL_NVP(_skyboxPath));
+        ar(CEREAL_NVP(_skybox));
+
+        if(_skybox.get())
+        {
+            gCore->rendering().rendering3d().setSkybox(_skybox.get());
+        }
     }
 
     void start() override;
@@ -21,8 +29,7 @@ public:
     void update(float dt) override;
 
 protected:
-    std::shared_ptr<jleSkybox> _skybox;
-    std::string _skyboxPath;
+    jleResourceRef<jleSkybox> _skybox;
 };
 
 CEREAL_REGISTER_TYPE(cSkybox)

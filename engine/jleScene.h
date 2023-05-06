@@ -8,7 +8,7 @@
 
 #include "jleTypeReflectionUtils.h"
 #include "jlePath.h"
-#include "jleResourceInterface.h"
+#include "jleSerializedResource.h"
 #include <json.hpp>
 #include "jleResource.h"
 
@@ -18,7 +18,7 @@
 
 class jleObject;
 
-class jleScene : public jleResourceInterface, public std::enable_shared_from_this<jleScene>
+class jleScene : public jleSerializedResource, public std::enable_shared_from_this<jleScene>
 {
 public:
     JLE_REGISTER_RESOURCE_TYPE(jleScene, scn)
@@ -34,14 +34,8 @@ public:
         }
         std::ofstream save{filepath};
         cereal::JSONOutputArchive outputArchive(save);
-        std::shared_ptr<jleResourceInterface> thiz = shared_from_this();
+        std::shared_ptr<jleSerializedResource> thiz = shared_from_this();
         outputArchive(thiz);
-    };
-
-    jleLoadFromFileSuccessCode
-    loadFromFile(const jlePath &path) override
-    {
-        return jleLoadFromFileSuccessCode::IMPLEMENT_POLYMORPHIC_CEREAL;
     };
 
     explicit jleScene(const std::string &sceneName);
@@ -119,7 +113,7 @@ private:
 };
 
 CEREAL_REGISTER_TYPE(jleScene)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleResourceInterface, jleScene)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleScene)
 
 #include "jleScene.inl"
 

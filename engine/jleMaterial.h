@@ -13,7 +13,7 @@
 #include <cereal/cereal.hpp>
 
 
-class jleMaterial : public jleResourceInterface, public std::enable_shared_from_this<jleMaterial>
+class jleMaterial : public jleSerializedResource, public std::enable_shared_from_this<jleMaterial>
 {
 public:
 
@@ -33,13 +33,7 @@ public:
            CEREAL_NVP(roughnessTextureRef));
     }
 
-    SAVE_SHARED_THIS_SERIALIZED_JSON(jleResourceInterface)
-
-    jleLoadFromFileSuccessCode
-    loadFromFile(const jlePath &path) override
-    {
-        return jleLoadFromFileSuccessCode::IMPLEMENT_POLYMORPHIC_CEREAL;
-    };
+    SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
 
     jleResourceRef<jleTexture> albedoTextureRef;
     jleResourceRef<jleTexture> normalTextureRef;
@@ -48,6 +42,6 @@ public:
 };
 
 CEREAL_REGISTER_TYPE(jleMaterial)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleResourceInterface, jleMaterial)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleMaterial)
 
 #endif // JLE_MATERIAL_H

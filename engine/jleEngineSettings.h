@@ -3,16 +3,15 @@
 #ifndef JLE_ENGINESETTINGS
 #define JLE_ENGINESETTINGS
 
-#include "jleResourceInterface.h"
+#include "jleSerializedResource.h"
 #include "jleWindowSettings.h"
 
-class jleEngineSettings : public jleResourceInterface, public std::enable_shared_from_this<jleEngineSettings>
+class jleEngineSettings : public jleSerializedResource, public std::enable_shared_from_this<jleEngineSettings>
 {
 public:
     WindowSettings windowSettings;
 
-    LOAD_THIS_SERIALIZED_JSON
-    SAVE_SHARED_THIS_SERIALIZED_JSON(jleResourceInterface)
+    SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
 
     ~jleEngineSettings() override = default;
 
@@ -25,7 +24,7 @@ public:
 };
 
 CEREAL_REGISTER_TYPE(jleEngineSettings)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleResourceInterface, jleEngineSettings)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleEngineSettings)
 
 
 #endif // JLE_ENGINESETTINGS

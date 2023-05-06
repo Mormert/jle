@@ -179,6 +179,7 @@ private:
         std::string copy = value.path._virtualPath;
         draw_ui(ar, std::string{name + std::string{" (ref)"}}.c_str(), value.path._virtualPath);
         if (copy != value.path._virtualPath) {
+            value.path = jlePath{value.path._virtualPath}; // Find real path again
             value.load(ar);
         }
 

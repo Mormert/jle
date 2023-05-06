@@ -6,6 +6,7 @@
 #include "jleResource.h"
 
 #include "jleIncludeGL.h"
+#include "jleResourceRef.h"
 
 #include <string>
 #include <vector>
@@ -13,7 +14,6 @@
 jleLoadFromFileSuccessCode
 jleSkybox::loadFromFile(const jlePath &path)
 {
-
     constexpr float skyboxVertices[] = {// positions
                                         -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,
                                         1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f,
@@ -41,32 +41,31 @@ jleSkybox::loadFromFile(const jlePath &path)
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 
-    std::vector<std::string> faces;
+    std::vector<jleResourceRef<jleImage>> faces;
     auto pathStr = path.getRealPath();
-    faces.push_back(pathStr + "_right.jpg");
-    faces.push_back(pathStr + "_left.jpg");
-    faces.push_back(pathStr + "_bottom.jpg");
-    faces.push_back(pathStr + "_top.jpg");
-    faces.push_back(pathStr + "_front.jpg");
-    faces.push_back(pathStr + "_back.jpg");
+    faces.push_back(_right);
+    faces.push_back(_left);
+    faces.push_back(_bottom);
+    faces.push_back(_top);
+    faces.push_back(_front);
+    faces.push_back(_back);
 
     glGenTextures(1, &_textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, _textureID);
 
     int i = 0;
     jleImage::setFlipImage(true);
-    for (auto &&face : faces) {
-        auto image2d = gCore->resources().loadResourceFromFile<jleImage>(jlePath{face});
-        if (image2d) {
+    for (auto &&image : faces) {
+        if (image) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                          0,
                          GL_RGB,
-                         image2d->width(),
-                         image2d->height(),
+                         image->width(),
+                         image->height(),
                          0,
                          GL_RGB,
                          GL_UNSIGNED_BYTE,
-                         image2d->data());
+                         image->data());
         }
         i++;
     }

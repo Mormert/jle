@@ -43,7 +43,7 @@
         outputArchive(thiz);                                                                                           \
     };
 
-enum class jleLoadFromFileSuccessCode : uint8_t { SUCCESS, FAIL, IMPLEMENT_POLYMORPHIC_CEREAL };
+enum class jleLoadFromFileSuccessCode : uint8_t { SUCCESS, FAIL };
 
 class jleResourceInterface
 {
