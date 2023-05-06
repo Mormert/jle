@@ -4,6 +4,15 @@
 
 #include "jleResourceInterface.h"
 
+#define SAVE_SHARED_THIS_SERIALIZED_JSON(PTR_TYPE)                                                                     \
+    void saveToFile() override                                                                                         \
+    {                                                                                                                  \
+        std::ofstream save{filepath};                                                                                  \
+        cereal::JSONOutputArchive outputArchive(save);                                                                 \
+        std::shared_ptr<PTR_TYPE> thiz = shared_from_this();                                                           \
+        outputArchive(thiz);                                                                                           \
+    };
+
 class jleSerializedResource : public jleResourceInterface
 {
 public:
@@ -26,5 +35,3 @@ public:
 };
 
 CEREAL_REGISTER_TYPE(jleSerializedResource)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleResourceInterface, jleSerializedResource)
-
