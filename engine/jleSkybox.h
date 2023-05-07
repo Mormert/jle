@@ -7,7 +7,7 @@
 #include "jleTypeReflectionUtils.h"
 
 #include "jleResourceRef.h"
-#include "jleImage.h"
+#include "jleImageFlipped.h"
 
 
 class jleSkybox : public jleSerializedResource, public std::enable_shared_from_this<jleSkybox>
@@ -35,12 +35,12 @@ public:
 
     jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
 
-    jleResourceRef<jleImage> _right;
-    jleResourceRef<jleImage> _left;
-    jleResourceRef<jleImage> _bottom;
-    jleResourceRef<jleImage> _top;
-    jleResourceRef<jleImage> _front;
-    jleResourceRef<jleImage> _back;
+    jleResourceRef<jleImageFlipped> _right;
+    jleResourceRef<jleImageFlipped> _left;
+    jleResourceRef<jleImageFlipped> _bottom;
+    jleResourceRef<jleImageFlipped> _top;
+    jleResourceRef<jleImageFlipped> _front;
+    jleResourceRef<jleImageFlipped> _back;
 
     unsigned int getTextureID();
 

@@ -1,14 +1,11 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleSkybox.h"
-#include "jleCore.h"
 #include "jleImage.h"
-#include "jleResource.h"
 
 #include "jleIncludeGL.h"
 #include "jleResourceRef.h"
 
-#include <string>
 #include <vector>
 
 jleLoadFromFileSuccessCode
@@ -41,7 +38,7 @@ jleSkybox::loadFromFile(const jlePath &path)
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 
-    std::vector<jleResourceRef<jleImage>> faces;
+    std::vector<jleResourceRef<jleImageFlipped>> faces;
     auto pathStr = path.getRealPath();
     faces.push_back(_right);
     faces.push_back(_left);
@@ -54,7 +51,6 @@ jleSkybox::loadFromFile(const jlePath &path)
     glBindTexture(GL_TEXTURE_CUBE_MAP, _textureID);
 
     int i = 0;
-    jleImage::setFlipImage(true);
     for (auto &&image : faces) {
         if (image) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,

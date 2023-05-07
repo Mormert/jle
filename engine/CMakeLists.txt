@@ -5,6 +5,7 @@ add_library(engine STATIC
         "3rdparty/tiny_obj_loader.cpp"
         "3rdparty/Remotery/Remotery.c"
         "jleImage.cpp"
+        "jleImageFlipped.cpp"
         "jleComponent.cpp"
         "jleCore.cpp"
         "jleEngineStatus.cpp"

@@ -15,6 +15,7 @@
 #include <thread>
 #include <unordered_map>
 #include <vector>
+#include <typeinfo>
 
 #include <cereal/archives/json.hpp>
 #include <cereal/cereal.hpp>
@@ -42,6 +43,7 @@ public:
 
         if (!forceReload) {
             auto it = _resources[prefix].find(path);
+            if(typeid(T))
             if (it != _resources[prefix].end()) {
                 return std::static_pointer_cast<T>(it->second);
             }
