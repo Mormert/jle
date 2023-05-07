@@ -89,6 +89,15 @@ if (BUILD_EDITOR)
             "3rdparty/ImGui/imgui_widgets.cpp"
             "3rdparty/ImGui/imgui_stdlib.cpp"
             "3rdparty/ImGui/ImGuizmo.cpp")
+
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+    set(ASSIMP_NO_EXPORT ON CACHE BOOL "" FORCE)
+    set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+    add_subdirectory(3rdparty/git_submodules/assimp)
+    add_definitions()
+    target_link_libraries(engine PUBLIC assimp)
+    target_include_directories(engine SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/assimp/include")
 endif ()
 
 if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()

@@ -10,3 +10,6 @@
 [submodule "engine/3rdparty/git_submodules/socket.io-client-cpp"]
 	path = engine/3rdparty/git_submodules/socket.io-client-cpp
 	url = https://github.com/socketio/socket.io-client-cpp.git
+[submodule "engine/3rdparty/git_submodules/assimp"]
+	path = engine/3rdparty/git_submodules/assimp
+	url = https://github.com/assimp/assimp.git
