@@ -41,6 +41,8 @@ public:
 
     friend class std::hash<jlePath>;
 
+    friend std::ostream& operator<< (std::ostream& stream, const jlePath& path);
+
     // Note: should actually be private!
     // Don't modify!
     std::string _virtualPath;

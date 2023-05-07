@@ -32,7 +32,7 @@ void jleEditorResourceViewer::update(jleGameEngine &ge) {
             for (auto &&path : drive.second) {
                 const std::string pathStr =
                     path.first.getVirtualPath() + " (" +
-                    std::to_string(path.second.use_count() - 1) + " users)";
+                    std::to_string(path.second.second.use_count() - 1) + " users)";
 
                 if (ImGui::TreeNode(pathStr.c_str())) {
                     if (ImGui::Button("Unload")) {

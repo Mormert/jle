@@ -13,9 +13,9 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <typeinfo>
 #include <unordered_map>
 #include <vector>
-#include <typeinfo>
 
 #include <cereal/archives/json.hpp>
 #include <cereal/cereal.hpp>
@@ -43,9 +43,14 @@ public:
 
         if (!forceReload) {
             auto it = _resources[prefix].find(path);
-            if(typeid(T))
             if (it != _resources[prefix].end()) {
-                return std::static_pointer_cast<T>(it->second);
+                if(it->second.first == typeid(T).hash_code())
+                {
+                    return std::static_pointer_cast<T>(it->second.second);
+                }else
+                {
+                    LOGW << "Found another type usage from the same resource. Overwriting previous resource for: " << path;
+                }
             }
         }
 
@@ -53,14 +58,13 @@ public:
 
         jleLoadFromFileSuccessCode loadSuccess{jleLoadFromFileSuccessCode::FAIL};
 
-        if constexpr(std::is_base_of<jleSerializedResource, T>::value)
-        {
-            if(newResource->getFileExtension() == path.getFileEnding())
-            {
+        if constexpr (std::is_base_of<jleSerializedResource, T>::value) {
+            if (newResource->getFileExtension() == path.getFileEnding()) {
                 try {
                     std::ifstream i(path.getRealPath());
                     cereal::JSONInputArchive iarchive{i};
-                    std::shared_ptr<jleSerializedResource> sr = std::static_pointer_cast<jleSerializedResource>(newResource);
+                    std::shared_ptr<jleSerializedResource> sr =
+                        std::static_pointer_cast<jleSerializedResource>(newResource);
                     iarchive(sr);
                     newResource = sr;
                     loadSuccess = jleLoadFromFileSuccessCode::SUCCESS;
@@ -77,7 +81,7 @@ public:
 
         _resources[prefix].erase(path);
         if (loadSuccess == jleLoadFromFileSuccessCode::SUCCESS) {
-            _resources[prefix].insert(std::make_pair(path, newResource));
+            _resources[prefix].insert(std::make_pair(path, std::make_pair(typeid(T).hash_code(), newResource)));
         } else {
             LOGW << "Failed to load: " << path._virtualPath;
         }
@@ -101,7 +105,7 @@ public:
             const auto prefix = path.getPathPrefix();
 
             _resources[prefix].erase(path);
-            _resources[prefix].insert(std::make_pair(path, resource));
+            _resources[prefix].insert(std::make_pair(path, std::make_pair(typeid(resource).hash_code(), resource)));
         } catch (std::exception &e) {
             LOGE << "Failed reloading serialized resource file: " << e.what();
         }
@@ -117,7 +121,7 @@ public:
         if (!forceReload) {
             auto it = _resources[prefix].find(path);
             if (it != _resources[prefix].end()) {
-                return std::static_pointer_cast<jleSerializedResource>(it->second);
+                return std::static_pointer_cast<jleSerializedResource>(it->second.second);
             }
         }
 
@@ -128,12 +132,12 @@ public:
 
             ptr->filepath = path.getRealPath();
 
-            if(ptr->loadFromFile(path) == jleLoadFromFileSuccessCode::FAIL){
+            if (ptr->loadFromFile(path) == jleLoadFromFileSuccessCode::FAIL) {
                 LOGE << "Failed loading serialized resource's internals";
             }
 
             _resources[prefix].erase(path);
-            _resources[prefix].insert(std::make_pair(path, ptr));
+            _resources[prefix].insert(std::make_pair(path, std::make_pair(typeid(ptr).hash_code(), ptr)));
 
         } catch (std::exception &e) {
             LOGE << "Failed loading serialized resource file: " << e.what();
@@ -191,7 +195,9 @@ public:
         _resources[path.getPathPrefix()].erase(path);
     }
 
-    const std::unordered_map<std::string, std::unordered_map<jlePath, std::shared_ptr<void>>> &
+    using TypeHash = std::size_t;
+
+    const std::unordered_map<std::string, std::unordered_map<jlePath, std::pair<TypeHash, std::shared_ptr<void>>>> &
     resourcesMap()
     {
         return _resources;
@@ -200,7 +206,8 @@ public:
 private:
     // Maps a drive like "GR:" to a resource map that contains paths such as
     // "GR:Folder/MyFile.txt" and points to the resource in memory.
-    std::unordered_map<std::string, std::unordered_map<jlePath, std::shared_ptr<void>>> _resources{};
+    std::unordered_map<std::string, std::unordered_map<jlePath, std::pair<TypeHash, std::shared_ptr<void>>>>
+        _resources{};
 
     static inline int _periodicCleanCounter{0};
 
@@ -217,7 +224,7 @@ private:
                     // If the use count is 1, it means that no other place is
                     // the resource used other than inside the unordered map,
                     // which means that it is time to delete it from memory.
-                    if (res_kvp.second.use_count() == 1) {
+                    if (res_kvp.second.second.use_count() == 1) {
                         keys_for_removal.push_back(res_kvp.first);
                     }
                 }

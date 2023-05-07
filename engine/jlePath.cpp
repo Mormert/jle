@@ -180,3 +180,10 @@ jlePath::getFileEnding() const
         return "";
     }
 }
+
+std::ostream &
+operator<<(std::ostream &stream, const jlePath &path)
+{
+    stream << path.getVirtualPath();
+    return stream;
+}
