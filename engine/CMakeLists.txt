@@ -1,5 +1,15 @@
 # Copyright (c) 2022. Johan Lind
 
+add_subdirectory(3rdparty/zlib)
+
+set(ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
+set(ZLIB_LIBRARY zlib)
+set(ZLIB_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib)
+set(SKIP_INSTALL_ALL ON)
+
+include_directories(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
+find_package(ZLIB REQUIRED)
+
 add_library(engine STATIC
         "3rdparty/stb_image.cpp"
         "3rdparty/tiny_obj_loader.cpp"
@@ -99,24 +109,6 @@ if (BUILD_EDITOR)
             target_link_libraries(engine PUBLIC assimp)
             target_include_directories(engine SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/assimp/include")
 endif ()
-
-# Fetch and link zlib, required by some of the libraries used by the engine
-include(FetchContent)
-Set(FETCHCONTENT_QUIET FALSE)
-FetchContent_Declare(
-        zlib
-        GIT_REPOSITORY https://github.com/madler/zlib.git
-        GIT_TAG        04f42ceca40f73e2978b50e93806c2a18c1281fc # 1.2.13
-        GIT_PROGRESS TRUE
-        FIND_PACKAGE_ARGS NAMES ZLIB
-)
-
-FetchContent_MakeAvailable(zlib)
-
-set(ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
-set(ZLIB_LIBRARY zlib)
-include_directories(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
-find_package(ZLIB REQUIRED)
 
 target_link_libraries(engine PUBLIC zlib)
 
