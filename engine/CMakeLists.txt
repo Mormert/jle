@@ -90,15 +90,36 @@ if (BUILD_EDITOR)
             "3rdparty/ImGui/imgui_stdlib.cpp"
             "3rdparty/ImGui/ImGuizmo.cpp")
 
-    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-    set(ASSIMP_NO_EXPORT ON CACHE BOOL "" FORCE)
-    set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-    set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
-    add_subdirectory(3rdparty/git_submodules/assimp)
-    add_definitions()
-    target_link_libraries(engine PUBLIC assimp)
-    target_include_directories(engine SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/assimp/include")
+            set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+            set(ASSIMP_NO_EXPORT ON CACHE BOOL "" FORCE)
+            set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+            set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+            set(ASSIMP_BUILD_ZLIB OFF CACHE BOOL "" FORCE)
+            add_subdirectory(3rdparty/git_submodules/assimp)
+            target_link_libraries(engine PUBLIC assimp)
+            target_include_directories(engine SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/assimp/include")
 endif ()
+
+# Fetch and link zlib, required by some of the libraries used by the engine
+include(FetchContent)
+Set(FETCHCONTENT_QUIET FALSE)
+FetchContent_Declare(
+        zlib
+        GIT_REPOSITORY https://github.com/madler/zlib.git
+        GIT_TAG        04f42ceca40f73e2978b50e93806c2a18c1281fc # 1.2.13
+        GIT_PROGRESS TRUE
+        FIND_PACKAGE_ARGS NAMES ZLIB
+)
+
+FetchContent_MakeAvailable(zlib)
+
+set(ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
+set(ZLIB_LIBRARY zlib)
+include_directories(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
+find_package(ZLIB REQUIRED)
+
+target_link_libraries(engine PUBLIC zlib)
+
 
 if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()
 
@@ -127,6 +148,7 @@ target_link_libraries(engine PUBLIC SoLoud)
 
 # Disable HarfBuzz Dependency
 set(FT_DISABLE_HARFBUZZ ON)
+set(FT_REQUIRE_ZLIB ON)
 add_subdirectory(3rdparty/freetype)
 target_link_libraries(engine PUBLIC freetype)
 
