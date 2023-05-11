@@ -5,6 +5,12 @@
 #include "tiny_obj_loader.h"
 #include <stdio.h>
 
+#ifdef BUILD_EDITOR
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#endif
+
 #include "jleIncludeGL.h"
 
 jleLoadFromFileSuccessCode
@@ -23,6 +29,11 @@ jleMesh::loadFromFile(const jlePath &path)
 bool
 jleMesh::loadFromObj(const jlePath &path)
 {
+
+#if BUILD_EDITOR
+    return loadAssimp(path);
+#endif
+
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
@@ -257,3 +268,85 @@ jleMesh::usesIndexing()
 {
     return _ebo > 0;
 }
+
+#ifdef BUILD_EDITOR
+bool
+jleMesh::loadAssimp(const jlePath &path)
+{
+    auto pathStr = path.getRealPath();
+
+    Assimp::Importer importer;
+    const aiScene *scene = importer.ReadFile(pathStr, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
+
+    if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+    {
+        LOGE << "Error loading mesh with Assimp" << importer.GetErrorString();
+        return false;
+    }
+
+    std::vector<glm::vec3> out_vertices;
+    std::vector<glm::vec2> out_uvs;
+    std::vector<glm::vec3> out_normals;
+    std::vector<glm::vec3> out_tangents;
+    std::vector<glm::vec3> out_bitangents;
+    std::vector<unsigned int> out_indices;
+
+
+    for(int i = 0; i < scene->mNumMeshes; i++){
+        auto assimpMesh = scene->mMeshes[i];
+        for(int j = 0; j < assimpMesh->mNumVertices; j++){
+
+            glm::vec3 position;
+            position.x = assimpMesh->mVertices[j].x;
+            position.y = assimpMesh->mVertices[j].y;
+            position.z = assimpMesh->mVertices[j].z;
+            out_vertices.push_back(position);
+
+            if(assimpMesh->HasNormals())
+            {
+                glm::vec3 normal;
+                normal.x = assimpMesh->mNormals[j].x;
+                normal.y = assimpMesh->mNormals[j].y;
+                normal.z = assimpMesh->mNormals[j].z;
+                out_normals.push_back(normal);
+            }
+
+            if(assimpMesh->mTextureCoords[0])
+            {
+                glm::vec2 coords;
+
+                coords.x = assimpMesh->mTextureCoords[0][j].x;
+                coords.y = assimpMesh->mTextureCoords[0][j].y;
+                out_uvs.push_back(coords);
+
+                glm::vec3 tangent;
+                tangent.x = assimpMesh->mTangents[j].x;
+                tangent.y = assimpMesh->mTangents[j].y;
+                tangent.z = assimpMesh->mTangents[j].z;
+                out_tangents.push_back(tangent);
+
+                glm::vec3 bitangent;
+                tangent.x = assimpMesh->mBitangents[j].x;
+                tangent.y = assimpMesh->mBitangents[j].y;
+                tangent.z = assimpMesh->mBitangents[j].z;
+                out_bitangents.push_back(bitangent);
+
+            }
+        }
+
+        for(int i = 0; i < assimpMesh->mNumFaces; i++)
+        {
+            const auto &face = assimpMesh->mFaces[i];
+            for(int j = 0; j < face.mNumIndices; j++)
+            {
+                out_indices.push_back(face.mIndices[j]);
+            }
+        }
+
+    }
+
+    makeMesh(out_vertices, out_normals, out_uvs, out_tangents, out_bitangents, out_indices);
+
+    return true;
+}
+#endif
