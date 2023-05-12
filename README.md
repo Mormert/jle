@@ -1,9 +1,8 @@
 # Cross-Platform 2D & 3D Game Engine
 
-A simple, yet powerful custom-made C++ game engine intended for PC games. It is developed alongside an
-old-school-inspired multiplayer Action-RPG, similar to games like Diablo II and Titan Quest.
+A simple, yet powerful custom-made C++ game engine intended for PC games. The engine is developed alongside an unannounced game.
 
-![Game Showcase](https://mormert.com/jle-media/jle-logo-cropped2.png)
+![Engine Logo](https://mormert.com/jle-media/jle-logo-cropped2.png)
 
 ## Build status
 
@@ -14,46 +13,31 @@ old-school-inspired multiplayer Action-RPG, similar to games like Diablo II and 
 
 # Engine: jle
 
-The game engine jle is written in C++, uses OpenGL ES 3.0 or OpenGL Core 3.3. It has the ability to build games
-targeting Windows, Mac and Linux, as well as browsers using WebAssembly via Emscripten and WebGL 2.
+The engine is written in C++ 17 and currently runs OpenGL ES 3.0, OpenGL Core 3.3 or WebGL 2. It thus has the ability to build games
+targeting Windows, Mac and Linux, as well as modern browsers using WebAssembly via Emscripten.
 
-### Feature overview
+The way of working with the engine is inspired by a mix of Unreal Engine and Unity.
 
-- Runs on Windows, Linux, Mac and WebGL-enabled browsers
-- Pixel perfect 2D rendering
-- Isometric 2.5D rendering
-- Pixel perfect font rendering
-- C++ Scripting for objects & components
-- Resource management
-- Included audio engine
-- Runs seamlessly in the editor
-
-## The Editor
-
-Games made with jle can be started as standalone programs, or in the jle editor. In the editor, the user can compose
-scenes, object hierarchies, create object templates, modify data on objects and components in the scene. All of this can
-be done during the runtime of the game.
-
-![Editor Showcase](https://mormert.com/hexablo-press/jle_editor_demo.png)
-
-### Feature overview
-- Edit any object or component in runtime
-- Construct scenes with object hierarchies
-- Object templates (similar to Unity prefabs)
-- Content browser with all game resources
-- Game and engine settings
+![Editor Showcase](https://mormert.com/jle-media/jle-screengrab.png)
 
 # Third Party
-Everything is included, and used by jle:
-* GLFW3
-* GLAD
-* stb_image
-* JSON for Modern C++
-* SoLoud Audio Engine
-* Plog logging library
-* Dear ImGui (docking branch)
-* FreeType 2
-* OpenGL Mathematics (GLM)
+The engine uses a set of libraries for certain specific tasks.
+| Usage      | Library |
+| :----:       | :----: |
+| Window management & input      | GLFW3        |
+| OpenGL loading (desktop)   | GLAD             |
+| Image loading   | stb_image                   |
+| Serialization   | nlohmann::json, cereal      |
+| 3D importing    | tinyobjloader, Assimp       |
+| Font importing   | FreeType 2                 |
+| Networking   | Socket.IO C++ Client           |
+| Audio   | SoLoud                              |
+| Editor UI   | Dear ImGui, ImGuizmo, ImGuiColorTextEdit  |
+| Logging   | Plog                              |
+| Mathematics   | GLM                           |
+| Real-time profiling   | Remotery              |
+| Compression   | Zlib                            |
+| Multi-threading   | moodycamel::ConcurrentQueue |
 
 # Development
 CMake 3.20+ is used as the build system.
