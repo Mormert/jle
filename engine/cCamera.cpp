@@ -64,9 +64,8 @@ cCamera::update(float dt)
     jleCameraSimpleFPVController c;
     c.position = getTransform().getWorldPosition();
 
-    // TODO: handle rotation
-
-    game.mainCamera.setViewMatrix(c.getLookAtViewMatrix(), c.position);
+    auto &&transformation = _attachedToObject->getTransform().getWorldMatrix();
+    game.mainCamera.setViewMatrix(glm::inverse(transformation), c.position);
 }
 
 cCamera::cCamera(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
