@@ -9,10 +9,8 @@
 #include "jleTypeReflectionUtils.h"
 #include "jlePath.h"
 #include "jleSerializedResource.h"
-#include <json.hpp>
 #include "jleResource.h"
 
-#include <cereal/archives/xml.hpp>
 #include <cereal/types/memory.hpp>
 #include <cereal/types/vector.hpp>
 
@@ -51,10 +49,6 @@ public:
     std::shared_ptr<jleObject> spawnObject(const std::string &objName);
 
     void spawnObject(std::shared_ptr<jleObject> object);
-
-    // std::shared_ptr<jleObject> spawnObject(const nlohmann::json &j_in);
-
-    //  std::shared_ptr<jleObject> spawnTemplateObject(const jlePath &templatePath);
 
     void updateSceneObjects(float dt);
 

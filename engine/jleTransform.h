@@ -31,6 +31,12 @@ public:
 
     void addLocalTranslation(const glm::vec3& position);
 
+    glm::vec3 getForward();
+
+    glm::vec3 getUp();
+
+    glm::vec3 getRight();
+
     [[nodiscard]] glm::vec3 getLocalPosition();
 
     [[nodiscard]] glm::vec3 getWorldPosition();

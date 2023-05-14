@@ -5,10 +5,11 @@
 
 #include "jleTypeReflectionUtils.h"
 
-#include "json.hpp"
-
 #include <string_view>
 
+#ifdef BUILD_EDITOR
+#include "editor/jleImGuiCerealArchive.h"
+#endif
 #include <cereal/archives/json.hpp>
 #include <cereal/types/base_class.hpp>
 #include <cereal/types/memory.hpp>

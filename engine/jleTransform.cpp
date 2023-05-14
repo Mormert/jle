@@ -104,3 +104,21 @@ jleTransform::setLocalMatrix(const glm::mat4 &matrix)
     _local = matrix;
     propagateMatrix();
 }
+
+glm::vec3
+jleTransform::getForward()
+{
+    return glm::vec3{getWorldMatrix()[2]};
+}
+
+glm::vec3
+jleTransform::getUp()
+{
+    return glm::vec3{getWorldMatrix()[1]};
+}
+
+glm::vec3
+jleTransform::getRight()
+{
+    return glm::vec3{getWorldMatrix()[0]};
+}
