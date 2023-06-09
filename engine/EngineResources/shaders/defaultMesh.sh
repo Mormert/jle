@@ -6,10 +6,10 @@
             "id": 2147483649,
             "data": {
                 "_vertexPath": {
-                    "_virtualPath": "ER:shaders/es/defaultMesh.vert"
+                    "_virtualPath": "ER:/shaders/es/defaultMesh.vert"
                 },
                 "_fragPath": {
-                    "_virtualPath": "ER:shaders/es/defaultMesh.frag"
+                    "_virtualPath": "ER:/shaders/es/defaultMesh.frag"
                 }
             }
         }
