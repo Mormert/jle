@@ -13,3 +13,6 @@
 [submodule "engine/3rdparty/git_submodules/assimp"]
 	path = engine/3rdparty/git_submodules/assimp
 	url = https://github.com/assimp/assimp.git
+[submodule "engine/3rdparty/git_submodules/RmlUi"]
+	path = engine/3rdparty/git_submodules/RmlUi
+	url = https://github.com/mikke89/RmlUi.git
