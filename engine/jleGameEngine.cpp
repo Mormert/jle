@@ -11,6 +11,11 @@
 #include "jleTimerManager.h"
 #include <plog/Log.h>
 
+#include <RmlUi/Core.h>
+#include <RmlUi/Debugger.h>
+#include <RmlUi_Backend.h>
+#include <shell/include/Shell.h>
+
 jleGameEngine::jleGameEngine() : jleCore() { gEngine = this; }
 
 jleGameEngine::~jleGameEngine() { gEngine = nullptr; }
@@ -89,6 +94,68 @@ jleGameEngine::gameRef()
 }
 
 void
+jleGameEngine::startRmlUi()
+{
+
+    auto width = mainScreenFramebuffer->width();
+    auto height = mainScreenFramebuffer->height();
+
+
+    if (!Shell::Initialize())
+    {
+        LOGE << "Failed to init Shell for RmlUi";
+        return;
+    }
+
+    // Constructs the system and render interfaces, creates a window, and attaches the renderer.
+    if (!Backend::Initialize("RmlUiWindow", width, height, true))
+    {
+        LOGE << "Failed to init backend for RmlUi";
+        return;
+    }
+
+
+    // Install the custom interfaces constructed by the backend before initializing RmlUi.
+    Rml::SetSystemInterface(Backend::GetSystemInterface());
+    Rml::SetRenderInterface(Backend::GetRenderInterface());
+
+
+    // RmlUi initialisation.
+    Rml::Initialise();
+
+    Rml::Log::Message(Rml::Log::LT_WARNING, "Test warning.");
+
+    context = Rml::CreateContext("main", Rml::Vector2i(width, height));
+    if (!context)
+    {
+        Rml::Shutdown();
+        Backend::Shutdown();
+        Shell::Shutdown();
+        LOGE << "Failed to init backend for RmlUi";
+        return;
+    }
+
+    Rml::Debugger::Initialise(context);
+
+    Shell::LoadFonts();
+
+    Rml::LoadFontFace("C:/dev/cgfx/cgfx/GameResources/LatoLatin-Regular.ttf");
+    Rml::LoadFontFace("C:/dev/cgfx/cgfx/GameResources/LatoLatin-Bold.ttf");
+    Rml::LoadFontFace("C:/dev/cgfx/cgfx/GameResources/LatoLatin-Italic.ttf");
+    Rml::LoadFontFace("C:/dev/cgfx/cgfx/GameResources/LatoLatin-BoldItalic.ttf");
+
+    if(auto doc = context->LoadDocument("assets/demo.rml"))
+    {
+        doc->Show();
+    }
+
+    Rml::Debugger::SetVisible(true);
+
+
+
+}
+
+void
 jleGameEngine::start()
 {
     constexpr int initialScreenX = 1024;
@@ -98,6 +165,8 @@ jleGameEngine::start()
     const auto &mouse = gCore->input().mouse;
     mouse->setPixelatedScreenSize(initialScreenX, initialScreenY);
     mouse->setScreenSize(initialScreenX, initialScreenY);
+
+    startRmlUi();
 
     _fullscreen_renderer = std::make_unique<jleFullscreenRendering>();
 
@@ -165,6 +234,7 @@ jleGameEngine::update(float dt)
     if (!gameHalted && game) {
         game->update(dt);
         game->updateActiveScenes(dt);
+        context->Update();
     }
 }
 
@@ -173,7 +243,15 @@ jleGameEngine::render()
 {
     JLE_SCOPE_PROFILE_CPU(jleGameEngine_render)
     if (!gameHalted && game) {
-        rendering().render(*mainScreenFramebuffer.get(), gameRef().mainCamera);
+
+        // Render to game view
+        static jleFramebufferMultisample msaa{mainScreenFramebuffer->width(), mainScreenFramebuffer->height(), 4};
+
+        if (mainScreenFramebuffer->width() != msaa.width() || mainScreenFramebuffer->height() != msaa.height()) {
+            msaa.resize(mainScreenFramebuffer->width(), mainScreenFramebuffer->height());
+        }
+
+        rendering().renderMSAA(*mainScreenFramebuffer.get(), msaa, gameRef().mainCamera);
         rendering().clearBuffersForNextFrame();
         _fullscreen_renderer->renderFramebufferFullscreen(*mainScreenFramebuffer, window().width(), window().height());
     }

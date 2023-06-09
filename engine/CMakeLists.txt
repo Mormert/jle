@@ -14,6 +14,13 @@ add_library(engine STATIC
         "3rdparty/stb_image.cpp"
         "3rdparty/tiny_obj_loader.cpp"
         "3rdparty/Remotery/Remotery.c"
+        "RmlUiImplementation/RmlUi_Backend_GLFW_GL3.cpp"
+        "RmlUiImplementation/RmlUi_Renderer_GL3.cpp"
+        "RmlUiImplementation/RmlUi_Platform_GLFW.cpp"
+        #"RmlUiImplementation/shell/src/PlatformExtensions.cpp"
+        #"RmlUiImplementation/shell/src/RendererExtensions.cpp"
+        #"RmlUiImplementation/shell/src/Shell.cpp"
+        #"RmlUiImplementation/shell/src/ShellFileInterface.cpp"
         "jleImage.cpp"
         "jleImageFlipped.cpp"
         "jleComponent.cpp"
@@ -68,7 +75,7 @@ add_library(engine STATIC
         "cLightDirectional.cpp"
         "jleFramebufferScreen.cpp"
         "jleMaterial.cpp"
-        "jleExplicitInclude.cpp")
+        "jleExplicitInclude.cpp" jleFramebufferGameScreen.cpp jleFramebufferGameScreen.h)
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE
@@ -143,6 +150,15 @@ set(FT_DISABLE_HARFBUZZ ON)
 set(FT_REQUIRE_ZLIB ON)
 add_subdirectory(3rdparty/freetype)
 target_link_libraries(engine PUBLIC freetype)
+
+set(FREETYPE_INCLUDE_DIRS 3rdparty/freetype/include)
+set(FREETYPE_LIBRARY freetype)
+
+add_definitions(-DRMLUI_STATIC_LIB)
+set(BUILD_SAMPLES ON)
+add_subdirectory(3rdparty/git_submodules/RmlUi)
+target_include_directories(engine PUBLIC 3rdparty/git_submodules/RmlUi/Include RmlUiImplementation RmlUiImplementation/shell/include)
+target_link_libraries(engine PUBLIC RmlCore RmlDebugger shell)
 
 target_include_directories(engine SYSTEM PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty"

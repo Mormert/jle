@@ -4,6 +4,7 @@
 
 #include "jleCore.h"
 #include "jleGame.h"
+#include <RmlUi/Core/Context.h>
 
 class jleFullscreenRendering;
 class jleFramebufferInterface;
@@ -53,6 +54,8 @@ public:
 
     jleGame &gameRef();
 
+    static inline Rml::Context* context{};
+
 private:
     std::function<std::unique_ptr<jleGame>()> _gameCreator;
 
@@ -66,9 +69,13 @@ private:
 protected:
     void start() override;
 
+    void startRmlUi();
+
     void update(float dt) override;
 
     void render() override;
+
+    void renderRmlUi();
 
     void exiting() override;
 

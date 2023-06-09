@@ -111,6 +111,8 @@ jleEditor::start()
 
     LOG_INFO << "Starting the game in editor mode";
 
+    startRmlUi();
+
     startGame();
 }
 

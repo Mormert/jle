@@ -3,6 +3,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <memory>
 
 class jleFramebufferInterface
 {
@@ -31,6 +32,8 @@ public:
     [[nodiscard]] unsigned int height() const;
 
     [[nodiscard]] unsigned int texture() const;
+
+    static std::shared_ptr<jleFramebufferInterface> GetMainScreenFramebuffer();
 
 protected:
     unsigned int _width{}, _height{};

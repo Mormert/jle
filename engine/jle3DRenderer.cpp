@@ -18,6 +18,10 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <random>
 
+
+#include <RmlUi_Backend.h>
+
+
 jle3DRenderer::jle3DRenderer()
     : _exampleCubeShader{jlePath{"ER:shaders/exampleCube.sh"}},
       _defaultMeshShader{jlePath{"ER:shaders/defaultMesh.sh"}},
@@ -187,6 +191,17 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _shadowMappingFramebuffer->texture());
     renderFullscreenQuad(); */
+
+    //gEngine->context->Update();
+
+    gEngine->context->SetDimensions(Rml::Vector2i(framebufferOut.width(), framebufferOut.height()));
+
+
+    // Disable depth testing here because the UI doesnt use depth
+    glDisable(GL_DEPTH_TEST);
+    Backend::BeginFrame();
+    gEngine->context->Render();
+    Backend::PresentFrame();
 
     framebufferOut.bindDefault();
 }
