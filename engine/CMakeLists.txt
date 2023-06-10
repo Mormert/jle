@@ -17,10 +17,10 @@ add_library(engine STATIC
         "RmlUiImplementation/RmlUi_Backend_GLFW_GL3.cpp"
         "RmlUiImplementation/RmlUi_Renderer_GL3.cpp"
         "RmlUiImplementation/RmlUi_Platform_GLFW.cpp"
-        #"RmlUiImplementation/shell/src/PlatformExtensions.cpp"
-        #"RmlUiImplementation/shell/src/RendererExtensions.cpp"
-        #"RmlUiImplementation/shell/src/Shell.cpp"
-        #"RmlUiImplementation/shell/src/ShellFileInterface.cpp"
+        "RmlUiImplementation/shell/src/PlatformExtensions.cpp"
+        "RmlUiImplementation/shell/src/RendererExtensions.cpp"
+        "RmlUiImplementation/shell/src/Shell.cpp"
+        "RmlUiImplementation/shell/src/ShellFileInterface.cpp"
         "jleImage.cpp"
         "jleImageFlipped.cpp"
         "jleComponent.cpp"
@@ -155,10 +155,10 @@ set(FREETYPE_INCLUDE_DIRS 3rdparty/freetype/include)
 set(FREETYPE_LIBRARY freetype)
 
 add_definitions(-DRMLUI_STATIC_LIB)
-set(BUILD_SAMPLES ON)
+set(BUILD_SAMPLES OFF)
 add_subdirectory(3rdparty/git_submodules/RmlUi)
 target_include_directories(engine PUBLIC 3rdparty/git_submodules/RmlUi/Include RmlUiImplementation RmlUiImplementation/shell/include)
-target_link_libraries(engine PUBLIC RmlCore RmlDebugger shell)
+target_link_libraries(engine PUBLIC RmlCore RmlDebugger)
 
 target_include_directories(engine SYSTEM PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty"

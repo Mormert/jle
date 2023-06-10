@@ -188,7 +188,7 @@ jleEditorContentBrowser::contentBrowser()
                             newResourceFunction = resourceType.second.creationFunction;
                             std::string newFileNameStr =
                                 resourceType.first + "." + resourceType.second.filenameExtension;
-                            strcpy_s(newFileName, newFileNameStr.c_str());
+                            newFileNameStr.copy(newFileName, 0, newFileNameStr.length());
                             break;
                         }
                     }
@@ -196,7 +196,8 @@ jleEditorContentBrowser::contentBrowser()
                 }
 
                 if (ImGui::MenuItem("Folder")) {
-                    strcpy_s(newFileName, std::string{"NewFolder"}.c_str());
+                    auto newFolderStr = std::string("NewFolder");
+                    newFolderStr.copy(newFileName, 0, newFolderStr.length());
                     willOpenNewFolder = true;
                 }
 
