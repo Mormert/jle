@@ -157,7 +157,9 @@ set(FREETYPE_LIBRARY freetype)
 add_definitions(-DRMLUI_STATIC_LIB)
 set(BUILD_SAMPLES OFF)
 add_subdirectory(3rdparty/git_submodules/RmlUi)
-target_link_libraries(engine PRIVATE shlwapi imm32) # shlwapi and imm32 needed for "shell"
+if (WIN32)
+    target_link_libraries(engine PRIVATE shlwapi imm32) # shlwapi and imm32 needed for "shell"
+endif()
 target_include_directories(engine PUBLIC 3rdparty/git_submodules/RmlUi/Include RmlUiImplementation RmlUiImplementation/shell/include)
 target_link_libraries(engine PUBLIC RmlCore RmlDebugger)
 
