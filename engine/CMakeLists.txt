@@ -156,6 +156,7 @@ set(FREETYPE_LIBRARY freetype)
 
 add_definitions(-DRMLUI_STATIC_LIB)
 set(BUILD_SAMPLES OFF)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 add_subdirectory(3rdparty/git_submodules/RmlUi)
 if (WIN32)
     target_link_libraries(engine PRIVATE shlwapi imm32) # shlwapi and imm32 needed for "shell"
