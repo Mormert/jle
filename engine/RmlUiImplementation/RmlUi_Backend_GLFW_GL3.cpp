@@ -34,6 +34,7 @@
 #include <RmlUi/Core/Context.h>
 #include <RmlUi/Core/Input.h>
 #include <RmlUi/Core/Profiling.h>
+#include "jleIncludeGL.h"
 #include <GLFW/glfw3.h>
 
 static void SetupCallbacks(GLFWwindow* window);
@@ -114,7 +115,9 @@ bool Backend::Initialize(const char* name, int width, int height, bool allow_res
 	data->render_interface.SetViewport(width, height);
 
 	// Receive num lock and caps lock modifiers for proper handling of numpad inputs in text fields.
+#ifndef __EMSCRIPTEN__
 	glfwSetInputMode(window, GLFW_LOCK_KEY_MODS, GLFW_TRUE);
+#endif
 
 	// Setup the input and window event callback functions.
 	SetupCallbacks(window);
@@ -155,7 +158,10 @@ bool Backend::ProcessEvents(Rml::Context* context, KeyDownCallback key_down_call
 		Rml::Vector2i window_size;
 		float dp_ratio = 1.f;
 		glfwGetFramebufferSize(data->window, &window_size.x, &window_size.y);
+
+#ifndef __EMSCRIPTEN__
 		glfwGetWindowContentScale(data->window, &dp_ratio, nullptr);
+#endif
 
 		context->SetDimensions(window_size);
 		context->SetDensityIndependentPixelRatio(dp_ratio);
@@ -200,6 +206,7 @@ void Backend::PresentFrame()
 	RMLUI_FrameMark;
 }
 
+#ifndef __EMSCRIPTEN__
 static void SetupCallbacksGLFWSpecific(GLFWwindow * window)
 {
         // Key input
@@ -264,8 +271,10 @@ static void SetupCallbacksGLFWSpecific(GLFWwindow * window)
         glfwSetWindowContentScaleCallback(window, [](GLFWwindow * /*window*/, float xscale, float /*yscale*/) {
             RmlGLFW::ProcessContentScaleCallback(data->context, xscale);
         });
-
 }
+
+#endif
+
 
 static void SetupCallbacks(GLFWwindow* window)
 {
