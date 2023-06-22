@@ -106,7 +106,8 @@ Rml::String PlatformExtensions::FindSamplesRoot()
 	CFRelease(executable_posix_file_name);
 	CFRelease(executable_url);
 
-	return executable_path + "../../../" + path;
+	//return executable_path + "../../../" + path;
+	return executable_path + path;
 
 #elif defined RMLUI_PLATFORM_EMSCRIPTEN
 
