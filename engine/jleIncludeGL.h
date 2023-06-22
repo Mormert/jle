@@ -21,18 +21,18 @@
 static inline GLenum glCheckError_(const char* desc, const char *file, int line)
 {
     GLenum errorCode;
-    while ((errorCode = glGetError()) != GL_NO_ERROR)
+    while ((errorCode = glGetError()) != 0)
     {
         std::string error;
         switch (errorCode)
         {
-        case GL_INVALID_ENUM:                  error = "INVALID_ENUM"; break;
-        case GL_INVALID_VALUE:                 error = "INVALID_VALUE"; break;
-        case GL_INVALID_OPERATION:             error = "INVALID_OPERATION"; break;
-        case GL_STACK_OVERFLOW:                error = "STACK_OVERFLOW"; break;
-        case GL_STACK_UNDERFLOW:               error = "STACK_UNDERFLOW"; break;
-        case GL_OUT_OF_MEMORY:                 error = "OUT_OF_MEMORY"; break;
-        case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION"; break;
+        case 0x0500:    error = "INVALID_ENUM"; break;
+        case 0x0501:    error = "INVALID_VALUE"; break;
+        case 0x0502:    error = "INVALID_OPERATION"; break;
+        case 0x0503:    error = "STACK_OVERFLOW"; break;
+        case 0x0504:    error = "STACK_UNDERFLOW"; break;
+        case 0x0505:    error = "OUT_OF_MEMORY"; break;
+        case 0x0506:    error = "INVALID_FRAMEBUFFER_OPERATION"; break;
         }
         LOGE << "'" << desc << "' - " << error << " | " << file << " (" << line << ")";
     }
