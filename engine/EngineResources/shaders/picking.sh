@@ -6,10 +6,10 @@
             "id": 2147483649,
             "data": {
                 "_vertexPath": {
-                    "_virtualPath": "ER:shaders/es/picking.vert"
+                    "_virtualPath": "ER:shaders/glsl/picking.vert"
                 },
                 "_fragPath": {
-                    "_virtualPath": "ER:shaders/es/picking.frag"
+                    "_virtualPath": "ER:shaders/glsl/picking.frag"
                 }
             }
         }

@@ -29,8 +29,11 @@ jleRendering::render(jleFramebufferInterface &framebufferOut, const jleCamera &c
 
     glEnable(GL_DEPTH_TEST);
 
+    glCheckError("Render");
+
     _3dRenderer->queuerender(framebufferOut, camera);
 
+    glCheckError("3D Render Queue");
 }
 
 void
@@ -43,7 +46,11 @@ jleRendering::renderMSAA(jleFramebufferInterface &framebufferOut,
 
     render(msaaIn, camera);
 
+    glCheckError("Render");
+
     msaaIn.blitToOther(framebufferOut);
+
+    glCheckError("MSAA Blit");
 }
 
 void

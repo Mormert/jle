@@ -146,6 +146,14 @@ jleShader::CreateFromSources(const char *vertexPath, const char *fragmentPath, c
         fShaderFile.open(fragmentPath);
         std::stringstream vShaderStream, fShaderStream;
 
+#ifdef BUILD_OPENGLES30
+        vShaderStream << "#version 300 es\n";
+        fShaderStream << "#version 300 es\nprecision highp float;\n";
+#else
+        vShaderStream << "#version 330 core\n";
+        fShaderStream << "#version 330 core\n";
+#endif
+
         vShaderStream << vShaderFile.rdbuf();
         fShaderStream << fShaderFile.rdbuf();
 

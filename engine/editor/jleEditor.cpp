@@ -2,6 +2,7 @@
 
 #include "jleEditor.h"
 #include <jleFramebufferMultisample.h>
+#include <jleIncludeGL.h>
 
 #include "ImGui/ImGuizmo.h"
 #include "ImGui/imgui.h"
@@ -132,6 +133,8 @@ jleEditor::render()
         rendering().renderMSAA(*mainScreenFramebuffer, msaa, game->mainCamera);
     }
 
+    glCheckError("Render MSAA Game View");
+
     if (projectionType == jleCameraProjection::Orthographic) {
         editorCamera.setOrthographicProjection(
             editorScreenFramebuffer->width(), editorScreenFramebuffer->height(), 10000.f, -10000.f);
@@ -148,6 +151,8 @@ jleEditor::render()
 
     // Render to editor scene view
     rendering().renderMSAA(*editorScreenFramebuffer, msaa, editorCamera);
+
+    glCheckError("Render MSAA Scene View");
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -173,6 +178,8 @@ jleEditor::render()
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        glCheckError("ImGui");
+
 
         auto &&io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
@@ -183,7 +190,7 @@ jleEditor::render()
         }
     }
 
-    checkGlErrors();
+    glCheckError("Main Editor Render");
 
     rendering().clearBuffersForNextFrame();
 }
@@ -312,42 +319,6 @@ jleEditor::mainEditorWindowResized(int w, int h)
 {
     auto &&io = ImGui::GetIO();
     io.FontGlobalScale = w / 1920.f;
-}
-void
-jleEditor::checkGlErrors()
-{
-    // Goes through all the errors that OpenGL have queued up
-    GLenum errorCode;
-    while ((errorCode = glGetError()) != GL_NO_ERROR) {
-        std::string error;
-        switch (errorCode) {
-        case GL_INVALID_ENUM:
-            error = "INVALID_ENUM";
-            break;
-        case GL_INVALID_VALUE:
-            error = "INVALID_VALUE";
-            break;
-        case GL_INVALID_OPERATION:
-            error = "INVALID_OPERATION";
-            break;
-        case GL_STACK_OVERFLOW:
-            error = "STACK_OVERFLOW";
-            break;
-        case GL_STACK_UNDERFLOW:
-            error = "STACK_UNDERFLOW";
-            break;
-        case GL_OUT_OF_MEMORY:
-            error = "OUT_OF_MEMORY";
-            break;
-        case GL_INVALID_FRAMEBUFFER_OPERATION:
-            error = "INVALID_FRAMEBUFFER_OPERATION";
-            break;
-        default:
-            error = "UNKNOWN_ERROR";
-            break;
-        }
-        LOGE << "Detected OpenGL error somewhere of type: " << error;
-    }
 }
 
 std::vector<std::shared_ptr<jleScene>> &

@@ -164,7 +164,11 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
     // Directional light renders to the shadow mapping framebuffer
     renderDirectionalLight(camera);
 
+    glCheckError("3D Render - Directional Lights");
+
     renderPointLights(camera);
+
+    glCheckError("3D Render - Point Lights");
 
     framebufferOut.bind();
 
@@ -180,7 +184,11 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 
     renderMeshes(camera, _queuedMeshes);
 
+    glCheckError("3D Render - Meshes");
+
     renderSkybox(camera);
+
+    glCheckError("3D Render - Skybox");
 
     /* // Render shadow map in fullscreen as debug
     _debugDepthQuad.use();

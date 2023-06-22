@@ -6,10 +6,10 @@
             "id": 2147483649,
             "data": {
                 "_vertexPath": {
-                    "_virtualPath": "ER:shaders/es/shadowMapping.vert"
+                    "_virtualPath": "ER:shaders/glsl/shadowMapping.vert"
                 },
                 "_fragPath": {
-                    "_virtualPath": "ER:shaders/es/shadowMapping.frag"
+                    "_virtualPath": "ER:shaders/glsl/shadowMapping.frag"
                 }
             }
         }

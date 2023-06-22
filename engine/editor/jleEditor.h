@@ -75,8 +75,6 @@ private:
 
     void mainEditorWindowResized(int w, int h);
 
-    void checkGlErrors();
-
     std::vector<std::shared_ptr<iEditorImGuiWindow>> _imGuiWindows;
 
     std::vector<std::shared_ptr<jleScene>> _editorScenes;

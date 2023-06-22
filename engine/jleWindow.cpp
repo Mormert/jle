@@ -295,6 +295,7 @@ glDebugOutput(GLenum source,
         return;
 
     // ADD BREAKPOINT ON SOME LINE BELOW TO FIND THE CALLING OPENGL FUNCTION THAT CAUSED THE ERROR!
+    // Note: This does not work on OS X (tested, and info online says this)
     std::cout << "OpenGL Debug Output (id=" << id << "): " << message << std::endl;
 
     switch (source) {

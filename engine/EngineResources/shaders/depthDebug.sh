@@ -6,10 +6,10 @@
             "id": 2147483649,
             "data": {
                 "_vertexPath": {
-                    "_virtualPath": "ER:shaders/es/debugDepthQuad.vert"
+                    "_virtualPath": "ER:shaders/glsl/debugDepthQuad.vert"
                 },
                 "_fragPath": {
-                    "_virtualPath": "ER:shaders/es/debugDepthQuad.frag"
+                    "_virtualPath": "ER:shaders/glsl/debugDepthQuad.frag"
                 }
             }
         }

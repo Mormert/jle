@@ -6,10 +6,10 @@
             "id": 2147483649,
             "data": {
                 "_vertexPath": {
-                    "_virtualPath": "ER:shaders/es/exampleCube.vert"
+                    "_virtualPath": "ER:shaders/glsl/exampleCube.vert"
                 },
                 "_fragPath": {
-                    "_virtualPath": "ER:shaders/es/exampleCube.frag"
+                    "_virtualPath": "ER:shaders/glsl/exampleCube.frag"
                 }
             }
         }

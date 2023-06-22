@@ -6,10 +6,10 @@
             "id": 2147483649,
             "data": {
                 "_vertexPath": {
-                    "_virtualPath": "ER:shaders/es/skybox.vert"
+                    "_virtualPath": "ER:shaders/glsl/skybox.vert"
                 },
                 "_fragPath": {
-                    "_virtualPath": "ER:shaders/es/skybox.frag"
+                    "_virtualPath": "ER:shaders/glsl/skybox.frag"
                 }
             }
         }
