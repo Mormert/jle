@@ -18,6 +18,8 @@ public:
     }
 
     void update(float dt) override;
+
+    void editorGizmosRender(bool selected) override;
 };
 
 CEREAL_REGISTER_TYPE(cLightDirectional)

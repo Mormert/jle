@@ -18,7 +18,7 @@ cMesh::update(float dt)
         std::shared_ptr<jleMesh> mesh = _meshRef.get();
         std::shared_ptr<jleMaterial> material = _materialRef.get();
         gCore->rendering().rendering3d().sendMesh(
-            mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID());
+            mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), true);
     }
 }
 

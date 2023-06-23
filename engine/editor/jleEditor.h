@@ -7,6 +7,7 @@
 #include "editor/jleEditorImGuiWindowInterface.h"
 #include "jleGameEngine.h"
 #include "jleImage.h"
+#include "jleMesh.h"
 #include <memory>
 #include <vector>
 
@@ -65,11 +66,17 @@ public:
         return scene;
     }
 
+    jleResourceRef<jleMesh> pointLightLampGizmoMesh;
+    jleResourceRef<jleMesh> directionalLightLampGizmoMesh;
 
 private:
     void initImgui();
 
     void imguiTheme();
+
+    void renderEditorGizmos();
+
+    void renderEditorGizmosObject(jleObject* object);
 
     void addImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window);
 

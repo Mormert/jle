@@ -25,6 +25,8 @@ public:
 
     void editorUpdate(float dt) override;
 
+    void editorGizmosRender(bool selected) override;
+
 protected:
     glm::vec3 _color{1.f};
 };

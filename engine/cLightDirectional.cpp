@@ -1,5 +1,6 @@
 // Copyright (c) 2023. Johan Lind
 
+#include <editor/jleEditor.h>
 #include "cLightDirectional.h"
 
 #include "jleCore.h"
@@ -14,4 +15,13 @@ cLightDirectional::update(float dt)
     auto mat4 = getTransform().getWorldMatrix();
 
     gCore->rendering().rendering3d().setDirectionalLight(mat4, _color);
+}
+
+
+void
+cLightDirectional::editorGizmosRender(bool selected)
+{
+    auto mesh = gEditor->directionalLightLampGizmoMesh.get();
+    std::shared_ptr<jleMaterial> material{};
+    gEngine->rendering().rendering3d().sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 }

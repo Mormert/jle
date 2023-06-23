@@ -23,6 +23,7 @@ public:
         std::shared_ptr<jleMesh> mesh;
         std::shared_ptr<jleMaterial> material;
         int instanceId;
+        bool castShadows;
     };
 
     struct jle3DRendererLight {
@@ -48,7 +49,8 @@ public:
     void sendMesh(std::shared_ptr<jleMesh> &mesh,
                   std::shared_ptr<jleMaterial> &material,
                   const glm::mat4 &transform,
-                  int instanceId);
+                  int instanceId,
+                  bool castShadows);
 
     void sendLight(const glm::vec3 &position, const glm::vec3 &color);
 

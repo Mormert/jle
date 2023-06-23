@@ -50,6 +50,11 @@ public:
     {
     }
 
+    [[maybe_unused]] virtual void
+    editorGizmosRender(bool selected)
+    {
+    }
+
     void destroy();
 
     virtual const std::string_view componentName() const = 0;

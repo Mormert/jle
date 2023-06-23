@@ -112,6 +112,9 @@ jleEditor::start()
 
     LOG_INFO << "Starting the game in editor mode";
 
+    pointLightLampGizmoMesh = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_lamp.fbx"}};
+    directionalLightLampGizmoMesh = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_sun.fbx"}};
+
     startRmlUi();
 
     startGame();
@@ -134,6 +137,8 @@ jleEditor::render()
     }
 
     glCheckError("Render MSAA Game View");
+
+    renderEditorGizmos();
 
     if (projectionType == jleCameraProjection::Orthographic) {
         editorCamera.setOrthographicProjection(
@@ -350,5 +355,32 @@ jleEditor::update(float dt)
     if(isGameKilled())
     {
         updateEditorLoadedScenes(dt);
+    }
+}
+
+void
+jleEditor::renderEditorGizmos()
+{
+    for (auto scene : gEngine->gameRef().activeScenesRef()) {
+        for(auto &&o : scene->sceneObjects()){
+            renderEditorGizmosObject(o.get());
+        }
+    }
+
+    for (auto scene : gEditor->getEditorScenes()) {
+        for(auto &&o : scene->sceneObjects()){
+            renderEditorGizmosObject(o.get());
+        }
+    }
+}
+
+void
+jleEditor::renderEditorGizmosObject(jleObject *object)
+{
+    for(auto &&c : object->customComponents()){
+        c->editorGizmosRender(true);
+    }
+    for(auto&& child : object->childObjects()){
+        renderEditorGizmosObject(child.get());
     }
 }

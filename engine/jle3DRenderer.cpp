@@ -250,9 +250,10 @@ void
 jle3DRenderer::sendMesh(std::shared_ptr<jleMesh> &mesh,
                         std::shared_ptr<jleMaterial> &material,
                         const glm::mat4 &transform,
-                        int instanceId)
+                        int instanceId,
+                        bool castShadows)
 {
-    _queuedMeshes.push_back({transform, mesh, material, instanceId});
+    _queuedMeshes.push_back({transform, mesh, material, instanceId, castShadows});
 }
 
 void
@@ -508,6 +509,9 @@ void
 jle3DRenderer::renderShadowMeshes(const std::vector<jle3DRendererQueuedMesh> &meshes, jleShader &shader)
 {
     for (auto &&mesh : meshes) {
+        if(!mesh.castShadows){
+            return;
+        }
         shader.SetMat4("model", mesh.transform);
         glBindVertexArray(mesh.mesh->getVAO());
         if (mesh.mesh->usesIndexing()) {
