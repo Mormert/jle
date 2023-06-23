@@ -29,8 +29,26 @@ jle3DRenderer::jle3DRenderer()
       _pickingShader{jlePath{"ER:shaders/picking.sh"}},
       _shadowMappingShader{jlePath{"ER:shaders/shadowMapping.sh"}},
       _shadowMappingPointShader{jlePath{"ER:shaders/shadowMappingPoint.sh"}},
-      _debugDepthQuad{jlePath{"ER:shaders/depthDebug.sh"}}
+      _debugDepthQuad{jlePath{"ER:shaders/depthDebug.sh"}},
+      _linesShader{jlePath{"ER:shaders/lines.sh"}}
 {
+
+    // Generate buffers for line drawing
+    glGenVertexArrays(1, &_lineVAO);
+    glGenBuffers(1, &_lineVBO);
+    glBindVertexArray(_lineVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
+    glBufferData(GL_ARRAY_BUFFER, (GLuint)1024 * sizeof(glm::vec3), (void*)0, GL_DYNAMIC_DRAW); // Please don't draw more lines than 1024 in one batch :))
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    // End gen buffers for line drawing
+
+
 
     constexpr float exampleCubeData[] = {
         // clang-format off
@@ -140,6 +158,9 @@ jle3DRenderer::~jle3DRenderer()
     glDeleteBuffers(1, &_exampleCubeVBO);
     glDeleteBuffers(1, &_exampleCubeInstanceBuffer);
     glDeleteVertexArrays(1, &_exampleCubeVAO);
+
+    glDeleteBuffers(1, &_lineVBO);
+    glDeleteVertexArrays(1, &_lineVAO);
 }
 
 void
@@ -186,6 +207,10 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 
     glCheckError("3D Render - Meshes");
 
+    renderLines(camera, _queuedLines);
+
+    glCheckError("3D Render - Lines");
+
     renderSkybox(camera);
 
     glCheckError("3D Render - Skybox");
@@ -226,6 +251,7 @@ jle3DRenderer::clearBuffersForNextFrame()
     _queuedExampleCubes.clear();
     _queuedMeshes.clear();
     _queuedLights.clear();
+    _queuedLines.clear();
 }
 
 void
@@ -580,4 +606,36 @@ void
 jle3DRenderer::disableDirectionalLight()
 {
     _useDirectionalLight = false;
+}
+
+void
+jle3DRenderer::sendLines(const std::vector<glm::vec3>& points, const glm::vec3& colour)
+{
+    _queuedLines.push_back({points, colour});
+}
+
+void
+jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DRendererLines>& linesBatch)
+{
+    if(linesBatch.empty()){
+        return;
+    }
+
+    _linesShader->use();
+    _linesShader->SetMat4("projView", camera.getProjectionViewMatrix());
+
+    glBindVertexArray(_lineVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
+
+
+    for(auto&& lineBatch : linesBatch){
+        _linesShader->SetVec3("color", lineBatch.color);
+
+        // Update existing buffer with new line data, but will not work past the buffer size!
+        glBufferSubData(GL_ARRAY_BUFFER, 0, (GLuint)lineBatch.points.size() * sizeof(glm::vec3), lineBatch.points.data());
+
+        glDrawArrays(GL_LINE_STRIP, 0, (GLuint)lineBatch.points.size());
+    }
+
+    glBindVertexArray(0);
 }

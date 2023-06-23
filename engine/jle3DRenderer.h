@@ -31,6 +31,11 @@ public:
         glm::vec3 color;
     };
 
+    struct jle3DRendererLines {
+        std::vector<glm::vec3> points;
+        glm::vec3 color;
+    };
+
     jle3DRenderer();
 
     virtual ~jle3DRenderer();
@@ -51,6 +56,8 @@ public:
                   const glm::mat4 &transform,
                   int instanceId,
                   bool castShadows);
+
+    void sendLines(const std::vector<glm::vec3>& points, const glm::vec3& colour);
 
     void sendLight(const glm::vec3 &position, const glm::vec3 &color);
 
@@ -86,12 +93,17 @@ private:
     jleResourceRef<jleShader> _shadowMappingShader;
     jleResourceRef<jleShader> _shadowMappingPointShader;
     jleResourceRef<jleShader> _debugDepthQuad;
+    jleResourceRef<jleShader> _linesShader;
 
     void renderMeshes(const jleCamera &camera, const std::vector<jle3DRendererQueuedMesh> &meshes);
 
     void renderShadowMeshes(const std::vector<jle3DRendererQueuedMesh> &meshes, jleShader &shader);
 
+    void renderLines(const jleCamera &camera, const std::vector<jle3DRendererLines>& linesBatch);
+
     std::vector<jle3DRendererQueuedMesh> _queuedMeshes;
+
+    std::vector<jle3DRendererLines> _queuedLines;
 
     void renderSkybox(const jleCamera &camera);
     jleResourceRef<jleShader> _skyboxShader;
@@ -112,4 +124,6 @@ private:
     bool _useEnvironmentMapping{true};
     glm::vec3 _directionalLightRotation{};
     glm::vec3 _directionalLightColour{};
+
+    unsigned int _lineVAO, _lineVBO;
 };
