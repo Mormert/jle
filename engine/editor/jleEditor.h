@@ -76,6 +76,8 @@ private:
 
     void renderEditorGizmos();
 
+    void renderEditorGridGizmo();
+
     void renderEditorGizmosObject(jleObject* object);
 
     void addImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window);

@@ -34,6 +34,7 @@ public:
     struct jle3DRendererLines {
         std::vector<glm::vec3> points;
         glm::vec3 color;
+        glm::vec3 attenuation;
     };
 
     jle3DRenderer();
@@ -57,7 +58,7 @@ public:
                   int instanceId,
                   bool castShadows);
 
-    void sendLines(const std::vector<glm::vec3>& points, const glm::vec3& colour);
+    void sendLines(const std::vector<glm::vec3>& points, const glm::vec3& colour, const glm::vec3& attenuation = {1.0f, 0.0f, 0.0f});
 
     void sendLight(const glm::vec3 &position, const glm::vec3 &color);
 

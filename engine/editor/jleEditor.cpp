@@ -140,6 +140,8 @@ jleEditor::render()
 
     renderEditorGizmos();
 
+    renderEditorGridGizmo();
+
     if (projectionType == jleCameraProjection::Orthographic) {
         editorCamera.setOrthographicProjection(
             editorScreenFramebuffer->width(), editorScreenFramebuffer->height(), 10000.f, -10000.f);
@@ -383,4 +385,62 @@ jleEditor::renderEditorGizmosObject(jleObject *object)
     for(auto&& child : object->childObjects()){
         renderEditorGizmosObject(child.get());
     }
+}
+void
+jleEditor::renderEditorGridGizmo()
+{
+    std::vector<glm::vec3> lines;
+    glm::vec3 attenuation = {1.0f, 0.44f, 0.80f};
+
+    lines.emplace_back(glm::vec3(100.f, 0.f, 0.f));
+    lines.emplace_back(glm::vec3(-100.f, 0.f, 0.f));
+    rendering().rendering3d().sendLines(lines, glm::vec3(1.0f, 0.0f, 0.0f), attenuation);
+    lines.clear();
+
+
+    lines.emplace_back(glm::vec3(0.f, 100.f, 0.f));
+    lines.emplace_back(glm::vec3(0.f, -100.f, 0.f));
+    rendering().rendering3d().sendLines(lines, glm::vec3(0.0f, 1.0f, 0.0f), attenuation);
+    lines.clear();
+
+    lines.emplace_back(glm::vec3(0.f, 0.f, 100.f));
+    lines.emplace_back(glm::vec3(0.f, 0.f, -100.f));
+    rendering().rendering3d().sendLines(lines, glm::vec3(0.0f, 0.0f, 1.0f), attenuation);
+    lines.clear();
+
+    auto pos = editorCamera.getPosition();
+    pos.y = 0;
+    pos.x = glm::round(pos.x/100.f)*100.f;
+    pos.z = glm::round(pos.z/100.f)*100.f;
+    pos.x -= 500;
+    pos.z -= 500;
+
+    for(int i = 0; i < 10; i++){
+            if(i % 2 == 0){
+                pos.x += 1000;
+            }else{
+                pos.x -= 1000;
+            }
+            lines.emplace_back(pos);
+            pos.z += 100;
+            lines.emplace_back(pos);
+    }
+
+    rendering().rendering3d().sendLines(lines, glm::vec3(1.0f, 0.3f, 0.3f), attenuation);
+    lines.clear();
+
+    pos.z -= 1000;
+    for(int i = 0; i < 10; i++){
+        if(i % 2 == 0){
+            pos.z += 1000;
+        }else{
+            pos.z -= 1000;
+        }
+        lines.emplace_back(pos);
+        pos.x += 100;
+        lines.emplace_back(pos);
+    }
+
+    rendering().rendering3d().sendLines(lines, glm::vec3(0.3f, 0.3f, 1.0f), attenuation);
+    lines.clear();
 }

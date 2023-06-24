@@ -609,9 +609,9 @@ jle3DRenderer::disableDirectionalLight()
 }
 
 void
-jle3DRenderer::sendLines(const std::vector<glm::vec3>& points, const glm::vec3& colour)
+jle3DRenderer::sendLines(const std::vector<glm::vec3>& points, const glm::vec3& colour, const glm::vec3& attenuation)
 {
-    _queuedLines.push_back({points, colour});
+    _queuedLines.push_back({points, colour, attenuation});
 }
 
 void
@@ -621,8 +621,12 @@ jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DRende
         return;
     }
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     _linesShader->use();
     _linesShader->SetMat4("projView", camera.getProjectionViewMatrix());
+    _linesShader->SetVec3("cameraPos", camera.getPosition());
 
     glBindVertexArray(_lineVAO);
     glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
@@ -630,6 +634,7 @@ jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DRende
 
     for(auto&& lineBatch : linesBatch){
         _linesShader->SetVec3("color", lineBatch.color);
+        _linesShader->SetVec3("attenuationParams", lineBatch.attenuation);
 
         // Update existing buffer with new line data, but will not work past the buffer size!
         glBufferSubData(GL_ARRAY_BUFFER, 0, (GLuint)lineBatch.points.size() * sizeof(glm::vec3), lineBatch.points.data());
@@ -638,4 +643,6 @@ jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DRende
     }
 
     glBindVertexArray(0);
+
+    glDisable(GL_BLEND);
 }
