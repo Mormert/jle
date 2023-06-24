@@ -6,6 +6,7 @@
 
 #include "editor/jleEditorImGuiWindowInterface.h"
 #include "jleGameEngine.h"
+#include "jleResourceRef.h"
 #include "jleImage.h"
 #include "jleMesh.h"
 #include <memory>

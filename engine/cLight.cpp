@@ -6,6 +6,9 @@
 #include "jleCore.h"
 #include "jleRendering.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
+
 cLight::cLight(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 void
 cLight::start()
