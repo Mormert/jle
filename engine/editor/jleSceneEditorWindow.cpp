@@ -211,7 +211,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     const float *projectionMatrix = &jleEditor::editorCamera.getProjectionMatrix()[0][0];
     static const auto identityMatrix = glm::mat4{1.f};
     const static float *identityMatrixPtr = &identityMatrix[0][0];
-    ImGuizmo::DrawGrid(viewMatrix, projectionMatrix, identityMatrixPtr, 25.f);
+    //ImGuizmo::DrawGrid(viewMatrix, projectionMatrix, identityMatrixPtr, 25.f);
 
     /*
     // The following commented code is for a camera controller "cube" in the top left corner.

@@ -73,5 +73,6 @@ cCamera::cCamera(jleObject *owner, jleScene *scene) : jleComponent(owner, scene)
 cCamera::~cCamera()
 {
     sInstanceCounter--;
-    gEngine->removeGameWindowResizeCallback(_framebufferCallbackId);
+    if(gEngine)
+        gEngine->removeGameWindowResizeCallback(_framebufferCallbackId);
 }

@@ -261,4 +261,13 @@ void
 jleGameEngine::exiting()
 {
     killGame();
+    killRmlUi();
+}
+
+void
+jleGameEngine::killRmlUi()
+{
+    Rml::Shutdown();
+    Backend::Shutdown();
+    Shell::Shutdown();
 }

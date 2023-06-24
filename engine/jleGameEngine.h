@@ -71,6 +71,8 @@ protected:
 
     void startRmlUi();
 
+    void killRmlUi();
+
     void update(float dt) override;
 
     void render() override;

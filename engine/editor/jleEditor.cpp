@@ -363,9 +363,11 @@ jleEditor::update(float dt)
 void
 jleEditor::renderEditorGizmos()
 {
-    for (auto scene : gEngine->gameRef().activeScenesRef()) {
-        for(auto &&o : scene->sceneObjects()){
-            renderEditorGizmosObject(o.get());
+    if(!gEngine->isGameKilled()){
+        for (auto scene : gEngine->gameRef().activeScenesRef()) {
+            for(auto &&o : scene->sceneObjects()){
+                renderEditorGizmosObject(o.get());
+            }
         }
     }
 
