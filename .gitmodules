@@ -16,3 +16,6 @@
 [submodule "engine/3rdparty/git_submodules/RmlUi"]
 	path = engine/3rdparty/git_submodules/RmlUi
 	url = https://github.com/mikke89/RmlUi.git
+[submodule "engine/3rdparty/git_submodules/bullet3"]
+	path = engine/3rdparty/git_submodules/bullet3
+	url = https://github.com/bulletphysics/bullet3.git

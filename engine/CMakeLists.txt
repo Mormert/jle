@@ -75,7 +75,8 @@ add_library(engine STATIC
         "cLightDirectional.cpp"
         "jleFramebufferScreen.cpp"
         "jleMaterial.cpp"
-        "jleExplicitInclude.cpp" jleFramebufferGameScreen.cpp jleFramebufferGameScreen.h)
+        "jleExplicitInclude.cpp"
+        "jlePhysics.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE
@@ -144,6 +145,10 @@ endif ()
 
 add_subdirectory(3rdparty/SoLoud)
 target_link_libraries(engine PUBLIC SoLoud)
+
+add_subdirectory(3rdparty/git_submodules/bullet3)
+target_link_libraries(engine PUBLIC LinearMath Bullet3Common BulletInverseDynamics BulletCollision BulletDynamics BulletSoftBody)
+target_include_directories(engine SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/bullet3/src")
 
 # Disable HarfBuzz Dependency
 set(FT_DISABLE_HARFBUZZ ON)
