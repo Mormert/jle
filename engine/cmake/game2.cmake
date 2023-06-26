@@ -28,6 +28,17 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 endif()
 
+if (MINGW)
+    # This -03 issue is similar to the /bigobj fix above, but it uses more optimization...? Hacky. :>
+    # The dangling-reference warning is coming from Assimp, and only happens on MinGW
+    # Socket.io library uses WinSock
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wno-dangling-reference -lwsock32 -lws2_32")
+
+    find_library(WSOCK32_LIBRARY wsock32)
+    find_library(WS2_32_LIBRARY ws2_32)
+    link_libraries(wsock32 ws2_32)
+endif()
+
 if (BUILD_EDITOR)
     add_definitions(-DBUILD_EDITOR)
 endif ()

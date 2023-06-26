@@ -151,7 +151,7 @@ set(BUILD_BULLET2_DEMOS OFF CACHE BOOL "" FORCE)
 set(BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
 set(BUILD_EXTRAS OFF CACHE BOOL "" FORCE)
 add_subdirectory(3rdparty/git_submodules/bullet3)
-target_link_libraries(engine PUBLIC LinearMath Bullet3Common BulletInverseDynamics BulletCollision BulletDynamics BulletSoftBody)
+target_link_libraries(engine PUBLIC BulletDynamics BulletCollision Bullet3Common BulletInverseDynamics BulletSoftBody LinearMath)
 target_include_directories(engine SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/bullet3/src")
 
 # Disable HarfBuzz Dependency
