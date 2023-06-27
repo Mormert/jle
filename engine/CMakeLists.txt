@@ -76,7 +76,9 @@ add_library(engine STATIC
         "jleFramebufferScreen.cpp"
         "jleMaterial.cpp"
         "jleExplicitInclude.cpp"
-        "jlePhysics.cpp")
+        "jlePhysics.cpp"
+        "jlePhysicsDebugDrawer.cpp"
+        "cRigidbody.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE

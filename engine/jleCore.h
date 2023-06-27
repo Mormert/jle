@@ -58,8 +58,6 @@ public:
 
     jleTextRendering &textRendering();
 
-    jlePhysics &physics();
-
     [[nodiscard]] jleEngineSettings &settings();
 
     [[nodiscard]] std::shared_ptr<jleEngineSettings> settingsPtr();
@@ -113,7 +111,6 @@ protected:
     const std::shared_ptr<jleInput> _input;
     const std::shared_ptr<jleRendering> _rendering;
     const std::unique_ptr<SoLoud::Soloud> _soLoud;
-    const std::unique_ptr<jlePhysics> _physics;
 
     Remotery *_remotery;
 

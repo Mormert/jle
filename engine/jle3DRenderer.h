@@ -13,6 +13,8 @@
 #include <memory>
 #include <vector>
 
+#define JLE_LINE_DRAW_BATCH_SIZE 1024
+
 class jleMaterial;
 
 class jle3DRenderer
@@ -58,6 +60,10 @@ public:
                   int instanceId,
                   bool castShadows);
 
+    // Line strips will always connect each lines, from start to end.
+    void sendLineStrip(const std::vector<glm::vec3>& points, const glm::vec3& colour, const glm::vec3& attenuation = {1.0f, 0.0f, 0.0f});
+
+    // Lines needs to come in pairs in the points, two for each line.
     void sendLines(const std::vector<glm::vec3>& points, const glm::vec3& colour, const glm::vec3& attenuation = {1.0f, 0.0f, 0.0f});
 
     void sendLight(const glm::vec3 &position, const glm::vec3 &color);
@@ -100,10 +106,11 @@ private:
 
     void renderShadowMeshes(const std::vector<jle3DRendererQueuedMesh> &meshes, jleShader &shader);
 
-    void renderLines(const jleCamera &camera, const std::vector<jle3DRendererLines>& linesBatch);
+    void renderLines(const jleCamera &camera, const std::vector<jle3DRendererLines>& linesBatch, bool lineStrip);
 
     std::vector<jle3DRendererQueuedMesh> _queuedMeshes;
 
+    std::vector<jle3DRendererLines> _queuedLineStrips;
     std::vector<jle3DRendererLines> _queuedLines;
 
     void renderSkybox(const jleCamera &camera);

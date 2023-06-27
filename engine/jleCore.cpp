@@ -31,8 +31,7 @@ jleCore::jleCore()
                                                   std::make_shared<jleMouseInput>(_window))},
       _timerManager{std::make_unique<jleTimerManager>()},
       _rendering{std::make_shared<jleRendering>()},
-      _resources{std::make_unique<jleResources>()}, _soLoud{std::make_unique<SoLoud::Soloud>()},
-      _physics{std::make_unique<jlePhysics>()}
+      _resources{std::make_unique<jleResources>()}, _soLoud{std::make_unique<SoLoud::Soloud>()}
 {
     PLOG_INFO << "Starting the core...";
 
@@ -177,12 +176,6 @@ jleTextRendering &
 jleCore::textRendering()
 {
     return _rendering->texts();
-}
-
-jlePhysics &
-jleCore::physics()
-{
-    return *_physics;
 }
 
 jleEngineSettings &

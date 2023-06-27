@@ -48,6 +48,8 @@ public:
 
     void executeNextFrame();
 
+    jlePhysics &physics();
+
     [[nodiscard]] bool isGameKilled() const;
 
     [[nodiscard]] bool isGameHalted() const;
@@ -80,6 +82,8 @@ protected:
     void renderRmlUi();
 
     void exiting() override;
+
+    std::unique_ptr<jlePhysics> _physics;
 
     std::unique_ptr<jleGame> game;
     bool gameHalted = false;

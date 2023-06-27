@@ -20,6 +20,8 @@
 #include <jleResourceRef.h>
 #include <jleTransform.h>
 
+// A tooltip utility for showing tooltips in the editor
+// Works on arithmetic types: float, int, double, etc, and std::string
 template <typename T>
 struct jleToolTip {
     explicit jleToolTip<T>(const std::string_view tip) : tip_view{tip} {}
@@ -44,9 +46,10 @@ struct jleToolTip {
 };
 
 #ifdef BUILD_EDITOR
-#define JLE_TOOLTIP(TYPE, TIP, NAME) jleToolTip<TYPE>(NAME){TIP};
+// The following macro only works on arithmetic types: float, int, double, etc, and std::string
+#define JLE_TOOLTIP_ARITHMETIC(TYPE, TIP, NAME) jleToolTip<TYPE>(NAME){TIP};
 #else
-#define JLE_TOOLTIP(TYPE, TIP) TYPE NAME
+#define JLE_TOOLTIP_ARITHMETIC(TYPE, TIP) TYPE NAME;
 #endif
 
     namespace cereal

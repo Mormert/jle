@@ -125,6 +125,20 @@ jleEditor::render()
 {
     JLE_SCOPE_PROFILE_GPU(EditorRender);
 
+    renderGameView();
+
+    renderEditorSceneView();
+
+    renderEditorUI();
+
+    glCheckError("Main Editor Render");
+
+    rendering().clearBuffersForNextFrame();
+}
+
+void
+jleEditor::renderGameView()
+{
     if (!gameHalted && game) {
         // Render to game view
         static jleFramebufferMultisample msaa{mainScreenFramebuffer->width(), mainScreenFramebuffer->height(), 4};
@@ -137,10 +151,19 @@ jleEditor::render()
     }
 
     glCheckError("Render MSAA Game View");
+}
 
+void
+jleEditor::renderEditorSceneView()
+{
     renderEditorGizmos();
 
     renderEditorGridGizmo();
+
+    if(!isGameKilled())
+    {
+        physics().renderDebug();
+    }
 
     if (projectionType == jleCameraProjection::Orthographic) {
         editorCamera.setOrthographicProjection(
@@ -160,7 +183,11 @@ jleEditor::render()
     rendering().renderMSAA(*editorScreenFramebuffer, msaa, editorCamera);
 
     glCheckError("Render MSAA Scene View");
+}
 
+void
+jleEditor::renderEditorUI()
+{
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glClearColor(0.f, 0.f, 0.f, 1.f);
@@ -197,9 +224,7 @@ jleEditor::render()
         }
     }
 
-    glCheckError("Main Editor Render");
-
-    rendering().clearBuffersForNextFrame();
+    glCheckError("Render Editor UI");
 }
 
 void
@@ -396,18 +421,18 @@ jleEditor::renderEditorGridGizmo()
 
     lines.emplace_back(glm::vec3(100.f, 0.f, 0.f));
     lines.emplace_back(glm::vec3(-100.f, 0.f, 0.f));
-    rendering().rendering3d().sendLines(lines, glm::vec3(1.0f, 0.0f, 0.0f), attenuation);
+    rendering().rendering3d().sendLineStrip(lines, glm::vec3(1.0f, 0.0f, 0.0f), attenuation);
     lines.clear();
 
 
     lines.emplace_back(glm::vec3(0.f, 100.f, 0.f));
     lines.emplace_back(glm::vec3(0.f, -100.f, 0.f));
-    rendering().rendering3d().sendLines(lines, glm::vec3(0.0f, 1.0f, 0.0f), attenuation);
+    rendering().rendering3d().sendLineStrip(lines, glm::vec3(0.0f, 1.0f, 0.0f), attenuation);
     lines.clear();
 
     lines.emplace_back(glm::vec3(0.f, 0.f, 100.f));
     lines.emplace_back(glm::vec3(0.f, 0.f, -100.f));
-    rendering().rendering3d().sendLines(lines, glm::vec3(0.0f, 0.0f, 1.0f), attenuation);
+    rendering().rendering3d().sendLineStrip(lines, glm::vec3(0.0f, 0.0f, 1.0f), attenuation);
     lines.clear();
 
     auto pos = editorCamera.getPosition();
@@ -428,7 +453,7 @@ jleEditor::renderEditorGridGizmo()
             lines.emplace_back(pos);
     }
 
-    rendering().rendering3d().sendLines(lines, glm::vec3(1.0f, 0.3f, 0.3f), attenuation);
+    rendering().rendering3d().sendLineStrip(lines, glm::vec3(1.0f, 0.3f, 0.3f), attenuation);
     lines.clear();
 
     pos.z -= 1000;
@@ -443,6 +468,7 @@ jleEditor::renderEditorGridGizmo()
         lines.emplace_back(pos);
     }
 
-    rendering().rendering3d().sendLines(lines, glm::vec3(0.3f, 0.3f, 1.0f), attenuation);
+    rendering().rendering3d().sendLineStrip(lines, glm::vec3(0.3f, 0.3f, 1.0f), attenuation);
     lines.clear();
 }
+

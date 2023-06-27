@@ -181,6 +181,7 @@ jleObject::duplicate(bool childChain)
     duplicated->__childObjects.clear();
     duplicated->__instanceID = _containedInScene->getNextInstanceId();
     duplicated->_transform._owner = duplicated.get();
+    duplicated->_isStarted = false; // Note that duplicating an object will run its start function!
 
     for (auto &&component : _components) {
         auto clonedComponent = component->clone();

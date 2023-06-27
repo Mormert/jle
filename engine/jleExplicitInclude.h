@@ -18,3 +18,4 @@
 #include "cText.h"
 #include "cUITransformUpdater.h"
 #include "jleTransform.h"
+#include "cRigidbody.h"

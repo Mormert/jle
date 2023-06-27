@@ -1,11 +1,11 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jle3DRenderer.h"
-#include "jleMaterial.h"
 #include "jleCamera.h"
 #include "jleFrameBufferInterface.h"
 #include "jleFullscreenRendering.h"
 #include "jleGameEngine.h"
+#include "jleMaterial.h"
 #include "jlePathDefines.h"
 #include "jleProfiler.h"
 #include "jleStaticOpenGLState.h"
@@ -18,19 +18,14 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <random>
 
-
 #include <RmlUi_Backend.h>
-
 
 jle3DRenderer::jle3DRenderer()
     : _exampleCubeShader{jlePath{"ER:shaders/exampleCube.sh"}},
-      _defaultMeshShader{jlePath{"ER:shaders/defaultMesh.sh"}},
-      _skyboxShader{jlePath{"ER:shaders/skybox.sh"}},
-      _pickingShader{jlePath{"ER:shaders/picking.sh"}},
-      _shadowMappingShader{jlePath{"ER:shaders/shadowMapping.sh"}},
+      _defaultMeshShader{jlePath{"ER:shaders/defaultMesh.sh"}}, _skyboxShader{jlePath{"ER:shaders/skybox.sh"}},
+      _pickingShader{jlePath{"ER:shaders/picking.sh"}}, _shadowMappingShader{jlePath{"ER:shaders/shadowMapping.sh"}},
       _shadowMappingPointShader{jlePath{"ER:shaders/shadowMappingPoint.sh"}},
-      _debugDepthQuad{jlePath{"ER:shaders/depthDebug.sh"}},
-      _linesShader{jlePath{"ER:shaders/lines.sh"}}
+      _debugDepthQuad{jlePath{"ER:shaders/depthDebug.sh"}}, _linesShader{jlePath{"ER:shaders/lines.sh"}}
 {
 
     // Generate buffers for line drawing
@@ -39,16 +34,17 @@ jle3DRenderer::jle3DRenderer()
     glBindVertexArray(_lineVAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
-    glBufferData(GL_ARRAY_BUFFER, (GLuint)1024 * sizeof(glm::vec3), (void*)0, GL_DYNAMIC_DRAW); // Please don't draw more lines than 1024 in one batch :))
+    glBufferData(GL_ARRAY_BUFFER,
+                 (GLuint)JLE_LINE_DRAW_BATCH_SIZE * sizeof(glm::vec3),
+                 (void *)0,
+                 GL_DYNAMIC_DRAW); // Please don't draw more lines than JLE_LINE_DRAW_BATCH_SIZE in one batch :))
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     // End gen buffers for line drawing
-
-
 
     constexpr float exampleCubeData[] = {
         // clang-format off
@@ -200,14 +196,18 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
-    //glEnable(GL_CULL_FACE);
+    // glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
 
     renderMeshes(camera, _queuedMeshes);
 
     glCheckError("3D Render - Meshes");
 
-    renderLines(camera, _queuedLines);
+    renderLines(camera, _queuedLineStrips, true);
+
+    glCheckError("3D Render - Strip Lines");
+
+    renderLines(camera, _queuedLines, false);
 
     glCheckError("3D Render - Lines");
 
@@ -225,10 +225,9 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
     glBindTexture(GL_TEXTURE_2D, _shadowMappingFramebuffer->texture());
     renderFullscreenQuad(); */
 
-    //gEngine->context->Update();
+    // gEngine->context->Update();
 
     gEngine->context->SetDimensions(Rml::Vector2i(framebufferOut.width(), framebufferOut.height()));
-
 
     // Disable depth testing here because the UI doesnt use depth
     glDisable(GL_DEPTH_TEST);
@@ -251,6 +250,7 @@ jle3DRenderer::clearBuffersForNextFrame()
     _queuedExampleCubes.clear();
     _queuedMeshes.clear();
     _queuedLights.clear();
+    _queuedLineStrips.clear();
     _queuedLines.clear();
 }
 
@@ -299,8 +299,7 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, _pointsShadowMappingFramebuffer->texture());
 
-    if(_skybox)
-    {
+    if (_skybox) {
         glActiveTexture(GL_TEXTURE4);
         glBindTexture(GL_TEXTURE_CUBE_MAP, _skybox->getTextureID());
     }
@@ -535,7 +534,7 @@ void
 jle3DRenderer::renderShadowMeshes(const std::vector<jle3DRendererQueuedMesh> &meshes, jleShader &shader)
 {
     for (auto &&mesh : meshes) {
-        if(!mesh.castShadows){
+        if (!mesh.castShadows) {
             return;
         }
         shader.SetMat4("model", mesh.transform);
@@ -609,16 +608,31 @@ jle3DRenderer::disableDirectionalLight()
 }
 
 void
-jle3DRenderer::sendLines(const std::vector<glm::vec3>& points, const glm::vec3& colour, const glm::vec3& attenuation)
+jle3DRenderer::sendLineStrip(const std::vector<glm::vec3> &points,
+                             const glm::vec3 &colour,
+                             const glm::vec3 &attenuation)
+{
+    _queuedLineStrips.push_back({points, colour, attenuation});
+}
+
+void
+jle3DRenderer::sendLines(const std::vector<glm::vec3> &points, const glm::vec3 &colour, const glm::vec3 &attenuation)
 {
     _queuedLines.push_back({points, colour, attenuation});
 }
 
 void
-jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DRendererLines>& linesBatch)
+jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DRendererLines> &linesBatch, bool lineStrip)
 {
-    if(linesBatch.empty()){
+    if (linesBatch.empty()) {
         return;
+    }
+
+    GLenum lineMode;
+    if (lineStrip) {
+        lineMode = GL_LINE_STRIP;
+    } else {
+        lineMode = GL_LINES;
     }
 
     glEnable(GL_BLEND);
@@ -631,15 +645,15 @@ jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DRende
     glBindVertexArray(_lineVAO);
     glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
 
-
-    for(auto&& lineBatch : linesBatch){
+    for (auto &&lineBatch : linesBatch) {
         _linesShader->SetVec3("color", lineBatch.color);
         _linesShader->SetVec3("attenuationParams", lineBatch.attenuation);
 
         // Update existing buffer with new line data, but will not work past the buffer size!
-        glBufferSubData(GL_ARRAY_BUFFER, 0, (GLuint)lineBatch.points.size() * sizeof(glm::vec3), lineBatch.points.data());
+        glBufferSubData(
+            GL_ARRAY_BUFFER, 0, (GLuint)lineBatch.points.size() * sizeof(glm::vec3), lineBatch.points.data());
 
-        glDrawArrays(GL_LINE_STRIP, 0, (GLuint)lineBatch.points.size());
+        glDrawArrays(lineMode, 0, (GLuint)lineBatch.points.size());
     }
 
     glBindVertexArray(0);

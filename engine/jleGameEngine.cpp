@@ -28,6 +28,13 @@ jleGameEngine::startGame()
                        "before starting the game.";
         return;
     }
+
+    if(!_physics)
+    {
+        // Re-initialize the physics
+        _physics = std::make_unique<jlePhysics>();
+    }
+
     game = _gameCreator();
     game->start();
 }
@@ -36,6 +43,8 @@ void
 jleGameEngine::restartGame()
 {
     game.reset();
+    _physics.reset();
+
     timerManager().clearTimers();
     startGame();
 }
@@ -45,6 +54,7 @@ jleGameEngine::killGame()
 {
     timerManager().clearTimers();
     game.reset();
+    _physics.reset();
 }
 
 void
@@ -70,6 +80,12 @@ jleGameEngine::executeNextFrame()
     update(deltaFrameTime());
     rendering().render(*mainScreenFramebuffer, gameRef().mainCamera);
     gameHalted = gameHaltedTemp;
+}
+
+jlePhysics &
+jleGameEngine::physics()
+{
+    return *_physics;
 }
 
 bool
@@ -235,6 +251,7 @@ jleGameEngine::update(float dt)
         game->update(dt);
         game->updateActiveScenes(dt);
         context->Update();
+        physics().step(dt);
     }
 }
 

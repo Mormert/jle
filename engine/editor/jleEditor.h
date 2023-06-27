@@ -51,7 +51,7 @@ public:
     }
 
     std::shared_ptr<jleScene>
-    loadScene(const jlePath &scenePath)
+    loadScene(const jlePath &scenePath, bool startObjects = true)
     {
         auto scene = gCore->resources().loadResourceFromFile<jleScene>(scenePath, true);
 
@@ -59,7 +59,10 @@ public:
         if (it == _editorScenes.end()) {
             _editorScenes.push_back(scene);
             scene->onSceneCreation();
-            scene->startObjects();
+            if(startObjects)
+            {
+                scene->startObjects();
+            }
         } else {
             LOG_WARNING << "Loaded scene is already loaded";
         }
@@ -71,6 +74,12 @@ public:
     jleResourceRef<jleMesh> directionalLightLampGizmoMesh;
 
 private:
+    void renderGameView();
+
+    void renderEditorSceneView();
+
+    void renderEditorUI();
+
     void initImgui();
 
     void imguiTheme();

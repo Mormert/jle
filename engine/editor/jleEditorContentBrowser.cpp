@@ -542,7 +542,7 @@ jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file)
                 sceneName.resize(dot);
             }
 
-            gEditor->loadScene(jlePath{file.string(), false});
+            gEditor->loadScene(jlePath{file.string(), false}, false);
         }
     }
 }
