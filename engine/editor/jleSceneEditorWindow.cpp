@@ -28,6 +28,10 @@
 
 #include <GLFW/glfw3.h>
 
+#include <cRigidbody.h>
+#include "btBulletDynamicsCommon.h"
+
+
 jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name,
                                            std::shared_ptr<jleFramebufferInterface> &framebuffer)
     : iEditorImGuiWindow(window_name)
@@ -259,7 +263,33 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         EditTransform((float *)viewMatrix, (float *)projectionMatrix, (float *)&worldMatrixBefore[0][0], true);
         glm::mat4 transformMatrix = obj->getTransform().getWorldMatrix();
         if (transformMatrix != worldMatrixBefore) {
-            obj->getTransform().setWorldMatrix(worldMatrixBefore);
+            if(!gEngine->isGameKilled())
+            {
+                if(auto rb = obj->getComponent<cRigidbody>())
+                {
+                    obj->getTransform().setWorldMatrix(worldMatrixBefore);
+
+                    // Remove scaling from the world matrix (bullet don't want the scaling)
+                    glm::vec3 size;
+                    size.x = glm::length(glm::vec3(worldMatrixBefore[0])); // Basis vector X
+                    size.y = glm::length(glm::vec3(worldMatrixBefore[1])); // Basis vector Y
+                    size.z = glm::length(glm::vec3(worldMatrixBefore[2])); // Basis vector Z
+                    worldMatrixBefore = glm::scale(worldMatrixBefore, glm::vec3(1.f/size.x, 1.f/size.y, 1.f/size.z));
+
+                    btTransform transform;
+                    transform.setFromOpenGLMatrix((btScalar*)&worldMatrixBefore);
+
+                    rb->getBody()->setWorldTransform(transform);
+
+                    rb->getBody()->setLinearVelocity(btVector3{0.f, 0.f, 0.f});
+                    rb->getBody()->setAngularVelocity(btVector3{0.f, 0.f, 0.f});
+                    rb->getBody()->activate(true);
+                }
+            }
+            else
+            {
+                obj->getTransform().setWorldMatrix(worldMatrixBefore);
+            }
         }
     }
 

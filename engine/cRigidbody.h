@@ -7,8 +7,10 @@
 #include "jleMesh.h"
 #include "jleTransform.h"
 
-#include "jleResourceRef.h"
 #include "editor/jleImGuiCerealArchive.h"
+#include "jleResourceRef.h"
+
+class btRigidBody;
 
 class cRigidbody : public jleComponent
 {
@@ -29,11 +31,14 @@ public:
 
     void update(float dt) override;
 
-protected:
+    btRigidBody* getBody();
 
+protected:
     JLE_TOOLTIP_ARITHMETIC(float, "Setting mass to 0 makes this rigidbody static", _mass);
 
     glm::vec3 _origin;
+
+    btRigidBody *body;
 };
 
 CEREAL_REGISTER_TYPE(cRigidbody)

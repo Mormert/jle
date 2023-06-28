@@ -23,11 +23,17 @@ cRigidbody::start()
 
     btCollisionShape* shape = new btBoxShape(btVector3(btScalar(5.), btScalar(5.), btScalar(5.)));
 
-    gEngine->physics().createRigidbody(1.f, transform, shape, this);
+    body = gEngine->physics().createRigidbody(1.f, transform, shape, this);
 }
 
 void
 cRigidbody::update(float dt)
 {
 
+}
+
+btRigidBody *
+cRigidbody::getBody()
+{
+    return body;
 }

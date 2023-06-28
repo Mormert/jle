@@ -49,7 +49,7 @@ struct jleToolTip {
 // The following macro only works on arithmetic types: float, int, double, etc, and std::string
 #define JLE_TOOLTIP_ARITHMETIC(TYPE, TIP, NAME) jleToolTip<TYPE>(NAME){TIP};
 #else
-#define JLE_TOOLTIP_ARITHMETIC(TYPE, TIP) TYPE NAME;
+#define JLE_TOOLTIP_ARITHMETIC(TYPE, TIP, NAME) TYPE NAME;
 #endif
 
     namespace cereal
