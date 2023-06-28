@@ -11,7 +11,6 @@
 #include "jleResource.h"
 #include "jleTimerManager.h"
 #include "jleWindow.h"
-#include "jlePhysics.h"
 
 #include <plog/Log.h>
 #include <soloud.h>

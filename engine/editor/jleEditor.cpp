@@ -37,6 +37,7 @@
 #include "jleQuadRendering.h"
 #include "jleSceneEditorWindow.h"
 #include "jleWindow.h"
+#include "jlePhysics.h"
 #include "plog/Log.h"
 
 jleEditor::jleEditor()

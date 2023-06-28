@@ -10,6 +10,8 @@
 #include "jleInput.h"
 #include "jleTimerManager.h"
 #include <plog/Log.h>
+#include "jlePhysics.h"
+
 
 #include <RmlUi/Core.h>
 #include <RmlUi/Debugger.h>

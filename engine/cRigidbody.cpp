@@ -3,6 +3,8 @@
 #include "cRigidbody.h"
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
 
+#include "jlePhysics.h"
+
 #include "jleGameEngine.h"
 
 cRigidbody::cRigidbody(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
