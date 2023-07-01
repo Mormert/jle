@@ -40,7 +40,8 @@ jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name,
 
     _pickingFramebuffer = std::make_unique<jleFramebufferPicking>(_framebuffer->width(), _framebuffer->height());
 
-    _fpvCamController.position = {0.f, 0.f, 250.f};
+    auto pos = gEditor->editorCamera.getPosition();
+    fpvCamController.position = pos;
 }
 
 void
@@ -199,12 +200,12 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     ImGui::SameLine();
 
     ImGui::Text(
-        "(%f, %f, %f)", _fpvCamController.position.x, _fpvCamController.position.y, _fpvCamController.position.z);
+        "(%f, %f, %f)", fpvCamController.position.x, fpvCamController.position.y, fpvCamController.position.z);
 
     ImGui::SameLine();
 
     if (ImGui::SmallButton("R")) {
-        _fpvCamController.backToOrigin();
+        fpvCamController.backToOrigin();
     }
 
     ImGui::SameLine();
@@ -301,40 +302,40 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         auto dragDelta = ImGui::GetMouseDragDelta(1);
 
         if (jleEditor::projectionType == jleCameraProjection::Perspective || ImGui::IsKeyDown(ImGuiKey_LeftShift)) {
-            _fpvCamController.applyPerspectiveMouseMovementDelta(glm::vec2{dragDelta.x, dragDelta.y}, t * 100.f);
+            fpvCamController.applyPerspectiveMouseMovementDelta(glm::vec2{dragDelta.x, dragDelta.y}, t * 100.f);
         } else {
-            _fpvCamController.move(glm::vec3{dragDelta.x, dragDelta.y, 0.f} * t * 5.f);
+            fpvCamController.move(glm::vec3{dragDelta.x, dragDelta.y, 0.f} * t * 5.f);
         }
 
         constexpr float moveSpeed = 350.f;
         if (ImGui::IsKeyDown(ImGuiKey_W)) {
             if (jleEditor::projectionType == jleCameraProjection::Orthographic) {
-                _fpvCamController.moveUp(moveSpeed * t);
+                fpvCamController.moveUp(moveSpeed * t);
             } else {
-                _fpvCamController.moveForward(moveSpeed * t);
+                fpvCamController.moveForward(moveSpeed * t);
             }
         }
         if (ImGui::IsKeyDown(ImGuiKey_S)) {
             if (jleEditor::projectionType == jleCameraProjection::Orthographic) {
-                _fpvCamController.moveDown(moveSpeed * t);
+                fpvCamController.moveDown(moveSpeed * t);
             } else {
-                _fpvCamController.moveBackward(moveSpeed * t);
+                fpvCamController.moveBackward(moveSpeed * t);
             }
         }
         if (ImGui::IsKeyDown(ImGuiKey_D)) {
-            _fpvCamController.moveRight(moveSpeed * t);
+            fpvCamController.moveRight(moveSpeed * t);
         }
         if (ImGui::IsKeyDown(ImGuiKey_A)) {
-            _fpvCamController.moveLeft(moveSpeed * t);
+            fpvCamController.moveLeft(moveSpeed * t);
         }
         if (ImGui::IsKeyDown(ImGuiKey_Space)) {
-            _fpvCamController.moveUp(moveSpeed * t);
+            fpvCamController.moveUp(moveSpeed * t);
         }
         if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl)) {
-            _fpvCamController.moveDown(moveSpeed * t);
+            fpvCamController.moveDown(moveSpeed * t);
         }
 
-        jleEditor::editorCamera.setViewMatrix(_fpvCamController.getLookAtViewMatrix(), _fpvCamController.position);
+        jleEditor::editorCamera.setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
 
         auto currentScroll = gCore->input().mouse->scrollY();
         if (currentScroll != 0.f) {

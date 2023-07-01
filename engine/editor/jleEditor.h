@@ -13,9 +13,37 @@
 #include <vector>
 
 class jleFramebufferInterface;
+class jleSceneEditorWindow;
 
 class jleEditor;
 inline jleEditor *gEditor;
+
+struct jleEditorSaveState : public jleSerializedResource, public std::enable_shared_from_this<jleEditorSaveState> {
+    template <class Archive>
+    void
+    serialize(Archive &archive)
+    {
+        archive(CEREAL_NVP(loadedScenePaths),
+                CEREAL_NVP(cameraPosition),
+                CEREAL_NVP(gameRunning),
+                CEREAL_NVP(orthographicCamera),
+                CEREAL_NVP(cameraYaw),
+                CEREAL_NVP(cameraPitch));
+    }
+
+    JLE_REGISTER_RESOURCE_TYPE(jleEditorSaveState, edsave);
+    SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
+
+    std::vector<jlePath> loadedScenePaths{};
+    glm::vec3 cameraPosition{};
+    float cameraYaw{};
+    float cameraPitch{};
+    bool orthographicCamera{};
+    bool gameRunning{};
+};
+
+CEREAL_REGISTER_TYPE(jleEditorSaveState)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleEditorSaveState)
 
 class jleEditor : public jleGameEngine
 {
@@ -74,6 +102,11 @@ public:
     jleResourceRef<jleMesh> directionalLightLampGizmoMesh;
 
 private:
+
+    jleResourceRef<jleEditorSaveState> _editorSaveState;
+
+    void exiting() override;
+
     void renderGameView();
 
     void renderEditorSceneView();
@@ -97,4 +130,6 @@ private:
     std::vector<std::shared_ptr<iEditorImGuiWindow>> _imGuiWindows;
 
     std::vector<std::shared_ptr<jleScene>> _editorScenes;
+
+    std::shared_ptr<jleSceneEditorWindow> _sceneWindow;
 };

@@ -34,22 +34,21 @@
 #include "jleEditorTextEdit.h"
 #include "jleFramebufferScreen.h"
 #include "jleGameEditorWindow.h"
+#include "jlePhysics.h"
 #include "jleQuadRendering.h"
 #include "jleSceneEditorWindow.h"
 #include "jleWindow.h"
-#include "jlePhysics.h"
 #include "plog/Log.h"
 
-jleEditor::jleEditor()
-{
-    gEditor = this;
-}
+jleEditor::jleEditor() { gEditor = this; }
 
 void
 jleEditor::start()
 {
 
     LOG_INFO << "Starting the editor";
+
+    _editorSaveState = jleResourceRef<jleEditorSaveState>(jlePath{"BI:editor_save.edsave"});
 
     initImgui();
 
@@ -70,9 +69,13 @@ jleEditor::start()
     auto resourceEditor = std::make_shared<jleEditorResourceEdit>("Resource Edit");
     addImGuiWindow(resourceEditor);
 
-    auto sceneWindow = std::make_shared<jleSceneEditorWindow>("Scene Window", editorScreenFramebuffer);
-    addImGuiWindow(sceneWindow);
-    menu->addWindow(sceneWindow);
+    _sceneWindow = std::make_shared<jleSceneEditorWindow>("Scene Window", editorScreenFramebuffer);
+    _sceneWindow->fpvCamController.position = _editorSaveState->cameraPosition;
+    _sceneWindow->fpvCamController.yaw = _editorSaveState->cameraYaw;
+    _sceneWindow->fpvCamController.pitch = _editorSaveState->cameraPitch;
+    projectionType = static_cast<jleCameraProjection>(!_editorSaveState->orthographicCamera);
+    addImGuiWindow(_sceneWindow);
+    menu->addWindow(_sceneWindow);
 
     auto gameWindow = std::make_shared<jleGameEditorWindow>("Game Window");
     addImGuiWindow(gameWindow);
@@ -118,7 +121,13 @@ jleEditor::start()
 
     startRmlUi();
 
-    startGame();
+    if (_editorSaveState->gameRunning) {
+        startGame();
+    }
+
+    for (auto &&scenePath : _editorSaveState->loadedScenePaths) {
+        loadScene(scenePath, false);
+    }
 }
 
 void
@@ -161,8 +170,7 @@ jleEditor::renderEditorSceneView()
 
     renderEditorGridGizmo();
 
-    if(!isGameKilled())
-    {
+    if (!isGameKilled()) {
         physics().renderDebug();
     }
 
@@ -207,14 +215,13 @@ jleEditor::renderEditorUI()
         ImGuizmo::BeginFrame();
 
         // Update loop for all ImGui windows
-        for (auto window : _imGuiWindows) {
+        for (const auto& window : _imGuiWindows) {
             window->update(*this);
         }
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glCheckError("ImGui");
-
 
         auto &&io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
@@ -380,8 +387,7 @@ void
 jleEditor::update(float dt)
 {
     jleGameEngine::update(dt);
-    if(isGameKilled())
-    {
+    if (isGameKilled()) {
         updateEditorLoadedScenes(dt);
     }
 }
@@ -389,16 +395,16 @@ jleEditor::update(float dt)
 void
 jleEditor::renderEditorGizmos()
 {
-    if(!gEngine->isGameKilled()){
-        for (auto scene : gEngine->gameRef().activeScenesRef()) {
-            for(auto &&o : scene->sceneObjects()){
+    if (!gEngine->isGameKilled()) {
+        for (const auto& scene : gEngine->gameRef().activeScenesRef()) {
+            for (auto &&o : scene->sceneObjects()) {
                 renderEditorGizmosObject(o.get());
             }
         }
     }
 
-    for (auto scene : gEditor->getEditorScenes()) {
-        for(auto &&o : scene->sceneObjects()){
+    for (const auto& scene : gEditor->getEditorScenes()) {
+        for (auto &&o : scene->sceneObjects()) {
             renderEditorGizmosObject(o.get());
         }
     }
@@ -407,10 +413,10 @@ jleEditor::renderEditorGizmos()
 void
 jleEditor::renderEditorGizmosObject(jleObject *object)
 {
-    for(auto &&c : object->customComponents()){
+    for (auto &&c : object->customComponents()) {
         c->editorGizmosRender(true);
     }
-    for(auto&& child : object->childObjects()){
+    for (auto &&child : object->childObjects()) {
         renderEditorGizmosObject(child.get());
     }
 }
@@ -420,48 +426,47 @@ jleEditor::renderEditorGridGizmo()
     std::vector<glm::vec3> lines;
     glm::vec3 attenuation = {1.0f, 0.44f, 0.80f};
 
-    lines.emplace_back(glm::vec3(100.f, 0.f, 0.f));
-    lines.emplace_back(glm::vec3(-100.f, 0.f, 0.f));
+    lines.emplace_back(100.f, 0.f, 0.f);
+    lines.emplace_back(-100.f, 0.f, 0.f);
     rendering().rendering3d().sendLineStrip(lines, glm::vec3(1.0f, 0.0f, 0.0f), attenuation);
     lines.clear();
 
-
-    lines.emplace_back(glm::vec3(0.f, 100.f, 0.f));
-    lines.emplace_back(glm::vec3(0.f, -100.f, 0.f));
+    lines.emplace_back(0.f, 100.f, 0.f);
+    lines.emplace_back(0.f, -100.f, 0.f);
     rendering().rendering3d().sendLineStrip(lines, glm::vec3(0.0f, 1.0f, 0.0f), attenuation);
     lines.clear();
 
-    lines.emplace_back(glm::vec3(0.f, 0.f, 100.f));
-    lines.emplace_back(glm::vec3(0.f, 0.f, -100.f));
+    lines.emplace_back(0.f, 0.f, 100.f);
+    lines.emplace_back(0.f, 0.f, -100.f);
     rendering().rendering3d().sendLineStrip(lines, glm::vec3(0.0f, 0.0f, 1.0f), attenuation);
     lines.clear();
 
     auto pos = editorCamera.getPosition();
     pos.y = 0;
-    pos.x = glm::round(pos.x/100.f)*100.f;
-    pos.z = glm::round(pos.z/100.f)*100.f;
+    pos.x = glm::round(pos.x / 100.f) * 100.f;
+    pos.z = glm::round(pos.z / 100.f) * 100.f;
     pos.x -= 500;
     pos.z -= 500;
 
-    for(int i = 0; i < 10; i++){
-            if(i % 2 == 0){
-                pos.x += 1000;
-            }else{
-                pos.x -= 1000;
-            }
-            lines.emplace_back(pos);
-            pos.z += 100;
-            lines.emplace_back(pos);
+    for (int i = 0; i < 10; i++) {
+        if (i % 2 == 0) {
+            pos.x += 1000;
+        } else {
+            pos.x -= 1000;
+        }
+        lines.emplace_back(pos);
+        pos.z += 100;
+        lines.emplace_back(pos);
     }
 
     rendering().rendering3d().sendLineStrip(lines, glm::vec3(1.0f, 0.3f, 0.3f), attenuation);
     lines.clear();
 
     pos.z -= 1000;
-    for(int i = 0; i < 10; i++){
-        if(i % 2 == 0){
+    for (int i = 0; i < 10; i++) {
+        if (i % 2 == 0) {
             pos.z += 1000;
-        }else{
+        } else {
             pos.z -= 1000;
         }
         lines.emplace_back(pos);
@@ -473,3 +478,19 @@ jleEditor::renderEditorGridGizmo()
     lines.clear();
 }
 
+void
+jleEditor::exiting()
+{
+    _editorSaveState->gameRunning = !isGameKilled();
+    _editorSaveState->cameraPosition = editorCamera.getPosition();
+    _editorSaveState->loadedScenePaths.clear();
+    for (auto &&scene : _editorScenes) {
+        _editorSaveState->loadedScenePaths.push_back(jlePath{scene->filepath, false});
+    }
+    _editorSaveState->cameraYaw = _sceneWindow->fpvCamController.yaw;
+    _editorSaveState->cameraPitch = _sceneWindow->fpvCamController.pitch;
+    _editorSaveState->orthographicCamera = !static_cast<bool>(projectionType);
+    _editorSaveState->saveToFile();
+
+    jleGameEngine::exiting();
+}

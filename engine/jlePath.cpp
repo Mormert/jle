@@ -58,8 +58,8 @@ jlePath::findVirtualPathFromRealPath(const std::string &realPath)
         return virtualPath;
     }
 
-    LOGE << "Could not generate true resource path from absolute path for " << path;
-    virtualPath = path;
+    // Assume binary path if none of the above
+    virtualPath = "BI:" + path;
     return virtualPath;
 }
 
@@ -78,6 +78,9 @@ jlePath::findRealPathFromVirtualPath(const std::string &virtualPath)
         rootFolder = jleRootFolder::EngineResources;
     } else if (prefixString == EDITOR_RESOURCES_PREFIX) {
         rootFolder = jleRootFolder::EditorResources;
+    } else if (prefixString == BINARY_RESOURCES_PREFIX) {
+        path.erase(0, 4);
+        return path;
     }
 
     std::string rootFolderStr;
@@ -94,6 +97,10 @@ jlePath::findRealPathFromVirtualPath(const std::string &virtualPath)
     case jleRootFolder::EditorResources:
         rootFolderStr = EDITOR_RESOURCES_PREFIX;
         resourcesDirectory = &JLE_EDITOR_RESOURCES_PATH;
+        break;
+    case jleRootFolder::BinaryFolder:
+        rootFolderStr = BINARY_RESOURCES_PREFIX;
+        resourcesDirectory = &JLE_BINARY_RESOURCES_PATH;
         break;
     case jleRootFolder::None:
         realPath = path;

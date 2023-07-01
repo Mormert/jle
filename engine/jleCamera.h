@@ -33,6 +33,8 @@ struct jleCameraSimpleFPVController {
     [[nodiscard]] glm::mat4 getLookAtViewMatrix() const;
 
     glm::vec3 position{0.f, 0.f, 0.f};
+    float yaw{-90.f};
+    float pitch{0.f};
 
     void backToOrigin();
 
@@ -45,8 +47,6 @@ private:
     glm::vec3 _up{0.0f, 1.0f, 0.0f};
     glm::vec3 _right{};
     const glm::vec3 _worldUp{0.0f, 1.0f, 0.0f};
-    float _yaw{-90.f};
-    float _pitch{0.f};
     float _mouseSensitivity{0.001f};
 };
 

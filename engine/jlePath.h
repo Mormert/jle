@@ -22,7 +22,7 @@ public:
         _realPath = findRealPathFromVirtualPath(_virtualPath);
     }
 
-    explicit jlePath(const std::string &path, bool virtualPath = true);
+    jlePath(const std::string &path, bool virtualPath = true);
 
     // Returns the drive, like "GR:"
     [[nodiscard]] std::string getPathPrefix() const;

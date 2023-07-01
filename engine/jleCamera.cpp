@@ -102,10 +102,10 @@ void
 jleCameraSimpleFPVController::applyPerspectiveMouseMovementDelta(glm::vec2 delta, float factor)
 {
     delta *= _mouseSensitivity * factor;
-    _yaw = glm::mod(_yaw + delta.x, 360.0f);
-    _pitch += delta.y;
+    yaw = glm::mod(yaw + delta.x, 360.0f);
+    pitch += delta.y;
 
-    _pitch = glm::clamp(_pitch, -89.f, 89.f);
+    pitch = glm::clamp(pitch, -89.f, 89.f);
 
     calculatePerspectiveVectors();
 }
@@ -117,14 +117,14 @@ void
 jleCameraSimpleFPVController::calculatePerspectiveVectors()
 {
     glm::vec3 front;
-    front.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
-    front.y = sin(glm::radians(_pitch));
-    front.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     _front = glm::normalize(front);
     _right = glm::normalize(glm::cross(_front, _worldUp));
     _up = glm::normalize(glm::cross(_right, _front));
 
-    if (_pitch > 90.f || _pitch < 270.f) {
+    if (pitch > 90.f || pitch < 270.f) {
         _right *= -1;
     }
 }
@@ -178,26 +178,26 @@ jleCameraSimpleFPVController::backToOrigin()
     _front = {0.0f, 0.0f, -1.0f};
     _up = {0.0f, 1.0f, 0.0f};
     _right = glm::vec3{};
-    _yaw = -90.f;
-    _pitch = 0.f;
+    yaw = -90.f;
+    pitch = 0.f;
     applyPerspectiveMouseMovementDelta({0, 0}, 0.f);
 }
 void
 jleCameraSimpleFPVController::setPitch(float pitch)
 {
-    _pitch = pitch;
+    pitch = pitch;
 }
 void
 jleCameraSimpleFPVController::setYaw(float yaw)
 {
-    _yaw = yaw;
+    yaw = yaw;
 }
 void
 jleCameraSimpleFPVController::recalculateVectorsFromViewMatrix(const glm::mat4 &view)
 {
     glm::quat rotation = glm::quat_cast(view);
-    _yaw = glm::degrees(glm::yaw(rotation));
-    _pitch = glm::degrees(glm::pitch(rotation));
-    LOGV << "YAW: " << _yaw << ", PITCH: " << _pitch;
+    yaw = glm::degrees(glm::yaw(rotation));
+    pitch = glm::degrees(glm::pitch(rotation));
+    LOGV << "YAW: " << yaw << ", PITCH: " << pitch;
     calculatePerspectiveVectors();
 }
