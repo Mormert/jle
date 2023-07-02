@@ -5,11 +5,9 @@
 #include "tiny_obj_loader.h"
 #include <stdio.h>
 
-#ifdef BUILD_EDITOR
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#endif
 
 #include "jleIncludeGL.h"
 
@@ -30,9 +28,8 @@ bool
 jleMesh::loadFromObj(const jlePath &path)
 {
 
-#if BUILD_EDITOR
     return loadAssimp(path);
-#endif
+
 
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -277,7 +274,6 @@ jleMesh::usesIndexing()
     return _ebo > 0;
 }
 
-#ifdef BUILD_EDITOR
 bool
 jleMesh::loadAssimp(const jlePath &path)
 {
@@ -393,5 +389,3 @@ jleMesh::indices()
 {
     return _indices;
 }
-
-#endif

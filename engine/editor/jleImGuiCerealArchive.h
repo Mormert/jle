@@ -3,6 +3,15 @@
 #ifndef JLEIMGUICEREALARCHIVE_H
 #define JLEIMGUICEREALARCHIVE_H
 
+#ifdef BUILD_EDITOR
+// The following macro only works on arithmetic types: float, int, double, etc, and std::string
+#define JLE_TOOLTIP_ARITHMETIC(TYPE, TIP, NAME) jleToolTip<TYPE>(NAME){TIP};
+#else
+#define JLE_TOOLTIP_ARITHMETIC(TYPE, TIP, NAME) TYPE NAME;
+#endif
+
+#ifdef BUILD_EDITOR
+
 #include "cereal/cereal.hpp"
 #include "cereal/details/helpers.hpp"
 #include "cereal/types/memory.hpp"
@@ -48,12 +57,6 @@ struct jleToolTip {
     const std::string_view tip_view;
 };
 
-#ifdef BUILD_EDITOR
-// The following macro only works on arithmetic types: float, int, double, etc, and std::string
-#define JLE_TOOLTIP_ARITHMETIC(TYPE, TIP, NAME) jleToolTip<TYPE>(NAME){TIP};
-#else
-#define JLE_TOOLTIP_ARITHMETIC(TYPE, TIP, NAME) TYPE NAME;
-#endif
 
     namespace cereal
     {
@@ -488,5 +491,7 @@ struct jleToolTip {
 
     CEREAL_REGISTER_ARCHIVE(cereal::jleImGuiCerealArchiveInternal)
     CEREAL_REGISTER_ARCHIVE(cereal::jleImGuiCerealArchive)
+
+#endif // BUILD_EDITOR
 
 #endif // JLEIMGUICEREALARCHIVE_H

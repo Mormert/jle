@@ -1,5 +1,6 @@
 // Copyright (c) 2023. Johan Lind
 #include "jlePhysics.h"
+#include <glm/ext/matrix_transform.hpp>
 
 #include "btBulletDynamicsCommon.h"
 

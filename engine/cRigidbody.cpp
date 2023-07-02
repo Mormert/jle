@@ -5,6 +5,7 @@
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
 #include <BulletCollision/CollisionShapes/btConvexHullShape.h>
 #include <BulletCollision/CollisionShapes/btTriangleMesh.h>
+#include <glm/ext/matrix_transform.hpp>
 
 #include "jlePhysics.h"
 

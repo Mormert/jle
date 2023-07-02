@@ -16,9 +16,7 @@ public:
     // Synchronous OBJ loading
     bool loadFromObj(const jlePath &path);
 
-#ifdef BUILD_EDITOR
     bool loadAssimp(const jlePath &path);
-#endif
 
     // Lays out the attributes in the order:
     // position (0), normal (1), texcoords (2), tangent (3), bitangent (4)
