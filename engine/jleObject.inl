@@ -19,7 +19,6 @@ jleObject::serialize(Archive &archive)
     }
 
     archive(CEREAL_NVP(_instanceName),
-            CEREAL_NVP(__instanceID),
             CEREAL_NVP(_transform),
             CEREAL_NVP(__childObjects),
             CEREAL_NVP(_components));

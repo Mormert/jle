@@ -28,6 +28,8 @@ public:
 
     void update(float dt) override;
 
+    std::shared_ptr<jleMesh> getMesh();
+
 protected:
 
     jleResourceRef<jleMesh> _meshRef;

@@ -1,9 +1,9 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jlePhysicsDebugDrawer.h"
+#include "jle3DRenderer.h"
 #include "jleCore.h"
 #include "jleRendering.h"
-#include "jle3DRenderer.h"
 
 void
 jlePhysicsDebugDrawer::setDebugMode(int debugMode)
@@ -25,12 +25,6 @@ jlePhysicsDebugDrawer::getDebugMode() const
 void
 jlePhysicsDebugDrawer::flushLines()
 {
-    if(_linePoints.size() >= 2)
-    {
-        gCore->rendering().rendering3d().sendLines(_linePoints, glm::vec3(_lastLinesColor.x(), _lastLinesColor.y(), _lastLinesColor.z()));
-    }
-
-    _linePoints.clear();
 }
 
 void
@@ -55,22 +49,16 @@ jlePhysicsDebugDrawer::drawContactPoint(
 void
 jlePhysicsDebugDrawer::drawLine(const btVector3 &from1, const btVector3 &to1, const btVector3 &color1)
 {
-
-    if(color1 != _lastLinesColor || _linePoints.size() >= JLE_LINE_DRAW_BATCH_SIZE)
-    {
-        flushLines();
-    }
-
-    _linePoints.push_back(glm::vec3(from1.x(), from1.y(), from1.z()));
-    _linePoints.push_back(glm::vec3(to1.x(), to1.y(), to1.z()));
-
-    _lastLinesColor = color1;
+    auto from = glm::vec3(from1.x(), from1.y(), from1.z());
+    auto to = glm::vec3(to1.x(), to1.y(), to1.z());
+    auto color = glm::vec3(color1.x(), color1.y(), color1.z());
+    gCore->rendering().rendering3d().sendLine({from, color, glm::vec3{1.f, 0.f, 0.f}},
+                                              {to, color, glm::vec3{1.f, 0.f, 0.f}});
 }
 
 void
 jlePhysicsDebugDrawer::setDefaultColors(const btIDebugDraw::DefaultColors &colors)
 {
-
 }
 
 btIDebugDraw::DefaultColors

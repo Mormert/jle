@@ -3,6 +3,8 @@
 #include "jlePath.h"
 #include "jlePathDefines.h"
 
+#include <plog/Log.h>
+
 jlePath::jlePath(const std::string &path, bool virtualPath)
 {
 

@@ -15,6 +15,8 @@ public:
     void update(jleGameEngine &ge) override;
 
     jleCameraSimpleFPVController fpvCamController;
+    float cameraSpeed = 100.f;
+    float orthoZoomValue = 10.f;
 
 private:
     float _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;

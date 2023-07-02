@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "plog/Log.h"
 #include <regex>
 #include <string>
 

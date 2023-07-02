@@ -115,8 +115,6 @@ private:
 
     void initImgui();
 
-    void imguiTheme();
-
     void renderEditorGizmos();
 
     void renderEditorGridGizmo();

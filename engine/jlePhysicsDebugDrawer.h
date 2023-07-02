@@ -32,9 +32,6 @@ public:
 
     void flushLines() override;
 
-private:
-    std::vector<glm::vec3> _linePoints{};
-    btVector3 _lastLinesColor;
 };
 
 #endif // JLE_PHYSICSDEBUGDRAWER_H

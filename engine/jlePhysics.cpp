@@ -3,9 +3,8 @@
 
 #include "btBulletDynamicsCommon.h"
 
-#include "jleRendering.h"
-#include "jle3DRenderer.h"
 #include "cRigidbody.h"
+#include "jleProfiler.h"
 
 jlePhysics::jlePhysics()
 {
@@ -26,18 +25,13 @@ jlePhysics::jlePhysics()
 
     _dynamicsWorld->setDebugDrawer(&*_debugDraw);
 
-    btTransform groundTransform;
-    groundTransform.setIdentity();
-    groundTransform.setOrigin(btVector3(0, 2.5, 0));
-
-    btCollisionShape *groundShape = new btBoxShape(btVector3(btScalar(500.), btScalar(2.5), btScalar(500.)));
-
-    createRigidbody(0.0, groundTransform, groundShape, nullptr);
 }
 
 void
 jlePhysics::step(float dt)
 {
+    JLE_SCOPE_PROFILE_CPU(physics)
+
     _dynamicsWorld->stepSimulation(dt);
 
     // Update jle objects to new transforms
@@ -54,9 +48,8 @@ jlePhysics::step(float dt)
         if (jleRigidbody) {
             glm::mat4 matrix;
             trans.getOpenGLMatrix((btScalar*)&matrix);
-            matrix = glm::scale(matrix, glm::vec3{5.f});
+            matrix = glm::scale(matrix, jleRigidbody->_size);
             jleRigidbody->getTransform().setWorldMatrix(matrix);
-
         }
     }
 }
@@ -101,5 +94,9 @@ jlePhysics::deleteRigidbody(btRigidBody *body)
 void
 jlePhysics::renderDebug()
 {
-    _dynamicsWorld->debugDrawWorld();
+    if(renderDebugEnabled)
+    {
+        JLE_SCOPE_PROFILE_CPU(renderPhysicsDebug)
+        _dynamicsWorld->debugDrawWorld();
+    }
 }

@@ -22,7 +22,7 @@ public:
     void
     serialize(Archive &ar)
     {
-        ar(CEREAL_NVP(_mass), CEREAL_NVP(_origin));
+        ar(CEREAL_NVP(_mass));
     }
 
     void editorUpdate(float dt) override;
@@ -34,9 +34,16 @@ public:
     btRigidBody* getBody();
 
 protected:
+
+    friend class jlePhysics;
+
+    void generateCollisionDynamicConvex();
+
+    void generateCollisionStaticConcave();
+
     JLE_TOOLTIP_ARITHMETIC(float, "Setting mass to 0 makes this rigidbody static", _mass);
 
-    glm::vec3 _origin;
+    glm::vec3 _size{1.f};
 
     btRigidBody *body;
 };

@@ -10,7 +10,7 @@ template <class Archive>
 void
 jleScene::serialize(Archive &archive)
 {
-    archive(CEREAL_NVP(sceneName), CEREAL_NVP(_sceneObjects), CEREAL_NVP(_objectsInstantiatedCounter));
+    archive(CEREAL_NVP(sceneName), CEREAL_NVP(_sceneObjects));
 
     for (auto &&object : _sceneObjects) {
         // Replace object with template object, if it is based on one
@@ -23,7 +23,6 @@ jleScene::serialize(Archive &archive)
                 object = copy;
 
                 object->__templatePath = path;
-                object->__instanceID = getNextInstanceId();
 
             } catch (std::exception &e) {
                 LOGE << "Failed to load object template: " << e.what();

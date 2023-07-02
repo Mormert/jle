@@ -1,11 +1,12 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleScene.h"
+#include "jleGameEngine.h"
 #include "jleObject.h"
 #include "jleProfiler.h"
 
-#include <iostream>
 #include <filesystem>
+#include <iostream>
 
 int jleScene::_scenesCreatedCount{0};
 
@@ -56,8 +57,11 @@ void jleScene::processNewSceneObjects() {
     if (!_newSceneObjects.empty()) {
         for (const auto &newObject : _newSceneObjects) {
             if (!newObject->_isStarted) {
-                newObject->start();
-                newObject->startComponents();
+                if(!gEngine->isGameKilled())
+                {
+                    newObject->start();
+                    newObject->startComponents();
+                }
                 newObject->_isStarted = true;
             }
 
@@ -111,9 +115,8 @@ std::shared_ptr<jleObject> jleScene::spawnObject(const nlohmann::json &j_in) {
 
 void jleScene::configurateSpawnedObject(const std::shared_ptr<jleObject> &obj) {
     obj->_containedInScene = this;
-    obj->__instanceID = getNextInstanceId();
     obj->_instanceName = std::string{obj->objectNameVirtual()} + "_" +
-                         std::to_string(obj->__instanceID);
+                         std::to_string(obj->_instanceID);
 
     obj->replaceChildrenWithTemplate();
     _newSceneObjects.push_back(obj);
@@ -140,12 +143,6 @@ jleScene::startObject(jleObject *o)
             startObject(&*c);
         }
     }
-}
-
-uint32_t
-jleScene::getNextInstanceId()
-{
-    return _objectsInstantiatedCounter++;
 }
 
 void

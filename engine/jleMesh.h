@@ -17,7 +17,7 @@ public:
     bool loadFromObj(const jlePath &path);
 
 #ifdef BUILD_EDITOR
-    bool loadAssimp(const jlePath& path);
+    bool loadAssimp(const jlePath &path);
 #endif
 
     // Lays out the attributes in the order:
@@ -35,10 +35,22 @@ public:
 
     unsigned int getTrianglesCount();
 
+    const std::vector<glm::vec3>& positions();
+
+    const std::vector<glm::vec3>& normals();
+
+    const std::vector<glm::vec2>& texCoords();
+
+    const std::vector<glm::vec3>& tangents();
+
+    const std::vector<glm::vec3>& bitangents();
+
+    const std::vector<unsigned int>& indices();
+
 private:
     void destroyOldBuffers();
 
-    unsigned int _trianglesCount;
+    unsigned int _trianglesCount{};
 
     unsigned int _vao{};
     unsigned int _vbo_pos{};
@@ -47,4 +59,11 @@ private:
     unsigned int _vbo_tangent{};
     unsigned int _vbo_bitangent{};
     unsigned int _ebo{};
+
+    std::vector<glm::vec3> _positions{};
+    std::vector<glm::vec3> _normals{};
+    std::vector<glm::vec2> _texCoords{};
+    std::vector<glm::vec3> _tangents{};
+    std::vector<glm::vec3> _bitangents{};
+    std::vector<unsigned int> _indices{};
 };

@@ -26,6 +26,9 @@ template <typename T>
 struct jleToolTip {
     explicit jleToolTip<T>(const std::string_view tip) : tip_view{tip} {}
 
+    jleToolTip<T>(T i){item = i;}
+    operator T(){return item;}
+
     T item{};
 
     template <class Archive>

@@ -226,6 +226,14 @@ jleMesh::makeMesh(const std::vector<glm::vec3> &positions,
     } else {
         _trianglesCount = positions.size();
     }
+
+    _positions = positions;
+    _normals = normals;
+    _texCoords = texCoords;
+    _tangents = tangents;
+    _bitangents = bitangents;
+    _indices = indices;
+
 }
 
 jleMesh::~jleMesh() { destroyOldBuffers(); }
@@ -349,4 +357,41 @@ jleMesh::loadAssimp(const jlePath &path)
 
     return true;
 }
+
+const std::vector<glm::vec3> &
+jleMesh::positions()
+{
+    return _positions;
+}
+
+const std::vector<glm::vec3> &
+jleMesh::normals()
+{
+    return _normals;
+}
+
+const std::vector<glm::vec2> &
+jleMesh::texCoords()
+{
+    return _texCoords;
+}
+
+const std::vector<glm::vec3> &
+jleMesh::tangents()
+{
+    return _tangents;
+}
+
+const std::vector<glm::vec3> &
+jleMesh::bitangents()
+{
+    return _bitangents;
+}
+
+const std::vector<unsigned int> &
+jleMesh::indices()
+{
+    return _indices;
+}
+
 #endif

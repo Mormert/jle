@@ -134,7 +134,7 @@ private:
 
     bool _isStarted = false;
 
-    uint32_t __instanceID;
+    uint32_t _instanceID{};
 
 protected:
     std::vector<std::shared_ptr<jleComponent>> _components{};
@@ -146,6 +146,8 @@ protected:
     jleObject *_parentObject = nullptr;
 
     jleScene *_containedInScene = nullptr;
+
+    static inline uint32_t _instanceIdCounter{0};
 };
 
 CEREAL_REGISTER_TYPE(jleObject)

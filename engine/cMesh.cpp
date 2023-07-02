@@ -27,3 +27,9 @@ cMesh::editorUpdate(float dt)
 {
     update(dt);
 }
+
+std::shared_ptr<jleMesh>
+cMesh::getMesh()
+{
+    return _meshRef.get();
+}

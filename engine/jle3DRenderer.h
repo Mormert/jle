@@ -13,7 +13,7 @@
 #include <memory>
 #include <vector>
 
-#define JLE_LINE_DRAW_BATCH_SIZE 1024
+#define JLE_LINE_DRAW_BATCH_SIZE 32768
 
 class jleMaterial;
 
@@ -33,10 +33,11 @@ public:
         glm::vec3 color;
     };
 
-    struct jle3DRendererLines {
-        std::vector<glm::vec3> points;
+    struct jle3DLineVertex
+    {
+        glm::vec3 position;
         glm::vec3 color;
-        glm::vec3 attenuation;
+        glm::vec3 attenuation; // {1.f, 0.f, 0.f} means no attenuation (constant)
     };
 
     jle3DRenderer();
@@ -61,10 +62,12 @@ public:
                   bool castShadows);
 
     // Line strips will always connect each lines, from start to end.
-    void sendLineStrip(const std::vector<glm::vec3>& points, const glm::vec3& colour, const glm::vec3& attenuation = {1.0f, 0.0f, 0.0f});
+    void sendLineStrip(const std::vector<jle3DLineVertex> &lines);
 
     // Lines needs to come in pairs in the points, two for each line.
-    void sendLines(const std::vector<glm::vec3>& points, const glm::vec3& colour, const glm::vec3& attenuation = {1.0f, 0.0f, 0.0f});
+    void sendLines(const std::vector<jle3DLineVertex> &lines);
+
+    void sendLine(const jle3DLineVertex& from, const jle3DLineVertex& to);
 
     void sendLight(const glm::vec3 &position, const glm::vec3 &color);
 
@@ -86,14 +89,6 @@ private:
     std::vector<glm::mat4> _queuedExampleCubes;
     unsigned int _exampleCubeVBO{}, _exampleCubeVAO{}, _exampleCubeInstanceBuffer{};
 
-    /*
-    jleShader _exampleCubeShader;
-    jleShader _defaultMeshShader;
-    jleShader _pickingShader;
-    jleShader _shadowMappingShader;
-    jleShader _shadowMappingPointShader;
-    jleShader _debugDepthQuad;*/
-
     jleResourceRef<jleShader> _exampleCubeShader;
     jleResourceRef<jleShader> _defaultMeshShader;
     jleResourceRef<jleShader> _pickingShader;
@@ -106,12 +101,14 @@ private:
 
     void renderShadowMeshes(const std::vector<jle3DRendererQueuedMesh> &meshes, jleShader &shader);
 
-    void renderLines(const jleCamera &camera, const std::vector<jle3DRendererLines>& linesBatch, bool lineStrip);
+    void renderLines(const jleCamera &camera, const std::vector<jle3DLineVertex>& linesBatch);
+
+    void renderLineStrips(const jleCamera &camera, std::vector<std::vector<jle3DLineVertex>>& lineStripBatch);
 
     std::vector<jle3DRendererQueuedMesh> _queuedMeshes;
 
-    std::vector<jle3DRendererLines> _queuedLineStrips;
-    std::vector<jle3DRendererLines> _queuedLines;
+    std::vector<std::vector<jle3DLineVertex>> _queuedLineStrips;
+    std::vector<jle3DLineVertex> _queuedLines;
 
     void renderSkybox(const jleCamera &camera);
     jleResourceRef<jleShader> _skyboxShader;

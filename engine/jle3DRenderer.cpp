@@ -34,13 +34,15 @@ jle3DRenderer::jle3DRenderer()
     glBindVertexArray(_lineVAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
-    glBufferData(GL_ARRAY_BUFFER,
-                 (GLuint)JLE_LINE_DRAW_BATCH_SIZE * sizeof(glm::vec3),
-                 (void *)0,
-                 GL_DYNAMIC_DRAW); // Please don't draw more lines than JLE_LINE_DRAW_BATCH_SIZE in one batch :))
+    glBufferData(
+        GL_ARRAY_BUFFER, (GLuint)JLE_LINE_DRAW_BATCH_SIZE * sizeof(jle3DLineVertex), (void *)0, GL_DYNAMIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(jle3DLineVertex), (void *)0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(jle3DLineVertex), (void *)(1 * sizeof(glm::vec3)));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(jle3DLineVertex), (void *)(2 * sizeof(glm::vec3)));
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -203,11 +205,11 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 
     glCheckError("3D Render - Meshes");
 
-    renderLines(camera, _queuedLineStrips, true);
+    renderLineStrips(camera, _queuedLineStrips);
 
     glCheckError("3D Render - Strip Lines");
 
-    renderLines(camera, _queuedLines, false);
+    renderLines(camera, _queuedLines);
 
     glCheckError("3D Render - Lines");
 
@@ -384,6 +386,8 @@ jle3DRenderer::setSkybox(const std::shared_ptr<jleSkybox> &skybox)
 void
 jle3DRenderer::renderSkybox(const jleCamera &camera)
 {
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes)
+
     if (!_skybox) {
         return;
     }
@@ -608,31 +612,31 @@ jle3DRenderer::disableDirectionalLight()
 }
 
 void
-jle3DRenderer::sendLineStrip(const std::vector<glm::vec3> &points,
-                             const glm::vec3 &colour,
-                             const glm::vec3 &attenuation)
+jle3DRenderer::sendLineStrip(const std::vector<jle3DLineVertex> &lines)
 {
-    _queuedLineStrips.push_back({points, colour, attenuation});
+    _queuedLineStrips.emplace_back(lines);
 }
 
 void
-jle3DRenderer::sendLines(const std::vector<glm::vec3> &points, const glm::vec3 &colour, const glm::vec3 &attenuation)
+jle3DRenderer::sendLines(const std::vector<jle3DLineVertex> &lines)
 {
-    _queuedLines.push_back({points, colour, attenuation});
+    _queuedLines.insert(std::end(_queuedLines), std::begin(lines), std::end(lines));
 }
 
 void
-jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DRendererLines> &linesBatch, bool lineStrip)
+jle3DRenderer::sendLine(const jle3DLineVertex &from, const jle3DLineVertex &to)
 {
+    _queuedLines.emplace_back(from);
+    _queuedLines.emplace_back(to);
+}
+
+void
+jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DLineVertex> &linesBatch)
+{
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderLines)
+
     if (linesBatch.empty()) {
         return;
-    }
-
-    GLenum lineMode;
-    if (lineStrip) {
-        lineMode = GL_LINE_STRIP;
-    } else {
-        lineMode = GL_LINES;
     }
 
     glEnable(GL_BLEND);
@@ -642,21 +646,32 @@ jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DRende
     _linesShader->SetMat4("projView", camera.getProjectionViewMatrix());
     _linesShader->SetVec3("cameraPos", camera.getPosition());
 
-    glBindVertexArray(_lineVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
+    int linesRendered = 0;
 
-    for (auto &&lineBatch : linesBatch) {
-        _linesShader->SetVec3("color", lineBatch.color);
-        _linesShader->SetVec3("attenuationParams", lineBatch.attenuation);
+    do {
+        int batchSize = JLE_LINE_DRAW_BATCH_SIZE;
+        if (linesRendered + batchSize > linesBatch.size()) {
+            batchSize = linesBatch.size() - linesRendered;
+        }
 
-        // Update existing buffer with new line data, but will not work past the buffer size!
-        glBufferSubData(
-            GL_ARRAY_BUFFER, 0, (GLuint)lineBatch.points.size() * sizeof(glm::vec3), lineBatch.points.data());
+        glBindVertexArray(_lineVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
 
-        glDrawArrays(lineMode, 0, (GLuint)lineBatch.points.size());
-    }
+        glBufferSubData(GL_ARRAY_BUFFER, 0, batchSize * sizeof(jle3DLineVertex), &linesBatch[linesRendered]);
+        glDrawArrays(GL_LINES, 0, (GLuint)linesBatch.size());
+
+        linesRendered += JLE_LINE_DRAW_BATCH_SIZE;
+    } while (linesRendered < linesBatch.size());
 
     glBindVertexArray(0);
 
     glDisable(GL_BLEND);
+}
+
+void
+jle3DRenderer::renderLineStrips(const jleCamera &camera, std::vector<std::vector<jle3DLineVertex>> &lineStripBatch)
+{
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderLineStrips)
+
+    // Not implemented
 }

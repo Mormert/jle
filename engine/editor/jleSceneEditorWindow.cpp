@@ -28,9 +28,10 @@
 
 #include <GLFW/glfw3.h>
 
-#include <cRigidbody.h>
 #include "btBulletDynamicsCommon.h"
 
+#include "jlePhysics.h"
+#include <cRigidbody.h>
 
 jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name,
                                            std::shared_ptr<jleFramebufferInterface> &framebuffer)
@@ -91,8 +92,6 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     const auto mouseCoordinateX = getPixelatedMousePosX() + static_cast<int>(jleEditor::editorCamera.getPosition().x);
     const auto mouseCoordinateY = getPixelatedMousePosY() + static_cast<int>(jleEditor::editorCamera.getPosition().y);
 
-    static float zoomValue = 1.f;
-
     if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset == _lastGameWindowWidth &&
           ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset == _lastGameWindowHeight)) {
         _lastGameWindowWidth = ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset;
@@ -102,7 +101,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         auto dims = jleFramebufferInterface::fixedAxisDimensions(
             jleFramebufferInterface::FIXED_AXIS::width, aspect, static_cast<unsigned int>(ImGui::GetWindowHeight()));
 
-        _framebuffer->resize(dims.x * zoomValue, dims.y * zoomValue);
+        _framebuffer->resize(_lastGameWindowWidth, _lastGameWindowHeight);
     }
 
     const auto &selectedObject = jleEditorSceneObjectsWindow::GetSelectedObject();
@@ -146,12 +145,9 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         int pixelReadY = mouseY_flipped * (_pickingFramebuffer->height() / _lastGameWindowHeight);
         glReadPixels(pixelReadX, pixelReadY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, data);
 
-        //LOGE << "X: " << pixelReadX << ", Y: " << pixelReadY;
-        //LOGE << "COLOR: " << (int)data[0] << ", " << (int)data[1] << ", " << (int)data[2] << ".";
-
         int pickedID = data[0] + data[1] * 256 + data[2] * 256 * 256;
         if (pickedID != 0x00ffffff) { // If we did not hit the white background
-            LOGE << "Picked object with id: " << pickedID;
+            LOGI << "Picked object with id: " << pickedID;
 
             std::vector<std::shared_ptr<jleScene>> scenes;
             if (!gEngine->isGameKilled()) {
@@ -199,8 +195,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
 
     ImGui::SameLine();
 
-    ImGui::Text(
-        "(%f, %f, %f)", fpvCamController.position.x, fpvCamController.position.y, fpvCamController.position.z);
+    ImGui::Text("(%f, %f, %f)", fpvCamController.position.x, fpvCamController.position.y, fpvCamController.position.z);
 
     ImGui::SameLine();
 
@@ -210,13 +205,28 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
 
     ImGui::SameLine();
 
-    ImGui::Text("[%d, %d]", _framebuffer->width(), _framebuffer->height());
+    if(!gEngine->isGameKilled())
+    {
+        ImGui::Checkbox("Physics Debug", &gEngine->physics().renderDebugEnabled);
+    }
+
+    ImGui::SameLine();
+
+    if (gEditor->projectionType == jleCameraProjection::Perspective) {
+        ImGui::Text("[%d, %d] (%f)", _framebuffer->width(), _framebuffer->height(), cameraSpeed);
+    } else {
+        ImGui::Text("[%d, %d - Ortho Zoom: %f] (%f)",
+                    _framebuffer->width(),
+                    _framebuffer->height(),
+                    orthoZoomValue,
+                    cameraSpeed);
+    }
 
     const float *viewMatrix = &jleEditor::editorCamera.getViewMatrix()[0][0];
     const float *projectionMatrix = &jleEditor::editorCamera.getProjectionMatrix()[0][0];
     static const auto identityMatrix = glm::mat4{1.f};
     const static float *identityMatrixPtr = &identityMatrix[0][0];
-    //ImGuizmo::DrawGrid(viewMatrix, projectionMatrix, identityMatrixPtr, 25.f);
+    // ImGuizmo::DrawGrid(viewMatrix, projectionMatrix, identityMatrixPtr, 25.f);
 
     /*
     // The following commented code is for a camera controller "cube" in the top left corner.
@@ -264,10 +274,8 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         EditTransform((float *)viewMatrix, (float *)projectionMatrix, (float *)&worldMatrixBefore[0][0], true);
         glm::mat4 transformMatrix = obj->getTransform().getWorldMatrix();
         if (transformMatrix != worldMatrixBefore) {
-            if(!gEngine->isGameKilled())
-            {
-                if(auto rb = obj->getComponent<cRigidbody>())
-                {
+            if (!gEngine->isGameKilled()) {
+                if (auto rb = obj->getComponent<cRigidbody>()) {
                     obj->getTransform().setWorldMatrix(worldMatrixBefore);
 
                     // Remove scaling from the world matrix (bullet don't want the scaling)
@@ -275,20 +283,22 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
                     size.x = glm::length(glm::vec3(worldMatrixBefore[0])); // Basis vector X
                     size.y = glm::length(glm::vec3(worldMatrixBefore[1])); // Basis vector Y
                     size.z = glm::length(glm::vec3(worldMatrixBefore[2])); // Basis vector Z
-                    worldMatrixBefore = glm::scale(worldMatrixBefore, glm::vec3(1.f/size.x, 1.f/size.y, 1.f/size.z));
+                    worldMatrixBefore =
+                        glm::scale(worldMatrixBefore, glm::vec3(1.f / size.x, 1.f / size.y, 1.f / size.z));
 
                     btTransform transform;
-                    transform.setFromOpenGLMatrix((btScalar*)&worldMatrixBefore);
+                    transform.setFromOpenGLMatrix((btScalar *)&worldMatrixBefore);
 
                     rb->getBody()->setWorldTransform(transform);
 
                     rb->getBody()->setLinearVelocity(btVector3{0.f, 0.f, 0.f});
                     rb->getBody()->setAngularVelocity(btVector3{0.f, 0.f, 0.f});
                     rb->getBody()->activate(true);
+                }else
+                {
+                    obj->getTransform().setWorldMatrix(worldMatrixBefore);
                 }
-            }
-            else
-            {
+            } else {
                 obj->getTransform().setWorldMatrix(worldMatrixBefore);
             }
         }
@@ -307,49 +317,42 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
             fpvCamController.move(glm::vec3{dragDelta.x, dragDelta.y, 0.f} * t * 5.f);
         }
 
-        constexpr float moveSpeed = 350.f;
         if (ImGui::IsKeyDown(ImGuiKey_W)) {
             if (jleEditor::projectionType == jleCameraProjection::Orthographic) {
-                fpvCamController.moveUp(moveSpeed * t);
+                fpvCamController.moveUp(cameraSpeed * t);
             } else {
-                fpvCamController.moveForward(moveSpeed * t);
+                fpvCamController.moveForward(cameraSpeed * t);
             }
         }
         if (ImGui::IsKeyDown(ImGuiKey_S)) {
             if (jleEditor::projectionType == jleCameraProjection::Orthographic) {
-                fpvCamController.moveDown(moveSpeed * t);
+                fpvCamController.moveDown(cameraSpeed * t);
             } else {
-                fpvCamController.moveBackward(moveSpeed * t);
+                fpvCamController.moveBackward(cameraSpeed * t);
             }
         }
         if (ImGui::IsKeyDown(ImGuiKey_D)) {
-            fpvCamController.moveRight(moveSpeed * t);
+            fpvCamController.moveRight(cameraSpeed * t);
         }
         if (ImGui::IsKeyDown(ImGuiKey_A)) {
-            fpvCamController.moveLeft(moveSpeed * t);
+            fpvCamController.moveLeft(cameraSpeed * t);
         }
         if (ImGui::IsKeyDown(ImGuiKey_Space)) {
-            fpvCamController.moveUp(moveSpeed * t);
+            fpvCamController.moveUp(cameraSpeed * t);
         }
         if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl)) {
-            fpvCamController.moveDown(moveSpeed * t);
+            fpvCamController.moveDown(cameraSpeed * t);
         }
 
         jleEditor::editorCamera.setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
 
         auto currentScroll = gCore->input().mouse->scrollY();
-        if (currentScroll != 0.f) {
-            zoomValue -= currentScroll * 0.1f;
-            zoomValue = glm::clamp(zoomValue, 0.25f, 5.f);
-
-            const auto aspect = static_cast<float>(_lastGameWindowHeight) / static_cast<float>(_lastGameWindowWidth);
-            auto dims =
-                jleFramebufferInterface::fixedAxisDimensions(jleFramebufferInterface::FIXED_AXIS::width,
-                                                             aspect,
-                                                             static_cast<unsigned int>(ImGui::GetWindowHeight()));
-
-            _framebuffer->resize(dims.x * zoomValue, dims.y * zoomValue);
-            _pickingFramebuffer->resize(dims.x * zoomValue, dims.y * zoomValue);
+        if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentScroll != 0.f) {
+            orthoZoomValue -= currentScroll * 3.f * ge.deltaFrameTime();
+            orthoZoomValue = glm::clamp(orthoZoomValue, 0.01f, 2.f);
+        } else if(currentScroll != 0.f){
+            cameraSpeed -= currentScroll * 2000.f * ge.deltaFrameTime();
+            cameraSpeed = glm::clamp(cameraSpeed, 0.2f, 500.f);
         }
     }
 

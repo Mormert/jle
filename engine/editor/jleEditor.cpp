@@ -175,8 +175,10 @@ jleEditor::renderEditorSceneView()
     }
 
     if (projectionType == jleCameraProjection::Orthographic) {
-        editorCamera.setOrthographicProjection(
-            editorScreenFramebuffer->width(), editorScreenFramebuffer->height(), 10000.f, -10000.f);
+        editorCamera.setOrthographicProjection(editorScreenFramebuffer->width() * _sceneWindow->orthoZoomValue,
+                                               editorScreenFramebuffer->height() * _sceneWindow->orthoZoomValue,
+                                               10000.f,
+                                               -10000.f);
     } else {
         editorCamera.setPerspectiveProjection(
             45.f, editorScreenFramebuffer->width(), editorScreenFramebuffer->height(), 10000.f, 0.1f);
@@ -215,7 +217,7 @@ jleEditor::renderEditorUI()
         ImGuizmo::BeginFrame();
 
         // Update loop for all ImGui windows
-        for (const auto& window : _imGuiWindows) {
+        for (const auto &window : _imGuiWindows) {
             window->update(*this);
         }
 
@@ -275,80 +277,6 @@ jleEditor::initImgui()
 }
 
 void
-jleEditor::imguiTheme()
-{
-    // cherry colors, 3 intensities
-#define HI(v) ImVec4(0.502f, 0.075f, 0.256f, v)
-#define MED(v) ImVec4(0.455f, 0.198f, 0.301f, v)
-#define LOW(v) ImVec4(0.232f, 0.201f, 0.271f, v)
-    // backgrounds (@todo: complete with BG_MED, BG_LOW)
-#define BG(v) ImVec4(0.200f, 0.220f, 0.270f, v)
-    // text
-#define TEXT(v) ImVec4(0.860f, 0.930f, 0.890f, v)
-
-    auto &style = ImGui::GetStyle();
-    style.Colors[ImGuiCol_Text] = TEXT(0.78f);
-    style.Colors[ImGuiCol_TextDisabled] = TEXT(0.28f);
-    style.Colors[ImGuiCol_WindowBg] = ImVec4(0.13f, 0.14f, 0.17f, 1.00f);
-    // style.Colors[ImGuiCol_ChildWindowBg] = BG(0.58f);
-    style.Colors[ImGuiCol_PopupBg] = BG(0.9f);
-    style.Colors[ImGuiCol_Border] = ImVec4(0.31f, 0.31f, 1.00f, 0.00f);
-    style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    style.Colors[ImGuiCol_FrameBg] = BG(1.00f);
-    style.Colors[ImGuiCol_FrameBgHovered] = MED(0.78f);
-    style.Colors[ImGuiCol_FrameBgActive] = MED(1.00f);
-    style.Colors[ImGuiCol_TitleBg] = LOW(1.00f);
-    style.Colors[ImGuiCol_TitleBgActive] = HI(1.00f);
-    style.Colors[ImGuiCol_TitleBgCollapsed] = BG(0.75f);
-    style.Colors[ImGuiCol_MenuBarBg] = BG(0.47f);
-    style.Colors[ImGuiCol_ScrollbarBg] = BG(1.00f);
-    style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.09f, 0.15f, 0.16f, 1.00f);
-    style.Colors[ImGuiCol_ScrollbarGrabHovered] = MED(0.78f);
-    style.Colors[ImGuiCol_ScrollbarGrabActive] = MED(1.00f);
-    style.Colors[ImGuiCol_CheckMark] = ImVec4(0.71f, 0.22f, 0.27f, 1.00f);
-    style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.47f, 0.77f, 0.83f, 0.14f);
-    style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.71f, 0.22f, 0.27f, 1.00f);
-    style.Colors[ImGuiCol_Button] = ImVec4(0.47f, 0.77f, 0.83f, 0.14f);
-    style.Colors[ImGuiCol_ButtonHovered] = MED(0.86f);
-    style.Colors[ImGuiCol_ButtonActive] = MED(1.00f);
-    style.Colors[ImGuiCol_Header] = MED(0.76f);
-    style.Colors[ImGuiCol_HeaderHovered] = MED(0.86f);
-    style.Colors[ImGuiCol_HeaderActive] = HI(1.00f);
-    // style.Colors[ImGuiCol_Column] = ImVec4(0.14f, 0.16f, 0.19f, 1.00f);
-    // style.Colors[ImGuiCol_ColumnHovered] = MED(0.78f);
-    // style.Colors[ImGuiCol_ColumnActive] = MED(1.00f);
-    style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.47f, 0.77f, 0.83f, 0.04f);
-    style.Colors[ImGuiCol_ResizeGripHovered] = MED(0.78f);
-    style.Colors[ImGuiCol_ResizeGripActive] = MED(1.00f);
-    style.Colors[ImGuiCol_PlotLines] = TEXT(0.63f);
-    style.Colors[ImGuiCol_PlotLinesHovered] = MED(1.00f);
-    style.Colors[ImGuiCol_PlotHistogram] = TEXT(0.63f);
-    style.Colors[ImGuiCol_PlotHistogramHovered] = MED(1.00f);
-    style.Colors[ImGuiCol_TextSelectedBg] = MED(0.43f);
-    // [...]
-    // style.Colors[ImGuiCol_ModalWindowDarkening] = BG(0.73f);
-
-    style.WindowPadding = ImVec2(6, 4);
-    style.WindowRounding = 0.0f;
-    style.FramePadding = ImVec2(5, 2);
-    style.FrameRounding = 3.0f;
-    style.ItemSpacing = ImVec2(7, 1);
-    style.ItemInnerSpacing = ImVec2(1, 1);
-    style.TouchExtraPadding = ImVec2(0, 0);
-    style.IndentSpacing = 6.0f;
-    style.ScrollbarSize = 12.0f;
-    style.ScrollbarRounding = 16.0f;
-    style.GrabMinSize = 20.0f;
-    style.GrabRounding = 2.0f;
-
-    style.WindowTitleAlign.x = 0.50f;
-
-    style.Colors[ImGuiCol_Border] = ImVec4(0.539f, 0.479f, 0.255f, 0.162f);
-    style.FrameBorderSize = 0.0f;
-    style.WindowBorderSize = 1.0f;
-}
-
-void
 jleEditor::addImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window)
 {
     _imGuiWindows.push_back(window);
@@ -388,6 +316,7 @@ jleEditor::update(float dt)
 {
     jleGameEngine::update(dt);
     if (isGameKilled()) {
+        JLE_SCOPE_PROFILE_CPU(updateEditorLoadedScenes)
         updateEditorLoadedScenes(dt);
     }
 }
@@ -395,15 +324,17 @@ jleEditor::update(float dt)
 void
 jleEditor::renderEditorGizmos()
 {
+    JLE_SCOPE_PROFILE_CPU(renderEditorGizmos)
+
     if (!gEngine->isGameKilled()) {
-        for (const auto& scene : gEngine->gameRef().activeScenesRef()) {
+        for (const auto &scene : gEngine->gameRef().activeScenesRef()) {
             for (auto &&o : scene->sceneObjects()) {
                 renderEditorGizmosObject(o.get());
             }
         }
     }
 
-    for (const auto& scene : gEditor->getEditorScenes()) {
+    for (const auto &scene : gEditor->getEditorScenes()) {
         for (auto &&o : scene->sceneObjects()) {
             renderEditorGizmosObject(o.get());
         }
@@ -423,59 +354,71 @@ jleEditor::renderEditorGizmosObject(jleObject *object)
 void
 jleEditor::renderEditorGridGizmo()
 {
-    std::vector<glm::vec3> lines;
-    glm::vec3 attenuation = {1.0f, 0.44f, 0.80f};
+    JLE_SCOPE_PROFILE_CPU(renderEditorGridGizmo)
 
-    lines.emplace_back(100.f, 0.f, 0.f);
-    lines.emplace_back(-100.f, 0.f, 0.f);
-    rendering().rendering3d().sendLineStrip(lines, glm::vec3(1.0f, 0.0f, 0.0f), attenuation);
-    lines.clear();
+    jle3DRenderer::jle3DLineVertex v1{glm::vec3{0.f}, glm::vec3{1.f, 0.f, 0.f}, {1.0f, 0.44f, 1.2f}};
+    jle3DRenderer::jle3DLineVertex v2 = v1;
+    v2.position = glm::vec3{100.f, 0.f, 0.f};
+    v1.position = glm::vec3{-100.f, 0.f, 0.f};
 
-    lines.emplace_back(0.f, 100.f, 0.f);
-    lines.emplace_back(0.f, -100.f, 0.f);
-    rendering().rendering3d().sendLineStrip(lines, glm::vec3(0.0f, 1.0f, 0.0f), attenuation);
-    lines.clear();
+    rendering().rendering3d().sendLine(v1, v2);
 
-    lines.emplace_back(0.f, 0.f, 100.f);
-    lines.emplace_back(0.f, 0.f, -100.f);
-    rendering().rendering3d().sendLineStrip(lines, glm::vec3(0.0f, 0.0f, 1.0f), attenuation);
-    lines.clear();
+    v2.position = glm::vec3{0.f, 100.f, 0.f};
+    v1.position = glm::vec3{0.f, -100.f, 0.f};
+    v1.color = glm::vec3{0.f, 1.f, 0.f};
+    v2.color = glm::vec3{0.f, 1.f, 0.f};
+    rendering().rendering3d().sendLine(v1, v2);
 
+    v2.position = glm::vec3{0.f, 0.f, 100.f};
+    v1.position = glm::vec3{0.f, 0.f, -100.f};
+    v1.color = glm::vec3{0.f, 0.f, 1.f};
+    v2.color = glm::vec3{0.f, 0.f, 1.f};
+    rendering().rendering3d().sendLine(v1, v2);
+
+    v1.color = glm::vec3(1.0f, 0.3f, 0.3f);
+    v2.color = glm::vec3(1.0f, 0.3f, 0.3f);
     auto pos = editorCamera.getPosition();
+
+    float scale = 1.f;
+    if (abs(pos.y) < 50.f) {
+        scale = 0.5f;
+    }
+
+    if (abs(pos.y) < 10.f) {
+        scale = 0.1f;
+    }
+
     pos.y = 0;
-    pos.x = glm::round(pos.x / 100.f) * 100.f;
-    pos.z = glm::round(pos.z / 100.f) * 100.f;
-    pos.x -= 500;
-    pos.z -= 500;
+    pos.x = glm::round(pos.x / (100.f * scale)) * (100.f * scale);
+    pos.z = glm::round(pos.z / (100.f * scale)) * (100.f * scale);
 
-    for (int i = 0; i < 10; i++) {
-        if (i % 2 == 0) {
-            pos.x += 1000;
-        } else {
-            pos.x -= 1000;
-        }
-        lines.emplace_back(pos);
-        pos.z += 100;
-        lines.emplace_back(pos);
+    v1.position = pos;
+    v1.position.z = -1000 * scale + pos.z;
+    v2.position = pos;
+    v2.position.z = 1000 * scale + pos.z;
+
+    v1.color = glm::vec3{0.3f, 0.3f, 0.7f};
+    v2.color = glm::vec3{0.3f, 0.3f, 0.7f};
+
+    for (int i = -10; i <= 10; i++) {
+        v1.position.x = 100.f * scale * i + pos.x;
+        v2.position.x = 100.f * scale * i + pos.x;
+        rendering().rendering3d().sendLine(v1, v2);
     }
 
-    rendering().rendering3d().sendLineStrip(lines, glm::vec3(1.0f, 0.3f, 0.3f), attenuation);
-    lines.clear();
+    v1.position = pos;
+    v1.position.x = -1000 * scale + pos.x;
+    v2.position = pos;
+    v2.position.x = 1000 * scale + pos.x;
 
-    pos.z -= 1000;
-    for (int i = 0; i < 10; i++) {
-        if (i % 2 == 0) {
-            pos.z += 1000;
-        } else {
-            pos.z -= 1000;
-        }
-        lines.emplace_back(pos);
-        pos.x += 100;
-        lines.emplace_back(pos);
+    v1.color = glm::vec3{0.7f, 0.3f, 0.3f};
+    v2.color = glm::vec3{0.7f, 0.3f, 0.3f};
+
+    for (int i = -10; i <= 10; i++) {
+        v1.position.z = 100.f * scale * i + pos.z;
+        v2.position.z = 100.f * scale * i + pos.z;
+        rendering().rendering3d().sendLine(v1, v2);
     }
-
-    rendering().rendering3d().sendLineStrip(lines, glm::vec3(0.3f, 0.3f, 1.0f), attenuation);
-    lines.clear();
 }
 
 void

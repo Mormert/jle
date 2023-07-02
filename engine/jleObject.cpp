@@ -12,7 +12,9 @@
 #include <fstream>
 #include <optional>
 
-jleObject::jleObject() : _transform{this} {}
+jleObject::jleObject() : _transform{this} {
+    _instanceID = _instanceIdCounter++;
+}
 
 void
 jleObject::destroyComponent(jleComponent *component)
@@ -179,8 +181,8 @@ jleObject::duplicate(bool childChain)
 
     duplicated->_components.clear();
     duplicated->__childObjects.clear();
-    duplicated->__instanceID = _containedInScene->getNextInstanceId();
     duplicated->_transform._owner = duplicated.get();
+    duplicated->_instanceID = _instanceIdCounter++;
     duplicated->_isStarted = false; // Note that duplicating an object will run its start function!
 
     for (auto &&component : _components) {
@@ -212,7 +214,7 @@ jleObject::duplicateTemplate(bool childChain)
 
     duplicated->_components.clear();
     duplicated->__childObjects.clear();
-    duplicated->__instanceID = 0;
+    duplicated->_instanceID = _instanceIdCounter++;
     duplicated->_transform._owner = duplicated.get();
 
     for (auto &&component : _components) {
@@ -245,7 +247,7 @@ jleObject::saveAsObjectTemplate()
 int
 jleObject::instanceID() const
 {
-    return __instanceID;
+    return _instanceID;
 }
 
 void
@@ -290,7 +292,6 @@ jleObject::replaceChildrenWithTemplate()
                 object = copy;
 
                 object->__templatePath = path;
-                object->__instanceID = _containedInScene->getNextInstanceId();
             } catch (std::exception &e) {
                 LOGE << "Failed to load object template: " << e.what();
             }

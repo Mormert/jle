@@ -88,8 +88,6 @@ public:
 
     std::string sceneName;
 
-    uint32_t getNextInstanceId();
-
 protected:
     friend class jleObject;
 
@@ -100,8 +98,6 @@ private:
     void startObject(jleObject *o);
 
     static int _scenesCreatedCount;
-
-    uint32_t _objectsInstantiatedCounter{0};
 
     void configurateSpawnedObject(const std::shared_ptr<jleObject> &obj);
 };

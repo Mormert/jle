@@ -28,6 +28,8 @@ public:
 
     void deleteRigidbody(btRigidBody* body);
 
+    bool renderDebugEnabled = true;
+
     void renderDebug();
 
 private:

@@ -250,9 +250,18 @@ jleGameEngine::update(float dt)
 {
     JLE_SCOPE_PROFILE_CPU(jleGameEngine_Update)
     if (!gameHalted && game) {
-        game->update(dt);
-        game->updateActiveScenes(dt);
-        context->Update();
+        {
+            JLE_SCOPE_PROFILE_CPU(jleGameEngine_updateGame)
+            game->update(dt);
+        }
+        {
+            JLE_SCOPE_PROFILE_CPU(jleGameEngine_updateActiveScenes)
+            game->updateActiveScenes(dt);
+        }
+        {
+            JLE_SCOPE_PROFILE_CPU(RmlUi)
+            context->Update();
+        }
         physics().step(dt);
     }
 }
