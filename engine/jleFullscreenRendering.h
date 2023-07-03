@@ -3,6 +3,7 @@
 #pragma once
 
 #include "jleShader.h"
+#include "jleResourceRef.h"
 
 class jleFramebufferInterface;
 
@@ -22,6 +23,6 @@ public:
                                      unsigned int screenHeight);
 
 private:
-    jleShader quadScreenShader;
+    jleResourceRef<jleShader> quadScreenShader;
     unsigned int quadVAO, quadVBO;
 };

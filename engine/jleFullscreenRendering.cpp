@@ -5,9 +5,7 @@
 #include "jleIncludeGL.h"
 
 #include "jleFrameBufferInterface.h"
-#include "jlePathDefines.h"
 #include "jleStaticOpenGLState.h"
-#include <string>
 
 constexpr float quadVertices[] =
     { // Vertex attributes for a quad that fills the entire screen in NDC
@@ -19,19 +17,15 @@ constexpr float quadVertices[] =
         1.0f,  0.0f, 1.0f, 1.0f,  1.0f,  1.0f};
 
 jleFullscreenRendering::jleFullscreenRendering()
-    : quadScreenShader{
-          std::string{JLE_ENGINE_PATH_SHADERS + "/quadScreen.vert"}.c_str(),
-          std::string{JLE_ENGINE_PATH_SHADERS + "/quadScreen.frag"}.c_str()} {
+    : quadScreenShader{jlePath{"ER:shaders/quadScreen.sh"}} {
     // Configure screen quad
     glGenVertexArrays(1, &quadVAO);
     glGenBuffers(1, &quadVBO);
     glBindVertexArray(quadVAO);
     glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-    glBufferData(
-        GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(
-        0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1,
                           2,
@@ -60,7 +54,7 @@ jleFullscreenRendering::renderFramebufferFullscreen(jleFramebufferInterface &fra
     // Set viewport to cover the entire screen
     glViewport(0, 0, screenWidth, screenHeight);
 
-    quadScreenShader.use();
+    quadScreenShader->use();
     glBindVertexArray(quadVAO);
 
     // Disable depth testing for the fullscreen quad
