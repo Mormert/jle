@@ -658,7 +658,7 @@ jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DLineV
         glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
 
         glBufferSubData(GL_ARRAY_BUFFER, 0, batchSize * sizeof(jle3DLineVertex), &linesBatch[linesRendered]);
-        glDrawArrays(GL_LINES, 0, (GLuint)linesBatch.size());
+        glDrawArrays(GL_LINES, 0, batchSize);
 
         linesRendered += JLE_LINE_DRAW_BATCH_SIZE;
     } while (linesRendered < linesBatch.size());
