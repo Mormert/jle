@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifdef BUILD_EDITOR
+
 #include <climits>
 #include <memory>
 #include <set>
@@ -357,3 +359,5 @@ private:
     _iNode _rootNode;
     std::set<std::string> _skipDraw;
 };
+
+#endif // BUILD_EDITOR

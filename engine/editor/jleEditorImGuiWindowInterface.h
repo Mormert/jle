@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifdef BUILD_EDITOR
+
 #include <string>
 
 #include "jleGameEngine.h"
@@ -31,3 +33,5 @@ protected:
     std::string window_name;
     bool isOpened = true;
 };
+
+#endif // BUILD_EDITOR

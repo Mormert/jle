@@ -5,6 +5,8 @@
 #include "jleEditorImGuiWindowInterface.h"
 #include "jleEditorJsonToImgui.h"
 
+#ifdef BUILD_EDITOR
+
 class jleEditorSceneObjectsWindow : public iEditorImGuiWindow {
 public:
     explicit jleEditorSceneObjectsWindow(const std::string &window_name);
@@ -25,3 +27,5 @@ private:
 
     void objectTreeRecursive(std::shared_ptr<jleObject> object);
 };
+
+#endif // BUILD_EDITOR

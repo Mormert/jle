@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifdef BUILD_EDITOR
+
 #include "editor/jleEditorImGuiWindowInterface.h"
 #include <ImGui/ImGuizmo.h>
 
@@ -30,3 +32,5 @@ private:
     ImGuizmo::OPERATION _currentGizmoOperation{ImGuizmo::TRANSLATE};
     void EditTransform(float *cameraView, float *cameraProjection, float *matrix, bool editTransformDecomposition);
 };
+
+#endif // BUILD_EDITOR

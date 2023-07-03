@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifdef BUILD_EDITOR
+
 #include "jlePathDefines.h"
 
 #include "editor/jleEditorImGuiWindowInterface.h"
@@ -131,3 +133,5 @@ private:
 
     std::shared_ptr<jleSceneEditorWindow> _sceneWindow;
 };
+
+#endif // BUILD_EDITOR

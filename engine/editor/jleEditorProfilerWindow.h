@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifdef BUILD_EDITOR
+
 #include "jleEditorImGuiWindowInterface.h"
 #include "jleProfiler.h"
 
@@ -14,3 +16,5 @@ public:
 private:
     void drawProfilerRecursive(uint32_t index);
 };
+
+#endif // BUILD_EDITOR

@@ -3,6 +3,9 @@
 #ifndef JLEEDITORTEXTEDIT_H
 #define JLEEDITORTEXTEDIT_H
 
+#ifdef BUILD_EDITOR
+
+
 #include "3rdparty/ImGuiColorTextEdit/TextEditor.h"
 #include "jleEditorImGuiWindowInterface.h"
 #include <jleResourceRef.h>
@@ -22,5 +25,7 @@ public:
 private:
     std::unordered_map<jlePath, std::unique_ptr<TextEditor>> _textEditorsMap;
 };
+
+#endif // BUILD_EDITOR
 
 #endif // JLEEDITORTEXTEDIT_H

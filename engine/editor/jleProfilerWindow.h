@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifdef BUILD_EDITOR
+
 #include "editor/jleEditorImGuiWindowInterface.h"
 
 #include "jleGameEngine.h"
@@ -15,3 +17,5 @@ public:
 
     profilersWindow _profilersWindow;
 };
+
+#endif // BUILD_EDITOR

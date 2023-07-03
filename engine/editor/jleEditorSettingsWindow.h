@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifdef BUILD_EDITOR
+
 #include "editor/jleEditorImGuiWindowInterface.h"
 #include "editor/jleEditorJsonToImgui.h"
 
@@ -13,3 +15,5 @@ public:
 
     virtual void update(jleGameEngine &ge) override;
 };
+
+#endif // BUILD_EDITOR

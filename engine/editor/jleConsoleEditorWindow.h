@@ -4,6 +4,8 @@
 
 #pragma once
 
+#ifdef BUILD_EDITOR
+
 #include "jleEditorImGuiWindowInterface.h"
 
 #include "ImGui/imgui.h"
@@ -52,3 +54,5 @@ private:
     bool AutoScroll;
     bool ScrollToBottom;
 };
+
+#endif // BUILD_EDITOR

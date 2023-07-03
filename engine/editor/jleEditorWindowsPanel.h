@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifdef BUILD_EDITOR
+
 #include "jleEditorGameControllerWidget.h"
 #include "jleEditorImGuiWindowInterface.h"
 
@@ -22,3 +24,5 @@ private:
 
     jleEditorGameControllerWidget _gameController;
 };
+
+#endif // BUILD_EDITOR

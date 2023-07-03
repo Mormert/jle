@@ -29,8 +29,10 @@ cLight::editorUpdate(float dt)
 void
 cLight::editorGizmosRender(bool selected)
 {
+#ifdef BUILD_EDITOR
     auto mesh = gEditor->pointLightLampGizmoMesh.get();
     std::shared_ptr<jleMaterial> material{};
     auto matrix = glm::translate(glm::mat4{1.0f}, _attachedToObject->getTransform().getWorldPosition());
     gEngine->rendering().rendering3d().sendMesh(mesh, material, matrix, _attachedToObject->instanceID(), false);
+#endif // BUILD_EDITOR
 }

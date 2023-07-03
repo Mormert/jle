@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifdef BUILD_EDITOR
+
 #include "jleEditorImGuiWindowInterface.h"
 #include "jleEditorResourceEdit.h"
 #include "jleTexture.h"
@@ -60,3 +62,5 @@ private:
 
     std::shared_ptr<jleEditorResourceEdit> _editorResourceEdit;
 };
+
+#endif // BUILD_EDITOR

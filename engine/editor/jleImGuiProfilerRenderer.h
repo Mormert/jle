@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifdef BUILD_EDITOR
+
 #include "ImGui/imgui.h"
 #include "glm/glm.hpp"
 
@@ -418,3 +420,5 @@ public:
     size_t fpsFramesCount;
     float avgFrameTime;
 };
+
+#endif // BUILD_EDITOR

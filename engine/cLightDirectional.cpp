@@ -21,7 +21,9 @@ cLightDirectional::update(float dt)
 void
 cLightDirectional::editorGizmosRender(bool selected)
 {
+#ifdef BUILD_EDITOR
     auto mesh = gEditor->directionalLightLampGizmoMesh.get();
     std::shared_ptr<jleMaterial> material{};
     gEngine->rendering().rendering3d().sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
+#endif // BUILD_EDITOR
 }

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifdef BUILD_EDITOR
+
 #include "jleEditorImGuiWindowInterface.h"
 
 class jleEditorResourceViewer : public iEditorImGuiWindow {
@@ -10,3 +12,5 @@ public:
 
     void update(jleGameEngine &ge) override;
 };
+
+#endif // BUILD_EDITOR

@@ -3,6 +3,8 @@
 #ifndef JLE_EDITORRESOURCEEDIT_H
 #define JLE_EDITORRESOURCEEDIT_H
 
+#ifdef BUILD_EDITOR
+
 #include "jleEditorImGuiWindowInterface.h"
 #include <jleResourceRef.h>
 
@@ -23,5 +25,7 @@ private:
     std::unordered_map<jlePath, std::shared_ptr<jleSerializedResource>> _resources;
 
 };
+
+#endif // BUILD_EDITOR
 
 #endif // JLE_EDITORRESOURCEEDIT_H

@@ -20,6 +20,7 @@ void kickStartGame() {
     gameEngine->run();
 }
 
+#ifdef BUILD_EDITOR
 template <typename T>
 void kickStartGameInEditor() {
     LOG_VERBOSE << "Kickstarting the editor";
@@ -31,6 +32,7 @@ void kickStartGameInEditor() {
     gameEngineInEditor->setGame<T>();
     gameEngineInEditor->run();
 }
+#endif // BUILD_EDITOR
 
 template <typename T>
 void kickStart() {

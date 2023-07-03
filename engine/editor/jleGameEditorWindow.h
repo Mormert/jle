@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifdef BUILD_EDITOR
+
 #include "editor/jleEditorImGuiWindowInterface.h"
 
 #include "jleGameEngine.h"
@@ -28,3 +30,5 @@ private:
     int _windowPositionX, _windowPositionY;
     bool _wasFocused = false;
 };
+
+#endif // BUILD_EDITOR
