@@ -66,6 +66,9 @@ struct jleToolTip {
     public:
         jleImGuiCerealArchiveInternal() : OutputArchive<jleImGuiCerealArchiveInternal>(this) {}
         ~jleImGuiCerealArchiveInternal() override = default;
+
+        std::string nextPolymorhphicTypeName{};
+
     };
 
     class jleImGuiCerealArchive : public InputArchive<jleImGuiCerealArchive>
@@ -458,8 +461,6 @@ struct jleToolTip {
         ar.draw<T>(ar, "", t);
     }
 
-    static std::string nextPolymorhphicTypeName{};
-
     template <class T>
     inline void
     CEREAL_SAVE_FUNCTION_NAME(
@@ -468,7 +469,7 @@ struct jleToolTip {
     {
         std::shared_ptr<T> f = std::const_pointer_cast<T>(t.value.ptr);
         jleImGuiCerealArchive nonPolymorphicArchive;
-        nonPolymorphicArchive.draw(nonPolymorphicArchive, nextPolymorhphicTypeName + " (ptr)", *f.get());
+        nonPolymorphicArchive.draw(nonPolymorphicArchive, ar.nextPolymorhphicTypeName + " (ptr)", *f.get());
     }
 
     template <class T>
@@ -476,7 +477,7 @@ struct jleToolTip {
     CEREAL_SAVE_FUNCTION_NAME(jleImGuiCerealArchiveInternal &ar, NameValuePair<T> const &t)
     {
         if constexpr (std::is_same_v<std::string &, T>) {
-            nextPolymorhphicTypeName = t.value;
+            ar.nextPolymorhphicTypeName = t.value;
         }
     }
 
