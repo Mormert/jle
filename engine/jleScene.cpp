@@ -24,6 +24,7 @@ void jleScene::updateSceneObjects(float dt) {
     JLE_SCOPE_PROFILE_CPU(jleScene_updateSceneObjects)
     for (int32_t i = _sceneObjects.size() - 1; i >= 0; i--) {
         if (_sceneObjects[i]->_pendingKill) {
+            _sceneObjects[i]->propagateDestroy();
             _sceneObjects.erase(_sceneObjects.begin() + i);
             continue;
         }

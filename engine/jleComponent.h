@@ -41,6 +41,11 @@ public:
     }
 
     virtual void
+    onDestroy()
+    {
+    }
+
+    virtual void
     update(float dt)
     {
     }

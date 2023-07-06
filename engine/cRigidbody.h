@@ -31,6 +31,8 @@ public:
 
     void update(float dt) override;
 
+    void onDestroy() override;
+
     btRigidBody* getBody();
 
 protected:

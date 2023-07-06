@@ -116,6 +116,8 @@ private:
 
     explicit jleObject(jleScene *scene);
 
+    void propagateDestroy();
+
     void propagateOwnedByScene(jleScene *scene);
 
     void replaceChildrenWithTemplate();
@@ -129,6 +131,8 @@ private:
     void updateChildren(float dt);
 
     void updateChildrenEditor(float dt);
+
+    void addComponentStart(jleComponent* c);
 
     bool _pendingKill = false;
 

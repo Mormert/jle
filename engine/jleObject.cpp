@@ -7,6 +7,7 @@
 #include "jleResource.h"
 #include "jleScene.h"
 #include "jleTransform.h"
+#include "jleGameEngine.h"
 
 #include <filesystem>
 #include <fstream>
@@ -21,6 +22,9 @@ jleObject::destroyComponent(jleComponent *component)
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
         if (_components[i].get() == component) {
+            if(!gEngine->isGameKilled()){
+                component->onDestroy();
+            }
             _components.erase(_components.begin() + i);
         }
     }
@@ -133,6 +137,7 @@ jleObject::updateChildren(float dt)
 {
     for (int32_t i = __childObjects.size() - 1; i >= 0; i--) {
         if (__childObjects[i]->_pendingKill) {
+            __childObjects[i]->propagateDestroy();
             __childObjects.erase(__childObjects.begin() + i);
             continue;
         }
@@ -298,5 +303,25 @@ jleObject::replaceChildrenWithTemplate()
         }
 
         object->replaceChildrenWithTemplate();
+    }
+}
+
+void
+jleObject::propagateDestroy()
+{
+    for(auto&& c : _components){
+        c->onDestroy();
+    }
+
+    for(auto&& o : __childObjects){
+        o->propagateDestroy();
+    }
+}
+
+void
+jleObject::addComponentStart(jleComponent* c)
+{
+    if(!gEngine->isGameKilled()){
+        c->start();
     }
 }

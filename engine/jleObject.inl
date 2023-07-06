@@ -50,6 +50,8 @@ jleObject::addComponent()
     std::shared_ptr<T> newComponent = std::make_shared<T>(this, _containedInScene);
     _components.push_back(newComponent);
 
+    addComponentStart(newComponent.get());
+
     return newComponent;
 };
 
@@ -61,6 +63,8 @@ jleObject::addComponent(const std::string &component_name)
     newComponent->_containedInScene = _containedInScene;
 
     _components.push_back(newComponent);
+
+    addComponentStart(newComponent.get());
 
     return newComponent;
 }

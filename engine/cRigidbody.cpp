@@ -119,3 +119,8 @@ cRigidbody::generateCollisionStaticConcave()
 
     body = gEngine->physics().createRigidbody(_mass, transform, shape, this);
 }
+void
+cRigidbody::onDestroy()
+{
+    gEngine->physics().deleteRigidbody(body);
+}
