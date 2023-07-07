@@ -70,6 +70,22 @@ jleObject::addComponent(const std::string &component_name)
 }
 
 template <typename T>
+void
+jleObject::addComponent(const std::shared_ptr<T>& component)
+{
+    static_assert(std::is_base_of<jleComponent, T>::value, "T must derive from jleComponent");
+
+    const auto& c = std::static_pointer_cast<jleComponent>(component);
+    c->_attachedToObject = this;
+    c->_containedInScene = _containedInScene;
+
+    _components.push_back(component);
+
+    addComponentStart(component.get());
+
+}
+
+template <typename T>
 inline std::shared_ptr<T>
 jleObject::getComponent()
 {
@@ -117,3 +133,4 @@ jleObject::spawnChildObject(const std::string &objName)
     attachChildObject(object);
     return object;
 }
+

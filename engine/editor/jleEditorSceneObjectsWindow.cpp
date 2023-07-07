@@ -185,7 +185,6 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                 ImGui::Text("No object selected");
             }
 
-            static std::weak_ptr<jleObject> lastSelectedObject;
             if (hasAnObjectSelected) {
                 ImGui::Separator();
                 if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None)) {
@@ -212,14 +211,38 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                         ImGui::EndTabItem();
                     }
                     if (ImGui::BeginTabItem("Custom Components")) {
+                        static std::shared_ptr<jleComponent> componentBeingAdded = nullptr;
+                        bool openedThisFrame = false;
                         if (ImGui::BeginMenu("Add Custom Component")) {
                             for (auto &&componentType : jleTypeReflectionUtils::registeredComponentsRef()) {
                                 if (ImGui::MenuItem(componentType.first.c_str())) {
-                                    selectedObjectSafePtr->addComponent(componentType.first);
-                                    lastSelectedObject.reset(); // refresh
+                                    componentBeingAdded = jleTypeReflectionUtils::instantiateComponentByString(componentType.first);
+                                    openedThisFrame = true;
                                 }
                             }
                             ImGui::EndMenu();
+                        }
+
+                        if(openedThisFrame){
+                            ImGui::OpenPopup("Add Component Popup");
+                        }
+
+                        bool openedPopup = componentBeingAdded.operator bool();
+
+                        if (ImGui::BeginPopupModal("Add Component Popup", &openedPopup, 0)) {
+
+                            cereal::jleImGuiCerealArchiveInternal ar;
+                            ar(componentBeingAdded);
+
+                            if (ImGui::Button("Add Component")) {
+                                selectedObjectSafePtr->addComponent(componentBeingAdded);
+                                componentBeingAdded.reset();
+                            }
+                            ImGui::SameLine();
+                            if (ImGui::Button("Cancel")) {
+                                componentBeingAdded.reset();
+                            }
+                            ImGui::EndPopup();
                         }
 
                         auto &&customComponents = selectedObjectSafePtr->customComponents();
@@ -228,7 +251,6 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                                 for (int i = customComponents.size() - 1; i >= 0; i--) {
                                     if (ImGui::MenuItem(customComponents[i]->componentName().data())) {
                                         customComponents[i]->destroy();
-                                        lastSelectedObject.reset(); // refresh
                                     }
                                 }
                                 ImGui::EndMenu();
