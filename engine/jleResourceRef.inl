@@ -6,26 +6,6 @@
 #include "jleResource.h"
 
 template <typename T>
-template <class Archive>
-void
-jleResourceRef<T>::save(Archive &ar) const
-{
-    ar(CEREAL_NVP(path));
-}
-
-template <typename T>
-template <class Archive>
-void
-jleResourceRef<T>::load(Archive &ar)
-{
-    ar(CEREAL_NVP(path));
-    ptr = nullptr;
-    if (!path.isEmpty()) {
-        ptr = gCore->resources().loadResourceFromFile<T>(path);
-    }
-}
-
-template <typename T>
 void
 jleResourceRef<T>::loadResource()
 {
@@ -40,4 +20,25 @@ void
 jleResourceRef<T>::saveResource()
 {
     ptr->saveToFile();
+}
+
+
+template <typename T>
+template <class Archive>
+std::string
+jleResourceRef<T>::save_minimal(const Archive &) const
+{
+    return path.getVirtualPath();
+}
+
+template <typename T>
+template <class Archive>
+void
+jleResourceRef<T>::load_minimal(const Archive &, const std::string &value)
+{
+    path = jlePath{value};
+    ptr = nullptr;
+    if (!path.isEmpty()) {
+        ptr = gCore->resources().loadResourceFromFile<T>(path);
+    }
 }

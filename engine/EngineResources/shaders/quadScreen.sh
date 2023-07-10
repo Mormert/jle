@@ -5,11 +5,8 @@
         "ptr_wrapper": {
             "id": 2147483649,
             "data": {
-                "_vertexPath": {
-                    "_virtualPath": "ER:/shaders/glsl/quadScreen.vert"
-                },
-                "_fragPath": {
-                    "_virtualPath": "ER:/shaders/glsl/quadScreen.frag"
+                "_vertexPath": "ER:shaders/glsl/quadScreen.vert",
+                "_fragPath":"ER:shaders/glsl/quadScreen.frag"
                 }
             }
         }

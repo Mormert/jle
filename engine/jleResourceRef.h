@@ -23,13 +23,11 @@ struct jleResourceRef {
         }
     };
 
-    // Serialization save
     template <class Archive>
-    void save(Archive &ar) const;
+    std::string save_minimal(Archive const &) const;
 
-    // Serialization load
     template <class Archive>
-    void load(Archive &ar);
+    void load_minimal( Archive const &, std::string const & value );
 
     // Load resource from file
     void loadResource();

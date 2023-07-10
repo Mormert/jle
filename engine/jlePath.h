@@ -14,12 +14,17 @@ public:
     jlePath() = default;
 
     template <class Archive>
-    void
-    serialize(Archive &ar)
+    std::string save_minimal(Archive const & ) const
     {
-        ar(CEREAL_NVP(_virtualPath));
+        return _virtualPath;
+    }
+
+    template <class Archive>
+    void load_minimal( Archive const &, std::string const & value )
+    {
         fixSlashes(_virtualPath);
         _realPath = findRealPathFromVirtualPath(_virtualPath);
+        _virtualPath = value;
     }
 
     jlePath(const std::string &path, bool virtualPath = true);
@@ -53,7 +58,8 @@ private:
     static std::string findVirtualPathFromRealPath(const std::string &realPath);
     static std::string findRealPathFromVirtualPath(const std::string &virtualPath);
 
-    void fixSlashes(std::string& str);
+    static void fixSlashes(std::string& str);
+    static std::string fixSlashes(const std::string& str);
 };
 
 namespace std

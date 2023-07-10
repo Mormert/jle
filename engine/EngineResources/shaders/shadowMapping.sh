@@ -5,12 +5,8 @@
         "ptr_wrapper": {
             "id": 2147483649,
             "data": {
-                "_vertexPath": {
-                    "_virtualPath": "ER:shaders/glsl/shadowMapping.vert"
-                },
-                "_fragPath": {
-                    "_virtualPath": "ER:shaders/glsl/shadowMapping.frag"
-                }
+                "_vertexPath": "ER:shaders/glsl/shadowMapping.vert",
+                "_fragPath": "ER:shaders/glsl/shadowMapping.frag"
             }
         }
     }

@@ -5,12 +5,8 @@
         "ptr_wrapper": {
             "id": 2147483649,
             "data": {
-                "_vertexPath": {
-                    "_virtualPath": "ER:shaders/glsl/picking.vert"
-                },
-                "_fragPath": {
-                    "_virtualPath": "ER:shaders/glsl/picking.frag"
-                }
+                "_vertexPath": "ER:shaders/glsl/picking.vert",
+                "_fragPath": "ER:shaders/glsl/picking.frag"
             }
         }
     }

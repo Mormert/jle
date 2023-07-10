@@ -5,12 +5,8 @@
         "ptr_wrapper": {
             "id": 2147483649,
             "data": {
-                "_vertexPath": {
-                    "_virtualPath": "ER:shaders/glsl/skybox.vert"
-                },
-                "_fragPath": {
-                    "_virtualPath": "ER:shaders/glsl/skybox.frag"
-                }
+                "_vertexPath":  "ER:shaders/glsl/skybox.vert",
+                "_fragPath": "ER:shaders/glsl/skybox.frag"
             }
         }
     }

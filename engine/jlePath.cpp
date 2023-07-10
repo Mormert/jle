@@ -179,6 +179,23 @@ jlePath::fixSlashes(std::string &str)
 }
 
 std::string
+jlePath::fixSlashes(const std::string &str)
+{
+    std::string s2 = str;
+    const auto str_replace = [](std::string &str, const std::string &oldStr, const std::string &newStr) {
+        std::string::size_type pos = 0u;
+        while ((pos = str.find(oldStr, pos)) != std::string::npos) {
+            str.replace(pos, oldStr.length(), newStr);
+            pos += newStr.length();
+        }
+    };
+
+    str_replace(s2, ":", ":/");
+    str_replace(s2, "\\", "/");
+    str_replace(s2, "//", "/");
+}
+
+std::string
 jlePath::getFileEnding() const
 {
     size_t pos = _virtualPath.find_last_of(".");
