@@ -4,7 +4,7 @@
 
 #include "ImGui/imgui.h"
 #include "plog/Formatters/FuncMessageFormatter.h"
-
+#include "jleDynamicLogAppender.h"
 #include <algorithm>
 #include <locale>
 
@@ -18,14 +18,6 @@ std::string recordToString(const plog::Record &record) {
          << record.getLine() << PLOG_NSTR(": ") << record.getMessage()
          << PLOG_NSTR("\n");
     auto wstr = woss.str();
-
-    // DEPRECATED C++ 14 CODE BELOW
-    // Conversion from wstring to string is required
-    //  using convert_type = std::codecvt_utf8<wchar_t>;
-    //  static std::wstring_convert<convert_type, wchar_t> converter;
-    //  std::string converted_str = converter.to_bytes(wstr);
-
-    // C++ 17 VERSION:
 
     std::string converted_str(wstr.length(), 0);
     std::transform(wstr.begin(),
@@ -50,21 +42,11 @@ struct ConsoleAppender : public plog::IAppender {
     }
 };
 
-ConsoleAppender &consoleAppender() {
-    static auto appender = ConsoleAppender{};
-
-    return appender;
-}
-
 } // namespace
 
-plog::IAppender &jleConsoleEditorWindow::appender() {
-    return consoleAppender();
-}
 
 jleConsoleEditorWindow::jleConsoleEditorWindow(const std::string &window_name)
     : iEditorImGuiWindow{window_name} {
-    consoleAppender().window = this;
     clearLog();
     memset(InputBuf, 0, sizeof(InputBuf));
     HistoryPos = -1;
@@ -77,13 +59,16 @@ jleConsoleEditorWindow::jleConsoleEditorWindow(const std::string &window_name)
     Commands.push_back("CLASSIFY");
     AutoScroll = true;
     ScrollToBottom = false;
+
+    dynamicAppender().addAppender(this);
 }
 
 jleConsoleEditorWindow::~jleConsoleEditorWindow() {
-    consoleAppender().window = nullptr;
     clearLog();
     for (int i = 0; i < History.Size; i++)
         free(History[i]);
+
+    dynamicAppender().removeAppender(this);
 }
 
 int jleConsoleEditorWindow::stricmp(const char *s1, const char *s2) {

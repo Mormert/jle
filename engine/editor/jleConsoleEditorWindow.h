@@ -12,13 +12,11 @@
 
 #include "plog/Appenders/IAppender.h"
 
-class jleConsoleEditorWindow : public iEditorImGuiWindow {
+class jleConsoleEditorWindow : public iEditorImGuiWindow, public plog::IAppender {
 public:
-    jleConsoleEditorWindow(const std::string &window_name);
+    explicit jleConsoleEditorWindow(const std::string &window_name);
 
-    ~jleConsoleEditorWindow();
-
-    static plog::IAppender &appender();
+    ~jleConsoleEditorWindow() override;
 
     static int stricmp(const char *s1, const char *s2);
 
@@ -40,8 +38,7 @@ public:
 
     int textEditCallback(ImGuiInputTextCallbackData *data);
 
-    // Inherited from plog::IAppender
-    void write(const plog::Record &record);
+    void write(const plog::Record &record) override;
 
 private:
     static const unsigned int InputBufSize = 256;

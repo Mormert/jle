@@ -29,6 +29,7 @@
 #include "editor/jleEditorResourceViewer.h"
 #include "editor/jleEditorSceneObjectsWindow.h"
 #include "editor/jleEditorWindowsPanel.h"
+#include "editor/jleEditorNotifications.h"
 #include "jleEditorResourceEdit.h"
 #include "jleEditorSettingsWindow.h"
 #include "jleEditorTextEdit.h"
@@ -82,7 +83,6 @@ jleEditor::start()
     menu->addWindow(gameWindow);
 
     auto console = std::make_shared<jleConsoleEditorWindow>("Console Window");
-    plog::get<0>()->addAppender(&console->appender());
     addImGuiWindow(console);
     menu->addWindow(console);
 
@@ -110,6 +110,9 @@ jleEditor::start()
     auto profilerWindow = std::make_shared<jleEditorProfilerWindow>("Profiler");
     addImGuiWindow(profilerWindow);
     menu->addWindow(profilerWindow);
+
+    auto notifications = std::make_shared<jleEditorNotifications>("Notifications");
+    addImGuiWindow(notifications);
 
     gCore->window().addWindowResizeCallback(
         std::bind(&jleEditor::mainEditorWindowResized, this, std::placeholders::_1, std::placeholders::_2));

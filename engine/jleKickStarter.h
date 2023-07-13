@@ -8,6 +8,7 @@
 #include <plog/Appenders/RollingFileAppender.h>
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Init.h>
+#include "jleDynamicLogAppender.h"
 
 template <typename T>
 void kickStartGame() {
@@ -46,7 +47,7 @@ void kickStart() {
         "jle_log.plog", 100000, 5);
     plog::ColorConsoleAppender<plog::TxtFormatter>
         consoleAppender; // Log to command window
-    plog::init<0>(plog::verbose, &fileAppender).addAppender(&consoleAppender);
+    plog::init<0>(plog::verbose, &fileAppender).addAppender(&consoleAppender).addAppender(&dynamicAppender());
 
 #ifdef BUILD_EDITOR
     kickStartGameInEditor<T>();
