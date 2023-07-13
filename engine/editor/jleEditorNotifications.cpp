@@ -32,9 +32,21 @@ jleEditorNotifications::update(jleGameEngine &ge)
     bool t = true;
     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4{0.1f, 0.1f, 0.1f, 1.0f});
 
+    const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
+
+    auto x = ImGui::GetWindowViewport()->Pos.x + 45;
+    auto y = ImGui::GetWindowViewport()->Pos.y + 45;
+
     for(const auto& notification : _notifications){
-        ImGui::SetNextWindowSize(ImVec2{200, 16});
-        ImGui::SetNextWindowPos(ImVec2{45, 45 + 25.f * i});
+
+        std::wstring first64 = notification.message.substr(0, 64);
+        if(first64.size() == 64)
+        {
+            first64 += L"...";
+        }
+
+        ImGui::SetNextWindowSize(ImVec2{400 * globalImguiScale, 26 * globalImguiScale});
+        ImGui::SetNextWindowPos(ImVec2{x, y + 32.f * globalImguiScale * i});
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove |
                                  ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse |
                                  ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoDocking;
@@ -42,13 +54,13 @@ jleEditorNotifications::update(jleGameEngine &ge)
 
 
         ImGui::Image((void *)(intptr_t)_errorImage->id(),
-                     ImVec2(16, 16),
+                     ImVec2(16 * globalImguiScale, 16 * globalImguiScale),
                      ImVec2(0, 1),
                      ImVec2(1, 0));
 
-        ImGui::SameLine();
+        ImGui::SameLine(16.f * globalImguiScale + 10.f * globalImguiScale + 3);
 
-        ImGui::Text("%s", notification.message.c_str());
+        ImGui::Text("%ls", first64.c_str());
 
         ImGui::End();
 
@@ -56,28 +68,26 @@ jleEditorNotifications::update(jleGameEngine &ge)
     }
 
     ImGui::PopStyleColor();
-
-
 }
 
-void jleEditorNotifications::addNotificationError(const std::string& message){
+void jleEditorNotifications::addNotificationError(const std::wstring& message){
     using namespace std::chrono;
     long long now = system_clock::now().time_since_epoch().count();
 
-    _notifications.push_back({message, now + 3000000});
+    _notifications.push_back({message, now + 30000000});
 }
 
 void
 jleEditorNotifications::write(const plog::Record &record)
 {
     if(record.getSeverity() == plog::Severity::error){
-        std::string m = record.getMessage();
+        std::wstring m = record.getMessage();
         addNotificationError(m);
         return;
     }
 
     if(record.getSeverity() == plog::Severity::fatal){
-        std::string m = record.getMessage();
+        std::wstring m = record.getMessage();
         addNotificationError(m);
         return;
     }

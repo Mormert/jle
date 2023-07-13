@@ -15,12 +15,12 @@ public:
 
     void update(jleGameEngine &ge) override;
 
-    void addNotificationError(const std::string& message);
+    void addNotificationError(const std::wstring& message);
 
     void write(const plog::Record& record) override;
 private:
     struct Notification{
-        std::string message;
+        std::wstring message;
         long long activeUntil;
     };
 

@@ -167,7 +167,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
                 }
             }
         } else {
-            LOGE << "Picking object fell out into the universe";
+            LOGI << "Picking object fell out into the universe";
         }
 
         _pickingFramebuffer->bindDefault();

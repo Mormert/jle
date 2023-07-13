@@ -59,7 +59,6 @@ private:
     static std::string findRealPathFromVirtualPath(const std::string &virtualPath);
 
     static void fixSlashes(std::string& str);
-    static std::string fixSlashes(const std::string& str);
 };
 
 namespace std
