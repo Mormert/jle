@@ -241,6 +241,26 @@ struct jleToolTip {
             ImGui::PopID();
         }
 
+        bool draw_ui_reference(jleImGuiCerealArchive &ar, const char *name, std::string &value){
+            ImGui::PushID(elementCount++);
+
+            std::vector<char> charData(value.begin(), value.end());
+            charData.resize(1000);
+
+            bool isEditedAndDeactivated = false;
+
+            if (ImGui::InputText(LeftLabelImGui(name).c_str(), &charData[0], charData.size())) {
+                value = std::string(charData.data());
+            }
+
+            if(ImGui::IsItemDeactivatedAfterEdit()){
+                isEditedAndDeactivated = true;
+            }
+
+            ImGui::PopID();
+            return isEditedAndDeactivated;
+        }
+
         template <class T>
         void
         draw_ui(jleImGuiCerealArchive &ar, const char *name, jleResourceRef<T> &value)
@@ -248,9 +268,8 @@ struct jleToolTip {
             ImGui::PushID(elementCount++);
 
             std::string copy = value.path._virtualPath;
-            draw_ui(ar, std::string{name + std::string{" (ref)"}}.c_str(), value.path._virtualPath);
-            if (copy != value.path._virtualPath) {
-                //value.path = jlePath{value.path._virtualPath}; // Find real path again
+            bool isEditedAndDeactivated = draw_ui_reference(ar, std::string{name + std::string{" (ref)"}}.c_str(), value.path._virtualPath);
+            if (isEditedAndDeactivated) {
                 value.load_minimal(ar, value.path._virtualPath);
             }
 
