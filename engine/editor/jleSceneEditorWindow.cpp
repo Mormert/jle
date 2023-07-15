@@ -374,14 +374,17 @@ jleSceneEditorWindow::EditTransform(float *cameraView,
     static bool boundSizingSnap = false;
 
     if (editTransformDecomposition) {
-        if (ImGui::IsKeyPressed(ImGuiKey_T) && !ImGuizmo::IsUsing())
-            _currentGizmoOperation = ImGuizmo::TRANSLATE;
-        if (ImGui::IsKeyPressed(ImGuiKey_R) && !ImGuizmo::IsUsing())
-            _currentGizmoOperation = ImGuizmo::ROTATE;
-        if (ImGui::IsKeyPressed(ImGuiKey_Z) && !ImGuizmo::IsUsing())
-            _currentGizmoOperation = ImGuizmo::SCALE;
-        if (ImGui::IsKeyPressed(ImGuiKey_U) && !ImGuizmo::IsUsing())
-            _currentGizmoOperation = ImGuizmo::UNIVERSAL;
+        if(ImGui::IsWindowFocused())
+        {
+            if (ImGui::IsKeyPressed(ImGuiKey_T) && !ImGuizmo::IsUsing())
+                _currentGizmoOperation = ImGuizmo::TRANSLATE;
+            if (ImGui::IsKeyPressed(ImGuiKey_R) && !ImGuizmo::IsUsing())
+                _currentGizmoOperation = ImGuizmo::ROTATE;
+            if (ImGui::IsKeyPressed(ImGuiKey_Z) && !ImGuizmo::IsUsing())
+                _currentGizmoOperation = ImGuizmo::SCALE;
+            if (ImGui::IsKeyPressed(ImGuiKey_U) && !ImGuizmo::IsUsing())
+                _currentGizmoOperation = ImGuizmo::UNIVERSAL;
+        }
         if (ImGui::RadioButton("Translate", _currentGizmoOperation == ImGuizmo::TRANSLATE))
             _currentGizmoOperation = ImGuizmo::TRANSLATE;
         ImGui::SameLine();
@@ -401,10 +404,12 @@ jleSceneEditorWindow::EditTransform(float *cameraView,
                 mCurrentGizmoMode = ImGuizmo::WORLD;
         }
 
-        /*
         ImGui::Checkbox("##UseSnap", &useSnap);
         ImGui::SameLine();
 
+        const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
+
+        ImGui::PushItemWidth(150.f * globalImguiScale);
         switch (_currentGizmoOperation) {
         case ImGuizmo::TRANSLATE:
             ImGui::InputFloat3("Snap", &snap[0]);
@@ -423,7 +428,8 @@ jleSceneEditorWindow::EditTransform(float *cameraView,
             ImGui::SameLine();
             ImGui::InputFloat3("Snap", boundsSnap);
             ImGui::PopID();
-        }*/
+        }
+        ImGui::PopItemWidth();
     }
 
     ImGuizmo::Manipulate(cameraView,
