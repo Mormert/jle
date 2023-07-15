@@ -118,7 +118,13 @@ jlePath::findRealPathFromVirtualPath(const std::string &virtualPath)
     // Remove the root folder prefix ("GR:", "ER:" or "ED:")
     path.erase(0, 3);
 
-    realPath = *resourcesDirectory + '/' + path;
+    if(path[0] == '/')
+    {
+        realPath = *resourcesDirectory + path;
+    }else
+    {
+        realPath = *resourcesDirectory + '/' + path;
+    }
     return realPath;
 }
 bool
