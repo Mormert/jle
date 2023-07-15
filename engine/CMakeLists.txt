@@ -178,7 +178,7 @@ add_subdirectory(3rdparty/git_submodules/RmlUi)
 if (WIN32)
     target_link_libraries(engine PRIVATE shlwapi imm32) # shlwapi and imm32 needed for "shell"
 endif ()
-target_include_directories(engine PUBLIC 3rdparty/git_submodules/RmlUi/Include RmlUiImplementation RmlUiImplementation/shell/include)
+target_include_directories(engine PUBLIC 3rdparty/git_submodules/RmlUi/Include RmlUiImplementation RmlUiImplementation/shell/include 3rdparty/lua)
 target_link_libraries(engine PUBLIC RmlCore RmlDebugger)
 
 target_include_directories(engine SYSTEM PUBLIC
