@@ -24,6 +24,8 @@ public:
 
 private:
     std::unordered_map<jlePath, std::unique_ptr<TextEditor>> _textEditorsMap;
+
+    ImFont* font;
 };
 
 #endif // BUILD_EDITOR

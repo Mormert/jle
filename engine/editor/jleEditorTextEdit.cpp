@@ -1,12 +1,16 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleEditorTextEdit.h"
-jleEditorTextEdit::jleEditorTextEdit(const std::string &window_name) : iEditorImGuiWindow(window_name) {}
+jleEditorTextEdit::jleEditorTextEdit(const std::string &window_name) : iEditorImGuiWindow(window_name)
+{
+    ImGuiIO &io = ImGui::GetIO();
+    std::string path = jlePath{"ED:/fonts/Cascadia.ttf"}.getRealPath();
+    font = io.Fonts->AddFontFromFileTTF(path.c_str(), 20.0f);
+}
 
 void
 jleEditorTextEdit::update(jleGameEngine &ge)
 {
-
     std::vector<jlePath> toBeClosed;
 
     for (auto &[path, textEditorPtr] : _textEditorsMap) {
@@ -95,7 +99,9 @@ jleEditorTextEdit::update(jleGameEngine &ge)
                         path.getRealPath().c_str(),
                         path.getVirtualPath().c_str());
 
+            ImGui::PushFont(font);
             textEditor.Render(tabName.c_str(), ImVec2(), true);
+            ImGui::PopFont();
         }
         ImGui::End();
     }
@@ -114,6 +120,7 @@ jleEditorTextEdit::open(const jlePath &path)
     }
 
     auto e = std::make_unique<TextEditor>();
+    e->SetShowWhitespaces(false);
 
     const auto ends_with = [](std::string const &value, std::string const &ending) -> bool {
         if (ending.size() > value.size())
@@ -126,6 +133,8 @@ jleEditorTextEdit::open(const jlePath &path)
         e->SetLanguageDefinition(TextEditor::LanguageDefinition::GLSL());
     } else if (ends_with(pathStr, ".cpp") || ends_with(pathStr, ".h") || ends_with(pathStr, ".c")) {
         e->SetLanguageDefinition(TextEditor::LanguageDefinition::CPlusPlus());
+    } else if (ends_with(pathStr, ".lua")) {
+        e->SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
     } else {
         e->SetLanguageDefinition(TextEditor::LanguageDefinition::RegularText());
     }
