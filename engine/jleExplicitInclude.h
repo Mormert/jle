@@ -19,3 +19,4 @@
 #include "cUITransformUpdater.h"
 #include "jleTransform.h"
 #include "cRigidbody.h"
+#include "cLuaScript.h"
