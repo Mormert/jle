@@ -79,7 +79,8 @@ add_library(engine STATIC
         "jleExplicitInclude.cpp"
         "jlePhysics.cpp"
         "jlePhysicsDebugDrawer.cpp"
-        "cRigidbody.cpp")
+        "cRigidbody.cpp"
+        "cLuaScript.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE
@@ -128,6 +129,8 @@ target_include_directories(engine SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rd
 
 target_link_libraries(engine PUBLIC zlib)
 
+add_subdirectory(3rdparty/lua)
+target_link_libraries(engine PUBLIC vanilla_lua)
 
 if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()
 
