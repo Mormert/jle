@@ -32,11 +32,11 @@ jleTexture::loadFromFile(const jlePath &path)
         imagePath = path;
     }
 
-    auto image = gCore->resources().loadResourceFromFile<jleImage>(imagePath);
+    auto image = jleImage{imagePath};
 
-    _width = image->width();
-    _height = image->height();
-    _nrChannels = image->nrChannels();
+    _width = image.width();
+    _height = image.height();
+    _nrChannels = image.nrChannels();
 
     glGenTextures(1, &_id);
 
@@ -48,13 +48,13 @@ jleTexture::loadFromFile(const jlePath &path)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    if (image->data()) {
+    if (image.data()) {
         GLenum format = GL_RGBA;
-        if (image->nrChannels() == 1)
+        if (image.nrChannels() == 1)
             format = GL_RED;
-        else if (image->nrChannels() == 3)
+        else if (image.nrChannels() == 3)
             format = GL_RGB;
-        else if (image->nrChannels() == 4)
+        else if (image.nrChannels() == 4)
             format = GL_RGBA;
 
         glBindTexture(GL_TEXTURE_2D, _id);
@@ -66,7 +66,7 @@ jleTexture::loadFromFile(const jlePath &path)
             glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
         }
         glTexImage2D(
-            GL_TEXTURE_2D, 0, format, image->width(), image->height(), 0, format, GL_UNSIGNED_BYTE, image->data());
+            GL_TEXTURE_2D, 0, format, image.width(), image.height(), 0, format, GL_UNSIGNED_BYTE, image.data());
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
@@ -74,13 +74,13 @@ jleTexture::loadFromFile(const jlePath &path)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        PLOG_VERBOSE << "Generated OpenGL texture " << _id << " (" << image->nrChannels() << " channels)";
+        PLOG_VERBOSE << "Generated OpenGL texture " << _id << " (" << image.nrChannels() << " channels)";
 
         glBindTexture(GL_TEXTURE_2D, 0);
         jleStaticOpenGLState::globalActiveTexture = 0;
 
     } else {
-        PLOG_ERROR << "Failed to generate OpenGL texture " << _id << " with path: " << image->filepath;
+        PLOG_ERROR << "Failed to generate OpenGL texture " << _id << " with path: " << image.filepath;
 
         return jleLoadFromFileSuccessCode::FAIL;
     }

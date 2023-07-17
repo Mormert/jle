@@ -81,7 +81,8 @@ add_library(engine STATIC
         "jlePhysicsDebugDrawer.cpp"
         "cRigidbody.cpp"
         "cLuaScript.cpp"
-        "jleLuaScript.cpp" jleFileChangeNotifier.cpp jleFileChangeNotifier.h)
+        "jleLuaScript.cpp"
+        "jleFileChangeNotifier.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE

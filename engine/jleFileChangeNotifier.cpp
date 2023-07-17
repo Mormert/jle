@@ -14,8 +14,9 @@ jleFileChangeNotifier::periodicSweep()
 
     long long now = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 
-    if (now > lastSweep + 1000ll) {
+    if (now > lastSweep + 250ll) {
         sweep();
+        lastSweep = now;
     }
 }
 
