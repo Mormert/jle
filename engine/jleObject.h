@@ -110,7 +110,9 @@ public:
     // If this object is based on a template
     std::optional<jlePath> __templatePath{};
 
-    int instanceID() const;
+    uint32_t instanceID() const;
+
+    uint32_t& instanceIDRef();
 
     jleTransform &getTransform();
 

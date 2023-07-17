@@ -25,14 +25,15 @@
 #include "editor/jleConsoleEditorWindow.h"
 #include "editor/jleEditorContentBrowser.h"
 #include "editor/jleEditorGameControllerWidget.h"
+#include "editor/jleEditorNotifications.h"
 #include "editor/jleEditorProfilerWindow.h"
 #include "editor/jleEditorResourceViewer.h"
 #include "editor/jleEditorSceneObjectsWindow.h"
 #include "editor/jleEditorWindowsPanel.h"
-#include "editor/jleEditorNotifications.h"
 #include "jleEditorResourceEdit.h"
 #include "jleEditorSettingsWindow.h"
 #include "jleEditorTextEdit.h"
+#include "jleFileChangeNotifier.h"
 #include "jleFramebufferScreen.h"
 #include "jleGameEditorWindow.h"
 #include "jlePhysics.h"
@@ -50,6 +51,12 @@ jleEditor::start()
     LOG_INFO << "Starting the editor";
 
     _editorSaveState = jleResourceRef<jleEditorSaveState>(jlePath{"BI:editor_save.edsave"});
+
+    std::vector<std::string> directoriesForNotification;
+    directoriesForNotification.push_back(jlePath{"ER:/"}.getRealPath());
+    directoriesForNotification.push_back(jlePath{"ED:/"}.getRealPath());
+    directoriesForNotification.push_back(jlePath{"GR:/"}.getRealPath());
+    _fileChangeNotifier = std::make_unique<jleFileChangeNotifier>(directoriesForNotification);
 
     initImgui();
 
@@ -317,6 +324,7 @@ jleEditor::updateEditorLoadedScenes(float dt)
 void
 jleEditor::update(float dt)
 {
+    _fileChangeNotifier->periodicSweep();
     jleGameEngine::update(dt);
     if (isGameKilled()) {
         JLE_SCOPE_PROFILE_CPU(updateEditorLoadedScenes)

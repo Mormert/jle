@@ -3,7 +3,8 @@
 #pragma once
 
 #include "jleComponent.h"
-#include <sol2/sol.hpp>
+#include "jleLuaScript.h"
+#include "jleResourceRef.h"
 
 class cLuaScript : public jleComponent
 {
@@ -11,21 +12,31 @@ class cLuaScript : public jleComponent
 public:
     explicit cLuaScript(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
+    virtual ~cLuaScript();
+
     template <class Archive>
     void
     serialize(Archive &ar)
     {
-        ar(CEREAL_NVP(_scriptPath));
+        ar( CEREAL_NVP(_scriptRef));
     }
 
     void start() override;
 
     void update(float dt) override;
 
-protected:
-    jlePath _scriptPath;
+    void onDestroy() override;
 
-    std::shared_ptr<sol::state> _lua;
+    bool runUpdate = true;
+
+private:
+    jleResourceRef<jleLuaScript> _scriptRef;
+
+    std::shared_ptr<sol::state> _luaKeepAliveRef{};
+    sol::table _self;
+
+    std::function<void(sol::table, float)> _updateLua;
+    std::function<void(sol::table)> _onDestroyLua;
 };
 
 CEREAL_REGISTER_TYPE(cLuaScript)

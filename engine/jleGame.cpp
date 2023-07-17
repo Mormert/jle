@@ -19,3 +19,20 @@ void jleGame::updateActiveScenes(float dt) {
 std::vector<std::shared_ptr<jleScene>> &jleGame::activeScenesRef() {
     return _activeScenes;
 }
+
+jleGame::jleGame() {
+    _lua = std::make_shared<sol::state>();
+    _lua->open_libraries(sol::lib::base,
+                       sol::lib::math,
+                       sol::lib::string,
+                       sol::lib::coroutine,
+                       sol::lib::package,
+                       sol::lib::debug,
+                       sol::lib::io,
+                       sol::lib::table,
+                       sol::lib::os);
+
+    _lua->set_function("LOGE", [](std::string a) {
+        LOGE << a;
+    });
+}

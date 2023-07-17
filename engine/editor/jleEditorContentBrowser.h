@@ -27,6 +27,7 @@ private:
     std::shared_ptr<jleTexture> _sceneFileIcon;
     std::shared_ptr<jleTexture> _imageFileIcon;
     std::shared_ptr<jleTexture> _jsonFileIcon;
+    std::shared_ptr<jleTexture> _luaFileIcon;
     std::shared_ptr<jleTexture> _shaderShFileIcon;
     std::shared_ptr<jleTexture> _shaderVsFileIcon;
     std::shared_ptr<jleTexture> _shaderFsFileIcon;

@@ -249,8 +249,14 @@ jleObject::saveAsObjectTemplate()
     outputArchive(shared_from_this());
 }
 
-int
+uint32_t
 jleObject::instanceID() const
+{
+    return _instanceID;
+}
+
+uint32_t &
+jleObject::instanceIDRef()
 {
     return _instanceID;
 }

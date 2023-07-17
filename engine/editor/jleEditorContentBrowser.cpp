@@ -32,6 +32,8 @@ jleEditorContentBrowser::jleEditorContentBrowser(const std::string &window_name,
 
     _jsonFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/json.png"});
 
+    _luaFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/script.png"});
+
     _shaderShFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/shader_sh.png"});
 
     _shaderVsFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/shader_vs.png"});
@@ -339,6 +341,8 @@ jleEditorContentBrowser::contentBrowser()
                         }
                     } else if (dir_entry.path().extension() == ".json") {
                         iconTexture = _jsonFileIcon;
+                    } else if (dir_entry.path().extension() == ".lua") {
+                        iconTexture = _luaFileIcon;
                     } else if (dir_entry.path().extension() == ".sh") {
                         iconTexture = _shaderShFileIcon;
                     } else if (dir_entry.path().extension() == ".frag") {

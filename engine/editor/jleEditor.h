@@ -16,6 +16,7 @@
 
 class jleFramebufferInterface;
 class jleSceneEditorWindow;
+class jleFileChangeNotifier;
 
 class jleEditor;
 inline jleEditor *gEditor;
@@ -132,6 +133,8 @@ private:
     std::vector<std::shared_ptr<jleScene>> _editorScenes;
 
     std::shared_ptr<jleSceneEditorWindow> _sceneWindow;
+
+    std::unique_ptr<jleFileChangeNotifier> _fileChangeNotifier;
 };
 
 #endif // BUILD_EDITOR

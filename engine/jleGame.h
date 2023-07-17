@@ -5,10 +5,10 @@
 #include <memory>
 #include <vector>
 
-#include "jleCore.h"
-#include "jleResource.h"
 #include "jleCamera.h"
+#include "jleCore.h"
 #include "jleProfiler.h"
+#include "jleResource.h"
 #include "jleScene.h"
 
 #include <cereal/archives/json.hpp>
@@ -17,13 +17,17 @@
 #include "editor/jleImGuiCerealArchive.h"
 #endif
 
-
 #include <fstream>
 #include <iostream>
+
+#define SOL_ALL_SAFETIES_ON 1
+#include <sol2/sol.hpp>
 
 class jleGame
 {
 public:
+    jleGame();
+
     virtual ~jleGame() = default;
 
     virtual void
@@ -56,16 +60,13 @@ public:
     loadScene(const jlePath &scenePath)
     {
         std::shared_ptr<jleScene> scene = gCore->resources().loadResourceFromFile<jleScene>(scenePath, true);
-        if(scene)
-        {
+        if (scene) {
             auto it = std::find(_activeScenes.begin(), _activeScenes.end(), scene);
-            if(it == _activeScenes.end())
-            {
+            if (it == _activeScenes.end()) {
                 _activeScenes.push_back(scene);
                 scene->onSceneCreation();
                 scene->startObjects();
-            }else
-            {
+            } else {
                 LOG_WARNING << "Loaded scene is already loaded";
             }
         }
@@ -77,6 +78,14 @@ public:
 
     jleCamera mainCamera{jleCameraProjection::Orthographic};
 
+    inline std::shared_ptr<sol::state> &
+    lua()
+    {
+        return _lua;
+    }
+
 protected:
     std::vector<std::shared_ptr<jleScene>> _activeScenes;
+
+    std::shared_ptr<sol::state> _lua{};
 };

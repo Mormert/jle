@@ -168,6 +168,13 @@ public:
         return std::static_pointer_cast<T>(_resources[prefix].at(path));
     }
 
+    std::shared_ptr<jleResourceInterface>
+    resource(const jlePath &path)
+    {
+        const auto prefix = path.getPathPrefix();
+        return _resources[prefix].at(path).second;
+    }
+
     // Check to see if a resource is loaded
     bool
     isResourceLoaded(const jlePath &path)
@@ -197,7 +204,7 @@ public:
 
     using TypeHash = std::size_t;
 
-    const std::unordered_map<std::string, std::unordered_map<jlePath, std::pair<TypeHash, std::shared_ptr<void>>>> &
+    const std::unordered_map<std::string, std::unordered_map<jlePath, std::pair<TypeHash, std::shared_ptr<jleResourceInterface>>>> &
     resourcesMap()
     {
         return _resources;
@@ -206,7 +213,7 @@ public:
 private:
     // Maps a drive like "GR:" to a resource map that contains paths such as
     // "GR:Folder/MyFile.txt" and points to the resource in memory.
-    std::unordered_map<std::string, std::unordered_map<jlePath, std::pair<TypeHash, std::shared_ptr<void>>>>
+    std::unordered_map<std::string, std::unordered_map<jlePath, std::pair<TypeHash, std::shared_ptr<jleResourceInterface>>>>
         _resources{};
 
     static inline int _periodicCleanCounter{0};

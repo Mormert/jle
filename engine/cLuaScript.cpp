@@ -1,34 +1,49 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "cLuaScript.h"
+#include "jleGameEngine.h"
 
 cLuaScript::cLuaScript(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
+
+cLuaScript::~cLuaScript()
+{
+    // First destroy the 'self' object by making it empty, which is referencing the lua::state,
+    // which is first needed to avoid a crash. This will not do anything in editor mode, either.
+    _self = {};
+    _luaKeepAliveRef.reset();
+}
 
 void
 cLuaScript::start()
 {
-    _lua = std::make_shared<sol::state>();
-
-    _lua->open_libraries(sol::lib::base,
-                         sol::lib::math,
-                         sol::lib::string,
-                         sol::lib::coroutine,
-                         sol::lib::package,
-                         sol::lib::debug,
-                         sol::lib::io,
-                         sol::lib::table,
-                         sol::lib::os);
-
-    _lua->set_function("LOGE", [](std::string a) { LOGE << a; });
-
-    try {
-        _lua->script_file(_scriptPath.getRealPath());
-    } catch (std::exception &e) {
-        LOGE << "Error running lua script:" << e.what();
+    if(!_scriptRef)
+    {
+        LOGE << "Can't start script since there a reference issue";
+        return;
     }
+
+    _luaKeepAliveRef = _scriptRef->startLua(_self);
 }
 
 void
 cLuaScript::update(float dt)
 {
+    if (runUpdate) {
+        try {
+            _scriptRef->updateLua(_self, dt);
+        } catch (std::exception &e) {
+            LOGE << "Error running lua update: " << e.what();
+            runUpdate = false;
+        }
+    }
+}
+
+void
+cLuaScript::onDestroy()
+{
+    try {
+        _scriptRef->onDestroyLua(_self);
+    } catch (std::exception &e) {
+        LOGE << "Error running lua destroy: " << e.what();
+    }
 }
