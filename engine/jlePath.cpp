@@ -20,6 +20,8 @@ jlePath::jlePath(const std::string &path, bool virtualPath)
     }
 }
 
+jlePath::jlePath(const std::string &virtualPath) : jlePath(virtualPath, true) {}
+
 std::string
 jlePath::getPathPrefix() const
 {
@@ -162,6 +164,7 @@ jlePath::getVirtualPath()
     }
     return _virtualPath;
 }
+
 std::string
 jlePath::getRealPath() const
 {
@@ -215,3 +218,14 @@ operator<<(std::ostream &stream, const jlePath &path)
     stream << path.getVirtualPath();
     return stream;
 }
+std::string
+jlePath::getRealPathConst() const
+{
+    return getRealPath();
+}
+std::string
+jlePath::getVirtualPathConst() const
+{
+    return getVirtualPath();
+}
+

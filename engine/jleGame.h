@@ -89,5 +89,7 @@ protected:
 
     void setupLua(sol::state& lua);
 
+    void setupLuaGLM(sol::state& lua);
+
     std::shared_ptr<sol::state> _lua{};
 };

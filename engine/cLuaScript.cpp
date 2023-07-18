@@ -18,7 +18,8 @@ cLuaScript::start()
 {
     if(!_scriptRef)
     {
-        LOGE << "Can't start script since there a reference issue";
+        LOGE << "Can't start script since there is a reference issue";
+        runUpdate = false;
         return;
     }
 
@@ -43,7 +44,10 @@ void
 cLuaScript::onDestroy()
 {
     try {
-        _scriptRef->onDestroyLua(_self);
+        if(_scriptRef)
+        {
+            _scriptRef->onDestroyLua(_self);
+        }
     } catch (std::exception &e) {
         LOGE << "Error running lua destroy: " << e.what();
     }
