@@ -6,7 +6,6 @@
 jleLoadFromFileSuccessCode
 jleLuaScript::loadFromFile(const jlePath &path)
 {
-
     std::ifstream load{path.getRealPath()};
     if (!load.good()) {
         return jleLoadFromFileSuccessCode::FAIL;
@@ -16,14 +15,9 @@ jleLuaScript::loadFromFile(const jlePath &path)
     buffer << load.rdbuf();
 
     _sourceCode = buffer.str();
+    _luaScriptName = path.getFileNameNoEnding();
 
-    if (!gEngine->isGameKilled()) {
-        auto lua = gEngine->gameRef().lua();
-        if (lua) {
-            _currentGameLua = lua;
-            loadScript();
-        }
-    }
+    loadScript();
 
     return jleLoadFromFileSuccessCode::SUCCESS;
 }
@@ -36,62 +30,123 @@ jleLuaScript::saveToFile()
 }
 
 std::shared_ptr<sol::state> &
-jleLuaScript::startLua(sol::table &self)
+jleLuaScript::setupLua(sol::table &self, jleObject *ownerObject)
 {
 
-    if (_currentGameLua != gEngine->gameRef().lua()) {
-        _currentGameLua = gEngine->gameRef().lua();
-        loadScript();
-    }
+    loadScript();
 
-    try {
-        self = _setupLua();
-    } catch (std::exception &e) {
-        LOGE << "Failed to setup lua script: " << e.what();
-    }
-
-    try {
-        _startLua(self);
-    } catch (std::exception &e) {
-        LOGE << "Failed to start lua script: " << e.what();
+    if (!faultyState) {
+        auto result = _setupLua();
+        if (result.valid()) {
+            self = result;
+            self["object"] = ownerObject;
+        } else {
+            sol::error err = result;
+            LOGE << "Failed starting script: " << err.what();
+        }
     }
 
     return _currentGameLua;
 }
 
 void
+jleLuaScript::startLua(sol::table &self)
+{
+    if (faultyState) {
+        return;
+    }
+    auto result = _startLua(self);
+    if (!result.valid()) {
+        sol::error err = result;
+        LOGE << "Failed starting script: " << err.what();
+    }
+}
+
+void
 jleLuaScript::updateLua(sol::table &self, float dt)
 {
-    _updateLua(self, dt);
+    if (faultyState) {
+        return;
+    }
+
+    auto result = _updateLua(self, dt);
+    if (!result.valid()) {
+        sol::error err = result;
+        LOGE << "Failed updating script: " << err.what();
+    }
 }
 
 void
 jleLuaScript::onDestroyLua(sol::table &self)
 {
-    _onDestroyLua(self);
+    if (faultyState) {
+        return;
+    }
+    auto result = _onDestroyLua(self);
+    if (!result.valid()) {
+        sol::error err = result;
+        LOGE << "Failed destroying script: " << err.what();
+    }
 }
 
 void
 jleLuaScript::loadScript()
 {
+    if (gEngine->isGameKilled()) {
+        return;
+    }
+
+    auto gameLua = gEngine->gameRef().lua();
+
+    if (_currentGameLua != gameLua) {
+        _setupLua = {};
+        _startLua = {};
+        _updateLua = {};
+        _onDestroyLua = {};
+        _currentGameLua = gameLua;
+    }
+
     auto &lua = *_currentGameLua;
 
     try {
-
-        lua.new_usertype<jleObject>("jleObject", "name", &jleObject::_instanceName);
-
-        lua.new_usertype<glm::vec3>("vec3", "x", &glm::vec3::x, "y", &glm::vec3::y, "z", &glm::vec3::z);
-        lua.new_usertype<glm::vec4>(
-            "vec4", "x", &glm::vec4::x, "y", &glm::vec4::y, "z", &glm::vec4::z, "w", &glm::vec4::w);
-
         lua.script(_sourceCode);
 
-        _setupLua = lua["test"]["setup"];
-        _startLua = lua["test"]["start"];
-        _updateLua = lua["test"]["update"];
-        _onDestroyLua = lua["test"]["onDestroy"];
+        lua.collect_garbage();
+
+        auto setup = lua[_luaScriptName]["setup"];
+        auto start = lua[_luaScriptName]["start"];
+        auto update = lua[_luaScriptName]["update"];
+        auto onDestroy = lua[_luaScriptName]["onDestroy"];
+
+        if (!setup.valid() || !setup.is<sol::function>()) {
+            std::string err = "Expected " + _luaScriptName + ".setup function was not found!";
+            throw std::exception(err.c_str());
+        }
+
+        if (!start.valid() || !start.is<sol::function>()) {
+            std::string err = "Expected " + _luaScriptName + ".start function was not found!";
+            throw std::exception(err.c_str());
+        }
+
+        if (!update.valid() || !update.is<sol::function>()) {
+            std::string err = "Expected " + _luaScriptName + ".update function was not found!";
+            throw std::exception(err.c_str());
+        }
+
+        if (!onDestroy.valid() || !onDestroy.is<sol::function>()) {
+            std::string err = "Expected " + _luaScriptName + ".onDestroy function was not found!";
+            throw std::exception(err.c_str());
+        }
+
+        _setupLua = setup;
+        _startLua = start;
+        _updateLua = update;
+        _onDestroyLua = onDestroy;
+
+        faultyState = false;
 
     } catch (std::exception &e) {
         LOGE << "Loading script failed: " << e.what();
+        faultyState = true;
     }
 }

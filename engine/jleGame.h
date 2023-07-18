@@ -87,5 +87,7 @@ public:
 protected:
     std::vector<std::shared_ptr<jleScene>> _activeScenes;
 
+    void setupLua(sol::state& lua);
+
     std::shared_ptr<sol::state> _lua{};
 };

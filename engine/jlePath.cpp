@@ -196,6 +196,19 @@ jlePath::getFileEnding() const
     }
 }
 
+std::string
+jlePath::getFileNameNoEnding() const
+{
+    size_t posDot = _virtualPath.find_last_of('.');
+    size_t posSlash = _virtualPath.find_last_of('/');
+
+    if (posDot != std::string::npos) {
+        return _virtualPath.substr(posSlash+1, posDot-posSlash-1);
+    } else {
+        return "";
+    }
+}
+
 std::ostream &
 operator<<(std::ostream &stream, const jlePath &path)
 {

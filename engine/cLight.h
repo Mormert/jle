@@ -27,6 +27,8 @@ public:
 
     void editorGizmosRender(bool selected) override;
 
+    void registerLua(sol::state& lua, sol::table &table) override;
+
 protected:
     glm::vec3 _color{1.f};
 };

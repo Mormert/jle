@@ -1,6 +1,8 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleFileChangeNotifier.h"
+#include "editor/jleEditorTextEdit.h"
+#include <editor/jleEditor.h>
 
 jleFileChangeNotifier::jleFileChangeNotifier(const std::vector<std::string> &directories)
 {
@@ -65,6 +67,8 @@ jleFileChangeNotifier::notifyModification(const jlePath &path)
     if (gEngine->resources().isResourceLoaded(path)) {
         LOGI << "File modified: " << path << " (reloading resource)";
         gEngine->resources().resource(path)->loadFromFile(path);
+
+        gEditor->editorTextEdit().reloadIfOpened(path);
     } else {
         LOGI << "File modified: " << path;
     }

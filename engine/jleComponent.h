@@ -14,6 +14,9 @@
 #include <cereal/types/base_class.hpp>
 #include <cereal/types/memory.hpp>
 
+#define SOL_ALL_SAFETIES_ON 1
+#include <sol2/sol.hpp>
+
 class jleScene;
 class jleComponent;
 class jleTransform;
@@ -60,11 +63,16 @@ public:
     {
     }
 
+    virtual void
+    registerLua(sol::state& lua, sol::table &table)
+    {
+    }
+
     void destroy();
 
     virtual const std::string_view componentName() const = 0;
 
-    jleTransform& getTransform();
+    jleTransform &getTransform();
 
     template <typename T>
     [[nodiscard]] std::shared_ptr<T> addDependencyComponentInStart();

@@ -22,7 +22,8 @@ cLuaScript::start()
         return;
     }
 
-    _luaKeepAliveRef = _scriptRef->startLua(_self);
+    _luaKeepAliveRef = _scriptRef->setupLua(_self, _attachedToObject);
+    _scriptRef->startLua(_self);
 }
 
 void

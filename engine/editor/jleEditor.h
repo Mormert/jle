@@ -8,15 +8,16 @@
 
 #include "editor/jleEditorImGuiWindowInterface.h"
 #include "jleGameEngine.h"
-#include "jleResourceRef.h"
 #include "jleImage.h"
 #include "jleMesh.h"
+#include "jleResourceRef.h"
 #include <memory>
 #include <vector>
 
 class jleFramebufferInterface;
 class jleSceneEditorWindow;
 class jleFileChangeNotifier;
+class jleEditorTextEdit;
 
 class jleEditor;
 inline jleEditor *gEditor;
@@ -69,6 +70,9 @@ public:
 
     std::vector<std::shared_ptr<jleScene>> &getEditorScenes();
 
+    jleEditorTextEdit &
+    editorTextEdit();
+
     bool
     checkSceneIsActiveEditor(const std::string &sceneName)
     {
@@ -90,8 +94,7 @@ public:
         if (it == _editorScenes.end()) {
             _editorScenes.push_back(scene);
             scene->onSceneCreation();
-            if(startObjects)
-            {
+            if (startObjects) {
                 scene->startObjects();
             }
         } else {
@@ -105,7 +108,6 @@ public:
     jleResourceRef<jleMesh> directionalLightLampGizmoMesh;
 
 private:
-
     jleResourceRef<jleEditorSaveState> _editorSaveState;
 
     void exiting() override;
@@ -122,7 +124,7 @@ private:
 
     void renderEditorGridGizmo();
 
-    void renderEditorGizmosObject(jleObject* object);
+    void renderEditorGizmosObject(jleObject *object);
 
     void addImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window);
 
@@ -135,6 +137,8 @@ private:
     std::shared_ptr<jleSceneEditorWindow> _sceneWindow;
 
     std::unique_ptr<jleFileChangeNotifier> _fileChangeNotifier;
+
+    std::shared_ptr<jleEditorTextEdit> _textEditWindow;
 };
 
 #endif // BUILD_EDITOR

@@ -47,6 +47,7 @@ TextEditor::TextEditor()
 	, mHandleMouseInputs(true)
 	, mIgnoreImGuiChild(false)
 	, mShowWhitespaces(true)
+	, mDocumentWasSavedThisFrame(false)
 	, mStartTime(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count())
 {
 	SetPalette(GetDarkPalette());
@@ -761,6 +762,13 @@ void TextEditor::HandleKeyboardInputs()
 			EnterCharacter('\n', false);
 		else if (!IsReadOnly() && !ctrl && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Tab)))
 			EnterCharacter('\t', shift);
+                else if(!IsReadOnly() && ctrl && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_S)))
+                {
+                        mDocumentWasSavedThisFrame = true;
+                }else
+                {
+                        mDocumentWasSavedThisFrame = false;
+                }
 
 		if (!IsReadOnly() && !io.InputQueueCharacters.empty())
 		{
@@ -2455,6 +2463,11 @@ int TextEditor::GetPageSize() const
 {
 	auto height = ImGui::GetWindowHeight() - 20.0f;
 	return (int)floor(height / mCharAdvance.y);
+}
+bool
+TextEditor::DocumentSavedThisFrame()
+{
+        return mDocumentWasSavedThisFrame;
 }
 
 TextEditor::UndoRecord::UndoRecord(

@@ -146,6 +146,7 @@ private:
     uint32_t _instanceID{};
 
 protected:
+    friend class jleGame;
     std::vector<std::shared_ptr<jleComponent>> _components{};
 
     jleTransform _transform;

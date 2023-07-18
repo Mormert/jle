@@ -42,6 +42,8 @@ public:
 
     std::string getFileEnding() const;
 
+    std::string getFileNameNoEnding() const;
+
     bool operator==(const jlePath &other) const;
 
     friend class std::hash<jlePath>;

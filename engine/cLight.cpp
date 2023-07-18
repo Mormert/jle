@@ -36,3 +36,9 @@ cLight::editorGizmosRender(bool selected)
     gEngine->rendering().rendering3d().sendMesh(mesh, material, matrix, _attachedToObject->instanceID(), false);
 #endif // BUILD_EDITOR
 }
+
+void
+cLight::registerLua(sol::state& lua, sol::table &table)
+{
+    lua.new_usertype<cLight>("cLight", "color", &cLight::_color);
+}

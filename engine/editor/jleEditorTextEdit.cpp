@@ -26,9 +26,8 @@ jleEditorTextEdit::update(jleGameEngine &ge)
             if (ImGui::BeginMenuBar()) {
                 if (ImGui::BeginMenu("File")) {
                     if (ImGui::MenuItem("Save", "Ctrl-S")) {
-                        auto textToSave = textEditor.GetText();
                         std::ofstream stream{path.getRealPath()};
-                        stream << textToSave;
+                        stream << textEditor.GetText();
                     }
                     if (ImGui::MenuItem("Reload", "Ctrl-R")) {
                         std::ifstream i(path.getRealPath());
@@ -101,6 +100,11 @@ jleEditorTextEdit::update(jleGameEngine &ge)
 
             ImGui::PushFont(font);
             textEditor.Render(tabName.c_str(), ImVec2(), true);
+            if(textEditor.DocumentSavedThisFrame())
+            {
+                std::ofstream stream{path.getRealPath()};
+                stream << textEditor.GetText();
+            }
             ImGui::PopFont();
         }
         ImGui::End();
@@ -149,4 +153,24 @@ jleEditorTextEdit::open(const jlePath &path)
     }
 
     _textEditorsMap.insert(std::make_pair(path, std::move(e)));
+}
+
+void
+jleEditorTextEdit::reloadIfOpened(const jlePath &path)
+{
+    auto doc = _textEditorsMap.find(path);
+    if(doc == _textEditorsMap.end())
+    {
+        return;
+    }
+
+    std::ifstream i(path.getRealPath());
+    if (i.good()) {
+        std::stringstream buffer;
+        buffer << i.rdbuf();
+        doc->second->SetText(buffer.str());
+    } else {
+        LOGE << "Failed to open file with real path: " << path.getRealPath();
+    }
+
 }

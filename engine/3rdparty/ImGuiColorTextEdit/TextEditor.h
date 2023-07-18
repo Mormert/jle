@@ -263,6 +263,8 @@ public:
 	void Undo(int aSteps = 1);
 	void Redo(int aSteps = 1);
 
+        bool DocumentSavedThisFrame();
+
 	static const Palette& GetDarkPalette();
 	static const Palette& GetLightPalette();
 	static const Palette& GetRetroBluePalette();
@@ -372,6 +374,7 @@ private:
 	bool mHandleMouseInputs;
 	bool mIgnoreImGuiChild;
 	bool mShowWhitespaces;
+        bool mDocumentWasSavedThisFrame;
 
 	Palette mPaletteBase;
 	Palette mPalette;

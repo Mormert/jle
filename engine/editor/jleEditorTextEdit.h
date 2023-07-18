@@ -22,6 +22,8 @@ public:
 
     void open(const jlePath &path);
 
+    void reloadIfOpened(const jlePath& path);
+
 private:
     std::unordered_map<jlePath, std::unique_ptr<TextEditor>> _textEditorsMap;
 

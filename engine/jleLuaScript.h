@@ -19,7 +19,9 @@ public:
 
     void saveToFile() override;
 
-    std::shared_ptr<sol::state> &startLua(sol::table &self);
+    std::shared_ptr<sol::state> &setupLua(sol::table &self, jleObject* ownerObject);
+
+    void startLua(sol::table &self);
 
     void updateLua(sol::table &self, float dt);
 
@@ -30,12 +32,15 @@ private:
 
     std::shared_ptr<sol::state> _currentGameLua{};
 
-    std::function<sol::table()> _setupLua;
-    std::function<void(sol::table)> _startLua;
-    std::function<void(sol::table, float)> _updateLua;
-    std::function<void(sol::table)> _onDestroyLua;
+    sol::protected_function _setupLua;
+    sol::protected_function _startLua;
+    sol::protected_function _updateLua;
+    sol::protected_function _onDestroyLua;
 
     std::string _sourceCode;
+    std::string _luaScriptName;
+
+    bool faultyState = true;
 };
 
 CEREAL_REGISTER_TYPE(jleLuaScript)

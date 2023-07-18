@@ -71,8 +71,8 @@ jleEditor::start()
     auto menu = std::make_shared<jleEditorWindowsPanel>("Menu");
     addImGuiWindow(menu);
 
-    auto textEditWindow = std::make_shared<jleEditorTextEdit>("Text Editor");
-    addImGuiWindow(textEditWindow);
+    _textEditWindow = std::make_shared<jleEditorTextEdit>("Text Editor");
+    addImGuiWindow(_textEditWindow);
 
     auto resourceEditor = std::make_shared<jleEditorResourceEdit>("Resource Edit");
     addImGuiWindow(resourceEditor);
@@ -106,7 +106,7 @@ jleEditor::start()
     addImGuiWindow(editorSceneObjects);
     menu->addWindow(editorSceneObjects);
 
-    auto contentBrowser = std::make_shared<jleEditorContentBrowser>("Content Browser", textEditWindow, resourceEditor);
+    auto contentBrowser = std::make_shared<jleEditorContentBrowser>("Content Browser", _textEditWindow, resourceEditor);
     addImGuiWindow(contentBrowser);
     menu->addWindow(contentBrowser);
 
@@ -447,4 +447,10 @@ jleEditor::exiting()
     _editorSaveState->saveToFile();
 
     jleGameEngine::exiting();
+}
+
+jleEditorTextEdit &
+jleEditor::editorTextEdit()
+{
+    return *_textEditWindow;
 }
