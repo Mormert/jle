@@ -1,6 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleGame.h"
+#include <glm/ext/matrix_transform.hpp>
 
 void
 jleGame::updateActiveScenes(float dt)
