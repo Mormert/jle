@@ -68,7 +68,9 @@ jleFileChangeNotifier::notifyModification(const jlePath &path)
         LOGI << "File modified: " << path << " (reloading resource)";
         gEngine->resources().resource(path)->loadFromFile(path);
 
+#ifdef BUILD_EDITOR
         gEditor->editorTextEdit().reloadIfOpened(path);
+#endif
     } else {
         LOGI << "File modified: " << path;
     }
