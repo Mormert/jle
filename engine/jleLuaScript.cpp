@@ -111,31 +111,33 @@ jleLuaScript::loadScript()
     try {
         lua.script(_sourceCode);
 
-        lua.collect_garbage();
-
         auto setup = lua[_luaScriptName]["setup"];
         auto start = lua[_luaScriptName]["start"];
         auto update = lua[_luaScriptName]["update"];
         auto onDestroy = lua[_luaScriptName]["onDestroy"];
 
         if (!setup.valid() || !setup.is<sol::function>()) {
-            std::string err = "Expected " + _luaScriptName + ".setup function was not found!";
-            throw std::exception(err.c_str());
+            LOGE << "Expected " + _luaScriptName + ".setup function was not found!";
+            faultyState = true;
+            return;
         }
 
         if (!start.valid() || !start.is<sol::function>()) {
-            std::string err = "Expected " + _luaScriptName + ".start function was not found!";
-            throw std::exception(err.c_str());
+            LOGE << "Expected " + _luaScriptName + ".start function was not found!";
+            faultyState = true;
+            return;
         }
 
         if (!update.valid() || !update.is<sol::function>()) {
-            std::string err = "Expected " + _luaScriptName + ".update function was not found!";
-            throw std::exception(err.c_str());
+            LOGE << "Expected " + _luaScriptName + ".update function was not found!";
+            faultyState = true;
+            return;
         }
 
         if (!onDestroy.valid() || !onDestroy.is<sol::function>()) {
-            std::string err = "Expected " + _luaScriptName + ".onDestroy function was not found!";
-            throw std::exception(err.c_str());
+            LOGE << "Expected " + _luaScriptName + ".onDestroy function was not found!";
+            faultyState = true;
+            return;
         }
 
         _setupLua = setup;
