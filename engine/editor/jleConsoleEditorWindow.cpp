@@ -13,10 +13,18 @@ namespace {
 std::string recordToString(const plog::Record &record) {
 
     std::wostringstream woss;
-    woss << PLOG_NSTR("<") << plog::severityToString(record.getSeverity())
-         << PLOG_NSTR("> ") << record.getFunc() << PLOG_NSTR("@")
-         << record.getLine() << PLOG_NSTR(":\n") << record.getMessage()
-         << PLOG_NSTR("\n");
+    if(strlen(record.getFile()) > 0)
+    {
+        woss << PLOG_NSTR("<") << plog::severityToString(record.getSeverity())
+             << PLOG_NSTR("> ") << record.getFile() << PLOG_NSTR(": ") << record.getMessage()
+             << PLOG_NSTR("\n");
+    } else{
+        woss << PLOG_NSTR("<") << plog::severityToString(record.getSeverity())
+             << PLOG_NSTR("> ") << record.getFunc() << PLOG_NSTR("@")
+             << record.getLine() << PLOG_NSTR(":\n") << record.getMessage()
+             << PLOG_NSTR("\n");
+    }
+
     auto wstr = woss.str();
 
     std::string converted_str(wstr.length(), 0);
@@ -272,7 +280,7 @@ void jleConsoleEditorWindow::update(jleGameEngine &ge) {
         // etc.)
         ImVec4 color;
         bool has_color = false;
-        if (strstr(item, "<ERROR>")) {
+        if (strstr(item, "<ERROR>") || strstr(item, "<FATAL>")) {
             color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
             has_color = true;
         }
