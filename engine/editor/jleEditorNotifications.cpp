@@ -34,6 +34,8 @@ jleEditorNotifications::update(jleGameEngine &ge)
     auto x = ImGui::GetWindowViewport()->Pos.x + 45;
     auto y = ImGui::GetWindowViewport()->Pos.y + 45;
 
+    constexpr int maxShownNotifications = 18;
+
     for (const auto &notification : _notifications) {
 
         std::wstring first64 = notification.message.substr(0, 64);
@@ -45,7 +47,8 @@ jleEditorNotifications::update(jleGameEngine &ge)
         ImGui::SetNextWindowPos(ImVec2{x, y + 32.f * globalImguiScale * i});
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
                                  ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing |
-                                 ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoDocking;
+                                 ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoDocking |
+                                 ImGuiWindowFlags_NoScrollbar;
         ImGui::Begin(std::to_string(i).c_str(), &t, flags);
 
         ImGui::Image((void *)(intptr_t)_errorImage->id(),
@@ -55,11 +58,14 @@ jleEditorNotifications::update(jleGameEngine &ge)
 
         ImGui::SameLine(16.f * globalImguiScale + 10.f * globalImguiScale + 3);
 
-        ImGui::Text("%ls", first64.c_str());
+        ImGui::TextWrapped("%ls", first64.c_str());
 
         ImGui::End();
 
         i++;
+        if (i == maxShownNotifications) {
+            break;
+        }
     }
 
     ImGui::PopStyleColor();
