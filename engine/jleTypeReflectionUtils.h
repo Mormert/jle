@@ -26,6 +26,7 @@ private:
                                                                                                                        \
 public:                                                                                                                \
     std::shared_ptr<jleComponent> clone() const override { return std::make_shared<component_name>(*this); }           \
+    void registerSelfLua(sol::table &self) override { self[componentName()] = this; }                                  \
                                                                                                                        \
 private:
 

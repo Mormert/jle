@@ -38,7 +38,7 @@ cLight::editorGizmosRender(bool selected)
 }
 
 void
-cLight::registerLua(sol::state& lua, sol::table &table)
+cLight::registerLua(sol::state &lua, sol::table &table)
 {
-    lua.new_usertype<cLight>("cLight", "color", &cLight::_color);
+    lua.new_usertype<cLight>("cLight", sol::base_classes, sol::bases<jleComponent>(), "color", &cLight::_color);
 }

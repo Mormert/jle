@@ -32,6 +32,8 @@ public:
 
     [[nodiscard]] virtual std::shared_ptr<jleComponent> clone() const = 0;
 
+    virtual void registerSelfLua(sol::table &self) = 0;
+
     template <class Archive>
     void
     serialize(Archive &archive)
@@ -64,7 +66,7 @@ public:
     }
 
     virtual void
-    registerLua(sol::state& lua, sol::table &table)
+    registerLua(sol::state &lua, sol::table &table)
     {
     }
 

@@ -17,6 +17,8 @@ public:
         ar(cereal::base_class<cLight>(this));
     }
 
+    void registerLua(sol::state& lua, sol::table &table) override;
+
     void update(float dt) override;
 
     void editorGizmosRender(bool selected) override;

@@ -40,6 +40,9 @@ jleLuaScript::setupLua(sol::table &self, jleObject *ownerObject)
         if (result.valid()) {
             self = result;
             self["object"] = ownerObject;
+            for (auto &c : ownerObject->customComponents()) {
+                c->registerSelfLua(self);
+            }
         } else {
             sol::error err = result;
             LOGE << "Failed starting script: " << err.what();

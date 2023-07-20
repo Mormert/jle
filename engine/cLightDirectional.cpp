@@ -27,3 +27,9 @@ cLightDirectional::editorGizmosRender(bool selected)
     gEngine->rendering().rendering3d().sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 #endif // BUILD_EDITOR
 }
+
+void
+cLightDirectional::registerLua(sol::state &lua, sol::table &table)
+{
+
+}
