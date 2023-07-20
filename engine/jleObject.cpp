@@ -2,27 +2,30 @@
 
 #include "jleObject.h"
 
+#include "cLuaScript.h"
 #include "jleCore.h"
+#include "jleGameEngine.h"
 #include "jlePathDefines.h"
-#include "jleResource.h"
 #include "jleScene.h"
 #include "jleTransform.h"
-#include "jleGameEngine.h"
 
 #include <filesystem>
 #include <fstream>
 #include <optional>
 
-jleObject::jleObject() : _transform{this} {
-    _instanceID = _instanceIdCounter++;
-}
+jleObject::jleObject() : _transform{this} { _instanceID = _instanceIdCounter++; }
 
 void
 jleObject::destroyComponent(jleComponent *component)
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
         if (_components[i].get() == component) {
-            if(!gEngine->isGameKilled()){
+            if (!gEngine->isGameKilled()) {
+
+                if (auto luaScriptComponent = getComponent<cLuaScript>()) {
+                    luaScriptComponent->getSelf()[component->componentName()] = sol::nil;
+                }
+
                 component->onDestroy();
             }
             _components.erase(_components.begin() + i);
@@ -315,19 +318,24 @@ jleObject::replaceChildrenWithTemplate()
 void
 jleObject::propagateDestroy()
 {
-    for(auto&& c : _components){
+    for (auto &&c : _components) {
         c->onDestroy();
     }
 
-    for(auto&& o : __childObjects){
+    for (auto &&o : __childObjects) {
         o->propagateDestroy();
     }
 }
 
 void
-jleObject::addComponentStart(jleComponent* c)
+jleObject::addComponentStart(jleComponent *c)
 {
-    if(!gEngine->isGameKilled()){
+    if (!gEngine->isGameKilled()) {
+
+        if (auto luaComponent = getComponent<cLuaScript>()) {
+            c->registerSelfLua(luaComponent->getSelf());
+        }
+
         c->start();
     }
 }

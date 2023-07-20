@@ -63,7 +63,9 @@ jleGame::setupLua(sol::state &lua)
                               "fileEnding",
                               &jlePath::getFileEnding,
                               "fileName",
-                              &jlePath::getFileNameNoEnding);
+                              &jlePath::getFileNameNoEnding,
+                              sol::meta_function::to_string,
+                              &jlePath::getVirtualPathConst);
 
     lua.new_usertype<jleTransform>("jleTransform",
                                    "localPos",
@@ -79,44 +81,73 @@ jleGame::setupLua(sol::state &lua)
                                    "localMatrix",
                                    &jleTransform::getLocalMatrix);
 
-    lua.new_usertype<jleObject>("jleObject", "name", &jleObject::_instanceName, "transform", &jleObject::getTransform);
+    lua.new_usertype<jleObject>(
+        "jleObject",
+        "name",
+        &jleObject::_instanceName,
+        "transform",
+        &jleObject::getTransform,
+        "addComponent",
+        &jleObject::addComponentByName,
+        "duplicate",
+        [](jleObject &object) { return object.duplicate().get(); },
+        "destroy",
+        &jleObject::destroyObject,
+        "pendingKill",
+        sol::readonly(&jleObject::_pendingKill),
+        "isStarted",
+        sol::readonly(&jleObject::_isStarted),
+        "instanceID",
+        sol::readonly(&jleObject::_instanceID),
+        "scene",
+        sol::readonly(&jleObject::_containedInScene));
+
+    lua.new_usertype<jleScene>("jleScene",
+                               "name",
+                               &jleScene::sceneName,
+                               "spawnObject",
+                               &jleScene::spawnObjectWithName,
+                               "destroy",
+                               &jleScene::destroyScene,
+                               "objects",
+                               &jleScene::sceneObjects);
 
     lua.set_function("LOGE", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::error)) {
             ;
         } else
-            (*plog::get<0>()) +=
-                plog::Record(plog::error, "_function_name_", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref() << s;
+            (*plog::get<0>()) += plog::Record(plog::error, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
+                                 << s;
     });
 
     lua.set_function("LOGF", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::fatal)) {
             ;
         } else
-            (*plog::get<0>()) +=
-                plog::Record(plog::fatal, "_function_name_", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref() << s;
+            (*plog::get<0>()) += plog::Record(plog::fatal, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
+                                 << s;
     });
 
     lua.set_function("LOGI", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::info)) {
             ;
         } else
-            (*plog::get<0>()) +=
-                plog::Record(plog::info, "_function_name_", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref() << s;
+            (*plog::get<0>()) += plog::Record(plog::info, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
+                                 << s;
     });
     lua.set_function("LOGW", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::warning)) {
             ;
         } else
-            (*plog::get<0>()) +=
-                plog::Record(plog::warning, "_function_name_", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref() << s;
+            (*plog::get<0>()) += plog::Record(plog::warning, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
+                                 << s;
     });
     lua.set_function("LOGV", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::verbose)) {
             ;
         } else
-            (*plog::get<0>()) +=
-                plog::Record(plog::verbose, "_function_name_", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref() << s;
+            (*plog::get<0>()) += plog::Record(plog::verbose, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
+                                 << s;
     });
 
     for (auto &c : jleTypeReflectionUtils::registeredComponentsRef()) {

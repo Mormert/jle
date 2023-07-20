@@ -56,9 +56,14 @@ jleObject::addComponent()
 };
 
 inline std::shared_ptr<jleComponent>
-jleObject::addComponent(const std::string &component_name)
+jleObject::addComponentByName(const std::string &component_name)
 {
     auto newComponent = jleTypeReflectionUtils::instantiateComponentByString(component_name);
+    if(!newComponent)
+    {
+        LOGE << "Attempting to add non-existent component: " << component_name;
+        return nullptr;
+    }
     newComponent->_attachedToObject = this;
     newComponent->_containedInScene = _containedInScene;
 
@@ -129,7 +134,7 @@ jleObject::spawnChildObject()
 inline std::shared_ptr<jleObject>
 jleObject::spawnChildObject(const std::string &objName)
 {
-    auto object = _containedInScene->spawnObject(objName);
+    auto object = _containedInScene->spawnObjectTypeByName(objName);
     attachChildObject(object);
     return object;
 }

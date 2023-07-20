@@ -71,7 +71,7 @@ public:
     template <typename T>
     void addComponent(const std::shared_ptr<T>& component);
 
-    std::shared_ptr<jleComponent> addComponent(const std::string &component_name);
+    std::shared_ptr<jleComponent> addComponentByName(const std::string &component_name);
 
     template <typename T>
     std::shared_ptr<T> getComponent();

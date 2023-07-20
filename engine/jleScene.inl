@@ -48,7 +48,7 @@ jleScene::spawnObject()
 }
 
 inline std::shared_ptr<jleObject>
-jleScene::spawnObject(const std::string &objName)
+jleScene::spawnObjectTypeByName(const std::string &objName)
 {
     auto newSceneObject = jleTypeReflectionUtils::instantiateObjectByString(objName);
     configurateSpawnedObject(newSceneObject);

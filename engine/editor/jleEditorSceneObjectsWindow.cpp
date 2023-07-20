@@ -64,7 +64,7 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                 if (ImGui::BeginMenu("Create Object")) {
                     for (auto &&objectType : jleTypeReflectionUtils::registeredObjectsRef()) {
                         if (ImGui::MenuItem(objectType.first.c_str())) {
-                            selectedScene.lock()->spawnObject(objectType.first);
+                            selectedScene.lock()->spawnObjectTypeByName(objectType.first);
                         }
                     }
                     ImGui::EndMenu();

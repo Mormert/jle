@@ -32,7 +32,6 @@ jleLuaScript::saveToFile()
 std::shared_ptr<sol::state> &
 jleLuaScript::setupLua(sol::table &self, jleObject *ownerObject)
 {
-
     loadScript();
 
     if (!faultyState) {
@@ -46,9 +45,9 @@ jleLuaScript::setupLua(sol::table &self, jleObject *ownerObject)
         } else {
             sol::error err = result;
             LOGE << "Failed starting script: " << err.what();
+            faultyState = true;
         }
     }
-
     return _currentGameLua;
 }
 
@@ -62,6 +61,7 @@ jleLuaScript::startLua(sol::table &self)
     if (!result.valid()) {
         sol::error err = result;
         LOGE << "Failed starting script: " << err.what();
+        faultyState = true;
     }
 }
 

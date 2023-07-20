@@ -80,39 +80,8 @@ void jleScene::processNewSceneObjects() {
 
 void jleScene::destroyScene() {
     bPendingSceneDestruction = true;
-
-    _sceneObjects.clear();
-    _newSceneObjects.clear();
-
     onSceneDestruction();
 }
-
-/*
-std::shared_ptr<jleObject> jleScene::spawnTemplateObject(
-    const jlePath &templatePath) {
-    auto j = jleObject::objectTemplateJson(templatePath);
-
-    std::string objectsName;
-    j.at("__obj_name").get_to(objectsName);
-
-    auto spawnedObjFromJson = spawnObject(objectsName);
-    spawnedObjFromJson->_templatePath = templatePath.relativePathStr();
-    //from_json(j, spawnedObjFromJson);
-    //spawnedObjFromJson->fromJson(j);
-
-    return spawnedObjFromJson;
-}
-
-std::shared_ptr<jleObject> jleScene::spawnObject(const nlohmann::json &j_in) {
-    std::string objectsName;
-    j_in.at("__obj_name").get_to(objectsName);
-
-    auto spawnedObjFromJson = spawnObject(objectsName);
-    //from_json(j_in, spawnedObjFromJson);
-    //spawnedObjFromJson->fromJson(j_in);
-
-    return spawnedObjFromJson;
-}*/
 
 void jleScene::configurateSpawnedObject(const std::shared_ptr<jleObject> &obj) {
     obj->_containedInScene = this;
@@ -157,3 +126,12 @@ jleScene::spawnObject(std::shared_ptr<jleObject> object)
 {
     configurateSpawnedObject(object);
 }
+
+std::shared_ptr<jleObject>
+jleScene::spawnObjectWithName(const std::string &name)
+{
+    auto obj = spawnObject<jleObject>();
+    obj->_instanceName = name;
+    return obj;
+}
+

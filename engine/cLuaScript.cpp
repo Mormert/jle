@@ -52,3 +52,9 @@ cLuaScript::onDestroy()
         LOGE << "Error running lua destroy: " << e.what();
     }
 }
+
+sol::table &
+cLuaScript::getSelf()
+{
+    return _self;
+}

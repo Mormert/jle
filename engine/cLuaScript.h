@@ -27,6 +27,8 @@ public:
 
     void onDestroy() override;
 
+    sol::table& getSelf();
+
     bool runUpdate = true;
 
 private:
