@@ -8,19 +8,22 @@
 // A class that holds paths such as for example "ER:SomeFolder/SomeFile.txt", that
 // is actually located in the "EngineResources" folder, that can be located at
 // different places, depending on build configuration, etc
+
 class jlePath
 {
 public:
     jlePath() = default;
 
     template <class Archive>
-    std::string save_minimal(Archive const & ) const
+    std::string
+    save_minimal(Archive const &) const
     {
         return _virtualPath;
     }
 
     template <class Archive>
-    void load_minimal( Archive const &, std::string const & value )
+    void
+    load_minimal(Archive const &, std::string const &value)
     {
         fixSlashes(_virtualPath);
         _realPath = findRealPathFromVirtualPath(_virtualPath);
@@ -42,8 +45,6 @@ public:
     [[nodiscard]] std::string getRealPathConst() const;
     [[nodiscard]] std::string getVirtualPathConst() const;
 
-
-
     bool isEmpty();
 
     std::string getFileEnding() const;
@@ -54,11 +55,13 @@ public:
 
     friend class std::hash<jlePath>;
 
-    friend std::ostream& operator<< (std::ostream& stream, const jlePath& path);
+    // Below operator broke Lua bindings for some reason:
+    // friend std::ostream &operator<<(std::ostream &stream, const jlePath &path);
 
     // Note: should actually be private!
     // Don't modify!
     std::string _virtualPath;
+
 private:
     std::string _realPath;
 
@@ -66,7 +69,7 @@ private:
     static std::string findVirtualPathFromRealPath(const std::string &realPath);
     static std::string findRealPathFromVirtualPath(const std::string &virtualPath);
 
-    static void fixSlashes(std::string& str);
+    static void fixSlashes(std::string &str);
 };
 
 namespace std

@@ -58,28 +58,28 @@ jleFileChangeNotifier::sweep()
 void
 jleFileChangeNotifier::notifyAdded(const jlePath &path)
 {
-    LOGI << "File indexed: " << path;
+    LOGI << "File indexed: " << path.getVirtualPath();
 }
 
 void
 jleFileChangeNotifier::notifyModification(const jlePath &path)
 {
     if (gEngine->resources().isResourceLoaded(path)) {
-        LOGI << "File modified: " << path << " (reloading resource)";
+        LOGI << "File modified: " << path.getVirtualPath() << " (reloading resource)";
         gEngine->resources().resource(path)->loadFromFile(path);
 
 #ifdef BUILD_EDITOR
         gEditor->editorTextEdit().reloadIfOpened(path);
 #endif
     } else {
-        LOGI << "File modified: " << path;
+        LOGI << "File modified: " << path.getVirtualPath();
     }
 }
 
 void
 jleFileChangeNotifier::notifyErase(const jlePath &path)
 {
-    LOGI << "File erased: " << path;
+    LOGI << "File erased: " << path.getVirtualPath();
 }
 
 bool

@@ -50,8 +50,8 @@ jleGame::setupLua(sol::state &lua)
 
     setupLuaGLM(lua);
 
-    lua.new_usertype<jlePath>("path",
-                              sol::constructors<jlePath(const std::string &), jlePath(const std::string &, bool)>(),
+    lua.new_usertype<jlePath>("jlePath",
+                              sol::constructors<jlePath(), jlePath(const std::string &), jlePath(const std::string &, bool)>(),
                               "prefix",
                               &jlePath::getPathPrefix,
                               "virtual",

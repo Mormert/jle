@@ -49,7 +49,7 @@ public:
                     return std::static_pointer_cast<T>(it->second.second);
                 }else
                 {
-                    LOGW << "Found another type usage from the same resource. Overwriting previous resource for: " << path;
+                    LOGW << "Found another type usage from the same resource. Overwriting previous resource for: " << path.getVirtualPath();
                 }
             }
         }

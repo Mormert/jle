@@ -212,12 +212,14 @@ jlePath::getFileNameNoEnding() const
     }
 }
 
-std::ostream &
-operator<<(std::ostream &stream, const jlePath &path)
-{
-    stream << path.getVirtualPath();
-    return stream;
-}
+// Below operator broke Lua bindings for some reason:
+// std::ostream &
+// operator<<(std::ostream &stream, const jlePath &path)
+// {
+//     stream << path.getVirtualPath();
+//     return stream;
+// }
+
 std::string
 jlePath::getRealPathConst() const
 {
