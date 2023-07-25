@@ -565,7 +565,7 @@ jleEditorContentBrowser::selectedFilePopupObjectTemplate(std::filesystem::path &
             objectName.resize(dot);
         }
 
-        if (auto &&scene = jleEditorSceneObjectsWindow::GetSelectedScene().lock()) {
+        if (auto &&scene = gEditor->editorSceneObjects().GetSelectedScene().lock()) {
             try {
                 std::shared_ptr<jleObject> object;
 

@@ -5,25 +5,30 @@
 
 cLuaScript::cLuaScript(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 
-cLuaScript::~cLuaScript()
-{
-    // First destroy the 'self' object by making it empty, which is referencing the lua::state,
-    // which is first needed to avoid a crash. This will not do anything in editor mode, either.
-    _self = {};
-    _luaKeepAliveRef.reset();
-}
-
 void
 cLuaScript::start()
 {
-    if(!_scriptRef)
-    {
+    if (!_scriptRef) {
         LOGE << "Can't start script since there is a reference issue";
         runUpdate = false;
         return;
     }
 
-    _luaKeepAliveRef = _scriptRef->setupLua(_self, _attachedToObject);
+    _scriptRef->setupLua(_self, _attachedToObject);
+
+    if(!_specializationScript.empty())
+    {
+        sol::load_result fx = gEngine->luaEnvironment()->getState().load(_specializationScript);
+        if (!fx.valid()) {
+            sol::error err = fx;
+            LOGE << "Failed to load specialization script for " << _attachedToObject->_instanceName << ": " << err.what();
+        }
+
+        fx(_self);
+    }
+
+
+
     _scriptRef->startLua(_self);
 }
 
@@ -44,8 +49,7 @@ void
 cLuaScript::onDestroy()
 {
     try {
-        if(_scriptRef)
-        {
+        if (_scriptRef) {
             _scriptRef->onDestroyLua(_self);
         }
     } catch (std::exception &e) {

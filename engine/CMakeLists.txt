@@ -82,7 +82,9 @@ add_library(engine STATIC
         "cRigidbody.cpp"
         "cLuaScript.cpp"
         "jleLuaScript.cpp"
-        "jleFileChangeNotifier.cpp")
+        "jleLuaScriptComponent.cpp"
+        "jleFileChangeNotifier.cpp"
+        "jleLuaEnvironment.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE

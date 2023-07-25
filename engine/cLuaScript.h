@@ -3,7 +3,7 @@
 #pragma once
 
 #include "jleComponent.h"
-#include "jleLuaScript.h"
+#include "jleLuaScriptComponent.h"
 #include "jleResourceRef.h"
 
 class cLuaScript : public jleComponent
@@ -12,13 +12,11 @@ class cLuaScript : public jleComponent
 public:
     explicit cLuaScript(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
-    virtual ~cLuaScript();
-
     template <class Archive>
     void
     serialize(Archive &ar)
     {
-        ar( CEREAL_NVP(_scriptRef));
+        ar( CEREAL_NVP(_scriptRef), CEREAL_NVP(_specializationScript));
     }
 
     void start() override;
@@ -32,9 +30,8 @@ public:
     bool runUpdate = true;
 
 private:
-    jleResourceRef<jleLuaScript> _scriptRef;
-
-    std::shared_ptr<sol::state> _luaKeepAliveRef{};
+    jleResourceRef<jleLuaScriptComponent> _scriptRef;
+    std::string _specializationScript = "local self = ...;\n";
     sol::table _self;
 
     std::function<void(sol::table, float)> _updateLua;

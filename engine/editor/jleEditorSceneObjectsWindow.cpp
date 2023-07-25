@@ -9,6 +9,7 @@
 #include "jleNetScene.h"
 #include "jleTypeReflectionUtils.h"
 
+#include <cLuaScript.h>
 #include <filesystem>
 #include <fstream>
 
@@ -206,6 +207,21 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                         } else {
                             cereal::jleImGuiCerealArchive ar1;
                             ar1(*selectedObjectSafePtr);
+
+                            if(!gEngine->isGameKilled())
+                            {
+                                if(auto luaScript = selectedObjectSafePtr->getComponent<cLuaScript>())
+                                {
+                                    ImGui::Text("Lua Object:");
+
+                                    sol::protected_function f = gEditor->luaEnvironment()->getState()["luaEditor"]["prettyTable"];
+                                    std::string prettyTable = f(luaScript->getSelf());
+
+                                    ImGui::BeginChild("LuaPretty", ImVec2(0, 0), true);
+                                    ImGui::TextWrapped("%s", prettyTable.c_str());
+                                    ImGui::EndChild();
+                                }
+                            }
                         }
 
                         ImGui::EndTabItem();

@@ -4,21 +4,26 @@
 
 #include "jleFramebufferScreen.h"
 #include "jleFullscreenRendering.h"
-#include "jleMouseInput.h"
-#include "jleRendering.h"
-#include "jleWindow.h"
 #include "jleInput.h"
-#include "jleTimerManager.h"
-#include <plog/Log.h>
+#include "jleMouseInput.h"
 #include "jlePhysics.h"
-
+#include "jleRendering.h"
+#include "jleTimerManager.h"
+#include "jleWindow.h"
+#include <plog/Log.h>
 
 #include <RmlUi/Core.h>
 #include <RmlUi/Debugger.h>
 #include <RmlUi_Backend.h>
 #include <shell/include/Shell.h>
 
-jleGameEngine::jleGameEngine() : jleCore() { gEngine = this; }
+jleGameEngine::jleGameEngine() : jleCore()
+{
+    gEngine = this;
+
+    LOG_INFO << "Starting the lua environment";
+    _luaEnvironment = std::make_unique<jleLuaEnvironment>();
+}
 
 jleGameEngine::~jleGameEngine() { gEngine = nullptr; }
 
@@ -31,8 +36,7 @@ jleGameEngine::startGame()
         return;
     }
 
-    if(!_physics)
-    {
+    if (!_physics) {
         // Re-initialize the physics
         _physics = std::make_unique<jlePhysics>();
     }
@@ -118,25 +122,20 @@ jleGameEngine::startRmlUi()
     auto width = mainScreenFramebuffer->width();
     auto height = mainScreenFramebuffer->height();
 
-
-    if (!Shell::Initialize())
-    {
+    if (!Shell::Initialize()) {
         LOGE << "Failed to init Shell for RmlUi";
         return;
     }
 
     // Constructs the system and render interfaces, creates a window, and attaches the renderer.
-    if (!Backend::Initialize("RmlUiWindow", width, height, true))
-    {
+    if (!Backend::Initialize("RmlUiWindow", width, height, true)) {
         LOGE << "Failed to init backend for RmlUi";
         return;
     }
 
-
     // Install the custom interfaces constructed by the backend before initializing RmlUi.
     Rml::SetSystemInterface(Backend::GetSystemInterface());
     Rml::SetRenderInterface(Backend::GetRenderInterface());
-
 
     // RmlUi initialisation.
     Rml::Initialise();
@@ -144,8 +143,7 @@ jleGameEngine::startRmlUi()
     Rml::Log::Message(Rml::Log::LT_WARNING, "Test warning.");
 
     context = Rml::CreateContext("main", Rml::Vector2i(width, height));
-    if (!context)
-    {
+    if (!context) {
         Rml::Shutdown();
         Backend::Shutdown();
         Shell::Shutdown();
@@ -162,15 +160,11 @@ jleGameEngine::startRmlUi()
     Rml::LoadFontFace("C:/dev/cgfx/cgfx/GameResources/LatoLatin-Italic.ttf");
     Rml::LoadFontFace("C:/dev/cgfx/cgfx/GameResources/LatoLatin-BoldItalic.ttf");
 
-    if(auto doc = context->LoadDocument("assets/demo.rml"))
-    {
+    if (auto doc = context->LoadDocument("assets/demo.rml")) {
         doc->Show();
     }
 
     Rml::Debugger::SetVisible(true);
-
-
-
 }
 
 void
@@ -183,6 +177,8 @@ jleGameEngine::start()
     const auto &mouse = gCore->input().mouse;
     mouse->setPixelatedScreenSize(initialScreenX, initialScreenY);
     mouse->setScreenSize(initialScreenX, initialScreenY);
+
+    luaEnvironment()->loadScript("ER:/scripts/engine.lua");
 
     startRmlUi();
 
@@ -298,4 +294,10 @@ jleGameEngine::killRmlUi()
     Rml::Shutdown();
     Backend::Shutdown();
     Shell::Shutdown();
+}
+
+std::shared_ptr<jleLuaEnvironment> &
+jleGameEngine::luaEnvironment()
+{
+    return _luaEnvironment;
 }

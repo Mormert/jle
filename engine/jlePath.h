@@ -30,6 +30,8 @@ public:
         _virtualPath = value;
     }
 
+    jlePath(const char* virtualPath);
+
     explicit jlePath(const std::string &virtualPath);
     explicit jlePath(const std::string &path, bool virtualPath);
 

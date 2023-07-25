@@ -147,6 +147,7 @@ private:
 
 protected:
     friend class jleGame;
+    friend class jleLuaEnvironment;
     std::vector<std::shared_ptr<jleComponent>> _components{};
 
     jleTransform _transform;

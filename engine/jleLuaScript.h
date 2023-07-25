@@ -17,33 +17,18 @@ public:
 
     jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
 
+    virtual void loadScript();
+
     void saveToFile() override;
 
-    std::shared_ptr<sol::state> &setupLua(sol::table &self, jleObject* ownerObject);
-
-    void startLua(sol::table &self);
-
-    void updateLua(sol::table &self, float dt);
-
-    void onDestroyLua(sol::table &self);
-
-private:
-    void loadScript();
-
-    std::shared_ptr<sol::state> _currentGameLua{};
-
-    sol::protected_function _setupLua;
-    sol::protected_function _startLua;
-    sol::protected_function _updateLua;
-    sol::protected_function _onDestroyLua;
-
-    std::string _sourceCode;
+protected:
     std::string _luaScriptName;
-
+    std::string _sourceCode;
+    std::shared_ptr<jleLuaEnvironment> _luaEnvironment;
     bool faultyState = true;
 };
 
 CEREAL_REGISTER_TYPE(jleLuaScript)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleResourceInterface, jleLuaScript)
 
-#endif // JLELUASCRIPT_H
+#endif // JLE_LUASCRIPT_H

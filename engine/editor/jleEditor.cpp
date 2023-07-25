@@ -102,9 +102,9 @@ jleEditor::start()
     // AddImGuiWindow(gameController);
     // menu->addWindow(gameController);
 
-    auto editorSceneObjects = std::make_shared<jleEditorSceneObjectsWindow>("Scene Objects");
-    addImGuiWindow(editorSceneObjects);
-    menu->addWindow(editorSceneObjects);
+    _editorSceneObjects = std::make_shared<jleEditorSceneObjectsWindow>("Scene Objects");
+    addImGuiWindow(_editorSceneObjects);
+    menu->addWindow(_editorSceneObjects);
 
     auto contentBrowser = std::make_shared<jleEditorContentBrowser>("Content Browser", _textEditWindow, resourceEditor);
     addImGuiWindow(contentBrowser);
@@ -128,6 +128,9 @@ jleEditor::start()
 
     pointLightLampGizmoMesh = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_lamp.fbx"}};
     directionalLightLampGizmoMesh = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_sun.fbx"}};
+
+    luaEnvironment()->loadScript("ER:/scripts/engine.lua");
+    luaEnvironment()->loadScript("ED:/scripts/editor.lua");
 
     startRmlUi();
 
@@ -453,4 +456,10 @@ jleEditorTextEdit &
 jleEditor::editorTextEdit()
 {
     return *_textEditWindow;
+}
+
+jleEditorSceneObjectsWindow &
+jleEditor::editorSceneObjects()
+{
+    return *_editorSceneObjects;
 }

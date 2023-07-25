@@ -104,7 +104,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         _framebuffer->resize(_lastGameWindowWidth, _lastGameWindowHeight);
     }
 
-    const auto &selectedObject = jleEditorSceneObjectsWindow::GetSelectedObject();
+    const auto &selectedObject = gEditor->editorSceneObjects().GetSelectedObject();
 
     glBindTexture(GL_TEXTURE_2D, (unsigned int)_framebuffer->texture());
     jleStaticOpenGLState::globalActiveTexture = (unsigned int)_framebuffer->texture();
@@ -162,7 +162,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
                     std::shared_ptr<jleObject> o{};
                     object->tryFindChildWithInstanceId(pickedID, o);
                     if (o) {
-                        jleEditorSceneObjectsWindow::SetSelectedObject(o);
+                        gEditor->editorSceneObjects().SetSelectedObject(o);
                     }
                 }
             }

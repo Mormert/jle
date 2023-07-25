@@ -4,6 +4,7 @@
 
 #include "jleCore.h"
 #include "jleGame.h"
+#include "jleLuaEnvironment.h"
 #include <RmlUi/Core/Context.h>
 
 class jleFullscreenRendering;
@@ -56,6 +57,8 @@ public:
 
     jleGame &gameRef();
 
+    std::shared_ptr<jleLuaEnvironment> &luaEnvironment();
+
     static inline Rml::Context* context{};
 
 private:
@@ -84,6 +87,8 @@ protected:
     void exiting() override;
 
     std::unique_ptr<jlePhysics> _physics;
+
+    std::shared_ptr<jleLuaEnvironment> _luaEnvironment;
 
     std::unique_ptr<jleGame> game;
     bool gameHalted = false;

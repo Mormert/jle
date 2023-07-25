@@ -18,6 +18,7 @@ class jleFramebufferInterface;
 class jleSceneEditorWindow;
 class jleFileChangeNotifier;
 class jleEditorTextEdit;
+class jleEditorSceneObjectsWindow;
 
 class jleEditor;
 inline jleEditor *gEditor;
@@ -70,8 +71,9 @@ public:
 
     std::vector<std::shared_ptr<jleScene>> &getEditorScenes();
 
-    jleEditorTextEdit &
-    editorTextEdit();
+    jleEditorTextEdit &editorTextEdit();
+
+    jleEditorSceneObjectsWindow &editorSceneObjects();
 
     bool
     checkSceneIsActiveEditor(const std::string &sceneName)
@@ -135,6 +137,8 @@ private:
     std::vector<std::shared_ptr<jleScene>> _editorScenes;
 
     std::shared_ptr<jleSceneEditorWindow> _sceneWindow;
+
+    std::shared_ptr<jleEditorSceneObjectsWindow> _editorSceneObjects;
 
     std::unique_ptr<jleFileChangeNotifier> _fileChangeNotifier;
 

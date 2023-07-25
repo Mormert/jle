@@ -20,6 +20,8 @@ jlePath::jlePath(const std::string &path, bool virtualPath)
     }
 }
 
+jlePath::jlePath(const char *virtualPath) : jlePath(std::string{virtualPath}, true) {}
+
 jlePath::jlePath(const std::string &virtualPath) : jlePath(virtualPath, true) {}
 
 std::string
@@ -230,4 +232,3 @@ jlePath::getVirtualPathConst() const
 {
     return getVirtualPath();
 }
-
