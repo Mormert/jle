@@ -4,8 +4,7 @@
 #include "jleGameEngine.h"
 
 cUITransformUpdater::cUITransformUpdater(jleObject *owner, jleScene *scene)
-    : jleComponent(owner, scene), _gameRef{
-                                      ((jleGameEngine *)gCore)->gameRef()} {}
+    : jleComponent(owner, scene) {}
 
 cUITransformUpdater::~cUITransformUpdater() {}
 

@@ -40,7 +40,6 @@ private:
     bool _right{false};
 
     int _x{}, _y{};
-    jleGame &_gameRef;
 };
 
 CEREAL_REGISTER_TYPE(cUITransformUpdater)
