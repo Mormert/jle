@@ -26,7 +26,14 @@ jleLuaScript::loadFromFile(const jlePath &path)
 void
 jleLuaScript::loadScript()
 {
-    _luaEnvironment->getState().script(_sourceCode);
+    try {
+        _luaEnvironment->getState().script(_sourceCode);
+        faultyState = false;
+    } catch (std::exception &e) {
+        LOGE << "Loading script failed: " << e.what();
+        faultyState = true;
+    }
+    _luaEnvironment->loadedScripts().insert(std::make_pair(jlePath{filepath, false}, shared_from_this()));
 }
 
 void
@@ -35,4 +42,3 @@ jleLuaScript::saveToFile()
     std::ofstream save{filepath};
     save << _sourceCode;
 }
-

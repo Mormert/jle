@@ -1,82 +1,39 @@
-
 luaEditor = luaEditor or {}
 
-function luaEditor.prettyTable(node)
-    local cache, stack, output = {}, {}, {}
-    local depth = 1
-    local output_str = "{\n"
-
-    while true do
-        local size = 0
-
+function luaEditor.tableImguiRecursive(node, depth)
+    if type(node) == 'table' then
+        ImGui.BeginChild(tostring(depth), 0, 0, true)
         for k, v in pairs(node) do
-            size = size + 1
-        end
-
-        local cur_index = 1
-        for k, v in pairs(node) do
-            if (cache[node] == nil) or (cur_index >= cache[node]) then
-
-                if (string.find(output_str, "}", output_str:len())) then
-                    output_str = output_str .. ",\n"
-                elseif not (string.find(output_str, "\n", output_str:len())) then
-                    output_str = output_str .. "\n"
+            if type(v) == 'number' then
+                v, selected = ImGui.InputFloat(k, v)
+                node[k] = v
+            end
+            if type(v) == 'string' then
+                -- Kinda buggy atm
+                v, selected = ImGui.InputText(k, v, 100)
+                local terminator = 0
+                for i = 1, #v do
+                    if (string.byte(v:sub(i, i)) == 0) then
+                        terminator = i
+                        break
+                    end
                 end
-
-                -- This is necessary for working with HUGE tables otherwise we run out of memory using concat on huge strings
-                table.insert(output, output_str)
-                output_str = ""
-
-                local key
-                if (type(k) == "number" or type(k) == "boolean") then
-                    key = "[" .. tostring(k) .. "]"
-                else
-                    key = "['" .. tostring(k) .. "']"
-                end
-
-                if (type(v) == "number" or type(v) == "boolean") then
-                    output_str = output_str .. string.rep('\t', depth) .. key .. " = " .. tostring(v)
-                elseif (type(v) == "table") then
-                    output_str = output_str .. string.rep('\t', depth) .. key .. " = {\n"
-                    table.insert(stack, node)
-                    table.insert(stack, v)
-                    cache[node] = cur_index + 1
-                    break
-                else
-                    output_str = output_str .. string.rep('\t', depth) .. key .. " = '" .. tostring(v) .. "'"
-                end
-
-                if (cur_index == size) then
-                    output_str = output_str .. "\n" .. string.rep('\t', depth - 1) .. "}"
-                else
-                    output_str = output_str .. ","
-                end
-            else
-                -- close the table
-                if (cur_index == size) then
-                    output_str = output_str .. "\n" .. string.rep('\t', depth - 1) .. "}"
+                node[k] = v:sub(1, terminator - 1)
+            end
+            if type(v) == "userdata" then
+                ImGui.Text(tostring(v))
+            end
+            if type(v) == "table" then
+                if (ImGui.TreeNode(k)) then
+                    luaEditor.tableImguiRecursive(v, depth + 1)
+                    ImGui.TreePop()
                 end
             end
-
-            cur_index = cur_index + 1
         end
-
-        if (size == 0) then
-            output_str = output_str .. "\n" .. string.rep('\t', depth - 1) .. "}"
-        end
-
-        if (#stack > 0) then
-            node = stack[#stack]
-            stack[#stack] = nil
-            depth = cache[node] == nil and depth + 1 or depth - 1
-        else
-            break
-        end
+        ImGui.EndChild()
     end
+end
 
-    -- This is necessary for working with HUGE tables otherwise we run out of memory using concat on huge strings
-    table.insert(output, output_str)
-    output_str = table.concat(output)
-
-    return output_str
+function luaEditor.tableImGui(node)
+    luaEditor.tableImguiRecursive(node, 0)
 end

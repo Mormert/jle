@@ -208,18 +208,23 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                             cereal::jleImGuiCerealArchive ar1;
                             ar1(*selectedObjectSafePtr);
 
-                            if(!gEngine->isGameKilled())
-                            {
-                                if(auto luaScript = selectedObjectSafePtr->getComponent<cLuaScript>())
-                                {
+                            if (!gEngine->isGameKilled()) {
+                                if (auto luaScript = selectedObjectSafePtr->getComponent<cLuaScript>()) {
                                     ImGui::Text("Lua Object:");
 
-                                    sol::protected_function f = gEditor->luaEnvironment()->getState()["luaEditor"]["prettyTable"];
-                                    std::string prettyTable = f(luaScript->getSelf());
-
-                                    ImGui::BeginChild("LuaPretty", ImVec2(0, 0), true);
-                                    ImGui::TextWrapped("%s", prettyTable.c_str());
-                                    ImGui::EndChild();
+                                    try {
+                                        sol::protected_function f =
+                                            gEditor->luaEnvironment()->getState()["luaEditor"]["tableImGui"];
+                                        if (f.valid()) {
+                                            auto res = f(luaScript->getSelf());
+                                            if (!res.valid()) {
+                                                sol::error err = res;
+                                                ImGui::Text("Lua Error: %s", err.what());
+                                            }
+                                        }
+                                    } catch (std::exception &e) {
+                                        ImGui::Text("Lua Error: %s", e.what());
+                                    }
                                 }
                             }
                         }
@@ -232,14 +237,15 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                         if (ImGui::BeginMenu("Add Custom Component")) {
                             for (auto &&componentType : jleTypeReflectionUtils::registeredComponentsRef()) {
                                 if (ImGui::MenuItem(componentType.first.c_str())) {
-                                    componentBeingAdded = jleTypeReflectionUtils::instantiateComponentByString(componentType.first);
+                                    componentBeingAdded =
+                                        jleTypeReflectionUtils::instantiateComponentByString(componentType.first);
                                     openedThisFrame = true;
                                 }
                             }
                             ImGui::EndMenu();
                         }
 
-                        if(openedThisFrame){
+                        if (openedThisFrame) {
                             ImGui::OpenPopup("Add Component Popup");
                         }
 

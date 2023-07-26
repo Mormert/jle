@@ -23,7 +23,9 @@ public:
 
     [[nodiscard]] sol::state& getState();
 
+    std::unordered_map<jlePath, std::shared_ptr<jleLuaScript>>& loadedScripts();
+
 private:
-    std::vector<std::shared_ptr<jleLuaScript>> _loadedScripts;
+    std::unordered_map<jlePath, std::shared_ptr<jleLuaScript>> _loadedScripts;
     sol::state _luaState;
 };

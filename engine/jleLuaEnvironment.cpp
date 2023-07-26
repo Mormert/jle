@@ -5,6 +5,7 @@
 #include "jleObject.h"
 #include "jlePath.h"
 #include "jleResourceRef.h"
+#include "ImGui/sol_ImGui.h"
 #include <glm/ext/matrix_transform.hpp>
 
 jleLuaEnvironment::jleLuaEnvironment()
@@ -28,6 +29,8 @@ jleLuaEnvironment::setupLua(sol::state &lua)
                        sol::lib::os);
 
     setupLuaGLM(lua);
+
+    sol_ImGui::Init(lua);
 
     lua.set_function("loadScript", [&](const std::string path) {
         loadScript(path.c_str());
@@ -460,4 +463,11 @@ jleLuaEnvironment::loadScript(const jlePath &path)
 {
     // Loads script and it will be placed in resource holder
     auto script = jleResourceRef<jleLuaScript>(path);
+    _loadedScripts.insert(std::make_pair(path, script.get()));
+}
+
+std::unordered_map<jlePath, std::shared_ptr<jleLuaScript>> &
+jleLuaEnvironment::loadedScripts()
+{
+    return _loadedScripts;
 }

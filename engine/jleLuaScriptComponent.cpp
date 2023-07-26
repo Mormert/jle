@@ -109,6 +109,8 @@ jleLuaScriptComponent::loadScript()
 
         faultyState = false;
 
+        _luaEnvironment->loadedScripts().insert(std::make_pair(jlePath{filepath, false}, shared_from_this()));
+
     } catch (std::exception &e) {
         LOGE << "Loading script failed: " << e.what();
         faultyState = true;

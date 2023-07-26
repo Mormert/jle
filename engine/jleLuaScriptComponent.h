@@ -4,7 +4,7 @@
 #define JLE_LUASCRIPTCOMPONENT_H
 
 #include "jleLuaScript.h"
-class jleLuaScriptComponent : public jleLuaScript, public std::enable_shared_from_this<jleLuaScriptComponent>
+class jleLuaScriptComponent : public jleLuaScript
 {
 public:
     JLE_REGISTER_RESOURCE_TYPE(jleLuaScriptComponent, lua);
