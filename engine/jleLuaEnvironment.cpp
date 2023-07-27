@@ -5,8 +5,11 @@
 #include "jleObject.h"
 #include "jlePath.h"
 #include "jleResourceRef.h"
-#include "ImGui/sol_ImGui.h"
 #include <glm/ext/matrix_transform.hpp>
+
+#ifdef BUILD_EDITOR
+#include "ImGui/sol_ImGui.h"
+#endif
 
 jleLuaEnvironment::jleLuaEnvironment()
 {
@@ -30,7 +33,9 @@ jleLuaEnvironment::setupLua(sol::state &lua)
 
     setupLuaGLM(lua);
 
+#ifdef BUILD_EDITOR
     sol_ImGui::Init(lua);
+#endif
 
     lua.set_function("loadScript", [&](const std::string path) {
         loadScript(path.c_str());
