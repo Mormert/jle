@@ -23,7 +23,7 @@ jleObject::destroyComponent(jleComponent *component)
             if (!gEngine->isGameKilled()) {
 
                 if (auto luaScriptComponent = getComponent<cLuaScript>()) {
-                    luaScriptComponent->getSelf()[component->componentName()] = sol::nil;
+                    luaScriptComponent->getSelf()[component->componentName()] = sol::lua_nil;
                 }
 
                 component->onDestroy();
