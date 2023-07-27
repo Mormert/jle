@@ -207,26 +207,6 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                         } else {
                             cereal::jleImGuiCerealArchive ar1;
                             ar1(*selectedObjectSafePtr);
-
-                            if (!gEngine->isGameKilled()) {
-                                if (auto luaScript = selectedObjectSafePtr->getComponent<cLuaScript>()) {
-                                    ImGui::Text("Lua Object:");
-
-                                    try {
-                                        sol::protected_function f =
-                                            gEditor->luaEnvironment()->getState()["luaEditor"]["tableImGui"];
-                                        if (f.valid()) {
-                                            auto res = f(luaScript->getSelf());
-                                            if (!res.valid()) {
-                                                sol::error err = res;
-                                                ImGui::Text("Lua Error: %s", err.what());
-                                            }
-                                        }
-                                    } catch (std::exception &e) {
-                                        ImGui::Text("Lua Error: %s", e.what());
-                                    }
-                                }
-                            }
                         }
 
                         ImGui::EndTabItem();

@@ -29,6 +29,8 @@ public:
 
     bool runUpdate = true;
 
+    void editorInspectorImGuiRender() override;
+
 private:
     jleResourceRef<jleLuaScriptComponent> _scriptRef;
     std::string _specializationScript = "local self = ...;\n";

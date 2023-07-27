@@ -65,6 +65,11 @@ public:
     {
     }
 
+    [[maybe_unused]] virtual void
+    editorInspectorImGuiRender()
+    {
+    }
+
     virtual void
     registerLua(sol::state &lua, sol::table &table)
     {

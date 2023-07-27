@@ -3,6 +3,11 @@
 #include "cLuaScript.h"
 #include "jleGameEngine.h"
 
+#ifdef BUILD_EDITOR
+#include "ImGui/imgui.h"
+#include "editor/jleEditor.h"
+#endif
+
 cLuaScript::cLuaScript(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 
 void
@@ -16,18 +21,16 @@ cLuaScript::start()
 
     _scriptRef->setupLua(_self, _attachedToObject);
 
-    if(!_specializationScript.empty())
-    {
+    if (!_specializationScript.empty()) {
         sol::load_result fx = gEngine->luaEnvironment()->getState().load(_specializationScript);
         if (!fx.valid()) {
             sol::error err = fx;
-            LOGE << "Failed to load specialization script for " << _attachedToObject->_instanceName << ": " << err.what();
+            LOGE << "Failed to load specialization script for " << _attachedToObject->_instanceName << ": "
+                 << err.what();
         }
 
         fx(_self);
     }
-
-
 
     _scriptRef->startLua(_self);
 }
@@ -61,4 +64,35 @@ sol::table &
 cLuaScript::getSelf()
 {
     return _self;
+}
+
+void
+cLuaScript::editorInspectorImGuiRender()
+{
+#ifdef BUILD_EDITOR
+    if (!gEngine->isGameKilled()) {
+
+        ImGui::BeginChild("LuaVars", ImVec2(0,200), true, ImGuiWindowFlags_AlwaysAutoResize);
+        ImGui::Text("Lua Variables");
+
+        try {
+            sol::protected_function f = gEditor->luaEnvironment()->getState()["luaEditor"]["tableImGui"];
+            if (f.valid()) {
+                auto res = f(getSelf());
+                if (!res.valid()) {
+                    sol::error err = res;
+                    ImGui::Text("Lua Error: %s", err.what());
+                }
+            }
+        } catch (std::exception &e) {
+            ImGui::Text("Lua Error: %s", e.what());
+        }
+
+        ImGui::EndChild();
+
+    }else
+    {
+        ImGui::Text("Start the game to see Lua variables");
+    }
+#endif
 }

@@ -28,6 +28,8 @@
 #include <iostream>
 #include <jleResourceRef.h>
 #include <jleTransform.h>
+#include "jleComponent.h"
+
 
 // A tooltip utility for showing tooltips in the editor
 // Works on arithmetic types: float, int, double, etc, and std::string
@@ -447,7 +449,7 @@ struct jleToolTip {
 
             return labelID;
         }
-
+    public:
         int elementCount = 0;
     };
 
@@ -487,8 +489,24 @@ struct jleToolTip {
         NameValuePair<cereal::memory_detail::PtrWrapper<const std::shared_ptr<const T> &>> const &t)
     {
         std::shared_ptr<T> f = std::const_pointer_cast<T>(t.value.ptr);
-        jleImGuiCerealArchive nonPolymorphicArchive;
-        nonPolymorphicArchive.draw(nonPolymorphicArchive, ar.nextPolymorhphicTypeName + " (ptr)", *f.get());
+
+        if(auto component = std::dynamic_pointer_cast<jleComponent>(f)) {
+            jleImGuiCerealArchive nonPolymorphicArchive;
+            nonPolymorphicArchive.elementCount += 1;
+
+            ImGui::PushID(nonPolymorphicArchive.elementCount);
+
+            if (ImGui::TreeNodeEx(std::string{ar.nextPolymorhphicTypeName + " (ptr)"}.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+                nonPolymorphicArchive(*f);
+                component->editorInspectorImGuiRender();
+                ImGui::TreePop();
+            }
+
+            ImGui::PopID();
+        }else {
+            jleImGuiCerealArchive nonPolymorphicArchive;
+            nonPolymorphicArchive.draw(nonPolymorphicArchive, ar.nextPolymorhphicTypeName + " (ptr)", *f.get());
+        }
     }
 
     template <class T>
