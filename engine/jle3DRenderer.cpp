@@ -14,6 +14,7 @@
 #include <glm/gtx/matrix_decompose.hpp>
 
 #include "jleIncludeGL.h"
+#include "jleGLError.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <random>
@@ -498,9 +499,9 @@ jle3DRenderer::renderPointLights(const jleCamera &camera)
     glCullFace(GL_BACK);
 
     float aspect = (float)_pointsShadowMappingFramebuffer->width() / (float)_pointsShadowMappingFramebuffer->height();
-    float near = 0.0f;
-    float far = 500.0f;
-    glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
+    float nearP = 0.0f;
+    float farP = 500.0f;
+    glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, nearP, farP);
 
     glm::vec3 lightPos = _queuedLights[0].position;
 
@@ -520,7 +521,7 @@ jle3DRenderer::renderPointLights(const jleCamera &camera)
 
     _shadowMappingPointShader->use();
     _shadowMappingPointShader->SetVec3("lightPos", lightPos);
-    _shadowMappingPointShader->SetFloat("farPlane", far);
+    _shadowMappingPointShader->SetFloat("farPlane", farP);
 
     for (int i = 0; i < 6; i++) {
         _shadowMappingPointShader->SetMat4("lightSpaceMatrix", shadowTransforms[i]);

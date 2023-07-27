@@ -3,7 +3,7 @@
 #include "jleMouseInput.h"
 
 #include "jleWindow.h"
-#include <GLFW/glfw3.h>
+#include "jleIncludeGL.h"
 #include <utility>
 
 jleMouseInput::jleMouseInput(std::shared_ptr<jleWindow> windowInternal) {

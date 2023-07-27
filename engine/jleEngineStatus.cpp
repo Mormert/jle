@@ -2,7 +2,7 @@
 
 #include "jleEngineStatus.h"
 
-#include "GLFW/glfw3.h"
+#include "jleIncludeGL.h"
 
 int jleEngineStatus::_fps{0};
 double jleEngineStatus::_deltaTime{0.0f};

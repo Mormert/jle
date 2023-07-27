@@ -72,7 +72,8 @@
 #endif
 
 // GLFW
-#include <GLFW/glfw3.h>
+#include "jleIncludeGL.h"
+
 
 #ifdef _WIN32
 #undef APIENTRY

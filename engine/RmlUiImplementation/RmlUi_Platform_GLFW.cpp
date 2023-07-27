@@ -32,7 +32,7 @@
 #include <RmlUi/Core/Log.h>
 #include <RmlUi/Core/StringUtilities.h>
 #include <RmlUi/Core/SystemInterface.h>
-#include <GLFW/glfw3.h>
+#include "jleIncludeGL.h"
 
 #include <plog/Log.h>
 

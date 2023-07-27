@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleTimerManager.h"
-#include <GLFW/glfw3.h>
+#include "jleIncludeGL.h"
 
 #include "jleProfiler.h"
 

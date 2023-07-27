@@ -15,18 +15,7 @@
 #include "jleTransform.h"
 #include "jleWindow.h"
 
-#ifdef __EMSCRIPTEN__
-#include <GLES3/gl3.h>
-#include <emscripten.h>
-#define GL_GLEXT_PROTOTYPES
-#define EGL_EGLEXT_PROTOTYPES
-#else
-
-#include "glad/glad.h"
-
-#endif
-
-#include <GLFW/glfw3.h>
+#include "jleIncludeGL.h"
 
 #include "btBulletDynamicsCommon.h"
 

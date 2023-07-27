@@ -8,6 +8,8 @@ option(BUILD_EDITOR "Build the game in the editor" ON)
 option(BUILD_EMSCRIPTEN "Build with Emscripten targeting WebAssembly" OFF)
 option(BUILD_OPENGLES30 "Use OpenGL ES 3.0 instead of desktop core 3.3" ON)
 option(BUILD_REMOTERY "Use Remotery profiling" ON)
+option(BUILD_UNITY "Smash compilation units into chunks for faster build times" OFF)
+option(BUILD_PRECOMPILED_HEADER "Use the precompiled header technique for faster iteration build times" OFF)
 
 # Mac OS doesn't support GLES 3.0
 if (APPLE)

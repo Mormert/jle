@@ -6,7 +6,7 @@
 #include "jlePathDefines.h"
 #include "jleStaticOpenGLState.h"
 
-#include <GLFW/glfw3.h>
+#include "jleIncludeGL.h"
 
 #include <iostream>
 

@@ -847,7 +847,7 @@
         Too many extensions
 */
 
-#include <glad/glad.h>
+#include "jleIncludeGL.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

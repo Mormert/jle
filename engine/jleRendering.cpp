@@ -3,6 +3,7 @@
 #include "jleRendering.h"
 
 #include "jleIncludeGL.h"
+#include "jleGLError.h"
 
 #include "jleFramebufferMultisample.h"
 #include "jleProfiler.h"

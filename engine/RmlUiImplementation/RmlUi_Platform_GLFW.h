@@ -32,7 +32,7 @@
 #include <RmlUi/Core/Input.h>
 #include <RmlUi/Core/SystemInterface.h>
 #include <RmlUi/Core/Types.h>
-#include <GLFW/glfw3.h>
+#include "jleIncludeGL.h"
 
 class SystemInterface_GLFW : public Rml::SystemInterface {
 public:

@@ -34,7 +34,7 @@
 #include <RmlUi/Core/Context.h>
 #include <RmlUi/Core/Input.h>
 #include <RmlUi/Core/Profiling.h>
-#include <GLFW/glfw3.h>
+#include "jleIncludeGL.h"
 
 static void SetupCallbacks(GLFWwindow* window);
 

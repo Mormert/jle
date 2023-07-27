@@ -13,7 +13,7 @@ find_package(ZLIB REQUIRED)
 add_library(engine STATIC
         "3rdparty/stb_image.cpp"
         "3rdparty/tiny_obj_loader.cpp"
-        "3rdparty/Remotery/Remotery.c"
+        "3rdparty/Remotery/Remotery.cpp"
         "RmlUiImplementation/RmlUi_Backend_GLFW_GL3.cpp"
         "RmlUiImplementation/RmlUi_Renderer_GL3.cpp"
         "RmlUiImplementation/RmlUi_Platform_GLFW.cpp"
@@ -28,7 +28,7 @@ add_library(engine STATIC
         "jleEngineStatus.cpp"
         "jleGame.cpp"
         "jleObject.cpp"
-        "jleAseprite.cpp"
+        #"jleAseprite.cpp"
         "jleScene.cpp"
         "jleTextRendering.cpp"
         "jleStaticOpenGLState.cpp"
@@ -48,9 +48,9 @@ add_library(engine STATIC
         "jleTexture.cpp"
         "jleWindow.cpp"
         "jleTransform.cpp"
-        "cSprite.cpp"
-        "cSpriteDepth.cpp"
-        "cAseprite.cpp"
+        #"cSprite.cpp"
+        #"cSpriteDepth.cpp"
+        #"cAseprite.cpp"
         "cCamera.cpp"
         "jleFont.cpp"
         "cText.cpp"
@@ -60,9 +60,9 @@ add_library(engine STATIC
         "jleNetworkingNative.cpp"
         "jleNetworkingJS.cpp"
         "jleNetScene.cpp"
-        "jleSpritesheet.cpp"
-        "cSpritesheetDepth.cpp"
-        "cSpritesheet.cpp"
+        #"jleSpritesheet.cpp"
+        #"cSpritesheetDepth.cpp"
+        #"cSpritesheet.cpp"
         "jlePath.cpp"
         "jleProfiler.cpp"
         "jleCamera.cpp"
@@ -84,7 +84,8 @@ add_library(engine STATIC
         "jleLuaScript.cpp"
         "jleLuaScriptComponent.cpp"
         "jleFileChangeNotifier.cpp"
-        "jleLuaEnvironment.cpp")
+        "jleLuaEnvironment.cpp"
+        "jleGLError.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE
@@ -100,7 +101,6 @@ if (BUILD_EDITOR)
             "editor/jleSceneEditorWindow.cpp"
             "editor/jleGameEditorWindow.cpp"
             "editor/jleEditorContentBrowser.cpp"
-            "editor/jleProfilerWindow.cpp"
             "editor/jleEditorWindowsPanel.cpp"
             "editor/jleEditorTextEdit.cpp"
             "editor/jleEditorResourceEdit.cpp"
@@ -141,7 +141,7 @@ if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded lib
     target_link_libraries(engine PUBLIC ${CMAKE_DL_LIBS})
 
     # Compile glad.c only when building native
-    target_sources(engine PRIVATE "3rdparty/glad/glad.c")
+    target_sources(engine PRIVATE "3rdparty/glad/glad.cpp")
 
     # Remove GLFW tests, examples and docs from build
     set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -203,4 +203,27 @@ if (BUILD_EMSCRIPTEN)
 else ()
     FILE(COPY EditorResources DESTINATION ${PROJECT_BINARY_DIR}/${JLE_GAME_BUILD})
     FILE(COPY EngineResources DESTINATION ${PROJECT_BINARY_DIR}/${JLE_GAME_BUILD})
+endif ()
+
+if (BUILD_UNITY)
+    set_target_properties(engine PROPERTIES
+            UNITY_BUILD ON
+            UNITY_BUILD_BATCH_SIZE 8)
+
+    # Known compilation units to be problematic for unity builds are listed here.
+    set_source_files_properties(
+            "3rdparty/stb_image.cpp"
+            "3rdparty/tiny_obj_loader.cpp"
+            "cSkybox.cpp"
+            "3rdparty/ImGui/imgui.cpp"
+            "3rdparty/ImGui/imgui_draw.cpp"
+            "3rdparty/ImGui/imgui_tables.cpp"
+            "3rdparty/ImGui/imgui_widgets.cpp"
+            "3rdparty/ImGui/ImGuizmo.cpp"
+            "3rdparty/glad/glad.cpp"
+            PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+endif ()
+
+if (BUILD_PRECOMPILED_HEADER)
+    target_precompile_headers(engine PRIVATE precompile.h)
 endif ()
