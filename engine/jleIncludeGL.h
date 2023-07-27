@@ -9,15 +9,13 @@
 #include <GLES3/gl3.h>
 #include <GLES2/gl2ext.h>
 #include <emscripten.h>
+#include <GLFW/glfw3.h>
 
 #define GL_GLEXT_PROTOTYPES
 #define EGL_EGLEXT_PROTOTYPES
 #else
-#ifndef JLE_INCLUDE_GL_INCLUDED_GLAD
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#define JLE_INCLUDE_GL_INCLUDED_GLAD
-#endif
 
 #endif // __EMSCRIPTEN__
 
