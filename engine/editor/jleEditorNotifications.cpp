@@ -85,13 +85,15 @@ void
 jleEditorNotifications::write(const plog::Record &record)
 {
     if (record.getSeverity() == plog::Severity::error) {
-        std::wstring m = record.getMessage();
+        auto msg = record.getMessage();
+        std::wstring m(msg, msg + strlen(msg));
         addNotificationError(m);
         return;
     }
 
     if (record.getSeverity() == plog::Severity::fatal) {
-        std::wstring m = record.getMessage();
+        auto msg = record.getMessage();
+        std::wstring m(msg, msg + strlen(msg));
         addNotificationError(m);
         return;
     }

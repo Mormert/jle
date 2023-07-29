@@ -10,13 +10,13 @@
 #include "jleGameEngine.h"
 #include "jleImage.h"
 #include "jleMesh.h"
+#include "jleFileChangeNotifier.h"
 #include "jleResourceRef.h"
 #include <memory>
 #include <vector>
 
 class jleFramebufferInterface;
 class jleSceneEditorWindow;
-class jleFileChangeNotifier;
 class jleEditorTextEdit;
 class jleEditorSceneObjectsWindow;
 
