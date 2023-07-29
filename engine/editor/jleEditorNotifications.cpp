@@ -88,7 +88,6 @@ jleEditorNotifications::write(const plog::Record &record)
         auto msg = record.getMessage();
 #if defined(__APPLE__) || defined(__linux__)
         std::wstring m(msg, msg + strlen(msg));
-        std::wstring m(msg, msg + strlen(msg));
 #else
         std::wstring m = msg;
 #endif
