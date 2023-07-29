@@ -28,6 +28,8 @@ public:
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
 
+    std::vector<std::string> getFileAssociationList() override;
+
     ~jleTexture() override;
 
     // Returns true if this Texture is the globally active texture

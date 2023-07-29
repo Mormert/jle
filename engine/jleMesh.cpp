@@ -389,3 +389,9 @@ jleMesh::indices()
 {
     return _indices;
 }
+
+std::vector<std::string>
+jleMesh::getFileAssociationList()
+{
+    return {"fbx", "obj"};
+}

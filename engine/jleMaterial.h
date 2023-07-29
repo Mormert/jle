@@ -35,6 +35,8 @@ public:
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
 
+    std::vector<std::string> getFileAssociationList() override;
+
     jleResourceRef<jleTexture> albedoTextureRef;
     jleResourceRef<jleTexture> normalTextureRef;
     jleResourceRef<jleTexture> metallicTextureRef;

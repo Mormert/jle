@@ -21,6 +21,8 @@ public:
 
     void saveToFile() override;
 
+    std::vector<std::string> getFileAssociationList() override;
+
 protected:
     std::string _luaScriptName;
     std::string _sourceCode;

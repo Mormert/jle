@@ -24,12 +24,13 @@
 #include "ImGui/imgui.h"
 #include "ImGui/ImGuizmo.h"
 
+#include "jleComponent.h"
+#include <ImGui/imgui_internal.h>
+#include <filesystem>
 #include <glm/gtx/matrix_decompose.hpp>
 #include <iostream>
 #include <jleResourceRef.h>
 #include <jleTransform.h>
-#include "jleComponent.h"
-
 
 // A tooltip utility for showing tooltips in the editor
 // Works on arithmetic types: float, int, double, etc, and std::string
@@ -243,7 +244,7 @@ struct jleToolTip {
             ImGui::PopID();
         }
 
-        bool draw_ui_reference(jleImGuiCerealArchive &ar, const char *name, std::string &value){
+        bool draw_ui_reference(jleImGuiCerealArchive &ar, const char *name, std::string &value, std::vector<std::string> fileExtensions){
             ImGui::PushID(elementCount++);
 
             std::vector<char> charData(value.begin(), value.end());
@@ -253,6 +254,71 @@ struct jleToolTip {
 
             if (ImGui::InputText(LeftLabelImGui(name).c_str(), &charData[0], charData.size())) {
                 value = std::string(charData.data());
+            }
+
+            std::vector<std::string> directories;
+            directories.push_back(jlePath{"ER:/"}.getRealPath());
+            directories.push_back(jlePath{"ED:/"}.getRealPath());
+            directories.push_back(jlePath{"GR:/"}.getRealPath());
+
+            std::vector<jlePath> relevantResources;
+
+            for (auto &dir : directories) {
+                for (auto &file : std::filesystem::recursive_directory_iterator(dir)) {
+                    if(file.is_regular_file()) {
+                        auto ext = file.path().extension().string();
+                        for(auto &fileExtension : fileExtensions) {
+                            if(ext == std::string{'.' + fileExtension}) {
+                                relevantResources.emplace_back(file.path().string(), false);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //bool isOpen = false;
+            //static bool isOpen = false;
+            static std::set<int> isOpenSet;
+
+            bool isOpen = isOpenSet.find(elementCount) != isOpenSet.end();
+
+            if(relevantResources.size() != 0) {
+
+                bool isFocused = ImGui::IsItemFocused();
+                isOpen |= ImGui::IsItemActive();
+                if (isOpen) {
+                    ImGui::SetNextWindowPos({ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y});
+                    ImGui::SetNextWindowSize({ImGui::GetItemRectSize().x, 0});
+                    if (ImGui::Begin(std::string{"popup_" + std::string{name}}.c_str(),
+                                     &isOpen,
+                                     ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                                         ImGuiWindowFlags_Tooltip)) {
+                        ImGui::BringWindowToDisplayFront(ImGui::GetCurrentWindow());
+                        isFocused |= ImGui::IsWindowFocused();
+                        // static const char* autocomplete[] = {"cats", "dogs", "rabbits", "turtles"};
+                        for (int i = 0; i < relevantResources.size(); i++) {
+                            if (strstr(relevantResources[i].getVirtualPath().c_str(), value.c_str()) == NULL)
+                                continue;
+                            if (ImGui::Selectable(relevantResources[i].getVirtualPath().c_str()) ||
+                                (ImGui::IsItemFocused() && ImGui::IsKeyPressedMap(ImGuiKey_Enter))) {
+                                value = relevantResources[i].getVirtualPath();
+                                isEditedAndDeactivated = true;
+                                isOpen = false;
+                            }
+                        }
+                    }
+                    ImGui::End();
+                    isOpen &= isFocused;
+                }
+            }else {
+                isOpen = false;
+            }
+
+            if(isOpen) {
+                isOpenSet.insert(elementCount);
+            }else {
+                isOpenSet.erase(elementCount);
             }
 
             if(ImGui::IsItemDeactivatedAfterEdit()){
@@ -270,7 +336,15 @@ struct jleToolTip {
             ImGui::PushID(elementCount++);
 
             std::string copy = value.path._virtualPath;
-            bool isEditedAndDeactivated = draw_ui_reference(ar, std::string{name + std::string{" (ref)"}}.c_str(), value.path._virtualPath);
+
+            static std::unique_ptr<T> dummyResource;
+            if(!dummyResource) {
+                dummyResource = std::make_unique<T>();
+            }
+
+            auto fileExtensionAssociated = dummyResource->getFileAssociationList();
+
+            bool isEditedAndDeactivated = draw_ui_reference(ar, std::string{name + std::string{" (ref)"}}.c_str(), value.path._virtualPath, fileExtensionAssociated);
             if (isEditedAndDeactivated) {
                 value.load_minimal(ar, value.path._virtualPath);
             }

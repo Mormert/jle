@@ -39,6 +39,11 @@ public:
         return "";
     }
 
+    virtual std::vector<std::string> getFileAssociationList()
+    {
+        return {};
+    }
+
     std::string
     getDotFileExtension()
     {

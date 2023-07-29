@@ -213,3 +213,8 @@ jleShader::CreateFromSources(const char *vertexPath, const char *fragmentPath, c
 
     LOG_VERBOSE << "Compiled shader, ID: " << ID;
 }
+std::vector<std::string>
+jleShader::getFileAssociationList()
+{
+    return {"sh"};
+}

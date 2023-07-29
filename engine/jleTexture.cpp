@@ -119,3 +119,8 @@ jleTexture::id()
 {
     return _id;
 }
+std::vector<std::string>
+jleTexture::getFileAssociationList()
+{
+    return {"png", "jpg", "tga", "bmp", "psd", "jpeg"};
+}

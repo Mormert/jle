@@ -45,6 +45,8 @@ public:
 
     const std::vector<unsigned int>& indices();
 
+    std::vector<std::string> getFileAssociationList() override;
+
 private:
     void destroyOldBuffers();
 

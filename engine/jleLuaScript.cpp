@@ -42,3 +42,8 @@ jleLuaScript::saveToFile()
     std::ofstream save{filepath};
     save << _sourceCode;
 }
+std::vector<std::string>
+jleLuaScript::getFileAssociationList()
+{
+    return {"lua"};
+}

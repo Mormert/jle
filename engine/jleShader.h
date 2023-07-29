@@ -46,6 +46,8 @@ public:
         }
     }
 
+    std::vector<std::string> getFileAssociationList() override;
+
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
 
     jleShader() = default;
