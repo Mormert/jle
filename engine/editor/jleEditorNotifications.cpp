@@ -84,16 +84,14 @@ jleEditorNotifications::addNotificationError(const std::wstring &message)
 void
 jleEditorNotifications::write(const plog::Record &record)
 {
-    if (record.getSeverity() == plog::Severity::error) {
+    if (record.getSeverity() == plog::Severity::error || record.getSeverity() == plog::Severity::fatal) {
         auto msg = record.getMessage();
+#if defined(__APPLE__) || defined(__linux__)
         std::wstring m(msg, msg + strlen(msg));
-        addNotificationError(m);
-        return;
-    }
-
-    if (record.getSeverity() == plog::Severity::fatal) {
-        auto msg = record.getMessage();
         std::wstring m(msg, msg + strlen(msg));
+#else
+        std::wstring m = msg;
+#endif
         addNotificationError(m);
         return;
     }
