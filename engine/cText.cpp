@@ -9,6 +9,9 @@
 
 cText::cText(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 
+JLE_EXTERN_TEMPLATE_CEREAL_CPP(cText)
+
+
 void cText::start() {}
 
 void cText::update(float dt) {

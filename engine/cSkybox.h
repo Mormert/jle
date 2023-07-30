@@ -32,5 +32,7 @@ protected:
     jleResourceRef<jleSkybox> _skybox;
 };
 
+JLE_EXTERN_TEMPLATE_CEREAL_H(cSkybox)
+
 CEREAL_REGISTER_TYPE(cSkybox)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cSkybox)

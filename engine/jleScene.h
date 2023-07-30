@@ -106,6 +106,8 @@ private:
     void configurateSpawnedObject(const std::shared_ptr<jleObject> &obj);
 };
 
+JLE_EXTERN_TEMPLATE_CEREAL_H(jleScene)
+
 CEREAL_REGISTER_TYPE(jleScene)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleScene)
 

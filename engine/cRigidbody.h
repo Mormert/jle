@@ -50,5 +50,7 @@ protected:
     btRigidBody *body;
 };
 
+JLE_EXTERN_TEMPLATE_CEREAL_H(cRigidbody)
+
 CEREAL_REGISTER_TYPE(cRigidbody)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cRigidbody)

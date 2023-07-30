@@ -6,6 +6,8 @@
 
 cCameraFPV::cCameraFPV(jleObject *owner, jleScene *scene) : cCamera(owner, scene) {}
 
+JLE_EXTERN_TEMPLATE_CEREAL_CPP(cCameraFPV)
+
 cCameraFPV::~cCameraFPV() {}
 
 void

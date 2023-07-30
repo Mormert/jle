@@ -33,6 +33,8 @@
 #include "jleWindow.h"
 #include "plog/Log.h"
 
+JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleEditorSaveState)
+
 jleEditor::jleEditor() { gEditor = this; }
 
 void

@@ -12,6 +12,9 @@
 #include "cMesh.h"
 #include "jleGameEngine.h"
 
+JLE_EXTERN_TEMPLATE_CEREAL_CPP(cRigidbody)
+
+
 cRigidbody::cRigidbody(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 
 void

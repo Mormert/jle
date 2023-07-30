@@ -47,6 +47,8 @@ struct jleEditorSaveState : public jleSerializedResource, public std::enable_sha
     bool gameRunning{};
 };
 
+JLE_EXTERN_TEMPLATE_CEREAL_H(jleEditorSaveState)
+
 CEREAL_REGISTER_TYPE(jleEditorSaveState)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleEditorSaveState)
 

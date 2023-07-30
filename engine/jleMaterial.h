@@ -8,7 +8,6 @@
 
 #include "jleResourceRef.h"
 #include "jleTexture.h"
-#include "json.hpp"
 
 #include <cereal/cereal.hpp>
 

@@ -8,6 +8,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLight)
+
 
 cLight::cLight(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 void

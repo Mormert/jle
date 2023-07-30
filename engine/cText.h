@@ -42,5 +42,8 @@ private:
     float _colorR{1.f}, _colorG{1.f}, _colorB{1.f}, _colorA{1.f};
 };
 
+JLE_EXTERN_TEMPLATE_CEREAL_H(cText)
+
+
 CEREAL_REGISTER_TYPE(cText)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cText)

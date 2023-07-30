@@ -8,6 +8,8 @@
 #include <filesystem>
 #include <iostream>
 
+JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleScene)
+
 int jleScene::_scenesCreatedCount{0};
 
 jleScene::jleScene() {

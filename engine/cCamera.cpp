@@ -5,6 +5,8 @@
 #include "jleObject.h"
 #include "jleWindow.h"
 
+JLE_EXTERN_TEMPLATE_CEREAL_CPP(cCamera)
+
 void
 cCamera::start()
 {

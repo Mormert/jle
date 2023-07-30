@@ -14,8 +14,6 @@
 #include "jleTransform.h"
 #include "json.hpp"
 
-// #include <cereal/archives/json.hpp>
-#include <cereal/archives/xml.hpp>
 #include <cereal/types/memory.hpp>
 #include <cereal/types/polymorphic.hpp>
 
@@ -69,7 +67,7 @@ public:
     std::shared_ptr<T> addComponent();
 
     template <typename T>
-    void addComponent(const std::shared_ptr<T>& component);
+    void addComponent(const std::shared_ptr<T> &component);
 
     std::shared_ptr<jleComponent> addComponentByName(const std::string &component_name);
 
@@ -112,7 +110,7 @@ public:
 
     uint32_t instanceID() const;
 
-    uint32_t& instanceIDRef();
+    uint32_t &instanceIDRef();
 
     jleTransform &getTransform();
 
@@ -137,7 +135,7 @@ private:
 
     void updateChildrenEditor(float dt);
 
-    void addComponentStart(jleComponent* c);
+    void addComponentStart(jleComponent *c);
 
     bool _pendingKill = false;
 
@@ -160,6 +158,9 @@ protected:
 
     static inline uint32_t _instanceIdCounter{0};
 };
+
+
+JLE_EXTERN_TEMPLATE_CEREAL_H(jleObject)
 
 CEREAL_REGISTER_TYPE(jleObject)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleObject)

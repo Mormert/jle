@@ -7,9 +7,6 @@
 #include "jleResourceInterface.h"
 #include "jleTypeReflectionUtils.h"
 
-#define SOL_ALL_SAFETIES_ON 1
-#include <sol2/sol.hpp>
-
 class jleLuaScript : public jleResourceInterface, public std::enable_shared_from_this<jleLuaScript>
 {
 public:

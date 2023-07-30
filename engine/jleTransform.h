@@ -6,6 +6,7 @@
 
 #include <glm/glm.hpp>
 #include "jleExternalSerialization.h"
+#include "jleCompileHelper.h"
 
 class jleObject;
 
@@ -16,10 +17,7 @@ public:
 
     template <class Archive>
     void
-    serialize(Archive &ar)
-    {
-        ar(CEREAL_NVP(_local));
-    }
+    serialize(Archive &ar);
 
     void setWorldPosition(const glm::vec3 &position);
 
@@ -56,5 +54,7 @@ private:
     glm::mat4 _local{1.f};
     glm::mat4 _world{1.f};
 };
+
+JLE_EXTERN_TEMPLATE_CEREAL_H(jleTransform)
 
 #endif // JLE_TRANSFORM

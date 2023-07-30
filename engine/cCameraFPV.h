@@ -30,5 +30,7 @@ protected:
     float _mouseSensitivity{1.f};
 };
 
+JLE_EXTERN_TEMPLATE_CEREAL_H(cCameraFPV)
+
 CEREAL_REGISTER_TYPE(cCameraFPV)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cCameraFPV)

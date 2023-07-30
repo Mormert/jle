@@ -6,7 +6,7 @@
 
 #include <fstream>
 #include <string>
-
+#include "jleCompileHelper.h"
 #include <cereal/archives/json.hpp>
 #include <cereal/cereal.hpp>
 #include <cereal/types/polymorphic.hpp>

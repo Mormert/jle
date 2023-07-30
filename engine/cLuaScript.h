@@ -40,5 +40,8 @@ private:
     std::function<void(sol::table)> _onDestroyLua;
 };
 
+JLE_EXTERN_TEMPLATE_CEREAL_H(cLuaScript)
+
+
 CEREAL_REGISTER_TYPE(cLuaScript)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cLuaScript)

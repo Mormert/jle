@@ -13,6 +13,8 @@
 #include <fstream>
 #include <optional>
 
+JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleObject)
+
 jleObject::jleObject() : _transform{this} { _instanceID = _instanceIdCounter++; }
 
 void

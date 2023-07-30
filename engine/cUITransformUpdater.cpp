@@ -3,6 +3,8 @@
 #include "cUITransformUpdater.h"
 #include "jleGameEngine.h"
 
+JLE_EXTERN_TEMPLATE_CEREAL_CPP(cUITransformUpdater)
+
 cUITransformUpdater::cUITransformUpdater(jleObject *owner, jleScene *scene)
     : jleComponent(owner, scene) {}
 

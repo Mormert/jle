@@ -24,5 +24,8 @@ public:
     void editorGizmosRender(bool selected) override;
 };
 
+JLE_EXTERN_TEMPLATE_CEREAL_H(cLightDirectional)
+
+
 CEREAL_REGISTER_TYPE(cLightDirectional)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(cLight, cLightDirectional)

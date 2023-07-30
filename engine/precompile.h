@@ -22,14 +22,10 @@
 
 #include <cereal/cereal.hpp>
 #include <cereal/archives/json.hpp>
-#include <cereal/archives/binary.hpp>
-#include <cereal/archives/portable_binary.hpp>
 #include "cereal/details/helpers.hpp"
 #include "cereal/types/memory.hpp"
 #include "cereal/types/polymorphic.hpp"
 #include "editor/jleImGuiCerealArchive.h"
-
-#include "ImGui/imgui.h"
 
 #include "plog/Log.h"
 #include "plog/Logger.h"
@@ -38,3 +34,4 @@
 #include "sol2/sol.hpp"
 
 #include "glm/glm.hpp"
+#include "glm/common.hpp"

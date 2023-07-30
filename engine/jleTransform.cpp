@@ -3,8 +3,17 @@
 #include "jleTransform.h"
 #include "jleObject.h"
 
+JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleTransform)
+
 jleTransform::jleTransform(jleObject *owner){
     _owner = owner;
+}
+
+template <class Archive>
+void
+jleTransform::serialize(Archive &arcc)
+{
+    arcc(CEREAL_NVP(_local));
 }
 
 void

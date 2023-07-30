@@ -20,9 +20,6 @@
 #include <fstream>
 #include <iostream>
 
-#define SOL_ALL_SAFETIES_ON 1
-#include <sol2/sol.hpp>
-
 class jleGame
 {
 public:

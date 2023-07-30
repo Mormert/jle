@@ -6,6 +6,9 @@
 #include "jleRendering.h"
 #include "jleResource.h"
 
+JLE_EXTERN_TEMPLATE_CEREAL_CPP(cSkybox)
+
+
 cSkybox::cSkybox(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 
 void

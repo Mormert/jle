@@ -42,5 +42,7 @@ private:
     int _x{}, _y{};
 };
 
+JLE_EXTERN_TEMPLATE_CEREAL_H(cUITransformUpdater)
+
 CEREAL_REGISTER_TYPE(cUITransformUpdater)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cUITransformUpdater)
