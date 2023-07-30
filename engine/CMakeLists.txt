@@ -7,6 +7,11 @@ set(ZLIB_LIBRARY zlib)
 set(ZLIB_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib)
 set(SKIP_INSTALL_ALL ON)
 
+option(ENABLE_CLANG_TIMETRACE "Enable -ftime-trace for Clang" OFF)
+if (ENABLE_CLANG_TIMETRACE AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    set(CMAKE_CXX_FLAGS "-ftime-trace ${CMAKE_CXX_FLAGS}")
+endif()
+
 include_directories(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
 find_package(ZLIB REQUIRED)
 
