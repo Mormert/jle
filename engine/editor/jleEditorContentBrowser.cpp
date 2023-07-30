@@ -324,7 +324,8 @@ jleEditorContentBrowser::contentBrowser()
                     if (dir_entry.path().extension() == ".scn") {
                         iconTexture = _sceneFileIcon;
                     } else if (dir_entry.path().extension() == ".png" || dir_entry.path().extension() == ".jpg" ||
-                               dir_entry.path().extension() == ".tga" || dir_entry.path().extension() == ".bmp") {
+                               dir_entry.path().extension() == ".tga" || dir_entry.path().extension() == ".bmp" ||
+                               dir_entry.path().extension() == ".psd") {
                         auto path = jlePath{dir_entry.path().string(), false};
                         auto it = _referencedTextures.find(path);
                         if (it != _referencedTextures.end()) {
@@ -344,7 +345,7 @@ jleEditorContentBrowser::contentBrowser()
                         iconTexture = _materialFileIcon;
                     } else if (dir_entry.path().extension() == ".jobj") {
                         iconTexture = _objTemplateFileIcon;
-                    } else if (dir_entry.path().extension() == ".obj") {
+                    } else if (dir_entry.path().extension() == ".obj" || dir_entry.path().extension() == ".fbx") {
                         iconTexture = _obj3dFileIcon;
                     } else {
                         iconTexture = _fileIcon;
