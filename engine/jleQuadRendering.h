@@ -6,6 +6,7 @@
 #include "jleCamera.h"
 #include "jleQuads.h"
 #include "jleShader.h"
+#include "jleResourceRef.h"
 #include "jleTexture.h"
 #include <glm/glm.hpp>
 #include <memory>
@@ -44,7 +45,7 @@ public:
     void renderShadowCubes(const glm::mat4 &view);
 
 private:
-    jleShader quadShader;
+    jleResourceRef<jleShader> quadShader;
     unsigned int quadVBO, quadVAO;
 
     void setupShaders();
@@ -71,15 +72,15 @@ private:
     // --- For shadow purposes only (WIP)
     void renderCube(glm::mat4 &model, jleShader &shader);
 
-    jleShader shadowMappingShader;
+    jleResourceRef<jleShader> shadowMappingShader;
     std::unique_ptr<jleFramebufferInterface> shadowMapBuffer;
 
     // ---
 
     // Instanced version
-    jleShader quadShaderInstanced;
-    jleShader quadHeightmapShaderInstanced;
-    jleShader quadHeightmapShaderInstancedSimple;
+    jleResourceRef<jleShader> quadShaderInstanced;
+    jleResourceRef<jleShader> quadHeightmapShaderInstanced;
+    jleResourceRef<jleShader> quadHeightmapShaderInstancedSimple;
     unsigned int quadVBO_Instanced, quadVAO_Instanced, instanceVBO,
         elementbuffer;
 

@@ -343,7 +343,7 @@ jleEditorContentBrowser::contentBrowser()
                         iconTexture = _jsonFileIcon;
                     } else if (dir_entry.path().extension() == ".lua") {
                         iconTexture = _luaFileIcon;
-                    } else if (dir_entry.path().extension() == ".sh") {
+                    } else if (dir_entry.path().extension() == ".glsl") {
                         iconTexture = _shaderShFileIcon;
                     } else if (dir_entry.path().extension() == ".frag") {
                         iconTexture = _shaderFsFileIcon;

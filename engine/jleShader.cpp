@@ -1,103 +1,166 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleShader.h"
-#include "jleStaticOpenGLState.h"
 #include "plog/Log.h"
 
 #include "jleIncludeGL.h"
 
 #include <fstream>
-#include <iostream>
 #include <string>
 
-// Inspired & based on examples found on learnopengl.com
-
-jleShader::jleShader(const char *vertexPath, const char *fragmentPath, const char *geometryPath)
+jleLoadFromFileSuccessCode
+jleShader::loadFromFile(const jlePath &path)
 {
-    CreateFromSources(vertexPath, fragmentPath, geometryPath);
+    std::ifstream load{path.getRealPath()};
+    if (!load.good()) {
+        return jleLoadFromFileSuccessCode::FAIL;
+    }
+
+    std::stringstream buffer;
+    buffer << load.rdbuf();
+
+    auto shaderSource = buffer.str();
+
+    unsigned first = 0;
+    unsigned last = shaderSource.find("/*BEGIN FRAG*/");
+    auto vert = shaderSource.substr(first, last - first);
+
+    first = last;
+    last = shaderSource.back();
+    auto frag = shaderSource.substr(first, last - first);
+
+#ifdef BUILD_OPENGLES30
+    vert = "#version 300 es\n" + vert;
+    frag = "#version 300 es\nprecision highp float;\n" + frag;
+#else
+    vert = "#version 330 core\n" + vert;
+    frag = "#version 330 core\n" + frag;
+#endif
+
+    unsigned int vertex, fragment;
+
+    vertex = glCreateShader(GL_VERTEX_SHADER);
+    const char *vert_c = vert.c_str();
+    glShaderSource(vertex, 1, &vert_c, NULL);
+    glCompileShader(vertex);
+    if (!checkCompileErrors(vertex, "VERTEX")) {
+        glDeleteShader(vertex);
+        return jleLoadFromFileSuccessCode::FAIL;
+    }
+
+    fragment = glCreateShader(GL_FRAGMENT_SHADER);
+    const char *frag_c = frag.c_str();
+    glShaderSource(fragment, 1, &frag_c, NULL);
+    glCompileShader(fragment);
+    if (!checkCompileErrors(fragment, "FRAGMENT")) {
+        glDeleteShader(vertex);
+        glDeleteShader(fragment);
+        return jleLoadFromFileSuccessCode::FAIL;
+    }
+
+    _program = glCreateProgram();
+    glAttachShader(_program, vertex);
+    glAttachShader(_program, fragment);
+
+    glLinkProgram(_program);
+    if (!checkCompileErrors(_program, "PROGRAM")) {
+        glDeleteShader(vertex);
+        glDeleteShader(fragment);
+        glDeleteProgram(_program);
+        _program = 0;
+        return jleLoadFromFileSuccessCode::FAIL;
+    }
+
+    glDeleteShader(vertex);
+    glDeleteShader(fragment);
+
+    LOGV << "Compiled GLSL shader program: " << _program;
+
+    return jleLoadFromFileSuccessCode::SUCCESS;
+
 }
 
-jleShader::~jleShader() { glDeleteProgram(ID); }
+jleShader::~jleShader() { glDeleteProgram(_program); }
 
 void
 jleShader::use()
 {
-    glUseProgram(ID);
+    glUseProgram(_program);
 }
 
 void
 jleShader::SetBool(const std::string &name, bool value) const
 {
-    glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+    glUniform1i(glGetUniformLocation(_program, name.c_str()), (int)value);
 }
 
 void
 jleShader::SetInt(const std::string &name, int value) const
 {
-    glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+    glUniform1i(glGetUniformLocation(_program, name.c_str()), value);
 }
 
 void
 jleShader::SetFloat(const std::string &name, float value) const
 {
-    glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+    glUniform1f(glGetUniformLocation(_program, name.c_str()), value);
 }
 
 void
 jleShader::SetVec2(const std::string &name, const glm::vec2 &value) const
 {
-    glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+    glUniform2fv(glGetUniformLocation(_program, name.c_str()), 1, &value[0]);
 }
 
 void
 jleShader::SetVec2(const std::string &name, float x, float y) const
 {
-    glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y);
+    glUniform2f(glGetUniformLocation(_program, name.c_str()), x, y);
 }
 
 void
 jleShader::SetVec3(const std::string &name, const glm::vec3 &value) const
 {
-    glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+    glUniform3fv(glGetUniformLocation(_program, name.c_str()), 1, &value[0]);
 }
 
 void
 jleShader::SetVec3(const std::string &name, float x, float y, float z) const
 {
-    glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
+    glUniform3f(glGetUniformLocation(_program, name.c_str()), x, y, z);
 }
 
 void
 jleShader::SetVec4(const std::string &name, const glm::vec4 &value) const
 {
-    glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+    glUniform4fv(glGetUniformLocation(_program, name.c_str()), 1, &value[0]);
 }
 
 void
 jleShader::SetVec4(const std::string &name, float x, float y, float z, float w)
 {
-    glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
+    glUniform4f(glGetUniformLocation(_program, name.c_str()), x, y, z, w);
 }
 
 void
 jleShader::SetMat2(const std::string &name, const glm::mat2 &mat) const
 {
-    glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    glUniformMatrix2fv(glGetUniformLocation(_program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
 void
 jleShader::SetMat3(const std::string &name, const glm::mat3 &mat) const
 {
-    glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    glUniformMatrix3fv(glGetUniformLocation(_program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
 void
 jleShader::SetMat4(const std::string &name, const glm::mat4 &mat) const
 {
-    glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(_program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-void
+bool
 jleShader::checkCompileErrors(unsigned int shader, std::string type)
 {
     GLint success;
@@ -106,115 +169,21 @@ jleShader::checkCompileErrors(unsigned int shader, std::string type)
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success) {
             glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-            LOG_ERROR << "Error in shader: " << _vertexPath.getVirtualPath() << '\n'
-                      << _fragPath.getVirtualPath() << '\n';
-            LOG_ERROR << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n"
-                      << infoLog;
+            LOG_ERROR << "Error in shader: " << filepath << ", of type: " << type << ": " << infoLog;
+            return false;
         }
     } else {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success) {
             glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-            LOG_ERROR << "Error in shader: " << _vertexPath.getVirtualPath() << '\n'
-                      << _fragPath.getVirtualPath() << '\n';
-            LOG_ERROR << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n"
-                      << infoLog;
+            LOG_ERROR << "Error linking shader: " << filepath << ", of type: " << type << ": " << infoLog;
+            return false;
         }
     }
-}
-
-void
-jleShader::CreateFromSources(const char *vertexPath, const char *fragmentPath, const char *geometryPath)
-{
-    assert(jleStaticOpenGLState::globalOpenGLInitialized == true);
-
-    LOG_VERBOSE << "Compiling shader: " << vertexPath << " , " << fragmentPath;
-
-    std::string vertexCode;
-    std::string fragmentCode;
-    std::string geometryCode;
-    std::ifstream vShaderFile;
-    std::ifstream fShaderFile;
-    std::ifstream gShaderFile;
-
-    vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    try {
-
-        vShaderFile.open(vertexPath);
-        fShaderFile.open(fragmentPath);
-        std::stringstream vShaderStream, fShaderStream;
-
-#ifdef BUILD_OPENGLES30
-        vShaderStream << "#version 300 es\n";
-        fShaderStream << "#version 300 es\nprecision highp float;\n";
-#else
-        vShaderStream << "#version 330 core\n";
-        fShaderStream << "#version 330 core\n";
-#endif
-
-        vShaderStream << vShaderFile.rdbuf();
-        fShaderStream << fShaderFile.rdbuf();
-
-        vShaderFile.close();
-        fShaderFile.close();
-
-        vertexCode = vShaderStream.str();
-        fragmentCode = fShaderStream.str();
-
-        if (geometryPath != nullptr) {
-            gShaderFile.open(geometryPath);
-            std::stringstream gShaderStream;
-            gShaderStream << gShaderFile.rdbuf();
-            gShaderFile.close();
-            geometryCode = gShaderStream.str();
-        }
-    } catch (std::ifstream::failure &e) {
-        LOGE << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ " << e.what() << std::endl;
-    }
-    const char *vShaderCode = vertexCode.c_str();
-    const char *fShaderCode = fragmentCode.c_str();
-
-    unsigned int vertex, fragment;
-
-    vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &vShaderCode, NULL);
-    glCompileShader(vertex);
-    checkCompileErrors(vertex, "VERTEX");
-
-    fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &fShaderCode, NULL);
-    glCompileShader(fragment);
-    checkCompileErrors(fragment, "FRAGMENT");
-    // if geometry shader is given, compile geometry shader - Not supported in
-    // OpenGL ES 3.0 unsigned int geometry; if (geometryPath != nullptr)
-    // {
-    // 	const char* gShaderCode = geometryCode.c_str();
-    // 	geometry = glCreateShader(GL_GEOMETRY_SHADER);
-    // 	glShaderSource(geometry, 1, &gShaderCode, NULL);
-    // 	glCompileShader(geometry);
-    // 	checkCompileErrors(geometry, "GEOMETRY");
-    // }
-    // shader Program
-    ID = glCreateProgram();
-    glAttachShader(ID, vertex);
-    glAttachShader(ID, fragment);
-    // if (geometryPath != nullptr)
-    // 	glAttachShader(ID, geometry);
-    glLinkProgram(ID);
-    checkCompileErrors(ID, "PROGRAM");
-    // delete the shaders as they're linked into our program now and no longer
-    // necessery
-    glDeleteShader(vertex);
-    glDeleteShader(fragment);
-    // if (geometryPath != nullptr)
-    // 	glDeleteShader(geometry);
-
-    LOG_VERBOSE << "Compiled shader, ID: " << ID;
+    return true;
 }
 std::vector<std::string>
 jleShader::getFileAssociationList()
 {
-    return {"sh"};
+    return {"glsl"};
 }

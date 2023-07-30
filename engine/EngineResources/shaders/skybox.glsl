@@ -1,3 +1,5 @@
+// Copyright (c) 2023. Johan Lind
+
 
 layout (location = 0) in vec3 aPos;
 
@@ -14,4 +16,17 @@ void main()
     // Set the z component to w, such that after perspective division
     // it will equal 1, and therefore the maximum depth value.
     gl_Position = pos.xyww;
+}
+
+/*BEGIN FRAG*/
+
+out vec4 FragColor;
+
+in vec3 TexCoords;
+
+uniform samplerCube skybox;
+
+void main()
+{
+    FragColor = texture(skybox, TexCoords);
 }

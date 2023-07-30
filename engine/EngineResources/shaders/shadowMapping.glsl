@@ -1,3 +1,18 @@
+// Copyright (c) 2023. Johan Lind
+
+
+layout (location = 0) in vec3 aPos;
+
+uniform mat4 lightSpaceMatrix;
+uniform mat4 model;
+
+
+void main()
+{
+    gl_Position = lightSpaceMatrix * model * vec4(aPos, 1.0);
+}
+
+/*BEGIN FRAG*/
 
 #define BIAS 0.1
 

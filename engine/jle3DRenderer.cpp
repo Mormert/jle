@@ -22,11 +22,11 @@
 #include <RmlUi_Backend.h>
 
 jle3DRenderer::jle3DRenderer()
-    : _exampleCubeShader{jlePath{"ER:shaders/exampleCube.sh"}},
-      _defaultMeshShader{jlePath{"ER:shaders/defaultMesh.sh"}}, _skyboxShader{jlePath{"ER:shaders/skybox.sh"}},
-      _pickingShader{jlePath{"ER:shaders/picking.sh"}}, _shadowMappingShader{jlePath{"ER:shaders/shadowMapping.sh"}},
-      _shadowMappingPointShader{jlePath{"ER:shaders/shadowMappingPoint.sh"}},
-      _debugDepthQuad{jlePath{"ER:shaders/depthDebug.sh"}}, _linesShader{jlePath{"ER:shaders/lines.sh"}}
+    : _exampleCubeShader{jlePath{"ER:/shaders/exampleCube.glsl"}},
+      _defaultMeshShader{jlePath{"ER:/shaders/defaultMesh.glsl"}}, _skyboxShader{jlePath{"ER:/shaders/skybox.glsl"}},
+      _pickingShader{jlePath{"ER:/shaders/picking.glsl"}}, _shadowMappingShader{jlePath{"ER:/shaders/shadowMapping.glsl"}},
+      _shadowMappingPointShader{jlePath{"ER:/shaders/shadowMappingPoint.glsl"}},
+      _debugDepthQuad{jlePath{"ER:/shaders/depthDebug.glsl"}}, _linesShader{jlePath{"ER:/shaders/lines.glsl"}}
 {
 
     // Generate buffers for line drawing

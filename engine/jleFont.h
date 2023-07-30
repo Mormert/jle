@@ -14,6 +14,7 @@
 #include "jleCamera.h"
 #include "jleResourceInterface.h"
 #include "jleShader.h"
+#include "jleResourceRef.h"
 
 class jleFontData;
 
@@ -72,7 +73,7 @@ struct jleFontData {
     jleFontData();
     ~jleFontData();
     unsigned int vao = 0, vbo = 0;
-    std::unique_ptr<jleShader> shader;
+    jleResourceRef<jleShader> shader;
 
     FT_Library freeTypeLibrary;
 

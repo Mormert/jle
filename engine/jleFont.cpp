@@ -200,9 +200,7 @@ jleFontData::jleFontData() {
         std::exit(EXIT_FAILURE);
     }
 
-    shader = std::make_unique<jleShader>(
-        std::string{JLE_ENGINE_PATH_SHADERS + "/font.vert"}.c_str(),
-        std::string{JLE_ENGINE_PATH_SHADERS + "/font.frag"}.c_str());
+    shader = jleResourceRef<jleShader>(jlePath{"ER:/shaders/font.glsl"});
 
     glm::mat4 projection = glm::ortho(
         0.0f, static_cast<float>(300), 0.0f, static_cast<float>(400));
