@@ -60,6 +60,8 @@ private:
     std::shared_ptr<jleEditorTextEdit> _editorTextEdit;
 
     std::shared_ptr<jleEditorResourceEdit> _editorResourceEdit;
+
+    std::unordered_map<jlePath, std::shared_ptr<jleTexture>> _referencedTextures;
 };
 
 #endif // BUILD_EDITOR

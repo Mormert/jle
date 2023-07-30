@@ -20,7 +20,6 @@ jleTexture::~jleTexture()
     if (_id != UINT_MAX) {
         glDeleteTextures(1, &_id);
     }
-    LOGV << "Destroyed texture with id " << _id;
 }
 
 jleLoadFromFileSuccessCode

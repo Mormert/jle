@@ -325,15 +325,14 @@ jleEditorContentBrowser::contentBrowser()
                         iconTexture = _sceneFileIcon;
                     } else if (dir_entry.path().extension() == ".png" || dir_entry.path().extension() == ".jpg" ||
                                dir_entry.path().extension() == ".tga" || dir_entry.path().extension() == ".bmp") {
-                        static std::unordered_map<jlePath, std::shared_ptr<jleTexture>> referencedTextures;
                         auto path = jlePath{dir_entry.path().string(), false};
-                        auto it = referencedTextures.find(path);
-                        if (it != referencedTextures.end()) {
+                        auto it = _referencedTextures.find(path);
+                        if (it != _referencedTextures.end()) {
                             iconTexture = it->second;
                         } else {
                             iconTexture = gCore->resources().loadResourceFromFile<jleTexture>(
                                 jlePath{dir_entry.path().string(), false});
-                            referencedTextures.insert(std::make_pair(path, iconTexture));
+                            _referencedTextures.insert(std::make_pair(path, iconTexture));
                         }
                     } else if (dir_entry.path().extension() == ".json") {
                         iconTexture = _jsonFileIcon;
