@@ -194,8 +194,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
 
     ImGui::SameLine();
 
-    if(!gEngine->isGameKilled())
-    {
+    if (!gEngine->isGameKilled()) {
         ImGui::Checkbox("Physics Debug", &gEngine->physics().renderDebugEnabled);
     }
 
@@ -283,8 +282,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
                     rb->getBody()->setLinearVelocity(btVector3{0.f, 0.f, 0.f});
                     rb->getBody()->setAngularVelocity(btVector3{0.f, 0.f, 0.f});
                     rb->getBody()->activate(true);
-                }else
-                {
+                } else {
                     obj->getTransform().setWorldMatrix(worldMatrixBefore);
                 }
             } else {
@@ -301,7 +299,10 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         auto dragDelta = ImGui::GetMouseDragDelta(1);
 
         if (jleEditor::projectionType == jleCameraProjection::Perspective || ImGui::IsKeyDown(ImGuiKey_LeftShift)) {
-            fpvCamController.applyPerspectiveMouseMovementDelta(glm::vec2{dragDelta.x, dragDelta.y}, t * 100.f);
+            if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
+                fpvCamController.applyPerspectiveMouseMovementDelta(glm::vec2{mouseDeltaX, mouseDeltaY}, t * 10000.f);
+                ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+            }
         } else {
             fpvCamController.move(glm::vec3{dragDelta.x, dragDelta.y, 0.f} * t * 5.f);
         }
@@ -337,10 +338,10 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
 
         auto currentScroll = gCore->input().mouse->scrollY();
         if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentScroll != 0.f) {
-            orthoZoomValue -= currentScroll * 3.f * ge.deltaFrameTime();
+            orthoZoomValue -= currentScroll * 1.f * ge.deltaFrameTime();
             orthoZoomValue = glm::clamp(orthoZoomValue, 0.01f, 2.f);
-        } else if(currentScroll != 0.f){
-            cameraSpeed -= currentScroll * 2000.f * ge.deltaFrameTime();
+        } else if (currentScroll != 0.f) {
+            cameraSpeed += currentScroll * 200.f * ge.deltaFrameTime();
             cameraSpeed = glm::clamp(cameraSpeed, 0.2f, 500.f);
         }
     }
@@ -363,8 +364,7 @@ jleSceneEditorWindow::EditTransform(float *cameraView,
     static bool boundSizingSnap = false;
 
     if (editTransformDecomposition) {
-        if(ImGui::IsWindowFocused())
-        {
+        if (ImGui::IsWindowFocused()) {
             if (ImGui::IsKeyPressed(ImGuiKey_T) && !ImGuizmo::IsUsing())
                 _currentGizmoOperation = ImGuizmo::TRANSLATE;
             if (ImGui::IsKeyPressed(ImGuiKey_R) && !ImGuizmo::IsUsing())
