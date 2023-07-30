@@ -34,11 +34,7 @@ jleEditorContentBrowser::jleEditorContentBrowser(const std::string &window_name,
 
     _luaFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/script.png"});
 
-    _shaderShFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/shader_sh.png"});
-
-    _shaderVsFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/shader_vs.png"});
-
-    _shaderFsFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/shader_fs.png"});
+    _shaderFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/shader.png"});
 
     _materialFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/material.png"});
 
@@ -344,11 +340,7 @@ jleEditorContentBrowser::contentBrowser()
                     } else if (dir_entry.path().extension() == ".lua") {
                         iconTexture = _luaFileIcon;
                     } else if (dir_entry.path().extension() == ".glsl") {
-                        iconTexture = _shaderShFileIcon;
-                    } else if (dir_entry.path().extension() == ".frag") {
-                        iconTexture = _shaderFsFileIcon;
-                    } else if (dir_entry.path().extension() == ".vert") {
-                        iconTexture = _shaderVsFileIcon;
+                        iconTexture = _shaderFileIcon;
                     } else if (dir_entry.path().extension() == ".mat") {
                         iconTexture = _materialFileIcon;
                     } else if (dir_entry.path().extension() == ".jobj") {

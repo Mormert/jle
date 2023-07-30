@@ -133,7 +133,7 @@ jleEditorTextEdit::open(const jlePath &path)
     };
 
     auto pathStr = path.getVirtualPath();
-    if (ends_with(pathStr, ".frag") || ends_with(pathStr, ".vert")) {
+    if (ends_with(pathStr, ".frag") || ends_with(pathStr, ".vert") || ends_with(pathStr, ".glsl")) {
         e->SetLanguageDefinition(TextEditor::LanguageDefinition::GLSL());
     } else if (ends_with(pathStr, ".cpp") || ends_with(pathStr, ".h") || ends_with(pathStr, ".c")) {
         e->SetLanguageDefinition(TextEditor::LanguageDefinition::CPlusPlus());

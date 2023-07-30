@@ -428,3 +428,5 @@ void main()
 
     FragColor = vec4(LightOutTotal, 1.0);
 }
+
+
