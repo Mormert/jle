@@ -156,7 +156,14 @@ jleWindow::initWindow(std::shared_ptr<jleRendering> rendering)
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     }
 
+#ifdef BUILD_EDITOR
+    glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+
+    const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    _glfwWindow = initWindow(mode->width, mode->height, windowSettings.WindowTitle.c_str());
+#else
     _glfwWindow = initWindow(windowSettings.width, windowSettings.height, windowSettings.WindowTitle.c_str());
+#endif
 
     glfwSetKeyCallback(_glfwWindow, glfwKeyCallback);
     glfwSetScrollCallback(_glfwWindow, glfwScrollCallback);
@@ -183,11 +190,8 @@ jleWindow::initWindow(std::shared_ptr<jleRendering> rendering)
 
     if (!windowSettings.iconPath.isEmpty()) {
         GLFWimage images[1];
-        images[0].pixels = stbi_load(windowSettings.iconPath.getRealPath().c_str(),
-                                     &images[0].width,
-                                     &images[0].height,
-                                     nullptr,
-                                     4);
+        images[0].pixels =
+            stbi_load(windowSettings.iconPath.getRealPath().c_str(), &images[0].width, &images[0].height, nullptr, 4);
 #ifndef __linux__
         glfwSetWindowIcon(_glfwWindow, 1, images);
 #endif

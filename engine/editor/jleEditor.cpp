@@ -2,7 +2,6 @@
 
 #include "jleEditor.h"
 #include "jleFramebufferMultisample.h"
-#include "jleIncludeGL.h"
 #include "jleGLError.h"
 
 #include "ImGui/ImGuizmo.h"
@@ -116,6 +115,10 @@ jleEditor::start()
 
     gCore->window().addWindowResizeCallback(
         std::bind(&jleEditor::mainEditorWindowResized, this, std::placeholders::_1, std::placeholders::_2));
+
+    int w, h;
+    glfwGetFramebufferSize(gCore->window().glfwWindow(), &w, &h);
+    gCore->window().executeResizeCallbacks(w, h);
 
     LOG_INFO << "Starting the game in editor mode";
 
