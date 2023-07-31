@@ -38,6 +38,8 @@ public:
 
     void framebufferResizeCallback(unsigned int width, unsigned int height);
 
+    void editorGizmosRender(bool selected) override;
+
 protected:
     float _perspectiveFov{90.f};
     float _farPlane{10000.f};

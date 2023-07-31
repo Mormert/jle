@@ -1,0 +1,15 @@
+{
+    "value0": {
+        "polymorphic_id": 2147483649,
+        "polymorphic_name": "jleMaterial",
+        "ptr_wrapper": {
+            "id": 2147483649,
+            "data": {
+                "albedoTextureRef": "ED:/gizmos/models/camera/cameraColor.png",
+                "normalTextureRef": "",
+                "metallicTextureRef": "",
+                "roughnessTextureRef": ""
+            }
+        }
+    }
+}

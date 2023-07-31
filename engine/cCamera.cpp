@@ -4,10 +4,11 @@
 #include "jleGameEngine.h"
 #include "jleIncludeGL.h"
 #include "jleObject.h"
-#include "jleWindow.h"
 #include "jleStaticOpenGLState.h"
+#include "jleWindow.h"
 
 #ifdef BUILD_EDITOR
+#include <editor/jleEditor.h>
 #include "ImGui/imgui.h"
 #endif
 
@@ -99,4 +100,13 @@ cCamera::editorInspectorImGuiRender()
         (void *)(intptr_t)fb->texture(), ImVec2(fb->width() / 4.f, fb->height() / 4.f), ImVec2(0, 1), ImVec2(1, 0));
 
 #endif
+}
+void
+cCamera::editorGizmosRender(bool selected)
+{
+#ifdef BUILD_EDITOR
+    auto mesh = gEditor->cameraGizmoMesh.get();
+    auto material = gEditor->cameraGizmoMaterial.get();
+    gEngine->rendering().rendering3d().sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
+#endif // BUILD_EDITOR
 }

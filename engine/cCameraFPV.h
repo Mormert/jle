@@ -5,7 +5,7 @@
 #include "cCamera.h"
 #include "jleCamera.h"
 
-class cCameraFPV : public cCamera
+class cCameraFPV : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cCameraFPV)
 public:
@@ -15,7 +15,6 @@ public:
     void
     serialize(Archive &ar)
     {
-        ar(cereal::base_class<cCamera>(this));
         ar(CEREAL_NVP(_moveSpeed), CEREAL_NVP(_mouseSensitivity));
     }
 
@@ -24,9 +23,7 @@ public:
     void update(float dt) override;
 
 protected:
-    jleCameraSimpleFPVController _fpvController;
-
-    float _moveSpeed{10.f};
+    float _moveSpeed{100.f};
     float _mouseSensitivity{1.f};
 };
 

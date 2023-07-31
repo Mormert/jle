@@ -10,6 +10,7 @@
 #include "jleGameEngine.h"
 #include "jleImage.h"
 #include "jleMesh.h"
+#include "jleMaterial.h"
 #include "jleFileChangeNotifier.h"
 #include "jleResourceRef.h"
 #include <memory>
@@ -110,6 +111,9 @@ public:
 
     jleResourceRef<jleMesh> pointLightLampGizmoMesh;
     jleResourceRef<jleMesh> directionalLightLampGizmoMesh;
+
+    jleResourceRef<jleMesh> cameraGizmoMesh;
+    jleResourceRef<jleMaterial> cameraGizmoMaterial;
 
 private:
     jleResourceRef<jleEditorSaveState> _editorSaveState;

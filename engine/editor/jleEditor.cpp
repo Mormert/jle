@@ -125,6 +125,9 @@ jleEditor::start()
     pointLightLampGizmoMesh = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_lamp.fbx"}};
     directionalLightLampGizmoMesh = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_sun.fbx"}};
 
+    cameraGizmoMesh = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/camera/camera.fbx"}};
+    cameraGizmoMaterial = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/camera/camera.mat"}};
+
     luaEnvironment()->loadScript("ER:/scripts/engine.lua");
     luaEnvironment()->loadScript("ED:/scripts/editor.lua");
 
