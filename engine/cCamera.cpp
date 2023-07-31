@@ -5,6 +5,7 @@
 #include "jleIncludeGL.h"
 #include "jleObject.h"
 #include "jleWindow.h"
+#include "jleStaticOpenGLState.h"
 
 #ifdef BUILD_EDITOR
 #include "ImGui/imgui.h"
