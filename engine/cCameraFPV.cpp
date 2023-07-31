@@ -45,7 +45,7 @@ cCameraFPV::update(float dt)
         _fpvController.moveRight(dt * _moveSpeed);
     }
 
-//#ifndef BUILD_EDITOR
+#ifndef BUILD_EDITOR
     if (keyboard->keyPressed(258)) // Tab
     {
         auto fpsMode = gEngine->input().mouse->isFpsMode();
@@ -55,7 +55,7 @@ cCameraFPV::update(float dt)
             gEngine->input().mouse->setFpsMode(true);
         }
     }
-//#endif
+#endif
 
     const auto mouseDeltaX = gCore->input().mouse->xDelta();
     const auto mouseDeltaY = gCore->input().mouse->yDelta();
