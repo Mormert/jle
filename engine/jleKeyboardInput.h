@@ -12,11 +12,11 @@ public:
 
     void linkWindow(std::shared_ptr<jleWindow> window);
 
-    bool keyPressed(char key);
+    bool keyPressed(int key);
 
-    bool keyReleased(char key);
+    bool keyReleased(int key);
 
-    bool keyDown(char key, bool ignoreInputEnabled = false);
+    bool keyDown(int key, bool ignoreInputEnabled = false);
 
     void isEnabled(bool value);
 

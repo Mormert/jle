@@ -2,8 +2,13 @@
 
 #include "cCamera.h"
 #include "jleGameEngine.h"
+#include "jleIncludeGL.h"
 #include "jleObject.h"
 #include "jleWindow.h"
+
+#ifdef BUILD_EDITOR
+#include "ImGui/imgui.h"
+#endif
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cCamera)
 
@@ -75,6 +80,22 @@ cCamera::cCamera(jleObject *owner, jleScene *scene) : jleComponent(owner, scene)
 cCamera::~cCamera()
 {
     sInstanceCounter--;
-    if(gEngine)
+    if (gEngine)
         gEngine->removeGameWindowResizeCallback(_framebufferCallbackId);
+}
+
+void
+cCamera::editorInspectorImGuiRender()
+{
+#ifdef BUILD_EDITOR
+    ImGui::Text("Camera Preview");
+
+    // Get the texture from the framebuffer
+    auto fb = gEngine->mainScreenFramebuffer;
+    glBindTexture(GL_TEXTURE_2D, (unsigned int)fb->texture());
+    jleStaticOpenGLState::globalActiveTexture = (unsigned int)fb->texture();
+    ImGui::Image(
+        (void *)(intptr_t)fb->texture(), ImVec2(fb->width() / 4.f, fb->height() / 4.f), ImVec2(0, 1), ImVec2(1, 0));
+
+#endif
 }

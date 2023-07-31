@@ -3,6 +3,7 @@
 #include "cCameraFPV.h"
 #include "jleGameEngine.h"
 #include "jleInput.h"
+#include "jleIncludeGL.h"
 
 cCameraFPV::cCameraFPV(jleObject *owner, jleScene *scene) : cCamera(owner, scene) {}
 
@@ -43,6 +44,18 @@ cCameraFPV::update(float dt)
     if (keyboard->keyDown('D')) {
         _fpvController.moveRight(dt * _moveSpeed);
     }
+
+//#ifndef BUILD_EDITOR
+    if (keyboard->keyPressed(258)) // Tab
+    {
+        auto fpsMode = gEngine->input().mouse->isFpsMode();
+        if (fpsMode) {
+            gEngine->input().mouse->setFpsMode(false);
+        } else {
+            gEngine->input().mouse->setFpsMode(true);
+        }
+    }
+//#endif
 
     const auto mouseDeltaX = gCore->input().mouse->xDelta();
     const auto mouseDeltaY = gCore->input().mouse->yDelta();

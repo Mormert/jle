@@ -218,19 +218,19 @@ jleWindow::windowShouldClose()
 }
 
 bool
-jleWindow::key(char key)
+jleWindow::key(int key)
 {
     return glfwGetKey(_glfwWindow, key);
 }
 
 bool
-jleWindow::keyPressed(char key)
+jleWindow::keyPressed(int key)
 {
     return sPressedKeys[key];
 }
 
 bool
-jleWindow::keyReleased(char key)
+jleWindow::keyReleased(int key)
 {
     return sReleasedKeys[key];
 }

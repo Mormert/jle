@@ -52,11 +52,11 @@ public:
 
     bool mouseClick(int button);
 
-    bool key(char key);
+    bool key(int key);
 
-    bool keyPressed(char key);
+    bool keyPressed(int key);
 
-    bool keyReleased(char key);
+    bool keyReleased(int key);
 
     float scrollX();
 
@@ -84,8 +84,8 @@ protected:
 
 private:
     static GLFWwindow *initWindow(int width, int height, const char *title);
-    inline static bool sPressedKeys[256];
-    inline static bool sReleasedKeys[256];
+    inline static bool sPressedKeys[512];
+    inline static bool sReleasedKeys[512];
 
     std::shared_ptr<jleRendering> rendering;
 

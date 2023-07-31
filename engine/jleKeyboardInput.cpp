@@ -13,21 +13,21 @@ void jleKeyboardInput::linkWindow(std::shared_ptr<jleWindow> window) {
     this->windowInternal = std::move(window);
 }
 
-bool jleKeyboardInput::keyPressed(char key) {
+bool jleKeyboardInput::keyPressed(int key) {
     if (_isEnabled) {
         return windowInternal->keyPressed(key);
     }
     return false;
 }
 
-bool jleKeyboardInput::keyReleased(char key) {
+bool jleKeyboardInput::keyReleased(int key) {
     if (_isEnabled) {
         return windowInternal->keyReleased(key);
     }
     return false;
 }
 
-bool jleKeyboardInput::keyDown(char key, bool ignoreInputEnabled) {
+bool jleKeyboardInput::keyDown(int key, bool ignoreInputEnabled) {
     if (ignoreInputEnabled) {
         return windowInternal->key(key);
     }

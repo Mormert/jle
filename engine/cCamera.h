@@ -34,6 +34,8 @@ public:
 
     void update(float dt) override;
 
+    void editorInspectorImGuiRender() override;
+
     void framebufferResizeCallback(unsigned int width, unsigned int height);
 
 protected:
