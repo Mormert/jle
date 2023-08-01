@@ -3,6 +3,7 @@
 #include "cCameraFPV.h"
 #include "jleGameEngine.h"
 #include "jleInput.h"
+#include "glm/ext/matrix_transform.hpp"
 
 cCameraFPV::cCameraFPV(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 
