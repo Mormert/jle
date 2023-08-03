@@ -6,7 +6,6 @@
 
 #include "jleEngineSettings.h"
 #include "jleTexture.h"
-#include "jleResourceRef.h"
 #include <memory>
 
 namespace SoLoud
@@ -108,7 +107,8 @@ protected:
     std::unique_ptr<jle3DRendererGraph> _3dRenderGraph;
     std::unique_ptr<jle3DRendererSettings> _3dRendererSettings;
 
-    jleResourceRef<jleEngineSettings> _engineSettings;
+    struct jleCoreInternal;
+    std::unique_ptr<jleCoreInternal> _internal;
 
     void resetRenderGraphForNewFrame();
 

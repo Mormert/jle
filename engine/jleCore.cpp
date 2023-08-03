@@ -22,12 +22,18 @@
 
 #include <iostream>
 
+struct jleCore::jleCoreInternal{
+    jleResourceRef<jleEngineSettings> engineSettings;
+};
+
 jleCore::jleCore()
 {
     gCore = this;
 
     _resources = std::make_unique<jleResources>();
-    _engineSettings = jleResourceRef<jleEngineSettings>("GR:/settings/enginesettings.es");
+
+    _internal = std::make_unique<jleCoreInternal>();
+    _internal->engineSettings = jleResourceRef<jleEngineSettings>("GR:/settings/enginesettings.es");
 
     _window = std::make_unique<jleWindow>();
 
@@ -161,7 +167,7 @@ jleCore::input()
 jleEngineSettings &
 jleCore::settings()
 {
-    return *_engineSettings.get();
+    return *_internal->engineSettings.get();
 }
 
 int
