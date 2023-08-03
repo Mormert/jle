@@ -118,7 +118,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     // Note here that the ImGui::Image is the item that is being clicked on!
     if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && canSelectObject) {
 
-        gCore->rendering().rendering3d().renderMeshesPicking(*_pickingFramebuffer, jleEditor::editorCamera);
+        gCore->renderer().renderMeshesPicking(*_pickingFramebuffer, jleEditor::editorCamera, gCore->renderGraph());
 
         _pickingFramebuffer->bind();
 

@@ -8,6 +8,7 @@
 
 #include "jleResourceRef.h"
 #include "jleTexture.h"
+#include "jleShader.h"
 
 #include <cereal/cereal.hpp>
 
@@ -22,24 +23,35 @@ public:
 
     jleMaterial() = default;
 
+
+    virtual void useMaterial(/*const jle3DRendererSettings&*/);
+
     template <class Archive>
     void
     serialize(Archive &ar)
     {
-        ar(CEREAL_NVP(albedoTextureRef),
-           CEREAL_NVP(normalTextureRef),
-           CEREAL_NVP(metallicTextureRef),
-           CEREAL_NVP(roughnessTextureRef));
+        try{
+            ar(CEREAL_NVP(_shaderRef));
+
+        }catch(std::exception &e)
+        {
+            _shaderRef = jleResourceRef<jleShader>(jlePath{"ER:/shaders/defaultMesh.glsl"});
+        }
+        ar(CEREAL_NVP(_albedoTextureRef),
+           CEREAL_NVP(_normalTextureRef),
+           CEREAL_NVP(_metallicTextureRef),
+           CEREAL_NVP(_roughnessTextureRef));
     }
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
 
     std::vector<std::string> getFileAssociationList() override;
 
-    jleResourceRef<jleTexture> albedoTextureRef;
-    jleResourceRef<jleTexture> normalTextureRef;
-    jleResourceRef<jleTexture> metallicTextureRef;
-    jleResourceRef<jleTexture> roughnessTextureRef;
+    jleResourceRef<jleShader> _shaderRef;
+    jleResourceRef<jleTexture> _albedoTextureRef;
+    jleResourceRef<jleTexture> _normalTextureRef;
+    jleResourceRef<jleTexture> _metallicTextureRef;
+    jleResourceRef<jleTexture> _roughnessTextureRef;
 };
 
 CEREAL_REGISTER_TYPE(jleMaterial)

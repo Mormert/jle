@@ -43,8 +43,6 @@ jleWindow::glfwScrollCallback(GLFWwindow *window, double xoffset, double yoffset
 void
 jleWindow::glfwFramebufferSizeCallback(GLFWwindow *window, int width, int height)
 {
-    activeWindow->rendering->viewportDimensions(
-        0, 0, static_cast<unsigned int>(width), static_cast<unsigned int>(height));
 
     activeWindow->windowSettings.width = static_cast<unsigned int>(width);
     activeWindow->windowSettings.height = static_cast<unsigned int>(height);
@@ -133,15 +131,8 @@ jleWindow::width() const
 }
 
 void
-jleWindow::initWindow(std::shared_ptr<jleRendering> rendering)
+jleWindow::initWindow()
 {
-    if (!rendering) {
-        std::cerr << "Rendering API is null!\n";
-        exit(1);
-    }
-
-    this->rendering = rendering;
-
     activeWindow = this;
     glfwSetErrorCallback(error_callback);
 
@@ -160,9 +151,9 @@ jleWindow::initWindow(std::shared_ptr<jleRendering> rendering)
     glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
     const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    _glfwWindow = initWindow(mode->width, mode->height, windowSettings.WindowTitle.c_str());
+    _glfwWindow = initGlfwWindow(mode->width, mode->height, windowSettings.WindowTitle.c_str());
 #else
-    _glfwWindow = initWindow(windowSettings.width, windowSettings.height, windowSettings.WindowTitle.c_str());
+    _glfwWindow = initGlfwWindow(windowSettings.width, windowSettings.height, windowSettings.WindowTitle.c_str());
 #endif
 
     glfwSetKeyCallback(_glfwWindow, glfwKeyCallback);
@@ -186,7 +177,6 @@ jleWindow::initWindow(std::shared_ptr<jleRendering> rendering)
 
     int w, h;
     glfwGetFramebufferSize(_glfwWindow, &w, &h);
-    rendering->viewportDimensions(0, 0, static_cast<unsigned int>(w), static_cast<unsigned int>(h));
 
     if (!windowSettings.iconPath.isEmpty()) {
         GLFWimage images[1];
@@ -376,7 +366,7 @@ glDebugOutput(GLenum source,
 #endif
 
 GLFWwindow *
-jleWindow::initWindow(int width, int height, const char *title)
+jleWindow::initGlfwWindow(int width, int height, const char *title)
 {
 #ifdef BUILD_OPENGLES30
     // Runs on OpenGL ES 3.0

@@ -69,7 +69,7 @@ private:
     friend class jleGameEditorWindow;
     void gameWindowResizedEvent(unsigned int w, unsigned int h);
 
-    std::map<unsigned int, std::function<void(unsigned int, unsigned int)>> gameWindowResizedCallbacks;
+    std::map<unsigned int, std::function<void(unsigned int, unsigned int)>> _gameWindowResizedCallbacks;
 
 protected:
     void start() override;

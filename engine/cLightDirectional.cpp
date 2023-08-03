@@ -13,10 +13,10 @@ JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLightDirectional)
 void
 cLightDirectional::update(float dt)
 {
-    gCore->rendering().rendering3d().enableDirectionalLight();
+    gCore->renderSettings().useDirectionalLight = true;
     auto mat4 = getTransform().getWorldMatrix();
 
-    gCore->rendering().rendering3d().setDirectionalLight(mat4, _color);
+    gCore->renderSettings().setDirectionalLight(mat4, _color);
 }
 
 
@@ -26,7 +26,7 @@ cLightDirectional::editorGizmosRender(bool selected)
 #ifdef BUILD_EDITOR
     auto mesh = gEditor->directionalLightLampGizmoMesh.get();
     std::shared_ptr<jleMaterial> material{};
-    gEngine->rendering().rendering3d().sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
+    gEngine->renderGraph().sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 #endif // BUILD_EDITOR
 }
 

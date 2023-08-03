@@ -1,5 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
+/*
+
 #include "cUITransformUpdater.h"
 #include "jleGameEngine.h"
 
@@ -46,3 +48,5 @@ void cUITransformUpdater::update(float dt) {
         getTransform().setLocalPosition({framebuffer->width() + _x, _y, 0.f});
     }
 }
+
+ */

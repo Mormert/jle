@@ -74,7 +74,7 @@ jleShader::loadFromFile(const jlePath &path)
     glDeleteShader(vertex);
     glDeleteShader(fragment);
 
-    LOGV << "Compiled GLSL shader program: " << _program;
+    LOGV << "Compiled GLSL shader program: " << path.getVirtualPath();
 
     return jleLoadFromFileSuccessCode::SUCCESS;
 

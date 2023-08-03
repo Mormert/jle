@@ -1,5 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
+/*
+
 #include "jleFont.h"
 #include "jleStaticOpenGLState.h"
 
@@ -227,3 +229,5 @@ jleFontData::~jleFontData() {
     freeTypeLibrary = nullptr;
     data = nullptr;
 }
+
+ */

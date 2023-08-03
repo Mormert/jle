@@ -3,6 +3,8 @@
 #include "jle3DRenderer.h"
 #include "jleCamera.h"
 #include "jleFrameBufferInterface.h"
+#include "jleFramebufferShadowCubeMap.h"
+#include "jleFramebufferShadowMap.h"
 #include "jleFullscreenRendering.h"
 #include "jleGameEngine.h"
 #include "jleMaterial.h"
@@ -11,10 +13,9 @@
 #include "jleStaticOpenGLState.h"
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
 
-#include "jleIncludeGL.h"
 #include "jleGLError.h"
+#include "jleIncludeGL.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <random>
@@ -24,7 +25,8 @@
 jle3DRenderer::jle3DRenderer()
     : _exampleCubeShader{jlePath{"ER:/shaders/exampleCube.glsl"}},
       _defaultMeshShader{jlePath{"ER:/shaders/defaultMesh.glsl"}}, _skyboxShader{jlePath{"ER:/shaders/skybox.glsl"}},
-      _pickingShader{jlePath{"ER:/shaders/picking.glsl"}}, _shadowMappingShader{jlePath{"ER:/shaders/shadowMapping.glsl"}},
+      _pickingShader{jlePath{"ER:/shaders/picking.glsl"}},
+      _shadowMappingShader{jlePath{"ER:/shaders/shadowMapping.glsl"}},
       _shadowMappingPointShader{jlePath{"ER:/shaders/shadowMappingPoint.glsl"}},
       _debugDepthQuad{jlePath{"ER:/shaders/depthDebug.glsl"}}, _linesShader{jlePath{"ER:/shaders/lines.glsl"}}
 {
@@ -49,132 +51,36 @@ jle3DRenderer::jle3DRenderer()
     glBindVertexArray(0);
     // End gen buffers for line drawing
 
-    constexpr float exampleCubeData[] = {
-        // clang-format off
-    // Vertex position XYZ,		        Color RGB
-    -0.5f, -0.5f, -0.5f,            1.0f, 1.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,             0.0f, 1.0f, 1.0f,
-    0.5f, 0.5f, -0.5f,          0.0f, 0.0f, 1.0f,
-    0.5f, 0.5f, -0.5f,          0.0f, 0.0f, 1.0f,
-    -0.5f, 0.5f, -0.5f,         1.0f, 0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,        1.0f, 1.0f, 1.0f,
-
-    -0.5f, -0.5f, 0.5f,         1.0f, 1.0f, 0.5f,
-    0.5f, -0.5f, 0.5f,          0.0f, 1.0f, 0.5f,
-    0.5f, 0.5f, 0.5f,           0.0f, 0.0f, 0.5f,
-    0.5f, 0.5f, 0.5f,           0.0f, 0.0f, 0.5f,
-    -0.5f, 0.5f, 0.5f,          1.0f, 0.0f, 0.5f,
-    -0.5f, -0.5f, 0.5f,         1.0f, 1.0f, 0.5f,
-
-    -0.5f, 0.5f, 0.5f,          0.0f, 0.0f, 0.7f,
-    -0.5f, 0.5f, -0.5f,         1.0f, 0.0f, 0.7f,
-    -0.5f, -0.5f, -0.5f,        1.0f, 1.0f, 0.7f,
-    -0.5f, -0.5f, -0.5f,        1.0f, 1.0f, 0.7f,
-    -0.5f, -0.5f, 0.5f,         0.0f, 1.0f, 0.7f,
-    -0.5f, 0.5f, 0.5f,          0.0f, 0.0f, 0.7f,
-
-    0.5f, 0.5f, 0.5f,           0.0f, 0.0f, 1.0f,
-    0.5f, 0.5f, -0.5f,          1.0f, 0.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,         1.0f, 1.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,         1.0f, 1.0f, 1.0f,
-    0.5f, -0.5f, 0.5f,          0.0f, 1.0f, 1.0f,
-    0.5f, 0.5f, 0.5f,           0.0f, 0.0f, 1.0f,
-
-    -0.5f, -0.5f, -0.5f,        0.0f, 0.0f, 0.2f,
-    0.5f, -0.5f, -0.5f,         1.0f, 0.0f, 0.2f,
-    0.5f, -0.5f, 0.5f,          1.0f, 1.0f, 0.2f,
-    0.5f, -0.5f, 0.5f,          1.0f, 1.0f, 0.2f,
-    -0.5f, -0.5f, 0.5f,         0.0f, 1.0f, 0.2f,
-    -0.5f, -0.5f, -0.5f,        0.0f, 0.0f, 0.2f,
-
-    -0.5f, 0.5f, -0.5f,         0.0f, 0.0f, 0.4f,
-    0.5f, 0.5f, -0.5f,          1.0f, 0.0f, 0.4f,
-    0.5f, 0.5f, 0.5f,           1.0f, 1.0f, 0.4f,
-    0.5f, 0.5f, 0.5f,           1.0f, 1.0f, 0.4f,
-    -0.5f, 0.5f, 0.5f,          0.0f, 1.0f, 0.4f,
-    -0.5f, 0.5f, -0.5f,         0.0f, 0.0f, 0.4f
-        // clang-format on
-    };
-
-    // Setup vertex array object
-    glGenVertexArrays(1, &_exampleCubeVAO);
-    glGenBuffers(1, &_exampleCubeVBO);
-
-    glBindVertexArray(_exampleCubeVAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, _exampleCubeVBO);
-
-    // Buffer one cube's data (XYZ pos, RGB vertex colors)
-    glBufferData(GL_ARRAY_BUFFER, sizeof(exampleCubeData), exampleCubeData, GL_STATIC_DRAW);
-
-    // Vertex position attribute x, y, z
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-
-    // Vertex color attribute r, g, b
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glGenBuffers(1, &_exampleCubeInstanceBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, _exampleCubeInstanceBuffer);
-
-    // Instance the transform data (glm::mat4)
-    auto vec4Size = sizeof(glm::vec4);
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)0);
-    glEnableVertexAttribArray(2);
-
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)(1 * vec4Size));
-    glEnableVertexAttribArray(3);
-
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)(2 * vec4Size));
-    glEnableVertexAttribArray(4);
-
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *)(3 * vec4Size));
-    glEnableVertexAttribArray(5);
-
-    // Only go to next attribute on next instance draw for the transform matrix
-    glVertexAttribDivisor(2, 1);
-    glVertexAttribDivisor(3, 1);
-    glVertexAttribDivisor(4, 1);
-    glVertexAttribDivisor(5, 1);
-
-    glBindVertexArray(0);
-
     _shadowMappingFramebuffer = std::make_unique<jleFramebufferShadowMap>(2048, 2048);
     _pointsShadowMappingFramebuffer = std::make_unique<jleFramebufferShadowCubeMap>(1024, 1024);
 
+    /*
     glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, near_plane, far_plane);
     jleCameraSimpleFPVController jc;
     glm::mat4 lightView =
         glm::lookAt(glm::vec3(-2.0f, 4.0f, -1.0f), glm::vec3(2.0f, 3.0f, 2.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-    lightView[1][1] *= -1.f;
-
-    _lightSpaceMatrix = lightProjection * lightView;
+    lightView[1][1] *= -1.f;*/
 }
 
 jle3DRenderer::~jle3DRenderer()
 {
-    glDeleteBuffers(1, &_exampleCubeVBO);
-    glDeleteBuffers(1, &_exampleCubeInstanceBuffer);
-    glDeleteVertexArrays(1, &_exampleCubeVAO);
-
     glDeleteBuffers(1, &_lineVBO);
     glDeleteVertexArrays(1, &_lineVAO);
 }
 
 void
-jle3DRenderer::queuerender(jleFramebufferInterface &framebufferOut, const jleCamera &camera)
-{
-    render(framebufferOut, camera, _queuedExampleCubes, _queuedMeshes);
-}
-
-void
 jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
                       const jleCamera &camera,
-                      const std::vector<glm::mat4> &cubeTransforms,
-                      const std::vector<jle3DRendererQueuedMesh> &meshes)
+                      const jle3DRendererGraph &graph,
+                      const jle3DRendererSettings &settings)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_render)
+
+    framebufferOut.bind();
+
+    const auto backgroundColor = camera.getBackgroundColor();
+    glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     const int viewportWidth = framebufferOut.width();
     const int viewportHeight = framebufferOut.height();
@@ -182,51 +88,37 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
     glEnable(GL_DEPTH_TEST);
 
     // Directional light renders to the shadow mapping framebuffer
-    renderDirectionalLight(camera);
+    renderDirectionalLight(graph._meshes, settings);
 
     glCheckError("3D Render - Directional Lights");
 
-    renderPointLights(camera);
+    renderPointLights(camera, graph);
 
     glCheckError("3D Render - Point Lights");
 
     framebufferOut.bind();
-
-    // Change viewport dimensions to match framebuffer's dimensions
     glViewport(0, 0, viewportWidth, viewportHeight);
-
-    renderExampleCubes(camera, cubeTransforms);
 
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
     // glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
 
-    renderMeshes(camera, _queuedMeshes);
+    renderMeshes(camera, graph, settings);
 
     glCheckError("3D Render - Meshes");
 
-    renderLineStrips(camera, _queuedLineStrips);
+    renderLineStrips(camera, graph._lineStrips);
 
     glCheckError("3D Render - Strip Lines");
 
-    renderLines(camera, _queuedLines);
+    renderLines(camera, graph._lines);
 
     glCheckError("3D Render - Lines");
 
-    renderSkybox(camera);
+    renderSkybox(camera, settings);
 
     glCheckError("3D Render - Skybox");
-
-    /* // Render shadow map in fullscreen as debug
-    _debugDepthQuad.use();
-    _debugDepthQuad.use();
-    _debugDepthQuad.SetInt("depthMap", 0);
-    _debugDepthQuad.SetFloat("near_plane", near_plane);
-    _debugDepthQuad.SetFloat("far_plane", far_plane);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _shadowMappingFramebuffer->texture());
-    renderFullscreenQuad(); */
 
     // gEngine->context->Update();
 
@@ -242,55 +134,13 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 }
 
 void
-jle3DRenderer::sendExampleCube(const glm::mat4 &transform)
-{
-    _queuedExampleCubes.push_back(transform);
-}
-
-void
-jle3DRenderer::clearBuffersForNextFrame()
-{
-    _queuedExampleCubes.clear();
-    _queuedMeshes.clear();
-    _queuedLights.clear();
-    _queuedLineStrips.clear();
-    _queuedLines.clear();
-}
-
-void
-jle3DRenderer::renderExampleCubes(const jleCamera &camera, const std::vector<glm::mat4> &cubeTransforms)
-{
-    if (cubeTransforms.empty()) {
-        return;
-    }
-
-    _exampleCubeShader->use();
-    _exampleCubeShader->SetMat4("projView", camera.getProjectionViewMatrix());
-
-    glBindVertexArray(_exampleCubeVAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, _exampleCubeInstanceBuffer);
-    glBufferData(GL_ARRAY_BUFFER, cubeTransforms.size() * sizeof(glm::mat4), &cubeTransforms[0], GL_DYNAMIC_DRAW);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 36, cubeTransforms.size());
-    glBindVertexArray(0);
-}
-
-void
-jle3DRenderer::sendMesh(std::shared_ptr<jleMesh> &mesh,
-                        std::shared_ptr<jleMaterial> &material,
-                        const glm::mat4 &transform,
-                        int instanceId,
-                        bool castShadows)
-{
-    _queuedMeshes.push_back({transform, mesh, material, instanceId, castShadows});
-}
-
-void
-jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRendererQueuedMesh> &meshes)
+jle3DRenderer::renderMeshes(const jleCamera &camera,
+                            const jle3DRendererGraph &graph,
+                            const jle3DRendererSettings &settings)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes)
 
-    if (meshes.empty()) {
+    if (graph._meshes.empty()) {
         return;
     }
 
@@ -302,9 +152,9 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, _pointsShadowMappingFramebuffer->texture());
 
-    if (_skybox) {
+    if (settings.skybox) {
         glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, _skybox->getTextureID());
+        glBindTexture(GL_TEXTURE_CUBE_MAP, settings.skybox->getTextureID());
     }
 
     _defaultMeshShader->use();
@@ -314,39 +164,40 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
     _defaultMeshShader->SetInt("normalTexture", 3);
     _defaultMeshShader->SetInt("skyboxTexture", 4);
     _defaultMeshShader->SetFloat("farPlane", 500.f);
-    _defaultMeshShader->SetBool("UseDirectionalLight", _useDirectionalLight);
-    _defaultMeshShader->SetBool("UseEnvironmentMapping", _useEnvironmentMapping);
-    _defaultMeshShader->SetVec3("DirectionalLightColour", _directionalLightColour);
-    _defaultMeshShader->SetVec3("DirectionalLightDir", _directionalLightRotation);
+    _defaultMeshShader->SetBool("UseDirectionalLight", settings.useDirectionalLight);
+    _defaultMeshShader->SetBool("UseEnvironmentMapping", settings.useEnvironmentMapping);
+    _defaultMeshShader->SetVec3("DirectionalLightColour", settings.directionalLightColour);
+    _defaultMeshShader->SetVec3("DirectionalLightDir", settings.directionalLightRotation);
     _defaultMeshShader->SetMat4("view", camera.getViewMatrix());
     _defaultMeshShader->SetMat4("proj", camera.getProjectionMatrix());
-    _defaultMeshShader->SetMat4("lightSpaceMatrix", _lightSpaceMatrix);
+    _defaultMeshShader->SetMat4("lightSpaceMatrix", settings.lightSpaceMatrix);
     _defaultMeshShader->SetVec3("CameraPosition", camera.getPosition());
-    _defaultMeshShader->SetInt("LightsCount", (int)_queuedLights.size());
+    _defaultMeshShader->SetInt("LightsCount", (int)graph._lights.size());
 
-    if (_queuedLights.size() > 4) // Limit to 4 lights
-    {
-        _queuedLights.erase(_queuedLights.begin() + 4, _queuedLights.end());
+    // Limit to 4 lights
+    int lightCount = graph._lights.size();
+    if (lightCount > 4) {
+        lightCount = 4;
     }
 
-    for (int l = 0; l < _queuedLights.size(); l++) {
-        _defaultMeshShader->SetVec3("LightPositions[" + std::to_string(l) + "]", _queuedLights[l].position);
-        _defaultMeshShader->SetVec3("LightColors[" + std::to_string(l) + "]", _queuedLights[l].color);
+    for (int l = 0; l < lightCount; l++) {
+        _defaultMeshShader->SetVec3("LightPositions[" + std::to_string(l) + "]", graph._lights[l].position);
+        _defaultMeshShader->SetVec3("LightColors[" + std::to_string(l) + "]", graph._lights[l].color);
     }
 
-    for (auto &&mesh : meshes) {
+    for (auto &&mesh : graph._meshes) {
         _defaultMeshShader->SetMat4("model", mesh.transform);
 
         // Set textures
         if (mesh.material) {
-            if (mesh.material->albedoTextureRef) {
-                mesh.material->albedoTextureRef.get()->setActive(2);
+            if (mesh.material->_albedoTextureRef) {
+                mesh.material->_albedoTextureRef.get()->setActive(2);
                 _defaultMeshShader->SetBool("useAlbedoTexture", true);
             } else {
                 _defaultMeshShader->SetBool("useAlbedoTexture", false);
             }
-            if (mesh.material->normalTextureRef) {
-                mesh.material->normalTextureRef.get()->setActive(3);
+            if (mesh.material->_normalTextureRef) {
+                mesh.material->_normalTextureRef.get()->setActive(3);
                 _defaultMeshShader->SetBool("useNormalTexture", true);
             } else {
                 _defaultMeshShader->SetBool("useNormalTexture", false);
@@ -366,11 +217,11 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
 
         // Unset textures
         if (mesh.material) {
-            if (mesh.material->albedoTextureRef) {
+            if (mesh.material->_albedoTextureRef) {
                 glActiveTexture(GL_TEXTURE2);
                 glBindTexture(GL_TEXTURE_2D, 0);
             }
-            if (mesh.material->normalTextureRef) {
+            if (mesh.material->_normalTextureRef) {
                 glActiveTexture(GL_TEXTURE3);
                 glBindTexture(GL_TEXTURE_2D, 0);
             }
@@ -379,17 +230,13 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const std::vector<jle3DRend
 
     glActiveTexture(GL_TEXTURE0);
 }
+
 void
-jle3DRenderer::setSkybox(const std::shared_ptr<jleSkybox> &skybox)
-{
-    _skybox = skybox;
-}
-void
-jle3DRenderer::renderSkybox(const jleCamera &camera)
+jle3DRenderer::renderSkybox(const jleCamera &camera, const jle3DRendererSettings &settings)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes)
 
-    if (!_skybox) {
+    if (!settings.skybox) {
         return;
     }
 
@@ -408,22 +255,19 @@ jle3DRenderer::renderSkybox(const jleCamera &camera)
     _skyboxShader->SetMat4("view", view);
     _skyboxShader->SetMat4("projection", camera.getProjectionMatrix());
     // skybox cube
-    glBindVertexArray(_skybox->getVAO());
+    glBindVertexArray(settings.skybox->getVAO());
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, _skybox->getTextureID());
+    glBindTexture(GL_TEXTURE_CUBE_MAP, settings.skybox->getTextureID());
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
 
     glDepthFunc(GL_LESS);
 }
-void
-jle3DRenderer::sendLight(const glm::vec3 &position, const glm::vec3 &color)
-{
-    _queuedLights.push_back({position, color});
-}
 
 void
-jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut, const jleCamera &camera)
+jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
+                                   const jleCamera &camera,
+                                   const jle3DRendererGraph &graph)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshesPicking)
 
@@ -442,7 +286,7 @@ jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut, cons
     _pickingShader->use();
     _pickingShader->SetMat4("projView", camera.getProjectionViewMatrix());
 
-    for (auto &&mesh : _queuedMeshes) {
+    for (auto &&mesh : graph._meshes) {
         int r = (mesh.instanceId & 0x000000FF) >> 0;
         int g = (mesh.instanceId & 0x0000FF00) >> 8;
         int b = (mesh.instanceId & 0x00FF0000) >> 16;
@@ -461,11 +305,12 @@ jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut, cons
 }
 
 void
-jle3DRenderer::renderDirectionalLight(const jleCamera &camera)
+jle3DRenderer::renderDirectionalLight(const std::vector<jle3DRendererGraph::jle3DRendererQueuedMesh> &meshes,
+                                      const jle3DRendererSettings &settings)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderDirectionalLight)
 
-    if (!_useDirectionalLight) {
+    if (!settings.useDirectionalLight) {
         return;
     }
 
@@ -475,12 +320,12 @@ jle3DRenderer::renderDirectionalLight(const jleCamera &camera)
 
     _shadowMappingShader->use();
 
-    _shadowMappingShader->SetMat4("lightSpaceMatrix", _lightSpaceMatrix);
+    _shadowMappingShader->SetMat4("lightSpaceMatrix", settings.lightSpaceMatrix);
 
     glViewport(0, 0, (int)_shadowMappingFramebuffer->width(), (int)_shadowMappingFramebuffer->height());
 
     glClear(GL_DEPTH_BUFFER_BIT);
-    renderShadowMeshes(_queuedMeshes, *_shadowMappingShader.get());
+    renderShadowMeshes(meshes, *_shadowMappingShader.get());
 
     glEnable(GL_CULL_FACE);
 
@@ -488,11 +333,11 @@ jle3DRenderer::renderDirectionalLight(const jleCamera &camera)
 }
 
 void
-jle3DRenderer::renderPointLights(const jleCamera &camera)
+jle3DRenderer::renderPointLights(const jleCamera &camera, const jle3DRendererGraph &graph)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderPointLights)
 
-    if (_queuedLights.empty()) {
+    if (graph._lights.empty()) {
         return;
     }
 
@@ -503,7 +348,7 @@ jle3DRenderer::renderPointLights(const jleCamera &camera)
     float farP = 500.0f;
     glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, nearP, farP);
 
-    glm::vec3 lightPos = _queuedLights[0].position;
+    glm::vec3 lightPos = graph._lights[0].position;
 
     std::vector<glm::mat4> shadowTransforms;
     shadowTransforms.push_back(shadowProj *
@@ -529,14 +374,15 @@ jle3DRenderer::renderPointLights(const jleCamera &camera)
         glViewport(0, 0, (int)_pointsShadowMappingFramebuffer->width(), (int)_pointsShadowMappingFramebuffer->height());
 
         glClear(GL_DEPTH_BUFFER_BIT);
-        renderShadowMeshes(_queuedMeshes, *_shadowMappingPointShader.get());
+        renderShadowMeshes(graph._meshes, *_shadowMappingPointShader.get());
     }
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
 void
-jle3DRenderer::renderShadowMeshes(const std::vector<jle3DRendererQueuedMesh> &meshes, jleShader &shader)
+jle3DRenderer::renderShadowMeshes(const std::vector<jle3DRendererGraph::jle3DRendererQueuedMesh> &meshes,
+                                  jleShader &shader)
 {
     for (auto &&mesh : meshes) {
         if (!mesh.castShadows) {
@@ -551,84 +397,6 @@ jle3DRenderer::renderShadowMeshes(const std::vector<jle3DRendererQueuedMesh> &me
         }
         glBindVertexArray(0);
     }
-}
-
-void
-jle3DRenderer::renderFullscreenQuad()
-{
-    static unsigned int quadVAO = 0;
-    static unsigned int quadVBO;
-
-    if (quadVAO == 0) {
-        float quadVertices[] = {
-            // positions        // texture Coords
-            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-            1.0f,  1.0f, 0.0f, 1.0f, 1.0f, 1.0f,  -1.0f, 0.0f, 1.0f, 0.0f,
-        };
-        // setup plane VAO
-        glGenVertexArrays(1, &quadVAO);
-        glGenBuffers(1, &quadVBO);
-        glBindVertexArray(quadVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
-    }
-    glBindVertexArray(quadVAO);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glBindVertexArray(0);
-}
-void
-jle3DRenderer::setDirectionalLight(const glm::mat4 &view, const glm::vec3 &colour)
-{
-
-    glm::vec3 scale;
-    glm::quat rotation;
-    glm::vec3 translation;
-    glm::vec3 skew;
-    glm::vec4 perspective;
-    glm::decompose(view, scale, rotation, translation, skew, perspective);
-
-    _directionalLightRotation = rotation * glm::vec3{0.f, 0.f, 1.f};
-    _directionalLightColour = colour;
-
-    glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, near_plane, far_plane);
-    glm::mat4 lightView =
-        glm::lookAt(glm::vec3(-2.0f, 4.0f, -1.0f), rotation * glm::vec3{0.f, -1.f, 0.f}, glm::vec3(0.0f, -1.0f, 0.0f));
-    lightView[1][1] *= -1.f;
-
-    _lightSpaceMatrix = lightProjection * view;
-}
-void
-jle3DRenderer::enableDirectionalLight()
-{
-    _useDirectionalLight = true;
-}
-void
-jle3DRenderer::disableDirectionalLight()
-{
-    _useDirectionalLight = false;
-}
-
-void
-jle3DRenderer::sendLineStrip(const std::vector<jle3DLineVertex> &lines)
-{
-    _queuedLineStrips.emplace_back(lines);
-}
-
-void
-jle3DRenderer::sendLines(const std::vector<jle3DLineVertex> &lines)
-{
-    _queuedLines.insert(std::end(_queuedLines), std::begin(lines), std::end(lines));
-}
-
-void
-jle3DRenderer::sendLine(const jle3DLineVertex &from, const jle3DLineVertex &to)
-{
-    _queuedLines.emplace_back(from);
-    _queuedLines.emplace_back(to);
 }
 
 void
@@ -670,7 +438,8 @@ jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DLineV
 }
 
 void
-jle3DRenderer::renderLineStrips(const jleCamera &camera, std::vector<std::vector<jle3DLineVertex>> &lineStripBatch)
+jle3DRenderer::renderLineStrips(const jleCamera &camera,
+                                const std::vector<std::vector<jle3DLineVertex>> &lineStripBatch)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderLineStrips)
 

@@ -153,9 +153,9 @@ jleEditor::render()
 
     renderEditorUI();
 
-    glCheckError("Main Editor Render");
+    resetRenderGraphForNewFrame();
 
-    rendering().clearBuffersForNextFrame();
+    glCheckError("Main Editor Render");
 }
 
 void
@@ -169,7 +169,8 @@ jleEditor::renderGameView()
             msaa.resize(mainScreenFramebuffer->width(), mainScreenFramebuffer->height());
         }
 
-        rendering().renderMSAA(*mainScreenFramebuffer, msaa, game->mainCamera);
+        renderer().render(msaa, game->mainCamera, renderGraph(), renderSettings());
+        msaa.blitToOther(*mainScreenFramebuffer);
     }
 
     glCheckError("Render MSAA Game View");
@@ -203,7 +204,8 @@ jleEditor::renderEditorSceneView()
     }
 
     // Render to editor scene view
-    rendering().renderMSAA(*editorScreenFramebuffer, msaa, editorCamera);
+    renderer().render(msaa, editorCamera, renderGraph(), renderSettings());
+    msaa.blitToOther(*editorScreenFramebuffer);
 
     glCheckError("Render MSAA Scene View");
 }
@@ -369,24 +371,24 @@ jleEditor::renderEditorGridGizmo()
 {
     JLE_SCOPE_PROFILE_CPU(renderEditorGridGizmo)
 
-    jle3DRenderer::jle3DLineVertex v1{glm::vec3{0.f}, glm::vec3{1.f, 0.f, 0.f}, {1.0f, 0.44f, 1.2f}};
-    jle3DRenderer::jle3DLineVertex v2 = v1;
+    jle3DLineVertex v1{glm::vec3{0.f}, glm::vec3{1.f, 0.f, 0.f}, {1.0f, 0.44f, 1.2f}};
+    jle3DLineVertex v2 = v1;
     v2.position = glm::vec3{100.f, 0.f, 0.f};
     v1.position = glm::vec3{-100.f, 0.f, 0.f};
 
-    rendering().rendering3d().sendLine(v1, v2);
+    renderGraph().sendLine(v1, v2);
 
     v2.position = glm::vec3{0.f, 100.f, 0.f};
     v1.position = glm::vec3{0.f, -100.f, 0.f};
     v1.color = glm::vec3{0.f, 1.f, 0.f};
     v2.color = glm::vec3{0.f, 1.f, 0.f};
-    rendering().rendering3d().sendLine(v1, v2);
+    renderGraph().sendLine(v1, v2);
 
     v2.position = glm::vec3{0.f, 0.f, 100.f};
     v1.position = glm::vec3{0.f, 0.f, -100.f};
     v1.color = glm::vec3{0.f, 0.f, 1.f};
     v2.color = glm::vec3{0.f, 0.f, 1.f};
-    rendering().rendering3d().sendLine(v1, v2);
+    renderGraph().sendLine(v1, v2);
 
     v1.color = glm::vec3(1.0f, 0.3f, 0.3f);
     v2.color = glm::vec3(1.0f, 0.3f, 0.3f);
@@ -416,7 +418,7 @@ jleEditor::renderEditorGridGizmo()
     for (int i = -10; i <= 10; i++) {
         v1.position.x = 100.f * scale * i + pos.x;
         v2.position.x = 100.f * scale * i + pos.x;
-        rendering().rendering3d().sendLine(v1, v2);
+        renderGraph().sendLine(v1, v2);
     }
 
     v1.position = pos;
@@ -430,7 +432,7 @@ jleEditor::renderEditorGridGizmo()
     for (int i = -10; i <= 10; i++) {
         v1.position.z = 100.f * scale * i + pos.z;
         v2.position.z = 100.f * scale * i + pos.z;
-        rendering().rendering3d().sendLine(v1, v2);
+        renderGraph().sendLine(v1, v2);
     }
 }
 

@@ -36,7 +36,7 @@ public:
 
     [[nodiscard]] unsigned int width() const;
 
-    void initWindow(std::shared_ptr<jleRendering> internalRenderingAPI);
+    void initWindow();
 
     unsigned int addWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback);
 
@@ -83,11 +83,9 @@ protected:
     bool cursorVisible{false};
 
 private:
-    static GLFWwindow *initWindow(int width, int height, const char *title);
+    static GLFWwindow *initGlfwWindow(int width, int height, const char *title);
     inline static bool sPressedKeys[512];
     inline static bool sReleasedKeys[512];
-
-    std::shared_ptr<jleRendering> rendering;
 
     std::map<unsigned int, std::function<void(unsigned int, unsigned int)>>
         windowResizedCallbacks;

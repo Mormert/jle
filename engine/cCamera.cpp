@@ -107,6 +107,6 @@ cCamera::editorGizmosRender(bool selected)
 #ifdef BUILD_EDITOR
     auto mesh = gEditor->cameraGizmoMesh.get();
     auto material = gEditor->cameraGizmoMaterial.get();
-    gEngine->rendering().rendering3d().sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
+    gEngine->renderGraph().sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 #endif // BUILD_EDITOR
 }

@@ -20,7 +20,7 @@ public:
 
         if(_skybox.get())
         {
-            gCore->rendering().rendering3d().setSkybox(_skybox.get());
+            gCore->renderSettings().skybox = _skybox;
         }
     }
 

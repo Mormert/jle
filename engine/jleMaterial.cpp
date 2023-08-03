@@ -6,3 +6,8 @@ jleMaterial::getFileAssociationList()
 {
     return {"mat"};
 }
+
+void
+jleMaterial::useMaterial()
+{
+}

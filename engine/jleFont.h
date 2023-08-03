@@ -16,6 +16,8 @@
 #include "jleShader.h"
 #include "jleResourceRef.h"
 
+/*
+
 class jleFontData;
 
 class jleFont : public jleResourceInterface
@@ -79,3 +81,5 @@ struct jleFontData {
 
     static inline jleFontData *data = nullptr;
 };
+
+*/

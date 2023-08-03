@@ -6,6 +6,7 @@
 
 #include "jleEngineSettings.h"
 #include "jleTexture.h"
+#include "jleResourceRef.h"
 #include <memory>
 
 namespace SoLoud
@@ -16,14 +17,14 @@ class Remotery;
 
 class jleFramebufferInterface;
 class jleResources;
-class jleFontData;
+//class jleFontData;
 class jleInput;
-class jleRendering;
 class jleWindow;
-class jleQuadRendering;
-class jleTextRendering;
 class jleTimerManager;
 class jlePhysics;
+class jle3DRenderer;
+class jle3DRendererSettings;
+class jle3DRendererGraph;
 
 class jleCore;
 inline jleCore *gCore;
@@ -31,11 +32,6 @@ inline jleCore *gCore;
 class jleCore
 {
 public:
-    jleCore(const jleCore &) = delete;
-    jleCore(jleCore &&) = delete;
-    jleCore &operator=(const jleCore &) = delete;
-    jleCore &operator=(jleCore &&) = delete;
-
     explicit jleCore();
 
     virtual ~jleCore();
@@ -52,15 +48,11 @@ public:
 
     jleInput &input();
 
-    jleRendering &rendering();
+    jle3DRendererGraph &renderGraph();
 
-    jleQuadRendering &quadRendering();
-
-    jleTextRendering &textRendering();
+    jle3DRendererSettings &renderSettings();
 
     [[nodiscard]] jleEngineSettings &settings();
-
-    [[nodiscard]] std::shared_ptr<jleEngineSettings> settingsPtr();
 
     [[nodiscard]] int fps() const;
 
@@ -105,12 +97,22 @@ private:
 
 protected:
     std::unique_ptr<jleResources> _resources;
-    std::unique_ptr<jleFontData> _fontData;
+    //std::unique_ptr<jleFontData> _fontData;
     std::unique_ptr<jleTimerManager> _timerManager;
-    const std::shared_ptr<jleWindow> _window;
-    const std::shared_ptr<jleInput> _input;
-    const std::shared_ptr<jleRendering> _rendering;
-    const std::unique_ptr<SoLoud::Soloud> _soLoud;
+    std::shared_ptr<jleWindow> _window;
+    std::shared_ptr<jleInput> _input;
+    std::unique_ptr<SoLoud::Soloud> _soLoud;
+
+    friend class jleSceneEditorWindow;
+    std::unique_ptr<jle3DRenderer> _3dRenderer;
+    std::unique_ptr<jle3DRendererGraph> _3dRenderGraph;
+    std::unique_ptr<jle3DRendererSettings> _3dRendererSettings;
+
+    jleResourceRef<jleEngineSettings> _engineSettings;
+
+    void resetRenderGraphForNewFrame();
+
+    jle3DRenderer &renderer();
 
     Remotery *_remotery;
 

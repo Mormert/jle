@@ -2,6 +2,8 @@
 
 #pragma once
 
+/*
+
 #include "jleAseprite.h"
 #include "jleComponent.h"
 #include "jleFont.h"
@@ -47,3 +49,5 @@ JLE_EXTERN_TEMPLATE_CEREAL_H(cText)
 
 CEREAL_REGISTER_TYPE(cText)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cText)
+
+ */

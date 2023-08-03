@@ -32,7 +32,7 @@ jleRendering::render(jleFramebufferInterface &framebufferOut, const jleCamera &c
 
     glCheckError("Render");
 
-    _3dRenderer->queuerender(framebufferOut, camera);
+    _3dRenderer->render(framebufferOut, camera);
 
     glCheckError("3D Render Queue");
 }
@@ -70,7 +70,6 @@ jleRendering::clearBuffersForNextFrame()
 {
     _quads->clearBuffersForNextFrame();
     _texts->clearBuffersForNextFrame();
-    _3dRenderer->clearBuffersForNextFrame();
 }
 
 jleQuadRendering &

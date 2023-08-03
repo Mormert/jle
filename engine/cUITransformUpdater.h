@@ -2,6 +2,8 @@
 
 #pragma once
 
+/*
+
 #include "cCamera.h"
 #include "jleComponent.h"
 #include "jleGame.h"
@@ -46,3 +48,5 @@ JLE_EXTERN_TEMPLATE_CEREAL_H(cUITransformUpdater)
 
 CEREAL_REGISTER_TYPE(cUITransformUpdater)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cUITransformUpdater)
+
+ */

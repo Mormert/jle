@@ -84,7 +84,7 @@ jleGameEngine::executeNextFrame()
     auto gameHaltedTemp = gameHalted;
     gameHalted = false;
     update(deltaFrameTime());
-    rendering().render(*mainScreenFramebuffer, gameRef().mainCamera);
+    render();
     gameHalted = gameHaltedTemp;
 }
 
@@ -210,12 +210,12 @@ jleGameEngine::addGameWindowResizeCallback(std::function<void(unsigned int, unsi
     unsigned int i = 0;
 
     // Find first available callback id
-    for (auto it = gameWindowResizedCallbacks.cbegin(), end = gameWindowResizedCallbacks.cend();
+    for (auto it = _gameWindowResizedCallbacks.cbegin(), end = _gameWindowResizedCallbacks.cend();
          it != end && i == it->first;
          ++it, ++i) {
     }
 
-    gameWindowResizedCallbacks.insert(
+    _gameWindowResizedCallbacks.insert(
         std::make_pair(i, std::bind(callback, std::placeholders::_1, std::placeholders::_2)));
 
     return i;
@@ -224,13 +224,13 @@ jleGameEngine::addGameWindowResizeCallback(std::function<void(unsigned int, unsi
 void
 jleGameEngine::removeGameWindowResizeCallback(unsigned int callbackId)
 {
-    gameWindowResizedCallbacks.erase(callbackId);
+    _gameWindowResizedCallbacks.erase(callbackId);
 }
 
 void
 jleGameEngine::executeGameWindowResizedCallbacks(unsigned int w, unsigned int h)
 {
-    for (const auto &callback : gameWindowResizedCallbacks) {
+    for (const auto &callback : _gameWindowResizedCallbacks) {
         callback.second(w, h);
     }
 }
@@ -275,9 +275,13 @@ jleGameEngine::render()
             msaa.resize(mainScreenFramebuffer->width(), mainScreenFramebuffer->height());
         }
 
-        rendering().renderMSAA(*mainScreenFramebuffer.get(), msaa, gameRef().mainCamera);
-        rendering().clearBuffersForNextFrame();
+        // Render to the MSAA framebuffer, then blit the result over to the main framebuffer
+        renderer().render(msaa, gameRef().mainCamera, renderGraph(), renderSettings());
+        msaa.blitToOther(*mainScreenFramebuffer);
+
         _fullscreen_renderer->renderFramebufferFullscreen(*mainScreenFramebuffer, window().width(), window().height());
+
+        resetRenderGraphForNewFrame();
     }
 }
 
