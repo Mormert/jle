@@ -2,7 +2,7 @@
 
 #include "jleEditorResourceViewer.h"
 #include "ImGui/imgui.h"
-#include "jleCore.h"
+#include "jleGameEngine.h"
 #include "jleResource.h"
 
 void jleEditorResourceViewer::update(jleGameEngine &ge) {
@@ -13,7 +13,7 @@ void jleEditorResourceViewer::update(jleGameEngine &ge) {
     ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_NoCollapse);
 
-    auto &resources = gCore->resources();
+    auto &resources = gEngine->resources();
 
     std::vector<jlePath> resourcesToBeUnloaded;
     for (auto &&drive : resources.resourcesMap()) {
@@ -54,4 +54,4 @@ void jleEditorResourceViewer::update(jleGameEngine &ge) {
 }
 
 jleEditorResourceViewer::jleEditorResourceViewer(const std::string &window_name)
-    : iEditorImGuiWindow{window_name} {}
+    : jleEditorWindowInterface{window_name} {}

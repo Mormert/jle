@@ -2,17 +2,15 @@
 
 #pragma once
 
+#include "jleCompileHelper.h"
 #include "jlePath.h"
 
 #include <fstream>
 #include <string>
-#include "jleCompileHelper.h"
 #include <cereal/archives/json.hpp>
 #include <cereal/cereal.hpp>
 #include <cereal/types/polymorphic.hpp>
 #include <plog/Log.h>
-
-
 
 enum class jleLoadFromFileSuccessCode : uint8_t { SUCCESS, FAIL };
 

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "jleRendering.h"
+
 #include "jleWindowSettings.h"
 #include <map>
 #include <memory>

@@ -3,7 +3,7 @@
 #include "jleObject.h"
 
 #include "cLuaScript.h"
-#include "jleCore.h"
+#include "jleGameEngine.h"
 #include "jleGameEngine.h"
 #include "jlePathDefines.h"
 #include "jleScene.h"
@@ -302,7 +302,7 @@ jleObject::replaceChildrenWithTemplate()
         if (object->__templatePath.has_value()) {
             auto path = object->__templatePath;
             try {
-                auto original = gCore->resources().loadResourceFromFile<jleObject>(object->__templatePath.value());
+                auto original = gEngine->resources().loadResourceFromFile<jleObject>(object->__templatePath.value());
 
                 auto copy = original->duplicateTemplate();
                 object = copy;

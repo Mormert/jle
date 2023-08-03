@@ -6,7 +6,7 @@
 
 #include "jleGameEngine.h"
 #include "jleResource.h"
-#include "jleRendering.h"
+
 
 cSpriteDepth::cSpriteDepth(jleObject *owner, jleScene *scene)
     : jleComponent{owner, scene} {}
@@ -19,12 +19,12 @@ void cSpriteDepth::createAndSetTextureFromPath(const std::string &pathDiffuse,
     }
 
     quad.mtextureWithHeightmap->texture =
-        gCore->resources().loadResourceFromFile<jleTexture>(jlePath{pathDiffuse});
+        gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{pathDiffuse});
     quad.mtextureWithHeightmap->heightmap =
-        gCore->resources().loadResourceFromFile<jleTexture>(jlePath{pathHeight});
+        gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{pathHeight});
     if (!pathNormal.empty()) {
         quad.mtextureWithHeightmap->normalmap =
-            gCore->resources().loadResourceFromFile<jleTexture>(jlePath{pathNormal});
+            gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{pathNormal});
     }
 }
 
@@ -55,8 +55,8 @@ void cSpriteDepth::update(float dt)
     }
 
     if (quad.mtextureWithHeightmap->normalmap) {
-        gCore->quadRendering().sendTexturedHeightQuad(*&quad);
+        gEngine->quadRendering().sendTexturedHeightQuad(*&quad);
     } else {
-        gCore->quadRendering().sendSimpleTexturedHeightQuad(*&quad);
+        gEngine->quadRendering().sendSimpleTexturedHeightQuad(*&quad);
     }
 }

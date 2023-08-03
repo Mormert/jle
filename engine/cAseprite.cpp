@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "cAseprite.h"
-#include "jleCore.h"
+#include "jleGameEngine.h"
 #include "jleGameEngine.h"
 #include "jleObject.h"
 #include "jlePath.h"
@@ -13,7 +13,7 @@ void cAseprite::start() {
     _aseprites.clear();
     for (auto &&path : _asepritePaths) {
         _aseprites.push_back(
-            gCore->resources().loadResourceFromFile<jleAseprite>(jlePath{path}));
+            gEngine->resources().loadResourceFromFile<jleAseprite>(jlePath{path}));
     }
 }
 
@@ -59,7 +59,7 @@ void cAseprite::update(float dt) {
         quad.depth = getTransform().getWorldPosition().z;
 
         if (quad.texture.get()) {
-            gCore->quadRendering().sendTexturedQuad(quad);
+            gEngine->quadRendering().sendTexturedQuad(quad);
         }
     }
 }
@@ -82,7 +82,7 @@ unsigned int cAseprite::currentAsepriteIndex() const {
 
 int cAseprite::addAsepritePath(const std::string &path) {
     _asepritePaths.push_back({path});
-    _aseprites.push_back(gCore->resources().loadResourceFromFile<jleAseprite>(jlePath{path}));
+    _aseprites.push_back(gEngine->resources().loadResourceFromFile<jleAseprite>(jlePath{path}));
     return (int)_aseprites.size() - 1;
 }
 

@@ -3,30 +3,88 @@
 #include "jleGameEngine.h"
 
 #include "jleFramebufferScreen.h"
+#include "jleFramebufferMultisample.h"
 #include "jleFullscreenRendering.h"
 #include "jleInput.h"
+#include "jleLuaEnvironment.h"
+#include "jleResourceRef.h"
+#include "jleEngineSettings.h"
 #include "jleMouseInput.h"
 #include "jlePhysics.h"
-#include "jleRendering.h"
+#include "jle3DRenderer.h"
+
 #include "jleTimerManager.h"
-#include "jleLuaEnvironment.h"
 #include "jleWindow.h"
+#include "jleGame.h"
 #include <plog/Log.h>
+
+#include "Remotery/Remotery.h"
+#include <soloud.h>
 
 #include <RmlUi/Core.h>
 #include <RmlUi/Debugger.h>
 #include <RmlUi_Backend.h>
 #include <shell/include/Shell.h>
 
-jleGameEngine::jleGameEngine() : jleCore()
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
+struct jleGameEngine::jleEngineInternal{
+    jleResourceRef<jleEngineSettings> engineSettings;
+};
+
+jleGameEngine::jleGameEngine()
 {
     gEngine = this;
+    _resources = std::make_unique<jleResources>();
+
+    _internal = std::make_unique<jleEngineInternal>();
+    _internal->engineSettings = jleResourceRef<jleEngineSettings>("GR:/settings/enginesettings.es");
+
+    _window = std::make_unique<jleWindow>();
+
+    PLOG_INFO << "Initializing the window";
+    _window->settings(settings().windowSettings);
+    _window->initWindow();
+
+    _input = std::make_unique<jleInput>(_window);
+
+    _timerManager = std::make_unique<jleTimerManager>();
+
+    _3dRenderer = std::make_unique<jle3DRenderer>();
+    _3dRenderGraph = std::make_unique<jle3DRendererGraph>();
+    _3dRendererSettings = std::make_unique<jle3DRendererSettings>();
+    _soLoud = std::make_unique<SoLoud::Soloud>();
+
+    PLOG_INFO << "Starting the core...";
+
+    PLOG_INFO << "Initializing remote profiling...";
+    rmtError error = rmt_CreateGlobalInstance(&_remotery);
+    if (RMT_ERROR_NONE != error) {
+        PLOG_ERROR << "Error launching Remotery: " << error;
+        std::exit(EXIT_FAILURE);
+    }
+    rmt_SetCurrentThreadName("Main Thread");
+
+    PLOG_INFO << "Initializing sound engine...";
+    _soLoud->init();
 
     LOG_INFO << "Starting the lua environment";
     _luaEnvironment = std::make_unique<jleLuaEnvironment>();
 }
 
-jleGameEngine::~jleGameEngine() { gEngine = nullptr; }
+jleGameEngine::~jleGameEngine()
+{
+    gEngine = nullptr;
+
+    PLOG_INFO << "Destroying the sound engine...";
+    _soLoud->deinit();
+
+    PLOG_INFO << "Destroying the remote profiling...";
+    rmt_UnbindOpenGL();
+    rmt_DestroyGlobalInstance(_remotery);
+}
 
 void
 jleGameEngine::startGame()
@@ -81,7 +139,7 @@ jleGameEngine::unhaltGame()
 void
 jleGameEngine::executeNextFrame()
 {
-    LOG_VERBOSE << "Next frame dt: " << gCore->deltaFrameTime();
+    LOG_VERBOSE << "Next frame dt: " << gEngine->deltaFrameTime();
     auto gameHaltedTemp = gameHalted;
     gameHalted = false;
     update(deltaFrameTime());
@@ -175,7 +233,7 @@ jleGameEngine::start()
     constexpr int initialScreenY = 1024;
     mainScreenFramebuffer = std::make_shared<jleFramebufferScreen>(initialScreenX, initialScreenY);
 
-    const auto &mouse = gCore->input().mouse;
+    const auto &mouse = gEngine->input().mouse;
     mouse->setScreenSize(initialScreenX, initialScreenY);
 
     luaEnvironment()->loadScript("ER:/scripts/engine.lua");
@@ -199,7 +257,7 @@ jleGameEngine::resizeMainFramebuffer(unsigned int width, unsigned int height)
 {
     mainScreenFramebuffer->resize(width, height);
 
-    const auto &inputMouse = gCore->input().mouse;
+    const auto &inputMouse = gEngine->input().mouse;
     inputMouse->setScreenSize(width, height);
 }
 
@@ -303,4 +361,138 @@ std::shared_ptr<jleLuaEnvironment> &
 jleGameEngine::luaEnvironment()
 {
     return _luaEnvironment;
+}
+
+void
+jleGameEngine::run()
+{
+    PLOG_INFO << "Binding Remotery to OpenGL";
+    rmt_BindOpenGL();
+
+    PLOG_INFO << "Starting the game loop";
+
+    running = true;
+    start();
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop(mainLoopEmscripten, 0, true);
+#else
+    loop();
+#endif
+}
+void
+jleGameEngine::mainLoop()
+{
+    jleProfiler::NewFrame();
+    JLE_SCOPE_PROFILE_CPU(mainLoop)
+
+    refreshDeltaTimes();
+
+    _timerManager->process();
+
+    input().mouse->updateDeltas();
+
+    update(deltaFrameTime());
+
+    render();
+    _window->updateWindow();
+
+    running = !_window->windowShouldClose();
+}
+void
+jleGameEngine::loop()
+{
+    while (running) {
+        mainLoop();
+    }
+    exiting();
+}
+void
+jleGameEngine::refreshDeltaTimes()
+{
+    _currentFrame = _window->time();
+    _deltaTime = _currentFrame - _lastFrame;
+    _lastFrame = _currentFrame;
+    _fps = static_cast<int>(1.0 / _deltaTime);
+}
+jle3DRenderer &
+jleGameEngine::renderer()
+{
+    return *_3dRenderer.get();
+}
+void
+jleGameEngine::resetRenderGraphForNewFrame()
+{
+    _3dRenderGraph = std::make_unique<jle3DRendererGraph>();
+}
+float
+jleGameEngine::lastFrameTime() const
+{
+    return _lastFrame;
+
+}
+float
+jleGameEngine::currentFrameTime() const
+{
+    return _currentFrame;
+
+}
+float
+jleGameEngine::deltaFrameTime() const
+{
+    return _deltaTime;
+
+}
+int
+jleGameEngine::fps() const
+{
+    return _fps;
+
+}
+jleEngineSettings &
+jleGameEngine::settings()
+{
+    return *_internal->engineSettings.get();
+
+}
+jle3DRendererSettings &
+jleGameEngine::renderSettings()
+{
+    return *_3dRendererSettings.get();
+
+}
+jle3DRendererGraph &
+jleGameEngine::renderGraph()
+{
+    return *_3dRenderGraph.get();
+
+}
+jleInput &
+jleGameEngine::input()
+{
+    return *_input;
+
+}
+jleWindow &
+jleGameEngine::window()
+{
+    return *_window;
+
+}
+jleResources &
+jleGameEngine::resources()
+{
+    return *_resources;
+
+}
+SoLoud::Soloud &
+jleGameEngine::soLoud()
+{
+    return *_soLoud;
+
+}
+jleTimerManager &
+jleGameEngine::timerManager()
+{
+    return *_timerManager;
+
 }

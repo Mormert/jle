@@ -1,9 +1,10 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "cMesh.h"
-#include "jleCore.h"
+#include "jleGameEngine.h"
 #include "jleResource.h"
-#include "jleRendering.h"
+#include "jle3DRendererGraph.h"
+
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cMesh)
 
@@ -20,7 +21,7 @@ cMesh::update(float dt)
     if (_meshRef) {
         std::shared_ptr<jleMesh> mesh = _meshRef.get();
         std::shared_ptr<jleMaterial> material = _materialRef.get();
-        gCore->renderGraph().sendMesh(
+        gEngine->renderGraph().sendMesh(
             mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), true);
     }
 }

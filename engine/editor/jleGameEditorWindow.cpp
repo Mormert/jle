@@ -10,7 +10,7 @@
 
 #include "jleIncludeGL.h"
 
-jleGameEditorWindow::jleGameEditorWindow(const std::string &window_name) : iEditorImGuiWindow{window_name}
+jleGameEditorWindow::jleGameEditorWindow(const std::string &window_name) : jleEditorWindowInterface{window_name}
 {
     gGameEditorWindow = this;
 }
@@ -56,7 +56,7 @@ jleGameEditorWindow::update(jleGameEngine &ge)
     _windowPositionX = cursorScreenPos.x - viewport->Pos.x;
     _windowPositionY = cursorScreenPos.y - viewport->Pos.y;
 
-    const auto &internalInputMouse = gCore->input().mouse;
+    const auto &internalInputMouse = gEngine->input().mouse;
     const auto &engineFramebufferMain = gEngine->mainScreenFramebuffer;
     internalInputMouse->setScreenBeginCoords(_windowPositionX, _windowPositionY);
     internalInputMouse->setScreenSize(width(), height());

@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "cSpritesheet.h"
-#include "jleCore.h"
+#include "jleGameEngine.h"
 #include "jleGameEngine.h"
 #include "jleQuadRendering.h"
 #include "jleResource.h"
@@ -32,7 +32,7 @@ void cSpritesheet::update(float dt) {
         quad.depth = getTransform().getWorldPosition().z;
 
         if (quad.texture.get()) {
-            gCore->quadRendering().sendTexturedQuad(quad);
+            gEngine->quadRendering().sendTexturedQuad(quad);
         }
     }
 }

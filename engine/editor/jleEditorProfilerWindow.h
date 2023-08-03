@@ -7,7 +7,8 @@
 #include "jleEditorImGuiWindowInterface.h"
 #include "jleProfiler.h"
 
-class jleEditorProfilerWindow : public iEditorImGuiWindow {
+class jleEditorProfilerWindow : public jleEditorWindowInterface
+{
 public:
     explicit jleEditorProfilerWindow(const std::string &window_name);
 

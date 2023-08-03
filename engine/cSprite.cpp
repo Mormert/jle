@@ -5,14 +5,14 @@
 #include "jleObject.h"
 
 #include "jleGameEngine.h"
-#include "jleRendering.h"
+
 #include "jleResource.h"
 
 cSprite::cSprite(jleObject *owner, jleScene *scene)
     : jleComponent{owner, scene}, quad{nullptr} {}
 
 void cSprite::createAndSetTextureFromPath(const std::string &path) {
-    quad.texture = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{path});
+    quad.texture = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{path});
 }
 
 void cSprite::texture(std::shared_ptr<jleTexture> texture) {
@@ -41,6 +41,6 @@ void cSprite::update(float dt)
     quad.y = getTransform().getWorldPosition().y;
 
     if (quad.texture.get()) {
-        gCore->quadRendering().sendTexturedQuad(*&quad);
+        gEngine->quadRendering().sendTexturedQuad(*&quad);
     }
 }

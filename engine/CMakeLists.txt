@@ -10,7 +10,7 @@ set(SKIP_INSTALL_ALL ON)
 option(ENABLE_CLANG_TIMETRACE "Enable -ftime-trace for Clang" OFF)
 if (ENABLE_CLANG_TIMETRACE AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "-ftime-trace ${CMAKE_CXX_FLAGS}")
-endif()
+endif ()
 
 include_directories(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
 find_package(ZLIB REQUIRED)
@@ -29,13 +29,11 @@ add_library(engine STATIC
         "jleImage.cpp"
         "jleImageFlipped.cpp"
         "jleComponent.cpp"
-        "jleCore.cpp"
-        "jleEngineStatus.cpp"
         "jleGame.cpp"
         "jleObject.cpp"
         #"jleAseprite.cpp"
         "jleScene.cpp"
-       # "jleTextRendering.cpp"
+        # "jleTextRendering.cpp"
         "jleStaticOpenGLState.cpp"
         "jleGameEngine.cpp"
         "jleKeyboardInput.cpp"
@@ -112,6 +110,8 @@ if (BUILD_EDITOR)
             "editor/jleEditorTextEdit.cpp"
             "editor/jleEditorResourceEdit.cpp"
             "editor/jleEditorNotifications.cpp"
+            "editor/jleEditorGizmos.cpp"
+            "editor/jleEditorSaveState.cpp"
             "3rdparty/ImGuiColorTextEdit/TextEditor.cpp"
             "3rdparty/ImGui/imgui.cpp"
             "3rdparty/ImGui/imgui_spectrum.cpp"

@@ -3,12 +3,14 @@
 #pragma once
 
 #ifdef BUILD_EDITOR
+#include "jleEditorImGuiWindowInterface.h"
+#include "jleResourceRef.h"
+#include "jleTexture.h"
 
 #include "plog/Log.h"
-#include "jleTexture.h"
-#include "jleEditorImGuiWindowInterface.h"
 
-class jleEditorNotifications : public iEditorImGuiWindow, public plog::IAppender {
+
+class jleEditorNotifications : public jleEditorWindowInterface, public plog::IAppender {
 public:
     explicit jleEditorNotifications(const std::string& windowName);
 

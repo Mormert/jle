@@ -4,20 +4,22 @@
 
 #ifdef BUILD_EDITOR
 
-#include <string>
 
 #include "jleGameEngine.h"
+#include "ImGui/imgui.h"
 
+#include <string>
 #include <memory>
 #include <utility>
 #include <vector>
 
-class iEditorImGuiWindow {
+class jleEditorWindowInterface
+{
 public:
-    explicit iEditorImGuiWindow(std::string window_name)
+    explicit jleEditorWindowInterface(std::string window_name)
         : window_name{std::move(window_name)} {}
 
-    virtual ~iEditorImGuiWindow() = default;
+    virtual ~jleEditorWindowInterface() = default;
 
     virtual void update(jleGameEngine &ge) = 0;
 
@@ -25,7 +27,7 @@ public:
 
     virtual void closeWindow() { isOpened = false; }
 
-    bool opened() const { return isOpened; }
+    [[nodiscard]] bool opened() const { return isOpened; }
 
     const std::string &windowName() { return window_name; }
 

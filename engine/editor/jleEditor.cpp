@@ -1,48 +1,61 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleEditor.h"
-#include "jleFramebufferMultisample.h"
-#include "jleGLError.h"
-
-#include "ImGui/ImGuizmo.h"
-#include "ImGui/imgui.h"
-#include "ImGui/imgui_impl_glfw.h"
-#include "ImGui/imgui_impl_opengl3.h"
-#include "jlePathDefines.h"
-
-
-#include "Remotery/Remotery.h"
+#include "editor/jleEditorImGuiWindowInterface.h"
 #include "editor/jleConsoleEditorWindow.h"
 #include "editor/jleEditorContentBrowser.h"
-#include "editor/jleEditorGameControllerWidget.h"
 #include "editor/jleEditorNotifications.h"
 #include "editor/jleEditorProfilerWindow.h"
 #include "editor/jleEditorResourceViewer.h"
 #include "editor/jleEditorSceneObjectsWindow.h"
 #include "editor/jleEditorWindowsPanel.h"
+#include "editor/jleEditorSaveState.h"
+#include "editor/jleEditorGizmos.h"
+#include "jleFramebufferMultisample.h"
+#include "jleGLError.h"
+#include "jlePathDefines.h"
+#include "jlePath.h"
+#include "jleResourceRef.h"
 #include "jleEditorResourceEdit.h"
 #include "jleEditorSettingsWindow.h"
 #include "jleEditorTextEdit.h"
 #include "jleFileChangeNotifier.h"
 #include "jleFramebufferScreen.h"
+#include "jleGame.h"
 #include "jleGameEditorWindow.h"
 #include "jlePhysics.h"
 #include "jleQuadRendering.h"
 #include "jleSceneEditorWindow.h"
 #include "jleWindow.h"
+#include "jleLuaEnvironment.h"
+#include "jle3DRenderer.h"
+
+
+#include "Remotery/Remotery.h"
 #include "plog/Log.h"
+#include "ImGui/ImGuizmo.h"
+#include "ImGui/imgui.h"
+#include "ImGui/imgui_impl_glfw.h"
+#include "ImGui/imgui_impl_opengl3.h"
 
-JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleEditorSaveState)
+struct jleEditor::jleEditorInternal{
+    jleResourceRef<jleEditorSaveState> editorSaveState;
+};
 
-jleEditor::jleEditor() { gEditor = this; }
+jleEditor::jleEditor()
+{
+    gEditor = this;
+    _internal = std::make_unique<jleEditorInternal>();
+    _camera = std::make_unique<jleCamera>();
+    _gizmos = std::make_unique<jleEditorGizmos>();
+}
 
 void
 jleEditor::start()
 {
-
     LOG_INFO << "Starting the editor";
 
-    _editorSaveState = jleResourceRef<jleEditorSaveState>(jlePath{"BI:editor_save.edsave"});
+    _internal->editorSaveState = jleResourceRef<jleEditorSaveState>(jlePath{"BI:editor_save.edsave"});
 
     std::vector<std::string> directoriesForNotification;
     directoriesForNotification.push_back(jlePath{"ER:/"}.getRealPath());
@@ -70,10 +83,9 @@ jleEditor::start()
     addImGuiWindow(resourceEditor);
 
     _sceneWindow = std::make_shared<jleSceneEditorWindow>("Scene Window", editorScreenFramebuffer);
-    _sceneWindow->fpvCamController.position = _editorSaveState->cameraPosition;
-    _sceneWindow->fpvCamController.yaw = _editorSaveState->cameraYaw;
-    _sceneWindow->fpvCamController.pitch = _editorSaveState->cameraPitch;
-    projectionType = static_cast<jleCameraProjection>(!_editorSaveState->orthographicCamera);
+    _sceneWindow->fpvCamController.position = saveState().cameraPosition;
+    _sceneWindow->fpvCamController.yaw = saveState().cameraYaw;
+    _sceneWindow->fpvCamController.pitch = saveState().cameraPitch;
     addImGuiWindow(_sceneWindow);
     menu->addWindow(_sceneWindow);
 
@@ -113,31 +125,25 @@ jleEditor::start()
     auto notifications = std::make_shared<jleEditorNotifications>("Notifications");
     addImGuiWindow(notifications);
 
-    gCore->window().addWindowResizeCallback(
+    gEngine->window().addWindowResizeCallback(
         std::bind(&jleEditor::mainEditorWindowResized, this, std::placeholders::_1, std::placeholders::_2));
 
     int w, h;
-    glfwGetFramebufferSize(gCore->window().glfwWindow(), &w, &h);
-    gCore->window().executeResizeCallbacks(w, h);
+    glfwGetFramebufferSize(gEngine->window().glfwWindow(), &w, &h);
+    gEngine->window().executeResizeCallbacks(w, h);
 
     LOG_INFO << "Starting the game in editor mode";
-
-    pointLightLampGizmoMesh = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_lamp.fbx"}};
-    directionalLightLampGizmoMesh = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_sun.fbx"}};
-
-    cameraGizmoMesh = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/camera/camera.fbx"}};
-    cameraGizmoMaterial = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/camera/camera.mat"}};
 
     luaEnvironment()->loadScript("ER:/scripts/engine.lua");
     luaEnvironment()->loadScript("ED:/scripts/editor.lua");
 
     startRmlUi();
 
-    if (_editorSaveState->gameRunning) {
+    if (saveState().gameRunning) {
         startGame();
     }
 
-    for (auto &&scenePath : _editorSaveState->loadedScenePaths) {
+    for (auto &&scenePath : saveState().loadedScenePaths) {
         loadScene(scenePath, false);
     }
 }
@@ -187,14 +193,14 @@ jleEditor::renderEditorSceneView()
         physics().renderDebug();
     }
 
-    if (projectionType == jleCameraProjection::Orthographic) {
-        editorCamera.setOrthographicProjection(editorScreenFramebuffer->width() * _sceneWindow->orthoZoomValue,
-                                               editorScreenFramebuffer->height() * _sceneWindow->orthoZoomValue,
-                                               10000.f,
-                                               -10000.f);
-    } else {
-        editorCamera.setPerspectiveProjection(
+    if (perspectiveCamera) {
+        gEditor->camera().setPerspectiveProjection(
             45.f, editorScreenFramebuffer->width(), editorScreenFramebuffer->height(), 10000.f, 0.1f);
+    } else {
+        gEditor->camera().setOrthographicProjection(editorScreenFramebuffer->width() * _sceneWindow->orthoZoomValue,
+                                                    editorScreenFramebuffer->height() * _sceneWindow->orthoZoomValue,
+                                                    10000.f,
+                                                    -10000.f);
     }
 
     static jleFramebufferMultisample msaa{editorScreenFramebuffer->width(), editorScreenFramebuffer->height(), 4};
@@ -204,7 +210,7 @@ jleEditor::renderEditorSceneView()
     }
 
     // Render to editor scene view
-    renderer().render(msaa, editorCamera, renderGraph(), renderSettings());
+    renderer().render(msaa, gEditor->camera(), renderGraph(), renderSettings());
     msaa.blitToOther(*editorScreenFramebuffer);
 
     glCheckError("Render MSAA Scene View");
@@ -291,7 +297,7 @@ jleEditor::initImgui()
 }
 
 void
-jleEditor::addImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window)
+jleEditor::addImGuiWindow(std::shared_ptr<jleEditorWindowInterface> window)
 {
     _imGuiWindows.push_back(window);
 }
@@ -392,7 +398,7 @@ jleEditor::renderEditorGridGizmo()
 
     v1.color = glm::vec3(1.0f, 0.3f, 0.3f);
     v2.color = glm::vec3(1.0f, 0.3f, 0.3f);
-    auto pos = editorCamera.getPosition();
+    auto pos = gEditor->camera().getPosition();
 
     float scale = 1.f;
     if (abs(pos.y) < 50.f) {
@@ -439,16 +445,16 @@ jleEditor::renderEditorGridGizmo()
 void
 jleEditor::exiting()
 {
-    _editorSaveState->gameRunning = !isGameKilled();
-    _editorSaveState->cameraPosition = editorCamera.getPosition();
-    _editorSaveState->loadedScenePaths.clear();
+    saveState().gameRunning = !isGameKilled();
+    saveState().cameraPosition = gEditor->camera().getPosition();
+    saveState().loadedScenePaths.clear();
     for (auto &&scene : _editorScenes) {
-        _editorSaveState->loadedScenePaths.push_back(jlePath{scene->filepath, false});
+        saveState().loadedScenePaths.push_back(jlePath{scene->filepath, false});
     }
-    _editorSaveState->cameraYaw = _sceneWindow->fpvCamController.yaw;
-    _editorSaveState->cameraPitch = _sceneWindow->fpvCamController.pitch;
-    _editorSaveState->orthographicCamera = !static_cast<bool>(projectionType);
-    _editorSaveState->saveToFile();
+    saveState().cameraYaw = _sceneWindow->fpvCamController.yaw;
+    saveState().cameraPitch = _sceneWindow->fpvCamController.pitch;
+    //saveState().orthographicCamera = !static_cast<bool>(projectionType);
+    saveState().saveToFile();
 
     jleGameEngine::exiting();
 }
@@ -463,4 +469,53 @@ jleEditorSceneObjectsWindow &
 jleEditor::editorSceneObjects()
 {
     return *_editorSceneObjects;
+}
+
+jleCamera &
+jleEditor::camera()
+{
+    return *_camera.get();
+}
+bool
+
+jleEditor::checkSceneIsActiveEditor(const std::string &sceneName)
+{
+    for (auto &&scene : _editorScenes) {
+        if (sceneName == scene->sceneName) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+std::shared_ptr<jleScene>
+jleEditor::loadScene(const jlePath &scenePath, bool startObjects)
+{
+    auto scene = gEngine->resources().loadResourceFromFile<jleScene>(scenePath, true);
+
+    auto it = std::find(_editorScenes.begin(), _editorScenes.end(), scene);
+    if (it == _editorScenes.end()) {
+        _editorScenes.push_back(scene);
+        scene->onSceneCreation();
+        if (startObjects) {
+            scene->startObjects();
+        }
+    } else {
+        LOG_WARNING << "Loaded scene is already loaded";
+    }
+
+    return scene;
+}
+
+jleEditorGizmos &
+jleEditor::gizmos()
+{
+    return *_gizmos.get();
+}
+
+jleEditorSaveState &
+jleEditor::saveState()
+{
+    return *_internal->editorSaveState.get();
 }

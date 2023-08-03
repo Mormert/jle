@@ -10,7 +10,7 @@
 
 jleEditorGameControllerWidget::jleEditorGameControllerWidget(
     const std::string &window_name)
-    : iEditorImGuiWindow{window_name} {
+    : jleEditorWindowInterface{window_name} {
 }
 
 void jleEditorGameControllerWidget::update(jleGameEngine &ge) {

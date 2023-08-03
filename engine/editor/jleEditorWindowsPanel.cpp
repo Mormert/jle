@@ -8,12 +8,12 @@
 #include "plog/Log.h"
 
 jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name)
-    : iEditorImGuiWindow{window_name}, _gameController{"Game Controller"} {}
+    : jleEditorWindowInterface{window_name}, _gameController{"Game Controller"} {}
 
 void jleEditorWindowsPanel::update(jleGameEngine &ge) { dockspaceupdate(ge); }
 
 void jleEditorWindowsPanel::addWindow(
-    std::shared_ptr<iEditorImGuiWindow> window) {
+    std::shared_ptr<jleEditorWindowInterface> window) {
     windows.push_back(window);
 }
 

@@ -1,9 +1,11 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleEditorResourceEdit.h"
-#include "jleCore.h"
+#include "jleGameEngine.h"
 
-jleEditorResourceEdit::jleEditorResourceEdit(const std::string &window_name) : iEditorImGuiWindow(window_name) {}
+#include "editor/jleImGuiCerealArchive.h"
+
+jleEditorResourceEdit::jleEditorResourceEdit(const std::string &window_name) : jleEditorWindowInterface(window_name) {}
 
 void
 jleEditorResourceEdit::update(jleGameEngine &ge)
@@ -37,7 +39,7 @@ jleEditorResourceEdit::update(jleGameEngine &ge)
         ImGui::SameLine();
 
         if (resource && ImGui::Button("Reload Resource")) {
-            gCore->resources().reloadSerializedResource(resource);
+            gEngine->resources().reloadSerializedResource(resource);
         }
 
         ImGui::End();
@@ -58,7 +60,7 @@ jleEditorResourceEdit::tryOpen(const jlePath &path)
     }
 
     try {
-        auto resource = gCore->resources().loadSerializedResourceFromFile(path);
+        auto resource = gEngine->resources().loadSerializedResourceFromFile(path);
         _resources.insert(std::make_pair(path, resource));
     } catch (std::exception &e) {
         LOGV << "Failed to open resource with path: " << path.getVirtualPath() << ", error: " << e.what();

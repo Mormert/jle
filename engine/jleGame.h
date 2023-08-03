@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "jleCamera.h"
-#include "jleCore.h"
+#include "jleGameEngine.h"
 #include "jleProfiler.h"
 #include "jleResource.h"
 #include "jleScene.h"
@@ -56,7 +56,7 @@ public:
     std::shared_ptr<jleScene>
     loadScene(const jlePath &scenePath)
     {
-        std::shared_ptr<jleScene> scene = gCore->resources().loadResourceFromFile<jleScene>(scenePath, true);
+        std::shared_ptr<jleScene> scene = gEngine->resources().loadResourceFromFile<jleScene>(scenePath, true);
         if (scene) {
             auto it = std::find(_activeScenes.begin(), _activeScenes.end(), scene);
             if (it == _activeScenes.end()) {

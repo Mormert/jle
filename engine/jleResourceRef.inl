@@ -2,7 +2,7 @@
 
 #include "jleResourceRef.h"
 
-#include "jleCore.h"
+#include "jleGameEngine.h"
 #include "jleResource.h"
 
 template <typename T>
@@ -11,7 +11,7 @@ jleResourceRef<T>::loadResource()
 {
     ptr = nullptr;
     if (!path.isEmpty()) {
-        ptr = gCore->resources().loadResourceFromFile<T>(path);
+        ptr = gEngine->resources().loadResourceFromFile<T>(path);
     }
 }
 
@@ -39,6 +39,6 @@ jleResourceRef<T>::load_minimal(const Archive &, const std::string &value)
     path = jlePath{value};
     ptr = nullptr;
     if (!path.isEmpty()) {
-        ptr = gCore->resources().loadResourceFromFile<T>(path);
+        ptr = gEngine->resources().loadResourceFromFile<T>(path);
     }
 }

@@ -2,13 +2,15 @@
 
 #pragma once
 
-#include "jleEditorImGuiWindowInterface.h"
-#include "jleEditorJsonToImgui.h"
-#include <jleLuaScript.h>
-
 #ifdef BUILD_EDITOR
 
-class jleEditorSceneObjectsWindow : public iEditorImGuiWindow {
+#include "jleEditorImGuiWindowInterface.h"
+
+class jleObject;
+class jleScene;
+
+class jleEditorSceneObjectsWindow : public jleEditorWindowInterface
+{
 public:
     explicit jleEditorSceneObjectsWindow(const std::string &window_name);
 

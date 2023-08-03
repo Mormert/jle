@@ -3,6 +3,7 @@
 #pragma once
 
 #include "jlePathDefines.h"
+#include "jlePath.h"
 #include <cereal/archives/json.hpp>
 
 #include <string>

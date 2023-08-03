@@ -5,7 +5,7 @@
 #include "jleObject.h"
 #include "jlePathDefines.h"
 #include "jleResource.h"
-#include "jleRendering.h"
+
 
 cText::cText(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 
@@ -19,7 +19,7 @@ void cText::update(float dt) {
         return;
     }
 
-    gCore->textRendering().sendFontText(_font.get(),
+    gEngine->textRendering().sendFontText(_font.get(),
                                         _text,
                                         _fontSize,
                                         getTransform().getWorldPosition().x,

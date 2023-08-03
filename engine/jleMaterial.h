@@ -5,12 +5,15 @@
 
 #include "jleResourceInterface.h"
 #include "jleTypeReflectionUtils.h"
+#include "jleCompileHelper.h"
 
 #include "jleResourceRef.h"
 #include "jleTexture.h"
 #include "jleShader.h"
 
 #include <cereal/cereal.hpp>
+#include <cereal/archives/json.hpp>
+#include "editor/jleImGuiCerealArchive.h"
 
 
 class jleMaterial : public jleSerializedResource, public std::enable_shared_from_this<jleMaterial>
@@ -53,6 +56,8 @@ public:
     jleResourceRef<jleTexture> _metallicTextureRef;
     jleResourceRef<jleTexture> _roughnessTextureRef;
 };
+
+JLE_EXTERN_TEMPLATE_CEREAL_H(jleMaterial)
 
 CEREAL_REGISTER_TYPE(jleMaterial)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleMaterial)

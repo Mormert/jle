@@ -11,7 +11,7 @@ jleSpritesheet::loadImage()
 {
     std::string pngPath = _pathJson.substr(0, _pathJson.find(".", 0)) + ".png";
 
-    _imageTexture = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{pngPath});
+    _imageTexture = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{pngPath});
 }
 
 jleLoadFromFileSuccessCode

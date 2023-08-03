@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <regex>
 #include <string>
 
 // Wrappers for paths defined in CMakeLists
@@ -17,11 +16,6 @@ static std::string JLE_ENGINE_RESOURCES_PATH{JLE_ENGINE_PATH + "EngineResources"
 static std::string JLE_EDITOR_RESOURCES_PATH{JLE_ENGINE_PATH + "EditorResources"};
 static std::string JLE_BINARY_RESOURCES_PATH{""};
 
-#ifdef BUILD_OPENGLES30
-static std::string JLE_ENGINE_PATH_SHADERS{JLE_ENGINE_RESOURCES_PATH + "/shaders/es"};
-#else
-static std::string JLE_ENGINE_PATH_SHADERS{JLE_ENGINE_RESOURCES_PATH + "/shaders/core"};
-#endif
 
 #ifdef BUILD_EDITOR
 static std::string GAME_RESOURCES_DIRECTORY{_GAME_RESOURCES_DIRECTORY};

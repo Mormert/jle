@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <memory>
 
-class jleEditorTextEdit : public iEditorImGuiWindow
+class jleEditorTextEdit : public jleEditorWindowInterface
 {
 public:
     explicit jleEditorTextEdit(const std::string &window_name);

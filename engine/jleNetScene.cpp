@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleNetScene.h"
-#include "jleCore.h"
+#include "jleGameEngine.h"
 #include "plog/Log.h"
 
 jleNetScene::jleNetScene() : jleScene() {}

@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "cSpritesheetDepth.h"
-#include "jleCore.h"
+#include "jleGameEngine.h"
 #include "jleGameEngine.h"
 #include "jleQuadRendering.h"
 #include "jleResource.h"
@@ -27,10 +27,10 @@ void cSpritesheetDepth::update(float dt) {
         _quad.depth = getTransform().getWorldPosition().z;
 
         if (_quad.mtextureWithHeightmap->normalmap) {
-            gCore->quadRendering().sendTexturedHeightQuad(*&_quad);
+            gEngine->quadRendering().sendTexturedHeightQuad(*&_quad);
         }
         else if (_quad.mtextureWithHeightmap->heightmap) {
-            gCore->quadRendering().sendSimpleTexturedHeightQuad(*&_quad);
+            gEngine->quadRendering().sendSimpleTexturedHeightQuad(*&_quad);
         }
     }
 }
@@ -44,11 +44,11 @@ void cSpritesheetDepth::createAndSetTextureFromPath(
     }
 
     _quad.mtextureWithHeightmap->texture =
-        gCore->resources().loadResourceFromFile<jleTexture>(jlePath{pathDiffuse});
+        gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{pathDiffuse});
     _quad.mtextureWithHeightmap->heightmap =
-        gCore->resources().loadResourceFromFile<jleTexture>(jlePath{pathHeight});
+        gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{pathHeight});
     if (!pathNormal.empty()) {
         _quad.mtextureWithHeightmap->normalmap =
-            gCore->resources().loadResourceFromFile<jleTexture>(jlePath{pathNormal});
+            gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{pathNormal});
     }
 }

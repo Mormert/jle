@@ -11,7 +11,7 @@
 
 class jleEditorTextEdit;
 
-class jleEditorContentBrowser : public iEditorImGuiWindow
+class jleEditorContentBrowser : public jleEditorWindowInterface
 {
 public:
     explicit jleEditorContentBrowser(const std::string &window_name,

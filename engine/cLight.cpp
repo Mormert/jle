@@ -1,10 +1,12 @@
 // Copyright (c) 2023. Johan Lind
 
-#include <editor/jleEditor.h>
 #include "cLight.h"
 
-#include "jleCore.h"
-#include "jleRendering.h"
+#include "editor/jleEditor.h"
+#include "editor/jleEditorGizmos.h"
+
+#include "jleGameEngine.h"
+#include "jle3DRendererGraph.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -19,7 +21,7 @@ cLight::start()
 void
 cLight::update(float dt)
 {
-    gCore->renderGraph().sendLight(getTransform().getWorldPosition(), _color);
+    gEngine->renderGraph().sendLight(getTransform().getWorldPosition(), _color);
 }
 
 void
@@ -32,7 +34,7 @@ void
 cLight::editorGizmosRender(bool selected)
 {
 #ifdef BUILD_EDITOR
-    auto mesh = gEditor->pointLightLampGizmoMesh.get();
+    auto mesh = gEditor->gizmos().lightLampMesh();
     std::shared_ptr<jleMaterial> material{};
     auto matrix = glm::translate(glm::mat4{1.0f}, _attachedToObject->getTransform().getWorldPosition());
     gEngine->renderGraph().sendMesh(mesh, material, matrix, _attachedToObject->instanceID(), false);

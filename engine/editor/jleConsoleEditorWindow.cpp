@@ -54,7 +54,7 @@ struct ConsoleAppender : public plog::IAppender {
 
 
 jleConsoleEditorWindow::jleConsoleEditorWindow(const std::string &window_name)
-    : iEditorImGuiWindow{window_name} {
+    : jleEditorWindowInterface{window_name} {
     clearLog();
     memset(InputBuf, 0, sizeof(InputBuf));
     HistoryPos = -1;

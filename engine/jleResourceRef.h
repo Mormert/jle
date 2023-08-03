@@ -4,7 +4,6 @@
 #define JLE_RESOURCEREF_H
 
 #include <cereal/cereal.hpp>
-
 #include "jlePath.h"
 
 class jleResourceInterface;

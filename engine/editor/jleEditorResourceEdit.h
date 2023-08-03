@@ -11,7 +11,7 @@
 #include <memory>
 #include <unordered_map>
 
-class jleEditorResourceEdit : public iEditorImGuiWindow
+class jleEditorResourceEdit : public jleEditorWindowInterface
 {
 public:
     explicit jleEditorResourceEdit(const std::string &window_name);

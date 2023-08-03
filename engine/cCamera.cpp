@@ -6,10 +6,13 @@
 #include "jleObject.h"
 #include "jleStaticOpenGLState.h"
 #include "jleWindow.h"
+#include "jleGame.h"
 
 #ifdef BUILD_EDITOR
-#include <editor/jleEditor.h>
+#include "editor/jleEditor.h"
+#include "editor/jleEditorGizmos.h"
 #include "ImGui/imgui.h"
+#include "jle3DRendererGraph.h"
 #endif
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cCamera)
@@ -27,7 +30,7 @@ cCamera::start()
         framebufferResizeCallback(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
     });
 
-    framebufferResizeCallback(gCore->window().width(), gCore->window().height());
+    framebufferResizeCallback(gEngine->window().width(), gEngine->window().height());
 }
 
 void
@@ -57,7 +60,7 @@ cCamera::framebufferResizeCallback(unsigned int width, unsigned int height)
 void
 cCamera::update(float dt)
 {
-    auto &game = ((jleGameEngine *)gCore)->gameRef();
+    auto &game = ((jleGameEngine *)gEngine)->gameRef();
 
     if (_perspective) {
         game.mainCamera.setPerspectiveProjection(_perspectiveFov,
@@ -105,8 +108,8 @@ void
 cCamera::editorGizmosRender(bool selected)
 {
 #ifdef BUILD_EDITOR
-    auto mesh = gEditor->cameraGizmoMesh.get();
-    auto material = gEditor->cameraGizmoMaterial.get();
+    auto mesh = gEditor->gizmos().cameraMesh();
+    auto material = gEditor->gizmos().cameraMaterial();
     gEngine->renderGraph().sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 #endif // BUILD_EDITOR
 }

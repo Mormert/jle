@@ -4,54 +4,24 @@
 
 #ifdef BUILD_EDITOR
 
-#include "jlePathDefines.h"
-
-#include "editor/jleEditorImGuiWindowInterface.h"
 #include "jleGameEngine.h"
-#include "jleImage.h"
-#include "jleMesh.h"
-#include "jleMaterial.h"
-#include "jleFileChangeNotifier.h"
-#include "jleResourceRef.h"
-#include <memory>
+
 #include <vector>
 
+class jleFileChangeNotifier;
+class jleEditorWindowInterface;
 class jleFramebufferInterface;
 class jleSceneEditorWindow;
 class jleEditorTextEdit;
 class jleEditorSceneObjectsWindow;
+class jleCamera;
+class jleScene;
+class jleEditorGizmos;
+class jleEditorSaveState;
+class jlePath;
 
 class jleEditor;
 inline jleEditor *gEditor;
-
-struct jleEditorSaveState : public jleSerializedResource, public std::enable_shared_from_this<jleEditorSaveState> {
-    template <class Archive>
-    void
-    serialize(Archive &archive)
-    {
-        archive(CEREAL_NVP(loadedScenePaths),
-                CEREAL_NVP(cameraPosition),
-                CEREAL_NVP(gameRunning),
-                CEREAL_NVP(orthographicCamera),
-                CEREAL_NVP(cameraYaw),
-                CEREAL_NVP(cameraPitch));
-    }
-
-    JLE_REGISTER_RESOURCE_TYPE(jleEditorSaveState, edsave);
-    SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
-
-    std::vector<jlePath> loadedScenePaths{};
-    glm::vec3 cameraPosition{};
-    float cameraYaw{};
-    float cameraPitch{};
-    bool orthographicCamera{};
-    bool gameRunning{};
-};
-
-JLE_EXTERN_TEMPLATE_CEREAL_H(jleEditorSaveState)
-
-CEREAL_REGISTER_TYPE(jleEditorSaveState)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleEditorSaveState)
 
 class jleEditor : public jleGameEngine
 {
@@ -66,9 +36,12 @@ public:
 
     std::shared_ptr<jleFramebufferInterface> editorScreenFramebuffer;
 
-    static inline jleCameraProjection projectionType;
+    jleCamera& camera();
+    bool perspectiveCamera = true;
 
-    static inline jleCamera editorCamera{jleCameraProjection::Orthographic};
+    jleEditorGizmos& gizmos();
+
+    jleEditorSaveState& saveState();
 
     void updateEditorLoadedScenes(float dt);
 
@@ -79,44 +52,14 @@ public:
     jleEditorSceneObjectsWindow &editorSceneObjects();
 
     bool
-    checkSceneIsActiveEditor(const std::string &sceneName)
-    {
-        for (auto &&scene : _editorScenes) {
-            if (sceneName == scene->sceneName) {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    checkSceneIsActiveEditor(const std::string &sceneName);
 
     std::shared_ptr<jleScene>
-    loadScene(const jlePath &scenePath, bool startObjects = true)
-    {
-        auto scene = gCore->resources().loadResourceFromFile<jleScene>(scenePath, true);
-
-        auto it = std::find(_editorScenes.begin(), _editorScenes.end(), scene);
-        if (it == _editorScenes.end()) {
-            _editorScenes.push_back(scene);
-            scene->onSceneCreation();
-            if (startObjects) {
-                scene->startObjects();
-            }
-        } else {
-            LOG_WARNING << "Loaded scene is already loaded";
-        }
-
-        return scene;
-    }
-
-    jleResourceRef<jleMesh> pointLightLampGizmoMesh;
-    jleResourceRef<jleMesh> directionalLightLampGizmoMesh;
-
-    jleResourceRef<jleMesh> cameraGizmoMesh;
-    jleResourceRef<jleMaterial> cameraGizmoMaterial;
+    loadScene(const jlePath &scenePath, bool startObjects = true);
 
 private:
-    jleResourceRef<jleEditorSaveState> _editorSaveState;
+    struct jleEditorInternal;
+    std::unique_ptr<jleEditorInternal> _internal;
 
     void exiting() override;
 
@@ -134,11 +77,11 @@ private:
 
     void renderEditorGizmosObject(jleObject *object);
 
-    void addImGuiWindow(std::shared_ptr<iEditorImGuiWindow> window);
+    void addImGuiWindow(std::shared_ptr<jleEditorWindowInterface> window);
 
     void mainEditorWindowResized(int w, int h);
 
-    std::vector<std::shared_ptr<iEditorImGuiWindow>> _imGuiWindows;
+    std::vector<std::shared_ptr<jleEditorWindowInterface>> _imGuiWindows;
 
     std::vector<std::shared_ptr<jleScene>> _editorScenes;
 
@@ -149,6 +92,10 @@ private:
     std::unique_ptr<jleFileChangeNotifier> _fileChangeNotifier;
 
     std::shared_ptr<jleEditorTextEdit> _textEditWindow;
+
+    std::unique_ptr<jleCamera> _camera;
+
+    std::unique_ptr<jleEditorGizmos> _gizmos;
 };
 
 #endif // BUILD_EDITOR

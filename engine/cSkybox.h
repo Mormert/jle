@@ -3,7 +3,7 @@
 #include "jleComponent.h"
 #include "jleResourceRef.h"
 #include "jleSkybox.h"
-#include "jleRendering.h"
+
 #include "jle3DRenderer.h"
 
 class cSkybox : public jleComponent
@@ -20,7 +20,7 @@ public:
 
         if(_skybox.get())
         {
-            gCore->renderSettings().skybox = _skybox;
+            gEngine->renderSettings().skybox = _skybox;
         }
     }
 

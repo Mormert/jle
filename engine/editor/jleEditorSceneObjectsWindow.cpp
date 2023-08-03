@@ -5,16 +5,16 @@
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_stdlib.h"
 #include "jleEditor.h"
+#include "jleGame.h"
 #include "jleImGuiCerealArchive.h"
 #include "jleNetScene.h"
 #include "jleTypeReflectionUtils.h"
 
-#include <cLuaScript.h>
 #include <filesystem>
 #include <fstream>
 
 jleEditorSceneObjectsWindow::jleEditorSceneObjectsWindow(const std::string &window_name)
-    : iEditorImGuiWindow{window_name}
+    : jleEditorWindowInterface{window_name}
 {
 }
 

@@ -2,8 +2,9 @@
 
 #include "jleEditorNotifications.h"
 #include "jleDynamicLogAppender.h"
+#include "ImGui/imgui.h"
 
-jleEditorNotifications::jleEditorNotifications(const std::string &windowName) : iEditorImGuiWindow(windowName)
+jleEditorNotifications::jleEditorNotifications(const std::string &windowName) : jleEditorWindowInterface(windowName)
 {
     dynamicAppender().addAppender(this);
 

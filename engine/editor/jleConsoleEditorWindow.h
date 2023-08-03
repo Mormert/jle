@@ -12,7 +12,7 @@
 
 #include "plog/Appenders/IAppender.h"
 
-class jleConsoleEditorWindow : public iEditorImGuiWindow, public plog::IAppender {
+class jleConsoleEditorWindow : public jleEditorWindowInterface, public plog::IAppender {
 public:
     explicit jleConsoleEditorWindow(const std::string &window_name);
 

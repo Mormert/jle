@@ -8,7 +8,7 @@
 #include <windows.h>
 #endif
 
-jleEditorProfilerWindow::jleEditorProfilerWindow(const std::string &window_name) : iEditorImGuiWindow{window_name} {}
+jleEditorProfilerWindow::jleEditorProfilerWindow(const std::string &window_name) : jleEditorWindowInterface{window_name} {}
 
 void
 jleEditorProfilerWindow::update(jleGameEngine &ge)

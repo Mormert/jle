@@ -21,8 +21,6 @@ public:
                                       const std::weak_ptr<void> &data);
 
 private:
-    friend class jleCore;
-
     friend class jleGameEngine;
 
     void process();

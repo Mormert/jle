@@ -1,5 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
+/*
+
 #pragma once
 
 #include "jle3DRenderer.h"
@@ -38,3 +40,5 @@ private:
     std::unique_ptr<jleTextRendering> _texts;
     std::unique_ptr<jle3DRenderer> _3dRenderer;
 };
+
+ */

@@ -14,6 +14,7 @@
 #include "jleTexture.h"
 #include "jleTransform.h"
 #include "jleWindow.h"
+#include "jle3DRenderer.h"
 
 #include "jleIncludeGL.h"
 
@@ -24,13 +25,13 @@
 
 jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name,
                                            std::shared_ptr<jleFramebufferInterface> &framebuffer)
-    : iEditorImGuiWindow(window_name)
+    : jleEditorWindowInterface(window_name)
 {
     _framebuffer = framebuffer;
 
     _pickingFramebuffer = std::make_unique<jleFramebufferPicking>(_framebuffer->width(), _framebuffer->height());
 
-    auto pos = gEditor->editorCamera.getPosition();
+    auto pos = gEditor->camera().getPosition();
     fpvCamController.position = pos;
 }
 
@@ -62,7 +63,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     const int32_t windowPositionY = int32_t(cursorScreenPos.y) - viewport->Pos.y;
 
     const auto previousFrameCursorPos = _lastCursorPos;
-    _lastCursorPos = gCore->window().cursor();
+    _lastCursorPos = gEngine->window().cursor();
     const int32_t mouseX = _lastCursorPos.first;
     const int32_t mouseY = _lastCursorPos.second;
     const int32_t mouseDeltaX = mouseX - previousFrameCursorPos.first;
@@ -78,8 +79,8 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         return int(ratio * float(mouseY - windowPositionY));
     };
 
-    const auto mouseCoordinateX = getPixelatedMousePosX() + static_cast<int>(jleEditor::editorCamera.getPosition().x);
-    const auto mouseCoordinateY = getPixelatedMousePosY() + static_cast<int>(jleEditor::editorCamera.getPosition().y);
+    const auto mouseCoordinateX = getPixelatedMousePosX() + static_cast<int>(gEditor->camera().getPosition().x);
+    const auto mouseCoordinateY = getPixelatedMousePosY() + static_cast<int>(gEditor->camera().getPosition().y);
 
     if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset == _lastGameWindowWidth &&
           ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset == _lastGameWindowHeight)) {
@@ -118,7 +119,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     // Note here that the ImGui::Image is the item that is being clicked on!
     if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && canSelectObject) {
 
-        gCore->renderer().renderMeshesPicking(*_pickingFramebuffer, jleEditor::editorCamera, gCore->renderGraph());
+        gEngine->renderer().renderMeshesPicking(*_pickingFramebuffer, gEditor->camera(), gEngine->renderGraph());
 
         _pickingFramebuffer->bind();
 
@@ -140,7 +141,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
 
             std::vector<std::shared_ptr<jleScene>> scenes;
             if (!gEngine->isGameKilled()) {
-                auto &game = ((jleGameEngine *)gCore)->gameRef();
+                auto &game = ((jleGameEngine *)gEngine)->gameRef();
                 scenes = game.activeScenesRef();
             }
 
@@ -170,14 +171,14 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     auto x = ImGui::GetCursorPosX();
     ImGui::SetCursorPosX(x + 8 * globalImguiScale);
 
-    if (jleEditor::projectionType == jleCameraProjection::Orthographic) {
+    if (gEditor->perspectiveCamera) {
         if (ImGui::Button("Orthographic")) {
-            jleEditor::projectionType = jleCameraProjection::Perspective;
+            gEditor->perspectiveCamera = false;
             ImGuizmo::SetOrthographic(false);
         }
     } else {
         if (ImGui::Button("Perspective")) {
-            jleEditor::projectionType = jleCameraProjection::Orthographic;
+            gEditor->perspectiveCamera = true;
             ImGuizmo::SetOrthographic(true);
         }
     }
@@ -200,7 +201,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
 
     ImGui::SameLine();
 
-    if (gEditor->projectionType == jleCameraProjection::Perspective) {
+    if (gEditor->camera().getProjectionType() == jleCameraProjection::Perspective) {
         ImGui::Text("[%d, %d] (%f)", _framebuffer->width(), _framebuffer->height(), cameraSpeed);
     } else {
         ImGui::Text("[%d, %d - Ortho Zoom: %f] (%f)",
@@ -210,8 +211,8 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
                     cameraSpeed);
     }
 
-    const float *viewMatrix = &jleEditor::editorCamera.getViewMatrix()[0][0];
-    const float *projectionMatrix = &jleEditor::editorCamera.getProjectionMatrix()[0][0];
+    const float *viewMatrix = &gEditor->camera().getViewMatrix()[0][0];
+    const float *projectionMatrix = &gEditor->camera().getProjectionMatrix()[0][0];
     static const auto identityMatrix = glm::mat4{1.f};
     const static float *identityMatrixPtr = &identityMatrix[0][0];
     // ImGuizmo::DrawGrid(viewMatrix, projectionMatrix, identityMatrixPtr, 25.f);
@@ -298,7 +299,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         auto t = ge.deltaFrameTime();
         auto dragDelta = ImGui::GetMouseDragDelta(1);
 
-        if (jleEditor::projectionType == jleCameraProjection::Perspective || ImGui::IsKeyDown(ImGuiKey_LeftShift)) {
+        if (gEditor->camera().getProjectionType() == jleCameraProjection::Perspective || ImGui::IsKeyDown(ImGuiKey_LeftShift)) {
             if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
                 fpvCamController.applyPerspectiveMouseMovementDelta(glm::vec2{mouseDeltaX, mouseDeltaY}, t * 10000.f);
                 ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
@@ -308,14 +309,14 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         }
 
         if (ImGui::IsKeyDown(ImGuiKey_W)) {
-            if (jleEditor::projectionType == jleCameraProjection::Orthographic) {
+            if (gEditor->camera().getProjectionType() == jleCameraProjection::Orthographic) {
                 fpvCamController.moveUp(cameraSpeed * t);
             } else {
                 fpvCamController.moveForward(cameraSpeed * t);
             }
         }
         if (ImGui::IsKeyDown(ImGuiKey_S)) {
-            if (jleEditor::projectionType == jleCameraProjection::Orthographic) {
+            if (gEditor->camera().getProjectionType() == jleCameraProjection::Orthographic) {
                 fpvCamController.moveDown(cameraSpeed * t);
             } else {
                 fpvCamController.moveBackward(cameraSpeed * t);
@@ -334,9 +335,9 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
             fpvCamController.moveDown(cameraSpeed * t);
         }
 
-        jleEditor::editorCamera.setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
+        gEditor->camera().setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
 
-        auto currentScroll = gCore->input().mouse->scrollY();
+        auto currentScroll = gEngine->input().mouse->scrollY();
         if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentScroll != 0.f) {
             orthoZoomValue -= currentScroll * 1.f * ge.deltaFrameTime();
             orthoZoomValue = glm::clamp(orthoZoomValue, 0.01f, 2.f);

@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleEditorTextEdit.h"
-jleEditorTextEdit::jleEditorTextEdit(const std::string &window_name) : iEditorImGuiWindow(window_name)
+jleEditorTextEdit::jleEditorTextEdit(const std::string &window_name) : jleEditorWindowInterface(window_name)
 {
     ImGuiIO &io = ImGui::GetIO();
     std::string path = jlePath{"ED:/fonts/Cascadia.ttf"}.getRealPath();

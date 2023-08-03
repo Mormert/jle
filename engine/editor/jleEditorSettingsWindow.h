@@ -5,15 +5,14 @@
 #ifdef BUILD_EDITOR
 
 #include "editor/jleEditorImGuiWindowInterface.h"
-#include "editor/jleEditorJsonToImgui.h"
-
 #include <memory>
 
-class jleEditorSettingsWindow : public iEditorImGuiWindow {
+class jleEditorSettingsWindow : public jleEditorWindowInterface
+{
 public:
-    jleEditorSettingsWindow(const std::string &window_name);
+    explicit jleEditorSettingsWindow(const std::string &window_name);
 
-    virtual void update(jleGameEngine &ge) override;
+    void update(jleGameEngine &ge) override;
 };
 
 #endif // BUILD_EDITOR

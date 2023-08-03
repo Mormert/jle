@@ -10,7 +10,8 @@
 #include "jleGameEngine.h"
 #include "jleImage.h"
 
-class jleSceneEditorWindow : public iEditorImGuiWindow {
+class jleSceneEditorWindow : public jleEditorWindowInterface
+{
 public:
     jleSceneEditorWindow(const std::string &window_name, std::shared_ptr<jleFramebufferInterface> &framebuffer);
 

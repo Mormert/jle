@@ -6,7 +6,7 @@
 #include "jleEngineSettings.h"
 #include "jleImGuiCerealArchive.h"
 
-jleEditorSettingsWindow::jleEditorSettingsWindow(const std::string &window_name) : iEditorImGuiWindow{window_name} {}
+jleEditorSettingsWindow::jleEditorSettingsWindow(const std::string &window_name) : jleEditorWindowInterface{window_name} {}
 
 void
 jleEditorSettingsWindow::update(jleGameEngine &ge)
@@ -23,12 +23,12 @@ jleEditorSettingsWindow::update(jleGameEngine &ge)
                       ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 
     cereal::jleImGuiCerealArchive archive;
-    archive(gCore->settings());
+    archive(gEngine->settings());
 
     ImGui::EndChild();
 
     if (ImGui::Button("Save Settings")) {
-        gCore->settings().saveToFile();
+        gEngine->settings().saveToFile();
     }
 
     ImGui::SameLine();

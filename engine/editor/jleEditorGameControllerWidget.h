@@ -7,7 +7,8 @@
 #include "jleEditorImGuiWindowInterface.h"
 #include "jleTexture.h"
 
-class jleEditorGameControllerWidget : public iEditorImGuiWindow {
+class jleEditorGameControllerWidget : public jleEditorWindowInterface
+{
 public:
     explicit jleEditorGameControllerWidget(const std::string &window_name);
 

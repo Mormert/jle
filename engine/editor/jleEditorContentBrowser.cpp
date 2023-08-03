@@ -20,27 +20,27 @@
 jleEditorContentBrowser::jleEditorContentBrowser(const std::string &window_name,
                                                  const std::shared_ptr<jleEditorTextEdit> &editorTextEdit,
                                                  const std::shared_ptr<jleEditorResourceEdit> &editorResourceEdit)
-    : iEditorImGuiWindow(window_name)
+    : jleEditorWindowInterface(window_name)
 {
-    _directoryIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/directory.png"});
-    _fileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/files.png"});
-    _backDirectoryIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/back_directory.png"});
+    _directoryIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/directory.png"});
+    _fileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/files.png"});
+    _backDirectoryIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/back_directory.png"});
 
-    _sceneFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/scene.png"});
+    _sceneFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/scene.png"});
 
-    _imageFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/image.png"});
+    _imageFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/image.png"});
 
-    _jsonFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/json.png"});
+    _jsonFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/json.png"});
 
-    _luaFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/script.png"});
+    _luaFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/script.png"});
 
-    _shaderFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/shader.png"});
+    _shaderFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/shader.png"});
 
-    _materialFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/material.png"});
+    _materialFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/material.png"});
 
-    _objTemplateFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/obj_template.png"});
+    _objTemplateFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/obj_template.png"});
 
-    _obj3dFileIcon = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/object.png"});
+    _obj3dFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/object.png"});
 
     _selectedDirectory = GAME_RESOURCES_DIRECTORY;
 
@@ -331,7 +331,7 @@ jleEditorContentBrowser::contentBrowser()
                         if (it != _referencedTextures.end()) {
                             iconTexture = it->second;
                         } else {
-                            iconTexture = gCore->resources().loadResourceFromFile<jleTexture>(
+                            iconTexture = gEngine->resources().loadResourceFromFile<jleTexture>(
                                 jlePath{dir_entry.path().string(), false});
                             _referencedTextures.insert(std::make_pair(path, iconTexture));
                         }
@@ -527,7 +527,7 @@ jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file)
                 sceneName.resize(dot);
             }
 
-            auto &game = ((jleGameEngine *)gCore)->gameRef();
+            auto &game = ((jleGameEngine *)gEngine)->gameRef();
             game.loadScene(jlePath{file.string(), false});
         }
     } else {

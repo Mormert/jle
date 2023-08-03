@@ -2,8 +2,8 @@
 
 #include "cSkybox.h"
 #include "jle3DRenderer.h"
-#include "jleCore.h"
-#include "jleRendering.h"
+#include "jleGameEngine.h"
+
 #include "jleResource.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cSkybox)

@@ -14,7 +14,7 @@ cCameraFPV::~cCameraFPV() {}
 void
 cCameraFPV::update(float dt)
 {
-    auto &&keyboard = gCore->input().keyboard;
+    auto &&keyboard = gEngine->input().keyboard;
 
     auto updatedPosition = getTransform().getLocalPosition();
 
@@ -65,8 +65,8 @@ cCameraFPV::update(float dt)
     }
 #endif
 
-    float mouseDeltaX = gCore->input().mouse->xDelta() * 0.078f;
-    float mouseDeltaY = -gCore->input().mouse->yDelta() * 0.078f;
+    float mouseDeltaX = gEngine->input().mouse->xDelta() * 0.078f;
+    float mouseDeltaY = -gEngine->input().mouse->yDelta() * 0.078f;
 
     glm::mat4 worldMatrix = getTransform().getWorldMatrix();
 

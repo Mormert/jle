@@ -7,7 +7,6 @@
 #include "jleFramebufferShadowMap.h"
 #include "jleFullscreenRendering.h"
 #include "jleGameEngine.h"
-#include "jleMaterial.h"
 #include "jlePathDefines.h"
 #include "jleProfiler.h"
 #include "jleStaticOpenGLState.h"
@@ -20,6 +19,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <random>
 
+#include <RmlUi/Core/Context.h>
 #include <RmlUi_Backend.h>
 
 jle3DRenderer::jle3DRenderer()

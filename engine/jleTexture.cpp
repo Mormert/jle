@@ -6,14 +6,12 @@
 
 #include "jleIncludeGL.h"
 
-#include "jleCore.h"
+#include "jleGameEngine.h"
 #include "jleImage.h"
-#include "jleResource.h"
 #include "jleStaticOpenGLState.h"
 #include "plog/Log.h"
 
 #include <iostream>
-#include <memory>
 
 jleTexture::~jleTexture()
 {

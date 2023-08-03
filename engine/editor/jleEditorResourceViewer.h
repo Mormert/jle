@@ -6,7 +6,8 @@
 
 #include "jleEditorImGuiWindowInterface.h"
 
-class jleEditorResourceViewer : public iEditorImGuiWindow {
+class jleEditorResourceViewer : public jleEditorWindowInterface
+{
 public:
     explicit jleEditorResourceViewer(const std::string &window_name);
 

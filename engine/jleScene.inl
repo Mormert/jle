@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Johan Lind
 
-#include "jleCore.h"
+#include "jleGameEngine.h"
 #include "jleObject.h"
 #include "jleResource.h"
 #include <fstream>
@@ -17,7 +17,7 @@ jleScene::serialize(Archive &archive)
         if (object->__templatePath.has_value()) {
             auto path = object->__templatePath;
             try {
-                auto original = gCore->resources().loadResourceFromFile<jleObject>(object->__templatePath.value());
+                auto original = gEngine->resources().loadResourceFromFile<jleObject>(object->__templatePath.value());
 
                 auto copy = original->duplicateTemplate();
                 object = copy;

@@ -81,7 +81,7 @@ jleAseprite::jleAseprite(const jlePath &path) {
 void jleAseprite::loadImage() {
     std::filesystem::path p{path};
     p.remove_filename();
-    imageTexture = gCore->resources().loadResourceFromFile<jleTexture>(jlePath{p.string() + meta.image});
+    imageTexture = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{p.string() + meta.image});
 }
 
 int jleAseprite::totalAnimationTimeMs() {

@@ -1,6 +1,8 @@
 // Copyright (c) 2023. Johan Lind
 
-#include "jleRendering.h"
+/*
+
+
 
 #include "jleIncludeGL.h"
 #include "jleGLError.h"
@@ -88,3 +90,5 @@ jleRendering::rendering3d()
 {
     return *_3dRenderer;
 }
+
+*/
