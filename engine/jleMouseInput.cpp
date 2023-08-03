@@ -4,15 +4,15 @@
 #include "jleWindow.h"
 
 
-jleMouseInput::jleMouseInput(std::shared_ptr<jleWindow> windowInternal) {
-    this->_window = std::move(windowInternal);
+jleMouseInput::jleMouseInput(std::shared_ptr<jleWindow> window) {
+    this->_window = std::move(window);
 }
 
 int jleMouseInput::mouseX() {
 #ifdef BUILD_EDITOR
     return _window->cursor().first - _screenBeginX;
 #else
-    return windowInternal->cursor().first;
+    return _window->cursor().first;
 #endif
 }
 
@@ -20,7 +20,7 @@ int jleMouseInput::mouseY() {
 #ifdef BUILD_EDITOR
     return _window->cursor().second - _screenBeginY;
 #else
-    return windowInternal->cursor().second;
+    return _window->cursor().second;
 #endif
 }
 

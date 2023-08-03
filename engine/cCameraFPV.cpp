@@ -54,7 +54,7 @@ cCameraFPV::update(float dt)
     }
 
 #ifndef BUILD_EDITOR
-    if (keyboard->keyPressed(258)) // Tab
+    if (keyboard->keyPressed(jleKey::TAB)) // Tab
     {
         auto fpsMode = gEngine->input().mouse->isFpsMode();
         if (fpsMode) {
