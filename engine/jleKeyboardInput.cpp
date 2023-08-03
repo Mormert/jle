@@ -6,33 +6,29 @@
 #include <utility>
 
 jleKeyboardInput::jleKeyboardInput(std::shared_ptr<jleWindow> window) {
-    this->windowInternal = std::move(window);
+    this->_window = std::move(window);
 }
 
-void jleKeyboardInput::linkWindow(std::shared_ptr<jleWindow> window) {
-    this->windowInternal = std::move(window);
-}
-
-bool jleKeyboardInput::keyPressed(int key) {
+bool jleKeyboardInput::keyPressed(jleKey key) {
     if (_isEnabled) {
-        return windowInternal->keyPressed(key);
+        return _window->keyPressed(static_cast<int>(key));
     }
     return false;
 }
 
-bool jleKeyboardInput::keyReleased(int key) {
+bool jleKeyboardInput::keyReleased(jleKey key) {
     if (_isEnabled) {
-        return windowInternal->keyReleased(key);
+        return _window->keyReleased(static_cast<int>(key));
     }
     return false;
 }
 
-bool jleKeyboardInput::keyDown(int key, bool ignoreInputEnabled) {
+bool jleKeyboardInput::keyDown(jleKey key, bool ignoreInputEnabled) {
     if (ignoreInputEnabled) {
-        return windowInternal->key(key);
+        return _window->key(static_cast<int>(key));
     }
     if (_isEnabled) {
-        return windowInternal->key(key);
+        return _window->key(static_cast<int>(key));
     }
     return false;
 }

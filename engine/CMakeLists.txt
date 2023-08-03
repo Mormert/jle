@@ -91,7 +91,8 @@ add_library(engine STATIC
         "jleLuaScriptComponent.cpp"
         "jleFileChangeNotifier.cpp"
         "jleLuaEnvironment.cpp"
-        "jleGLError.cpp")
+        "jleGLError.cpp"
+        "jleInput.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE

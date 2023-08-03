@@ -79,7 +79,7 @@ jleGameEditorWindow::update(jleGameEngine &ge)
 
     if (ImGui::IsWindowFocused() != _wasFocused) {
         _wasFocused = ImGui::IsWindowFocused();
-        ge.input().inputEnabled(_wasFocused);
+        ge.input().setInputEnabled(_wasFocused);
     }
 
     if (ImGui::IsWindowFocused() && ge.input().mouse->isFpsMode() && ImGui::IsKeyPressed(ImGuiKey_Tab)) {

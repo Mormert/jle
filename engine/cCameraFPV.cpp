@@ -24,28 +24,28 @@ cCameraFPV::update(float dt)
 
     glm::vec3 addedPosition{0.f};
 
-    if (keyboard->keyDown('A')) {
+    if (keyboard->keyDown(jleKey::A)) {
         addedPosition -= right;
     }
-    if (keyboard->keyDown('D')) {
+    if (keyboard->keyDown(jleKey::D)) {
         addedPosition += right;
     }
-    if (keyboard->keyDown('W')) {
+    if (keyboard->keyDown(jleKey::W)) {
         addedPosition -= forward;
     }
-    if (keyboard->keyDown('S')) {
+    if (keyboard->keyDown(jleKey::S)) {
         addedPosition += forward;
     }
-    if (keyboard->keyDown(32)) { // Space
+    if (keyboard->keyDown(jleKey::SPACE)) {
         addedPosition -= up;
     }
-    if (keyboard->keyDown(341)) { // Left CTRL
+    if (keyboard->keyDown(jleKey::LEFT_CONTROL)) {
         addedPosition += up;
     }
 
     if (addedPosition != glm::vec3{0.f}) {
         addedPosition = glm::normalize(addedPosition) * dt * _moveSpeed;
-        if (keyboard->keyDown(340)) { // Left Shift
+        if (keyboard->keyDown(jleKey::LEFT_SHIFT)) {
             addedPosition *= 2.5f;
         }
         updatedPosition += addedPosition;

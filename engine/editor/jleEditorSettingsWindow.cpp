@@ -3,6 +3,7 @@
 #include "jleEditorSettingsWindow.h"
 #include "ImGui/imgui.h"
 #include "jleEditor.h"
+#include "jleEngineSettings.h"
 #include "jleImGuiCerealArchive.h"
 
 jleEditorSettingsWindow::jleEditorSettingsWindow(const std::string &window_name) : iEditorImGuiWindow{window_name} {}

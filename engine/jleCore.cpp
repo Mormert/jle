@@ -1,6 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleCore.h"
+#include "jleEngineSettings.h"
 #include "jle3DRenderer.h"
 #include "jleExplicitInclude.h"
 #include "jleFont.h"
@@ -41,8 +42,7 @@ jleCore::jleCore()
     _window->settings(settings().windowSettings);
     _window->initWindow();
 
-    _input = std::make_shared<jleInput>(std::make_shared<jleKeyboardInput>(_window),
-                                      std::make_shared<jleMouseInput>(_window));
+    _input = std::make_unique<jleInput>(_window);
 
     _timerManager = std::make_unique<jleTimerManager>();
 

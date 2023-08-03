@@ -4,11 +4,12 @@
 
 #include "jleCore.h"
 #include "jleGame.h"
-#include "jleLuaEnvironment.h"
 #include <RmlUi/Core/Context.h>
 
 class jleFullscreenRendering;
 class jleFramebufferInterface;
+class jleLuaEnvironment;
+class jleGame;
 
 class jleGameEngine;
 inline jleGameEngine *gEngine;

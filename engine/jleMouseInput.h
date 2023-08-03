@@ -6,12 +6,26 @@
 
 class jleWindow;
 
+enum class jleButton : int
+{
+    BUTTON_1        = 0,
+    BUTTON_2        = 1,
+    BUTTON_3        = 2,
+    BUTTON_4        = 3,
+    BUTTON_5        = 4,
+    BUTTON_6        = 5,
+    BUTTON_7        = 6,
+    BUTTON_8        = 7,
+    BUTTON_LAST     = BUTTON_8,
+    BUTTON_LEFT     = BUTTON_1,
+    BUTTON_RIGHT    = BUTTON_2,
+    BUTTON_MIDDLE   = BUTTON_3
+};
+
 class jleMouseInput
 {
 public:
-    explicit jleMouseInput(std::shared_ptr<jleWindow> windowInternal);
-
-    void linkWindow(std::shared_ptr<jleWindow> windowInternal);
+    explicit jleMouseInput(std::shared_ptr<jleWindow> window);
 
     void updateDeltas();
 
@@ -27,17 +41,11 @@ public:
 
     float scrollY();
 
-    int pixelatedMouseX();
-
-    int pixelatedMouseY();
-
-    bool mouseClick(int button);
+    bool mouseClick(jleButton button);
 
     void setScreenBeginCoords(int x, int y);
 
     void setScreenSize(int width, int height);
-
-    void setPixelatedScreenSize(int width, int height);
 
     void isEnabled(bool value);
 
@@ -46,13 +54,12 @@ public:
     [[nodiscard]] bool isFpsMode() const;
 
 private:
-    std::shared_ptr<jleWindow> windowInternal;
+    std::shared_ptr<jleWindow> _window;
 
     int _lastMouseX{}, _lastMouseY{};
     int _deltaX{}, _deltaY;
     int _screenBeginX{0}, _screenBeginY{0};
     int _screenWidth, _screenHeight;
-    int _pixelatedScreenWidth, _pixelatedScreenHeight;
     bool _isEnabled = true;
     bool _fpsMode{false};
 };

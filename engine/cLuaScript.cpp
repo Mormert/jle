@@ -2,6 +2,7 @@
 
 #include "cLuaScript.h"
 #include "jleGameEngine.h"
+#include "jleLuaEnvironment.h"
 
 #ifdef BUILD_EDITOR
 #include "ImGui/imgui.h"

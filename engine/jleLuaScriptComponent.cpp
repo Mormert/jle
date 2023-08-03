@@ -1,6 +1,8 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleLuaScriptComponent.h"
+#include "jleLuaEnvironment.h"
+
 
 void
 jleLuaScriptComponent::setupLua(sol::table &self, jleObject *ownerObject)

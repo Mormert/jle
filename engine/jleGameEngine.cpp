@@ -9,6 +9,7 @@
 #include "jlePhysics.h"
 #include "jleRendering.h"
 #include "jleTimerManager.h"
+#include "jleLuaEnvironment.h"
 #include "jleWindow.h"
 #include <plog/Log.h>
 
@@ -175,7 +176,6 @@ jleGameEngine::start()
     mainScreenFramebuffer = std::make_shared<jleFramebufferScreen>(initialScreenX, initialScreenY);
 
     const auto &mouse = gCore->input().mouse;
-    mouse->setPixelatedScreenSize(initialScreenX, initialScreenY);
     mouse->setScreenSize(initialScreenX, initialScreenY);
 
     luaEnvironment()->loadScript("ER:/scripts/engine.lua");
@@ -200,7 +200,6 @@ jleGameEngine::resizeMainFramebuffer(unsigned int width, unsigned int height)
     mainScreenFramebuffer->resize(width, height);
 
     const auto &inputMouse = gCore->input().mouse;
-    inputMouse->setPixelatedScreenSize(width, height);
     inputMouse->setScreenSize(width, height);
 }
 

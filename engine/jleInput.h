@@ -4,28 +4,24 @@
 
 #include "jleKeyboardInput.h"
 #include "jleMouseInput.h"
-
 #include <memory>
-#include <utility>
 
-class jleInput {
+class jleWindow;
+
+class jleInput
+{
 public:
     ~jleInput() = default;
 
-    jleInput(std::shared_ptr<jleKeyboardInput> ki,
-             std::shared_ptr<jleMouseInput> mi)
-        : keyboard{std::move(std::move(ki))}, mouse{std::move(std::move(mi))} {}
+    explicit jleInput(const std::shared_ptr<jleWindow> &window);
 
-    std::shared_ptr<jleKeyboardInput> keyboard;
-    std::shared_ptr<jleMouseInput> mouse;
+    const std::unique_ptr<jleKeyboardInput> keyboard;
+    const std::unique_ptr<jleMouseInput> mouse;
 
-    // Set to false if the input system should stop polling
-    void inputEnabled(bool isEnabled) {
-        _isInputEnabled = isEnabled;
+    void setInputEnabled(bool isEnabled);
 
-        keyboard->isEnabled(isEnabled);
-        mouse->isEnabled(isEnabled);
-    }
+    bool getInputEnabled() const;
 
+private:
     bool _isInputEnabled = true;
 };

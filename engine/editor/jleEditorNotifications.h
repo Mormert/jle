@@ -5,6 +5,7 @@
 #ifdef BUILD_EDITOR
 
 #include "plog/Log.h"
+#include "jleTexture.h"
 #include "jleEditorImGuiWindowInterface.h"
 
 class jleEditorNotifications : public iEditorImGuiWindow, public plog::IAppender {

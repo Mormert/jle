@@ -3,9 +3,6 @@
 #ifndef JLE_CORE_H
 #define JLE_CORE_H
 
-
-#include "jleEngineSettings.h"
-#include "jleTexture.h"
 #include <memory>
 
 namespace SoLoud
@@ -16,6 +13,7 @@ class Remotery;
 
 class jleFramebufferInterface;
 class jleResources;
+class jleEngineSettings;
 //class jleFontData;
 class jleInput;
 class jleWindow;
@@ -99,7 +97,7 @@ protected:
     //std::unique_ptr<jleFontData> _fontData;
     std::unique_ptr<jleTimerManager> _timerManager;
     std::shared_ptr<jleWindow> _window;
-    std::shared_ptr<jleInput> _input;
+    std::unique_ptr<jleInput> _input;
     std::unique_ptr<SoLoud::Soloud> _soLoud;
 
     friend class jleSceneEditorWindow;
