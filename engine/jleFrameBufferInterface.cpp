@@ -5,7 +5,6 @@
 #include "jleIncludeGL.h"
 
 #include "glm/glm.hpp"
-#include "jleStaticOpenGLState.h"
 #include <plog/Log.h>
 
 #include <iostream>
@@ -49,7 +48,6 @@ jleFramebufferInterface::bindDefault()
 {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
-    jleStaticOpenGLState::globalActiveTexture = 0;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

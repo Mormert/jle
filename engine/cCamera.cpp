@@ -4,7 +4,6 @@
 #include "jleGameEngine.h"
 #include "jleIncludeGL.h"
 #include "jleObject.h"
-#include "jleStaticOpenGLState.h"
 #include "jleWindow.h"
 #include "jleGame.h"
 
@@ -98,7 +97,6 @@ cCamera::editorInspectorImGuiRender()
     // Get the texture from the framebuffer
     auto fb = gEngine->mainScreenFramebuffer;
     glBindTexture(GL_TEXTURE_2D, (unsigned int)fb->texture());
-    jleStaticOpenGLState::globalActiveTexture = (unsigned int)fb->texture();
     ImGui::Image(
         (void *)(intptr_t)fb->texture(), ImVec2(fb->width() / 4.f, fb->height() / 4.f), ImVec2(0, 1), ImVec2(1, 0));
 

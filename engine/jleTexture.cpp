@@ -8,7 +8,6 @@
 
 #include "jleGameEngine.h"
 #include "jleImage.h"
-#include "jleStaticOpenGLState.h"
 #include <plog/Log.h>
 
 #include <iostream>
@@ -74,7 +73,6 @@ jleTexture::loadFromFile(const jlePath &path)
         PLOG_VERBOSE << "Generated OpenGL texture (ID=" << _id << ") " << path.getVirtualPath() << " (" << image.nrChannels() << " channels)";
 
         glBindTexture(GL_TEXTURE_2D, 0);
-        jleStaticOpenGLState::globalActiveTexture = 0;
 
     } else {
         PLOG_ERROR << "Failed to generate OpenGL texture " << _id << " with path: " << path.getVirtualPath();
@@ -85,18 +83,11 @@ jleTexture::loadFromFile(const jlePath &path)
     return jleLoadFromFileSuccessCode::SUCCESS;
 }
 
-bool
-jleTexture::isActive()
-{
-    return jleStaticOpenGLState::globalActiveTexture == _id;
-}
-
 void
-jleTexture::setActive(int texture_slot)
+jleTexture::setActive(jleTextureSlot slot)
 {
-    glActiveTexture(GL_TEXTURE0 + texture_slot);
+    glActiveTexture(GL_TEXTURE0 + static_cast<int>(slot));
     glBindTexture(GL_TEXTURE_2D, _id);
-    jleStaticOpenGLState::globalActiveTexture = _id;
 }
 
 int32_t

@@ -3,48 +3,36 @@
 #ifndef JLE_MATERIAL_H
 #define JLE_MATERIAL_H
 
+#include "jleCompileHelper.h"
 #include "jleResourceInterface.h"
 #include "jleTypeReflectionUtils.h"
-#include "jleCompileHelper.h"
 
+#include "jle3DGraph.h"
+#include "jle3DSettings.h"
+#include "jleCamera.h"
 #include "jleResourceRef.h"
-#include "jleTexture.h"
 #include "jleShader.h"
+#include "jleTexture.h"
 
-#include <cereal/cereal.hpp>
-#include <cereal/archives/json.hpp>
 #include "editor/jleImGuiCerealArchive.h"
-
+#include <cereal/archives/json.hpp>
+#include <cereal/cereal.hpp>
 
 class jleMaterial : public jleSerializedResource, public std::enable_shared_from_this<jleMaterial>
 {
 public:
-
     JLE_REGISTER_RESOURCE_TYPE(jleMaterial, mat)
 
     ~jleMaterial() override = default;
 
     jleMaterial() = default;
 
-
-    virtual void useMaterial(/*const jle3DRendererSettings&*/);
+    virtual void useMaterial(const jleCamera &camera,
+                             const std::vector<jle3DRendererLight> &lights,
+                             const jle3DSettings &settings);
 
     template <class Archive>
-    void
-    serialize(Archive &ar)
-    {
-        try{
-            ar(CEREAL_NVP(_shaderRef));
-
-        }catch(std::exception &e)
-        {
-            _shaderRef = jleResourceRef<jleShader>(jlePath{"ER:/shaders/defaultMesh.glsl"});
-        }
-        ar(CEREAL_NVP(_albedoTextureRef),
-           CEREAL_NVP(_normalTextureRef),
-           CEREAL_NVP(_metallicTextureRef),
-           CEREAL_NVP(_roughnessTextureRef));
-    }
+    void serialize(Archive &ar);
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
 

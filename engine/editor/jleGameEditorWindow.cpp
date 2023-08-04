@@ -5,7 +5,6 @@
 #include "jleWindow.h"
 #include "jleFrameBufferInterface.h"
 #include "jleMouseInput.h"
-#include "jleStaticOpenGLState.h"
 
 #include "jleIncludeGL.h"
 
@@ -73,7 +72,6 @@ jleGameEditorWindow::update(jleGameEngine &ge)
 
     // Get the texture from the framebuffer
     glBindTexture(GL_TEXTURE_2D, (unsigned int)ge.mainScreenFramebuffer->texture());
-    jleStaticOpenGLState::globalActiveTexture = (unsigned int)ge.mainScreenFramebuffer->texture();
     ImGui::Image((void *)(intptr_t)ge.mainScreenFramebuffer->texture(),
                  ImVec2(_lastGameWindowWidth, _lastGameWindowHeight),
                  ImVec2(0, 1),

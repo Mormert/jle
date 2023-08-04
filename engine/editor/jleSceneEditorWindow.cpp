@@ -6,7 +6,6 @@
 #include "jleInput.h"
 #include "jleGame.h"
 #include "jleFramebufferPicking.h"
-#include "jleStaticOpenGLState.h"
 #include "jleTexture.h"
 #include "jleWindow.h"
 #include "jle3DGraph.h"
@@ -94,7 +93,6 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     const auto &selectedObject = gEditor->editorSceneObjects().GetSelectedObject();
 
     glBindTexture(GL_TEXTURE_2D, (unsigned int)_framebuffer->texture());
-    jleStaticOpenGLState::globalActiveTexture = (unsigned int)_framebuffer->texture();
 
     // Render the framebuffer as an image
     ImGui::Image((void *)(intptr_t)_framebuffer->texture(),

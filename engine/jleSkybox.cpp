@@ -84,3 +84,8 @@ jleSkybox::getVAO()
 {
     return _vao;
 }
+std::vector<std::string>
+jleSkybox::getFileAssociationList()
+{
+    return {"skyb"};
+}

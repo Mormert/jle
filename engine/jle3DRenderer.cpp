@@ -16,7 +16,6 @@
 #include "jleProfiler.h"
 #include "jleShader.h"
 #include "jleSkybox.h"
-#include "jleStaticOpenGLState.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -31,17 +30,17 @@
 
 struct jle3DRenderer::jle3DRendererShaders {
     jle3DRendererShaders()
-        : exampleCubeShader{jlePath{"ER:/shaders/exampleCube.glsl"}},
-          defaultMeshShader{jlePath{"ER:/shaders/defaultMesh.glsl"}}, skyboxShader{jlePath{"ER:/shaders/skybox.glsl"}},
-          pickingShader{jlePath{"ER:/shaders/picking.glsl"}},
+        : defaultMeshShader{jlePath{"ER:/shaders/defaultMesh.glsl"}},
+          missingMaterialShader{jlePath{"ER:/shaders/missingMaterialShader.glsl"}},
+          skyboxShader{jlePath{"ER:/shaders/skybox.glsl"}}, pickingShader{jlePath{"ER:/shaders/picking.glsl"}},
           shadowMappingShader{jlePath{"ER:/shaders/shadowMapping.glsl"}},
           shadowMappingPointShader{jlePath{"ER:/shaders/shadowMappingPoint.glsl"}},
           debugDepthQuad{jlePath{"ER:/shaders/debugDepthQuad.glsl"}}, linesShader{jlePath{"ER:/shaders/lines.glsl"}}
     {
     }
 
-    jleResourceRef<jleShader> exampleCubeShader;
     jleResourceRef<jleShader> defaultMeshShader;
+    jleResourceRef<jleShader> missingMaterialShader;
     jleResourceRef<jleShader> pickingShader;
     jleResourceRef<jleShader> shadowMappingShader;
     jleResourceRef<jleShader> shadowMappingPointShader;
@@ -166,66 +165,26 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const jle3DGraph &graph, co
     }
 
     // Bind to shadow map texture
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(JLE_TEXTURE_DIR_SHADOW);
     glBindTexture(GL_TEXTURE_2D, _shadowMappingFramebuffer->texture());
-    jleStaticOpenGLState::globalActiveTexture = _shadowMappingFramebuffer->texture();
 
-    glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(JLE_TEXTURE_POINT_SHADOW);
     glBindTexture(GL_TEXTURE_CUBE_MAP, _pointsShadowMappingFramebuffer->texture());
 
     if (settings.skybox) {
-        glActiveTexture(GL_TEXTURE4);
+        glActiveTexture(JLE_TEXTURE_SKYBOX);
         glBindTexture(GL_TEXTURE_CUBE_MAP, settings.skybox->getTextureID());
     }
 
-    _shaders->defaultMeshShader->use();
-    _shaders->defaultMeshShader->SetInt("shadowMap", 0);
-    _shaders->defaultMeshShader->SetInt("shadowMapPoint", 1);
-    _shaders->defaultMeshShader->SetInt("albedoTexture", 2);
-    _shaders->defaultMeshShader->SetInt("normalTexture", 3);
-    _shaders->defaultMeshShader->SetInt("skyboxTexture", 4);
-    _shaders->defaultMeshShader->SetFloat("farPlane", 500.f);
-    _shaders->defaultMeshShader->SetBool("UseDirectionalLight", settings.useDirectionalLight);
-    _shaders->defaultMeshShader->SetBool("UseEnvironmentMapping", settings.useEnvironmentMapping);
-    _shaders->defaultMeshShader->SetVec3("DirectionalLightColour", settings.directionalLightColour);
-    _shaders->defaultMeshShader->SetVec3("DirectionalLightDir", settings.directionalLightRotation);
-    _shaders->defaultMeshShader->SetMat4("view", camera.getViewMatrix());
-    _shaders->defaultMeshShader->SetMat4("proj", camera.getProjectionMatrix());
-    _shaders->defaultMeshShader->SetMat4("lightSpaceMatrix", settings.lightSpaceMatrix);
-    _shaders->defaultMeshShader->SetVec3("CameraPosition", camera.getPosition());
-    _shaders->defaultMeshShader->SetInt("LightsCount", (int)graph._lights.size());
-
-    // Limit to 4 lights
-    int lightCount = graph._lights.size();
-    if (lightCount > 4) {
-        lightCount = 4;
-    }
-
-    for (int l = 0; l < lightCount; l++) {
-        _shaders->defaultMeshShader->SetVec3("LightPositions[" + std::to_string(l) + "]", graph._lights[l].position);
-        _shaders->defaultMeshShader->SetVec3("LightColors[" + std::to_string(l) + "]", graph._lights[l].color);
-    }
-
     for (auto &&mesh : graph._meshes) {
-        _shaders->defaultMeshShader->SetMat4("model", mesh.transform);
-
-        // Set textures
-        if (mesh.material) {
-            if (mesh.material->_albedoTextureRef) {
-                mesh.material->_albedoTextureRef.get()->setActive(2);
-                _shaders->defaultMeshShader->SetBool("useAlbedoTexture", true);
-            } else {
-                _shaders->defaultMeshShader->SetBool("useAlbedoTexture", false);
-            }
-            if (mesh.material->_normalTextureRef) {
-                mesh.material->_normalTextureRef.get()->setActive(3);
-                _shaders->defaultMeshShader->SetBool("useNormalTexture", true);
-            } else {
-                _shaders->defaultMeshShader->SetBool("useNormalTexture", false);
-            }
+        if (!mesh.material || !mesh.material->_shaderRef) {
+            _shaders->missingMaterialShader->use();
+            _shaders->missingMaterialShader->SetMat4("view", camera.getViewMatrix());
+            _shaders->missingMaterialShader->SetMat4("proj", camera.getProjectionMatrix());
+            _shaders->missingMaterialShader->SetMat4("model", mesh.transform);
         } else {
-            _shaders->defaultMeshShader->SetBool("useAlbedoTexture", false);
-            _shaders->defaultMeshShader->SetBool("useNormalTexture", false);
+            mesh.material->useMaterial(camera, graph._lights, settings);
+            mesh.material->_shaderRef->SetMat4("model", mesh.transform);
         }
 
         glBindVertexArray(mesh.mesh->getVAO());
@@ -235,18 +194,6 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const jle3DGraph &graph, co
             glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
         }
         glBindVertexArray(0);
-
-        // Unset textures
-        if (mesh.material) {
-            if (mesh.material->_albedoTextureRef) {
-                glActiveTexture(GL_TEXTURE2);
-                glBindTexture(GL_TEXTURE_2D, 0);
-            }
-            if (mesh.material->_normalTextureRef) {
-                glActiveTexture(GL_TEXTURE3);
-                glBindTexture(GL_TEXTURE_2D, 0);
-            }
-        }
     }
 
     glActiveTexture(GL_TEXTURE0);

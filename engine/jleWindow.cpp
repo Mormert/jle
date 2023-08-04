@@ -1,7 +1,6 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleWindow.h"
-#include "jleStaticOpenGLState.h"
 
 #include <iostream>
 
@@ -430,8 +429,6 @@ jleWindow::initGlfwWindow(int width, int height, const char *title)
     }
 #endif
 #endif
-
-    jleStaticOpenGLState::globalOpenGLInitialized = true;
 
     return glfwWindow;
 }

@@ -101,6 +101,12 @@ jleShader::SetInt(const std::string &name, int value) const
 }
 
 void
+jleShader::SetTextureSlot(const std::string &name, jleTextureSlot slot) const
+{
+    glUniform1i(glGetUniformLocation(_program, name.c_str()), static_cast<int>(slot));
+}
+
+void
 jleShader::SetFloat(const std::string &name, float value) const
 {
     glUniform1f(glGetUniformLocation(_program, name.c_str()), value);
@@ -187,3 +193,4 @@ jleShader::getFileAssociationList()
 {
     return {"glsl"};
 }
+

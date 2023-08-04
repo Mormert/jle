@@ -34,7 +34,6 @@ add_library(engine STATIC
         #"jleAseprite.cpp"
         "jleScene.cpp"
         # "jleTextRendering.cpp"
-        "jleStaticOpenGLState.cpp"
         "jleGameEngine.cpp"
         "jleKeyboardInput.cpp"
         "jleMouseInput.cpp"

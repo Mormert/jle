@@ -42,6 +42,8 @@ public:
     jleResourceRef<jleImageFlipped> _front;
     jleResourceRef<jleImageFlipped> _back;
 
+    std::vector<std::string> getFileAssociationList() override;
+
     unsigned int getTextureID();
 
     unsigned int getVAO();

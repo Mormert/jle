@@ -5,7 +5,6 @@
 #include "jleIncludeGL.h"
 
 #include "jleFrameBufferInterface.h"
-#include "jleStaticOpenGLState.h"
 
 constexpr float quadVertices[] =
     { // Vertex attributes for a quad that fills the entire screen in NDC
@@ -62,7 +61,6 @@ jleFullscreenRendering::renderFramebufferFullscreen(jleFramebufferInterface &fra
 
     // Get the texture from the framebuffer
     glBindTexture(GL_TEXTURE_2D, framebuffer.texture());
-    jleStaticOpenGLState::globalActiveTexture = framebuffer.texture();
 
     // Draw quad with framebuffer's texture over the entire screen
     glDrawArrays(GL_TRIANGLES, 0, 6);

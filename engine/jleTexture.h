@@ -5,6 +5,7 @@
 #include "jlePath.h"
 #include "jleSerializedResource.h"
 #include "jleTypeReflectionUtils.h"
+#include "jleTextureRules.h"
 
 #include <climits>
 
@@ -32,11 +33,8 @@ public:
 
     ~jleTexture() override;
 
-    // Returns true if this Texture is the globally active texture
-    bool isActive();
-
     // Set this Texture to be the globally active texture
-    void setActive(int texture_slot = 0);
+    void setActive(jleTextureSlot slot);
 
     int32_t width();
 
