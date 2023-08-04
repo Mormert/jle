@@ -2,7 +2,7 @@
 
 #include "jleNetScene.h"
 #include "jleGameEngine.h"
-#include "plog/Log.h"
+#include <plog/Log.h>
 
 jleNetScene::jleNetScene() : jleScene() {}
 

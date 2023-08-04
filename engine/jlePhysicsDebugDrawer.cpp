@@ -1,9 +1,8 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jlePhysicsDebugDrawer.h"
-#include "jle3DRenderer.h"
+#include "jle3DGraph.h"
 #include "jleGameEngine.h"
-
 
 void
 jlePhysicsDebugDrawer::setDebugMode(int debugMode)

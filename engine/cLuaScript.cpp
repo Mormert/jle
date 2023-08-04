@@ -5,7 +5,7 @@
 #include "jleLuaEnvironment.h"
 
 #ifdef BUILD_EDITOR
-#include "ImGui/imgui.h"
+#include <ImGui/imgui.h>
 #include "editor/jleEditor.h"
 #endif
 

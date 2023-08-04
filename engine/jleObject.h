@@ -3,19 +3,18 @@
 #ifndef JLE_OBJECT
 #define JLE_OBJECT
 
-#include <memory>
-#include <optional>
-#include <vector>
 
 #include "jleTypeReflectionUtils.h"
-
 #include "jlePath.h"
 #include "jleSerializedResource.h"
 #include "jleTransform.h"
-#include "json.hpp"
 
 #include <cereal/types/memory.hpp>
 #include <cereal/types/polymorphic.hpp>
+
+#include <memory>
+#include <optional>
+#include <vector>
 
 class jleScene;
 

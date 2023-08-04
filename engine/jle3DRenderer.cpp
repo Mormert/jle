@@ -1,35 +1,58 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jle3DRenderer.h"
+#include "jle3DGraph.h"
+#include "jle3DSettings.h"
 #include "jleCamera.h"
 #include "jleFrameBufferInterface.h"
 #include "jleFramebufferShadowCubeMap.h"
 #include "jleFramebufferShadowMap.h"
 #include "jleFullscreenRendering.h"
-#include "jleGameEngine.h"
-#include "jlePathDefines.h"
-#include "jleProfiler.h"
-#include "jleStaticOpenGLState.h"
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/glm.hpp>
-
 #include "jleGLError.h"
+#include "jleGameEngine.h"
 #include "jleIncludeGL.h"
+#include "jleMaterial.h"
+#include "jleMesh.h"
+#include "jleProfiler.h"
+#include "jleShader.h"
+#include "jleSkybox.h"
+#include "jleStaticOpenGLState.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
-#include <random>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/glm.hpp>
 
 #include <RmlUi/Core/Context.h>
 #include <RmlUi_Backend.h>
 
+#include <random>
+
+#define JLE_LINE_DRAW_BATCH_SIZE 32768
+
+struct jle3DRenderer::jle3DRendererShaders {
+    jle3DRendererShaders()
+        : exampleCubeShader{jlePath{"ER:/shaders/exampleCube.glsl"}},
+          defaultMeshShader{jlePath{"ER:/shaders/defaultMesh.glsl"}}, skyboxShader{jlePath{"ER:/shaders/skybox.glsl"}},
+          pickingShader{jlePath{"ER:/shaders/picking.glsl"}},
+          shadowMappingShader{jlePath{"ER:/shaders/shadowMapping.glsl"}},
+          shadowMappingPointShader{jlePath{"ER:/shaders/shadowMappingPoint.glsl"}},
+          debugDepthQuad{jlePath{"ER:/shaders/depthDebug.glsl"}}, linesShader{jlePath{"ER:/shaders/lines.glsl"}}
+    {
+    }
+
+    jleResourceRef<jleShader> exampleCubeShader;
+    jleResourceRef<jleShader> defaultMeshShader;
+    jleResourceRef<jleShader> pickingShader;
+    jleResourceRef<jleShader> shadowMappingShader;
+    jleResourceRef<jleShader> shadowMappingPointShader;
+    jleResourceRef<jleShader> debugDepthQuad;
+    jleResourceRef<jleShader> linesShader;
+    jleResourceRef<jleShader> skyboxShader;
+};
+
 jle3DRenderer::jle3DRenderer()
-    : _exampleCubeShader{jlePath{"ER:/shaders/exampleCube.glsl"}},
-      _defaultMeshShader{jlePath{"ER:/shaders/defaultMesh.glsl"}}, _skyboxShader{jlePath{"ER:/shaders/skybox.glsl"}},
-      _pickingShader{jlePath{"ER:/shaders/picking.glsl"}},
-      _shadowMappingShader{jlePath{"ER:/shaders/shadowMapping.glsl"}},
-      _shadowMappingPointShader{jlePath{"ER:/shaders/shadowMappingPoint.glsl"}},
-      _debugDepthQuad{jlePath{"ER:/shaders/depthDebug.glsl"}}, _linesShader{jlePath{"ER:/shaders/lines.glsl"}}
 {
+    _shaders = std::make_unique<jle3DRendererShaders>();
 
     // Generate buffers for line drawing
     glGenVertexArrays(1, &_lineVAO);
@@ -71,8 +94,8 @@ jle3DRenderer::~jle3DRenderer()
 void
 jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
                       const jleCamera &camera,
-                      const jle3DRendererGraph &graph,
-                      const jle3DRendererSettings &settings)
+                      const jle3DGraph &graph,
+                      const jle3DSettings &settings)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_render)
 
@@ -134,9 +157,7 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 }
 
 void
-jle3DRenderer::renderMeshes(const jleCamera &camera,
-                            const jle3DRendererGraph &graph,
-                            const jle3DRendererSettings &settings)
+jle3DRenderer::renderMeshes(const jleCamera &camera, const jle3DGraph &graph, const jle3DSettings &settings)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes)
 
@@ -157,22 +178,22 @@ jle3DRenderer::renderMeshes(const jleCamera &camera,
         glBindTexture(GL_TEXTURE_CUBE_MAP, settings.skybox->getTextureID());
     }
 
-    _defaultMeshShader->use();
-    _defaultMeshShader->SetInt("shadowMap", 0);
-    _defaultMeshShader->SetInt("shadowMapPoint", 1);
-    _defaultMeshShader->SetInt("albedoTexture", 2);
-    _defaultMeshShader->SetInt("normalTexture", 3);
-    _defaultMeshShader->SetInt("skyboxTexture", 4);
-    _defaultMeshShader->SetFloat("farPlane", 500.f);
-    _defaultMeshShader->SetBool("UseDirectionalLight", settings.useDirectionalLight);
-    _defaultMeshShader->SetBool("UseEnvironmentMapping", settings.useEnvironmentMapping);
-    _defaultMeshShader->SetVec3("DirectionalLightColour", settings.directionalLightColour);
-    _defaultMeshShader->SetVec3("DirectionalLightDir", settings.directionalLightRotation);
-    _defaultMeshShader->SetMat4("view", camera.getViewMatrix());
-    _defaultMeshShader->SetMat4("proj", camera.getProjectionMatrix());
-    _defaultMeshShader->SetMat4("lightSpaceMatrix", settings.lightSpaceMatrix);
-    _defaultMeshShader->SetVec3("CameraPosition", camera.getPosition());
-    _defaultMeshShader->SetInt("LightsCount", (int)graph._lights.size());
+    _shaders->defaultMeshShader->use();
+    _shaders->defaultMeshShader->SetInt("shadowMap", 0);
+    _shaders->defaultMeshShader->SetInt("shadowMapPoint", 1);
+    _shaders->defaultMeshShader->SetInt("albedoTexture", 2);
+    _shaders->defaultMeshShader->SetInt("normalTexture", 3);
+    _shaders->defaultMeshShader->SetInt("skyboxTexture", 4);
+    _shaders->defaultMeshShader->SetFloat("farPlane", 500.f);
+    _shaders->defaultMeshShader->SetBool("UseDirectionalLight", settings.useDirectionalLight);
+    _shaders->defaultMeshShader->SetBool("UseEnvironmentMapping", settings.useEnvironmentMapping);
+    _shaders->defaultMeshShader->SetVec3("DirectionalLightColour", settings.directionalLightColour);
+    _shaders->defaultMeshShader->SetVec3("DirectionalLightDir", settings.directionalLightRotation);
+    _shaders->defaultMeshShader->SetMat4("view", camera.getViewMatrix());
+    _shaders->defaultMeshShader->SetMat4("proj", camera.getProjectionMatrix());
+    _shaders->defaultMeshShader->SetMat4("lightSpaceMatrix", settings.lightSpaceMatrix);
+    _shaders->defaultMeshShader->SetVec3("CameraPosition", camera.getPosition());
+    _shaders->defaultMeshShader->SetInt("LightsCount", (int)graph._lights.size());
 
     // Limit to 4 lights
     int lightCount = graph._lights.size();
@@ -181,30 +202,30 @@ jle3DRenderer::renderMeshes(const jleCamera &camera,
     }
 
     for (int l = 0; l < lightCount; l++) {
-        _defaultMeshShader->SetVec3("LightPositions[" + std::to_string(l) + "]", graph._lights[l].position);
-        _defaultMeshShader->SetVec3("LightColors[" + std::to_string(l) + "]", graph._lights[l].color);
+        _shaders->defaultMeshShader->SetVec3("LightPositions[" + std::to_string(l) + "]", graph._lights[l].position);
+        _shaders->defaultMeshShader->SetVec3("LightColors[" + std::to_string(l) + "]", graph._lights[l].color);
     }
 
     for (auto &&mesh : graph._meshes) {
-        _defaultMeshShader->SetMat4("model", mesh.transform);
+        _shaders->defaultMeshShader->SetMat4("model", mesh.transform);
 
         // Set textures
         if (mesh.material) {
             if (mesh.material->_albedoTextureRef) {
                 mesh.material->_albedoTextureRef.get()->setActive(2);
-                _defaultMeshShader->SetBool("useAlbedoTexture", true);
+                _shaders->defaultMeshShader->SetBool("useAlbedoTexture", true);
             } else {
-                _defaultMeshShader->SetBool("useAlbedoTexture", false);
+                _shaders->defaultMeshShader->SetBool("useAlbedoTexture", false);
             }
             if (mesh.material->_normalTextureRef) {
                 mesh.material->_normalTextureRef.get()->setActive(3);
-                _defaultMeshShader->SetBool("useNormalTexture", true);
+                _shaders->defaultMeshShader->SetBool("useNormalTexture", true);
             } else {
-                _defaultMeshShader->SetBool("useNormalTexture", false);
+                _shaders->defaultMeshShader->SetBool("useNormalTexture", false);
             }
         } else {
-            _defaultMeshShader->SetBool("useAlbedoTexture", false);
-            _defaultMeshShader->SetBool("useNormalTexture", false);
+            _shaders->defaultMeshShader->SetBool("useAlbedoTexture", false);
+            _shaders->defaultMeshShader->SetBool("useNormalTexture", false);
         }
 
         glBindVertexArray(mesh.mesh->getVAO());
@@ -232,7 +253,7 @@ jle3DRenderer::renderMeshes(const jleCamera &camera,
 }
 
 void
-jle3DRenderer::renderSkybox(const jleCamera &camera, const jle3DRendererSettings &settings)
+jle3DRenderer::renderSkybox(const jleCamera &camera, const jle3DSettings &settings)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes)
 
@@ -247,13 +268,13 @@ jle3DRenderer::renderSkybox(const jleCamera &camera, const jle3DRendererSettings
     // Depth testing to draw the skybox behind everything.
     // We also draw the skybox last, such that it can be early-depth-tested.
     glDepthFunc(GL_LEQUAL);
-    _skyboxShader->use();
+    _shaders->skyboxShader->use();
 
     // Convert the view matrix to mat3 first to remove the translation
     auto view = glm::mat4(glm::mat3(camera.getViewMatrix()));
 
-    _skyboxShader->SetMat4("view", view);
-    _skyboxShader->SetMat4("projection", camera.getProjectionMatrix());
+    _shaders->skyboxShader->SetMat4("view", view);
+    _shaders->skyboxShader->SetMat4("projection", camera.getProjectionMatrix());
     // skybox cube
     glBindVertexArray(settings.skybox->getVAO());
     glActiveTexture(GL_TEXTURE0);
@@ -267,7 +288,7 @@ jle3DRenderer::renderSkybox(const jleCamera &camera, const jle3DRendererSettings
 void
 jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
                                    const jleCamera &camera,
-                                   const jle3DRendererGraph &graph)
+                                   const jle3DGraph &graph)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshesPicking)
 
@@ -283,15 +304,15 @@ jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
     // Change viewport dimensions to match framebuffer's dimensions
     glViewport(0, 0, viewportWidth, viewportHeight);
 
-    _pickingShader->use();
-    _pickingShader->SetMat4("projView", camera.getProjectionViewMatrix());
+    _shaders->pickingShader->use();
+    _shaders->pickingShader->SetMat4("projView", camera.getProjectionViewMatrix());
 
     for (auto &&mesh : graph._meshes) {
         int r = (mesh.instanceId & 0x000000FF) >> 0;
         int g = (mesh.instanceId & 0x0000FF00) >> 8;
         int b = (mesh.instanceId & 0x00FF0000) >> 16;
-        _pickingShader->SetVec4("PickingColor", glm::vec4{r / 255.0f, g / 255.0f, b / 255.0f, 1.f});
-        _pickingShader->SetMat4("model", mesh.transform);
+        _shaders->pickingShader->SetVec4("PickingColor", glm::vec4{r / 255.0f, g / 255.0f, b / 255.0f, 1.f});
+        _shaders->pickingShader->SetMat4("model", mesh.transform);
         glBindVertexArray(mesh.mesh->getVAO());
         if (mesh.mesh->usesIndexing()) {
             glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
@@ -305,8 +326,7 @@ jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
 }
 
 void
-jle3DRenderer::renderDirectionalLight(const std::vector<jle3DRendererGraph::jle3DRendererQueuedMesh> &meshes,
-                                      const jle3DRendererSettings &settings)
+jle3DRenderer::renderDirectionalLight(const std::vector<jle3DQueuedMesh> &meshes, const jle3DSettings &settings)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderDirectionalLight)
 
@@ -318,14 +338,14 @@ jle3DRenderer::renderDirectionalLight(const std::vector<jle3DRendererGraph::jle3
 
     glDisable(GL_CULL_FACE);
 
-    _shadowMappingShader->use();
+    _shaders->shadowMappingShader->use();
 
-    _shadowMappingShader->SetMat4("lightSpaceMatrix", settings.lightSpaceMatrix);
+    _shaders->shadowMappingShader->SetMat4("lightSpaceMatrix", settings.lightSpaceMatrix);
 
     glViewport(0, 0, (int)_shadowMappingFramebuffer->width(), (int)_shadowMappingFramebuffer->height());
 
     glClear(GL_DEPTH_BUFFER_BIT);
-    renderShadowMeshes(meshes, *_shadowMappingShader.get());
+    renderShadowMeshes(meshes, *_shaders->shadowMappingShader.get());
 
     glEnable(GL_CULL_FACE);
 
@@ -333,7 +353,7 @@ jle3DRenderer::renderDirectionalLight(const std::vector<jle3DRendererGraph::jle3
 }
 
 void
-jle3DRenderer::renderPointLights(const jleCamera &camera, const jle3DRendererGraph &graph)
+jle3DRenderer::renderPointLights(const jleCamera &camera, const jle3DGraph &graph)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderPointLights)
 
@@ -364,25 +384,24 @@ jle3DRenderer::renderPointLights(const jleCamera &camera, const jle3DRendererGra
     shadowTransforms.push_back(shadowProj *
                                glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
 
-    _shadowMappingPointShader->use();
-    _shadowMappingPointShader->SetVec3("lightPos", lightPos);
-    _shadowMappingPointShader->SetFloat("farPlane", farP);
+    _shaders->shadowMappingPointShader->use();
+    _shaders->shadowMappingPointShader->SetVec3("lightPos", lightPos);
+    _shaders->shadowMappingPointShader->SetFloat("farPlane", farP);
 
     for (int i = 0; i < 6; i++) {
-        _shadowMappingPointShader->SetMat4("lightSpaceMatrix", shadowTransforms[i]);
+        _shaders->shadowMappingPointShader->SetMat4("lightSpaceMatrix", shadowTransforms[i]);
         _pointsShadowMappingFramebuffer->setRenderFace(i);
         glViewport(0, 0, (int)_pointsShadowMappingFramebuffer->width(), (int)_pointsShadowMappingFramebuffer->height());
 
         glClear(GL_DEPTH_BUFFER_BIT);
-        renderShadowMeshes(graph._meshes, *_shadowMappingPointShader.get());
+        renderShadowMeshes(graph._meshes, *_shaders->shadowMappingPointShader.get());
     }
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
 void
-jle3DRenderer::renderShadowMeshes(const std::vector<jle3DRendererGraph::jle3DRendererQueuedMesh> &meshes,
-                                  jleShader &shader)
+jle3DRenderer::renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jleShader &shader)
 {
     for (auto &&mesh : meshes) {
         if (!mesh.castShadows) {
@@ -411,9 +430,9 @@ jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DLineV
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    _linesShader->use();
-    _linesShader->SetMat4("projView", camera.getProjectionViewMatrix());
-    _linesShader->SetVec3("cameraPos", camera.getPosition());
+    _shaders->linesShader->use();
+    _shaders->linesShader->SetMat4("projView", camera.getProjectionViewMatrix());
+    _shaders->linesShader->SetVec3("cameraPos", camera.getPosition());
 
     int linesRendered = 0;
 

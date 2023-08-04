@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleEditorProfilerWindow.h"
-#include "ImGui/imgui.h"
+#include <ImGui/imgui.h>
 
 #ifdef WIN32
 #define NOMINMAX

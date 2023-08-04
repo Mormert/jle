@@ -3,7 +3,7 @@
 #include "jleFramebufferPicking.h"
 
 #include "jleIncludeGL.h"
-#include "plog/Log.h"
+#include <plog/Log.h>
 
 jleFramebufferPicking::jleFramebufferPicking(unsigned int width, unsigned int height)
     : jleFramebufferInterface(width, height)

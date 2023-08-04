@@ -2,6 +2,7 @@
 
 #include "jleLuaScriptComponent.h"
 #include "jleLuaEnvironment.h"
+#include "jleObject.h"
 
 
 void

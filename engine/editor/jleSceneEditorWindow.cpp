@@ -1,27 +1,24 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleSceneEditorWindow.h"
-#include "editor/jleEditorSceneObjectsWindow.h"
+#include "jleEditorSceneObjectsWindow.h"
 #include "jleEditor.h"
 #include "jleInput.h"
-
-#include "ImGui/imgui.h"
-
-#include "glm/common.hpp"
+#include "jleGame.h"
 #include "jleFramebufferPicking.h"
-#include "jleQuadRendering.h"
 #include "jleStaticOpenGLState.h"
 #include "jleTexture.h"
-#include "jleTransform.h"
 #include "jleWindow.h"
+#include "jle3DGraph.h"
 #include "jle3DRenderer.h"
-
+#include "jle3DSettings.h"
 #include "jleIncludeGL.h"
-
-#include "btBulletDynamicsCommon.h"
-
 #include "jlePhysics.h"
-#include <cRigidbody.h>
+#include "cRigidbody.h"
+
+#include <glm/common.hpp>
+#include <btBulletDynamicsCommon.h>
+#include <ImGui/imgui.h>
 
 jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name,
                                            std::shared_ptr<jleFramebufferInterface> &framebuffer)

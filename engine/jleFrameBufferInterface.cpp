@@ -6,7 +6,7 @@
 
 #include "glm/glm.hpp"
 #include "jleStaticOpenGLState.h"
-#include "plog/Log.h"
+#include <plog/Log.h>
 
 #include <iostream>
 

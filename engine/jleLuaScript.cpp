@@ -2,6 +2,7 @@
 
 #include "jleLuaScript.h"
 #include "jleGameEngine.h"
+#include "jleLuaEnvironment.h"
 
 jleLoadFromFileSuccessCode
 jleLuaScript::loadFromFile(const jlePath &path)

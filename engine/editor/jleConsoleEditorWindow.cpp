@@ -1,12 +1,15 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleConsoleEditorWindow.h"
-
-#include "ImGui/imgui.h"
-#include "plog/Formatters/FuncMessageFormatter.h"
 #include "jleDynamicLogAppender.h"
+
+#include <ImGui/imgui.h>
+#include <Remotery/Remotery.h>
+#include <plog/Formatters/FuncMessageFormatter.h>
+
 #include <algorithm>
 #include <locale>
+#include <iostream>
 
 namespace {
 

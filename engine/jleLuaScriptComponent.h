@@ -4,6 +4,10 @@
 #define JLE_LUASCRIPTCOMPONENT_H
 
 #include "jleLuaScript.h"
+
+#define SOL_ALL_SAFETIES_ON 1
+#include <sol2/sol.hpp>
+
 class jleLuaScriptComponent : public jleLuaScript
 {
 public:

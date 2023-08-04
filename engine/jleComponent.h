@@ -5,8 +5,6 @@
 
 #include "jleTypeReflectionUtils.h"
 
-#include <string_view>
-
 #ifdef BUILD_EDITOR
 #include "editor/jleImGuiCerealArchive.h"
 #endif
@@ -16,6 +14,8 @@
 
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol2/sol.hpp>
+
+#include <string_view>
 
 class jleScene;
 class jleComponent;

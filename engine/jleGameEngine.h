@@ -24,8 +24,8 @@ class jleWindow;
 class jleTimerManager;
 class jlePhysics;
 class jle3DRenderer;
-class jle3DRendererSettings;
-class jle3DRendererGraph;
+class jle3DSettings;
+class jle3DGraph;
 class jleFullscreenRendering;
 class jleFramebufferInterface;
 class jleLuaEnvironment;
@@ -59,9 +59,9 @@ public:
 
     jleInput &input();
 
-    jle3DRendererGraph &renderGraph();
+    jle3DGraph &renderGraph();
 
-    jle3DRendererSettings &renderSettings();
+    jle3DSettings &renderSettings();
 
     [[nodiscard]] jleEngineSettings &settings();
 
@@ -151,8 +151,8 @@ protected:
 
     friend class jleSceneEditorWindow;
     std::unique_ptr<jle3DRenderer> _3dRenderer;
-    std::unique_ptr<jle3DRendererGraph> _3dRenderGraph;
-    std::unique_ptr<jle3DRendererSettings> _3dRendererSettings;
+    std::unique_ptr<jle3DGraph> _3dRenderGraph;
+    std::unique_ptr<jle3DSettings> _3dRendererSettings;
 
     struct jleEngineInternal;
     std::unique_ptr<jleEngineInternal> _internal;

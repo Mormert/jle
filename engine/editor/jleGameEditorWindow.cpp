@@ -1,14 +1,16 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleGameEditorWindow.h"
-#include "ImGui/imgui.h"
 #include "jleInput.h"
 #include "jleWindow.h"
-
+#include "jleFrameBufferInterface.h"
 #include "jleMouseInput.h"
 #include "jleStaticOpenGLState.h"
 
 #include "jleIncludeGL.h"
+
+#include <ImGui/imgui.h>
+
 
 jleGameEditorWindow::jleGameEditorWindow(const std::string &window_name) : jleEditorWindowInterface{window_name}
 {

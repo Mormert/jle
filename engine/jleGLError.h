@@ -4,7 +4,7 @@
 #include "jleIncludeGL.h"
 
 #include <string>
-#include "plog/Log.h"
+#include <plog/Log.h>
 
 #ifndef NDEBUG
 GLenum glCheckError_(const char* desc, const char *file, int line);

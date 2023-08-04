@@ -4,7 +4,7 @@
 
 #include "stb_image.h"
 
-#include "plog/Log.h"
+#include <plog/Log.h>
 
 #include <algorithm>
 

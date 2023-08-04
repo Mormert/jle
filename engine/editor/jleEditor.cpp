@@ -11,32 +11,32 @@
 #include "editor/jleEditorWindowsPanel.h"
 #include "editor/jleEditorSaveState.h"
 #include "editor/jleEditorGizmos.h"
-#include "jleFramebufferMultisample.h"
-#include "jleGLError.h"
-#include "jlePathDefines.h"
-#include "jlePath.h"
-#include "jleResourceRef.h"
+
+#include "jle3DRenderer.h"
 #include "jleEditorResourceEdit.h"
 #include "jleEditorSettingsWindow.h"
 #include "jleEditorTextEdit.h"
 #include "jleFileChangeNotifier.h"
+#include "jleFramebufferMultisample.h"
 #include "jleFramebufferScreen.h"
+#include "jleGLError.h"
 #include "jleGame.h"
 #include "jleGameEditorWindow.h"
+#include "jleLuaEnvironment.h"
+#include "jlePath.h"
+#include "jlePathDefines.h"
 #include "jlePhysics.h"
 #include "jleQuadRendering.h"
+#include "jleResourceRef.h"
 #include "jleSceneEditorWindow.h"
 #include "jleWindow.h"
-#include "jleLuaEnvironment.h"
-#include "jle3DRenderer.h"
 
-
-#include "Remotery/Remotery.h"
-#include "plog/Log.h"
-#include "ImGui/ImGuizmo.h"
-#include "ImGui/imgui.h"
-#include "ImGui/imgui_impl_glfw.h"
-#include "ImGui/imgui_impl_opengl3.h"
+#include <Remotery/Remotery.h>
+#include <plog/Log.h>
+#include <ImGui/ImGuizmo.h>
+#include <ImGui/imgui.h>
+#include <ImGui/imgui_impl_glfw.h>
+#include <ImGui/imgui_impl_opengl3.h>
 
 struct jleEditor::jleEditorInternal{
     jleResourceRef<jleEditorSaveState> editorSaveState;
@@ -278,7 +278,7 @@ jleEditor::initImgui()
 
     ImGui::Spectrum::StyleColorsSpectrum();
 
-    // up Platform/Renderer bindings
+    // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window().glfwWindow(), true);
 
 #ifdef BUILD_OPENGLES30

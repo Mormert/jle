@@ -3,7 +3,7 @@
 #include "jleAseprite.h"
 #include "jleGameEngine.h"
 #include "jleResource.h"
-#include "plog/Log.h"
+#include <plog/Log.h>
 
 #include <filesystem>
 #include <fstream>

@@ -2,7 +2,6 @@
 
 #pragma once
 
-
 #include "jleWindowSettings.h"
 #include <map>
 #include <memory>

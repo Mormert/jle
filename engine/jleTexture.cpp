@@ -9,7 +9,7 @@
 #include "jleGameEngine.h"
 #include "jleImage.h"
 #include "jleStaticOpenGLState.h"
-#include "plog/Log.h"
+#include <plog/Log.h>
 
 #include <iostream>
 

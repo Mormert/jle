@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleEditorSettingsWindow.h"
-#include "ImGui/imgui.h"
+#include <ImGui/imgui.h>
 #include "jleEditor.h"
 #include "jleEngineSettings.h"
 #include "jleImGuiCerealArchive.h"

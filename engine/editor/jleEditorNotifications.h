@@ -7,7 +7,7 @@
 #include "jleResourceRef.h"
 #include "jleTexture.h"
 
-#include "plog/Log.h"
+#include <plog/Log.h>
 
 
 class jleEditorNotifications : public jleEditorWindowInterface, public plog::IAppender {

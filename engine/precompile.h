@@ -27,11 +27,11 @@
 #include "cereal/types/polymorphic.hpp"
 #include "editor/jleImGuiCerealArchive.h"
 
-#include "plog/Log.h"
-#include "plog/Logger.h"
+#include <plog/Log.h>
+#include <plog/Logger.h>
 
 #define SOL_ALL_SAFETIES_ON 1
-#include "sol2/sol.hpp"
+#include <sol2/sol.hpp>
 
 #include "glm/glm.hpp"
 #include "glm/common.hpp"

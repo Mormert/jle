@@ -3,8 +3,10 @@
 #include "cLightDirectional.h"
 
 #include "editor/jleEditor.h"
-#include "jle3DRendererSettings.h"
-#include "jle3DRendererGraph.h"
+#include "editor/jleEditorGizmos.h"
+
+#include "jle3DGraph.h"
+#include "jle3DSettings.h"
 
 cLightDirectional::cLightDirectional(jleObject *owner, jleScene *scene) : cLight(owner, scene) {}
 

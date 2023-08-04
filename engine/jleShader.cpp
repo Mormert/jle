@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleShader.h"
-#include "plog/Log.h"
+#include <plog/Log.h>
 
 #include "jleIncludeGL.h"
 

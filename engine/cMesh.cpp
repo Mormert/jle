@@ -1,10 +1,9 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "cMesh.h"
+#include "jle3DGraph.h"
 #include "jleGameEngine.h"
 #include "jleResource.h"
-#include "jle3DRendererGraph.h"
-
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cMesh)
 

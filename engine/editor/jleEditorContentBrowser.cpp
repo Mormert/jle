@@ -1,14 +1,14 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleEditorContentBrowser.h"
-#include "ImGui/imgui.h"
+#include <ImGui/imgui.h>
 #include "ImGui/imgui_stdlib.h"
 #include "jleEditor.h"
 #include "jleEditorSceneObjectsWindow.h"
 #include "jleEditorTextEdit.h"
 #include "jleResource.h"
 
-#include "plog/Log.h"
+#include <plog/Log.h>
 
 #include "jleGame.h"
 

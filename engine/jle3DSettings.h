@@ -1,14 +1,13 @@
 // Copyright (c) 2023. Johan Lind
 
-#ifndef JLE_3DRENDERERSETTINGS_H
-#define JLE_3DRENDERERSETTINGS_H
+#pragma once
 
 #include "jleResourceRef.h"
 #include "jleSkybox.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
-struct jle3DRendererSettings {
+struct jle3DSettings {
     bool useDirectionalLight{false};
     bool usePointsLights{true};
     bool useEnvironmentMapping{true};
@@ -41,5 +40,3 @@ struct jle3DRendererSettings {
         lightSpaceMatrix = lightProjection * view;
     }
 };
-
-#endif // JLE_3DRENDERERSETTINGS_H

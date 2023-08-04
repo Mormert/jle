@@ -3,7 +3,7 @@
 #include "jleFramebufferShadowCubeMap.h"
 
 #include "jleIncludeGL.h"
-#include "plog/Log.h"
+#include <plog/Log.h>
 
 jleFramebufferShadowCubeMap::jleFramebufferShadowCubeMap(unsigned int width, unsigned int height)
     : jleFramebufferInterface(width, height)

@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleMesh.h"
-#include "plog/Log.h"
+#include <plog/Log.h>
 #include "tiny_obj_loader.h"
 #include <stdio.h>
 

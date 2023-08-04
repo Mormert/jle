@@ -2,15 +2,14 @@
 
 #include "jleWindow.h"
 #include "jleIncludeGL.h"
-#include "jlePath.h"
-#include "jlePathDefines.h"
 #include "jleStaticOpenGLState.h"
-
-#include "jleIncludeGL.h"
 
 #include <iostream>
 
 #include "stb_image.h"
+#include <plog/Log.h>
+
+JLE_EXTERN_TEMPLATE_CEREAL_CPP(WindowSettings)
 
 jleWindow *jleWindow::activeWindow{nullptr};
 

@@ -1,10 +1,14 @@
 // Copyright (c) 2023. Johan Lind
 
-#ifndef JLE_3DRENDERERGRAPH_H
-#define JLE_3DRENDERERGRAPH_H
+#pragma once
 
-#include "jleMaterial.h"
-#include "jleMesh.h"
+#include <glm/glm.hpp>
+
+#include <memory>
+#include <vector>
+
+class jleMaterial;
+class jleMesh;
 
 struct jle3DRendererLight {
     glm::vec3 position;
@@ -18,17 +22,18 @@ struct jle3DLineVertex {
     glm::vec3 attenuation;
 };
 
-class jle3DRendererGraph
+struct jle3DQueuedMesh {
+    std::shared_ptr<jleMesh> mesh;
+    std::shared_ptr<jleMaterial> material;
+    glm::mat4 transform;
+    int instanceId;
+    bool castShadows;
+};
+
+class jle3DGraph
 {
 private:
     friend class jle3DRenderer;
-    struct jle3DRendererQueuedMesh {
-        std::shared_ptr<jleMesh> mesh;
-        std::shared_ptr<jleMaterial> material;
-        glm::mat4 transform;
-        int instanceId;
-        bool castShadows;
-    };
 
 public:
     void sendMesh(std::shared_ptr<jleMesh> &mesh,
@@ -48,10 +53,9 @@ public:
     void sendLight(const glm::vec3 &position, const glm::vec3 &color);
 
 private:
-    std::vector<jle3DRendererQueuedMesh> _meshes;
+    std::vector<jle3DQueuedMesh> _meshes;
     std::vector<std::vector<jle3DLineVertex>> _lineStrips;
     std::vector<jle3DLineVertex> _lines;
     std::vector<jle3DRendererLight> _lights;
 };
 
-#endif // JLE_3DRENDERERGRAPH_H

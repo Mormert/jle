@@ -5,8 +5,8 @@
 #include "editor/jleEditor.h"
 #include "editor/jleEditorGizmos.h"
 
+#include "jle3DGraph.h"
 #include "jleGameEngine.h"
-#include "jle3DRendererGraph.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 

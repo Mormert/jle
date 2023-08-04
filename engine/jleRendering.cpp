@@ -11,7 +11,7 @@
 #include "jleProfiler.h"
 #include "jleQuadRendering.h"
 #include "jleTextRendering.h"
-#include "plog/Log.h"
+#include <plog/Log.h>
 
 void
 jleRendering::viewportDimensions(int x, int y, unsigned int width, unsigned int height)

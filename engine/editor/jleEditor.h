@@ -7,6 +7,7 @@
 #include "jleGameEngine.h"
 
 #include <vector>
+#include <string>
 
 class jleFileChangeNotifier;
 class jleEditorWindowInterface;
@@ -19,6 +20,7 @@ class jleScene;
 class jleEditorGizmos;
 class jleEditorSaveState;
 class jlePath;
+class jleObject;
 
 class jleEditor;
 inline jleEditor *gEditor;

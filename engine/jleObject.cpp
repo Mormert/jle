@@ -1,7 +1,6 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleObject.h"
-
 #include "cLuaScript.h"
 #include "jleGameEngine.h"
 #include "jleGameEngine.h"

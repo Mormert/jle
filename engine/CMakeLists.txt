@@ -70,7 +70,7 @@ add_library(engine STATIC
         "jleProfiler.cpp"
         "jleCamera.cpp"
         "jle3DRenderer.cpp"
-        "jle3DRendererGraph.cpp"
+        "jle3DGraph.cpp"
         "cCameraFPV.cpp"
         "jleMesh.cpp"
         "cMesh.cpp"

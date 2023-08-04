@@ -4,6 +4,8 @@
 #include "editor/jleEditorTextEdit.h"
 #include <editor/jleEditor.h>
 
+#include "jleResource.h"
+
 jleFileChangeNotifier::jleFileChangeNotifier(const std::vector<std::string> &directories)
 {
     _directories = directories;

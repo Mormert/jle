@@ -1,24 +1,25 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleGameEngine.h"
-
-#include "jleFramebufferScreen.h"
+#include "jle3DGraph.h"
+#include "jle3DRenderer.h"
+#include "jle3DSettings.h"
+#include "jleEngineSettings.h"
 #include "jleFramebufferMultisample.h"
+#include "jleFramebufferScreen.h"
 #include "jleFullscreenRendering.h"
+#include "jleGame.h"
 #include "jleInput.h"
 #include "jleLuaEnvironment.h"
-#include "jleResourceRef.h"
-#include "jleEngineSettings.h"
 #include "jleMouseInput.h"
 #include "jlePhysics.h"
-#include "jle3DRenderer.h"
-
+#include "jleResourceRef.h"
 #include "jleTimerManager.h"
 #include "jleWindow.h"
-#include "jleGame.h"
-#include <plog/Log.h>
+#include "jleExplicitInclude.h"
 
-#include "Remotery/Remotery.h"
+#include <plog/Log.h>
+#include <Remotery/Remotery.h>
 #include <soloud.h>
 
 #include <RmlUi/Core.h>
@@ -53,8 +54,8 @@ jleGameEngine::jleGameEngine()
     _timerManager = std::make_unique<jleTimerManager>();
 
     _3dRenderer = std::make_unique<jle3DRenderer>();
-    _3dRenderGraph = std::make_unique<jle3DRendererGraph>();
-    _3dRendererSettings = std::make_unique<jle3DRendererSettings>();
+    _3dRenderGraph = std::make_unique<jle3DGraph>();
+    _3dRendererSettings = std::make_unique<jle3DSettings>();
     _soLoud = std::make_unique<SoLoud::Soloud>();
 
     PLOG_INFO << "Starting the core...";
@@ -422,7 +423,7 @@ jleGameEngine::renderer()
 void
 jleGameEngine::resetRenderGraphForNewFrame()
 {
-    _3dRenderGraph = std::make_unique<jle3DRendererGraph>();
+    _3dRenderGraph = std::make_unique<jle3DGraph>();
 }
 float
 jleGameEngine::lastFrameTime() const
@@ -454,13 +455,13 @@ jleGameEngine::settings()
     return *_internal->engineSettings.get();
 
 }
-jle3DRendererSettings &
+jle3DSettings &
 jleGameEngine::renderSettings()
 {
     return *_3dRendererSettings.get();
 
 }
-jle3DRendererGraph &
+jle3DGraph &
 jleGameEngine::renderGraph()
 {
     return *_3dRenderGraph.get();

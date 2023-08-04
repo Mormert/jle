@@ -4,9 +4,9 @@
 
 #include "jleResource.h"
 
-#include "ImGui/imgui.h"
+#include <ImGui/imgui.h>
 
-#include "plog/Log.h"
+#include <plog/Log.h>
 
 jleEditorGameControllerWidget::jleEditorGameControllerWidget(
     const std::string &window_name)

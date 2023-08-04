@@ -11,8 +11,8 @@
 #ifdef BUILD_EDITOR
 #include "editor/jleEditor.h"
 #include "editor/jleEditorGizmos.h"
-#include "ImGui/imgui.h"
-#include "jle3DRendererGraph.h"
+#include "jle3DGraph.h"
+#include <ImGui/imgui.h>
 #endif
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cCamera)

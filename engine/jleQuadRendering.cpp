@@ -4,7 +4,7 @@
 #include "jleFrameBufferInterface.h"
 #include "jlePathDefines.h"
 #include "jleProfiler.h"
-#include "plog/Log.h"
+#include <plog/Log.h>
 #include <random>
 #include <thread>
 

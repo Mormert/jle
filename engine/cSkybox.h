@@ -1,10 +1,11 @@
 // Copyright (c) 2023. Johan Lind
 
+#pragma once
+
+#include "jle3DSettings.h"
 #include "jleComponent.h"
 #include "jleResourceRef.h"
 #include "jleSkybox.h"
-
-#include "jle3DRenderer.h"
 
 class cSkybox : public jleComponent
 {

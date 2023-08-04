@@ -2,9 +2,11 @@
 
 #pragma once
 
-#include "jlePathDefines.h"
+#include "jleCompileHelper.h"
 #include "jlePath.h"
+
 #include <cereal/archives/json.hpp>
+#include "editor/jleImGuiCerealArchive.h"
 
 #include <string>
 
@@ -36,3 +38,5 @@ public:
     }
 
 };
+
+JLE_EXTERN_TEMPLATE_CEREAL_H(WindowSettings)

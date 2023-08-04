@@ -21,8 +21,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-#include "ImGui/imgui.h"
-#include "ImGui/ImGuizmo.h"
+#include <ImGui/imgui.h>
+#include <ImGui/ImGuizmo.h>
 
 #include "jleComponent.h"
 #include <ImGui/imgui_internal.h>

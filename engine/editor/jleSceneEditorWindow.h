@@ -5,10 +5,11 @@
 #ifdef BUILD_EDITOR
 
 #include "editor/jleEditorImGuiWindowInterface.h"
-#include <ImGui/ImGuizmo.h>
 
 #include "jleGameEngine.h"
-#include "jleImage.h"
+#include "jleCamera.h"
+
+#include <ImGui/ImGuizmo.h>
 
 class jleSceneEditorWindow : public jleEditorWindowInterface
 {

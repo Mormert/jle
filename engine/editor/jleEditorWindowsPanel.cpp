@@ -4,8 +4,8 @@
 
 #include "jleGameEditorWindow.h"
 
-#include "ImGui/imgui.h"
-#include "plog/Log.h"
+#include <ImGui/imgui.h>
+#include <plog/Log.h>
 
 jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name)
     : jleEditorWindowInterface{window_name}, _gameController{"Game Controller"} {}
