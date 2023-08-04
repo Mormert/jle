@@ -1,7 +1,6 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleWindow.h"
-#include "jleIncludeGL.h"
 #include "jleStaticOpenGLState.h"
 
 #include <iostream>
@@ -11,7 +10,6 @@
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(WindowSettings)
 
-jleWindow *jleWindow::activeWindow{nullptr};
 
 void
 jleWindow::error_callback(int error, const char *description)
@@ -35,19 +33,19 @@ jleWindow::glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action
 void
 jleWindow::glfwScrollCallback(GLFWwindow *window, double xoffset, double yoffset)
 {
-    activeWindow->currentScrollX = static_cast<float>(xoffset);
-    activeWindow->currentScrollY = static_cast<float>(yoffset);
+    _activeWindow->currentScrollX = static_cast<float>(xoffset);
+    _activeWindow->currentScrollY = static_cast<float>(yoffset);
 }
 
 void
 jleWindow::glfwFramebufferSizeCallback(GLFWwindow *window, int width, int height)
 {
 
-    activeWindow->windowSettings.width = static_cast<unsigned int>(width);
-    activeWindow->windowSettings.height = static_cast<unsigned int>(height);
+    _activeWindow->windowSettings.width = static_cast<unsigned int>(width);
+    _activeWindow->windowSettings.height = static_cast<unsigned int>(height);
 
     // Call all subscribed callbacks
-    activeWindow->executeResizeCallbacks(width, height);
+    _activeWindow->executeResizeCallbacks(width, height);
 }
 
 #ifdef __EMSCRIPTEN__
@@ -61,7 +59,7 @@ resize_canvas_js(int width, int height)
 
     printf("Change window size: %d, %d", width, height);
 
-    const auto &window = jleWindow::activeWindow;
+    const auto &window = jleWindow::_activeWindow;
 
     jleWindow::glfwFramebufferSizeCallback(nullptr, width, height);
 
@@ -79,13 +77,13 @@ jleWindow::time()
 float
 jleWindow::scrollX()
 {
-    return activeWindow->currentScrollX;
+    return _activeWindow->currentScrollX;
 }
 
 float
 jleWindow::scrollY()
 {
-    return activeWindow->currentScrollY;
+    return _activeWindow->currentScrollY;
 }
 
 jleWindow::~jleWindow()
@@ -132,7 +130,7 @@ jleWindow::width() const
 void
 jleWindow::initWindow()
 {
-    activeWindow = this;
+    _activeWindow = this;
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit()) {
@@ -191,8 +189,8 @@ jleWindow::initWindow()
 void
 jleWindow::updateWindow()
 {
-    activeWindow->currentScrollX = 0.f;
-    activeWindow->currentScrollY = 0.f;
+    _activeWindow->currentScrollX = 0.f;
+    _activeWindow->currentScrollY = 0.f;
 
     std::memset(sPressedKeys, 0, sizeof(sPressedKeys));
     std::memset(sReleasedKeys, 0, sizeof(sPressedKeys));
@@ -438,4 +436,10 @@ jleWindow::initGlfwWindow(int width, int height, const char *title)
     jleStaticOpenGLState::globalOpenGLInitialized = true;
 
     return glfwWindow;
+}
+
+GLFWwindow *
+jleWindow::glfwWindow()
+{
+    return _glfwWindow;
 }

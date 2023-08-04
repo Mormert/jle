@@ -3,10 +3,10 @@
 #pragma once
 
 #include "jleWindowSettings.h"
+#include "jleIncludeGL.h"
+
 #include <map>
 #include <memory>
-
-class GLFWwindow;
 
 class jleWindow {
 public:
@@ -63,16 +63,12 @@ public:
 
     std::pair<int, int> cursor();
 
-    static jleWindow *activeWindow;
-
     GLFWwindow *
-    glfwWindow()
-    {
-        return _glfwWindow;
-    }
+    glfwWindow();
 
 protected:
     GLFWwindow *_glfwWindow;
+    static inline jleWindow *_activeWindow;
 
     WindowSettings windowSettings;
 

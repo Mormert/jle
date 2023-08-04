@@ -27,6 +27,7 @@
  */
 
 #include "jleWindow.h"
+#include "jleGameEngine.h"
 
 #include "RmlUi_Backend.h"
 #include "RmlUi_Platform_GLFW.h"
@@ -104,7 +105,7 @@ bool Backend::Initialize(const char* name, int width, int height, bool allow_res
 	if (!data || !data->render_interface)
 		return false;
 
-        GLFWwindow* window = jleWindow::activeWindow->glfwWindow();
+        GLFWwindow* window = gEngine->window().glfwWindow();
 	data->window = window;
 	data->system_interface.SetWindow(window);
 	data->system_interface.LogMessage(Rml::Log::LT_INFO, "renderer_message");
@@ -127,10 +128,10 @@ bool Backend::Initialize(const char* name, int width, int height, bool allow_res
 void Backend::Shutdown()
 {
 	RMLUI_ASSERT(data);
-	glfwDestroyWindow(data->window);
+	//glfwDestroyWindow(data->window);
 	data.reset();
-	RmlGL3::Shutdown();
-	glfwTerminate();
+	//RmlGL3::Shutdown();
+	//glfwTerminate();
 }
 
 Rml::SystemInterface* Backend::GetSystemInterface()
@@ -286,9 +287,8 @@ static void SetupCallbacks(GLFWwindow* window)
         //});
 
 
-       jleWindow::activeWindow->addWindowResizeCallback([&](int w, int h){
+        gEngine->window().addWindowResizeCallback([&](int w, int h){
             data->render_interface.SetViewport(w, h);
             RmlGLFW::ProcessFramebufferSizeCallback(data->context, w, h);
         });
-
 }

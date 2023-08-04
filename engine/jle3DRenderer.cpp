@@ -36,7 +36,7 @@ struct jle3DRenderer::jle3DRendererShaders {
           pickingShader{jlePath{"ER:/shaders/picking.glsl"}},
           shadowMappingShader{jlePath{"ER:/shaders/shadowMapping.glsl"}},
           shadowMappingPointShader{jlePath{"ER:/shaders/shadowMappingPoint.glsl"}},
-          debugDepthQuad{jlePath{"ER:/shaders/depthDebug.glsl"}}, linesShader{jlePath{"ER:/shaders/lines.glsl"}}
+          debugDepthQuad{jlePath{"ER:/shaders/debugDepthQuad.glsl"}}, linesShader{jlePath{"ER:/shaders/lines.glsl"}}
     {
     }
 
