@@ -30,6 +30,8 @@ class jleEditor : public jleGameEngine
 public:
     jleEditor();
 
+    ~jleEditor() override;
+
     void start() override;
 
     void render() override;

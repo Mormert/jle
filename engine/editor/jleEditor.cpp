@@ -519,3 +519,5 @@ jleEditor::saveState()
 {
     return *_internal->editorSaveState.get();
 }
+
+jleEditor::~jleEditor() = default;
