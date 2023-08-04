@@ -25,7 +25,6 @@
 #include "cereal/details/helpers.hpp"
 #include "cereal/types/memory.hpp"
 #include "cereal/types/polymorphic.hpp"
-#include "editor/jleImGuiCerealArchive.h"
 
 #include <plog/Log.h>
 #include <plog/Logger.h>
