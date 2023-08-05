@@ -1,11 +1,11 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "cCamera.h"
+#include "jleGame.h"
 #include "jleGameEngine.h"
 #include "jleIncludeGL.h"
 #include "jleObject.h"
 #include "jleWindow.h"
-#include "jleGame.h"
 
 #ifdef BUILD_EDITOR
 #include "editor/jleEditor.h"
@@ -61,15 +61,13 @@ cCamera::update(float dt)
 {
     auto &game = ((jleGameEngine *)gEngine)->gameRef();
 
-    if (_perspective) {
-        game.mainCamera.setPerspectiveProjection(_perspectiveFov,
-                                                 gEngine->mainScreenFramebuffer->width(),
-                                                 gEngine->mainScreenFramebuffer->height(),
-                                                 _farPlane,
-                                                 _nearPlane);
+    auto width = gEngine->mainScreenFramebuffer->width();
+    auto height = gEngine->mainScreenFramebuffer->height();
+
+    if (_perspective && width > 0 && height > 0) {
+        game.mainCamera.setPerspectiveProjection(_perspectiveFov, width, height, _farPlane, _nearPlane);
     } else {
-        game.mainCamera.setOrthographicProjection(
-            gEngine->mainScreenFramebuffer->width(), gEngine->mainScreenFramebuffer->height(), _farPlane, _nearPlane);
+        game.mainCamera.setOrthographicProjection(width, height, _farPlane, _nearPlane);
     }
 
     jleCameraSimpleFPVController c;
@@ -108,6 +106,7 @@ cCamera::editorGizmosRender(bool selected)
 #ifdef BUILD_EDITOR
     auto mesh = gEditor->gizmos().cameraMesh();
     auto material = gEditor->gizmos().cameraMaterial();
-    gEngine->renderGraph().sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
+    gEngine->renderGraph().sendMesh(
+        mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 #endif // BUILD_EDITOR
 }
