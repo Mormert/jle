@@ -1,0 +1,17 @@
+{
+    "value0": {
+        "polymorphic_id": 2147483649,
+        "polymorphic_name": "jleSkybox",
+        "ptr_wrapper": {
+            "id": 2147483649,
+            "data": {
+                "_right": "ER:/skybox/px.jpg",
+                "_left": "ER:/skybox/nx.jpg",
+                "_bottom": "ER:/skybox/ny.jpg",
+                "_top": "ER:/skybox/py.jpg",
+                "_front": "ER:/skybox/pz.jpg",
+                "_back": "ER:/skybox/nz.jpg"
+            }
+        }
+    }
+}
