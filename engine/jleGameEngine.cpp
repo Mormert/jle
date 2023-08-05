@@ -5,6 +5,7 @@
 #include "jle3DRenderer.h"
 #include "jle3DSettings.h"
 #include "jleEngineSettings.h"
+#include "jleExplicitInclude.h"
 #include "jleFramebufferMultisample.h"
 #include "jleFramebufferScreen.h"
 #include "jleFullscreenRendering.h"
@@ -16,10 +17,9 @@
 #include "jleResourceRef.h"
 #include "jleTimerManager.h"
 #include "jleWindow.h"
-#include "jleExplicitInclude.h"
 
-#include <plog/Log.h>
 #include <Remotery/Remotery.h>
+#include <plog/Log.h>
 #include <soloud.h>
 
 #include <RmlUi/Core.h>
@@ -31,7 +31,7 @@
 #include <emscripten.h>
 #endif
 
-struct jleGameEngine::jleEngineInternal{
+struct jleGameEngine::jleEngineInternal {
     jleResourceRef<jleEngineSettings> engineSettings;
 };
 
@@ -39,6 +39,12 @@ jleGameEngine::jleGameEngine()
 {
     gEngine = this;
     _resources = std::make_unique<jleResources>();
+
+    LOGI << "Game Resources located at: " << jlePath{"GR:/"}.getRealPath();
+    LOGI << "Engine Resources located at: " << jlePath{"ER:/"}.getRealPath();
+#ifdef BUILD_EDITOR
+    LOGI << "Editor Resources located at: " << jlePath{"ED:/"}.getRealPath();
+#endif
 
     _internal = std::make_unique<jleEngineInternal>();
     _internal->engineSettings = jleResourceRef<jleEngineSettings>("GR:/settings/enginesettings.es");
@@ -429,71 +435,59 @@ float
 jleGameEngine::lastFrameTime() const
 {
     return _lastFrame;
-
 }
 float
 jleGameEngine::currentFrameTime() const
 {
     return _currentFrame;
-
 }
 float
 jleGameEngine::deltaFrameTime() const
 {
     return _deltaTime;
-
 }
 int
 jleGameEngine::fps() const
 {
     return _fps;
-
 }
 jleEngineSettings &
 jleGameEngine::settings()
 {
     return *_internal->engineSettings.get();
-
 }
 jle3DSettings &
 jleGameEngine::renderSettings()
 {
     return *_3dRendererSettings.get();
-
 }
 jle3DGraph &
 jleGameEngine::renderGraph()
 {
     return *_3dRenderGraph.get();
-
 }
 jleInput &
 jleGameEngine::input()
 {
     return *_input;
-
 }
 jleWindow &
 jleGameEngine::window()
 {
     return *_window;
-
 }
 jleResources &
 jleGameEngine::resources()
 {
     return *_resources;
-
 }
 SoLoud::Soloud &
 jleGameEngine::soLoud()
 {
     return *_soLoud;
-
 }
 jleTimerManager &
 jleGameEngine::timerManager()
 {
     return *_timerManager;
-
 }

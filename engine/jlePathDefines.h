@@ -6,10 +6,10 @@
 
 // Wrappers for paths defined in CMakeLists
 
-#ifndef BUILD_EDITOR
-static std::string JLE_ENGINE_PATH{""};
-#else
+#if defined(BUILD_EDITOR) || !defined(NDEBUG)
 static std::string JLE_ENGINE_PATH{_JLE_ENGINE_PATH};
+#else
+static std::string JLE_ENGINE_PATH{""};
 #endif
 
 static std::string JLE_ENGINE_RESOURCES_PATH{JLE_ENGINE_PATH + "EngineResources"};
@@ -17,7 +17,7 @@ static std::string JLE_EDITOR_RESOURCES_PATH{JLE_ENGINE_PATH + "EditorResources"
 static std::string JLE_BINARY_RESOURCES_PATH{""};
 
 
-#ifdef BUILD_EDITOR
+#if defined(BUILD_EDITOR) || !defined(NDEBUG)
 static std::string GAME_RESOURCES_DIRECTORY{_GAME_RESOURCES_DIRECTORY};
 #else
 static std::string GAME_RESOURCES_DIRECTORY{"GameResources"};
