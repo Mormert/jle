@@ -89,9 +89,10 @@ uniform vec3 DirectionalLightColour;
 uniform vec3 DirectionalLightDir;
 
 const float pi = 3.141592653589;
-const vec3 albedo = vec3(0.83, 0.68, 0.22);
-const float metallic = 0.0;
-const float roughness = 0.5;
+uniform vec3 albedo;
+uniform vec3 normal;
+uniform float metallic;
+uniform float roughness;
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -371,7 +372,7 @@ void main()
         N = normalize(normal * 2.0 - 1.0);
     } else
     {
-        N = vec3(0.0, 0.0, 1.0);
+        N = normal;
     }
     vec3 V = normalize(TangentCameraPos - TangentFragPos);
 

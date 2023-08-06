@@ -89,7 +89,8 @@ add_library(engine STATIC
         "jleFileChangeNotifier.cpp"
         "jleLuaEnvironment.cpp"
         "jleGLError.cpp"
-        "jleInput.cpp")
+        "jleInput.cpp"
+        "jleTextureRefOrRGBA.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE
@@ -111,6 +112,7 @@ if (BUILD_EDITOR)
             "editor/jleEditorNotifications.cpp"
             "editor/jleEditorGizmos.cpp"
             "editor/jleEditorSaveState.cpp"
+            "editor/jleImGuiExtensions.cpp"
             "3rdparty/ImGuiColorTextEdit/TextEditor.cpp"
             "3rdparty/ImGui/imgui.cpp"
             "3rdparty/ImGui/imgui_spectrum.cpp"

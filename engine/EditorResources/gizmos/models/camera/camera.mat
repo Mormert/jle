@@ -1,14 +1,40 @@
 {
     "value0": {
         "polymorphic_id": 2147483649,
-        "polymorphic_name": "jleMaterial",
+        "polymorphic_name": "jleMaterialPBR",
         "ptr_wrapper": {
             "id": 2147483649,
             "data": {
-                "_albedoTextureRef": "ED:/gizmos/models/camera/cameraColor.png",
-                "_normalTextureRef": "",
-                "_metallicTextureRef": "",
-                "_roughnessTextureRef": ""
+                "value0": {
+                    "_shaderRef": "ER:/shaders/defaultMesh.glsl"
+                },
+                "_albedo": {
+                    "_color": {
+                        "x": 0.07408001273870468,
+                        "y": 0.9132915735244751,
+                        "z": 0.9240506291389465
+                    },
+                    "_textureRef": "ED:/gizmos/models/camera/cameraColor.png"
+                },
+                "_normal": {
+                    "_color": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                    },
+                    "_textureRef": ""
+                },
+                "_metallic": {
+                    "_alpha": 0.0,
+                    "_textureRef": ""
+                },
+                "_roughness": {
+                    "_alpha": 0.16699999570846559,
+                    "_textureRef": ""
+                },
+                "_usePointShadows": true,
+                "_useDirectionalShadows": true,
+                "_useSkyboxEnvironmentMap": true
             }
         }
     }

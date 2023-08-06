@@ -8,7 +8,7 @@
 #include <glm/gtx/matrix_decompose.hpp>
 
 struct jle3DSettings {
-    bool useDirectionalLight{false};
+    bool useDirectionalLight{true};
     bool usePointsLights{true};
     bool useEnvironmentMapping{true};
 

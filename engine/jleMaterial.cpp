@@ -2,6 +2,7 @@
 #include "jleMaterial.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterial)
+JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterialPBR)
 
 std::vector<std::string>
 jleMaterial::getFileAssociationList()
@@ -14,7 +15,25 @@ jleMaterial::useMaterial(const jleCamera &camera,
                          const std::vector<jle3DRendererLight> &lights,
                          const jle3DSettings &settings)
 {
+}
 
+std::shared_ptr<jleShader>
+jleMaterial::getShader()
+{
+    return _shaderRef.get();
+}
+
+template <class Archive>
+void
+jleMaterial::serialize(Archive &ar)
+{
+    ar(CEREAL_NVP(_shaderRef));
+}
+void
+jleMaterialPBR::useMaterial(const jleCamera &camera,
+                            const std::vector<jle3DRendererLight> &lights,
+                            const jle3DSettings &settings)
+{
     auto &shader = *_shaderRef.get();
 
     shader.use();
@@ -25,7 +44,7 @@ jleMaterial::useMaterial(const jleCamera &camera,
     shader.SetTextureSlot("skyboxTexture", jleTextureSlot::Skybox);
     shader.SetFloat("farPlane", 500.f);
     shader.SetBool("UseDirectionalLight", settings.useDirectionalLight);
-    shader.SetBool("UseEnvironmentMapping", settings.useEnvironmentMapping);
+    shader.SetBool("UseEnvironmentMapping", settings.useEnvironmentMapping && _useSkyboxEnvironmentMap);
     shader.SetVec3("DirectionalLightColour", settings.directionalLightColour);
     shader.SetVec3("DirectionalLightDir", settings.directionalLightRotation);
     shader.SetMat4("view", camera.getViewMatrix());
@@ -45,32 +64,53 @@ jleMaterial::useMaterial(const jleCamera &camera,
         shader.SetVec3("LightColors[" + std::to_string(l) + "]", lights[l].color);
     }
 
-    if (_albedoTextureRef) {
-        _albedoTextureRef->setActive(jleTextureSlot::Albedo);
+    if (_albedo.textureRef()) {
+        _albedo.textureRef()->setActive(jleTextureSlot::Albedo);
         shader.SetBool("useAlbedoTexture", true);
     } else {
         shader.SetBool("useAlbedoTexture", false);
+        shader.SetVec3("albedo", _albedo.color());
     }
 
-    if (_normalTextureRef) {
-        _normalTextureRef->setActive(jleTextureSlot::Albedo);
+    if (_normal.textureRef()) {
+        _normal.textureRef()->setActive(jleTextureSlot::Normal);
         shader.SetBool("useNormalTexture", true);
     } else {
         shader.SetBool("useNormalTexture", false);
+        shader.SetVec3("normal", _normal.color());
+    }
+
+    if (_metallic.textureRef()) {
+        _metallic.textureRef()->setActive(jleTextureSlot::Metallic);
+        shader.SetBool("useMetallicTexture", true);
+    } else {
+        shader.SetBool("useMetallicTexture", false);
+        shader.SetFloat("metallic", _metallic.alpha());
+    }
+
+    if (_roughness.textureRef()) {
+        _roughness.textureRef()->setActive(jleTextureSlot::Rougness);
+        shader.SetBool("useRoughnessTexture", true);
+    } else {
+        shader.SetBool("useRoughnessTexture", false);
+        shader.SetFloat("roughness", _roughness.alpha());
     }
 }
 
 template <class Archive>
 void
-jleMaterial::serialize(Archive &ar)
+jleMaterialPBR::serialize(Archive &ar)
 {
     try {
-        ar(CEREAL_NVP(_shaderRef));
+        ar(cereal::base_class<jleMaterial>(this),
+           CEREAL_NVP(_albedo),
+           CEREAL_NVP(_normal),
+           CEREAL_NVP(_metallic),
+           CEREAL_NVP(_roughness),
+           CEREAL_NVP(_usePointShadows),
+           CEREAL_NVP(_useDirectionalShadows),
+           CEREAL_NVP(_useSkyboxEnvironmentMap));
     } catch (std::exception &e) {
-        _shaderRef = jleResourceRef<jleShader>(jlePath{"ER:/shaders/defaultMesh.glsl"});
+        LOGE << "Failed loading material:" << e.what();
     }
-    ar(CEREAL_NVP(_albedoTextureRef),
-       CEREAL_NVP(_normalTextureRef),
-       CEREAL_NVP(_metallicTextureRef),
-       CEREAL_NVP(_roughnessTextureRef));
 }

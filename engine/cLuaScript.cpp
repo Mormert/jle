@@ -6,6 +6,7 @@
 
 #ifdef BUILD_EDITOR
 #include <ImGui/imgui.h>
+#include "editor/jleImGuiExtensions.h"
 #include "editor/jleEditor.h"
 #endif
 
@@ -76,8 +77,7 @@ cLuaScript::editorInspectorImGuiRender()
 #ifdef BUILD_EDITOR
     if (!gEngine->isGameKilled()) {
 
-        ImGui::BeginChild("LuaVars", ImVec2(0,200), true, ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::Text("Lua Variables");
+        ImGui::BeginGroupPanel("Lua Variables");
 
         try {
             sol::protected_function f = gEditor->luaEnvironment()->getState()["luaEditor"]["tableImGui"];
@@ -92,7 +92,7 @@ cLuaScript::editorInspectorImGuiRender()
             ImGui::Text("Lua Error: %s", e.what());
         }
 
-        ImGui::EndChild();
+        ImGui::EndGroupPanel();
 
     }else
     {

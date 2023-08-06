@@ -177,14 +177,14 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const jle3DGraph &graph, co
     }
 
     for (auto &&mesh : graph._meshes) {
-        if (!mesh.material || !mesh.material->_shaderRef) {
+        if (!mesh.material || !mesh.material->getShader()) {
             _shaders->missingMaterialShader->use();
             _shaders->missingMaterialShader->SetMat4("view", camera.getViewMatrix());
             _shaders->missingMaterialShader->SetMat4("proj", camera.getProjectionMatrix());
             _shaders->missingMaterialShader->SetMat4("model", mesh.transform);
         } else {
             mesh.material->useMaterial(camera, graph._lights, settings);
-            mesh.material->_shaderRef->SetMat4("model", mesh.transform);
+            mesh.material->getShader()->SetMat4("model", mesh.transform);
         }
 
         glBindVertexArray(mesh.mesh->getVAO());

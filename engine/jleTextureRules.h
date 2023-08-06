@@ -13,5 +13,7 @@ enum class jleTextureSlot : int {
     PointShadow,
     Albedo,
     Normal,
-    Skybox
+    Skybox,
+    Metallic,
+    Rougness
 };
