@@ -296,7 +296,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
 
         if (gEditor->camera().getProjectionType() == jleCameraProjection::Perspective || ImGui::IsKeyDown(ImGuiKey_LeftShift)) {
             if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
-                fpvCamController.applyPerspectiveMouseMovementDelta(glm::vec2{mouseDeltaX, mouseDeltaY}, t * 10000.f);
+                fpvCamController.applyPerspectiveMouseMovementDelta(glm::vec2{mouseDeltaX, mouseDeltaY}, 300.f);
                 ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
             }
         } else {
