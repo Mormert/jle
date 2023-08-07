@@ -294,8 +294,28 @@ float ShadowCalculationPoint(vec3 fragPos, vec3 lightPos)
     // The current depth from the light source
     float currentDepth = length(worldPosToLight);
 
-    float bias = 2.5;
-    float shadow = currentDepth - bias > closestDepth ? 0.0 : 1.0;
+    float shadow  = 0.0;
+    float bias    = 1.0;
+    float samples = 4.0;
+    float offset  = 0.1;
+
+    // PCF
+    for(float x = -offset; x < offset; x += offset / (samples * 0.5))
+    {
+        for(float y = -offset; y < offset; y += offset / (samples * 0.5))
+        {
+            for(float z = -offset; z < offset; z += offset / (samples * 0.5))
+            {
+                float closestDepth = texture(uShadowMapPoint, worldPosToLight + vec3(x, y, z)).r;
+                closestDepth *= uFarPlane;   // undo mapping [0;1]
+                if(currentDepth - bias < closestDepth)
+                {
+                    shadow += 1.0;
+                }
+            }
+        }
+    }
+    shadow /= (samples * samples * samples);
 
     return shadow;
 }
