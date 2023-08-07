@@ -7,13 +7,7 @@
 #define JLE_TEXTURE_ALBEDO 0x84C2
 #define JLE_TEXTURE_NORMAL 0x84C3
 #define JLE_TEXTURE_SKYBOX 0x84C4
+#define JLE_TEXTURE_METALLIC 0x84C5
+#define JLE_TEXTURE_ROUGHNESS 0x84C6
 
-enum class jleTextureSlot : int {
-    DirectionalShadow,
-    PointShadow,
-    Albedo,
-    Normal,
-    Skybox,
-    Metallic,
-    Rougness
-};
+enum class jleTextureSlot : int { DirectionalShadow, PointShadow, Albedo, Normal, Skybox, Metallic, Roughness };

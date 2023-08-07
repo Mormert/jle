@@ -17,7 +17,10 @@ public:
     ~jleEditorGizmos();
 
     std::shared_ptr<jleMesh> lightLampMesh();
+    std::shared_ptr<jleMaterial> lampMaterial();
+
     std::shared_ptr<jleMesh> sunMesh();
+    std::shared_ptr<jleMaterial> sunMaterial();
 
     std::shared_ptr<jleMesh> cameraMesh();
     std::shared_ptr<jleMaterial> cameraMaterial();

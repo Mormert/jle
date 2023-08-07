@@ -13,48 +13,46 @@ out vec3 TangentFragPos;
 out vec3 TangentLightPos[4];
 out vec3 TangentCameraPos;
 out vec2 TexCoords;
-out vec3 localNormal;
-
+out vec3 LocalNormal;
 out mat3 TBN;
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 proj;
-uniform mat4 lightSpaceMatrix;
-uniform vec3 LightPositions[4];
-uniform vec3 CameraPosition;
+uniform mat4 uModel;
+uniform mat4 uView;
+uniform mat4 uProj;
+uniform mat4 uLightSpaceMatrix;
+uniform vec3 uLightPositions[4];
+uniform vec3 uCameraPosition;
 
 void main()
 {
     TexCoords = aTexCoords;
 
     // Gram-Schmidt Orthogonalisation
-    mat3 normalMatrix = transpose(inverse(mat3(model)));
+    mat3 normalMatrix = transpose(inverse(mat3(uModel)));
     vec3 T = normalize(normalMatrix * aTangent);
     vec3 N = normalize(normalMatrix * aNormal);
     T = normalize(T - dot(T, N) * N);
     vec3 B = cross(N, T);
 
-    localNormal = normalize(aNormal);
+    LocalNormal = normalize(aNormal);
     TBN = transpose(mat3(T, B, N));
 
-    WorldFragPos = vec3(model * vec4(aPos, 1.0));
+    WorldFragPos = vec3(uModel * vec4(aPos, 1.0));
     TangentFragPos = TBN * WorldFragPos;
-    for(int i = 0; i < 4; i++)
+    for (int i = 0; i < 4; i++)
     {
-        TangentLightPos[i] = TBN * LightPositions[i];
+        TangentLightPos[i] = TBN * uLightPositions[i];
     }
-    TangentCameraPos = TBN * CameraPosition;
-    WorldCameraPos = CameraPosition;
-    WorldFragPosLightSpace = lightSpaceMatrix * vec4(WorldFragPos, 1.0);
+    TangentCameraPos = TBN * uCameraPosition;
+    WorldCameraPos = uCameraPosition;
+    WorldFragPosLightSpace = uLightSpaceMatrix * vec4(WorldFragPos, 1.0);
 
-    gl_Position = proj * view * model * vec4(aPos, 1.0f);
+    gl_Position = uProj * uView * uModel * vec4(aPos, 1.0f);
 }
 
 /*BEGIN FRAG*/
 
 out vec4 FragColor;
-
 
 in vec3 WorldFragPos;
 in vec4 WorldFragPosLightSpace;
@@ -63,36 +61,41 @@ in vec3 TangentFragPos;
 in vec3 TangentLightPos[4];
 in vec3 TangentCameraPos;
 in vec2 TexCoords;
-in vec3 localNormal;
-
+in vec3 LocalNormal;
 in mat3 TBN;
 
-uniform sampler2D shadowMap;
-uniform samplerCube shadowMapPoint;
-uniform samplerCube skyboxTexture;
+uniform sampler2D uShadowMap;
+uniform samplerCube uShadowMapPoint;
+uniform samplerCube uSkyboxTexture;
 
-uniform bool useAlbedoTexture;
-uniform sampler2D albedoTexture;
+uniform bool uUseAlbedoTexture;
+uniform sampler2D uAlbedoTexture;
+uniform vec3 uAlbedo;
 
-uniform bool useNormalTexture;
-uniform sampler2D normalTexture;
+uniform bool uUseNormalTexture;
+uniform sampler2D uNormalTexture;
+uniform vec3 uNormal;
 
-uniform float farPlane;
+uniform bool uUseMetallicTexture;
+uniform sampler2D uMetallicTexture;
+uniform float uMetallic;
 
-uniform int LightsCount;
-uniform vec3 LightPositions[4];
-uniform vec3 LightColors[4];
+uniform bool uUseRoughnessTexture;
+uniform sampler2D uRoughnessTexture;
+uniform float uRoughness;
 
-uniform bool UseDirectionalLight;
-uniform bool UseEnvironmentMapping;
-uniform vec3 DirectionalLightColour;
-uniform vec3 DirectionalLightDir;
+uniform float uFarPlane;
+
+uniform int uLightsCount;
+uniform vec3 uLightPositions[4];
+uniform vec3 uLightColors[4];
+
+uniform bool uUseDirectionalLight;
+uniform bool uUseEnvironmentMapping;
+uniform vec3 uDirectionalLightColour;
+uniform vec3 uDirectionalLightDir;
 
 const float pi = 3.141592653589;
-uniform vec3 albedo;
-uniform vec3 normal;
-uniform float metallic;
-uniform float roughness;
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -189,21 +192,14 @@ vec3 fresnelSchlickApprox(float cosTheta, vec3 F0)
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
-vec3 lambertian_brdf(vec3 in_direction, vec3 out_direction, vec3 normal)
+vec3 lambertian_brdf(vec3 in_direction, vec3 out_direction, vec3 normal, vec3 albedo)
 {
-    if (useAlbedoTexture)
-    {
-        return texture(albedoTexture, TexCoords).rgb/pi;
-    }
-    else
-    {
-        return albedo/pi;
-    }
+    return albedo/pi;
 }
 
 // https://www.shadertoy.com/view/ldBGz3
 // https://garykeen27.wixsite.com/portfolio/oren-nayar-shading
-float oren_nayar_brdf(vec3 lightDirection, vec3 viewDirection, vec3 surfaceNormal) {
+vec3 oren_nayar_brdf(vec3 lightDirection, vec3 viewDirection, vec3 surfaceNormal, vec3 albedo, float roughness) {
     float r2 = roughness*roughness;
     float a = 1.0 - 0.5*(r2/(r2+0.57));
     float b = 0.45*(r2/(r2+0.09));
@@ -213,33 +209,25 @@ float oren_nayar_brdf(vec3 lightDirection, vec3 viewDirection, vec3 surfaceNorma
 
     float ga = dot(viewDirection-surfaceNormal*nv, surfaceNormal-surfaceNormal*nl);
 
-    return max(0.0, nl) * (a + b*max(0.0, ga) * sqrt((1.0-nv*nv)*(1.0-nl*nl)) / max(nl, nv));
+    return albedo * max(0.0, nl) * (a + b*max(0.0, ga) * sqrt((1.0-nv*nv)*(1.0-nl*nl)) / max(nl, nv));
 }
 
-vec3 blinn_phong_brdf(vec3 in_direction, vec3 out_direction, vec3 normal){
+vec3 blinn_phong_brdf(vec3 in_direction, vec3 out_direction, vec3 normal, vec3 albedo, float roughness){
 
     vec3 halfwayVector = normalize(out_direction + in_direction);
 
     float kL = roughness;
     float kG = 1.0 - kL;
     float s = 16.0;
-    vec3 pL;
-    if (useAlbedoTexture)
-    {
-        pL = texture(albedoTexture, TexCoords).rgb;
-    }
-    else
-    {
-        pL = albedo;
-    }
+    vec3 pL = albedo;
+
     vec3 pG = vec3(1.0);
 
-    vec3 retVec = kL * (pL / pi) + kG *(pG*((8.0+s)/(8.0*pi))* pow(max(dot(normal, halfwayVector), 0.0), s));
-    return retVec;
-
+    vec3 result = kL * (pL / pi) + kG *(pG*((8.0+s)/(8.0*pi))* pow(max(dot(normal, halfwayVector), 0.0), s));
+    return result;
 }
 
-vec3 cook_torrance_brdf(vec3 in_direction, vec3 out_direction, vec3 normal){
+vec3 cook_torrance_brdf(vec3 in_direction, vec3 out_direction, vec3 normal, vec3 albedo, float roughness, float metallic){
 
     // The "metallic workflow"
     vec3 F0 = vec3(0.04);
@@ -298,10 +286,10 @@ float ShadowCalculationPoint(vec3 fragPos, vec3 lightPos)
     vec3 worldPosToLight = fragPos - lightPos;
 
     // Sample from the cube shadow texture
-    float closestDepth = texture(shadowMapPoint, worldPosToLight).r;
+    float closestDepth = texture(uShadowMapPoint, worldPosToLight).r;
 
     // Re-map from 0 to 1 back to 0 to far plane linearly
-    closestDepth *= farPlane;
+    closestDepth *= uFarPlane;
 
     // The current depth from the light source
     float currentDepth = length(worldPosToLight);
@@ -327,7 +315,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 N, vec3 L)
     }
 
     // Get closest depth value from light's perspective
-    float closestDepth = texture(shadowMap, projCoords.xy).r;
+    float closestDepth = texture(uShadowMap, projCoords.xy).r;
 
     // The current depth from the light source from the lights perspective
     float currentDepth = projCoords.z;
@@ -335,7 +323,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 N, vec3 L)
     // Slightly add bias for mitigating shadow acne further
     float bias = max(0.001 * (1.0 - dot(N, -L)), 0.00015);
 
-    ivec2 textureSize2d = textureSize(shadowMap, 0);
+    ivec2 textureSize2d = textureSize(uShadowMap, 0);
     float sizeTexture = float(textureSize2d.x);
     float texelSize = 1.0 / sizeTexture;
 
@@ -346,7 +334,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 N, vec3 L)
     {
         for (int y = -halfkernelWidth; y <= halfkernelWidth; ++y)
         {
-            shadow += SampleShadowMapLinear(shadowMap, projCoords.xy + vec2(x, y) * texelSize, currentDepth - bias, vec2(texelSize));
+            shadow += SampleShadowMapLinear(uShadowMap, projCoords.xy + vec2(x, y) * texelSize, currentDepth - bias, vec2(texelSize));
         }
     }
     shadow /= ((float(halfkernelWidth)*2.0+1.0)*(float(halfkernelWidth)*2.0+1.0));
@@ -362,22 +350,68 @@ float CalculateAttenuation(float distance, float constant, float linear, float q
     return distance / (constant + linear * distance + quadratic * (distance*distance));
 }
 
+vec3 getAlbedo()
+{
+    if (uUseAlbedoTexture)
+    {
+        // sRGB conversion
+        return pow(texture(uAlbedoTexture, TexCoords).rgb, vec3(2.2));
+
+        // Non-sRGB conversion
+        // return texture(uAlbedoTexture, TexCoords).rgb;
+    }
+    else
+    {
+        return uAlbedo;
+    }
+}
+
+vec3 getNormal()
+{
+    if (uUseNormalTexture)
+    {
+        vec3 normal = texture(uNormalTexture, TexCoords).rgb;
+        return normalize(normal * 2.0 - 1.0);
+    } else
+    {
+        return uNormal;
+    }
+}
+
+float getMetallic()
+{
+    if (uUseMetallicTexture)
+    {
+        return texture(uMetallicTexture, TexCoords).r;
+    } else
+    {
+        return uMetallic;
+    }
+}
+
+float getRoughness()
+{
+    if (uUseRoughnessTexture)
+    {
+        return texture(uRoughnessTexture, TexCoords).r;
+    } else
+    {
+        return uRoughness;
+    }
+}
+
 void main()
 {
 
-    vec3 N;
-    if (useNormalTexture)
-    {
-        vec3 normal = texture(normalTexture, TexCoords).rgb;
-        N = normalize(normal * 2.0 - 1.0);
-    } else
-    {
-        N = normal;
-    }
+    vec3 albedo = getAlbedo();
+    vec3 N = getNormal();
+    float metallic = getMetallic();
+    float roughness = getRoughness();
+
     vec3 V = normalize(TangentCameraPos - TangentFragPos);
 
     vec3 LightOutTotal = vec3(0.0);
-    for (int l = 0; l < LightsCount; ++l)
+    for (int l = 0; l < uLightsCount; ++l)
     {
         vec3 L = normalize(TangentLightPos[l] - TangentFragPos);
 
@@ -387,42 +421,45 @@ void main()
         // Incoming radiance from the light source
         float distance = length(TangentLightPos[l] - TangentFragPos);
         float attenuation = CalculateAttenuation(distance, 1.0, 0.35, 0.44);
-        vec3 radiance = LightColors[l] * attenuation * ShadowCalculationPoint(WorldFragPos, LightPositions[l]);
+        vec3 radiance = uLightColors[l] * attenuation * ShadowCalculationPoint(WorldFragPos, uLightPositions[l]);
 
-        // LightOutTotal += radiance * blinn_phong_brdf(L, V, N) * NdotL;
-        LightOutTotal += radiance * lambertian_brdf(L, V, N) * NdotL;
-        // LightOutTotal += radiance * cook_torrance_brdf(L, V, N) * NdotL;
-        // LightOutTotal += radiance * albedo * oren_nayar_brdf(L, V, N) * NdotL;
+        //LightOutTotal += radiance * blinn_phong_brdf(L, V, N, albedo, roughness) * NdotL;
+        //LightOutTotal += radiance * lambertian_brdf(L, V, N, albedo) * NdotL;
+        LightOutTotal += radiance * cook_torrance_brdf(L, V, N, albedo, roughness, metallic) * NdotL;
+        //LightOutTotal += radiance * oren_nayar_brdf(L, V, N, albedo, roughness) * NdotL;
 
     }
 
     vec3 worldView = normalize(WorldCameraPos - WorldFragPos);
     vec3 worldSpaceNormal = transpose(TBN) * N;
 
-    if (UseDirectionalLight)
+    if (uUseDirectionalLight)
     {
-        vec3 L = normalize(DirectionalLightDir);
+        vec3 L = normalize(uDirectionalLightDir);
 
         // Incident angle
         float NdotL = max(dot(worldSpaceNormal, L), 0.0);
 
         // Incoming radiance, depends on shadows from other objects
-        vec3 radiance = DirectionalLightColour;// * ShadowCalculation(WorldFragPosLightSpace, N, L);
+        vec3 radiance = uDirectionalLightColour;// * ShadowCalculation(WorldFragPosLightSpace, N, L);
 
-        LightOutTotal += radiance * lambertian_brdf(L, worldView, worldSpaceNormal) * NdotL;
+        //LightOutTotal += radiance * blinn_phong_brdf(L, V, N, albedo, roughness) * NdotL;
+        //LightOutTotal += radiance * lambertian_brdf(L, worldView, worldSpaceNormal, albedo) * NdotL;
+        LightOutTotal += radiance * cook_torrance_brdf(L, V, N, albedo, roughness, metallic) * NdotL;
+        //LightOutTotal += radiance * oren_nayar_brdf(L, V, N, albedo, roughness) * NdotL;
 
     }
 
-    if(UseEnvironmentMapping)
+    if (uUseEnvironmentMapping)
     {
-        vec3 R = reflect(-worldView,normalize(worldSpaceNormal));
-        vec3 environmentColor = texture(skyboxTexture, R).xyz;
-        float reflectanceCoeff = roughness;
+        vec3 R = reflect(-worldView, normalize(worldSpaceNormal));
+        vec3 environmentColor = texture(uSkyboxTexture, R).xyz;
+        float reflectanceCoeff = 1.0 - roughness;
         LightOutTotal = reflectanceCoeff * environmentColor + (1.0-reflectanceCoeff)*LightOutTotal;
     }
 
     // HDR tonemapping
-    // LightOutTotal = LightOutTotal / (LightOutTotal + vec3(1.0));
+    LightOutTotal = LightOutTotal / (LightOutTotal + vec3(1.0));
 
     // Gamma correction
     // LightOutTotal = pow(LightOutTotal, vec3(1.0/2.2));

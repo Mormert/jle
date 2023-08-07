@@ -12,12 +12,17 @@ struct jleEditorGizmos::jleEditorGizmosMeshMaterialHolder {
         lightLampMeshRef = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_lamp.fbx"}};
         sunMeshRef = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_sun.fbx"}};
         cameraMeshRef = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/camera/camera.fbx"}};
+        lampMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/lamp.mat"}};
+        sunMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/sun.mat"}};
         cameraMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/camera/camera.mat"}};
     }
 
     jleResourceRef<jleMesh> lightLampMeshRef;
     jleResourceRef<jleMesh> sunMeshRef;
     jleResourceRef<jleMesh> cameraMeshRef;
+
+    jleResourceRef<jleMaterial> lampMaterialRef;
+    jleResourceRef<jleMaterial> sunMaterialRef;
     jleResourceRef<jleMaterial> cameraMaterialRef;
 };
 
@@ -42,9 +47,23 @@ jleEditorGizmos::cameraMesh()
 }
 
 std::shared_ptr<jleMaterial>
+jleEditorGizmos::lampMaterial()
+{
+    return _meshMaterialHolder->lampMaterialRef.get();
+}
+
+std::shared_ptr<jleMaterial>
+jleEditorGizmos::sunMaterial()
+{
+    return _meshMaterialHolder->sunMaterialRef.get();
+}
+
+std::shared_ptr<jleMaterial>
 jleEditorGizmos::cameraMaterial()
 {
     return _meshMaterialHolder->cameraMaterialRef.get();
 }
+
+
 
 jleEditorGizmos::~jleEditorGizmos() = default;

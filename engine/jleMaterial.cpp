@@ -36,64 +36,66 @@ jleMaterialPBR::useMaterial(const jleCamera &camera,
 {
     auto &shader = *_shaderRef.get();
 
-    shader.use();
-    shader.SetTextureSlot("shadowMap", jleTextureSlot::DirectionalShadow);
-    shader.SetTextureSlot("shadowMapPoint", jleTextureSlot::PointShadow);
-    shader.SetTextureSlot("albedoTexture", jleTextureSlot::Albedo);
-    shader.SetTextureSlot("normalTexture", jleTextureSlot::Normal);
-    shader.SetTextureSlot("skyboxTexture", jleTextureSlot::Skybox);
-    shader.SetFloat("farPlane", 500.f);
-    shader.SetBool("UseDirectionalLight", settings.useDirectionalLight);
-    shader.SetBool("UseEnvironmentMapping", settings.useEnvironmentMapping && _useSkyboxEnvironmentMap);
-    shader.SetVec3("DirectionalLightColour", settings.directionalLightColour);
-    shader.SetVec3("DirectionalLightDir", settings.directionalLightRotation);
-    shader.SetMat4("view", camera.getViewMatrix());
-    shader.SetMat4("proj", camera.getProjectionMatrix());
-    shader.SetMat4("lightSpaceMatrix", settings.lightSpaceMatrix);
-    shader.SetVec3("CameraPosition", camera.getPosition());
-    shader.SetInt("LightsCount", (int)lights.size());
-
     // Limit to 4 lights
     int lightCount = lights.size();
     if (lightCount > 4) {
         lightCount = 4;
     }
 
+    shader.use();
+    shader.SetTextureSlot("uShadowMap", jleTextureSlot::DirectionalShadow);
+    shader.SetTextureSlot("uShadowMapPoint", jleTextureSlot::PointShadow);
+    shader.SetTextureSlot("uAlbedoTexture", jleTextureSlot::Albedo);
+    shader.SetTextureSlot("uNormalTexture", jleTextureSlot::Normal);
+    shader.SetTextureSlot("uMetallicTexture", jleTextureSlot::Metallic);
+    shader.SetTextureSlot("uRoughnessTexture", jleTextureSlot::Roughness);
+    shader.SetTextureSlot("uSkyboxTexture", jleTextureSlot::Skybox);
+    shader.SetFloat("uFarPlane", 500.f);
+    shader.SetBool("uUseDirectionalLight", settings.useDirectionalLight);
+    shader.SetBool("uUseEnvironmentMapping", settings.useEnvironmentMapping && _useSkyboxEnvironmentMap);
+    shader.SetVec3("uDirectionalLightColour", settings.directionalLightColour);
+    shader.SetVec3("uDirectionalLightDir", settings.directionalLightRotation);
+    shader.SetMat4("uView", camera.getViewMatrix());
+    shader.SetMat4("uProj", camera.getProjectionMatrix());
+    shader.SetMat4("uLightSpaceMatrix", settings.lightSpaceMatrix);
+    shader.SetVec3("uCameraPosition", camera.getPosition());
+    shader.SetInt("uLightsCount", lightCount);
+
     for (int l = 0; l < lightCount; l++) {
-        shader.SetVec3("LightPositions[" + std::to_string(l) + "]", lights[l].position);
-        shader.SetVec3("LightColors[" + std::to_string(l) + "]", lights[l].color);
+        shader.SetVec3("uLightPositions[" + std::to_string(l) + "]", lights[l].position);
+        shader.SetVec3("uLightColors[" + std::to_string(l) + "]", lights[l].color);
     }
 
     if (_albedo.textureRef()) {
         _albedo.textureRef()->setActive(jleTextureSlot::Albedo);
-        shader.SetBool("useAlbedoTexture", true);
+        shader.SetBool("uUseAlbedoTexture", true);
     } else {
-        shader.SetBool("useAlbedoTexture", false);
-        shader.SetVec3("albedo", _albedo.color());
+        shader.SetBool("uUseAlbedoTexture", false);
+        shader.SetVec3("uAlbedo", _albedo.color());
     }
 
     if (_normal.textureRef()) {
         _normal.textureRef()->setActive(jleTextureSlot::Normal);
-        shader.SetBool("useNormalTexture", true);
+        shader.SetBool("uUseNormalTexture", true);
     } else {
-        shader.SetBool("useNormalTexture", false);
-        shader.SetVec3("normal", _normal.color());
+        shader.SetBool("uUseNormalTexture", false);
+        shader.SetVec3("uNormal", _normal.color());
     }
 
     if (_metallic.textureRef()) {
         _metallic.textureRef()->setActive(jleTextureSlot::Metallic);
-        shader.SetBool("useMetallicTexture", true);
+        shader.SetBool("uUseMetallicTexture", true);
     } else {
-        shader.SetBool("useMetallicTexture", false);
-        shader.SetFloat("metallic", _metallic.alpha());
+        shader.SetBool("uUseMetallicTexture", false);
+        shader.SetFloat("uMetallic", _metallic.alpha());
     }
 
     if (_roughness.textureRef()) {
-        _roughness.textureRef()->setActive(jleTextureSlot::Rougness);
-        shader.SetBool("useRoughnessTexture", true);
+        _roughness.textureRef()->setActive(jleTextureSlot::Roughness);
+        shader.SetBool("uUseRoughnessTexture", true);
     } else {
-        shader.SetBool("useRoughnessTexture", false);
-        shader.SetFloat("roughness", _roughness.alpha());
+        shader.SetBool("uUseRoughnessTexture", false);
+        shader.SetFloat("uRoughness", _roughness.alpha());
     }
 }
 

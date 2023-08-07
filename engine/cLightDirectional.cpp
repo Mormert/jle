@@ -27,7 +27,7 @@ cLightDirectional::editorGizmosRender(bool selected)
 {
 #ifdef BUILD_EDITOR
     auto mesh = gEditor->gizmos().sunMesh();
-    std::shared_ptr<jleMaterial> material{};
+    std::shared_ptr<jleMaterial> material = gEditor->gizmos().sunMaterial();
     gEngine->renderGraph().sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 #endif // BUILD_EDITOR
 }

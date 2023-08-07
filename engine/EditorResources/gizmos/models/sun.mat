@@ -10,11 +10,11 @@
                 },
                 "_albedo": {
                     "_color": {
-                        "x": 0.07408001273870468,
-                        "y": 0.9132915735244751,
-                        "z": 0.9240506291389465
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 0.0
                     },
-                    "_textureRef": "ED:/gizmos/models/camera/cameraColor.png"
+                    "_textureRef": ""
                 },
                 "_normal": {
                     "_color": {
@@ -29,8 +29,8 @@
                     "_textureRef": ""
                 },
                 "_roughness": {
-                    "_alpha": 0.24500000476837159,
-                    "_textureRef": "ED:/gizmos/models/camera/cameraRoughness.png"
+                    "_alpha": 0.22300000488758088,
+                    "_textureRef": ""
                 },
                 "_usePointShadows": true,
                 "_useDirectionalShadows": true,
