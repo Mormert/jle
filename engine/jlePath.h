@@ -65,7 +65,7 @@ public:
     std::string _virtualPath;
 
 private:
-    std::string _realPath;
+    mutable std::string _realPath;
 
 private:
     static std::string findVirtualPathFromRealPath(const std::string &realPath);

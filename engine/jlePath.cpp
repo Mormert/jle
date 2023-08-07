@@ -170,6 +170,9 @@ jlePath::getVirtualPath()
 std::string
 jlePath::getRealPath() const
 {
+    if (_realPath.empty()) {
+        _realPath = findRealPathFromVirtualPath(_virtualPath);
+    }
     return _realPath;
 }
 
