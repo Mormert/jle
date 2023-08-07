@@ -441,12 +441,12 @@ void main()
         float NdotL = max(dot(worldSpaceNormal, L), 0.0);
 
         // Incoming radiance, depends on shadows from other objects
-        vec3 radiance = uDirectionalLightColour;// * ShadowCalculation(WorldFragPosLightSpace, N, L);
+        vec3 radiance = uDirectionalLightColour * ShadowCalculation(WorldFragPosLightSpace, N, L);
 
-        //LightOutTotal += radiance * blinn_phong_brdf(L, V, N, albedo, roughness) * NdotL;
+        //LightOutTotal += radiance * blinn_phong_brdf(L, worldView, worldSpaceNormal, albedo, roughness) * NdotL;
         //LightOutTotal += radiance * lambertian_brdf(L, worldView, worldSpaceNormal, albedo) * NdotL;
-        LightOutTotal += radiance * cook_torrance_brdf(L, V, N, albedo, roughness, metallic) * NdotL;
-        //LightOutTotal += radiance * oren_nayar_brdf(L, V, N, albedo, roughness) * NdotL;
+        LightOutTotal += radiance * cook_torrance_brdf(L, worldView, worldSpaceNormal, albedo, roughness, metallic) * NdotL;
+        //LightOutTotal += radiance * oren_nayar_brdf(L, worldView, worldSpaceNormal, albedo, roughness) * NdotL;
 
     }
 

@@ -22,20 +22,10 @@ struct jle3DSettings {
     setDirectionalLight(const glm::mat4 &view, const glm::vec3 &colour)
     {
 
-        glm::vec3 scale;
-        glm::quat rotation;
-        glm::vec3 translation;
-        glm::vec3 skew;
-        glm::vec4 perspective;
-        glm::decompose(view, scale, rotation, translation, skew, perspective);
-
-        directionalLightRotation = rotation * glm::vec3{0.f, 0.f, 1.f};
+        directionalLightRotation = glm::normalize(glm::vec3(view[0][2], view[1][2], view[2][2]));
         directionalLightColour = colour;
 
-        glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, -500.f, 500.f);
-        glm::mat4 lightView =
-            glm::lookAt(glm::vec3(-2.0f, 4.0f, -1.0f), rotation * glm::vec3{0.f, -1.f, 0.f}, glm::vec3(0.0f, -1.0f, 0.0f));
-        lightView[1][1] *= -1.f;
+        const static glm::mat4 lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, -500.f, 500.f);
 
         lightSpaceMatrix = lightProjection * view;
     }

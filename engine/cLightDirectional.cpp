@@ -18,7 +18,7 @@ cLightDirectional::update(float dt)
     gEngine->renderSettings().useDirectionalLight = true;
     auto mat4 = getTransform().getWorldMatrix();
 
-    gEngine->renderSettings().setDirectionalLight(mat4, _color);
+    gEngine->renderSettings().setDirectionalLight(glm::inverse(mat4), _color);
 }
 
 
