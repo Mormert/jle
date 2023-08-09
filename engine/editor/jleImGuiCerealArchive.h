@@ -18,10 +18,10 @@
 #include "jleTextureRefOrRGBA.h"
 #include "jleTransform.h"
 
+#include "jleImGuiExtensions.h"
 #include <ImGui/ImGuizmo.h>
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
-#include "jleImGuiExtensions.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -32,8 +32,11 @@
 #include <cereal/types/memory.hpp>
 #include <cereal/types/polymorphic.hpp>
 
+#include <magic_enum/magic_enum.hpp>
+
 #include <filesystem>
 #include <iostream>
+#include <vector>
 
 // A tooltip utility for showing tooltips in the editor
 // Works on arithmetic types: float, int, double, etc, and std::string
@@ -175,7 +178,7 @@ private:
         STD_MAPS_IMPL
     }
 
-    template <class T>
+    template <class T, std::enable_if_t<!std::is_enum<T>{}> * = nullptr>
     void
     draw_ui(jleImGuiCerealArchive &ar, std::string name, T &value)
     {
@@ -229,6 +232,42 @@ private:
         auto cpy = value;
         draw_ui(ar, name.c_str(), cpy);
 
+        ImGui::PopID();
+    }
+
+    template <class E, std::enable_if_t<std::is_enum<E>{}> * = nullptr>
+    void
+    draw_ui(jleImGuiCerealArchive &ar, std::string name, E &e)
+    {
+        ImGui::PushID(elementCount++);
+
+        static std::unique_ptr<std::vector<std::string>> enumNames{};
+        if (!enumNames) {
+            enumNames = std::make_unique<std::vector<std::string>>();
+            auto vals = magic_enum::enum_names<E>();
+            for (auto &v : vals) {
+                enumNames->push_back({v.begin(), v.end()});
+            }
+        }
+
+        std::string currentItem = std::string(magic_enum::enum_name(e));
+
+        if (ImGui::BeginCombo(name.c_str(), currentItem.c_str())) {
+            for (int n = 0; n < enumNames->size(); n++) {
+                bool is_selected = (currentItem == enumNames->at(n));
+                if (ImGui::Selectable(enumNames->at(n).c_str(), is_selected)) {
+                    currentItem = enumNames->at(n);
+                    std::optional<E> getter = magic_enum::enum_cast<E>(currentItem);
+                    if (getter.has_value()) {
+                        e = getter.value();
+                    }
+                }
+                if (is_selected) {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+            ImGui::EndCombo();
+        }
         ImGui::PopID();
     }
 
@@ -514,7 +553,7 @@ private:
     {
         ImGui::PushID(elementCount++);
 
-        ImGui::Checkbox(LeftLabelImGui(name).c_str(), &value);
+        ImGui::Checkbox(LeftLabelImGui(name, 0.7f).c_str(), &value);
         ImGui::PopID();
     }
 
@@ -594,14 +633,14 @@ private:
     }
 
     static std::string
-    LeftLabelImGui(const char *const label)
+    LeftLabelImGui(const char *const label, float factor = 0.3f)
     {
         float width = ImGui::CalcItemWidth();
 
         float x = ImGui::GetCursorPosX();
         ImGui::Text("%s", label);
         ImGui::SameLine();
-        ImGui::SetCursorPosX(x + width * 0.3f + ImGui::GetStyle().ItemInnerSpacing.x);
+        ImGui::SetCursorPosX(x + width * factor + ImGui::GetStyle().ItemInnerSpacing.x);
         ImGui::SetNextItemWidth(-1);
 
         std::string labelID = "##";
