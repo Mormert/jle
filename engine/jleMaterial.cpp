@@ -1,5 +1,6 @@
 // Copyright (c) 2023. Johan Lind
 #include "jleMaterial.h"
+#include "jleIncludeGL.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterial)
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterialPBR)
