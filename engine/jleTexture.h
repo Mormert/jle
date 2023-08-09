@@ -42,6 +42,8 @@ public:
 
     unsigned int id();
 
+    [[nodiscard]] const int channels();
+
     jlePath imagePath;
 
 private:

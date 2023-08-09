@@ -29,7 +29,10 @@ public:
     void renderMeshesPicking(jleFramebufferInterface &framebufferOut, const jleCamera &camera, const jle3DGraph &graph);
 
 private:
-    void renderMeshes(const jleCamera &camera, const jle3DGraph &graph, const jle3DSettings &settings);
+    void renderMeshes(const jleCamera &camera,
+                      const std::vector<jle3DQueuedMesh> &meshes,
+                      const std::vector<jle3DRendererLight> &lights,
+                      const jle3DSettings &settings);
 
     void renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jleShader &shader);
 
@@ -42,6 +45,8 @@ private:
     void renderDirectionalLight(const std::vector<jle3DQueuedMesh> &meshes, const jle3DSettings &settings);
 
     void renderPointLights(const jleCamera &camera, const jle3DGraph &graph);
+
+    void bindShadowmapFramebuffers(const jle3DSettings &settings);
 
     struct jle3DRendererShaders;
     std::unique_ptr<jle3DRendererShaders> _shaders;

@@ -1,18 +1,21 @@
 // Copyright (c) 2023. Johan Lind
 
-
 #include "jle3DGraph.h"
 #include "jleMaterial.h"
 #include "jleMesh.h"
 
 void
 jle3DGraph::sendMesh(std::shared_ptr<jleMesh> &mesh,
-                             std::shared_ptr<jleMaterial> &material,
-                             const glm::mat4 &transform,
-                             int instanceId,
-                             bool castShadows)
+                     std::shared_ptr<jleMaterial> &material,
+                     const glm::mat4 &transform,
+                     int instanceId,
+                     bool castShadows)
 {
-    _meshes.emplace_back(jle3DQueuedMesh{mesh, material, transform, instanceId, castShadows});
+    if (material && material->isTranslucent()) {
+        _translucentMeshes.emplace_back(jle3DQueuedMesh{mesh, material, transform, instanceId, castShadows});
+    } else {
+        _meshes.emplace_back(jle3DQueuedMesh{mesh, material, transform, instanceId, castShadows});
+    }
 }
 
 void

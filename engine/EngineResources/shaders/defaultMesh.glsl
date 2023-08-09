@@ -84,6 +84,13 @@ uniform bool uUseRoughnessTexture;
 uniform sampler2D uRoughnessTexture;
 uniform float uRoughness;
 
+uniform bool uUseOpacityTexture;
+uniform sampler2D uOpacityTexture;
+uniform float uOpacity;
+
+// Does the texture for the opacity consist of a single alpha channel?
+uniform bool uOpacityTextureOneChannel;
+
 uniform float uFarPlane;
 
 uniform int uLightsCount;
@@ -285,12 +292,6 @@ float ShadowCalculationPoint(vec3 fragPos, vec3 lightPos)
 {
     vec3 worldPosToLight = fragPos - lightPos;
 
-    // Sample from the cube shadow texture
-    float closestDepth = texture(uShadowMapPoint, worldPosToLight).r;
-
-    // Re-map from 0 to 1 back to 0 to far plane linearly
-    closestDepth *= uFarPlane;
-
     // The current depth from the light source
     float currentDepth = length(worldPosToLight);
 
@@ -300,15 +301,15 @@ float ShadowCalculationPoint(vec3 fragPos, vec3 lightPos)
     float offset  = 0.1;
 
     // PCF
-    for(float x = -offset; x < offset; x += offset / (samples * 0.5))
+    for (float x = -offset; x < offset; x += offset / (samples * 0.5))
     {
-        for(float y = -offset; y < offset; y += offset / (samples * 0.5))
+        for (float y = -offset; y < offset; y += offset / (samples * 0.5))
         {
-            for(float z = -offset; z < offset; z += offset / (samples * 0.5))
+            for (float z = -offset; z < offset; z += offset / (samples * 0.5))
             {
                 float closestDepth = texture(uShadowMapPoint, worldPosToLight + vec3(x, y, z)).r;
-                closestDepth *= uFarPlane;   // undo mapping [0;1]
-                if(currentDepth - bias < closestDepth)
+                closestDepth *= uFarPlane;// undo mapping [0;1]
+                if (currentDepth - bias < closestDepth)
                 {
                     shadow += 1.0;
                 }
@@ -420,8 +421,31 @@ float getRoughness()
     }
 }
 
+float getOpacity()
+{
+    if (uUseOpacityTexture)
+    {
+        // If the texture is an RGBA texture or single alpha channel texture
+        // Allows for using the albedo/diffuse texture as opacity texture.
+        if (uOpacityTextureOneChannel){
+            return texture(uOpacityTexture, TexCoords).r;
+        } else
+        {
+            return texture(uOpacityTexture, TexCoords).a;
+        }
+    } else
+    {
+        return uOpacity;
+    }
+}
+
 void main()
 {
+    float opacity = getOpacity();
+    if (opacity < 0.1)
+    {
+        discard;
+    }
 
     vec3 albedo = getAlbedo();
     vec3 N = getNormal();
@@ -482,9 +506,9 @@ void main()
     LightOutTotal = LightOutTotal / (LightOutTotal + vec3(1.0));
 
     // Gamma correction
-    // LightOutTotal = pow(LightOutTotal, vec3(1.0/2.2));
+    LightOutTotal = pow(LightOutTotal, vec3(1.0/2.2));
 
-    FragColor = vec4(LightOutTotal, 1.0);
+    FragColor = vec4(LightOutTotal, opacity);
 }
 
 

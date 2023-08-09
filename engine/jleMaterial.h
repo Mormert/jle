@@ -19,6 +19,19 @@
 #include <cereal/archives/json.hpp>
 #include <cereal/cereal.hpp>
 
+enum class jleBlendMode : int32_t {
+    DISABLED,
+    SRC_COLOR,
+    ONE_MINUS_SRC_COLOR,
+    SRC_ALPHA,
+    ONE_MINUS_SRC_ALPHA,
+    DST_ALPHA,
+    ONE_MINUS_DST_ALPHA,
+    DST_COLOR,
+    ONE_MINUS_DST_COLOR,
+    SRC_ALPHA_SATURATE
+};
+
 class jleMaterial : public jleSerializedResource, public std::enable_shared_from_this<jleMaterial>
 {
 public:
@@ -40,6 +53,10 @@ public:
     std::vector<std::string> getFileAssociationList() override;
 
     std::shared_ptr<jleShader> getShader();
+
+    virtual std::shared_ptr<jleTexture> getOpacityTexture();
+
+    virtual bool isTranslucent();
 
 protected:
     jleResourceRef<jleShader> _shaderRef;
@@ -64,13 +81,22 @@ public:
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleMaterial)
 
-    jleTextureRefOrRGB _albedo{glm::vec3{1.f}};           // White
-    jleTextureRefOrRGB _normal{glm::vec3{0.f, 0.f, 1.f}}; // Normals pointing up
-    jleTextureRefOrAlpha _metallic{0.0f};                 // No metallic
-    jleTextureRefOrAlpha _roughness{0.5f};                // Half roughness
+    std::shared_ptr<jleTexture> getOpacityTexture() override;
+
+    bool isTranslucent() override;
+
+    jleTextureRefOrRGB _albedo{glm::vec3{1.f}};           // White by default
+    jleTextureRefOrRGB _normal{glm::vec3{0.f, 0.f, 1.f}}; // Normals pointing up by default
+    jleTextureRefOrAlpha _metallic{0.0f};                 // No metallic by default
+    jleTextureRefOrAlpha _roughness{0.5f};                // Half roughness by default
+    jleTextureRefOrAlpha _opacity{1.0f};                  // Opaque by default
     bool _usePointShadows{true};
     bool _useDirectionalShadows{true};
     bool _useSkyboxEnvironmentMap{false};
+    bool _isTranslucent{false};
+    bool _singleChannelOpacity{false};
+    jleBlendMode _blendModeSrc{};
+    jleBlendMode _blendModeDst{};
 };
 
 JLE_EXTERN_TEMPLATE_CEREAL_H(jleMaterialPBR)

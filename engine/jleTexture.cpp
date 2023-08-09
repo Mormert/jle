@@ -112,3 +112,9 @@ jleTexture::getFileAssociationList()
 {
     return {"png", "jpg", "tga", "bmp", "psd", "jpeg"};
 }
+
+const int
+jleTexture::channels()
+{
+    return _nrChannels;
+}

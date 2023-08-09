@@ -23,6 +23,18 @@ jleMaterial::getShader()
     return _shaderRef.get();
 }
 
+std::shared_ptr<jleTexture>
+jleMaterial::getOpacityTexture()
+{
+    return nullptr;
+}
+
+bool
+jleMaterial::isTranslucent()
+{
+    return false;
+}
+
 template <class Archive>
 void
 jleMaterial::serialize(Archive &ar)
@@ -49,6 +61,7 @@ jleMaterialPBR::useMaterial(const jleCamera &camera,
     shader.SetTextureSlot("uNormalTexture", jleTextureSlot::Normal);
     shader.SetTextureSlot("uMetallicTexture", jleTextureSlot::Metallic);
     shader.SetTextureSlot("uRoughnessTexture", jleTextureSlot::Roughness);
+    shader.SetTextureSlot("uOpacityTexture", jleTextureSlot::Opacity);
     shader.SetTextureSlot("uSkyboxTexture", jleTextureSlot::Skybox);
     shader.SetFloat("uFarPlane", 500.f);
     shader.SetBool("uUseDirectionalLight", settings.useDirectionalLight);
@@ -97,6 +110,41 @@ jleMaterialPBR::useMaterial(const jleCamera &camera,
         shader.SetBool("uUseRoughnessTexture", false);
         shader.SetFloat("uRoughness", _roughness.alpha());
     }
+
+    if (auto opacity = _opacity.textureRef()) {
+        opacity->setActive(jleTextureSlot::Opacity);
+        if (_singleChannelOpacity) {
+            shader.SetBool("uOpacityTextureOneChannel", true);
+        } else {
+            shader.SetBool("uOpacityTextureOneChannel", false);
+        }
+        shader.SetBool("uUseOpacityTexture", true);
+    } else {
+        shader.SetBool("uUseOpacityTexture", false);
+        shader.SetFloat("uOpacity", _opacity.alpha());
+    }
+
+    if (_blendModeDst == jleBlendMode::DISABLED || _blendModeSrc == jleBlendMode::DISABLED) {
+        glDisable(GL_BLEND);
+    } else {
+        glEnable(GL_BLEND);
+        glBlendFunc(static_cast<int>(_blendModeSrc) + 0x0300 - 1, static_cast<int>(_blendModeDst) + 0x0300 - 1);
+    }
+}
+
+std::shared_ptr<jleTexture>
+jleMaterialPBR::getOpacityTexture()
+{
+    if (_opacity.textureRef()) {
+        return _opacity.textureRef().get();
+    }
+    return _albedo.textureRef().get();
+}
+
+bool
+jleMaterialPBR::isTranslucent()
+{
+    return _isTranslucent;
 }
 
 template <class Archive>
@@ -109,9 +157,14 @@ jleMaterialPBR::serialize(Archive &ar)
            CEREAL_NVP(_normal),
            CEREAL_NVP(_metallic),
            CEREAL_NVP(_roughness),
+           CEREAL_NVP(_opacity),
            CEREAL_NVP(_usePointShadows),
            CEREAL_NVP(_useDirectionalShadows),
-           CEREAL_NVP(_useSkyboxEnvironmentMap));
+           CEREAL_NVP(_useSkyboxEnvironmentMap),
+           CEREAL_NVP(_isTranslucent),
+           CEREAL_NVP(_singleChannelOpacity),
+           CEREAL_NVP(_blendModeSrc),
+           CEREAL_NVP(_blendModeDst));
     } catch (std::exception &e) {
         LOGE << "Failed loading material:" << e.what();
     }

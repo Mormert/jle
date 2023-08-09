@@ -75,13 +75,6 @@ jle3DRenderer::jle3DRenderer()
 
     _shadowMappingFramebuffer = std::make_unique<jleFramebufferShadowMap>(2048, 2048);
     _pointsShadowMappingFramebuffer = std::make_unique<jleFramebufferShadowCubeMap>(1024, 1024);
-
-    /*
-    glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, near_plane, far_plane);
-    jleCameraSimpleFPVController jc;
-    glm::mat4 lightView =
-        glm::lookAt(glm::vec3(-2.0f, 4.0f, -1.0f), glm::vec3(2.0f, 3.0f, 2.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-    lightView[1][1] *= -1.f;*/
 }
 
 jle3DRenderer::~jle3DRenderer()
@@ -126,21 +119,28 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
     // glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
 
-    renderMeshes(camera, graph, settings);
+    bindShadowmapFramebuffers(settings);
 
-    glCheckError("3D Render - Meshes");
+    {
+        JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes_Opaque)
+        renderMeshes(camera, graph._meshes, graph._lights, settings);
+        glCheckError("3D Render - Opaque Meshes");
+    }
 
     renderLineStrips(camera, graph._lineStrips);
-
     glCheckError("3D Render - Strip Lines");
 
     renderLines(camera, graph._lines);
-
     glCheckError("3D Render - Lines");
 
     renderSkybox(camera, settings);
-
     glCheckError("3D Render - Skybox");
+
+    {
+        JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes_Translucent)
+        renderMeshes(camera, graph._translucentMeshes, graph._lights, settings);
+        glCheckError("3D Render - Translucent Meshes");
+    }
 
     // gEngine->context->Update();
 
@@ -156,34 +156,19 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 }
 
 void
-jle3DRenderer::renderMeshes(const jleCamera &camera, const jle3DGraph &graph, const jle3DSettings &settings)
+jle3DRenderer::renderMeshes(const jleCamera &camera,
+                            const std::vector<jle3DQueuedMesh> &meshes,
+                            const std::vector<jle3DRendererLight> &lights,
+                            const jle3DSettings &settings)
 {
-    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes)
-
-    if (graph._meshes.empty()) {
-        return;
-    }
-
-    // Bind to shadow map texture
-    glActiveTexture(JLE_TEXTURE_DIR_SHADOW);
-    glBindTexture(GL_TEXTURE_2D, _shadowMappingFramebuffer->texture());
-
-    glActiveTexture(JLE_TEXTURE_POINT_SHADOW);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, _pointsShadowMappingFramebuffer->texture());
-
-    if (settings.skybox) {
-        glActiveTexture(JLE_TEXTURE_SKYBOX);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, settings.skybox->getTextureID());
-    }
-
-    for (auto &&mesh : graph._meshes) {
+    for (auto &&mesh : meshes) {
         if (!mesh.material || !mesh.material->getShader()) {
             _shaders->missingMaterialShader->use();
             _shaders->missingMaterialShader->SetMat4("uView", camera.getViewMatrix());
             _shaders->missingMaterialShader->SetMat4("uProj", camera.getProjectionMatrix());
             _shaders->missingMaterialShader->SetMat4("uModel", mesh.transform);
         } else {
-            mesh.material->useMaterial(camera, graph._lights, settings);
+            mesh.material->useMaterial(camera, lights, settings);
             mesh.material->getShader()->SetMat4("uModel", mesh.transform);
         }
 
@@ -195,14 +180,12 @@ jle3DRenderer::renderMeshes(const jleCamera &camera, const jle3DGraph &graph, co
         }
         glBindVertexArray(0);
     }
-
-    glActiveTexture(GL_TEXTURE0);
 }
 
 void
 jle3DRenderer::renderSkybox(const jleCamera &camera, const jle3DSettings &settings)
 {
-    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes)
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderSkybox)
 
     if (!settings.skybox) {
         return;
@@ -254,20 +237,26 @@ jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
     _shaders->pickingShader->use();
     _shaders->pickingShader->SetMat4("projView", camera.getProjectionViewMatrix());
 
-    for (auto &&mesh : graph._meshes) {
-        int r = (mesh.instanceId & 0x000000FF) >> 0;
-        int g = (mesh.instanceId & 0x0000FF00) >> 8;
-        int b = (mesh.instanceId & 0x00FF0000) >> 16;
-        _shaders->pickingShader->SetVec4("PickingColor", glm::vec4{r / 255.0f, g / 255.0f, b / 255.0f, 1.f});
-        _shaders->pickingShader->SetMat4("model", mesh.transform);
-        glBindVertexArray(mesh.mesh->getVAO());
-        if (mesh.mesh->usesIndexing()) {
-            glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
-        } else {
-            glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+    const auto executeRender = [&](const std::vector<jle3DQueuedMesh>& meshes){
+        for (auto &&mesh : meshes) {
+            int r = (mesh.instanceId & 0x000000FF) >> 0;
+            int g = (mesh.instanceId & 0x0000FF00) >> 8;
+            int b = (mesh.instanceId & 0x00FF0000) >> 16;
+            _shaders->pickingShader->SetVec4("PickingColor", glm::vec4{r / 255.0f, g / 255.0f, b / 255.0f, 1.f});
+            _shaders->pickingShader->SetMat4("model", mesh.transform);
+            glBindVertexArray(mesh.mesh->getVAO());
+            if (mesh.mesh->usesIndexing()) {
+                glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+            } else {
+                glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+            }
+            glBindVertexArray(0);
         }
-        glBindVertexArray(0);
-    }
+    };
+
+    executeRender(graph._meshes);
+    executeRender(graph._translucentMeshes);
+
 
     framebufferOut.bindDefault();
 }
@@ -355,6 +344,17 @@ jle3DRenderer::renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jl
             return;
         }
         shader.SetMat4("model", mesh.transform);
+        if (mesh.material) {
+            if (auto opacity = mesh.material->getOpacityTexture()) {
+                shader.SetBool("uUseOpacityTexture", true);
+                shader.SetTextureSlot("uOpacityTexture", jleTextureSlot::Opacity);
+                opacity->setActive(jleTextureSlot::Opacity);
+            } else {
+                shader.SetBool("uUseOpacityTexture", false);
+            }
+        } else {
+            shader.SetBool("uUseOpacityTexture", false);
+        }
         glBindVertexArray(mesh.mesh->getVAO());
         if (mesh.mesh->usesIndexing()) {
             glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
@@ -410,4 +410,20 @@ jle3DRenderer::renderLineStrips(const jleCamera &camera,
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderLineStrips)
 
     // Not implemented
+}
+
+void
+jle3DRenderer::bindShadowmapFramebuffers(const jle3DSettings &settings)
+{
+    // Bind to shadow map texture
+    glActiveTexture(JLE_TEXTURE_DIR_SHADOW);
+    glBindTexture(GL_TEXTURE_2D, _shadowMappingFramebuffer->texture());
+
+    glActiveTexture(JLE_TEXTURE_POINT_SHADOW);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, _pointsShadowMappingFramebuffer->texture());
+
+    if (settings.skybox) {
+        glActiveTexture(JLE_TEXTURE_SKYBOX);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, settings.skybox->getTextureID());
+    }
 }

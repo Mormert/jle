@@ -54,6 +54,7 @@ public:
 
 private:
     std::vector<jle3DQueuedMesh> _meshes;
+    std::vector<jle3DQueuedMesh> _translucentMeshes;
     std::vector<std::vector<jle3DLineVertex>> _lineStrips;
     std::vector<jle3DLineVertex> _lines;
     std::vector<jle3DRendererLight> _lights;
