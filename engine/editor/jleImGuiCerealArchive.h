@@ -252,7 +252,8 @@ private:
 
         std::string currentItem = std::string(magic_enum::enum_name(e));
 
-        if (ImGui::BeginCombo(name.c_str(), currentItem.c_str())) {
+        ImGui::Text("%s", name.c_str());
+        if (ImGui::BeginCombo("##enum_combo", currentItem.c_str())) {
             for (int n = 0; n < enumNames->size(); n++) {
                 bool is_selected = (currentItem == enumNames->at(n));
                 if (ImGui::Selectable(enumNames->at(n).c_str(), is_selected)) {
