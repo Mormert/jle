@@ -23,7 +23,7 @@ public:
 
     void render(jleFramebufferInterface &framebufferOut,
                 const jleCamera &camera,
-                const jle3DGraph &graph,
+                jle3DGraph &graph,
                 const jle3DSettings &settings);
 
     void renderMeshesPicking(jleFramebufferInterface &framebufferOut, const jleCamera &camera, const jle3DGraph &graph);
@@ -33,6 +33,8 @@ private:
                       const std::vector<jle3DQueuedMesh> &meshes,
                       const std::vector<jle3DRendererLight> &lights,
                       const jle3DSettings &settings);
+
+    void sortTranslucentMeshes(const jleCamera &camera, std::vector<jle3DQueuedMesh> &translucentMeshes);
 
     void renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jleShader &shader);
 

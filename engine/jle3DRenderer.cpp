@@ -20,6 +20,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
+#include <glm/gtx/norm.hpp>
 
 #include <RmlUi/Core/Context.h>
 #include <RmlUi_Backend.h>
@@ -86,7 +87,7 @@ jle3DRenderer::~jle3DRenderer()
 void
 jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
                       const jleCamera &camera,
-                      const jle3DGraph &graph,
+                      jle3DGraph &graph,
                       const jle3DSettings &settings)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_render)
@@ -101,6 +102,10 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
     const int viewportHeight = framebufferOut.height();
 
     glEnable(GL_DEPTH_TEST);
+
+    // Sort translucency early on another thread, sync before rendering translucency
+    std::future<void> sortTranslucentAsync =
+        std::async(std::launch::async, [&] { sortTranslucentMeshes(camera, graph._translucentMeshes); });
 
     // Directional light renders to the shadow mapping framebuffer
     renderDirectionalLight(graph._meshes, settings);
@@ -138,6 +143,8 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 
     {
         JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes_Translucent)
+        sortTranslucentAsync.wait();
+
         renderMeshes(camera, graph._translucentMeshes, graph._lights, settings);
         glCheckError("3D Render - Translucent Meshes");
     }
@@ -180,6 +187,19 @@ jle3DRenderer::renderMeshes(const jleCamera &camera,
         }
         glBindVertexArray(0);
     }
+}
+
+void
+jle3DRenderer::sortTranslucentMeshes(const jleCamera &camera, std::vector<jle3DQueuedMesh> &translucentMeshes)
+{
+    glm::vec3 camPosition = camera.getPosition();
+
+    std::sort(translucentMeshes.begin(),
+              translucentMeshes.end(),
+              [&camPosition](const jle3DQueuedMesh &mesh1, const jle3DQueuedMesh &mesh2) {
+                  return glm::distance2(camPosition, glm::vec3(mesh1.transform[3])) >
+                         glm::distance2(camPosition, glm::vec3(mesh2.transform[3]));
+              });
 }
 
 void
@@ -237,7 +257,7 @@ jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
     _shaders->pickingShader->use();
     _shaders->pickingShader->SetMat4("projView", camera.getProjectionViewMatrix());
 
-    const auto executeRender = [&](const std::vector<jle3DQueuedMesh>& meshes){
+    const auto executeRender = [&](const std::vector<jle3DQueuedMesh> &meshes) {
         for (auto &&mesh : meshes) {
             int r = (mesh.instanceId & 0x000000FF) >> 0;
             int g = (mesh.instanceId & 0x0000FF00) >> 8;
@@ -256,7 +276,6 @@ jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
 
     executeRender(graph._meshes);
     executeRender(graph._translucentMeshes);
-
 
     framebufferOut.bindDefault();
 }
