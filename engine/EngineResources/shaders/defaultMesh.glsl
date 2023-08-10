@@ -454,7 +454,7 @@ void main()
 
     vec3 V = normalize(TangentCameraPos - TangentFragPos);
 
-    vec3 LightOutTotal = vec3(0.0);
+    vec3 LightOutTotal = vec3(0.00314) * albedo;
     for (int l = 0; l < uLightsCount; ++l)
     {
         vec3 L = normalize(TangentLightPos[l] - TangentFragPos);
