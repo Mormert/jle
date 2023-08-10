@@ -44,7 +44,6 @@ private:
     static const unsigned int InputBufSize = 256;
     char InputBuf[InputBufSize];
     ImVector<char *> Items; // TODO: Do somoething more c++ ish
-    ImVector<const char *> Commands;
     ImVector<char *> History;
     int HistoryPos; // -1: new line, 0..History.Size-1 browsing history.
     ImGuiTextFilter Filter;

@@ -21,6 +21,8 @@ public:
 
     void loadScript(const jlePath& path);
 
+    void executeScript(const char* script);
+
     [[nodiscard]] sol::state& getState();
 
     std::unordered_map<jlePath, std::shared_ptr<jleLuaScript>>& loadedScripts();

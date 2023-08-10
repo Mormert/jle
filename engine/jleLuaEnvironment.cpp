@@ -37,9 +37,7 @@ jleLuaEnvironment::setupLua(sol::state &lua)
     sol_ImGui::Init(lua);
 #endif
 
-    lua.set_function("loadScript", [&](const std::string path) {
-        loadScript(path.c_str());
-    });
+    lua.set_function("loadScript", [&](const std::string path) { loadScript(path.c_str()); });
 
     lua.new_usertype<jlePath>(
         "jlePath",
@@ -141,6 +139,13 @@ jleLuaEnvironment::setupLua(sol::state &lua)
             (*plog::get<0>()) += plog::Record(plog::verbose, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
                                  << s;
     });
+
+#ifdef BUILD_EDITOR
+    // Overwrite print function
+    lua.script("function print(s)\n"
+               "    LOGV(tostring(s));\n"
+               "end");
+#endif
 
     for (auto &c : jleTypeReflectionUtils::registeredComponentsRef()) {
         auto instance = c.second();
@@ -469,6 +474,16 @@ jleLuaEnvironment::loadScript(const jlePath &path)
     // Loads script and it will be placed in resource holder
     auto script = jleResourceRef<jleLuaScript>(path);
     _loadedScripts.insert(std::make_pair(path, script.get()));
+}
+
+void
+jleLuaEnvironment::executeScript(const char *script)
+{
+    try {
+        getState().script(script);
+    } catch (std::exception &e) {
+        LOGE << "Failed executing script: " << e.what();
+    }
 }
 
 std::unordered_map<jlePath, std::shared_ptr<jleLuaScript>> &
