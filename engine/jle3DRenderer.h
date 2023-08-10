@@ -44,7 +44,7 @@ private:
 
     void renderSkybox(const jleCamera &camera, const jle3DSettings &settings);
 
-    void renderDirectionalLight(const std::vector<jle3DQueuedMesh> &meshes, const jle3DSettings &settings);
+    void renderDirectionalLight(const jleCamera &camera, const std::vector<jle3DQueuedMesh> &meshes, const jle3DSettings &settings);
 
     void renderPointLights(const jleCamera &camera, const jle3DGraph &graph);
 

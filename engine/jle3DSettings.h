@@ -14,19 +14,23 @@ struct jle3DSettings {
 
     glm::vec3 directionalLightRotation{};
     glm::vec3 directionalLightColour{};
-    glm::mat4 lightSpaceMatrix;
 
     jleResourceRef<jleSkybox> skybox;
 
     void
     setDirectionalLight(const glm::mat4 &view, const glm::vec3 &colour)
     {
-
-        directionalLightRotation = glm::normalize(glm::vec3(view[0][2], view[1][2], view[2][2]));
+        directionalLightRotation = glm::normalize(glm::vec3(view[2][0], view[2][1], view[2][2]));
         directionalLightColour = colour;
-
-        const static glm::mat4 lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, -500.f, 500.f);
-
-        lightSpaceMatrix = lightProjection * view;
     }
+
+
+    glm::mat4 getLightSpaceMatrixAtPosition(const glm::vec3& position) const
+    {
+        const static glm::mat4 lightProjection = glm::ortho(-160.0f, 160.0f, -160.0f, 160.0f, -500.f, 500.f);
+
+        auto mat = lightProjection * glm::lookAt(position, position - directionalLightRotation, glm::vec3(0.0f, 1.0f, 0.0f));
+        return mat;
+    }
+
 };

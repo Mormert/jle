@@ -110,7 +110,7 @@ jleMaterialPBR::useMaterial(const jleCamera &camera,
     shader.SetVec3("uDirectionalLightDir", settings.directionalLightRotation);
     shader.SetMat4("uView", camera.getViewMatrix());
     shader.SetMat4("uProj", camera.getProjectionMatrix());
-    shader.SetMat4("uLightSpaceMatrix", settings.lightSpaceMatrix);
+    shader.SetMat4("uLightSpaceMatrix", settings.getLightSpaceMatrixAtPosition(camera.getPosition()));
     shader.SetVec3("uCameraPosition", camera.getPosition());
     shader.SetInt("uLightsCount", lightCount);
 

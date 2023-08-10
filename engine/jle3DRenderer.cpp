@@ -108,7 +108,7 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
         std::async(std::launch::async, [&] { sortTranslucentMeshes(camera, graph._translucentMeshes); });
 
     // Directional light renders to the shadow mapping framebuffer
-    renderDirectionalLight(graph._meshes, settings);
+    renderDirectionalLight(camera, graph._meshes, settings);
 
     glCheckError("3D Render - Directional Lights");
 
@@ -281,7 +281,9 @@ jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
 }
 
 void
-jle3DRenderer::renderDirectionalLight(const std::vector<jle3DQueuedMesh> &meshes, const jle3DSettings &settings)
+jle3DRenderer::renderDirectionalLight(const jleCamera &camera,
+                                      const std::vector<jle3DQueuedMesh> &meshes,
+                                      const jle3DSettings &settings)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderDirectionalLight)
 
@@ -295,7 +297,7 @@ jle3DRenderer::renderDirectionalLight(const std::vector<jle3DQueuedMesh> &meshes
 
     _shaders->shadowMappingShader->use();
 
-    _shaders->shadowMappingShader->SetMat4("lightSpaceMatrix", settings.lightSpaceMatrix);
+    _shaders->shadowMappingShader->SetMat4("lightSpaceMatrix", settings.getLightSpaceMatrixAtPosition(camera.getPosition()));
 
     glViewport(0, 0, (int)_shadowMappingFramebuffer->width(), (int)_shadowMappingFramebuffer->height());
 
