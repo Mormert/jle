@@ -155,9 +155,13 @@ jleEditor::render()
 
     renderGameView();
 
-    renderEditorSceneView();
+    renderEditorGizmos();
+
+    renderEditorGridGizmo();
 
     renderEditorUI();
+
+    renderEditorSceneView();
 
     resetRenderGraphForNewFrame();
 
@@ -185,10 +189,6 @@ jleEditor::renderGameView()
 void
 jleEditor::renderEditorSceneView()
 {
-    renderEditorGizmos();
-
-    renderEditorGridGizmo();
-
     if (!isGameKilled()) {
         physics().renderDebug();
     }

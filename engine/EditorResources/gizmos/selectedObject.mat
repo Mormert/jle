@@ -1,0 +1,49 @@
+{
+    "value0": {
+        "polymorphic_id": 2147483649,
+        "polymorphic_name": "jleMaterialPBR",
+        "ptr_wrapper": {
+            "id": 2147483649,
+            "data": {
+                "value0": {
+                    "_shaderRef": "ER:/shaders/defaultMesh.glsl"
+                },
+                "_albedo": {
+                    "_color": {
+                        "x": 0.16131676733493806,
+                        "y": 0.9227278828620911,
+                        "z": 0.9324894547462463
+                    },
+                    "_textureRef": ""
+                },
+                "_normal": {
+                    "_color": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                    },
+                    "_textureRef": ""
+                },
+                "_metallic": {
+                    "_alpha": 0.0,
+                    "_textureRef": ""
+                },
+                "_roughness": {
+                    "_alpha": 0.5,
+                    "_textureRef": ""
+                },
+                "_opacity": {
+                    "_alpha": 0.2800000011920929,
+                    "_textureRef": ""
+                },
+                "_usePointShadows": true,
+                "_useDirectionalShadows": true,
+                "_useSkyboxEnvironmentMap": false,
+                "_isTranslucent": true,
+                "_singleChannelOpacity": false,
+                "_blendModeSrc": 3,
+                "_blendModeDst": 4
+            }
+        }
+    }
+}

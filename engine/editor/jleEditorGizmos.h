@@ -25,6 +25,8 @@ public:
     std::shared_ptr<jleMesh> cameraMesh();
     std::shared_ptr<jleMaterial> cameraMaterial();
 
+    std::shared_ptr<jleMaterial> selectedObjectMaterial();
+
 private:
     struct jleEditorGizmosMeshMaterialHolder;
     std::unique_ptr<jleEditorGizmosMeshMaterialHolder> _meshMaterialHolder;

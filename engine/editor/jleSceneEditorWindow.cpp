@@ -1,23 +1,25 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleSceneEditorWindow.h"
-#include "jleEditorSceneObjectsWindow.h"
-#include "jleEditor.h"
-#include "jleInput.h"
-#include "jleGame.h"
-#include "jleFramebufferPicking.h"
-#include "jleTexture.h"
-#include "jleWindow.h"
+#include "cMesh.h"
+#include "cRigidbody.h"
 #include "jle3DGraph.h"
 #include "jle3DRenderer.h"
 #include "jle3DSettings.h"
+#include "jleEditor.h"
+#include "jleEditorGizmos.h"
+#include "jleEditorSceneObjectsWindow.h"
+#include "jleFramebufferPicking.h"
+#include "jleGame.h"
 #include "jleIncludeGL.h"
+#include "jleInput.h"
 #include "jlePhysics.h"
-#include "cRigidbody.h"
+#include "jleTexture.h"
+#include "jleWindow.h"
 
-#include <glm/common.hpp>
-#include <btBulletDynamicsCommon.h>
 #include <ImGui/imgui.h>
+#include <btBulletDynamicsCommon.h>
+#include <glm/common.hpp>
 
 jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name,
                                            std::shared_ptr<jleFramebufferInterface> &framebuffer)
@@ -285,6 +287,18 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
                 obj->getTransform().setWorldMatrix(worldMatrixBefore);
             }
         }
+
+        if (auto meshComponent = obj->getComponent<cMesh>()) {
+            if(auto mesh = meshComponent->getMesh())
+            {
+                glm::mat4 modelMatrix = obj->getTransform().getWorldMatrix();
+                glm::mat4 matrix1 = glm::scale(modelMatrix, glm::vec3{1.00514159265f});
+                glm::mat4 matrix2 = glm::scale(modelMatrix, glm::vec3{0.99514159265f});
+                auto material = gEditor->gizmos().selectedObjectMaterial();
+                gEditor->renderGraph().sendMesh(mesh, material, matrix1, obj->instanceID(), false);
+                gEditor->renderGraph().sendMesh(mesh, material, matrix2, obj->instanceID(), false);
+            }
+        }
     }
 
     ImGui::EndGroup();
@@ -294,7 +308,8 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         auto t = ge.deltaFrameTime();
         auto dragDelta = ImGui::GetMouseDragDelta(1);
 
-        if (gEditor->camera().getProjectionType() == jleCameraProjection::Perspective || ImGui::IsKeyDown(ImGuiKey_LeftShift)) {
+        if (gEditor->camera().getProjectionType() == jleCameraProjection::Perspective ||
+            ImGui::IsKeyDown(ImGuiKey_LeftShift)) {
             if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
                 fpvCamController.applyPerspectiveMouseMovementDelta(glm::vec2{mouseDeltaX, mouseDeltaY}, 300.f);
                 ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);

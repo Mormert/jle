@@ -15,6 +15,7 @@ struct jleEditorGizmos::jleEditorGizmosMeshMaterialHolder {
         lampMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/lamp.mat"}};
         sunMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/sun.mat"}};
         cameraMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/camera/camera.mat"}};
+        selectedObjectMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/selectedObject.mat"}};
     }
 
     jleResourceRef<jleMesh> lightLampMeshRef;
@@ -24,6 +25,8 @@ struct jleEditorGizmos::jleEditorGizmosMeshMaterialHolder {
     jleResourceRef<jleMaterial> lampMaterialRef;
     jleResourceRef<jleMaterial> sunMaterialRef;
     jleResourceRef<jleMaterial> cameraMaterialRef;
+
+    jleResourceRef<jleMaterial> selectedObjectMaterialRef;
 };
 
 jleEditorGizmos::jleEditorGizmos() { _meshMaterialHolder = std::make_unique<jleEditorGizmosMeshMaterialHolder>(); }
@@ -64,6 +67,10 @@ jleEditorGizmos::cameraMaterial()
     return _meshMaterialHolder->cameraMaterialRef.get();
 }
 
-
+std::shared_ptr<jleMaterial>
+jleEditorGizmos::selectedObjectMaterial()
+{
+    return _meshMaterialHolder->selectedObjectMaterialRef.get();
+}
 
 jleEditorGizmos::~jleEditorGizmos() = default;

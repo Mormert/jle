@@ -29,6 +29,7 @@ public:
     void update(float dt) override;
 
     std::shared_ptr<jleMesh> getMesh();
+    std::shared_ptr<jleMaterial> getMaterial();
 
 protected:
 

@@ -36,3 +36,9 @@ cMesh::getMesh()
 {
     return _meshRef.get();
 }
+
+std::shared_ptr<jleMaterial>
+cMesh::getMaterial()
+{
+    return _materialRef.get();
+}
