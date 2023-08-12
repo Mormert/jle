@@ -79,7 +79,7 @@ add_library(engine STATIC
         "cLightDirectional.cpp"
         "jleFramebufferScreen.cpp"
         "jleMaterial.cpp"
-       # "jleExplicitInclude.cpp"
+        # "jleExplicitInclude.cpp"
         "jlePhysics.cpp"
         "jlePhysicsDebugDrawer.cpp"
         "cRigidbody.cpp"
@@ -113,6 +113,7 @@ if (BUILD_EDITOR)
             "editor/jleEditorGizmos.cpp"
             "editor/jleEditorSaveState.cpp"
             "editor/jleImGuiExtensions.cpp"
+            "editor/jleEditor3DImportWindow.cpp"
             "3rdparty/ImGuiColorTextEdit/TextEditor.cpp"
             "3rdparty/ImGui/imgui.cpp"
             "3rdparty/ImGui/imgui_spectrum.cpp"
@@ -128,7 +129,7 @@ endif ()
 
 # TODO: Move Assimp to be editor only
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-set(ASSIMP_NO_EXPORT ON CACHE BOOL "" FORCE)
+set(ASSIMP_NO_EXPORT OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_ZLIB OFF CACHE BOOL "" FORCE)

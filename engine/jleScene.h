@@ -26,11 +26,10 @@ public:
     void
     saveToFile() override
     {
-        if (filepath.empty()) {
-            jlePath path{"GR:scenes/" + sceneName + getDotFileExtension()};
-            filepath = path.getRealPath();
+        if (path.isEmpty()) {
+            path = jlePath{"GR:scenes/" + sceneName + getDotFileExtension()};
         }
-        std::ofstream save{filepath};
+        std::ofstream save{path.getRealPath()};
         cereal::JSONOutputArchive outputArchive(save);
         std::shared_ptr<jleSerializedResource> thiz = shared_from_this();
         outputArchive(thiz);

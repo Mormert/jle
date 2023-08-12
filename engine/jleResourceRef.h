@@ -28,6 +28,8 @@ struct jleResourceRef {
     template <class Archive>
     void load_minimal( Archive const &, std::string const & value );
 
+    void reloadWithNewPath(const jlePath& path);
+
     // Load resource from file
     void loadResource();
 

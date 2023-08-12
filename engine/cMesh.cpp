@@ -42,3 +42,16 @@ cMesh::getMaterial()
 {
     return _materialRef.get();
 }
+
+jleResourceRef<jleMesh> &
+cMesh::getMeshRef()
+{
+    return _meshRef;
+}
+
+jleResourceRef<jleMaterial> &
+cMesh::getMaterialRef()
+{
+    return _materialRef;
+}
+

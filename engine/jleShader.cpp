@@ -175,14 +175,14 @@ jleShader::checkCompileErrors(unsigned int shader, std::string type)
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success) {
             glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-            LOG_ERROR << "Error in shader: " << filepath << ", of type: " << type << ": " << infoLog;
+            LOG_ERROR << "Error in shader: " << path.getVirtualPath() << ", of type: " << type << ": " << infoLog;
             return false;
         }
     } else {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success) {
             glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-            LOG_ERROR << "Error linking shader: " << filepath << ", of type: " << type << ": " << infoLog;
+            LOG_ERROR << "Error linking shader: " << path.getVirtualPath() << ", of type: " << type << ": " << infoLog;
             return false;
         }
     }

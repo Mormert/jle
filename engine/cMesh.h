@@ -31,6 +31,9 @@ public:
     std::shared_ptr<jleMesh> getMesh();
     std::shared_ptr<jleMaterial> getMaterial();
 
+    jleResourceRef<jleMesh>& getMeshRef();
+    jleResourceRef<jleMaterial>& getMaterialRef();
+
 protected:
 
     jleResourceRef<jleMesh> _meshRef;

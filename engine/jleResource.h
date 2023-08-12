@@ -77,7 +77,7 @@ public:
 
         loadSuccess = newResource->loadFromFile(path);
 
-        newResource->filepath = path.getRealPath();
+        newResource->path = path;
 
         _resources[prefix].erase(path);
         if (loadSuccess == jleLoadFromFileSuccessCode::SUCCESS) {
@@ -94,7 +94,7 @@ public:
     void
     reloadSerializedResource(const std::shared_ptr<jleSerializedResource> &resource)
     {
-        jlePath path = jlePath{resource->filepath, false};
+        jlePath path = resource->path;
         try {
             std::ifstream i(path.getRealPath());
             std::shared_ptr<jleSerializedResource> f = std::const_pointer_cast<jleSerializedResource>(resource);
@@ -130,7 +130,7 @@ public:
             cereal::JSONInputArchive iarchive{i};
             iarchive(ptr);
 
-            ptr->filepath = path.getRealPath();
+            ptr->path = path;
 
             if (ptr->loadFromFile(path) == jleLoadFromFileSuccessCode::FAIL) {
                 LOGE << "Failed loading serialized resource's internals";

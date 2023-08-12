@@ -7,7 +7,7 @@
 #define SAVE_SHARED_THIS_SERIALIZED_JSON(PTR_TYPE)                                                                     \
     void saveToFile() override                                                                                         \
     {                                                                                                                  \
-        std::ofstream save{filepath};                                                                                  \
+        std::ofstream save{path.getRealPath()};                                                                                  \
         cereal::JSONOutputArchive outputArchive(save);                                                                 \
         std::shared_ptr<PTR_TYPE> thiz = shared_from_this();                                                           \
         outputArchive(thiz);                                                                                           \

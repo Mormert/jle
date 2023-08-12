@@ -17,6 +17,14 @@ jleResourceRef<T>::loadResource()
 
 template <typename T>
 void
+jleResourceRef<T>::reloadWithNewPath(const jlePath &path)
+{
+    this->path = path;
+    loadResource();
+}
+
+template <typename T>
+void
 jleResourceRef<T>::saveResource()
 {
     ptr->saveToFile();

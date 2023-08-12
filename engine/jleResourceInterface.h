@@ -48,6 +48,5 @@ public:
         return "." + getFileExtension();
     }
 
-    // This will be set to the absolute path to the file
-    std::string filepath;
+    jlePath path;
 };

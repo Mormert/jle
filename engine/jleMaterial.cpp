@@ -3,6 +3,7 @@
 #include "jleIncludeGL.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterial)
+JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterialPBR)
 
 std::vector<std::string>
 jleMaterial::getFileAssociationList()
@@ -41,45 +42,6 @@ jleMaterial::serialize(Archive &ar)
 {
     ar(CEREAL_NVP(_shaderRef));
 }
-
-
-
-
-class jleMaterialPBR : public jleMaterial
-{
-public:
-    JLE_REGISTER_RESOURCE_TYPE(jleMaterialPBR, mat)
-
-    void useMaterial(const jleCamera &camera,
-                     const std::vector<jle3DRendererLight> &lights,
-                     const jle3DSettings &settings) override;
-
-    template <class Archive>
-    void serialize(Archive &ar);
-
-    SAVE_SHARED_THIS_SERIALIZED_JSON(jleMaterial)
-
-    std::shared_ptr<jleTexture> getOpacityTexture() override;
-
-    bool isTranslucent() override;
-
-    jleTextureRefOrRGB _albedo{glm::vec3{1.f}};           // White by default
-    jleTextureRefOrRGB _normal{glm::vec3{0.f, 0.f, 1.f}}; // Normals pointing up by default
-    jleTextureRefOrAlpha _metallic{0.0f};                 // No metallic by default
-    jleTextureRefOrAlpha _roughness{0.5f};                // Half roughness by default
-    jleTextureRefOrAlpha _opacity{1.0f};                  // Opaque by default
-    bool _usePointShadows{true};
-    bool _useDirectionalShadows{true};
-    bool _useSkyboxEnvironmentMap{false};
-    bool _isTranslucent{false};
-    bool _singleChannelOpacity{false};
-    jleBlendMode _blendModeSrc{};
-    jleBlendMode _blendModeDst{};
-};
-
-CEREAL_REGISTER_TYPE(jleMaterialPBR)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleMaterial, jleMaterialPBR)
-
 
 void
 jleMaterialPBR::useMaterial(const jleCamera &camera,
@@ -185,6 +147,10 @@ bool
 jleMaterialPBR::isTranslucent()
 {
     return _isTranslucent;
+}
+
+jleMaterialPBR::jleMaterialPBR() {
+    _shaderRef = jleResourceRef<jleShader>("ER:/shaders/defaultMesh.glsl");
 }
 
 template <class Archive>

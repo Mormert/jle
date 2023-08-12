@@ -23,8 +23,7 @@ jleLoadFromFileSuccessCode
 jleTexture::loadFromFile(const jlePath &path)
 {
     auto fe = path.getFileEnding();
-    if(fe != "tex")
-    {
+    if (fe != "tex") {
         imagePath = path;
     }
 
@@ -48,19 +47,22 @@ jleTexture::loadFromFile(const jlePath &path)
         GLenum format = GL_RGBA;
         if (image.nrChannels() == 1)
             format = GL_RED;
+        else if (image.nrChannels() == 2)
+            format = GL_RED;
         else if (image.nrChannels() == 3)
             format = GL_RGB;
         else if (image.nrChannels() == 4)
             format = GL_RGBA;
 
         glBindTexture(GL_TEXTURE_2D, _id);
-        if (format == GL_RGB) {
-            // Needed to load jpg images with different byte alignments
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        } else if (format == GL_RGBA) {
+        if (format == GL_RGBA) {
             // Byte alignment 4 is defaulted for RGBA images
             glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+        } else {
+            // Needed to load images with different byte alignments
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         }
+
         glTexImage2D(
             GL_TEXTURE_2D, 0, format, image.width(), image.height(), 0, format, GL_UNSIGNED_BYTE, image.data());
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -70,7 +72,8 @@ jleTexture::loadFromFile(const jlePath &path)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        PLOG_VERBOSE << "Generated OpenGL texture (ID=" << _id << ") " << path.getVirtualPath() << " (" << image.nrChannels() << " channels)";
+        PLOG_VERBOSE << "Generated OpenGL texture (ID=" << _id << ") " << path.getVirtualPath() << " ("
+                     << image.nrChannels() << " channels)";
 
         glBindTexture(GL_TEXTURE_2D, 0);
 

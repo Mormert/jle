@@ -47,6 +47,8 @@ public:
     [[nodiscard]] std::string getRealPathConst() const;
     [[nodiscard]] std::string getVirtualPathConst() const;
 
+    [[nodiscard]] std::string getVirtualFolder() const;
+
     bool isEmpty();
 
     std::string getFileEnding() const;

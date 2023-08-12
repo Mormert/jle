@@ -219,7 +219,7 @@ jleEditorContentBrowser::contentBrowser()
             if (ImGui::Button("Create")) {
                 auto createdResource = newResourceFunction();
                 jlePath path = jlePath{_selectedDirectory.string() + "/" + std::string{newFileName}, false};
-                createdResource->filepath = path.getRealPath();
+                createdResource->path = path;
                 createdResource->saveToFile();
                 openedNewResource = false;
             }

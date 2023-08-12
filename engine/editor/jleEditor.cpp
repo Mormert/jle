@@ -13,6 +13,7 @@
 #include "editor/jleEditorGizmos.h"
 
 #include "jle3DRenderer.h"
+#include "jleEditor3DImportWindow.h"
 #include "jleEditorResourceEdit.h"
 #include "jleEditorSettingsWindow.h"
 #include "jleEditorTextEdit.h"
@@ -31,12 +32,12 @@
 #include "jleSceneEditorWindow.h"
 #include "jleWindow.h"
 
-#include <Remotery/Remotery.h>
-#include <plog/Log.h>
 #include <ImGui/ImGuizmo.h>
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
+#include <Remotery/Remotery.h>
+#include <plog/Log.h>
 
 struct jleEditor::jleEditorInternal{
     jleResourceRef<jleEditorSaveState> editorSaveState;
@@ -121,6 +122,10 @@ jleEditor::start()
     auto profilerWindow = std::make_shared<jleEditorProfilerWindow>("Profiler");
     addImGuiWindow(profilerWindow);
     menu->addWindow(profilerWindow);
+
+    auto import3DWindow = std::make_shared<jleEditor3DImportWindow>("Model Importer");
+    addImGuiWindow(import3DWindow);
+    menu->addWindow(import3DWindow);
 
     auto notifications = std::make_shared<jleEditorNotifications>("Notifications");
     addImGuiWindow(notifications);
@@ -449,7 +454,7 @@ jleEditor::exiting()
     saveState().cameraPosition = gEditor->camera().getPosition();
     saveState().loadedScenePaths.clear();
     for (auto &&scene : _editorScenes) {
-        saveState().loadedScenePaths.push_back(jlePath{scene->filepath, false});
+        saveState().loadedScenePaths.push_back(scene->path);
     }
     saveState().cameraYaw = _sceneWindow->fpvCamController.yaw;
     saveState().cameraPitch = _sceneWindow->fpvCamController.pitch;

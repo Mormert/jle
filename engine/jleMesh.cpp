@@ -1,13 +1,14 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleMesh.h"
-#include <plog/Log.h>
 #include "tiny_obj_loader.h"
+#include <plog/Log.h>
 #include <stdio.h>
 
+#include <assimp/Exporter.hpp>
 #include <assimp/Importer.hpp>
-#include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
 #include "jleIncludeGL.h"
 
@@ -15,11 +16,9 @@ jleLoadFromFileSuccessCode
 jleMesh::loadFromFile(const jlePath &path)
 {
     bool ret = loadFromObj(path);
-    if(ret)
-    {
+    if (ret) {
         return jleLoadFromFileSuccessCode::SUCCESS;
-    }else
-    {
+    } else {
         return jleLoadFromFileSuccessCode::FAIL;
     }
 }
@@ -30,14 +29,14 @@ jleMesh::loadFromObj(const jlePath &path)
 
     return loadAssimp(path);
 
-
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
 
     const std::string materialPath = path.getRealPath().substr(0, path.getRealPath().find_last_of('/'));
-    bool loaded = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.getRealPath().c_str(), materialPath.c_str());
+    bool loaded =
+        tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.getRealPath().c_str(), materialPath.c_str());
 
     if (!err.empty()) {
         LOGE << err;
@@ -230,7 +229,6 @@ jleMesh::makeMesh(const std::vector<glm::vec3> &positions,
     _tangents = tangents;
     _bitangents = bitangents;
     _indices = indices;
-
 }
 
 jleMesh::~jleMesh() { destroyOldBuffers(); }
@@ -280,10 +278,11 @@ jleMesh::loadAssimp(const jlePath &path)
     auto pathStr = path.getRealPath();
 
     Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(pathStr, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
+    const aiScene *scene = importer.ReadFile(pathStr,
+                                             aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_GenNormals |
+                                                 aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
 
-    if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-    {
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         LOGE << "Error loading mesh with Assimp" << importer.GetErrorString();
         return false;
     }
@@ -295,63 +294,68 @@ jleMesh::loadAssimp(const jlePath &path)
     std::vector<glm::vec3> out_bitangents;
     std::vector<unsigned int> out_indices;
 
-
-    for(int i = 0; i < scene->mNumMeshes; i++){
+    for (int i = 0; i < scene->mNumMeshes; i++) {
         auto assimpMesh = scene->mMeshes[i];
-        for(int j = 0; j < assimpMesh->mNumVertices; j++){
-
-            glm::vec3 position;
-            position.x = assimpMesh->mVertices[j].x;
-            position.y = assimpMesh->mVertices[j].y;
-            position.z = assimpMesh->mVertices[j].z;
-            out_vertices.push_back(position);
-
-            if(assimpMesh->HasNormals())
-            {
-                glm::vec3 normal;
-                normal.x = assimpMesh->mNormals[j].x;
-                normal.y = assimpMesh->mNormals[j].y;
-                normal.z = assimpMesh->mNormals[j].z;
-                out_normals.push_back(normal);
-            }
-
-            if(assimpMesh->mTextureCoords[0])
-            {
-                glm::vec2 coords;
-
-                coords.x = assimpMesh->mTextureCoords[0][j].x;
-                coords.y = assimpMesh->mTextureCoords[0][j].y;
-                out_uvs.push_back(coords);
-
-                glm::vec3 tangent;
-                tangent.x = assimpMesh->mTangents[j].x;
-                tangent.y = assimpMesh->mTangents[j].y;
-                tangent.z = assimpMesh->mTangents[j].z;
-                out_tangents.push_back(tangent);
-
-                glm::vec3 bitangent;
-                tangent.x = assimpMesh->mBitangents[j].x;
-                tangent.y = assimpMesh->mBitangents[j].y;
-                tangent.z = assimpMesh->mBitangents[j].z;
-                out_bitangents.push_back(bitangent);
-
-            }
-        }
-
-        for(int i = 0; i < assimpMesh->mNumFaces; i++)
-        {
-            const auto &face = assimpMesh->mFaces[i];
-            for(int j = 0; j < face.mNumIndices; j++)
-            {
-                out_indices.push_back(face.mIndices[j]);
-            }
-        }
-
+        loadAssimpMesh(assimpMesh, out_vertices, out_normals, out_uvs, out_tangents, out_bitangents, out_indices);
     }
 
     makeMesh(out_vertices, out_normals, out_uvs, out_tangents, out_bitangents, out_indices);
 
     return true;
+}
+
+void
+jleMesh::loadAssimpMesh(aiMesh *assimpMesh,
+                        std::vector<glm::vec3> &out_positions,
+                        std::vector<glm::vec3> &out_normals,
+                        std::vector<glm::vec2> &out_texCoords,
+                        std::vector<glm::vec3> &out_tangents,
+                        std::vector<glm::vec3> &out_bitangents,
+                        std::vector<unsigned int> &out_indices)
+{
+    for (int j = 0; j < assimpMesh->mNumVertices; j++) {
+
+        glm::vec3 position;
+        position.x = assimpMesh->mVertices[j].x;
+        position.y = assimpMesh->mVertices[j].y;
+        position.z = assimpMesh->mVertices[j].z;
+        out_positions.push_back(position);
+
+        if (assimpMesh->HasNormals()) {
+            glm::vec3 normal;
+            normal.x = assimpMesh->mNormals[j].x;
+            normal.y = assimpMesh->mNormals[j].y;
+            normal.z = assimpMesh->mNormals[j].z;
+            out_normals.push_back(normal);
+        }
+
+        if (assimpMesh->mTextureCoords[0]) {
+            glm::vec2 coords;
+
+            coords.x = assimpMesh->mTextureCoords[0][j].x;
+            coords.y = assimpMesh->mTextureCoords[0][j].y;
+            out_texCoords.push_back(coords);
+
+            glm::vec3 tangent;
+            tangent.x = assimpMesh->mTangents[j].x;
+            tangent.y = assimpMesh->mTangents[j].y;
+            tangent.z = assimpMesh->mTangents[j].z;
+            out_tangents.push_back(tangent);
+
+            glm::vec3 bitangent;
+            tangent.x = assimpMesh->mBitangents[j].x;
+            tangent.y = assimpMesh->mBitangents[j].y;
+            tangent.z = assimpMesh->mBitangents[j].z;
+            out_bitangents.push_back(bitangent);
+        }
+    }
+
+    for (int i = 0; i < assimpMesh->mNumFaces; i++) {
+        const auto &face = assimpMesh->mFaces[i];
+        for (int j = 0; j < face.mNumIndices; j++) {
+            out_indices.push_back(face.mIndices[j]);
+        }
+    }
 }
 
 const std::vector<glm::vec3> &
@@ -394,4 +398,73 @@ std::vector<std::string>
 jleMesh::getFileAssociationList()
 {
     return {"fbx", "obj"};
+}
+
+void
+jleMesh::saveToFile()
+{
+    aiScene scene;
+
+    scene.mRootNode = new aiNode();
+
+    scene.mMaterials = new aiMaterial *[1];
+    scene.mMaterials[0] = nullptr;
+    scene.mNumMaterials = 1;
+
+    scene.mMaterials[0] = new aiMaterial();
+
+    scene.mMeshes = new aiMesh *[1];
+    scene.mMeshes[0] = nullptr;
+    scene.mNumMeshes = 1;
+
+    scene.mMeshes[0] = new aiMesh();
+    scene.mMeshes[0]->mMaterialIndex = 0;
+
+    scene.mRootNode->mMeshes = new unsigned int[1];
+    scene.mRootNode->mMeshes[0] = 0;
+    scene.mRootNode->mNumMeshes = 1;
+
+    auto assimpMesh = scene.mMeshes[0];
+
+    assimpMesh->mVertices = new aiVector3D[_positions.size()];
+    assimpMesh->mNumVertices = _positions.size();
+
+    assimpMesh->mTextureCoords[0] = new aiVector3D[_texCoords.size()];
+    assimpMesh->mNumUVComponents[0] = 2;
+
+    assimpMesh->mNormals = new aiVector3D[_normals.size()];
+    assimpMesh->mTangents = new aiVector3D[_tangents.size()];
+    assimpMesh->mBitangents = new aiVector3D[_bitangents.size()];
+
+    for (int i = 0; i < _positions.size(); i++) {
+        assimpMesh->mVertices[i] = aiVector3D(_positions[i].x, _positions[i].y, _positions[i].z);
+        assimpMesh->mTextureCoords[0][i] = aiVector3D(_texCoords[i].x, _texCoords[i].y, 0.f);
+        assimpMesh->mNormals[i] = aiVector3D(_normals[i].x, _normals[i].y, _normals[i].z);
+        assimpMesh->mTangents[i] = aiVector3D(_tangents[i].x, _tangents[i].y, _tangents[i].z);
+        assimpMesh->mBitangents[i] = aiVector3D(_bitangents[i].x, _bitangents[i].y, _bitangents[i].z);
+    }
+
+    assimpMesh->mFaces = new aiFace[_indices.size() / 3];
+    assimpMesh->mNumFaces = _indices.size() / 3;
+
+    for (int i = 0; i < _indices.size() / 3; i++) {
+        aiFace &face = assimpMesh->mFaces[i];
+
+        face.mIndices = new unsigned int[3];
+        face.mNumIndices = 3;
+
+        face.mIndices[0] = _indices[3 * i + 0];
+        face.mIndices[1] = _indices[3 * i + 1];
+        face.mIndices[2] = _indices[3 * i + 2];
+    }
+
+    Assimp::Exporter exporter;
+    const auto &format = path.getFileEnding();
+    auto ret = exporter.Export(&scene, format, path.getRealPath(), aiProcess_JoinIdenticalVertices | aiProcess_FlipUVs);
+
+    if (ret == aiReturn_SUCCESS) {
+        LOGI << "Exported " << path.getVirtualPath() << " successfully.";
+    } else {
+        LOGE << "Failed to save mesh: " << path.getVirtualPath();
+    }
 }

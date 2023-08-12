@@ -6,6 +6,8 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+class aiMesh;
+
 class jleMesh : public jleResourceInterface
 {
 public:
@@ -25,27 +27,36 @@ public:
                   const std::vector<glm::vec2> &texCoords = {},
                   const std::vector<glm::vec3> &tangents = {},
                   const std::vector<glm::vec3> &bitangents = {},
-                  const std::vector<unsigned int> &indicies = {});
+                  const std::vector<unsigned int> &indices = {});
 
+    static void loadAssimpMesh(aiMesh *assimpMesh,
+                        std::vector<glm::vec3> &out_positions,
+                        std::vector<glm::vec3> &out_normals,
+                        std::vector<glm::vec2> &out_texCoords,
+                        std::vector<glm::vec3> &out_tangents,
+                        std::vector<glm::vec3> &out_bitangents,
+                        std::vector<unsigned int> &out_indices);
     bool usesIndexing();
 
     unsigned int getVAO();
 
     unsigned int getTrianglesCount();
 
-    const std::vector<glm::vec3>& positions();
+    const std::vector<glm::vec3> &positions();
 
-    const std::vector<glm::vec3>& normals();
+    const std::vector<glm::vec3> &normals();
 
-    const std::vector<glm::vec2>& texCoords();
+    const std::vector<glm::vec2> &texCoords();
 
-    const std::vector<glm::vec3>& tangents();
+    const std::vector<glm::vec3> &tangents();
 
-    const std::vector<glm::vec3>& bitangents();
+    const std::vector<glm::vec3> &bitangents();
 
-    const std::vector<unsigned int>& indices();
+    const std::vector<unsigned int> &indices();
 
     std::vector<std::string> getFileAssociationList() override;
+
+    void saveToFile() override;
 
 private:
     void destroyOldBuffers();

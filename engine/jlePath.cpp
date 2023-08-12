@@ -235,3 +235,12 @@ jlePath::getVirtualPathConst() const
 {
     return getVirtualPath();
 }
+
+std::string
+jlePath::getVirtualFolder() const
+{
+
+    auto slash = getVirtualPath().find_last_of('/');
+    auto folder = getVirtualPath().substr(0, slash);
+    return folder;
+}
