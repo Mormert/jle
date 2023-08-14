@@ -301,6 +301,8 @@ jleMesh::loadAssimp(const jlePath &path)
 
     makeMesh(out_vertices, out_normals, out_uvs, out_tangents, out_bitangents, out_indices);
 
+    LOGV << "Loaded mesh " << path.getVirtualPath() << " with " << out_vertices.size() << " vertices";
+
     return true;
 }
 

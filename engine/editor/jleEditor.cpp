@@ -1,17 +1,17 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleEditor.h"
-#include "editor/jleEditorImGuiWindowInterface.h"
 #include "editor/jleConsoleEditorWindow.h"
 #include "editor/jleEditorContentBrowser.h"
+#include "editor/jleEditorFrameGraphWindow.h"
+#include "editor/jleEditorGizmos.h"
+#include "editor/jleEditorImGuiWindowInterface.h"
 #include "editor/jleEditorNotifications.h"
 #include "editor/jleEditorProfilerWindow.h"
 #include "editor/jleEditorResourceViewer.h"
+#include "editor/jleEditorSaveState.h"
 #include "editor/jleEditorSceneObjectsWindow.h"
 #include "editor/jleEditorWindowsPanel.h"
-#include "editor/jleEditorSaveState.h"
-#include "editor/jleEditorGizmos.h"
-#include "editor/jleEditorFrameGraphWindow.h"
 
 #include "jle3DRenderer.h"
 #include "jleEditor3DImportWindow.h"
@@ -37,11 +37,11 @@
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
-#include <implot/implot.h>
 #include <Remotery/Remotery.h>
+#include <implot/implot.h>
 #include <plog/Log.h>
 
-struct jleEditor::jleEditorInternal{
+struct jleEditor::jleEditorInternal {
     jleResourceRef<jleEditorSaveState> editorSaveState;
 };
 
@@ -181,6 +181,8 @@ jleEditor::render()
 void
 jleEditor::renderGameView()
 {
+    JLE_SCOPE_PROFILE_CPU(RenderGameView);
+
     if (!gameHalted && game) {
         // Render to game view
         static jleFramebufferMultisample msaa{mainScreenFramebuffer->width(), mainScreenFramebuffer->height(), 4};
@@ -199,6 +201,8 @@ jleEditor::renderGameView()
 void
 jleEditor::renderEditorSceneView()
 {
+    JLE_SCOPE_PROFILE_CPU(RenderEditorSceneView);
+
     if (!isGameKilled()) {
         physics().renderDebug();
     }
@@ -229,6 +233,8 @@ jleEditor::renderEditorSceneView()
 void
 jleEditor::renderEditorUI()
 {
+    JLE_SCOPE_PROFILE_CPU(RenderEditorUI);
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glClearColor(0.f, 0.f, 0.f, 1.f);
@@ -237,31 +243,27 @@ jleEditor::renderEditorUI()
     // Set viewport to cover the entire screen
     glViewport(0, 0, window().width(), window().height());
 
-    {
-        JLE_SCOPE_PROFILE_GPU(ImGuiRender);
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
 
-        ImGuizmo::BeginFrame();
+    // Update loop for all ImGui windows
+    for (const auto &window : _imGuiWindows) {
+        window->update(*this);
+    }
 
-        // Update loop for all ImGui windows
-        for (const auto &window : _imGuiWindows) {
-            window->update(*this);
-        }
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    glCheckError("ImGui");
 
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glCheckError("ImGui");
-
-        auto &&io = ImGui::GetIO();
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-            GLFWwindow *backup_current_context = glfwGetCurrentContext();
-            ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault();
-            glfwMakeContextCurrent(backup_current_context);
-        }
+    auto &&io = ImGui::GetIO();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        GLFWwindow *backup_current_context = glfwGetCurrentContext();
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backup_current_context);
     }
 
     glCheckError("Render Editor UI");
@@ -464,7 +466,7 @@ jleEditor::exiting()
     }
     saveState().cameraYaw = _sceneWindow->fpvCamController.yaw;
     saveState().cameraPitch = _sceneWindow->fpvCamController.pitch;
-    //saveState().orthographicCamera = !static_cast<bool>(projectionType);
+    // saveState().orthographicCamera = !static_cast<bool>(projectionType);
     saveState().saveToFile();
 
     jleGameEngine::exiting();

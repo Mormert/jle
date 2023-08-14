@@ -1,8 +1,8 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleMouseInput.h"
+#include "jleProfiler.h"
 #include "jleWindow.h"
-
 
 jleMouseInput::jleMouseInput(std::shared_ptr<jleWindow> window) {
     this->_window = std::move(window);
@@ -80,6 +80,7 @@ jleMouseInput::isFpsMode() const
 void
 jleMouseInput::updateDeltas()
 {
+    JLE_SCOPE_PROFILE_CPU(jleMouseInput_updateDeltas)
     auto c = _window->cursor();
     _deltaX = c.first - _lastMouseX;
     _deltaY = c.second - _lastMouseY;

@@ -1,6 +1,7 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleWindow.h"
+#include "jleProfiler.h"
 
 #include <iostream>
 
@@ -186,6 +187,8 @@ jleWindow::initWindow()
 void
 jleWindow::updateWindow()
 {
+    JLE_SCOPE_PROFILE_CPU(WindowUpdate);
+
     _activeWindow->currentScrollX = 0.f;
     _activeWindow->currentScrollY = 0.f;
 
@@ -198,6 +201,7 @@ jleWindow::updateWindow()
 bool
 jleWindow::windowShouldClose()
 {
+    JLE_SCOPE_PROFILE_CPU(WindowCloseCheck);
     return glfwWindowShouldClose(_glfwWindow);
 }
 

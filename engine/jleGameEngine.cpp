@@ -429,6 +429,7 @@ jleGameEngine::renderer()
 void
 jleGameEngine::resetRenderGraphForNewFrame()
 {
+    JLE_SCOPE_PROFILE_CPU(ResetRenderGraph);
     _3dRenderGraph = std::make_unique<jle3DGraph>();
 }
 float

@@ -22,9 +22,10 @@ jleFileChangeNotifier::periodicSweep()
         static std::vector<jlePath> erased;
         static std::vector<jlePath> added;
         static std::vector<jlePath> modified;
-        static std::future<void> sortTranslucentAsync;
+        static std::future<void> sortTranslucentAsync{};
 
-        if (sortTranslucentAsync.valid() && sortTranslucentAsync.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+        if (sortTranslucentAsync.valid() &&
+            sortTranslucentAsync.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
             for (auto &path : erased) {
                 notifyErase(path);
             }
@@ -48,11 +49,13 @@ jleFileChangeNotifier::periodicSweep()
 void
 jleFileChangeNotifier::sweep(std::vector<jlePath> &erased, std::vector<jlePath> &added, std::vector<jlePath> &modified)
 {
-    auto it = _pathsMonitored.begin();
-    while (it != _pathsMonitored.end()) {
+    static std::unordered_map<std::string, std::filesystem::file_time_type> pathsMonitored;
+
+    auto it = pathsMonitored.begin();
+    while (it != pathsMonitored.end()) {
         if (!std::filesystem::exists(it->first)) {
             erased.push_back(jlePath{it->first, false});
-            it = _pathsMonitored.erase(it);
+            it = pathsMonitored.erase(it);
         } else {
             it++;
         }
@@ -63,12 +66,12 @@ jleFileChangeNotifier::sweep(std::vector<jlePath> &erased, std::vector<jlePath> 
         for (auto &file : std::filesystem::recursive_directory_iterator(dir)) {
             auto current_file_last_write_time = std::filesystem::last_write_time(file);
 
-            if (!contains(file.path().string())) {
-                _pathsMonitored[file.path().string()] = current_file_last_write_time;
+            if ((pathsMonitored.find(file.path().string()) == pathsMonitored.end())) {
+                pathsMonitored[file.path().string()] = current_file_last_write_time;
                 added.push_back(jlePath{file.path().string(), false});
             } else {
-                if (_pathsMonitored[file.path().string()] != current_file_last_write_time) {
-                    _pathsMonitored[file.path().string()] = current_file_last_write_time;
+                if (pathsMonitored[file.path().string()] != current_file_last_write_time) {
+                    pathsMonitored[file.path().string()] = current_file_last_write_time;
                     if (file.is_regular_file()) {
                         modified.push_back(jlePath{file.path().string(), false});
                     }
@@ -103,11 +106,4 @@ void
 jleFileChangeNotifier::notifyErase(const jlePath &path)
 {
     LOGI << "File erased: " << path.getVirtualPath();
-}
-
-bool
-jleFileChangeNotifier::contains(const std::string &key)
-{
-    auto el = _pathsMonitored.find(key);
-    return el != _pathsMonitored.end();
 }

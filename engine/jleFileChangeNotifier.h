@@ -27,10 +27,7 @@ private:
 
     void notifyErase(const jlePath &path);
 
-    std::unordered_map<std::string, std::filesystem::file_time_type> _pathsMonitored;
     std::vector<std::string> _directories;
-
-    bool contains(const std::string &key);
 
     long long lastSweep = 0;
 };
