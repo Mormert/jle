@@ -115,7 +115,7 @@ jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine &ge)
         ImGui::SetCursorPosX((windowWidth)*0.5f);
 
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetColumnWidth() -
-                             ImGui::CalcTextSize("FPS: XXXX   Run Time: HH:MM:SS.MMM").x - ImGui::GetScrollX() -
+                             ImGui::CalcTextSize("Avg FPS: XXXX   Run Time: HH:MM:SS.MMM").x - ImGui::GetScrollX() -
                              2 * ImGui::GetStyle().ItemSpacing.x);
 
         // clang-format off
@@ -136,7 +136,10 @@ jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine &ge)
         };
         // clang-format on
 
-        ImGui::Text("FPS: %4d  Run Time: %s", ge.fps(), formatTime(static_cast<int>(ge.currentFrameTime()*1000.f)).c_str());
+        const auto rolling120FramesAvgFps = (int)ImGui::GetIO().Framerate;
+        ImGui::Text("Avg FPS: %4d  Run Time: %s",
+                    rolling120FramesAvgFps,
+                    formatTime(static_cast<int>(ge.currentFrameTime() * 1000.f)).c_str());
 
         ImGui::EndMenuBar();
     }

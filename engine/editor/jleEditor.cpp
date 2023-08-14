@@ -11,6 +11,7 @@
 #include "editor/jleEditorWindowsPanel.h"
 #include "editor/jleEditorSaveState.h"
 #include "editor/jleEditorGizmos.h"
+#include "editor/jleEditorFrameGraphWindow.h"
 
 #include "jle3DRenderer.h"
 #include "jleEditor3DImportWindow.h"
@@ -36,6 +37,7 @@
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
+#include <implot/implot.h>
 #include <Remotery/Remotery.h>
 #include <plog/Log.h>
 
@@ -129,6 +131,9 @@ jleEditor::start()
 
     auto notifications = std::make_shared<jleEditorNotifications>("Notifications");
     addImGuiWindow(notifications);
+
+    auto frameGraph = std::make_shared<jleEditorFrameGraphWindow>("Frame Graph");
+    addImGuiWindow(frameGraph);
 
     gEngine->window().addWindowResizeCallback(
         std::bind(&jleEditor::mainEditorWindowResized, this, std::placeholders::_1, std::placeholders::_2));
@@ -273,6 +278,7 @@ jleEditor::initImgui()
                                           sizeof(ImDrawVert),
                                           sizeof(ImDrawIdx));
     ImGui::CreateContext();
+    ImPlot::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;

@@ -114,6 +114,7 @@ if (BUILD_EDITOR)
             "editor/jleEditorSaveState.cpp"
             "editor/jleImGuiExtensions.cpp"
             "editor/jleEditor3DImportWindow.cpp"
+            "editor/jleEditorFrameGraphWindow.cpp"
             "3rdparty/ImGuiColorTextEdit/TextEditor.cpp"
             "3rdparty/ImGui/imgui.cpp"
             "3rdparty/ImGui/imgui_spectrum.cpp"
@@ -124,7 +125,9 @@ if (BUILD_EDITOR)
             "3rdparty/ImGui/imgui_tables.cpp"
             "3rdparty/ImGui/imgui_widgets.cpp"
             "3rdparty/ImGui/imgui_stdlib.cpp"
-            "3rdparty/ImGui/ImGuizmo.cpp")
+            "3rdparty/ImGui/ImGuizmo.cpp"
+            "3rdparty/implot/implot.cpp"
+            "3rdparty/implot/implot_items.cpp")
 endif ()
 
 # TODO: Move Assimp to be editor only
