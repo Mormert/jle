@@ -19,7 +19,7 @@ public:
     void periodicSweep();
 
 private:
-    void sweep();
+    void sweep(std::vector<jlePath>& erased, std::vector<jlePath>& added, std::vector<jlePath>& modified);
 
     void notifyAdded(const jlePath &path);
 

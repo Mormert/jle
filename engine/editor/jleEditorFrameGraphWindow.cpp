@@ -11,7 +11,7 @@ jleEditorFrameGraphWindow::jleEditorFrameGraphWindow(const std::string &window_n
 void
 jleEditorFrameGraphWindow::update(jleGameEngine &ge)
 {
-    static std::vector<float> data;
+    static std::vector<float> data{};
     static bool enabled = false;
 
     ImGui::Begin("Frame Graph");
@@ -28,7 +28,10 @@ jleEditorFrameGraphWindow::update(jleGameEngine &ge)
 
         ImPlot::SetNextAxesLimits(-25.0, 175.0, -25.0, 175.0, ImGuiCond_FirstUseEver);
         if (ImPlot::BeginPlot("Frame Plot")) {
-            ImPlot::PlotBars("Frame Time (ms)", &data[0], data.size());
+            if(data.size() > 0)
+            {
+                ImPlot::PlotBars("Frame Time (ms)", &data[0], data.size());
+            }
             ImPlot::EndPlot();
         }
     }

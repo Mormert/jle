@@ -19,18 +19,39 @@ jleFileChangeNotifier::periodicSweep()
     long long now = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 
     if (now > lastSweep + 250ll) {
-        sweep();
+        static std::vector<jlePath> erased;
+        static std::vector<jlePath> added;
+        static std::vector<jlePath> modified;
+        static std::future<void> sortTranslucentAsync;
+
+        if (sortTranslucentAsync.valid() && sortTranslucentAsync.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+            for (auto &path : erased) {
+                notifyErase(path);
+            }
+            for (auto &path : added) {
+                notifyAdded(path);
+            }
+            for (auto &path : modified) {
+                notifyModification(path);
+            }
+            erased.clear();
+            added.clear();
+            modified.clear();
+        }
+
+        sortTranslucentAsync = std::async(std::launch::async, [&] { sweep(erased, added, modified); });
+
         lastSweep = now;
     }
 }
 
 void
-jleFileChangeNotifier::sweep()
+jleFileChangeNotifier::sweep(std::vector<jlePath> &erased, std::vector<jlePath> &added, std::vector<jlePath> &modified)
 {
     auto it = _pathsMonitored.begin();
     while (it != _pathsMonitored.end()) {
         if (!std::filesystem::exists(it->first)) {
-            notifyErase(jlePath{it->first, false});
+            erased.push_back(jlePath{it->first, false});
             it = _pathsMonitored.erase(it);
         } else {
             it++;
@@ -44,12 +65,12 @@ jleFileChangeNotifier::sweep()
 
             if (!contains(file.path().string())) {
                 _pathsMonitored[file.path().string()] = current_file_last_write_time;
-                notifyAdded(jlePath{file.path().string(), false});
+                added.push_back(jlePath{file.path().string(), false});
             } else {
                 if (_pathsMonitored[file.path().string()] != current_file_last_write_time) {
                     _pathsMonitored[file.path().string()] = current_file_last_write_time;
                     if (file.is_regular_file()) {
-                        notifyModification(jlePath{file.path().string(), false});
+                        modified.push_back(jlePath{file.path().string(), false});
                     }
                 }
             }
