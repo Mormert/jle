@@ -169,9 +169,9 @@ jleEditor::render()
 
     renderEditorGridGizmo();
 
-    renderEditorUI();
-
     renderEditorSceneView();
+
+    renderEditorUI();
 
     resetRenderGraphForNewFrame();
 
