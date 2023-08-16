@@ -300,11 +300,6 @@ jleEditor::initImgui()
     ImGui_ImplOpenGL3_Init("#version 330 core");
 #endif
 
-    ImFontConfig config;
-    config.OversampleH = 3;
-    config.OversampleV = 2;
-    config.GlyphExtraSpacing.x = 1.0f;
-
     io.Fonts->Clear();
     ImGui::Spectrum::LoadFont();
 }
@@ -319,7 +314,7 @@ void
 jleEditor::mainEditorWindowResized(int w, int h)
 {
     auto &&io = ImGui::GetIO();
-    io.FontGlobalScale = w / 1920.f;
+    io.FontGlobalScale = 1.0f;
 }
 
 std::vector<std::shared_ptr<jleScene>> &

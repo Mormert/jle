@@ -392,9 +392,8 @@ jleWindow::initGlfwWindow(int width, int height, const char *title)
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    // Avoid retina display scaling factor issues
-    // TODO: Can setting this to false cause textures looking "off" and pixly?
-    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GL_FALSE);
+    // Special case for Mac's Retina screens
+    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
 #endif
 
     GLFWwindow *glfwWindow = glfwCreateWindow(width, height, title, nullptr, nullptr);

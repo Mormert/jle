@@ -9,7 +9,12 @@ namespace ImGui {
 
         void LoadFont(float size) {
             ImGuiIO& io = ImGui::GetIO();
-            ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(SourceSansProRegular_compressed_data, SourceSansProRegular_compressed_size, size);
+
+            ImFontConfig config;
+            config.OversampleH = 5;
+            config.OversampleV = 5;
+
+            ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(SourceSansProRegular_compressed_data, SourceSansProRegular_compressed_size, size, &config);
             assert(font != nullptr);
             io.FontDefault = font;
         }

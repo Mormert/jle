@@ -299,7 +299,7 @@ jleEditorContentBrowser::contentBrowser()
     if (!_selectedDirectory.empty()) {
 
         int columns = ImGui::GetWindowContentRegionWidth() / fileSize.x - 1;
-        if (columns <= 0) {
+        if (columns <= 0 || columns > 64) {
             columns = 1;
         }
 
