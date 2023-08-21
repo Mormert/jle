@@ -58,7 +58,7 @@ public:
 
     void saveToFile() override;
 
-private:
+protected:
     void destroyOldBuffers();
 
     unsigned int _trianglesCount{};

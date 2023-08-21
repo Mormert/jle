@@ -163,7 +163,6 @@ jleMesh::makeMesh(const std::vector<glm::vec3> &positions,
                   const std::vector<glm::vec3> &bitangents,
                   const std::vector<unsigned int> &indices)
 {
-
     destroyOldBuffers();
 
     glGenVertexArrays(1, &_vao);
@@ -215,7 +214,7 @@ jleMesh::makeMesh(const std::vector<glm::vec3> &positions,
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
     }
 
-    glBindVertexArray(0);
+    //glBindVertexArray(0);
 
     if (indices.size() > 0) {
         _trianglesCount = indices.size();

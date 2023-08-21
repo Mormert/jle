@@ -90,7 +90,8 @@ add_library(engine STATIC
         "jleLuaEnvironment.cpp"
         "jleGLError.cpp"
         "jleInput.cpp"
-        "jleTextureRefOrRGBA.cpp")
+        "jleTextureRefOrRGBA.cpp"
+        "jleSkinnedMesh.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE
