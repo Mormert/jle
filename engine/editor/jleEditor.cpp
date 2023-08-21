@@ -315,6 +315,29 @@ jleEditor::mainEditorWindowResized(int w, int h)
 {
     auto &&io = ImGui::GetIO();
     io.FontGlobalScale = 1.0f;
+
+    constexpr int scale0 = 1080 * 720;
+    constexpr int scale1 = 1920 * 1080;
+    constexpr int scale2 = 2048 * 1536;
+    constexpr int scale3 = 4096 * 1728;
+
+    io.FontGlobalScale = 1.0;
+
+    if (w * h > scale0) {
+        io.FontGlobalScale = 1.0;
+    }
+
+    if (w * h > scale1) {
+        io.FontGlobalScale = 1.25f;
+    }
+
+    if (w * h > scale2) {
+        io.FontGlobalScale = 1.5f;
+    }
+
+    if (w * h > scale3) {
+        io.FontGlobalScale = 1.75f;
+    }
 }
 
 std::vector<std::shared_ptr<jleScene>> &

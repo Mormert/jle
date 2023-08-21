@@ -133,3 +133,9 @@ jleSkinnedMesh::loadAssimpSkinnedMesh(aiMesh *assimpMesh,
         return;
     }
 }
+
+jleLoadFromFileSuccessCode
+jleSkinnedMesh::loadFromFile(const jlePath &path)
+{
+    return jleMesh::loadFromFile(path);
+}
