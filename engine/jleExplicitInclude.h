@@ -22,3 +22,5 @@
 #include "jleTransform.h"
 #include "cRigidbody.h"
 #include "cLuaScript.h"
+#include "cAnimator.h"
+#include "cSkinnedMesh.h"

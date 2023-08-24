@@ -16,6 +16,8 @@
 #include "jleProfiler.h"
 #include "jleShader.h"
 #include "jleSkybox.h"
+#include "jleSkinnedMesh.h"
+#include "jleAnimationFinalMatrices.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -132,6 +134,12 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
         glCheckError("3D Render - Opaque Meshes");
     }
 
+    {
+        JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderSkinnedMeshes_Opaque)
+        renderSkinnedMeshes(camera, graph._skinnedMeshes, graph._lights, settings);
+        glCheckError("3D Render - Opaque Skinned Meshes");
+    }
+
     renderLineStrips(camera, graph._lineStrips);
     glCheckError("3D Render - Strip Lines");
 
@@ -177,6 +185,7 @@ jle3DRenderer::renderMeshes(const jleCamera &camera,
         } else {
             mesh.material->useMaterial(camera, lights, settings);
             mesh.material->getShader()->SetMat4("uModel", mesh.transform);
+            mesh.material->getShader()->SetBool("uUseSkinning", false);
         }
 
         glBindVertexArray(mesh.mesh->getVAO());
@@ -184,6 +193,38 @@ jle3DRenderer::renderMeshes(const jleCamera &camera,
             glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
         } else {
             glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+        }
+        glBindVertexArray(0);
+    }
+}
+
+void
+jle3DRenderer::renderSkinnedMeshes(const jleCamera &camera,
+                                   const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
+                                   const std::vector<jle3DRendererLight> &lights,
+                                   const jle3DSettings &settings)
+{
+    for (auto &&mesh : skinnedMeshes) {
+        if (!mesh.material || !mesh.material->getShader()) {
+            _shaders->missingMaterialShader->use();
+            _shaders->missingMaterialShader->SetMat4("uView", camera.getViewMatrix());
+            _shaders->missingMaterialShader->SetMat4("uProj", camera.getProjectionMatrix());
+            _shaders->missingMaterialShader->SetMat4("uModel", mesh.transform);
+        } else {
+            mesh.material->useMaterial(camera, lights, settings);
+            mesh.material->getShader()->SetMat4("uModel", mesh.transform);
+            mesh.material->getShader()->SetBool("uUseSkinning", true);
+
+            for(int i = 0; i < mesh.matrices->matrices.size(); ++i){
+                mesh.material->getShader()->SetMat4("uAnimBonesMatrices[" + std::to_string(i) + "]", mesh.matrices->matrices[i]);
+            }
+        }
+
+        glBindVertexArray(mesh.skinnedMesh->getVAO());
+        if (mesh.skinnedMesh->usesIndexing()) {
+            glDrawElements(GL_TRIANGLES, mesh.skinnedMesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+        } else {
+            glDrawArrays(GL_TRIANGLES, 0, mesh.skinnedMesh->getTrianglesCount());
         }
         glBindVertexArray(0);
     }

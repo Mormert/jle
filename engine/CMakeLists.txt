@@ -56,6 +56,7 @@ add_library(engine STATIC
         "cCamera.cpp"
         #"jleFont.cpp"
         #"cText.cpp"
+        "cAnimator.cpp"
         "jleTimerManager.cpp"
         #"cUITransformUpdater.cpp"
         "jleNetworking.cpp"
@@ -91,7 +92,10 @@ add_library(engine STATIC
         "jleGLError.cpp"
         "jleInput.cpp"
         "jleTextureRefOrRGBA.cpp"
-        "jleSkinnedMesh.cpp")
+        "jleSkinnedMesh.cpp"
+        "jleAnimationBone.cpp"
+        "jleAnimation.cpp"
+        "cSkinnedMesh.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE

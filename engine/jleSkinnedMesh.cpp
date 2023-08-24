@@ -40,7 +40,8 @@ jleSkinnedMesh::makeSkinnedMesh(const std::vector<glm::vec3> &positions,
                                 const std::vector<glm::vec3> &bitangents,
                                 const std::vector<unsigned int> &indices,
                                 const std::vector<glm::ivec4>& boneIndices,
-                                const std::vector<glm::vec4>& boneWeights)
+                                const std::vector<glm::vec4>& boneWeights,
+                                const std::unordered_map<std::string, jleSkinnedMeshBone>& boneMapping)
 {
     destroyOldBuffersSkinned();
     makeMesh(positions, normals, texCoords, tangents, bitangents, indices);
@@ -63,10 +64,11 @@ jleSkinnedMesh::makeSkinnedMesh(const std::vector<glm::vec3> &positions,
 
     _boneIndices = boneIndices;
     _boneWeights = boneWeights;
+    _boneMapping = boneMapping;
 
 }
 
-void
+bool
 jleSkinnedMesh::loadAssimpSkinnedMesh(aiMesh *assimpMesh,
                                       std::vector<glm::vec3> &out_positions,
                                       std::vector<glm::vec3> &out_normals,
@@ -74,8 +76,8 @@ jleSkinnedMesh::loadAssimpSkinnedMesh(aiMesh *assimpMesh,
                                       std::vector<glm::vec3> &out_tangents,
                                       std::vector<glm::vec3> &out_bitangents,
                                       std::vector<unsigned int> &out_indices,
-                                      std::vector<glm::ivec4> out_boneIndices,
-                                      std::vector<glm::vec4> out_boneWeights,
+                                      std::vector<glm::ivec4> &out_boneIndices,
+                                      std::vector<glm::vec4> &out_boneWeights,
                                       std::unordered_map<std::string, jleSkinnedMeshBone>& out_boneMapping)
 {
     loadAssimpMesh(assimpMesh, out_positions, out_normals, out_texCoords, out_tangents, out_bitangents, out_indices);
@@ -127,15 +129,56 @@ jleSkinnedMesh::loadAssimpSkinnedMesh(aiMesh *assimpMesh,
 
         }
 
-
+        return true;
     }else{
         LOGE << "Failed loading skinned mesh since it doesn't have bones.";
-        return;
+        return false;
     }
 }
 
 jleLoadFromFileSuccessCode
 jleSkinnedMesh::loadFromFile(const jlePath &path)
 {
-    return jleMesh::loadFromFile(path);
+    bool ret = loadSkinnedAssimp(path);
+    if(!ret){
+        return jleLoadFromFileSuccessCode::FAIL;
+    }
+    return jleLoadFromFileSuccessCode::SUCCESS;
+}
+
+bool
+jleSkinnedMesh::loadSkinnedAssimp(const jlePath& path)
+{
+    auto pathStr = path.getRealPath();
+
+    Assimp::Importer importer;
+    const aiScene *scene = importer.ReadFile(pathStr,
+                                             aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_GenNormals |
+                                                 aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
+
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+        LOGE << "Error loading mesh with Assimp" << importer.GetErrorString();
+        return false;
+    }
+
+    std::vector<glm::vec3> out_vertices;
+    std::vector<glm::vec2> out_uvs;
+    std::vector<glm::vec3> out_normals;
+    std::vector<glm::vec3> out_tangents;
+    std::vector<glm::vec3> out_bitangents;
+    std::vector<unsigned int> out_indices;
+    std::vector<glm::ivec4> out_boneIndices;
+    std::vector<glm::vec4> out_boneWeights;
+    std::unordered_map<std::string, jleSkinnedMeshBone> out_boneMapping;
+
+    for (int i = 0; i < scene->mNumMeshes; i++) {
+        auto assimpMesh = scene->mMeshes[i];
+        loadAssimpSkinnedMesh(assimpMesh, out_vertices, out_normals, out_uvs, out_tangents, out_bitangents, out_indices, out_boneIndices, out_boneWeights, out_boneMapping);
+    }
+
+    makeSkinnedMesh(out_vertices, out_normals, out_uvs, out_tangents, out_bitangents, out_indices, out_boneIndices, out_boneWeights, out_boneMapping);
+
+    LOGV << "Loaded skinned mesh " << path.getVirtualPath() << " with " << out_vertices.size() << " vertices";
+
+    return true;
 }

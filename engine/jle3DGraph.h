@@ -9,6 +9,8 @@
 
 class jleMaterial;
 class jleMesh;
+class jleSkinnedMesh;
+class jleAnimationFinalMatrices;
 
 struct jle3DRendererLight {
     glm::vec3 position;
@@ -30,6 +32,15 @@ struct jle3DQueuedMesh {
     bool castShadows;
 };
 
+struct jle3DQueuedSkinnedMesh {
+    std::shared_ptr<jleSkinnedMesh> skinnedMesh;
+    std::shared_ptr<jleMaterial> material;
+    std::shared_ptr<jleAnimationFinalMatrices> matrices;
+    glm::mat4 transform;
+    int instanceId;
+    bool castShadows;
+};
+
 class jle3DGraph
 {
 private:
@@ -41,6 +52,13 @@ public:
                   const glm::mat4 &transform,
                   int instanceId,
                   bool castShadows);
+
+    void sendSkinnedMesh(std::shared_ptr<jleSkinnedMesh> &mesh,
+                         std::shared_ptr<jleMaterial> &material,
+                         std::shared_ptr<jleAnimationFinalMatrices> &matrices,
+                         const glm::mat4 &transform,
+                         int instanceId,
+                         bool castShadows);
 
     // Line strips will always connect each lines, from start to end.
     void sendLineStrip(const std::vector<jle3DLineVertex> &lines);
@@ -55,6 +73,7 @@ public:
 private:
     std::vector<jle3DQueuedMesh> _meshes;
     std::vector<jle3DQueuedMesh> _translucentMeshes;
+    std::vector<jle3DQueuedSkinnedMesh> _skinnedMeshes;
     std::vector<std::vector<jle3DLineVertex>> _lineStrips;
     std::vector<jle3DLineVertex> _lines;
     std::vector<jle3DRendererLight> _lights;

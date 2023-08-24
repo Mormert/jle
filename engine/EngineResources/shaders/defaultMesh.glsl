@@ -5,6 +5,8 @@ layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoords;
 layout (location = 3) in vec3 aTangent;
 layout (location = 4) in vec3 aBitangent;
+layout (location = 5) in ivec4 aBoneIds;
+layout (location = 6) in vec4 aBoneWeights;
 
 out vec3 WorldFragPos;
 out vec4 WorldFragPosLightSpace;
@@ -23,9 +25,30 @@ uniform mat4 uLightSpaceMatrix;
 uniform vec3 uLightPositions[4];
 uniform vec3 uCameraPosition;
 
+uniform bool uUseSkinning;
+uniform mat4 uAnimBonesMatrices[100];
+
 void main()
 {
     TexCoords = aTexCoords;
+
+    vec4 totalPosition = vec4(0.0);
+    if(uUseSkinning){
+        for(int i = 0; i < 4; ++i){
+            if(aBoneIds[i] == -1){
+                continue;
+            }
+            if(aBoneIds[i] >= 100){
+                totalPosition = vec4(aPos, 1.0);
+                break;
+            }
+            vec4 localPosition = uAnimBonesMatrices[aBoneIds[i]] * vec4(aPos, 1.0);
+            totalPosition += localPosition * aBoneWeights[i];
+        }
+    }else{
+        totalPosition = vec4(aPos, 1.0f);
+    }
+
 
     // Gram-Schmidt Orthogonalisation
     mat3 normalMatrix = transpose(inverse(mat3(uModel)));
@@ -37,7 +60,7 @@ void main()
     LocalNormal = normalize(aNormal);
     TBN = transpose(mat3(T, B, N));
 
-    WorldFragPos = vec3(uModel * vec4(aPos, 1.0));
+    WorldFragPos = vec3(uModel * totalPosition);
     TangentFragPos = TBN * WorldFragPos;
     for (int i = 0; i < 4; i++)
     {
@@ -47,7 +70,7 @@ void main()
     WorldCameraPos = uCameraPosition;
     WorldFragPosLightSpace = uLightSpaceMatrix * vec4(WorldFragPos, 1.0);
 
-    gl_Position = uProj * uView * uModel * vec4(aPos, 1.0f);
+    gl_Position = uProj * uView * uModel * totalPosition;
 }
 
 /*BEGIN FRAG*/

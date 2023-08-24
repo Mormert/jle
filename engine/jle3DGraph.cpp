@@ -3,6 +3,7 @@
 #include "jle3DGraph.h"
 #include "jleMaterial.h"
 #include "jleMesh.h"
+#include "jleAnimationFinalMatrices.h"
 
 void
 jle3DGraph::sendMesh(std::shared_ptr<jleMesh> &mesh,
@@ -16,6 +17,17 @@ jle3DGraph::sendMesh(std::shared_ptr<jleMesh> &mesh,
     } else {
         _meshes.emplace_back(jle3DQueuedMesh{mesh, material, transform, instanceId, castShadows});
     }
+}
+
+void
+jle3DGraph::sendSkinnedMesh(std::shared_ptr<jleSkinnedMesh> &mesh,
+                            std::shared_ptr<jleMaterial> &material,
+                            std::shared_ptr<jleAnimationFinalMatrices> &matrices,
+                            const glm::mat4 &transform,
+                            int instanceId,
+                            bool castShadows)
+{
+    _skinnedMeshes.emplace_back(jle3DQueuedSkinnedMesh{mesh, material, matrices, transform, instanceId, castShadows});
 }
 
 void

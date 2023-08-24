@@ -34,6 +34,11 @@ private:
                       const std::vector<jle3DRendererLight> &lights,
                       const jle3DSettings &settings);
 
+    void renderSkinnedMeshes(const jleCamera &camera,
+                      const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
+                      const std::vector<jle3DRendererLight> &lights,
+                      const jle3DSettings &settings);
+
     void sortTranslucentMeshes(const jleCamera &camera, std::vector<jle3DQueuedMesh> &translucentMeshes);
 
     void renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jleShader &shader);

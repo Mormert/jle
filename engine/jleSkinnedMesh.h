@@ -5,8 +5,8 @@
 #include "jleMesh.h"
 
 struct jleSkinnedMeshBone{
-    int index;
-    glm::mat4 offset;
+    int index{0};
+    glm::mat4 offset{1.f};
 };
 
 class jleSkinnedMesh : public jleMesh
@@ -17,15 +17,17 @@ public:
 
     ~jleSkinnedMesh() override;
 
-    static void loadAssimpSkinnedMesh(aiMesh *assimpMesh,
+    bool loadSkinnedAssimp(const jlePath& path);
+
+    static bool loadAssimpSkinnedMesh(aiMesh *assimpMesh,
                                std::vector<glm::vec3> &out_positions,
                                std::vector<glm::vec3> &out_normals,
                                std::vector<glm::vec2> &out_texCoords,
                                std::vector<glm::vec3> &out_tangents,
                                std::vector<glm::vec3> &out_bitangents,
                                std::vector<unsigned int> &out_indices,
-                               std::vector<glm::ivec4> out_boneIndices,
-                               std::vector<glm::vec4> out_boneWeights,
+                               std::vector<glm::ivec4> &out_boneIndices,
+                               std::vector<glm::vec4> &out_boneWeights,
                                std::unordered_map<std::string, jleSkinnedMeshBone>& out_boneMapping);
 
     void makeSkinnedMesh(const std::vector<glm::vec3> &positions,
@@ -34,8 +36,14 @@ public:
                          const std::vector<glm::vec3> &tangents,
                          const std::vector<glm::vec3> &bitangents,
                          const std::vector<unsigned int> &indices,
-                         const std::vector<glm::ivec4>& boneIndices,
-                         const std::vector<glm::vec4>& boneWeights);
+                         const std::vector<glm::ivec4> &boneIndices,
+                         const std::vector<glm::vec4> &boneWeights,
+                         const std::unordered_map<std::string, jleSkinnedMeshBone>& boneMapping);
+
+    std::unordered_map<std::string, jleSkinnedMeshBone>& getBoneMapping()
+    {
+        return _boneMapping;
+    }
 
 private:
 
