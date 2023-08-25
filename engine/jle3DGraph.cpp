@@ -2,8 +2,6 @@
 
 #include "jle3DGraph.h"
 #include "jleMaterial.h"
-#include "jleMesh.h"
-#include "jleAnimationFinalMatrices.h"
 
 void
 jle3DGraph::sendMesh(std::shared_ptr<jleMesh> &mesh,

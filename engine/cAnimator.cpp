@@ -1,9 +1,11 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "cAnimator.h"
+
 #include "jleResourceRef.h"
 #include "jle3DGraph.h"
 #include "cSkinnedMesh.h"
+#include "jleProfiler.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cAnimator)
 
@@ -28,6 +30,8 @@ void
 cAnimator::update(float dt)
 {
     if(auto skinnedMeshComponent = _attachedToObject->getComponent<cSkinnedMesh>()){
+
+        JLE_SCOPE_PROFILE_CPU(cAnimator_Skinning)
 
         _deltaTime = dt;
         if(_currentAnimation){

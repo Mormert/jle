@@ -95,7 +95,8 @@ add_library(engine STATIC
         "jleSkinnedMesh.cpp"
         "jleAnimationBone.cpp"
         "jleAnimation.cpp"
-        "cSkinnedMesh.cpp")
+        "cSkinnedMesh.cpp"
+        "jleAnimationFinalMatrices.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE

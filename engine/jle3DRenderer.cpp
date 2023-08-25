@@ -177,6 +177,7 @@ jle3DRenderer::renderMeshes(const jleCamera &camera,
                             const jle3DSettings &settings)
 {
     for (auto &&mesh : meshes) {
+        JLE_SCOPE_PROFILE_GPU(MeshRender);
         if (!mesh.material || !mesh.material->getShader()) {
             _shaders->missingMaterialShader->use();
             _shaders->missingMaterialShader->SetMat4("uView", camera.getViewMatrix());
@@ -205,6 +206,7 @@ jle3DRenderer::renderSkinnedMeshes(const jleCamera &camera,
                                    const jle3DSettings &settings)
 {
     for (auto &&mesh : skinnedMeshes) {
+        JLE_SCOPE_PROFILE_GPU(SkinnedMeshRender);
         if (!mesh.material || !mesh.material->getShader()) {
             _shaders->missingMaterialShader->use();
             _shaders->missingMaterialShader->SetMat4("uView", camera.getViewMatrix());

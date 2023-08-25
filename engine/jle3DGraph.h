@@ -10,7 +10,7 @@
 class jleMaterial;
 class jleMesh;
 class jleSkinnedMesh;
-class jleAnimationFinalMatrices;
+struct jleAnimationFinalMatrices;
 
 struct jle3DRendererLight {
     glm::vec3 position;
