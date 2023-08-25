@@ -4,6 +4,7 @@
 
 #include "jleAnimation.h"
 #include "jleComponent.h"
+#include "jleResourceRef.h"
 
 #include "jleAnimationFinalMatrices.h"
 
