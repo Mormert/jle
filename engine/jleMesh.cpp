@@ -293,9 +293,19 @@ jleMesh::loadAssimp(const jlePath &path)
     std::vector<glm::vec3> out_bitangents;
     std::vector<unsigned int> out_indices;
 
-    for (int i = 0; i < scene->mNumMeshes; i++) {
-        auto assimpMesh = scene->mMeshes[i];
+    if(scene->mNumMeshes >= 1)
+    {
+        auto assimpMesh = scene->mMeshes[0];
         loadAssimpMesh(assimpMesh, out_vertices, out_normals, out_uvs, out_tangents, out_bitangents, out_indices);
+    }else
+    {
+        LOGW << "Found no meshes in " << path.getVirtualPath();
+        return false;
+    }
+
+    if(scene->mNumMeshes > 1)
+    {
+        LOGW << "Found multiple meshes in " << path.getVirtualPath() << ", only first mesh found will be used!";
     }
 
     makeMesh(out_vertices, out_normals, out_uvs, out_tangents, out_bitangents, out_indices);
@@ -405,7 +415,22 @@ void
 jleMesh::saveToFile()
 {
     aiScene scene;
+    saveMeshToAssimpScene(scene);
 
+    Assimp::Exporter exporter;
+    const auto &format = path.getFileEnding();
+    auto ret = exporter.Export(&scene, format, path.getRealPath(), aiProcess_JoinIdenticalVertices | aiProcess_FlipUVs);
+
+    if (ret == aiReturn_SUCCESS) {
+        LOGI << "Exported " << path.getVirtualPath() << " successfully.";
+    } else {
+        LOGE << "Failed to save mesh: " << path.getVirtualPath();
+    }
+}
+
+void
+jleMesh::saveMeshToAssimpScene(aiScene &scene)
+{
     scene.mRootNode = new aiNode();
 
     scene.mMaterials = new aiMaterial *[1];
@@ -457,15 +482,5 @@ jleMesh::saveToFile()
         face.mIndices[0] = _indices[3 * i + 0];
         face.mIndices[1] = _indices[3 * i + 1];
         face.mIndices[2] = _indices[3 * i + 2];
-    }
-
-    Assimp::Exporter exporter;
-    const auto &format = path.getFileEnding();
-    auto ret = exporter.Export(&scene, format, path.getRealPath(), aiProcess_JoinIdenticalVertices | aiProcess_FlipUVs);
-
-    if (ret == aiReturn_SUCCESS) {
-        LOGI << "Exported " << path.getVirtualPath() << " successfully.";
-    } else {
-        LOGE << "Failed to save mesh: " << path.getVirtualPath();
     }
 }

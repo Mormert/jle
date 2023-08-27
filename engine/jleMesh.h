@@ -6,7 +6,8 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-class aiMesh;
+struct aiMesh;
+struct aiScene;
 
 class jleMesh : public jleResourceInterface
 {
@@ -60,6 +61,8 @@ public:
 
 protected:
     void destroyOldBuffers();
+
+    void saveMeshToAssimpScene(aiScene& scene);
 
     unsigned int _trianglesCount{};
 

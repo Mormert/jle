@@ -2,6 +2,8 @@
 
 #include "jleEditor3DImportWindow.h"
 #include "cMesh.h"
+#include "jleSkinnedMesh.h"
+#include "cSkinnedMesh.h"
 #include "jleEditor.h"
 #include "jleMaterial.h"
 #include "jleMesh.h"
@@ -26,6 +28,8 @@ jleEditor3DImportWindow::update(jleGameEngine &ge)
 
     ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_NoCollapse);
+
+    ImGui::Checkbox("Import With Skinning", &_importWithSkinning);
 
     {
         static char buf[128];
@@ -97,8 +101,6 @@ jleEditor3DImportWindow::importModel(const jlePath &path)
     for (int i = 0; i < scene->mNumMeshes; i++) {
         aiMesh *assimpMesh = scene->mMeshes[i];
         auto meshName = assimpMesh->mName.C_Str();
-        auto createdMesh = std::make_shared<jleMesh>();
-        createdMesh->path = jlePath{path.getVirtualFolder() + '/' + meshName + ".fbx"};
 
         std::vector<glm::vec3> out_vertices;
         std::vector<glm::vec2> out_uvs;
@@ -107,11 +109,47 @@ jleEditor3DImportWindow::importModel(const jlePath &path)
         std::vector<glm::vec3> out_bitangents;
         std::vector<unsigned int> out_indices;
 
-        jleMesh::loadAssimpMesh(
-            assimpMesh, out_vertices, out_normals, out_uvs, out_tangents, out_bitangents, out_indices);
+        std::shared_ptr<jleMesh> createdMesh;
+        if (_importWithSkinning) {
+            std::vector<glm::ivec4> out_boneIds;
+            std::vector<glm::vec4> out_boneWeights;
+            std::unordered_map<std::string, jleSkinnedMeshBone> out_boneMapping;
 
-        createdMesh->makeMesh(out_vertices, out_normals, out_uvs, out_tangents, out_bitangents, out_indices);
+            jleSkinnedMesh::loadAssimpSkinnedMesh(assimpMesh,
+                                                  out_vertices,
+                                                  out_normals,
+                                                  out_uvs,
+                                                  out_tangents,
+                                                  out_bitangents,
+                                                  out_indices,
+                                                  out_boneIds,
+                                                  out_boneWeights,
+                                                  out_boneMapping);
 
+            auto skinnedMesh = std::make_shared<jleSkinnedMesh>();
+            skinnedMesh->makeSkinnedMesh(out_vertices,
+                                         out_normals,
+                                         out_uvs,
+                                         out_tangents,
+                                         out_bitangents,
+                                         out_indices,
+                                         out_boneIds,
+                                         out_boneWeights,
+                                         out_boneMapping);
+
+            skinnedMesh->processBoneNode(scene, scene->mRootNode, skinnedMesh->boneHierarchy);
+
+            createdMesh = skinnedMesh;
+        } else {
+            jleMesh::loadAssimpMesh(
+                assimpMesh, out_vertices, out_normals, out_uvs, out_tangents, out_bitangents, out_indices);
+
+            auto mesh = std::make_shared<jleMesh>();
+            mesh->makeMesh(out_vertices, out_normals, out_uvs, out_tangents, out_bitangents, out_indices);
+            createdMesh = mesh;
+        }
+
+        createdMesh->path = jlePath{path.getVirtualFolder() + '/' + meshName + ".fbx"};
         createdMesh->saveToFile();
 
         createdMeshes.push_back(createdMesh);
@@ -159,12 +197,20 @@ jleEditor3DImportWindow::processNode(const aiScene *scene,
 
     object->getTransform().setLocalMatrix(localTransform);
 
-    auto mesh = object->addComponent<cMesh>();
-
-    if (node->mNumMeshes >= 1) {
-        mesh->getMeshRef() = jleResourceRef<jleMesh>(createdMeshes[node->mMeshes[0]]->path);
-        mesh->getMaterialRef().reloadWithNewPath(
-            createdMaterials[scene->mMeshes[node->mMeshes[0]]->mMaterialIndex].path);
+    if (_importWithSkinning) {
+        auto mesh = object->addComponent<cSkinnedMesh>();
+        if (node->mNumMeshes >= 1) {
+            mesh->getMeshRef() = jleResourceRef<jleSkinnedMesh>(createdMeshes[node->mMeshes[0]]->path);
+            mesh->getMaterialRef().reloadWithNewPath(
+                createdMaterials[scene->mMeshes[node->mMeshes[0]]->mMaterialIndex].path);
+        }
+    } else {
+        auto mesh = object->addComponent<cMesh>();
+        if (node->mNumMeshes >= 1) {
+            mesh->getMeshRef() = jleResourceRef<jleMesh>(createdMeshes[node->mMeshes[0]]->path);
+            mesh->getMaterialRef().reloadWithNewPath(
+                createdMaterials[scene->mMeshes[node->mMeshes[0]]->mMaterialIndex].path);
+        }
     }
 
     for (int i = 0; i < node->mNumChildren; ++i) {

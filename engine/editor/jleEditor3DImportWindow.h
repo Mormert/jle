@@ -31,6 +31,8 @@ private:
                      std::shared_ptr<jleObject> &object,
                      std::vector<std::shared_ptr<jleMesh>> &createdMeshes,
                      std::vector<jleResourceRef<jleMaterialPBR>> &createdMaterials);
+
+    bool _importWithSkinning;
 };
 
 #endif // BUILD_EDITOR
