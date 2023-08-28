@@ -148,7 +148,7 @@ jleSkinnedMesh::loadSkinnedAssimp(const jlePath &path)
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(pathStr,
                                              aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_GenNormals |
-                                                 aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
+                                                 aiProcess_CalcTangentSpace | aiProcess_FlipUVs | aiProcess_LimitBoneWeights);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         LOGE << "Error loading mesh with Assimp" << importer.GetErrorString();
@@ -313,4 +313,10 @@ jleSkinnedMesh::fillNode(aiNode *node, const jleSkinnedMesh::jleSkinnedMeshBoneH
 
     glm::mat4 transformTranspose = glm::transpose(hierarchy.transformation);
     ::memcpy(&node->mTransformation, &transformTranspose, sizeof(aiMatrix4x4));
+}
+
+std::unordered_map<std::string, jleSkinnedMeshBone> &
+jleSkinnedMesh::getBoneMapping()
+{
+    return _boneMapping;
 }

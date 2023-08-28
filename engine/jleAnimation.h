@@ -39,7 +39,7 @@ public:
     std::vector<std::string> getFileAssociationList() override;
 
 private:
-    void readBones(const aiAnimation* animation);
+    void readBonesFromMesh(const aiAnimation* animation, const aiMesh* mesh);
 
     void readHierarchyData(jleAnimationNode& dest, aiNode* src);
 

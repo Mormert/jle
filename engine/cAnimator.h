@@ -31,11 +31,20 @@ public:
 
     void calculateBoneTransform(const jleAnimationNode& node, const glm::mat4& parentTransform);
 
+    const std::shared_ptr<jleAnimationFinalMatrices>& animationMatrices();
+
+    void editorInspectorImGuiRender() override;
+
 private:
     jleResourceRef<jleAnimation> _currentAnimation;
     std::shared_ptr<jleAnimationFinalMatrices> _animationMatrices{};
     float _currentTime{};
     float _deltaTime{};
+    float _animationSpeed{1.f};
+
+#ifdef BUILD_EDITOR
+    bool _editorPreviewAnimation{false};
+#endif
 };
 
 JLE_EXTERN_TEMPLATE_CEREAL_H(cAnimator)

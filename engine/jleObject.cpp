@@ -29,6 +29,7 @@ jleObject::destroyComponent(jleComponent *component)
 
                 component->onDestroy();
             }
+            component->_isDestroyed = true;
             _components.erase(_components.begin() + i);
         }
     }
@@ -339,4 +340,10 @@ jleObject::addComponentStart(jleComponent *c)
 
         c->start();
     }
+}
+
+bool
+jleObject::pendingKill()
+{
+    return _pendingKill;
 }

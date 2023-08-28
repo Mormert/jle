@@ -3,11 +3,10 @@
 #ifndef JLE_OBJECT
 #define JLE_OBJECT
 
-
-#include "jleTypeReflectionUtils.h"
 #include "jlePath.h"
 #include "jleSerializedResource.h"
 #include "jleTransform.h"
+#include "jleTypeReflectionUtils.h"
 
 #include <cereal/types/memory.hpp>
 #include <cereal/types/polymorphic.hpp>
@@ -73,6 +72,10 @@ public:
     template <typename T>
     std::shared_ptr<T> getComponent();
 
+    // If found, returns first component found of given type from this object, or one of its children
+    template <typename T>
+    std::shared_ptr<T> getComponentInChildren(jleObject *object = nullptr);
+
     template <typename T>
     std::shared_ptr<T> addDependencyComponent(const jleComponent *component);
 
@@ -112,6 +115,8 @@ public:
     uint32_t &instanceIDRef();
 
     jleTransform &getTransform();
+
+    bool pendingKill();
 
 private:
     friend class jleScene;
@@ -157,7 +162,6 @@ protected:
 
     static inline uint32_t _instanceIdCounter{0};
 };
-
 
 JLE_EXTERN_TEMPLATE_CEREAL_H(jleObject)
 

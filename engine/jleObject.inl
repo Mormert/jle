@@ -18,10 +18,7 @@ jleObject::serialize(Archive &archive)
     } catch (std::exception &e) {
     }
 
-    archive(CEREAL_NVP(_instanceName),
-            CEREAL_NVP(_transform),
-            CEREAL_NVP(__childObjects),
-            CEREAL_NVP(_components));
+    archive(CEREAL_NVP(_instanceName), CEREAL_NVP(_transform), CEREAL_NVP(__childObjects), CEREAL_NVP(_components));
 
     for (auto &&child : __childObjects) {
         child->_parentObject = this;
@@ -59,8 +56,7 @@ inline std::shared_ptr<jleComponent>
 jleObject::addComponentByName(const std::string &component_name)
 {
     auto newComponent = jleTypeReflectionUtils::instantiateComponentByString(component_name);
-    if(!newComponent)
-    {
+    if (!newComponent) {
         LOGE << "Attempting to add non-existent component: " << component_name;
         return nullptr;
     }
@@ -76,18 +72,17 @@ jleObject::addComponentByName(const std::string &component_name)
 
 template <typename T>
 void
-jleObject::addComponent(const std::shared_ptr<T>& component)
+jleObject::addComponent(const std::shared_ptr<T> &component)
 {
     static_assert(std::is_base_of<jleComponent, T>::value, "T must derive from jleComponent");
 
-    const auto& c = std::static_pointer_cast<jleComponent>(component);
+    const auto &c = std::static_pointer_cast<jleComponent>(component);
     c->_attachedToObject = this;
     c->_containedInScene = _containedInScene;
 
     _components.push_back(component);
 
     addComponentStart(component.get());
-
 }
 
 template <typename T>
@@ -104,6 +99,29 @@ jleObject::getComponent()
 
     return nullptr;
 };
+
+template <typename T>
+std::shared_ptr<T>
+jleObject::getComponentInChildren(jleObject *object)
+{
+    static_assert(std::is_base_of<jleComponent, T>::value, "T must derive from jleComponent");
+
+    if (!object) {
+        object = this;
+    }
+
+    for (auto &component : object->_components) {
+        if (std::dynamic_pointer_cast<T>(component)) {
+            return std::dynamic_pointer_cast<T>(component);
+        }
+    }
+
+    for (auto &child : object->__childObjects) {
+        return getComponentInChildren<T>(child.get());
+    }
+
+    return nullptr;
+}
 
 template <typename T>
 inline std::shared_ptr<T>
@@ -138,4 +156,3 @@ jleObject::spawnChildObject(const std::string &objName)
     attachChildObject(object);
     return object;
 }
-

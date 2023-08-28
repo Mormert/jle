@@ -77,12 +77,18 @@ public:
 
     void destroy();
 
+    bool isDestroyed();
+
     virtual const std::string_view componentName() const = 0;
 
     jleTransform &getTransform();
 
     template <typename T>
     [[nodiscard]] std::shared_ptr<T> addDependencyComponentInStart();
+
+    jleObject* object();
+
+    jleScene* scene();
 
 protected:
     friend class jleObject;
@@ -93,6 +99,9 @@ protected:
 
     // The scene in which this component's object lives
     jleScene *_containedInScene{};
+
+    bool _isDestroyed{false};
+
 };
 
 CEREAL_REGISTER_TYPE(jleComponent)

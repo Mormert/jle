@@ -17,3 +17,21 @@ jleComponent::getTransform()
 {
     return _attachedToObject->getTransform();
 }
+
+jleObject *
+jleComponent::object()
+{
+    return _attachedToObject;
+}
+
+jleScene *
+jleComponent::scene()
+{
+    return _containedInScene;
+}
+
+bool
+jleComponent::isDestroyed()
+{
+    return _isDestroyed;
+}

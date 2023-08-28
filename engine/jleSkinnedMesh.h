@@ -44,10 +44,7 @@ public:
     void saveToFile() override;
 
     std::unordered_map<std::string, jleSkinnedMeshBone> &
-    getBoneMapping()
-    {
-        return _boneMapping;
-    }
+    getBoneMapping();
 
     struct jleSkinnedMeshBoneHierarchy {
         std::string name;

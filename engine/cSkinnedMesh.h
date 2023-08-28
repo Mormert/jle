@@ -7,6 +7,8 @@
 #include "jleSkinnedMesh.h"
 #include "jleMaterial.h"
 
+class cAnimator;
+
 class cSkinnedMesh : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cSkinnedMesh)
@@ -28,10 +30,16 @@ public:
     jleResourceRef<jleSkinnedMesh>& getMeshRef();
     jleResourceRef<jleMaterial>& getMaterialRef();
 
+    void editorInspectorImGuiRender() override;
+
 protected:
 
     jleResourceRef<jleSkinnedMesh> _skinnedMeshRef;
     jleResourceRef<jleMaterial> _materialRef;
+
+    std::shared_ptr<cAnimator> _animator;
+
+    void findAnimator(jleObject* object);
 
 };
 
