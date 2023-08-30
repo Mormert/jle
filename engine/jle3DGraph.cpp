@@ -52,3 +52,10 @@ jle3DGraph::sendLight(const glm::vec3 &position, const glm::vec3 &color)
 {
     _lights.emplace_back(jle3DRendererLight{position, color});
 }
+
+void
+jle3DGraph::sendLine(const glm::vec3 &from, const glm::vec3 &to)
+{
+    _lines.emplace_back(jle3DLineVertex{from, glm::vec3{1.f}, glm::vec3{1.f, 0.f, 0.f}});
+    _lines.emplace_back(jle3DLineVertex{to, glm::vec3{1.f}, glm::vec3{1.f, 0.f, 0.f}});
+}

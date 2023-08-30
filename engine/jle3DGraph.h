@@ -68,6 +68,8 @@ public:
 
     void sendLine(const jle3DLineVertex &from, const jle3DLineVertex &to);
 
+    void sendLine(const glm::vec3 &from, const glm::vec3 &to);
+
     void sendLight(const glm::vec3 &position, const glm::vec3 &color);
 
 private:

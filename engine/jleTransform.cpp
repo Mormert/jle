@@ -117,17 +117,17 @@ jleTransform::setLocalMatrix(const glm::mat4 &matrix)
 glm::vec3
 jleTransform::getForward()
 {
-    return glm::vec3{getWorldMatrix()[2]};
+    return glm::normalize(glm::vec3{getWorldMatrix()[2]});
 }
 
 glm::vec3
 jleTransform::getUp()
 {
-    return glm::vec3{getWorldMatrix()[1]};
+    return glm::normalize(glm::vec3{getWorldMatrix()[1]});
 }
 
 glm::vec3
 jleTransform::getRight()
 {
-    return glm::vec3{getWorldMatrix()[0]};
+    return glm::normalize(glm::vec3{getWorldMatrix()[0]});
 }

@@ -41,6 +41,11 @@ private:
     float _currentTime{};
     float _deltaTime{};
     float _animationSpeed{1.f};
+    bool _enableRootMotion{false};
+    std::string _rootMotionBone{"RootBone"};
+
+    bool _animationLoopedThisFrame{false};
+    glm::vec3 _lastFrameRootPosition{};
 
 #ifdef BUILD_EDITOR
     bool _editorPreviewAnimation{false};
