@@ -10,7 +10,35 @@
 
 #include <glm/glm.hpp>
 
-class cAnimator : public jleComponent
+struct cAnimatorAnimation
+{
+    jleResourceRef<jleAnimation> currentAnimation{};
+    jleAnimationFinalMatrices animationMatrices{};
+
+    float currentTime{};
+    float deltaTime{};
+    float animationSpeed{1.f};
+    bool animationLoopedThisFrame{false};
+
+    float blendFactorStrength = 1.f;
+
+    glm::vec3 lastFrameRootPosition;
+
+    // Local bone root motion translation
+    glm::vec3 thisFrameRootMotionTranslation;
+
+    // Local model root motion translation, additive
+    glm::vec3 totalRootMotionTranslation;
+
+    template <class Archive>
+    void serialize(Archive &ar);
+
+};
+
+JLE_EXTERN_TEMPLATE_CEREAL_H(cAnimatorAnimation)
+
+
+class cAnimator : public jleComponent, public std::enable_shared_from_this<cAnimator>
 {
     JLE_REGISTER_COMPONENT_TYPE(cAnimator)
 public:
@@ -27,25 +55,27 @@ public:
 
     void registerLua(sol::state& lua, sol::table &table) override;
 
-    void setAnimation(const jleResourceRef<jleAnimation>& animation);
-
-    void calculateBoneTransform(const jleAnimationNode& node, const glm::mat4& parentTransform);
+    void calculateBoneTransform(const jleAnimationNode& node, const glm::mat4& parentTransform, cAnimatorAnimation& animation);
 
     const std::shared_ptr<jleAnimationFinalMatrices>& animationMatrices();
 
     void editorInspectorImGuiRender() override;
 
 private:
-    jleResourceRef<jleAnimation> _currentAnimation;
+
+    void blendAnimations();
+
+    void applyRootMotion();
+
+    std::vector<cAnimatorAnimation> _animations;
+
     std::shared_ptr<jleAnimationFinalMatrices> _animationMatrices{};
-    float _currentTime{};
-    float _deltaTime{};
-    float _animationSpeed{1.f};
+
     bool _enableRootMotion{false};
     std::string _rootMotionBone{"RootBone"};
 
-    bool _animationLoopedThisFrame{false};
-    glm::vec3 _lastFrameRootPosition{};
+    float _blendFactor{1.f};
+
 
 #ifdef BUILD_EDITOR
     bool _editorPreviewAnimation{false};
