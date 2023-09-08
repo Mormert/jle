@@ -19,3 +19,6 @@
 [submodule "engine/3rdparty/git_submodules/bullet3"]
 	path = engine/3rdparty/git_submodules/bullet3
 	url = https://github.com/bulletphysics/bullet3.git
+[submodule "engine/3rdparty/git_submodules/tracy"]
+	path = engine/3rdparty/git_submodules/tracy
+	url = https://github.com/wolfpld/tracy.git
