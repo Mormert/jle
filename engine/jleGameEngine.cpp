@@ -28,7 +28,7 @@
 
 #undef max
 #undef min
-#include <tracy/Tracy.hpp>
+#include <Tracy.hpp>
 
 #include <3rdparty/WickedEngine/wiJobSystem.h>
 
