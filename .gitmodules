@@ -22,3 +22,9 @@
 [submodule "engine/3rdparty/git_submodules/tracy"]
 	path = engine/3rdparty/git_submodules/tracy
 	url = https://github.com/wolfpld/tracy.git
+[submodule "engine/3rdparty/git_submodules_forks/jle_bullet3"]
+	path = engine/3rdparty/git_submodules_forks/jle_bullet3
+	url = https://github.com/Mormert/jle_bullet3.git
+[submodule "engine/3rdparty/git_submodules_forks/jle_RmlUi"]
+	path = engine/3rdparty/git_submodules_forks/jle_RmlUi
+	url = https://github.com/Mormert/jle_RmlUi.git
