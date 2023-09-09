@@ -216,6 +216,7 @@ target_link_libraries(engine PUBLIC RmlCore RmlDebugger)
 target_include_directories(engine SYSTEM PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty"
         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/plog/include"
+        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/tracy/public/tracy"
         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/glm")
 
 target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

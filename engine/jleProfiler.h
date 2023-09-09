@@ -7,7 +7,7 @@
 #include <string_view>
 #include <vector>
 
-#include <tracy/Tracy.hpp>
+#include <Tracy.hpp>
 
 class jleProfiler
 {
