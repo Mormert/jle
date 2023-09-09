@@ -6,7 +6,6 @@
 #include "jleLuaEnvironment.h"
 
 #include <ImGui/imgui.h>
-#include <Remotery/Remotery.h>
 #include <plog/Formatters/FuncMessageFormatter.h>
 
 #include <algorithm>
@@ -284,6 +283,5 @@ int jleConsoleEditorWindow::textEditCallback(ImGuiInputTextCallbackData *data) {
 
 void jleConsoleEditorWindow::write(const plog::Record &record) {
     const auto str = recordToString(record);
-    rmt_LogText(str.c_str());
     addLog("%s", str.c_str());
 }
