@@ -17,8 +17,12 @@
 #include "editor/jleImGuiCerealArchive.h"
 #endif
 
+#include <execution>
 #include <fstream>
 #include <iostream>
+#include <typeinfo>
+
+#include <3rdparty/WickedEngine/wiJobSystem.h>
 
 class jleGame
 {
@@ -75,7 +79,30 @@ public:
 
     jleCamera mainCamera{jleCameraProjection::Orthographic};
 
+    void
+    parallelUpdates(float dt)
+    {
+        wi::jobsystem::context parallelUpdatesCtx;
+        for (const auto &parallelizedComponents : _parallelComponents) {
+            for (const auto component : parallelizedComponents.second) {
+                wi::jobsystem::Execute(parallelUpdatesCtx, [component, dt](wi::jobsystem::JobArgs args) {
+                    component->parallelUpdate(dt);
+                });
+            }
+
+             wi::jobsystem::Wait(parallelUpdatesCtx);
+        }
+    }
+
+    void
+    addParallelComponent(const std::shared_ptr<jleComponent> &component)
+    {
+        const auto type = typeid(component).hash_code();
+        _parallelComponents[type].push_back(component);
+    }
 
 protected:
     std::vector<std::shared_ptr<jleScene>> _activeScenes;
+
+    std::unordered_map<uint64_t, std::vector<std::shared_ptr<jleComponent>>> _parallelComponents;
 };

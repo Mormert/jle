@@ -14,7 +14,6 @@ namespace Rml
 {
 class Context;
 };
-class Remotery;
 
 class jleGame;
 class jleResources;
@@ -160,8 +159,6 @@ protected:
     void resetRenderGraphForNewFrame();
 
     jle3DRenderer &renderer();
-
-    Remotery *_remotery;
 
     void refreshDeltaTimes();
 

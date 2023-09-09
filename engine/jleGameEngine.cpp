@@ -18,7 +18,6 @@
 #include "jleTimerManager.h"
 #include "jleWindow.h"
 
-#include <Remotery/Remotery.h>
 #include <plog/Log.h>
 #include <soloud.h>
 
@@ -26,6 +25,12 @@
 #include <RmlUi/Debugger.h>
 #include <RmlUi_Backend.h>
 #include <shell/include/Shell.h>
+
+#undef max
+#undef min
+#include <tracy/Tracy.hpp>
+
+#include <3rdparty/WickedEngine/wiJobSystem.h>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -37,6 +42,9 @@ struct jleGameEngine::jleEngineInternal {
 
 jleGameEngine::jleGameEngine()
 {
+    LOGI << "Initializing job system";
+    wi::jobsystem::Initialize();
+
     gEngine = this;
     _resources = std::make_unique<jleResources>();
 
@@ -64,16 +72,6 @@ jleGameEngine::jleGameEngine()
     _3dRendererSettings = std::make_unique<jle3DSettings>();
     _soLoud = std::make_unique<SoLoud::Soloud>();
 
-    PLOG_INFO << "Starting the core...";
-
-    PLOG_INFO << "Initializing remote profiling...";
-    rmtError error = rmt_CreateGlobalInstance(&_remotery);
-    if (RMT_ERROR_NONE != error) {
-        PLOG_ERROR << "Error launching Remotery: " << error;
-        std::exit(EXIT_FAILURE);
-    }
-    rmt_SetCurrentThreadName("Main Thread");
-
     PLOG_INFO << "Initializing sound engine...";
     _soLoud->init();
 
@@ -85,12 +83,13 @@ jleGameEngine::~jleGameEngine()
 {
     gEngine = nullptr;
 
+    LOGI << "Shutting down job system";
+    wi::jobsystem::ShutDown();
+
     PLOG_INFO << "Destroying the sound engine...";
     _soLoud->deinit();
 
-    PLOG_INFO << "Destroying the remote profiling...";
-    rmt_UnbindOpenGL();
-    rmt_DestroyGlobalInstance(_remotery);
+
 }
 
 void
@@ -314,6 +313,12 @@ jleGameEngine::update(float dt)
             JLE_SCOPE_PROFILE_CPU(jleGameEngine_updateGame)
             game->update(dt);
         }
+
+        {
+            JLE_SCOPE_PROFILE_CPU(jleGameEngine_parallelUpdates);
+            game->parallelUpdates(dt);
+        }
+
         {
             JLE_SCOPE_PROFILE_CPU(jleGameEngine_updateActiveScenes)
             game->updateActiveScenes(dt);
@@ -373,9 +378,6 @@ jleGameEngine::luaEnvironment()
 void
 jleGameEngine::run()
 {
-    PLOG_INFO << "Binding Remotery to OpenGL";
-    rmt_BindOpenGL();
-
     PLOG_INFO << "Starting the game loop";
 
     running = true;
@@ -404,6 +406,8 @@ jleGameEngine::mainLoop()
     _window->updateWindow();
 
     running = !_window->windowShouldClose();
+
+    FrameMark;
 }
 void
 jleGameEngine::loop()
@@ -416,6 +420,7 @@ jleGameEngine::loop()
 void
 jleGameEngine::refreshDeltaTimes()
 {
+    ZoneScoped;
     _currentFrame = _window->time();
     _deltaTime = _currentFrame - _lastFrame;
     _lastFrame = _currentFrame;

@@ -28,19 +28,7 @@ jleEditorProfilerWindow::update(jleGameEngine &ge)
 
     ImGui::Separator();
 
-#if RMT_ENABLED
-    if (ImGui::Button("Open Remotery Profiling")) {
-#ifdef WIN32
-        const std::string remoteryVisHtml = JLE_ENGINE_PATH + "3rdparty/Remotery/vis/index.html";
-        ShellExecute(NULL, NULL, remoteryVisHtml.c_str(), NULL, NULL, SW_SHOWNORMAL);
-#else
-        const std::string systemOpen = "open " + JLE_ENGINE_PATH + "3rdparty/Remotery/vis/index.html";
-        system(systemOpen.c_str());
-#endif
-    }
-#else
     ImGui::Text("Remotery profiling disabled. Enable by compiling with -DBUILD_REMOTERY");
-#endif
 
     ImGui::End();
 }

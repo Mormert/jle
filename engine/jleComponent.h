@@ -55,6 +55,13 @@ public:
     {
     }
 
+    virtual void
+    parallelUpdate(float dt)
+    {
+        // Danger zone, enabled by _enableParallellUpdate = true in component constructor.
+        // Called on all components of this type concurrently before scene graph update().
+    }
+
     [[maybe_unused]] virtual void
     editorUpdate(float dt)
     {
@@ -86,9 +93,9 @@ public:
     template <typename T>
     [[nodiscard]] std::shared_ptr<T> addDependencyComponentInStart();
 
-    jleObject* object();
+    jleObject *object();
 
-    jleScene* scene();
+    jleScene *scene();
 
 protected:
     friend class jleObject;
@@ -102,6 +109,7 @@ protected:
 
     bool _isDestroyed{false};
 
+    bool _enableParallellUpdate{false};
 };
 
 CEREAL_REGISTER_TYPE(jleComponent)

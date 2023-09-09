@@ -203,7 +203,7 @@ void Backend::PresentFrame()
 	//glfwSwapBuffers(data->window);
 
 	// Optional, used to mark frames during performance profiling.
-	RMLUI_FrameMark;
+	// RMLUI_FrameMark;
 }
 
 #ifndef __EMSCRIPTEN__

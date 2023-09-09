@@ -37,7 +37,6 @@
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
-#include <Remotery/Remotery.h>
 #include <implot/implot.h>
 #include <plog/Log.h>
 
@@ -233,7 +232,7 @@ jleEditor::renderEditorSceneView()
 void
 jleEditor::renderEditorUI()
 {
-    JLE_SCOPE_PROFILE_CPU(RenderEditorUI);
+    ZoneScoped;
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -365,7 +364,7 @@ jleEditor::updateEditorLoadedScenes(float dt)
 void
 jleEditor::update(float dt)
 {
-    _fileChangeNotifier->periodicSweep();
+    //_fileChangeNotifier->periodicSweep();
     jleGameEngine::update(dt);
     if (isGameKilled()) {
         JLE_SCOPE_PROFILE_CPU(updateEditorLoadedScenes)

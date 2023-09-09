@@ -51,6 +51,8 @@ public:
 
     void update(float dt) override;
 
+    void parallelUpdate(float dt) override;
+
     void editorUpdate(float dt) override;
 
     void registerLua(sol::state& lua, sol::table &table) override;

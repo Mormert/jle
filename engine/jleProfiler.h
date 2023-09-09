@@ -7,7 +7,7 @@
 #include <string_view>
 #include <vector>
 
-#include <Remotery/Remotery.h>
+#include <tracy/Tracy.hpp>
 
 class jleProfiler
 {
@@ -48,12 +48,12 @@ private:
 
 #ifdef BUILD_EDITOR
 #define JLE_SCOPE_PROFILE_CPU(profile_name)                                                                            \
+    ZoneScoped;                                                                                                        \
     using namespace std::literals::string_view_literals;                                                               \
     jleProfiler::jleProfilerRAII THIS_SCOPE_IS_PROFILED{                                                               \
-        JLE_SCOPE_PROFILE_CONCAT(JLE_SCOPE_PROFILE_STRINGIZE(profile_name), sv)};                                      \
-    rmt_ScopedCPUSample(profile_name, 0);
+        JLE_SCOPE_PROFILE_CONCAT(JLE_SCOPE_PROFILE_STRINGIZE(profile_name), sv)};
 
-#define JLE_SCOPE_PROFILE_GPU(profile_name) rmt_ScopedOpenGLSample(profile_name);
+#define JLE_SCOPE_PROFILE_GPU(profile_name) ZoneScoped
 
 #else
 #define JLE_SCOPE_PROFILE_CPU(profile_name)

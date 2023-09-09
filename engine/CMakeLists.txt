@@ -18,7 +18,7 @@ find_package(ZLIB REQUIRED)
 add_library(engine STATIC
         "3rdparty/stb_image.cpp"
         "3rdparty/tiny_obj_loader.cpp"
-        "3rdparty/Remotery/Remotery.cpp"
+        "3rdparty/WickedEngine/wiJobSystem.cpp"
         "RmlUiImplementation/RmlUi_Backend_GLFW_GL3.cpp"
         "RmlUiImplementation/RmlUi_Renderer_GL3.cpp"
         "RmlUiImplementation/RmlUi_Platform_GLFW.cpp"
@@ -134,6 +134,13 @@ if (BUILD_EDITOR)
             "3rdparty/ImGui/ImGuizmo.cpp"
             "3rdparty/implot/implot.cpp"
             "3rdparty/implot/implot_items.cpp")
+
+    add_definitions(-DTRACY_ENABLE)
+    add_definitions(-DTRACY_ON_DEMAND)
+    add_definitions(-DRMLUI_ENABLE_PROFILING)
+    add_subdirectory(3rdparty/git_submodules/tracy)
+    target_link_libraries(engine PUBLIC Tracy::TracyClient)
+
 endif ()
 
 # TODO: Move Assimp to be editor only
@@ -183,7 +190,7 @@ set(BUILD_CPU_DEMOS OFF CACHE BOOL "" FORCE)
 set(BUILD_BULLET2_DEMOS OFF CACHE BOOL "" FORCE)
 set(BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
 set(BUILD_EXTRAS OFF CACHE BOOL "" FORCE)
-add_subdirectory(3rdparty/git_submodules/bullet3)
+add_subdirectory(3rdparty/git_submodules_forks/jle_bullet3)
 target_link_libraries(engine PUBLIC BulletDynamics BulletCollision Bullet3Common BulletInverseDynamics BulletSoftBody LinearMath)
 target_include_directories(engine SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/bullet3/src")
 
@@ -199,11 +206,11 @@ set(FREETYPE_LIBRARY freetype)
 add_definitions(-DRMLUI_STATIC_LIB)
 set(BUILD_SAMPLES OFF)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-add_subdirectory(3rdparty/git_submodules/RmlUi)
+add_subdirectory(3rdparty/git_submodules_forks/jle_RmlUi)
 if (WIN32)
     target_link_libraries(engine PRIVATE shlwapi imm32) # shlwapi and imm32 needed for "shell"
 endif ()
-target_include_directories(engine PUBLIC 3rdparty/git_submodules/RmlUi/Include RmlUiImplementation RmlUiImplementation/shell/include 3rdparty/lua)
+target_include_directories(engine PUBLIC 3rdparty/git_submodules_forks/jle_RmlUi/Include RmlUiImplementation RmlUiImplementation/shell/include 3rdparty/lua)
 target_link_libraries(engine PUBLIC RmlCore RmlDebugger)
 
 target_include_directories(engine SYSTEM PUBLIC
