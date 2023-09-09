@@ -8,6 +8,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <cassert>
+#include <vector>
 
 #ifdef _WIN32
 #include <Windows.h>
