@@ -42,13 +42,14 @@ jleAnimation::jleAnimation(const std::string &path, jleSkinnedMesh &mesh) {}
 jleAnimationBone *
 jleAnimation::findBone(const std::string &name)
 {
-    auto iter = std::find_if(
-        _bones.begin(), _bones.end(), [&](const jleAnimationBone &Bone) { return Bone.getName() == name; });
-    if (iter == _bones.end())
-        return nullptr;
-    else
-        return &(*iter);
+    for (auto &i : _bones) {
+        if (i.getName() == name) {
+            return &i;
+        }
+    }
+    return nullptr;
 }
+
 float
 jleAnimation::getTicksPerSec()
 {
@@ -127,4 +128,10 @@ std::vector<std::string>
 jleAnimation::getFileAssociationList()
 {
     return {"fbx"};
+}
+
+const std::vector<jleAnimationBone> &
+jleAnimation::getBones()
+{
+    return _bones;
 }

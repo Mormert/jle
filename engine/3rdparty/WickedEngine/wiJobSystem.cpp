@@ -20,6 +20,8 @@
 #include <pthread.h>
 #endif
 
+#include <Tracy.hpp>
+
 namespace wi::jobsystem
 {
 struct Job
@@ -34,7 +36,7 @@ struct Job
 struct JobQueue
 {
     std::deque<Job> queue;
-    std::mutex locker;
+    TracyLockable(std::mutex, locker);
 
     inline void push_back(const Job& item)
     {
@@ -64,8 +66,8 @@ struct InternalState
     uint32_t numThreads = 0;
     std::unique_ptr<JobQueue[]> jobQueuePerThread;
     std::atomic_bool alive{ true };
-    std::condition_variable wakeCondition;
-    std::mutex wakeMutex;
+    std::condition_variable_any wakeCondition;
+    TracyLockable(std::mutex, wakeMutex);
     std::atomic<uint32_t> nextQueue{ 0 };
     std::vector<std::thread> threads;
     void ShutDown()
@@ -156,7 +158,7 @@ void Initialize(uint32_t maxThreadCount)
                 work(threadID);
 
                 // finished with jobs, put to sleep
-                std::unique_lock<std::mutex> lock(internal_state.wakeMutex);
+                std::unique_lock<LockableBase(std::mutex)> lock(internal_state.wakeMutex);
                 internal_state.wakeCondition.wait(lock);
             }
 

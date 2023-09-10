@@ -50,7 +50,7 @@ jleAnimationBone::getLocalTransform()
     return _localTransform;
 }
 
-std::string
+const std::string&
 jleAnimationBone::getName() const
 {
     return _name;

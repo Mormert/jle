@@ -123,12 +123,18 @@ cAnimator::calculateBoneTransform(const jleAnimationNode &node,
                                   const glm::mat4 &parentTransform,
                                   cAnimatorAnimation &animation)
 {
+   // ZoneScoped;
     const std::string &nodeName = node.name;
     glm::mat4 nodeTransform = node.transformation;
 
-    jleAnimationBone *bone = animation.currentAnimation->findBone(nodeName);
+    jleAnimationBone *bone;
+    {
+       // ZoneScopedN("FindBone");
+        bone = animation.currentAnimation->findBone(nodeName);
+    }
 
     if (bone) {
+       // ZoneScopedN("BoneUpdate");
         bone->update(animation.currentTime);
         nodeTransform = bone->getLocalTransform();
 
@@ -150,13 +156,17 @@ cAnimator::calculateBoneTransform(const jleAnimationNode &node,
 
     glm::mat4 globalTransformation = parentTransform * nodeTransform;
 
-    auto boneMapping = animation.currentAnimation->getBoneMapping();
-    auto meshBone = boneMapping.find(nodeName);
-    if (meshBone != boneMapping.end()) {
-        int index = meshBone->second.index;
-        const glm::mat4 &offset = meshBone->second.offset;
+    {
+       // ZoneScopedN("BoneMapping");
 
-        animation.animationMatrices.matrices[index] = globalTransformation * offset;
+        const auto &boneMapping = animation.currentAnimation->getBoneMapping();
+        const auto &meshBone = boneMapping.find(nodeName);
+        if (meshBone != boneMapping.end()) {
+            int index = meshBone->second.index;
+            const glm::mat4 &offset = meshBone->second.offset;
+
+            animation.animationMatrices.matrices[index] = globalTransformation * offset;
+        }
     }
 
     for (int i = 0; i < node.childNodes.size(); ++i) {

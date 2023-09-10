@@ -38,7 +38,7 @@ public:
 
     glm::mat4 getLocalTransform();
 
-    std::string getName() const;
+    [[nodiscard]] const std::string& getName() const;
 
     int getBoneId();
 

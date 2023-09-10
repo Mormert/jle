@@ -38,6 +38,8 @@ public:
 
     std::vector<std::string> getFileAssociationList() override;
 
+    const std::vector<jleAnimationBone>& getBones();
+
 private:
     void readBonesFromMesh(const aiAnimation* animation, const aiMesh* mesh);
 
