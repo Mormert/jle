@@ -2,7 +2,7 @@
 
 #include "jleObject.h"
 #include "cLuaScript.h"
-#include "jleGameEngine.h"
+#include "jleGame.h"
 #include "jleGameEngine.h"
 #include "jlePathDefines.h"
 #include "jleScene.h"
@@ -118,6 +118,9 @@ jleObject::startComponents()
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
         _components[i]->start();
+        if (_components[i]->_enableParallelUpdate) {
+            gEngine->gameRef().addParallelComponent(_components[i]);
+        }
     }
 }
 
@@ -322,6 +325,9 @@ jleObject::propagateDestroy()
 {
     for (auto &&c : _components) {
         c->onDestroy();
+        if (c->parallelUpdateEnabled() && !gEngine->isGameKilled()) {
+            gEngine->gameRef().removeParallelComponent(c);
+        }
     }
 
     for (auto &&o : __childObjects) {

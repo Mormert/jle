@@ -58,11 +58,13 @@ public:
     virtual void
     parallelUpdate(float dt)
     {
-        // Danger zone, enabled by _enableParallelUpdate = true in component constructor.
-        // Called on all components of this type concurrently before scene graph update().
+        // Danger zone, enabled by enableParallelUpdate() in component constructor.
+        // Called on all components of this type concurrently before recursive scene graph update().
     }
 
     int parallelUpdateBatchSize();
+
+    bool parallelUpdateEnabled();
 
     [[maybe_unused]] virtual void
     editorUpdate(float dt)
@@ -111,6 +113,10 @@ protected:
 
     bool _isDestroyed{false};
 
+    // Should be enabled in component's constructor
+    void enableParallelUpdate(int batchSize = 4);
+
+private:
     bool _enableParallelUpdate{false};
     int _parallelUpdateBatchSize = 4;
 };

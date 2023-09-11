@@ -41,3 +41,16 @@ jleComponent::parallelUpdateBatchSize()
 {
     return _parallelUpdateBatchSize;
 }
+
+bool
+jleComponent::parallelUpdateEnabled()
+{
+    return _enableParallelUpdate;
+}
+
+void
+jleComponent::enableParallelUpdate(int batchSize)
+{
+    _enableParallelUpdate = true;
+    _parallelUpdateBatchSize = batchSize;
+}
