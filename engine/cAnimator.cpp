@@ -45,13 +45,16 @@ cAnimator::serialize(Archive &ar)
 cAnimator::cAnimator(jleObject *owner, jleScene *scene) : jleComponent(owner, scene)
 {
     _animationMatrices = std::make_shared<jleAnimationFinalMatrices>();
-    _enableParallellUpdate = true;
+    _enableParallelUpdate = true;
 }
 
 void
 cAnimator::start()
 {
     gEngine->gameRef().addParallelComponent(shared_from_this());
+    for (auto &animation : _animations) {
+        animation.currentAnimationLocal = *animation.currentAnimation.get();
+    }
 }
 
 void
@@ -80,22 +83,20 @@ cAnimator::update(float dt)
 void
 cAnimator::parallelUpdate(float dt)
 {
-    ZoneScoped;
-
     for (auto &animation : _animations) {
         ZoneScopedN("AnimBlendIteration");
-        if (animation.currentAnimation) {
+       // if (animation.currentAnimationLocal) {
             animation.deltaTime = dt * animation.animationSpeed;
-            animation.currentTime += animation.currentAnimation->getTicksPerSec() * animation.deltaTime;
-            if (animation.currentTime / animation.currentAnimation->getDuration() > 1.f) {
+            animation.currentTime += animation.currentAnimationLocal.getTicksPerSec() * animation.deltaTime;
+            if (animation.currentTime / animation.currentAnimationLocal.getDuration() > 1.f) {
                 animation.animationLoopedThisFrame = true;
             } else {
                 animation.animationLoopedThisFrame = false;
             }
-            animation.currentTime = fmod(animation.currentTime, animation.currentAnimation->getDuration());
+            animation.currentTime = fmod(animation.currentTime, animation.currentAnimationLocal.getDuration());
 
-            calculateBoneTransform(animation.currentAnimation->getRootNode(), glm::identity<glm::mat4>(), animation);
-        }
+            calculateBoneTransform(animation.currentAnimationLocal.getRootNode(), glm::identity<glm::mat4>(), animation);
+       // }
     }
 
     blendAnimations();
@@ -123,18 +124,18 @@ cAnimator::calculateBoneTransform(const jleAnimationNode &node,
                                   const glm::mat4 &parentTransform,
                                   cAnimatorAnimation &animation)
 {
-   // ZoneScoped;
+    // ZoneScoped;
     const std::string &nodeName = node.name;
     glm::mat4 nodeTransform = node.transformation;
 
     jleAnimationBone *bone;
     {
-       // ZoneScopedN("FindBone");
-        bone = animation.currentAnimation->findBone(nodeName);
+        // ZoneScopedN("FindBone");
+        bone = animation.currentAnimationLocal.findBone(nodeName);
     }
 
     if (bone) {
-       // ZoneScopedN("BoneUpdate");
+        // ZoneScopedN("BoneUpdate");
         bone->update(animation.currentTime);
         nodeTransform = bone->getLocalTransform();
 
@@ -150,6 +151,8 @@ cAnimator::calculateBoneTransform(const jleAnimationNode &node,
                 } else {
                     animation.thisFrameRootMotionTranslation = newPos;
                 }
+            } else if (!_enableRootMotion) {
+                animation.thisFrameRootMotionTranslation = glm::vec3{0.f};
             }
         }
     }
@@ -157,9 +160,9 @@ cAnimator::calculateBoneTransform(const jleAnimationNode &node,
     glm::mat4 globalTransformation = parentTransform * nodeTransform;
 
     {
-       // ZoneScopedN("BoneMapping");
+        // ZoneScopedN("BoneMapping");
 
-        const auto &boneMapping = animation.currentAnimation->getBoneMapping();
+        const auto &boneMapping = animation.currentAnimationLocal.getBoneMapping();
         const auto &meshBone = boneMapping.find(nodeName);
         if (meshBone != boneMapping.end()) {
             int index = meshBone->second.index;
@@ -188,8 +191,8 @@ cAnimator::editorInspectorImGuiRender()
     ImGui::Separator();
     for (auto &animation : _animations) {
         ImGui::PushID(p++);
-        ImGui::Text("%s", animation.currentAnimation.path.getVirtualPath().c_str());
-        if (animation.currentAnimation) {
+        ImGui::Text("%s", animation.currentAnimationLocal.path.getVirtualPath().c_str());
+        //if (animation.currentAnimation) {
             if (gEditor->isGameKilled()) {
                 if (ImGui::IsItemEdited()) {
                     if (!_editorPreviewAnimation) {
@@ -197,8 +200,8 @@ cAnimator::editorInspectorImGuiRender()
                     }
                 }
             }
-            ImGui::SliderFloat("Current Time", &animation.currentTime, 0.f, animation.currentAnimation->getDuration());
-        }
+            ImGui::SliderFloat("Current Time", &animation.currentTime, 0.f, animation.currentAnimationLocal.getDuration());
+        //}
         ImGui::PopID();
     }
 
@@ -212,10 +215,10 @@ cAnimator::blendAnimations()
 {
     ZoneScoped;
     if (_animations.size() == 1) {
-        if (_animations[0].currentAnimation) {
+        //if (_animations[0].currentAnimation) {
             *_animationMatrices = _animations[0].animationMatrices;
             _animations[0].blendFactorStrength = 1.f;
-        }
+       // }
     } else if (_animations.size() == 2) {
         for (int i = 0; i < 100; ++i) {
             glm::mat4 &matrix1 = _animations[0].animationMatrices.matrices[i];

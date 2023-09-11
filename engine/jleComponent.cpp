@@ -35,3 +35,9 @@ jleComponent::isDestroyed()
 {
     return _isDestroyed;
 }
+
+int
+jleComponent::parallelUpdateBatchSize()
+{
+    return _parallelUpdateBatchSize;
+}

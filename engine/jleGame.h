@@ -82,15 +82,31 @@ public:
     void
     parallelUpdates(float dt)
     {
+        ZoneScoped;
         wi::jobsystem::context parallelUpdatesCtx;
+
         for (const auto &parallelizedComponents : _parallelComponents) {
-            for (const auto component : parallelizedComponents.second) {
-                wi::jobsystem::Execute(parallelUpdatesCtx, [component, dt](wi::jobsystem::JobArgs args) {
-                    component->parallelUpdate(dt);
-                });
+
+            const auto &components = parallelizedComponents.second;
+
+            if (!components.empty()) {
+
+                int batchSize = components[0]->parallelUpdateBatchSize();
+                wi::jobsystem::Dispatch(parallelUpdatesCtx,
+                                        components.size(),
+                                        batchSize,
+                                        [components, dt](wi::jobsystem::JobArgs args) {
+                                            ZoneScopedNC("ParallelUpdate", 0xFF8200);
+                                            const int componentIdx = args.jobIndex;
+                                            auto &component = components[componentIdx];
+                                            component->parallelUpdate(dt);
+                                        });
             }
 
-             wi::jobsystem::Wait(parallelUpdatesCtx);
+            {
+                ZoneScopedN("Wait For Jobs");
+                wi::jobsystem::Wait(parallelUpdatesCtx);
+            }
         }
     }
 

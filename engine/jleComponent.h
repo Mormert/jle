@@ -58,9 +58,11 @@ public:
     virtual void
     parallelUpdate(float dt)
     {
-        // Danger zone, enabled by _enableParallellUpdate = true in component constructor.
+        // Danger zone, enabled by _enableParallelUpdate = true in component constructor.
         // Called on all components of this type concurrently before scene graph update().
     }
+
+    int parallelUpdateBatchSize();
 
     [[maybe_unused]] virtual void
     editorUpdate(float dt)
@@ -109,7 +111,8 @@ protected:
 
     bool _isDestroyed{false};
 
-    bool _enableParallellUpdate{false};
+    bool _enableParallelUpdate{false};
+    int _parallelUpdateBatchSize = 4;
 };
 
 CEREAL_REGISTER_TYPE(jleComponent)

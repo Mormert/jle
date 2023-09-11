@@ -13,6 +13,7 @@
 struct cAnimatorAnimation
 {
     jleResourceRef<jleAnimation> currentAnimation{};
+    jleAnimation currentAnimationLocal;
     jleAnimationFinalMatrices animationMatrices{};
 
     float currentTime{};
