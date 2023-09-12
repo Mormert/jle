@@ -29,6 +29,8 @@
 
 #include <random>
 
+#include <WickedEngine/wiJobSystem.h>
+
 #define JLE_LINE_DRAW_BATCH_SIZE 32768
 
 struct jle3DRenderer::jle3DRendererShaders {
@@ -106,8 +108,14 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
     glEnable(GL_DEPTH_TEST);
 
     // Sort translucency early on another thread, sync before rendering translucency
-    std::future<void> sortTranslucentAsync =
-        std::async(std::launch::async, [&] { sortTranslucentMeshes(camera, graph._translucentMeshes); });
+    wi::jobsystem::context sortCtx;
+    if(!graph._translucentMeshes.empty())
+    {
+        wi::jobsystem::Execute(sortCtx, [&](wi::jobsystem::JobArgs args){
+            sortTranslucentMeshes(camera, graph._translucentMeshes);
+        });
+    }
+
 
     // Directional light renders to the shadow mapping framebuffer
     renderDirectionalLight(camera, graph._meshes, settings);
@@ -151,7 +159,9 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 
     {
         JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes_Translucent)
-        sortTranslucentAsync.wait();
+        if(!graph._translucentMeshes.empty()){
+            wi::jobsystem::Wait(sortCtx);
+        }
 
         renderMeshes(camera, graph._translucentMeshes, graph._lights, settings);
         glCheckError("3D Render - Translucent Meshes");
@@ -235,6 +245,7 @@ jle3DRenderer::renderSkinnedMeshes(const jleCamera &camera,
 void
 jle3DRenderer::sortTranslucentMeshes(const jleCamera &camera, std::vector<jle3DQueuedMesh> &translucentMeshes)
 {
+    ZoneScoped;
     glm::vec3 camPosition = camera.getPosition();
 
     std::sort(translucentMeshes.begin(),

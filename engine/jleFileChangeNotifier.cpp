@@ -6,6 +6,9 @@
 
 #include "jleResource.h"
 
+#include <Tracy.hpp>
+#include <WickedEngine/wiJobSystem.h>
+
 jleFileChangeNotifier::jleFileChangeNotifier(const std::vector<std::string> &directories)
 {
     _directories = directories;
@@ -16,39 +19,34 @@ jleFileChangeNotifier::periodicSweep()
 {
     using namespace std::chrono;
 
-    long long now = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+    static std::vector<jlePath> erased;
+    static std::vector<jlePath> added;
+    static std::vector<jlePath> modified;
+    static wi::jobsystem::context sweepingCtx;
 
-    if (now > lastSweep + 250ll) {
-        static std::vector<jlePath> erased;
-        static std::vector<jlePath> added;
-        static std::vector<jlePath> modified;
-        static std::future<void> sortTranslucentAsync{};
-
-        if (sortTranslucentAsync.valid() &&
-            sortTranslucentAsync.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-            for (auto &path : erased) {
-                notifyErase(path);
-            }
-            for (auto &path : added) {
-                notifyAdded(path);
-            }
-            for (auto &path : modified) {
-                notifyModification(path);
-            }
-            erased.clear();
-            added.clear();
-            modified.clear();
+    if (!IsBusy(sweepingCtx)) {
+        for (auto &path : erased) {
+            notifyErase(path);
         }
+        for (auto &path : added) {
+            notifyAdded(path);
+        }
+        for (auto &path : modified) {
+            notifyModification(path);
+        }
+        erased.clear();
+        added.clear();
+        modified.clear();
 
-        sortTranslucentAsync = std::async(std::launch::async, [&] { sweep(erased, added, modified); });
-
-        lastSweep = now;
+        wi::jobsystem::Execute(sweepingCtx, [&](wi::jobsystem::JobArgs args) { sweep(erased, added, modified); });
     }
 }
 
 void
 jleFileChangeNotifier::sweep(std::vector<jlePath> &erased, std::vector<jlePath> &added, std::vector<jlePath> &modified)
 {
+    ZoneScopedNC("FileChangeWatcher", 0xe57395);
+
     static std::unordered_map<std::string, std::filesystem::file_time_type> pathsMonitored;
 
     auto it = pathsMonitored.begin();

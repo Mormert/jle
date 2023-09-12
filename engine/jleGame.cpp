@@ -28,20 +28,6 @@ jleGame::activeScenesRef()
     return _activeScenes;
 }
 
-template <typename T>
-std::shared_ptr<T>
-jleGame::createScene()
-{
-    static_assert(std::is_base_of<jleScene, T>::value, "T must derive from jleScene");
-
-    std::shared_ptr<T> newScene = std::make_shared<T>();
-    _activeScenes.push_back(newScene);
-
-    newScene->onSceneCreation();
-
-    return newScene;
-}
-
 std::shared_ptr<jleScene>
 jleGame::loadScene(const jlePath &scenePath)
 {

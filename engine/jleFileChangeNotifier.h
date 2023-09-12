@@ -28,8 +28,6 @@ private:
     void notifyErase(const jlePath &path);
 
     std::vector<std::string> _directories;
-
-    long long lastSweep = 0;
 };
 
 #endif // JLE_FILECHANGENOTIFIER_H

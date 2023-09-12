@@ -364,7 +364,7 @@ jleEditor::updateEditorLoadedScenes(float dt)
 void
 jleEditor::update(float dt)
 {
-    //_fileChangeNotifier->periodicSweep();
+    _fileChangeNotifier->periodicSweep();
     jleGameEngine::update(dt);
     if (isGameKilled()) {
         JLE_SCOPE_PROFILE_CPU(updateEditorLoadedScenes)
