@@ -22,3 +22,6 @@
 [submodule "engine/3rdparty/git_submodules_forks/jle_RmlUi"]
 	path = engine/3rdparty/git_submodules_forks/jle_RmlUi
 	url = https://github.com/Mormert/jle_RmlUi.git
+[submodule "engine/3rdparty/git_submodules/EASTL"]
+	path = engine/3rdparty/git_submodules/EASTL
+	url = https://github.com/electronicarts/EASTL.git
