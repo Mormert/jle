@@ -7,9 +7,17 @@
 
 #define ASSERTION_EASTL_BREAK __debugbreak();
 
+#ifndef JLE_CDECL
+#ifdef _MSC_VER
+#define JLE_CDECL __cdecl
+#else
+#define JLE_CDECL
+#endif
+#endif
+
 namespace eastl
 {
-void __cdecl AssertionFailure(const char *af)
+void JLE_CDECL AssertionFailure(const char *af)
 {
     perror(af);
     ASSERTION_EASTL_BREAK
@@ -23,7 +31,7 @@ void __cdecl AssertionFailure(const char *af)
 
 namespace eastl
 {
-void __cdecl AssertionFailure(const char *af)
+void JLE_CDECL AssertionFailure(const char *af)
 {
     perror(af);
     assert(0);
