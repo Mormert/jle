@@ -222,7 +222,7 @@ target_include_directories(engine SYSTEM PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/plog/include"
         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/tracy/public/tracy"
         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules_forks/jle_EASTL/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules_forks/jle_EASTL/test/packages/EABase/include/Common"
+        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules_forks/jle_EASTL/jle_EABase/include/Common"
         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/glm")
 
 target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

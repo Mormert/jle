@@ -4,6 +4,7 @@
 #define JLE_NEW
 
 #include <new>
+#include <cstddef>
 
 // Required by EASTL
 void* operator new[](size_t size, const char* pName, int flags, unsigned debugFlags, const char* file, int line);
