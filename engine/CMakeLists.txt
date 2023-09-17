@@ -26,7 +26,6 @@ add_library(engine STATIC
         "RmlUiImplementation/shell/src/RendererExtensions.cpp"
         "RmlUiImplementation/shell/src/Shell.cpp"
         "RmlUiImplementation/shell/src/ShellFileInterface.cpp"
-        "jleEASTL.cpp"
         "jleNew.cpp"
         "jleImage.cpp"
         "jleImageFlipped.cpp"
@@ -216,6 +215,7 @@ target_include_directories(engine PUBLIC 3rdparty/git_submodules_forks/jle_RmlUi
 target_link_libraries(engine PUBLIC RmlCore RmlDebugger)
 
 add_subdirectory(3rdparty/git_submodules_forks/jle_EASTL)
+target_link_libraries(engine PUBLIC EASTL)
 
 target_include_directories(engine SYSTEM PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty"
