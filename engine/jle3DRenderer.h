@@ -35,13 +35,15 @@ private:
                       const jle3DSettings &settings);
 
     void renderSkinnedMeshes(const jleCamera &camera,
-                      const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
-                      const std::vector<jle3DRendererLight> &lights,
-                      const jle3DSettings &settings);
+                             const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
+                             const std::vector<jle3DRendererLight> &lights,
+                             const jle3DSettings &settings);
 
     void sortTranslucentMeshes(const jleCamera &camera, std::vector<jle3DQueuedMesh> &translucentMeshes);
 
     void renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jleShader &shader);
+
+    void renderShadowMeshesSkinned(const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes, jleShader &shader);
 
     void renderLines(const jleCamera &camera, const std::vector<jle3DLineVertex> &linesBatch);
 
@@ -49,7 +51,10 @@ private:
 
     void renderSkybox(const jleCamera &camera, const jle3DSettings &settings);
 
-    void renderDirectionalLight(const jleCamera &camera, const std::vector<jle3DQueuedMesh> &meshes, const jle3DSettings &settings);
+    void renderDirectionalLight(const jleCamera &camera,
+                                const std::vector<jle3DQueuedMesh> &meshes,
+                                const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
+                                const jle3DSettings &settings);
 
     void renderPointLights(const jleCamera &camera, const jle3DGraph &graph);
 

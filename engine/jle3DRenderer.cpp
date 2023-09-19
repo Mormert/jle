@@ -118,7 +118,7 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 
 
     // Directional light renders to the shadow mapping framebuffer
-    renderDirectionalLight(camera, graph._meshes, settings);
+    renderDirectionalLight(camera, graph._meshes, graph._skinnedMeshes, settings);
 
     glCheckError("3D Render - Directional Lights");
 
@@ -337,6 +337,7 @@ jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
 void
 jle3DRenderer::renderDirectionalLight(const jleCamera &camera,
                                       const std::vector<jle3DQueuedMesh> &meshes,
+                                      const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
                                       const jle3DSettings &settings)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderDirectionalLight)
@@ -357,6 +358,7 @@ jle3DRenderer::renderDirectionalLight(const jleCamera &camera,
 
     glClear(GL_DEPTH_BUFFER_BIT);
     renderShadowMeshes(meshes, *_shaders->shadowMappingShader.get());
+    renderShadowMeshesSkinned(skinnedMeshes, *_shaders->shadowMappingShader.get());
 
     glEnable(GL_CULL_FACE);
 
@@ -406,6 +408,7 @@ jle3DRenderer::renderPointLights(const jleCamera &camera, const jle3DGraph &grap
 
         glClear(GL_DEPTH_BUFFER_BIT);
         renderShadowMeshes(graph._meshes, *_shaders->shadowMappingPointShader.get());
+        renderShadowMeshesSkinned(graph._skinnedMeshes, *_shaders->shadowMappingPointShader.get());
     }
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
@@ -430,11 +433,50 @@ jle3DRenderer::renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jl
         } else {
             shader.SetBool("uUseOpacityTexture", false);
         }
+
+        shader.SetBool("uUseSkinning", false);
+
         glBindVertexArray(mesh.mesh->getVAO());
         if (mesh.mesh->usesIndexing()) {
             glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
         } else {
             glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+        }
+        glBindVertexArray(0);
+    }
+}
+
+void
+jle3DRenderer::renderShadowMeshesSkinned(const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes, jleShader &shader)
+{
+    for (auto &&mesh : skinnedMeshes) {
+        if (!mesh.castShadows) {
+            return;
+        }
+        shader.SetMat4("model", mesh.transform);
+        if (mesh.material) {
+            if (auto opacity = mesh.material->getOpacityTexture()) {
+                shader.SetBool("uUseOpacityTexture", true);
+                shader.SetTextureSlot("uOpacityTexture", jleTextureSlot::Opacity);
+                opacity->setActive(jleTextureSlot::Opacity);
+            } else {
+                shader.SetBool("uUseOpacityTexture", false);
+            }
+        } else {
+            shader.SetBool("uUseOpacityTexture", false);
+        }
+
+        shader.SetBool("uUseSkinning", true);
+
+        for(int i = 0; i < mesh.matrices->matrices.size(); ++i){
+            mesh.material->getShader()->SetMat4("uAnimBonesMatrices[" + std::to_string(i) + "]", mesh.matrices->matrices[i]);
+        }
+
+        glBindVertexArray(mesh.skinnedMesh->getVAO());
+        if (mesh.skinnedMesh->usesIndexing()) {
+            glDrawElements(GL_TRIANGLES, mesh.skinnedMesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+        } else {
+            glDrawArrays(GL_TRIANGLES, 0, mesh.skinnedMesh->getTrianglesCount());
         }
         glBindVertexArray(0);
     }

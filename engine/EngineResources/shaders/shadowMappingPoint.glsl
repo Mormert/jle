@@ -4,18 +4,43 @@
 layout (location = 0) in vec3 aPos;
 layout (location = 2) in vec2 aTexCoords;
 
+layout (location = 5) in ivec4 aBoneIds;
+layout (location = 6) in vec4 aBoneWeights;
+
 
 uniform mat4 lightSpaceMatrix;
 uniform mat4 model;
+
+uniform bool uUseSkinning;
+uniform mat4 uAnimBonesMatrices[100];
 
 out vec2 TexCoords;
 out vec3 WorldPos;
 
 void main()
 {
+
+    vec4 totalPosition = vec4(0.0);
+
+    if(uUseSkinning){
+        for(int i = 0; i < 4; ++i){
+            if(aBoneIds[i] == -1){
+                continue;
+            }
+            if(aBoneIds[i] >= 100){
+                totalPosition = vec4(aPos, 1.0);
+                break;
+            }
+            vec4 localPosition = uAnimBonesMatrices[aBoneIds[i]] * vec4(aPos, 1.0);
+            totalPosition += localPosition * aBoneWeights[i];
+        }
+    }else{
+        totalPosition = vec4(aPos, 1.0f);
+    }
+
     TexCoords = aTexCoords;
-    WorldPos = vec3(model * vec4(aPos, 1.0));
-    gl_Position = lightSpaceMatrix * model * vec4(aPos, 1.0);
+    WorldPos = vec3(model * totalPosition);
+    gl_Position = lightSpaceMatrix * model * totalPosition;
 }
 
 /*BEGIN FRAG*/
