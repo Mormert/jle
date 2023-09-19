@@ -33,6 +33,8 @@ void main()
     TexCoords = aTexCoords;
 
     vec4 totalPosition = vec4(0.0);
+    mat3 normalMatrix;
+
     if(uUseSkinning){
         for(int i = 0; i < 4; ++i){
             if(aBoneIds[i] == -1){
@@ -45,13 +47,21 @@ void main()
             vec4 localPosition = uAnimBonesMatrices[aBoneIds[i]] * vec4(aPos, 1.0);
             totalPosition += localPosition * aBoneWeights[i];
         }
+
+        mat4 BoneTransform  = uAnimBonesMatrices[aBoneIds[0]] * aBoneWeights[0];
+        BoneTransform += uAnimBonesMatrices[aBoneIds[1]] * aBoneWeights[1];
+        BoneTransform += uAnimBonesMatrices[aBoneIds[2]] * aBoneWeights[2];
+        BoneTransform += uAnimBonesMatrices[aBoneIds[3]] * aBoneWeights[3];
+
+        normalMatrix = transpose(inverse(mat3(BoneTransform * uModel)));
+
     }else{
         totalPosition = vec4(aPos, 1.0f);
+        normalMatrix = transpose(inverse(mat3(uModel)));
     }
 
 
     // Gram-Schmidt Orthogonalisation
-    mat3 normalMatrix = transpose(inverse(mat3(uModel)));
     vec3 T = normalize(normalMatrix * aTangent);
     vec3 N = normalize(normalMatrix * aNormal);
     T = normalize(T - dot(T, N) * N);
