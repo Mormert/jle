@@ -1,6 +1,8 @@
 // Copyright (c) 2023. Johan Lind
 
 #include "jleLuaEnvironment.h"
+#include "jleInput.h"
+#include "jleKeyboardInput.h"
 #include "jleLuaScript.h"
 #include "jleObject.h"
 #include "jlePath.h"
@@ -57,6 +59,14 @@ jleLuaEnvironment::setupLua(sol::state &lua)
         sol::meta_function::to_string,
         &jlePath::getVirtualPathConst);
 
+    lua.set_function("keyDown", [&](int key) { return gEngine->input().keyboard->keyDown(static_cast<jleKey>(key)); });
+
+    lua.set_function("keyPressed",
+                     [&](int key) { return gEngine->input().keyboard->keyPressed(static_cast<jleKey>(key)); });
+
+    lua.set_function("keyReleased",
+                     [&](int key) { return gEngine->input().keyboard->keyReleased(static_cast<jleKey>(key)); });
+
     lua.new_usertype<jleTransform>("jleTransform",
                                    "localPos",
                                    &jleTransform::getLocalPosition,
@@ -69,7 +79,11 @@ jleLuaEnvironment::setupLua(sol::state &lua)
                                    "worldMatrix",
                                    &jleTransform::getWorldMatrix,
                                    "localMatrix",
-                                   &jleTransform::getLocalMatrix);
+                                   &jleTransform::getLocalMatrix,
+                                   "forward",
+                                   &jleTransform::getForward,
+                                   "setWorldMat",
+                                   &jleTransform::setWorldMatrix);
 
     lua.new_usertype<jleObject>(
         "jleObject",

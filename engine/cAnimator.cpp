@@ -117,6 +117,7 @@ cAnimator::editorUpdate(float dt)
 void
 cAnimator::registerLua(sol::state &lua, sol::table &table)
 {
+    lua.new_usertype<cAnimator>("cAnimator", sol::base_classes, sol::bases<jleComponent>(), "setAnimation", &cAnimator::setAnimation);
 }
 
 void
@@ -271,5 +272,19 @@ cAnimator::applyRootMotion()
 
     for (auto &child : object()->childObjects()) {
         child->getTransform().setLocalPosition(addedRootMotionForChildren);
+    }
+}
+
+
+void
+cAnimator::setAnimation(const jlePath &path)
+{
+    _animations.clear();
+    _animations.push_back({});
+    _animations[0].currentAnimation.path = path;
+    _animations[0].currentAnimation.loadResource();
+
+    for (auto &animation : _animations) {
+        animation.currentAnimationLocal = *animation.currentAnimation.get();
     }
 }

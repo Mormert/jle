@@ -64,6 +64,8 @@ public:
 
     void editorInspectorImGuiRender() override;
 
+    void setAnimation(const jlePath& path);
+
 private:
 
     void blendAnimations();
