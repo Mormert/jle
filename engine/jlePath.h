@@ -28,6 +28,7 @@ public:
         fixSlashes(_virtualPath);
         _realPath = findRealPathFromVirtualPath(_virtualPath);
         _virtualPath = value;
+        _hash = std::hash<std::string>()(_virtualPath);
     }
 
     jlePath(const char* virtualPath);
@@ -74,6 +75,8 @@ private:
     static std::string findRealPathFromVirtualPath(const std::string &virtualPath);
 
     static void fixSlashes(std::string &str);
+
+    size_t _hash;
 };
 
 namespace std
@@ -83,7 +86,7 @@ struct hash<jlePath> {
     std::size_t
     operator()(const jlePath &path) const
     {
-        return hash<std::string>()(path._virtualPath);
+        return path._hash;
     }
 };
 } // namespace std

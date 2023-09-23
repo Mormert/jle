@@ -7,7 +7,6 @@
 
 jlePath::jlePath(const std::string &path, bool virtualPath)
 {
-
     std::string processedPath = path;
     fixSlashes(processedPath);
 
@@ -18,6 +17,8 @@ jlePath::jlePath(const std::string &path, bool virtualPath)
         _realPath = processedPath;
         _virtualPath = findVirtualPathFromRealPath(processedPath);
     }
+
+    _hash = std::hash<std::string>()(_virtualPath);
 }
 
 jlePath::jlePath(const char *virtualPath) : jlePath(std::string{virtualPath}, true) {}
@@ -163,6 +164,7 @@ jlePath::getVirtualPath()
 {
     if (_virtualPath.empty()) {
         _virtualPath = findVirtualPathFromRealPath(_realPath);
+        _hash = std::hash<std::string>()(_virtualPath);
     }
     return _virtualPath;
 }
