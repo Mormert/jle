@@ -9,7 +9,6 @@
 #include <random>
 #include <chrono>
 #include <type_traits>
-
 #include <vector>
 #include <array>
 #include <list>
@@ -19,6 +18,16 @@
 #include <unordered_set>
 #include <optional>
 #include <variant>
+
+#include "jleArray.h"
+#include "jleVector.h"
+#include "jleAlgorithm.h"
+#include "jleDeque.h"
+#include "jleHashMap.h"
+#include "jleUniquePtr.h"
+#include "jleSharedPtr.h"
+#include "jleString.h"
+#include "jleStringView.h"
 
 #include <cereal/cereal.hpp>
 #include <cereal/archives/json.hpp>
