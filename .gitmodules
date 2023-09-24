@@ -25,3 +25,9 @@
 [submodule "engine/3rdparty/git_submodules_forks/jle_EASTL"]
 	path = engine/3rdparty/git_submodules_forks/jle_EASTL
 	url = https://github.com/Mormert/jle_EASTL.git
+[submodule "engine/3rdparty/git_submodules/libzip"]
+	path = engine/3rdparty/git_submodules/libzip
+	url = https://github.com/nih-at/libzip.git
+[submodule "engine/3rdparty/git_submodules/libzippp"]
+	path = engine/3rdparty/git_submodules/libzippp
+	url = https://github.com/ctabin/libzippp.git

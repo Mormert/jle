@@ -148,6 +148,9 @@ if(MINGW)
 endif(MINGW)
 
 add_library(zlib SHARED ${ZLIB_SRCS} ${ZLIB_DLL_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
+# <jle> - Adding ZLIB::ZLIB as an alias for zlib because libzip tries to link to ZLIB::ZLIB.
+add_library(ZLIB::ZLIB ALIAS zlib)
+# </jle>
 add_library(zlibstatic STATIC ${ZLIB_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
 set_target_properties(zlib PROPERTIES DEFINE_SYMBOL ZLIB_DLL)
 set_target_properties(zlib PROPERTIES SOVERSION 1)

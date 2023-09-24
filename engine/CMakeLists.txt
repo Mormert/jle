@@ -153,6 +153,8 @@ set(ASSIMP_NO_EXPORT OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_ZLIB OFF CACHE BOOL "" FORCE)
+# Exclude 3MF since it uses zip_open which caused name conflict with libzip
+add_definitions(-DASSIMP_BUILD_NO_3MF_IMPORTER -DASSIMP_BUILD_NO_3MF_EXPORTER)
 if (BUILD_EMSCRIPTEN)
     set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
 endif ()
@@ -197,6 +199,26 @@ set(BUILD_EXTRAS OFF CACHE BOOL "" FORCE)
 add_subdirectory(3rdparty/git_submodules_forks/jle_bullet3)
 target_link_libraries(engine PUBLIC BulletDynamics BulletCollision Bullet3Common BulletInverseDynamics BulletSoftBody LinearMath)
 target_include_directories(engine SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules_forks/jle_bullet3/src")
+
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(BUILD_TOOLS OFF CACHE BOOL "" FORCE)
+set(BUILD_REGRESS OFF CACHE BOOL "" FORCE)
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(BUILD_DOC OFF CACHE BOOL "" FORCE)
+set(LIBZIP_DO_INSTALL OFF CACHE BOOL "" FORCE)
+set(SHARED_LIB_VERSIONNING OFF CACHE BOOL "" FORCE)
+add_subdirectory(3rdparty/git_submodules/libzip)
+#target_include_directories(engine PRIVATE BEFORE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/libzip/lib" ${PROJECT_BINARY_DIR})
+
+add_library(libzippp ${CMAKE_CURRENT_SOURCE_DIR}"/3rdparty/git_submodules/libzippp/src/libzippp.cpp")
+target_link_libraries(libzippp PRIVATE libzip::zip)
+
+target_link_libraries(engine PUBLIC libzippp)
+target_include_directories(engine SYSTEM PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}"/3rdparty/git_submodules/libzippp/src/")
+
+#add_subdirectory(3rdparty/git_submodules/libzippp)
+#target_include_directories(engine PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/libzippp/src")
+#target_link_libraries(engine PUBLIC libzippp)
 
 # Disable HarfBuzz Dependency
 set(FT_DISABLE_HARFBUZZ ON)
