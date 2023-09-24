@@ -208,17 +208,12 @@ set(BUILD_DOC OFF CACHE BOOL "" FORCE)
 set(LIBZIP_DO_INSTALL OFF CACHE BOOL "" FORCE)
 set(SHARED_LIB_VERSIONNING OFF CACHE BOOL "" FORCE)
 add_subdirectory(3rdparty/git_submodules/libzip)
-#target_include_directories(engine PRIVATE BEFORE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/libzip/lib" ${PROJECT_BINARY_DIR})
 
-add_library(libzippp ${CMAKE_CURRENT_SOURCE_DIR}"/3rdparty/git_submodules/libzippp/src/libzippp.cpp")
+add_library(libzippp "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/libzippp/src/libzippp.cpp")
 target_link_libraries(libzippp PRIVATE libzip::zip)
 
 target_link_libraries(engine PUBLIC libzippp)
-target_include_directories(engine SYSTEM PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}"/3rdparty/git_submodules/libzippp/src/")
-
-#add_subdirectory(3rdparty/git_submodules/libzippp)
-#target_include_directories(engine PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/libzippp/src")
-#target_link_libraries(engine PUBLIC libzippp)
+target_include_directories(engine SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/libzippp/src/")
 
 # Disable HarfBuzz Dependency
 set(FT_DISABLE_HARFBUZZ ON)
