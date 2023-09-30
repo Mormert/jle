@@ -246,3 +246,9 @@ jlePath::getVirtualFolder() const
     auto folder = getVirtualPath().substr(0, slash);
     return folder;
 }
+
+bool
+jlePath::operator<(const jlePath &other) const
+{
+    return _virtualPath < other._virtualPath;
+}

@@ -2,6 +2,7 @@
 
 #include "jleEditor.h"
 #include "editor/jleConsoleEditorWindow.h"
+#include "editor/jleEditorBuild.h"
 #include "editor/jleEditorContentBrowser.h"
 #include "editor/jleEditorFrameGraphWindow.h"
 #include "editor/jleEditorGizmos.h"
@@ -18,7 +19,7 @@
 #include "jleEditorResourceEdit.h"
 #include "jleEditorSettingsWindow.h"
 #include "jleEditorTextEdit.h"
-#include "jleFileChangeNotifier.h"
+#include "jleFileIndexer.h"
 #include "jleFramebufferMultisample.h"
 #include "jleFramebufferScreen.h"
 #include "jleGLError.h"
@@ -63,7 +64,7 @@ jleEditor::start()
     directoriesForNotification.push_back(jlePath{"ER:/"}.getRealPath());
     directoriesForNotification.push_back(jlePath{"ED:/"}.getRealPath());
     directoriesForNotification.push_back(jlePath{"GR:/"}.getRealPath());
-    _fileChangeNotifier = std::make_unique<jleFileChangeNotifier>(directoriesForNotification);
+    _fileIndexer = std::make_unique<jleFileIndexer>(directoriesForNotification);
 
     initImgui();
 
@@ -115,6 +116,10 @@ jleEditor::start()
     auto contentBrowser = std::make_shared<jleEditorContentBrowser>("Content Browser", _textEditWindow, resourceEditor);
     addImGuiWindow(contentBrowser);
     menu->addWindow(contentBrowser);
+
+    auto buildTool = std::make_shared<jleEditorBuild>("Build Tool");
+    addImGuiWindow(buildTool);
+    menu->addWindow(buildTool);
 
     auto resourceViewer = std::make_shared<jleEditorResourceViewer>("Resource Viewer");
     addImGuiWindow(resourceViewer);
@@ -364,7 +369,7 @@ jleEditor::updateEditorLoadedScenes(float dt)
 void
 jleEditor::update(float dt)
 {
-    _fileChangeNotifier->periodicSweep();
+    _fileIndexer->periodicSweep();
     jleGameEngine::update(dt);
     if (isGameKilled()) {
         JLE_SCOPE_PROFILE_CPU(updateEditorLoadedScenes)
@@ -548,6 +553,12 @@ jleEditorSaveState &
 jleEditor::saveState()
 {
     return *_internal->editorSaveState.get();
+}
+
+jleFileIndexer &
+jleEditor::fileIndexer()
+{
+    return *_fileIndexer.get();
 }
 
 jleEditor::~jleEditor() = default;

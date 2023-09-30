@@ -13,7 +13,9 @@
 #ifdef BUILD_EDITOR
 
 #include "jleComponent.h"
+#include "jleEditor.h"
 #include "jleExternalSerialization.h"
+#include "jleFileIndexer.h"
 #include "jleResourceRef.h"
 #include "jleTextureRefOrRGBA.h"
 #include "jleTransform.h"
@@ -34,8 +36,11 @@
 
 #include <magic_enum/magic_enum.hpp>
 
+#include <Tracy.hpp>
+
 #include <filesystem>
 #include <iostream>
+#include <jleSTL/jleFixedVector.h>
 #include <vector>
 
 // A tooltip utility for showing tooltips in the editor
@@ -386,36 +391,44 @@ private:
             value = std::string(charData.data());
         }
 
-        std::vector<std::string> directories;
-        directories.push_back(jlePath{"ER:/"}.getRealPath());
-        directories.push_back(jlePath{"ED:/"}.getRealPath());
-        directories.push_back(jlePath{"GR:/"}.getRealPath());
+        std::vector<const jleVectorSet<jlePath> *> indexedFileSets;
 
-        std::vector<jlePath> relevantResources;
-
-        for (auto &dir : directories) {
-            for (auto &file : std::filesystem::recursive_directory_iterator(dir)) {
-                if (file.is_regular_file()) {
-                    auto ext = file.path().extension().string();
-                    for (auto &fileExtension : fileExtensions) {
-                        if (ext == std::string{'.' + fileExtension}) {
-                            relevantResources.emplace_back(file.path().string(), false);
-                            break;
-                        }
-                    }
-                }
+        bool existsSomeFiles = false;
+        for (auto &extension : fileExtensions) {
+            auto e = gEditor->fileIndexer().getIndexedFilesPtr(extension.c_str());
+            if (!e->empty()) {
+                existsSomeFiles = true;
             }
+            indexedFileSets.push_back(e);
         }
 
         static std::set<int> isOpenSet;
 
         bool isOpen = isOpenSet.find(elementCount) != isOpenSet.end();
 
-        if (relevantResources.size() != 0) {
-
+        if (existsSomeFiles) {
             bool isFocused = ImGui::IsItemFocused();
             isOpen |= ImGui::IsItemActive();
+
             if (isOpen) {
+                static std::string lastValue = "non-empty";
+                static std::vector<std::string> lastFileExtensions;
+                static std::vector<std::string> searchResults;
+                if (lastValue != value || lastFileExtensions != fileExtensions) {
+                    lastValue = value;
+                    lastFileExtensions = fileExtensions;
+                    searchResults.clear();
+
+                    // Perform search
+                    for (auto &files : indexedFileSets) {
+                        for (auto &file : *files) {
+                            if (strstr(file.getVirtualPath().c_str(), value.c_str()) != NULL) {
+                                searchResults.push_back(file.getVirtualPath());
+                            }
+                        }
+                    }
+                }
+
                 ImGui::SetNextWindowPos({ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y});
                 ImGui::SetNextWindowSize({ImGui::GetItemRectSize().x, 0});
                 if (ImGui::Begin(std::string{"popup_" + std::string{name}}.c_str(),
@@ -424,15 +437,18 @@ private:
                                      ImGuiWindowFlags_Tooltip)) {
                     ImGui::BringWindowToDisplayFront(ImGui::GetCurrentWindow());
                     isFocused |= ImGui::IsWindowFocused();
-                    for (int i = 0; i < relevantResources.size(); i++) {
-                        if (strstr(relevantResources[i].getVirtualPath().c_str(), value.c_str()) == NULL)
-                            continue;
-                        if (ImGui::Selectable(relevantResources[i].getVirtualPath().c_str()) ||
+                    int ctr = 0;
+                    for (auto &result : searchResults) {
+                        if (ImGui::Selectable(result.c_str()) ||
                             (ImGui::IsItemFocused() && ImGui::IsKeyPressedMap(ImGuiKey_Enter))) {
-                            value = relevantResources[i].getVirtualPath();
+                            value = result;
                             isEditedAndDeactivated = true;
                             isOpen = false;
                         }
+                        if (ctr > 32) {
+                            break;
+                        }
+                        ctr++;
                     }
                 }
                 ImGui::End();

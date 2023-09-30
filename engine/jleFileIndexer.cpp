@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Johan Lind
 
-#include "jleFileChangeNotifier.h"
+#include "jleFileIndexer.h"
 #include "editor/jleEditorTextEdit.h"
 #include <editor/jleEditor.h>
 
@@ -9,13 +9,10 @@
 #include <Tracy.hpp>
 #include <WickedEngine/wiJobSystem.h>
 
-jleFileChangeNotifier::jleFileChangeNotifier(const std::vector<std::string> &directories)
-{
-    _directories = directories;
-}
+jleFileIndexer::jleFileIndexer(const std::vector<std::string> &directories) { _directories = directories; }
 
 void
-jleFileChangeNotifier::periodicSweep()
+jleFileIndexer::periodicSweep()
 {
     using namespace std::chrono;
 
@@ -43,7 +40,7 @@ jleFileChangeNotifier::periodicSweep()
 }
 
 void
-jleFileChangeNotifier::sweep(std::vector<jlePath> &erased, std::vector<jlePath> &added, std::vector<jlePath> &modified)
+jleFileIndexer::sweep(std::vector<jlePath> &erased, std::vector<jlePath> &added, std::vector<jlePath> &modified)
 {
     ZoneScopedNC("FileChangeWatcher", 0xe57395);
 
@@ -66,7 +63,9 @@ jleFileChangeNotifier::sweep(std::vector<jlePath> &erased, std::vector<jlePath> 
 
             if ((pathsMonitored.find(file.path().string()) == pathsMonitored.end())) {
                 pathsMonitored[file.path().string()] = current_file_last_write_time;
-                added.push_back(jlePath{file.path().string(), false});
+                if (file.is_regular_file()) {
+                    added.push_back(jlePath{file.path().string(), false});
+                }
             } else {
                 if (pathsMonitored[file.path().string()] != current_file_last_write_time) {
                     pathsMonitored[file.path().string()] = current_file_last_write_time;
@@ -80,13 +79,16 @@ jleFileChangeNotifier::sweep(std::vector<jlePath> &erased, std::vector<jlePath> 
 }
 
 void
-jleFileChangeNotifier::notifyAdded(const jlePath &path)
+jleFileIndexer::notifyAdded(const jlePath &path)
 {
     LOGI << "File indexed: " << path.getVirtualPath();
+    _indexedFiles.insert(path);
+
+    _indexedFilesWithExtension[path.getFileEnding().c_str()].insert(path);
 }
 
 void
-jleFileChangeNotifier::notifyModification(const jlePath &path)
+jleFileIndexer::notifyModification(const jlePath &path)
 {
     if (gEngine->resources().isResourceLoaded(path)) {
         LOGI << "File modified: " << path.getVirtualPath() << " (reloading resource)";
@@ -101,7 +103,43 @@ jleFileChangeNotifier::notifyModification(const jlePath &path)
 }
 
 void
-jleFileChangeNotifier::notifyErase(const jlePath &path)
+jleFileIndexer::notifyErase(const jlePath &path)
 {
     LOGI << "File erased: " << path.getVirtualPath();
+    _indexedFiles.erase(path.getVirtualPath().data());
+
+    auto it = _indexedFilesWithExtension.find(path.getFileEnding().c_str());
+    if (it) {
+        it->second.erase(path);
+    }
+}
+
+const jleVectorSet<jlePath> &
+jleFileIndexer::getIndexedFiles()
+{
+    return _indexedFiles;
+}
+
+const jleVectorSet<jlePath> &
+jleFileIndexer::getIndexedFiles(const jleString &extension)
+{
+    auto it = _indexedFilesWithExtension.find(extension);
+    if (!it) {
+        static const jleVectorSet<jlePath> empty;
+        return empty;
+    } else {
+        return it->second;
+    }
+}
+
+const jleVectorSet<jlePath> *
+jleFileIndexer::getIndexedFilesPtr(const jleString &extension)
+{
+    auto it = _indexedFilesWithExtension.find(extension);
+    if (!it) {
+        static const jleVectorSet<jlePath> empty;
+        return &empty;
+    } else {
+        return &it->second;
+    }
 }

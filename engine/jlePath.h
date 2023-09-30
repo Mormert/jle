@@ -58,6 +58,8 @@ public:
 
     bool operator==(const jlePath &other) const;
 
+    bool operator<(const jlePath& other) const;
+
     friend class std::hash<jlePath>;
 
     // Below operator broke Lua bindings for some reason:

@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 
-class jleFileChangeNotifier;
+class jleFileIndexer;
 class jleEditorWindowInterface;
 class jleFramebufferInterface;
 class jleSceneEditorWindow;
@@ -55,6 +55,8 @@ public:
 
     jleEditorSceneObjectsWindow &editorSceneObjects();
 
+    jleFileIndexer& fileIndexer();
+
     bool
     checkSceneIsActiveEditor(const std::string &sceneName);
 
@@ -93,7 +95,7 @@ private:
 
     std::shared_ptr<jleEditorSceneObjectsWindow> _editorSceneObjects;
 
-    std::unique_ptr<jleFileChangeNotifier> _fileChangeNotifier;
+    std::unique_ptr<jleFileIndexer> _fileIndexer;
 
     std::shared_ptr<jleEditorTextEdit> _textEditWindow;
 
