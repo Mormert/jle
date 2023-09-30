@@ -7,8 +7,7 @@
 
 #include <chrono>
 
-#define JLE_SCOPED_PROFILE_LOG(message) \
-    auto scopedLog = jleScopeProfileLog(message);
+#define JLE_SCOPED_PROFILE_LOG(message) auto scopedLog = jleScopeProfileLog(message);
 
 class jleScopeProfileLog
 {
@@ -16,17 +15,20 @@ public:
     explicit jleScopeProfileLog(const jleStringView &message)
     {
         _message = message;
-        _start = std::chrono::high_resolution_clock::now();
+        _start = std::chrono::duration_cast<std::chrono::milliseconds>(
+                     std::chrono::high_resolution_clock::now().time_since_epoch())
+                     .count();
     }
 
     ~jleScopeProfileLog()
     {
-        const auto elapsed = std::chrono::high_resolution_clock::now() - _start;
-        long long ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
-        LOGI << _message.data() << " : " << ms << " (milliseconds)";
+        uint64_t now = std::chrono::duration_cast<std::chrono::milliseconds>(
+                           std::chrono::high_resolution_clock::now().time_since_epoch())
+                           .count();
+        LOGI << _message.data() << " : " << now - _start << " (milliseconds)";
     }
 
 private:
     jleStringView _message;
-    std::chrono::time_point<std::chrono::steady_clock> _start;
+    uint64_t _start;
 };
