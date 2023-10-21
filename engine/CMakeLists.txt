@@ -19,6 +19,7 @@ file(GLOB_RECURSE JLE_STL_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/jleSTL/**.h")
 
 add_library(engine STATIC
         "3rdparty/stb_image.cpp"
+        "3rdparty/stb_image_write.cpp"
         "3rdparty/tiny_obj_loader.cpp"
         "3rdparty/WickedEngine/wiJobSystem.cpp"
         "RmlUiImplementation/RmlUi_Backend_GLFW_GL3.cpp"
