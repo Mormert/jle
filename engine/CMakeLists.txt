@@ -17,7 +17,19 @@ find_package(ZLIB REQUIRED)
 
 file(GLOB_RECURSE JLE_STL_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/jleSTL/**.h")
 
+set(LZ4_SOURCES
+    "3rdparty/git_submodules/lz4/lib/lz4.c"
+    "3rdparty/git_submodules/lz4/lib/lz4hc.c"
+    "3rdparty/git_submodules/lz4/lib/lz4file.c"
+    "3rdparty/git_submodules/lz4/lib/lz4frame.c"
+    "3rdparty/git_submodules/lz4/lib/xxhash.c"
+)
+
+set_source_files_properties(${LZ4_SOURCES} PROPERTIES LANGUAGE CXX)
+
 add_library(engine STATIC
+        ${JLE_STL_HEADERS}
+        ${LZ4_SOURCES}
         "3rdparty/stb_image.cpp"
         "3rdparty/stb_image_write.cpp"
         "3rdparty/tiny_obj_loader.cpp"
@@ -100,8 +112,7 @@ add_library(engine STATIC
         "jleAnimationBone.cpp"
         "jleAnimation.cpp"
         "cSkinnedMesh.cpp"
-        "jleAnimationFinalMatrices.cpp"
-        ${JLE_STL_HEADERS})
+        "jleAnimationFinalMatrices.cpp")
 
 if (BUILD_EDITOR)
     target_sources(engine PRIVATE
@@ -216,6 +227,8 @@ target_link_libraries(libzippp PRIVATE libzip::zip)
 
 target_link_libraries(engine PUBLIC libzippp)
 target_include_directories(engine SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/libzippp/src/")
+
+target_include_directories(engine SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/lz4/lib")
 
 # Disable HarfBuzz Dependency
 set(FT_DISABLE_HARFBUZZ ON)

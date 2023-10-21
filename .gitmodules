@@ -31,3 +31,6 @@
 [submodule "engine/3rdparty/git_submodules/libzippp"]
 	path = engine/3rdparty/git_submodules/libzippp
 	url = https://github.com/ctabin/libzippp.git
+[submodule "engine/3rdparty/git_submodules/lz4"]
+	path = engine/3rdparty/git_submodules/lz4
+	url = https://github.com/lz4/lz4.git
