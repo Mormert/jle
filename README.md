@@ -21,6 +21,8 @@ The engine is written in C++ 17 and currently runs OpenGL ES 3.0, OpenGL Core 3.
 
 The way of working in the engine is inspired by a mix of Unreal Engine and Unity, with scripting support in Lua.
 
+Watch the showcase video on [YouTube](https://youtu.be/2GiqLXTfKg4/).
+
 # Third Party
 The engine uses a set of libraries for certain specific tasks.
 | Usage      | Library |
