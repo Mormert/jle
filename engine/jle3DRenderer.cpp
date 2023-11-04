@@ -169,13 +169,17 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 
     // gEngine->context->Update();
 
-    gEngine->context->SetDimensions(Rml::Vector2i(framebufferOut.width(), framebufferOut.height()));
+    /*
+     * Temporarily disables RmlUi rendering, causing some problems since it's a WIP
+        gEngine->context->SetDimensions(Rml::Vector2i(framebufferOut.width(), framebufferOut.height()));
 
-    // Disable depth testing here because the UI doesnt use depth
-    glDisable(GL_DEPTH_TEST);
-    Backend::BeginFrame();
-    gEngine->context->Render();
-    Backend::PresentFrame();
+        // Disable depth testing here because the UI doesnt use depth
+        glDisable(GL_DEPTH_TEST);
+        Backend::BeginFrame();
+        gEngine->context->Render();
+        Backend::PresentFrame();
+
+     */
 
     framebufferOut.bindDefault();
 }
