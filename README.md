@@ -1,6 +1,7 @@
 <div align="center">
-    <img src="https://mormert.com/jle-media/jle-logo-cropped.png" width=20% alt="jle logo" />
-  <h1>Cross-Platform 3D Game Engine</h1>
+    <h1>Cross-Platform 3D Game Engine</h1>
+    <img src="https://mormert.com/jle-media/jetlaggedGitHub.png" width=40% alt="jle logo" />
+    <h1></h1>
   <p>A simple, yet powerful custom-made C++ game engine intended for PC games.<br>
     The engine is developed alongside an <i>unannounced game</i>.</p>
 </div>
