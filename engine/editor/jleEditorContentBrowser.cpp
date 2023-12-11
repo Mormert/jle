@@ -185,7 +185,7 @@ jleEditorContentBrowser::contentBrowser()
                             willOpenNewResource = true;
                             newResourceFunction = resourceType.second.creationFunction;
                             std::string newFileNameStr =
-                                resourceType.first + "." + resourceType.second.filenameExtension;
+                                resourceType.first + "." + resourceType.second.fileExtensions[0];
                             newFileNameStr.copy(newFileName, 0, newFileNameStr.length());
                             break;
                         }

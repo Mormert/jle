@@ -5,14 +5,12 @@
 #include "jleCompileHelper.h"
 #include "jlePath.h"
 
-#include <fstream>
-#include <string>
 #include <cereal/archives/json.hpp>
 #include <cereal/cereal.hpp>
 #include <cereal/types/polymorphic.hpp>
+#include <fstream>
 #include <plog/Log.h>
-
-enum class jleLoadFromFileSuccessCode : uint8_t { SUCCESS, FAIL };
+#include <string>
 
 class jleResourceInterface
 {
@@ -22,31 +20,20 @@ public:
     virtual ~jleResourceInterface() = default;
 
     // Should implement logic for loading data from file into derived class
-    virtual jleLoadFromFileSuccessCode
-    loadFromFile(const jlePath &path)
-    {
-        return jleLoadFromFileSuccessCode::FAIL;
-    };
+    [[nodiscard]] virtual bool
+    loadFromFile(const jlePath &path) = 0;
 
     // Optionally implement logic for saving data to file
     [[maybe_unused]] virtual void saveToFile(){};
 
-    virtual std::string
-    getFileExtension()
-    {
-        return "";
-    }
+    bool hasFileExtension(const std::string &fileExtensionTest);
 
-    virtual std::vector<std::string> getFileAssociationList()
-    {
-        return {};
-    }
+    // Automatically implemented when using JLE_REGISTER_RESOURCE_TYPE
+    virtual const std::vector<std::string> &getFileAssociations() = 0;
 
-    std::string
-    getDotFileExtension()
-    {
-        return "." + getFileExtension();
-    }
+    std::string getPrimaryFileAssociation();
+
+    std::string getDotPrimaryFileExtension();
 
     jlePath path;
 };

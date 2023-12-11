@@ -14,7 +14,9 @@ struct aiNode;
 class jleSkinnedMesh : public jleMesh
 {
 public:
-    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
+    JLE_REGISTER_RESOURCE_TYPE(jleSkinnedMesh, "smesh", "smesh.fbx")
+
+    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
 
     ~jleSkinnedMesh() override;
 

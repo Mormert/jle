@@ -16,7 +16,7 @@ class jleTexture : public jleSerializedResource, public std::enable_shared_from_
 public:
     jleTexture() = default;
 
-    JLE_REGISTER_RESOURCE_TYPE(jleTexture, tex)
+    JLE_REGISTER_RESOURCE_TYPE(jleTexture, "tex", "png", "jpg", "tga", "bmp", "psd", "jpeg")
 
     template <class Archive>
     void
@@ -25,15 +25,12 @@ public:
         ar(CEREAL_NVP(imagePath));
     }
 
-    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
 
-    std::vector<std::string> getFileAssociationList() override;
-
     ~jleTexture() override;
 
-    // Set this Texture to be the globally active texture
     void setActive(jleTextureSlot slot);
 
     int32_t width();
@@ -52,4 +49,4 @@ private:
 };
 
 CEREAL_REGISTER_TYPE(jleTexture)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleTexture)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedOnlyResource, jleTexture)

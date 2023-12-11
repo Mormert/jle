@@ -116,11 +116,11 @@ jleLoadFromFileSuccessCode jleFont::loadFromFile(const jlePath &path) {
     if (FT_New_Face(
             jleFontData::data->freeTypeLibrary, path.getRealPath().c_str(), 0, &_face)) {
         LOGE << "Failed to load font: " << path.getRealPath();
-        return jleLoadFromFileSuccessCode::FAIL;
+        return false;
     }
 
     _fontLoaded = true;
-    return jleLoadFromFileSuccessCode::SUCCESS;
+    return true;
 }
 
 void jleFont::addFontSizePixels(uint32_t sizePixels) {

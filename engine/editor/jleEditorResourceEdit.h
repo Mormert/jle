@@ -22,7 +22,7 @@ public:
 
 private:
 
-    std::unordered_map<jlePath, std::shared_ptr<jleSerializedResource>> _resources;
+    std::unordered_map<jlePath, std::shared_ptr<jleSerializedOnlyResource>> _resources;
 
 };
 

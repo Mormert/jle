@@ -8,15 +8,15 @@
 #include "jleTypeReflectionUtils.h"
 
 
-class jleEngineSettings : public jleSerializedResource, public std::enable_shared_from_this<jleEngineSettings>
+class jleEngineSettings : public jleSerializedOnlyResource, public std::enable_shared_from_this<jleEngineSettings>
 {
 public:
 
-    JLE_REGISTER_RESOURCE_TYPE(jleEngineSettings, es)
+    JLE_REGISTER_RESOURCE_TYPE(jleEngineSettings, "es")
 
     WindowSettings windowSettings;
 
-    SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
+    SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedOnlyResource)
 
     ~jleEngineSettings() override = default;
 
@@ -29,7 +29,7 @@ public:
 };
 
 CEREAL_REGISTER_TYPE(jleEngineSettings)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleEngineSettings)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedOnlyResource, jleEngineSettings)
 
 
 #endif // JLE_ENGINESETTINGS

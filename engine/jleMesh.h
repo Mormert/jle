@@ -3,6 +3,8 @@
 #pragma once
 
 #include "jleResourceInterface.h"
+#include "jleTypeReflectionUtils.h"
+
 #include <glm/glm.hpp>
 #include <vector>
 
@@ -12,9 +14,11 @@ struct aiScene;
 class jleMesh : public jleResourceInterface
 {
 public:
+    JLE_REGISTER_RESOURCE_TYPE(jleMesh, "mesh", "obj", "fbx")
+
     ~jleMesh() override;
 
-    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
 
     // Synchronous OBJ loading
     bool loadFromObj(const jlePath &path);
@@ -54,8 +58,6 @@ public:
     const std::vector<glm::vec3> &bitangents();
 
     const std::vector<unsigned int> &indices();
-
-    std::vector<std::string> getFileAssociationList() override;
 
     void saveToFile() override;
 

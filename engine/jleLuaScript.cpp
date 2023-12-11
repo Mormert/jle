@@ -4,12 +4,12 @@
 #include "jleGameEngine.h"
 #include "jleLuaEnvironment.h"
 
-jleLoadFromFileSuccessCode
+bool
 jleLuaScript::loadFromFile(const jlePath &path)
 {
     std::ifstream load{path.getRealPath()};
     if (!load.good()) {
-        return jleLoadFromFileSuccessCode::FAIL;
+        return false;
     }
 
     std::stringstream buffer;
@@ -21,7 +21,7 @@ jleLuaScript::loadFromFile(const jlePath &path)
     _luaEnvironment = gEngine->luaEnvironment();
     loadScript();
 
-    return jleLoadFromFileSuccessCode::SUCCESS;
+    return true;
 }
 
 void
@@ -42,10 +42,4 @@ jleLuaScript::saveToFile()
 {
     std::ofstream save{path.getRealPath()};
     save << _sourceCode;
-}
-
-std::vector<std::string>
-jleLuaScript::getFileAssociationList()
-{
-    return {"lua"};
 }

@@ -16,10 +16,10 @@
 
 class jleObject;
 
-class jleScene : public jleSerializedResource, public std::enable_shared_from_this<jleScene>
+class jleScene : public jleSerializedOnlyResource, public std::enable_shared_from_this<jleScene>
 {
 public:
-    JLE_REGISTER_RESOURCE_TYPE(jleScene, scn)
+    JLE_REGISTER_RESOURCE_TYPE(jleScene, "scn")
 
     jleScene();
 
@@ -27,11 +27,11 @@ public:
     saveToFile() override
     {
         if (path.isEmpty()) {
-            path = jlePath{"GR:scenes/" + sceneName + getDotFileExtension()};
+            path = jlePath{"GR:scenes/" + sceneName + getDotPrimaryFileExtension()};
         }
         std::ofstream save{path.getRealPath()};
         cereal::JSONOutputArchive outputArchive(save);
-        std::shared_ptr<jleSerializedResource> thiz = shared_from_this();
+        std::shared_ptr<jleSerializedOnlyResource> thiz = shared_from_this();
         outputArchive(thiz);
     };
 
@@ -108,7 +108,7 @@ private:
 JLE_EXTERN_TEMPLATE_CEREAL_H(jleScene)
 
 CEREAL_REGISTER_TYPE(jleScene)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleScene)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedOnlyResource, jleScene)
 
 #include "jleScene.inl"
 

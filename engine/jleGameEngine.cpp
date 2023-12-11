@@ -325,7 +325,7 @@ jleGameEngine::update(float dt)
         }
         {
             JLE_SCOPE_PROFILE_CPU(RmlUi)
-            context->Update();
+            // context->Update();
         }
         physics().step(dt);
     }

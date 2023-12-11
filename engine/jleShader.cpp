@@ -8,12 +8,12 @@
 #include <fstream>
 #include <string>
 
-jleLoadFromFileSuccessCode
+bool
 jleShader::loadFromFile(const jlePath &path)
 {
     std::ifstream load{path.getRealPath()};
     if (!load.good()) {
-        return jleLoadFromFileSuccessCode::FAIL;
+        return false;
     }
 
     std::stringstream buffer;
@@ -45,7 +45,7 @@ jleShader::loadFromFile(const jlePath &path)
     glCompileShader(vertex);
     if (!checkCompileErrors(vertex, "VERTEX")) {
         glDeleteShader(vertex);
-        return jleLoadFromFileSuccessCode::FAIL;
+        return false;
     }
 
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
@@ -55,7 +55,7 @@ jleShader::loadFromFile(const jlePath &path)
     if (!checkCompileErrors(fragment, "FRAGMENT")) {
         glDeleteShader(vertex);
         glDeleteShader(fragment);
-        return jleLoadFromFileSuccessCode::FAIL;
+        return false;
     }
 
     _program = glCreateProgram();
@@ -68,7 +68,7 @@ jleShader::loadFromFile(const jlePath &path)
         glDeleteShader(fragment);
         glDeleteProgram(_program);
         _program = 0;
-        return jleLoadFromFileSuccessCode::FAIL;
+        return false;
     }
 
     glDeleteShader(vertex);
@@ -76,7 +76,7 @@ jleShader::loadFromFile(const jlePath &path)
 
     LOGV << "Compiled GLSL shader program: " << path.getVirtualPath();
 
-    return jleLoadFromFileSuccessCode::SUCCESS;
+    return true;
 
 }
 
@@ -187,10 +187,5 @@ jleShader::checkCompileErrors(unsigned int shader, std::string type)
         }
     }
     return true;
-}
-std::vector<std::string>
-jleShader::getFileAssociationList()
-{
-    return {"glsl"};
 }
 

@@ -1,6 +1,10 @@
 // Copyright (c) 2023. Johan Lind
 
-#pragma once
+#ifndef JLE_TYPE_REFLECTION_UTILS
+#define JLE_TYPE_REFLECTION_UTILS
+
+#include "jlePath.h"
+#include "jleResource.h"
 
 #include <cassert>
 #include <functional>
@@ -30,14 +34,24 @@ public:                                                                         
                                                                                                                        \
 private:
 
-#define JLE_REGISTER_RESOURCE_TYPE(resource_name, filename_extension)                                                  \
-    static inline const jleResourceTypeRegistrator<resource_name> resource_name_Reg{#resource_name,                    \
-                                                                                    #filename_extension};              \
-    virtual std::string getFileExtension()                                                                             \
+// Registered by providing: ResourceName, FileExtensionAssociations (variadic)
+#define JLE_REGISTER_RESOURCE_TYPE(resource_name, ...)                                                                 \
+    static inline const jleResourceTypeRegistrator<resource_name> resource_name_Reg{#resource_name, {__VA_ARGS__}};    \
+    virtual const std::vector<std::string> &getFileAssociations() override                                             \
     {                                                                                                                  \
         static_assert(std::is_base_of<jleResourceInterface, resource_name>::value,                                     \
                       "Resource must derive from jleResourceInterface");                                               \
-        return #filename_extension;                                                                                    \
+        static std::vector<std::string> staticList{__VA_ARGS__};                                                       \
+        return staticList;                                                                                             \
+    }                                                                                                                  \
+                                                                                                                       \
+public:                                                                                                                \
+    static const std::vector<std::string> &getFileAssociationsStatic()                                                 \
+    {                                                                                                                  \
+        static_assert(std::is_base_of<jleResourceInterface, resource_name>::value,                                     \
+                      "Resource must derive from jleResourceInterface");                                               \
+        static std::vector<std::string> staticList{__VA_ARGS__};                                                       \
+        return staticList;                                                                                             \
     }
 
 class jleObject;
@@ -64,11 +78,14 @@ public:
     static std::map<std::string, std::function<std::shared_ptr<jleComponent>()>> &registeredComponentsRef();
 
     struct jleRegisteredResourceInterfaceData {
-        std::string filenameExtension;
+        std::vector<std::string> fileExtensions;
         std::function<std::shared_ptr<jleResourceInterface>()> creationFunction;
     };
 
     static std::map<std::string, jleRegisteredResourceInterfaceData> &registeredResourcesRef();
+
+    static std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path)>> &
+    registeredFileTypeLoadersRef();
 
 private:
     // Should always be accessed via registeredObjectsRef()
@@ -82,6 +99,10 @@ private:
     // Should always be accessed via registeredResourcesRef()
     static inline std::unique_ptr<std::map<std::string, jleRegisteredResourceInterfaceData>> _registeredResourcesPtr{
         nullptr};
+
+    static inline std::unique_ptr<
+        std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path)>>>
+        _registeredFileTypeLoadersPtr{nullptr};
 };
 
 template <typename T>
@@ -102,7 +123,9 @@ template <typename T>
 class jleResourceTypeRegistrator
 {
 public:
-    explicit jleResourceTypeRegistrator(const std::string &rName, const std::string &fileExtension);
+    explicit jleResourceTypeRegistrator(const std::string &rName, const std::vector<std::string> &fileExtensions);
 };
 
 #include "jleTypeReflectionUtils.inl"
+
+#endif // JLE_TYPE_REFLECTION_UTILS

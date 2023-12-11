@@ -14,7 +14,7 @@ jleSpritesheet::loadImage()
     _imageTexture = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{pngPath});
 }
 
-jleLoadFromFileSuccessCode
+bool
 jleSpritesheet::loadFromFile(const jlePath &path)
 {
     _pathJson = path.getRealPath();
@@ -25,10 +25,10 @@ jleSpritesheet::loadFromFile(const jlePath &path)
 
         from_json(j["frames"], *this);
         loadImage();
-        return jleLoadFromFileSuccessCode::SUCCESS;
+        return true;
     } else {
         LOG_ERROR << "Could not load Spritesheet json file " << path.getRealPath();
-        return jleLoadFromFileSuccessCode::FAIL;
+        return false;
     }
 }
 

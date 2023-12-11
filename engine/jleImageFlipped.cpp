@@ -4,7 +4,7 @@
 
 jleImageFlipped::jleImageFlipped(const jlePath &path) : jleImage(path) {}
 
-jleLoadFromFileSuccessCode
+bool
 jleImageFlipped::loadFromFile(const jlePath &path)
 {
     jleImage::setFlipImage(true);

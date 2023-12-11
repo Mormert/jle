@@ -1,5 +1,9 @@
 // Copyright (c) 2023. Johan Lind
 
+#include "jleGameEngine.h"
+#include "jleResource.h"
+#include "jleTypeReflectionUtils.h"
+
 template <typename T>
 inline void
 jleTypeReflectionUtils::registerObject()
@@ -67,10 +71,19 @@ inline std::map<std::string, jleTypeReflectionUtils::jleRegisteredResourceInterf
 jleTypeReflectionUtils::registeredResourcesRef()
 {
     if (!_registeredResourcesPtr) {
-        _registeredResourcesPtr =
-            std::make_unique<std::map<std::string, jleRegisteredResourceInterfaceData>>();
+        _registeredResourcesPtr = std::make_unique<std::map<std::string, jleRegisteredResourceInterfaceData>>();
     }
     return *_registeredResourcesPtr;
+}
+
+inline std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path)>> &
+jleTypeReflectionUtils::registeredFileTypeLoadersRef()
+{
+    if (!_registeredFileTypeLoadersPtr) {
+        _registeredFileTypeLoadersPtr = std::make_unique<
+            std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path)>>>();
+    }
+    return *_registeredFileTypeLoadersPtr;
 }
 
 template <typename T>
@@ -96,14 +109,24 @@ inline jleComponentTypeRegistrator<T>::jleComponentTypeRegistrator(const std::st
 }
 
 template <typename T>
-jleResourceTypeRegistrator<T>::jleResourceTypeRegistrator(const std::string &rName, const std::string& fileExtension)
+jleResourceTypeRegistrator<T>::jleResourceTypeRegistrator(const std::string &rName,
+                                                          const std::vector<std::string> &fileExtensions)
 {
+    if (fileExtensions.empty()) {
+        std::cerr << "No file extensions provided for resource registration of " << rName << std::endl;
+    }
+
 #ifndef NDEBUG
     std::cout << rName << " resource registered.\n";
 #endif
     jleTypeReflectionUtils::jleRegisteredResourceInterfaceData data;
     data.creationFunction = []() { return std::make_shared<T>(); };
-    data.filenameExtension = fileExtension;
+    data.fileExtensions = fileExtensions;
 
     jleTypeReflectionUtils::registeredResourcesRef().insert(std::make_pair(rName, data));
+
+    for (const auto &extension : fileExtensions) {
+        jleTypeReflectionUtils::registeredFileTypeLoadersRef().insert(std::make_pair(
+            extension, [](const jlePath &path) { return gEngine->resources().loadResourceFromFile<T>(path); }));
+    }
 }

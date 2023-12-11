@@ -28,7 +28,7 @@ struct jleSpritesheet : public jleResourceInterface {
 
     void loadImage();
 
-    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
 
     std::unordered_map<std::string, jleSpritesheetEntity> _spritesheetEntities;
 

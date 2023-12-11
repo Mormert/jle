@@ -8,7 +8,7 @@
 #include "stb_image.h"
 #include <plog/Log.h>
 
-JLE_EXTERN_TEMPLATE_CEREAL_CPP(WindowSettings)
+//JLE_EXTERN_TEMPLATE_CEREAL_CPP(WindowSettings)
 
 
 void

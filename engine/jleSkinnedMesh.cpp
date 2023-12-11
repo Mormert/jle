@@ -130,14 +130,14 @@ jleSkinnedMesh::loadAssimpSkinnedMesh(aiMesh *assimpMesh,
     }
 }
 
-jleLoadFromFileSuccessCode
+bool
 jleSkinnedMesh::loadFromFile(const jlePath &path)
 {
     bool ret = loadSkinnedAssimp(path);
     if (!ret) {
-        return jleLoadFromFileSuccessCode::FAIL;
+        return false;
     }
-    return jleLoadFromFileSuccessCode::SUCCESS;
+    return true;
 }
 
 bool

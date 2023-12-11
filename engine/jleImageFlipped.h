@@ -13,7 +13,7 @@ public:
 
     explicit jleImageFlipped(const jlePath &path);
 
-    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
 };
 
 #endif // JLE_IMAGEFLIPPED_H

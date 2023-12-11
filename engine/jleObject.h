@@ -17,9 +17,10 @@
 
 class jleScene;
 
-class jleObject : public jleSerializedResource, public std::enable_shared_from_this<jleObject>
+class jleObject : public jleSerializedOnlyResource, public std::enable_shared_from_this<jleObject>
 {
     JLE_REGISTER_OBJECT_TYPE(jleObject)
+    JLE_REGISTER_RESOURCE_TYPE(jleObject, "jobj")
 public:
     std::string _instanceName;
 
@@ -166,7 +167,7 @@ protected:
 JLE_EXTERN_TEMPLATE_CEREAL_H(jleObject)
 
 CEREAL_REGISTER_TYPE(jleObject)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleObject)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedOnlyResource, jleObject)
 
 #include "jleObject.inl"
 

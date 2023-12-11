@@ -12,14 +12,14 @@
 
 #include "jleIncludeGL.h"
 
-jleLoadFromFileSuccessCode
+bool
 jleMesh::loadFromFile(const jlePath &path)
 {
     bool ret = loadFromObj(path);
     if (ret) {
-        return jleLoadFromFileSuccessCode::SUCCESS;
+        return true;
     } else {
-        return jleLoadFromFileSuccessCode::FAIL;
+        return false;
     }
 }
 
@@ -403,12 +403,6 @@ const std::vector<unsigned int> &
 jleMesh::indices()
 {
     return _indices;
-}
-
-std::vector<std::string>
-jleMesh::getFileAssociationList()
-{
-    return {"fbx", "obj"};
 }
 
 void

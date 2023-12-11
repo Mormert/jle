@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include <glm/glm.hpp>
 #include <assimp/scene.h>
+#include <glm/glm.hpp>
 
-struct jleAnimationNode{
+struct jleAnimationNode {
     glm::mat4 transformation;
     std::string name;
     std::vector<jleAnimationNode> childNodes;
@@ -19,31 +19,30 @@ struct jleAnimationNode{
 class jleAnimation : public jleResourceInterface
 {
 public:
+    JLE_REGISTER_RESOURCE_TYPE(jleAnimation, "anim", "anim.fbx")
 
     jleAnimation() = default;
 
-    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
 
-    jleAnimation(const std::string& path, jleSkinnedMesh& mesh);
+    jleAnimation(const std::string &path, jleSkinnedMesh &mesh);
 
-    jleAnimationBone* findBone(const std::string& name);
+    jleAnimationBone *findBone(const std::string &name);
 
     float getTicksPerSec();
 
     float getDuration();
 
-    jleAnimationNode& getRootNode();
+    jleAnimationNode &getRootNode();
 
-    std::unordered_map<std::string, jleSkinnedMeshBone>& getBoneMapping();
+    std::unordered_map<std::string, jleSkinnedMeshBone> &getBoneMapping();
 
-    std::vector<std::string> getFileAssociationList() override;
-
-    const std::vector<jleAnimationBone>& getBones();
+    const std::vector<jleAnimationBone> &getBones();
 
 private:
-    void readBonesFromMesh(const aiAnimation* animation, const aiMesh* mesh);
+    void readBonesFromMesh(const aiAnimation *animation, const aiMesh *mesh);
 
-    void readHierarchyData(jleAnimationNode& dest, aiNode* src);
+    void readHierarchyData(jleAnimationNode &dest, aiNode *src);
 
     float _duration;
     int _ticksPerSecond;

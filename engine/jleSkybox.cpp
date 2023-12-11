@@ -8,7 +8,7 @@
 
 #include <vector>
 
-jleLoadFromFileSuccessCode
+bool
 jleSkybox::loadFromFile(const jlePath &path)
 {
     constexpr float skyboxVertices[] = {// positions
@@ -72,7 +72,7 @@ jleSkybox::loadFromFile(const jlePath &path)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-    return jleLoadFromFileSuccessCode::SUCCESS;
+    return true;
 }
 unsigned int
 jleSkybox::getTextureID()
@@ -83,9 +83,4 @@ unsigned int
 jleSkybox::getVAO()
 {
     return _vao;
-}
-std::vector<std::string>
-jleSkybox::getFileAssociationList()
-{
-    return {"skyb"};
 }

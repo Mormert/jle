@@ -4,17 +4,20 @@
 
 #include "jlePath.h"
 #include "jleResourceInterface.h"
+#include "jleTypeReflectionUtils.h"
 
 #include <string>
 
 class jleImage : public jleResourceInterface
 {
 public:
+    JLE_REGISTER_RESOURCE_TYPE(jleImage, "img", "png", "jpg", "jpeg", "tga", "psd", "gif")
+
     jleImage() = default;
 
     explicit jleImage(const jlePath &path);
 
-    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
 
     jleImage(const jleImage &i);
 

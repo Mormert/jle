@@ -14,11 +14,9 @@ class jleShader : public jleResourceInterface, public std::enable_shared_from_th
 {
 public:
 
-    JLE_REGISTER_RESOURCE_TYPE(jleShader, glsl)
+    JLE_REGISTER_RESOURCE_TYPE(jleShader, "glsl")
 
-    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
-
-    std::vector<std::string> getFileAssociationList() override;
+    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
 
     jleShader() = default;
 

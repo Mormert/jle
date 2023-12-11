@@ -11,7 +11,7 @@
 class jleLuaScriptComponent : public jleLuaScript
 {
 public:
-    JLE_REGISTER_RESOURCE_TYPE(jleLuaScriptComponent, lua);
+    JLE_REGISTER_RESOURCE_TYPE(jleLuaScriptComponent, "lua");
 
     void setupLua(sol::table &self, jleObject *ownerObject);
 

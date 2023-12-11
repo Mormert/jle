@@ -485,7 +485,7 @@ private:
             dummyResource = std::make_unique<T>();
         }
 
-        auto fileExtensionAssociated = dummyResource->getFileAssociationList();
+        auto fileExtensionAssociated = dummyResource->getFileAssociations();
 
         bool isEditedAndDeactivated = draw_ui_reference(
             ar, std::string{name + std::string{" (ref)"}}.c_str(), value.path._virtualPath, fileExtensionAssociated);

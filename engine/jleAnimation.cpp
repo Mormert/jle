@@ -6,7 +6,7 @@
 #include <assimp/scene.h>
 #include <glm/gtc/type_ptr.hpp>
 
-jleLoadFromFileSuccessCode
+bool
 jleAnimation::loadFromFile(const jlePath &path)
 {
     Assimp::Importer importer;
@@ -15,17 +15,17 @@ jleAnimation::loadFromFile(const jlePath &path)
         path.getRealPath(), aiProcess_Triangulate | aiProcess_PopulateArmatureData | aiProcess_LimitBoneWeights);
     if (!scene || !scene->mRootNode) {
         LOGE << "Failed loading animation, no scene or no root node.";
-        return jleLoadFromFileSuccessCode::FAIL;
+        return false;
     }
 
     if (!scene->HasAnimations()) {
         LOGE << "Failed loading animation, loaded model is missing animations.";
-        return jleLoadFromFileSuccessCode::FAIL;
+        return false;
     }
 
     if (!scene->HasMeshes()) {
         LOGE << "Failed loading animation, loaded model is missing at least 1 mesh to load skeleton";
-        return jleLoadFromFileSuccessCode::FAIL;
+        return false;
     }
 
     auto animation = scene->mAnimations[0];
@@ -35,7 +35,7 @@ jleAnimation::loadFromFile(const jlePath &path)
 
     readBonesFromMesh(animation, scene->mMeshes[0]);
 
-    return jleLoadFromFileSuccessCode::SUCCESS;
+    return true;
 }
 jleAnimation::jleAnimation(const std::string &path, jleSkinnedMesh &mesh) {}
 
@@ -122,12 +122,6 @@ jleAnimation::readHierarchyData(jleAnimationNode &dest, aiNode *src)
         readHierarchyData(newNode, src->mChildren[i]);
         dest.childNodes.push_back(newNode);
     }
-}
-
-std::vector<std::string>
-jleAnimation::getFileAssociationList()
-{
-    return {"fbx"};
 }
 
 const std::vector<jleAnimationBone> &

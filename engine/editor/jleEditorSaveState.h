@@ -10,9 +10,10 @@
 
 #include <cereal/cereal.hpp>
 #include <cereal/archives/json.hpp>
+#include <cereal/archives/binary.hpp>
 #include "editor/jleImGuiCerealArchive.h"
 
-struct jleEditorSaveState : public jleSerializedResource, public std::enable_shared_from_this<jleEditorSaveState> {
+struct jleEditorSaveState : public jleSerializedOnlyResource, public std::enable_shared_from_this<jleEditorSaveState> {
     template <class Archive>
     void
     serialize(Archive &archive)
@@ -25,8 +26,8 @@ struct jleEditorSaveState : public jleSerializedResource, public std::enable_sha
                 CEREAL_NVP(cameraPitch));
     }
 
-    JLE_REGISTER_RESOURCE_TYPE(jleEditorSaveState, edsave);
-    SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
+    JLE_REGISTER_RESOURCE_TYPE(jleEditorSaveState, "edsave");
+    SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedOnlyResource)
 
     std::vector<jlePath> loadedScenePaths{};
     glm::vec3 cameraPosition{};
@@ -39,7 +40,7 @@ struct jleEditorSaveState : public jleSerializedResource, public std::enable_sha
 JLE_EXTERN_TEMPLATE_CEREAL_H(jleEditorSaveState)
 
 CEREAL_REGISTER_TYPE(jleEditorSaveState)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleEditorSaveState)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedOnlyResource, jleEditorSaveState)
 
 
 #endif // JLE_EDITORSAVESTATE

@@ -8,20 +8,24 @@
 
 #include <algorithm>
 
-jleLoadFromFileSuccessCode
+bool
 jleImage::loadFromFile(const jlePath &path)
 {
-
     const auto &realPath = path.getRealPath();
     image_data = stbi_load(realPath.c_str(), &_width, &_height, &_nrChannels, 0);
 
     if (image_data) {
-        return jleLoadFromFileSuccessCode::SUCCESS;
+        return true;
     }
-    return jleLoadFromFileSuccessCode::FAIL;
+    return false;
 }
 
-jleImage::jleImage(const jlePath &path) { loadFromFile(path); }
+jleImage::jleImage(const jlePath &path)
+{
+    if (!loadFromFile(path)) {
+        LOGE << "Failed loading image with path: " << path.getVirtualPath();
+    }
+}
 
 jleImage::jleImage(const jleImage &i)
 {

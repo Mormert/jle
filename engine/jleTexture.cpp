@@ -19,7 +19,7 @@ jleTexture::~jleTexture()
     }
 }
 
-jleLoadFromFileSuccessCode
+bool
 jleTexture::loadFromFile(const jlePath &path)
 {
     auto fe = path.getFileEnding();
@@ -80,10 +80,10 @@ jleTexture::loadFromFile(const jlePath &path)
     } else {
         PLOG_ERROR << "Failed to generate OpenGL texture " << _id << " with path: " << path.getVirtualPath();
 
-        return jleLoadFromFileSuccessCode::FAIL;
+        return false;
     }
 
-    return jleLoadFromFileSuccessCode::SUCCESS;
+    return true;
 }
 
 void
@@ -109,11 +109,6 @@ unsigned int
 jleTexture::id()
 {
     return _id;
-}
-std::vector<std::string>
-jleTexture::getFileAssociationList()
-{
-    return {"png", "jpg", "tga", "bmp", "psd", "jpeg"};
 }
 
 const int

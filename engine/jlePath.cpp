@@ -26,7 +26,7 @@ jlePath::jlePath(const char *virtualPath) : jlePath(std::string{virtualPath}, tr
 jlePath::jlePath(const std::string &virtualPath) : jlePath(virtualPath, true) {}
 
 std::string
-jlePath::getPathPrefix() const
+jlePath::getPathVirtualDrive() const
 {
     return _virtualPath.substr(0, 3);
 }
@@ -197,7 +197,7 @@ jlePath::fixSlashes(std::string &str)
 std::string
 jlePath::getFileEnding() const
 {
-    size_t pos = _virtualPath.find_last_of(".");
+    size_t pos = _virtualPath.find_first_of('.');
 
     if (pos != std::string::npos) {
         return _virtualPath.substr(pos + 1);
@@ -251,4 +251,10 @@ bool
 jlePath::operator<(const jlePath &other) const
 {
     return _virtualPath < other._virtualPath;
+}
+
+size_t
+jlePath::hash() const
+{
+    return _hash;
 }

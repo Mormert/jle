@@ -4,34 +4,53 @@
 
 #include "jleResourceInterface.h"
 
-#define SAVE_SHARED_THIS_SERIALIZED_JSON(PTR_TYPE)                                                                     \
+#define SAVE_SHARED_THIS_SERIALIZED_JSON(PARENT_TYPE)                                                                  \
     void saveToFile() override                                                                                         \
     {                                                                                                                  \
-        std::ofstream save{path.getRealPath()};                                                                                  \
+        std::ofstream save{path.getRealPath()};                                                                        \
         cereal::JSONOutputArchive outputArchive(save);                                                                 \
-        std::shared_ptr<PTR_TYPE> thiz = shared_from_this();                                                           \
+        std::shared_ptr<PARENT_TYPE> thiz = shared_from_this();                                                        \
         outputArchive(thiz);                                                                                           \
     };
 
+// Derive from this whenever a resource only relies on save/load via serialization archives
+class jleSerializedOnlyResource : public jleResourceInterface
+{
+public:
+    jleSerializedOnlyResource() = default;
+
+    ~jleSerializedOnlyResource() override = default;
+
+    template <class Archive>
+    void
+    serialize(Archive &ar)
+    {
+        // Empty serialization function
+    }
+
+    bool
+    loadFromFile(const jlePath &path) final
+    {
+        // This empty interface function should never be called, instead the macro
+        // SAVE_SHARED_THIS_SERIALIZED_JSON should be used!
+        LOGE << "loadFromFile called for serialized-only resource, which should not happen.";
+        return false;
+    }
+};
+
+// Derive from this whenever a resource relies on save/load from serialization archives, but also implements a
+// loadFromFile() member function.
 class jleSerializedResource : public jleResourceInterface
 {
 public:
     jleSerializedResource() = default;
 
-    virtual ~jleSerializedResource() = default;
+    ~jleSerializedResource() override = default;
 
     template <class Archive>
     void
-    serialize(Archive &archive)
+    serialize(Archive &ar)
     {
+        // Empty serialization function
     }
-
-    // Should implement logic for loading data from file into derived class
-    jleLoadFromFileSuccessCode
-    loadFromFile(const jlePath &path) override
-    {
-        return jleLoadFromFileSuccessCode::SUCCESS;
-    };
 };
-
-CEREAL_REGISTER_TYPE(jleSerializedResource)

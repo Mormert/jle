@@ -45,7 +45,7 @@ jleLuaEnvironment::setupLua(sol::state &lua)
         "jlePath",
         sol::constructors<jlePath(), jlePath(const std::string &), jlePath(const std::string &, bool)>(),
         "prefix",
-        &jlePath::getPathPrefix,
+        &jlePath::getPathVirtualDrive,
         "virtual",
         &jlePath::getVirtualPathConst,
         "real",

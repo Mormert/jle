@@ -37,7 +37,7 @@ public:
     explicit jlePath(const std::string &path, bool virtualPath);
 
     // Returns the drive, like "GR:"
-    [[nodiscard]] std::string getPathPrefix() const;
+    [[nodiscard]] std::string getPathVirtualDrive() const;
 
     [[nodiscard]] std::string getVirtualPath() const;
     [[nodiscard]] std::string getVirtualPath();
@@ -68,6 +68,8 @@ public:
     // Note: should actually be private!
     // Don't modify!
     std::string _virtualPath;
+
+    size_t hash() const;
 
 private:
     mutable std::string _realPath;

@@ -6,6 +6,7 @@
 #include "jlePath.h"
 
 #include <cereal/archives/json.hpp>
+#include <cereal/archives/binary.hpp>
 #include "editor/jleImGuiCerealArchive.h"
 
 #include <string>
@@ -39,4 +40,4 @@ public:
 
 };
 
-JLE_EXTERN_TEMPLATE_CEREAL_H(WindowSettings)
+//JLE_EXTERN_TEMPLATE_CEREAL_H(WindowSettings)

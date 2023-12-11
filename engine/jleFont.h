@@ -32,7 +32,7 @@ public:
 
     void addFontSizePixels(uint32_t sizePixels);
 
-    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
 
     // TODO: Move rendering to Text Rendering engine subsystem
     // TODO: Add scale as param

@@ -92,7 +92,9 @@ jleFileIndexer::notifyModification(const jlePath &path)
 {
     if (gEngine->resources().isResourceLoaded(path)) {
         LOGI << "File modified: " << path.getVirtualPath() << " (reloading resource)";
-        gEngine->resources().resource(path)->loadFromFile(path);
+        if (!gEngine->resources().getResource(path)->loadFromFile(path)) {
+            LOGW << "Failed reloading resource: " << path.getVirtualPath();
+        }
 
 #ifdef BUILD_EDITOR
         gEditor->editorTextEdit().reloadIfOpened(path);

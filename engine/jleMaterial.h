@@ -17,6 +17,7 @@
 
 #include "editor/jleImGuiCerealArchive.h"
 #include <cereal/archives/json.hpp>
+#include <cereal/archives/binary.hpp>
 #include <cereal/cereal.hpp>
 
 enum class jleBlendMode : int32_t {
@@ -32,10 +33,10 @@ enum class jleBlendMode : int32_t {
     SRC_ALPHA_SATURATE
 };
 
-class jleMaterial : public jleSerializedResource, public std::enable_shared_from_this<jleMaterial>
+class jleMaterial : public jleSerializedOnlyResource, public std::enable_shared_from_this<jleMaterial>
 {
 public:
-    JLE_REGISTER_RESOURCE_TYPE(jleMaterial, mat)
+    JLE_REGISTER_RESOURCE_TYPE(jleMaterial, "mat")
 
     ~jleMaterial() override = default;
 
@@ -48,9 +49,7 @@ public:
     template <class Archive>
     void serialize(Archive &ar);
 
-    SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
-
-    std::vector<std::string> getFileAssociationList() override;
+    SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedOnlyResource)
 
     std::shared_ptr<jleShader> getShader();
 
@@ -65,12 +64,12 @@ protected:
 JLE_EXTERN_TEMPLATE_CEREAL_H(jleMaterial)
 
 CEREAL_REGISTER_TYPE(jleMaterial)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleMaterial)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedOnlyResource, jleMaterial)
 
 class jleMaterialPBR : public jleMaterial
 {
 public:
-    JLE_REGISTER_RESOURCE_TYPE(jleMaterialPBR, mat)
+    JLE_REGISTER_RESOURCE_TYPE(jleMaterialPBR, "mat")
 
     jleMaterialPBR();
 

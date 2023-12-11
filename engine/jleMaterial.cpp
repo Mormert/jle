@@ -5,11 +5,6 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterial)
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterialPBR)
 
-std::vector<std::string>
-jleMaterial::getFileAssociationList()
-{
-    return {"mat"};
-}
 
 void
 jleMaterial::useMaterial(const jleCamera &camera,

@@ -56,7 +56,7 @@ void from_json(const nlohmann::json &j, jleAseprite &a) {
     a.frames = j.at("frames").get<std::vector<jleAsepriteFrame>>();
 }
 
-jleLoadFromFileSuccessCode jleAseprite::loadFromFile(const jlePath &path) {
+bool jleAseprite::loadFromFile(const jlePath &path) {
     this->path = path.getRealPath();
     std::ifstream i(path.getRealPath());
     if (i.good()) {
@@ -65,11 +65,11 @@ jleLoadFromFileSuccessCode jleAseprite::loadFromFile(const jlePath &path) {
 
         from_json(j, *this);
         loadImage();
-        return jleLoadFromFileSuccessCode::SUCCESS;
+        return true;
     }
     else {
         LOG_ERROR << "Could not load Aseprite json file " << path.getRealPath();
-        return jleLoadFromFileSuccessCode::FAIL;
+        return false;
     }
 }
 

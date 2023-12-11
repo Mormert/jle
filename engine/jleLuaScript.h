@@ -10,15 +10,13 @@
 class jleLuaScript : public jleResourceInterface, public std::enable_shared_from_this<jleLuaScript>
 {
 public:
-    JLE_REGISTER_RESOURCE_TYPE(jleLuaScript, lua);
+    JLE_REGISTER_RESOURCE_TYPE(jleLuaScript, "lua");
 
-    jleLoadFromFileSuccessCode loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
 
     virtual void loadScript();
 
     void saveToFile() override;
-
-    std::vector<std::string> getFileAssociationList() override;
 
 protected:
     std::string _luaScriptName;
