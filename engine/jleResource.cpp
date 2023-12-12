@@ -27,7 +27,7 @@ jleResources::reloadSerializedResource(const std::shared_ptr<jleSerializedOnlyRe
         cereal::JSONInputArchive archive{i};
         archive(f);
         if (!f->loadFromFile(path)) {
-            throw std::exception("loadFromFile function failed for given resource.");
+            LOGE << "Failed reloading serialized resource file: " << resource->path.getVirtualPath();
         }
 
         const auto prefix = path.getPathVirtualDrive();

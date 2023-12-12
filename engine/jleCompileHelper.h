@@ -24,14 +24,14 @@ class BinaryInputArchive;
         cereal::jleImGuiCerealArchiveInternal &);                                                                      \
     extern template void object::serialize<cereal::JSONOutputArchive>(cereal::JSONOutputArchive &);                    \
     extern template void object::serialize<cereal::JSONInputArchive>(cereal::JSONInputArchive &);                      \
-    extern template void object::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive &);                  \
+    extern template void object::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive &);                \
     extern template void object::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive &);
 
 #define JLE_EXTERN_TEMPLATE_CEREAL_CPP(object)                                                                         \
     template void object::serialize<cereal::JSONOutputArchive>(cereal::JSONOutputArchive &);                           \
     template void object::serialize<cereal::JSONInputArchive>(cereal::JSONInputArchive &);                             \
-    template void object::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive &);                         \
-    template void object::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive &);                           \
+    template void object::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive &);                       \
+    template void object::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive &);                         \
     template void object::serialize<cereal::jleImGuiCerealArchive>(cereal::jleImGuiCerealArchive &);                   \
     template void object::serialize<cereal::jleImGuiCerealArchiveInternal>(cereal::jleImGuiCerealArchiveInternal &);
 
@@ -48,13 +48,13 @@ class BinaryInputArchive;
 #define JLE_EXTERN_TEMPLATE_CEREAL_H(object)                                                                           \
     extern template void object::serialize<cereal::JSONOutputArchive>(cereal::JSONOutputArchive &);                    \
     extern template void object::serialize<cereal::JSONInputArchive>(cereal::JSONInputArchive &);                      \
-    extern template void object::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive &);                    \
+    extern template void object::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive &);                \
     extern template void object::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive &);
 
 #define JLE_EXTERN_TEMPLATE_CEREAL_CPP(object)                                                                         \
     template void object::serialize<cereal::JSONOutputArchive>(cereal::JSONOutputArchive &);                           \
     template void object::serialize<cereal::JSONInputArchive>(cereal::JSONInputArchive &);                             \
-    template void object::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive &);                           \
+    template void object::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive &);                       \
     template void object::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive &);
 
 #endif
