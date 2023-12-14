@@ -59,6 +59,10 @@ jleFileIndexer::sweep(std::vector<jlePath> &erased, std::vector<jlePath> &added,
     for (auto &dir : _directories) {
 
         for (auto &file : std::filesystem::recursive_directory_iterator(dir)) {
+            auto end = file.path().string()[file.path().string().size()-1];
+            if (end == '~') {
+                continue;
+            }
             auto current_file_last_write_time = std::filesystem::last_write_time(file);
 
             if ((pathsMonitored.find(file.path().string()) == pathsMonitored.end())) {
