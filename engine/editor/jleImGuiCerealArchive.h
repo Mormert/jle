@@ -16,6 +16,7 @@
 #include "jleEditor.h"
 #include "jleExternalSerialization.h"
 #include "jleFileIndexer.h"
+#include "jleRGB.h"
 #include "jleResourceRef.h"
 #include "jleTextureRefOrRGBA.h"
 #include "jleTransform.h"
@@ -612,6 +613,22 @@ private:
         ImGui::PushID(elementCount++);
 
         ImGui::DragFloat4(LeftLabelImGui(name).c_str(), &value[0]);
+        ImGui::PopID();
+    }
+
+    void
+    draw_ui(jleImGuiCerealArchive &ar, const char *name, jleRGB &value)
+    {
+        ImGui::PushID(elementCount++);
+        ImGui::ColorEdit3(name, &value[0]);
+        ImGui::PopID();
+    }
+
+    void
+    draw_ui(jleImGuiCerealArchive &ar, const char *name, jleRGBA &value)
+    {
+        ImGui::PushID(elementCount++);
+        ImGui::ColorEdit4(name, &value[0]);
         ImGui::PopID();
     }
 
