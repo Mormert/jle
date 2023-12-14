@@ -148,6 +148,7 @@ jleResources::loadSerializedResource(std::shared_ptr<jleResourceInterface> &reso
                 std::static_pointer_cast<jleSerializedOnlyResource>(resource);
             iarchive(sr);
             resource = sr;
+            resource->path = path;
             return true;
         } catch (std::exception &e) {
             LOGE << e.what();
