@@ -77,7 +77,6 @@ jleShader::loadFromFile(const jlePath &path)
     LOGV << "Compiled GLSL shader program: " << path.getVirtualPath();
 
     return true;
-
 }
 
 jleShader::~jleShader() { glDeleteProgram(_program); }
@@ -95,9 +94,26 @@ jleShader::SetBool(const std::string &name, bool value) const
 }
 
 void
+jleShader::SetBool(const std::string &name, const std::vector<bool> &uniformArray) const
+{
+    std::vector<int> intConversion;
+    intConversion.resize(uniformArray.size());
+    for (const auto &b : uniformArray) {
+        intConversion.push_back((int)b);
+    }
+    glUniform1iv(glGetUniformLocation(_program, name.c_str()), uniformArray.size(), &intConversion[0]);
+}
+
+void
 jleShader::SetInt(const std::string &name, int value) const
 {
     glUniform1i(glGetUniformLocation(_program, name.c_str()), value);
+}
+
+void
+jleShader::SetInt(const std::string &name, const std::vector<int> &uniformArray) const
+{
+    glUniform1iv(glGetUniformLocation(_program, name.c_str()), uniformArray.size(), &uniformArray[0]);
 }
 
 void
@@ -113,6 +129,12 @@ jleShader::SetFloat(const std::string &name, float value) const
 }
 
 void
+jleShader::SetFloat(const std::string &name, const std::vector<float> &uniformArray) const
+{
+    glUniform1fv(glGetUniformLocation(_program, name.c_str()), uniformArray.size(), &uniformArray[0]);
+}
+
+void
 jleShader::SetVec2(const std::string &name, const glm::vec2 &value) const
 {
     glUniform2fv(glGetUniformLocation(_program, name.c_str()), 1, &value[0]);
@@ -125,9 +147,21 @@ jleShader::SetVec2(const std::string &name, float x, float y) const
 }
 
 void
+jleShader::SetVec2(const std::string &name, const std::vector<glm::vec2> &uniformArray) const
+{
+    glUniform2fv(glGetUniformLocation(_program, name.c_str()), uniformArray.size(), &uniformArray[0].x);
+}
+
+void
 jleShader::SetVec3(const std::string &name, const glm::vec3 &value) const
 {
     glUniform3fv(glGetUniformLocation(_program, name.c_str()), 1, &value[0]);
+}
+
+void
+jleShader::SetVec3(const std::string &name, const std::vector<glm::vec3> &uniformArray) const
+{
+    glUniform3fv(glGetUniformLocation(_program, name.c_str()), uniformArray.size(), &uniformArray[0].x);
 }
 
 void
@@ -146,6 +180,12 @@ void
 jleShader::SetVec4(const std::string &name, float x, float y, float z, float w)
 {
     glUniform4f(glGetUniformLocation(_program, name.c_str()), x, y, z, w);
+}
+
+void
+jleShader::SetVec4(const std::string &name, const std::vector<glm::vec4> &uniformArray) const
+{
+    glUniform4fv(glGetUniformLocation(_program, name.c_str()), uniformArray.size(), &uniformArray[0].x);
 }
 
 void
@@ -188,4 +228,3 @@ jleShader::checkCompileErrors(unsigned int shader, std::string type)
     }
     return true;
 }
-
