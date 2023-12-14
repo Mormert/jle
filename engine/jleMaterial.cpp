@@ -11,6 +11,12 @@ jleMaterial::useMaterial(const jleCamera &camera,
                          const std::vector<jle3DRendererLight> &lights,
                          const jle3DSettings &settings)
 {
+    auto &shader = *_shaderRef.get();
+
+    shader.use();
+    shader.SetMat4("uView", camera.getViewMatrix());
+    shader.SetMat4("uProj", camera.getProjectionMatrix());
+    shader.SetVec3("uCameraPosition", camera.getPosition());
 }
 
 std::shared_ptr<jleShader>
