@@ -47,9 +47,7 @@ add_library(engine STATIC
         "jleComponent.cpp"
         "jleGame.cpp"
         "jleObject.cpp"
-        #"jleAseprite.cpp"
         "jleScene.cpp"
-        # "jleTextRendering.cpp"
         "jleGameEngine.cpp"
         "jleKeyboardInput.cpp"
         "jleMouseInput.cpp"
@@ -59,29 +57,14 @@ add_library(engine STATIC
         "jleFramebufferShadowCubeMap.cpp"
         "jleFramebufferPicking.cpp"
         "jleFullscreenRendering.cpp"
-        #"jleQuadRendering.cpp"
-        #"jleRendering.cpp"
         "jleDynamicLogAppender.cpp"
         "jleShader.cpp"
         "jleTexture.cpp"
         "jleWindow.cpp"
         "jleTransform.cpp"
-        #"cSprite.cpp"
-        #"cSpriteDepth.cpp"
-        #"cAseprite.cpp"
         "cCamera.cpp"
-        #"jleFont.cpp"
-        #"cText.cpp"
         "cAnimator.cpp"
         "jleTimerManager.cpp"
-        #"cUITransformUpdater.cpp"
-        "jleNetworking.cpp"
-        "jleNetworkingNative.cpp"
-        "jleNetworkingJS.cpp"
-        "jleNetScene.cpp"
-        #"jleSpritesheet.cpp"
-        #"cSpritesheetDepth.cpp"
-        #"cSpritesheet.cpp"
         "jlePath.cpp"
         "jleProfiler.cpp"
         "jleCamera.cpp"
@@ -96,7 +79,6 @@ add_library(engine STATIC
         "cLightDirectional.cpp"
         "jleFramebufferScreen.cpp"
         "jleMaterial.cpp"
-        # "jleExplicitInclude.cpp"
         "jlePhysics.cpp"
         "jlePhysicsDebugDrawer.cpp"
         "cRigidbody.cpp"
@@ -196,11 +178,6 @@ if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded lib
 
     add_subdirectory(3rdparty/git_submodules/glfw)
     target_link_libraries(engine PUBLIC glfw)
-
-    add_subdirectory(3rdparty/git_submodules/socket.io-client-cpp)
-    target_link_libraries(engine PUBLIC sioclient)
-    target_include_directories(engine SYSTEM PUBLIC
-            "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/socket.io-cpp/src")
 
 endif ()
 

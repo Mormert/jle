@@ -7,7 +7,6 @@
 #include "jleEditor.h"
 #include "jleGame.h"
 #include "jleImGuiCerealArchive.h"
-#include "jleNetScene.h"
 #include "jleTypeReflectionUtils.h"
 
 #include <filesystem>
@@ -39,19 +38,10 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                     if (ImGui::MenuItem("jleScene")) {
                         ge.gameRef().createScene<jleScene>();
                     }
-                    if (ImGui::MenuItem("jleNetScene")) {
-                        ge.gameRef().createScene<jleNetScene>();
-                    }
                 } else {
                     if (ImGui::MenuItem("jleScene")) {
 
                         std::shared_ptr<jleScene> newScene = std::make_shared<jleScene>();
-                        gEditor->getEditorScenes().push_back(newScene);
-
-                        newScene->onSceneCreation();
-                    }
-                    if (ImGui::MenuItem("jleNetScene")) {
-                        std::shared_ptr<jleScene> newScene = std::make_shared<jleNetScene>();
                         gEditor->getEditorScenes().push_back(newScene);
 
                         newScene->onSceneCreation();
