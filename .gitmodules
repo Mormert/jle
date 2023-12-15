@@ -31,3 +31,9 @@
 [submodule "engine/3rdparty/git_submodules/lz4"]
 	path = engine/3rdparty/git_submodules/lz4
 	url = https://github.com/lz4/lz4.git
+[submodule "engine/3rdparty/git_submodules/enet"]
+	path = engine/3rdparty/git_submodules/enet
+	url = https://github.com/zpl-c/enet.git
+[submodule "engine/3rdparty/git_submodules/librg"]
+	path = engine/3rdparty/git_submodules/librg
+	url = https://github.com/zpl-c/librg.git
