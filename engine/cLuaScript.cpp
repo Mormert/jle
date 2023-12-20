@@ -30,7 +30,7 @@ cLuaScript::start()
         sol::load_result fx = gEngine->luaEnvironment()->getState().load(_specializationScript);
         if (!fx.valid()) {
             sol::error err = fx;
-            LOGE << "Failed to load specialization script for " << _attachedToObject->_instanceName << ": "
+            LOGE << "Failed to load specialization script for " << _attachedToObject->instanceName() << ": "
                  << err.what();
         }
 

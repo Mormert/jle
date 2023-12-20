@@ -257,16 +257,34 @@ jleObject::saveAsObjectTemplate()
     outputArchive(shared_from_this());
 }
 
+void
+jleObject::setInstanceName(const std::string &name)
+{
+    _instanceName = name;
+}
+
+const std::string &
+jleObject::instanceName() const
+{
+    return _instanceName;
+}
+
 uint32_t
 jleObject::instanceID() const
 {
     return _instanceID;
 }
 
-uint32_t &
-jleObject::instanceIDRef()
+int64_t
+jleObject::netEntityID() const
 {
-    return _instanceID;
+    return _networkEntityID;
+}
+
+int64_t
+jleObject::netOwnerID() const
+{
+    return _networkOwnerID;
 }
 
 void

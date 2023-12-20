@@ -360,9 +360,7 @@ jleEditor::updateEditorLoadedScenes(float dt)
             continue;
         }
 
-        _editorScenes[i]->updateSceneEditor();
-        _editorScenes[i]->processNewSceneObjects();
-        _editorScenes[i]->updateSceneObejctsEditor(dt);
+        _editorScenes[i]->updateSceneEditor(dt);
     }
 }
 
@@ -532,7 +530,6 @@ jleEditor::loadScene(const jlePath &scenePath, bool startObjects)
     auto it = std::find(_editorScenes.begin(), _editorScenes.end(), scene);
     if (it == _editorScenes.end()) {
         _editorScenes.push_back(scene);
-        scene->onSceneCreation();
         if (startObjects) {
             scene->startObjects();
         }

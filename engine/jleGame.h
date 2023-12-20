@@ -51,7 +51,7 @@ public:
         std::shared_ptr<T> newScene = std::make_shared<T>();
         _activeScenes.push_back(newScene);
 
-        newScene->onSceneCreation();
+        newScene->onSceneStart();
 
         return newScene;
     }

@@ -1,0 +1,53 @@
+// Copyright (c) 2023. Johan Lind
+
+#pragma once
+
+#include "jleSceneNetworked.h"
+
+constexpr int serverOwnedId = 0;
+
+class jleSceneServer : public jleSceneNetworked
+{
+public:
+    JLE_REGISTER_RESOURCE_TYPE(jleSceneServer, "scn")
+
+    ~jleSceneServer() override;
+
+    int startServer(int port = 314, int maxClients = 4);
+
+    int stopServer();
+
+    void onSceneStart() override;
+
+    void onSceneDestruction() override;
+
+    void updateScene(float dt) override;
+
+    void sceneInspectorImGuiRender() override;
+
+    template <class Archive>
+    void serialize(Archive &archive);
+
+protected:
+    void setupObject(const std::shared_ptr<jleObject> &obj) override;
+
+private:
+    void processNetwork() override;
+
+    static jleSceneServer &getSceneServerRef(librg_world *w);
+
+    static int32_t serverWriteUpdate(librg_world *w, librg_event *e);
+    static int32_t serverWriteCreate(librg_world *w, librg_event *e);
+    static int32_t serverReadUpdate(librg_world *w, librg_event *e);
+
+    ENetHost *_server = nullptr;
+
+    std::unordered_map<uint64_t, std::vector<std::weak_ptr<jleObject>>> _playerOwnedObjects;
+
+    int64_t _entityIdGenerateCounter{1};
+};
+
+JLE_EXTERN_TEMPLATE_CEREAL_H(jleSceneServer)
+
+CEREAL_REGISTER_TYPE(jleSceneServer)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedOnlyResource, jleSceneServer)

@@ -22,8 +22,6 @@ class jleObject : public jleSerializedOnlyResource, public std::enable_shared_fr
     JLE_REGISTER_OBJECT_TYPE(jleObject)
     JLE_REGISTER_RESOURCE_TYPE(jleObject, "jobj")
 public:
-    std::string _instanceName;
-
     virtual void
     start()
     {
@@ -111,9 +109,15 @@ public:
     // If this object is based on a template
     std::optional<jlePath> __templatePath{};
 
+    void setInstanceName(const std::string &name);
+
+    const std::string &instanceName() const;
+
     uint32_t instanceID() const;
 
-    uint32_t &instanceIDRef();
+    int64_t netEntityID() const;
+
+    int64_t netOwnerID() const;
 
     jleTransform &getTransform();
 
@@ -121,6 +125,8 @@ public:
 
 private:
     friend class jleScene;
+    friend class jleSceneServer;
+    friend class jleSceneClient;
 
     explicit jleObject(jleScene *scene);
 
@@ -142,11 +148,15 @@ private:
 
     void addComponentStart(jleComponent *c);
 
+    std::string _instanceName;
+
     bool _pendingKill = false;
 
     bool _isStarted = false;
 
     uint32_t _instanceID{};
+    int64_t _networkEntityID{-1};
+    int64_t _networkOwnerID{-1};
 
 protected:
     friend class jleGame;

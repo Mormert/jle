@@ -16,9 +16,7 @@ jleGame::updateActiveScenes(float dt)
             continue;
         }
 
-        _activeScenes[i]->updateScene();
-        _activeScenes[i]->processNewSceneObjects();
-        _activeScenes[i]->updateSceneObjects(dt);
+        _activeScenes[i]->updateScene(dt);
     }
 }
 
@@ -36,7 +34,7 @@ jleGame::loadScene(const jlePath &scenePath)
         auto it = std::find(_activeScenes.begin(), _activeScenes.end(), scene);
         if (it == _activeScenes.end()) {
             _activeScenes.push_back(scene);
-            scene->onSceneCreation();
+            scene->onSceneStart();
             scene->startObjects();
         } else {
             LOG_WARNING << "Loaded scene is already loaded";

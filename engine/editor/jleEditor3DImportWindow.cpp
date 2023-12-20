@@ -171,7 +171,7 @@ jleEditor3DImportWindow::processNode(const aiScene *scene,
                                      std::vector<std::shared_ptr<jleMesh>> &createdMeshes,
                                      std::vector<jleResourceRef<jleMaterialPBR>> &createdMaterials)
 {
-    object->_instanceName = node->mName.C_Str();
+    object->setInstanceName(node->mName.C_Str());
 
     const auto convertMatrix = [](const aiMatrix4x4 &from, glm::mat4 &to) {
         to[0][0] = (float)from.a1;

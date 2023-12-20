@@ -6,10 +6,10 @@
 #include <memory>
 #include <vector>
 
-#include "jleTypeReflectionUtils.h"
 #include "jlePath.h"
-#include "jleSerializedResource.h"
 #include "jleResource.h"
+#include "jleSerializedResource.h"
+#include "jleTypeReflectionUtils.h"
 
 #include <cereal/types/memory.hpp>
 #include <cereal/types/vector.hpp>
@@ -49,39 +49,21 @@ public:
     std::shared_ptr<jleObject> spawnObjectTypeByName(const std::string &objName);
 
     // Spawn a generic jleObject, with specified name
-    std::shared_ptr<jleObject> spawnObjectWithName(const std::string& name);
+    std::shared_ptr<jleObject> spawnObjectWithName(const std::string &name);
 
     void spawnObject(std::shared_ptr<jleObject> object);
 
-    void updateSceneObjects(float dt);
-
-    void updateSceneObejctsEditor(float dt);
-
-    void processNewSceneObjects();
-
     void startObjects();
 
-    void saveScene();
+    virtual void updateScene(float dt);
 
-    virtual void
-    updateScene()
-    {
-    }
+    virtual void updateSceneEditor(float dt);
 
-    virtual void
-    updateSceneEditor()
-    {
-    }
+    virtual void onSceneStart();
 
-    virtual void
-    onSceneCreation()
-    {
-    }
+    virtual void onSceneDestruction();
 
-    virtual void
-    onSceneDestruction()
-    {
-    }
+    virtual void sceneInspectorImGuiRender();
 
     void destroyScene();
 
@@ -97,12 +79,18 @@ protected:
     std::vector<std::shared_ptr<jleObject>> _sceneObjects;
     std::vector<std::shared_ptr<jleObject>> _newSceneObjects;
 
+    virtual void setupObject(const std::shared_ptr<jleObject> &obj);
+
+    void processNewSceneObjects();
+
 private:
+    void updateSceneObjects(float dt);
+
+    void updateSceneObjectsEditor(float dt);
+
     void startObject(jleObject *o);
 
     static int _scenesCreatedCount;
-
-    void configurateSpawnedObject(const std::shared_ptr<jleObject> &obj);
 };
 
 JLE_EXTERN_TEMPLATE_CEREAL_H(jleScene)

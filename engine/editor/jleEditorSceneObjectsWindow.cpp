@@ -2,12 +2,12 @@
 
 #include "jleEditorSceneObjectsWindow.h"
 
-#include <ImGui/imgui.h>
 #include "ImGui/imgui_stdlib.h"
 #include "jleEditor.h"
 #include "jleGame.h"
 #include "jleImGuiCerealArchive.h"
 #include "jleTypeReflectionUtils.h"
+#include <ImGui/imgui.h>
 
 #include <filesystem>
 #include <fstream>
@@ -44,7 +44,7 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                         std::shared_ptr<jleScene> newScene = std::make_shared<jleScene>();
                         gEditor->getEditorScenes().push_back(newScene);
 
-                        newScene->onSceneCreation();
+                        newScene->onSceneStart();
                     }
                 }
 
@@ -75,6 +75,8 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                                   selectedScene.lock() == scene)) {
                 selectedScene = scene;
             }
+
+            scene->sceneInspectorImGuiRender();
 
             if (selectedScene.lock() == scene) {
 
@@ -119,7 +121,7 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                 { // Save Scene
                     if (canSaveScene) {
                         if (ImGui::Button("Save Scene", ImVec2(138 * globalImguiScale, 0))) {
-                            scene->saveScene();
+                            scene->saveToFile();
                         }
                     }
                 }
@@ -169,7 +171,7 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
             bool hasAnObjectSelected = false;
             std::shared_ptr<jleObject> selectedObjectSafePtr;
             if (selectedObjectSafePtr = selectedObject.lock()) {
-                auto text = std::string_view{selectedObjectSafePtr->_instanceName};
+                auto text = std::string_view{selectedObjectSafePtr->instanceName()};
                 ImGui::Text("%.*s", static_cast<int>(text.size()), text.data());
                 hasAnObjectSelected = true;
             } else {
@@ -254,13 +256,17 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                     if (ImGui::BeginTabItem("Details")) {
                         {
                             auto name = selectedObjectSafePtr->objectNameVirtual();
-                            ImGui::Text("Object type   : %.*s", static_cast<int>(name.size()), name.data());
+                            ImGui::Text("Object type : %.*s", static_cast<int>(name.size()), name.data());
                         }
-                        ImGui::Text("Instance name : %s", selectedObjectSafePtr->_instanceName.c_str());
+                        ImGui::Text("Instance name : %s", selectedObjectSafePtr->instanceName().c_str());
                         ImGui::Text("Components attached count: %d", selectedObjectSafePtr->componentCount());
+                        ImGui::Text("Instance id: %d", selectedObjectSafePtr->instanceID());
+                        ImGui::Text("NetEntity id: %lld", selectedObjectSafePtr->netEntityID());
+                        ImGui::Text("NetOwner id: %lld", selectedObjectSafePtr->netOwnerID());
                         ImGui::EndTabItem();
                     }
                     ImGui::EndTabBar();
+
                 }
             }
 
@@ -283,14 +289,16 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
 {
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
 
-    std::string instanceDisplayName = object->_instanceName;
+    std::string instanceDisplayName = object->instanceName() + " {" + std::to_string(object->instanceID()) + ", " +
+                                      std::to_string(object->netEntityID()) + ", " +
+                                      std::to_string(object->netOwnerID()) + "}";
     if (object->__templatePath.has_value()) {
         instanceDisplayName += " [T]";
     }
 
     ImGui::PushID(object->instanceID()); // push instance id
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5, 5));
-    bool open = ImGui::TreeNodeEx(object->_instanceName.c_str(),
+    bool open = ImGui::TreeNodeEx(object->instanceName().c_str(),
                                   ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_DefaultOpen |
                                       (selectedObject.lock() == object ? ImGuiTreeNodeFlags_Selected : 0) |
                                       (object->childObjects().empty() ? ImGuiTreeNodeFlags_Leaf : 0),
@@ -299,7 +307,7 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
     ImGui::PopStyleVar();
     ImGui::PopID(); // pop instance id
 
-    ImGui::PushID(object->_instanceName.c_str());
+    ImGui::PushID(object->instanceName().c_str());
     if (ImGui::BeginPopupContextItem()) {
 
         if (ImGui::BeginMenu("Create Object")) {
@@ -328,14 +336,14 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
             static std::string buf;
             if (ImGui::Button("Rename Object", ImVec2(138 * globalImguiScale, 0))) {
                 opened = true;
-                buf = std::string{object->_instanceName};
+                buf = std::string{object->instanceName()};
                 ImGui::OpenPopup("Rename Object");
             }
 
             if (ImGui::BeginPopupModal("Rename Object", &opened, 0)) {
                 ImGui::InputText("Object Name", &buf);
                 if (ImGui::Button("Confirm")) {
-                    object->_instanceName = std::string{buf};
+                    object->setInstanceName(std::string{buf});
                     opened = false;
                 }
                 ImGui::EndPopup();
@@ -384,7 +392,7 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
     }
 
     if (ImGui::BeginDragDropSource()) {
-        ImGui::Text("Moving object: %s", object->_instanceName.c_str());
+        ImGui::Text("Moving object: %s", object->instanceName().c_str());
         ImGui::SetDragDropPayload("JLE_OBJECT", &object, sizeof(std::shared_ptr<jleObject>));
         ImGui::EndDragDropSource();
     }

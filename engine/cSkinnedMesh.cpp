@@ -95,7 +95,7 @@ cSkinnedMesh::editorInspectorImGuiRender()
         ImGui::PopStyleColor();
     } else {
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 1.0f, 0.2f, 1.0f));
-        ImGui::Text("Using cAnimator from: %s", _animator->object()->_instanceName.c_str());
+        ImGui::Text("Using cAnimator from: %s", _animator->object()->instanceName().c_str());
         ImGui::PopStyleColor();
     }
 #endif

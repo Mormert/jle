@@ -18,6 +18,7 @@
 #include "jleTimerManager.h"
 #include "jleWindow.h"
 
+#include <enet.h>
 #include <plog/Log.h>
 #include <soloud.h>
 
@@ -77,6 +78,10 @@ jleGameEngine::jleGameEngine()
 
     LOG_INFO << "Starting the lua environment";
     _luaEnvironment = std::make_unique<jleLuaEnvironment>();
+
+    if (settings().enableNetworking) {
+        enet_initialize();
+    }
 }
 
 jleGameEngine::~jleGameEngine()
@@ -89,7 +94,9 @@ jleGameEngine::~jleGameEngine()
     PLOG_INFO << "Destroying the sound engine...";
     _soLoud->deinit();
 
-
+    if (settings().enableNetworking) {
+        enet_deinitialize();
+    }
 }
 
 void
@@ -108,6 +115,10 @@ jleGameEngine::startGame()
 
     game = _gameCreator();
     game->start();
+
+    for (auto &scenePath : settings().initialScenesToLoad) {
+        game->loadScene(scenePath);
+    }
 }
 
 void
@@ -326,8 +337,8 @@ jleGameEngine::update(float dt)
         {
             JLE_SCOPE_PROFILE_CPU(RmlUi)
             // context->Update();
-        }
-        physics().step(dt);
+        } physics()
+            .step(dt);
     }
 }
 

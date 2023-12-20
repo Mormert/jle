@@ -12,17 +12,21 @@ JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleScene)
 
 int jleScene::_scenesCreatedCount{0};
 
-jleScene::jleScene() {
+jleScene::jleScene()
+{
     sceneName = "Scene_" + std::to_string(_scenesCreatedCount);
     _scenesCreatedCount++;
 }
 
-jleScene::jleScene(const std::string &sceneName) {
+jleScene::jleScene(const std::string &sceneName)
+{
     this->sceneName = sceneName;
     _scenesCreatedCount++;
 }
 
-void jleScene::updateSceneObjects(float dt) {
+void
+jleScene::updateSceneObjects(float dt)
+{
     JLE_SCOPE_PROFILE_CPU(jleScene_updateSceneObjects)
     for (int32_t i = _sceneObjects.size() - 1; i >= 0; i--) {
         if (_sceneObjects[i]->_pendingKill) {
@@ -38,7 +42,7 @@ void jleScene::updateSceneObjects(float dt) {
 }
 
 void
-jleScene::updateSceneObejctsEditor(float dt)
+jleScene::updateSceneObjectsEditor(float dt)
 {
 
     JLE_SCOPE_PROFILE_CPU(jleScene_updateSceneObejctsEditor)
@@ -52,16 +56,16 @@ jleScene::updateSceneObejctsEditor(float dt)
         _sceneObjects[i]->updateComponentsEditor(dt);
         _sceneObjects[i]->updateChildrenEditor(dt);
     }
-
 }
 
-void jleScene::processNewSceneObjects() {
+void
+jleScene::processNewSceneObjects()
+{
     JLE_SCOPE_PROFILE_CPU(jleScene_processNewSceneObjects)
     if (!_newSceneObjects.empty()) {
         for (const auto &newObject : _newSceneObjects) {
             if (!newObject->_isStarted) {
-                if(!gEngine->isGameKilled())
-                {
+                if (!gEngine->isGameKilled()) {
                     newObject->start();
                     newObject->startComponents();
                 }
@@ -80,15 +84,18 @@ void jleScene::processNewSceneObjects() {
     }
 }
 
-void jleScene::destroyScene() {
+void
+jleScene::destroyScene()
+{
     bPendingSceneDestruction = true;
     onSceneDestruction();
 }
 
-void jleScene::configurateSpawnedObject(const std::shared_ptr<jleObject> &obj) {
+void
+jleScene::setupObject(const std::shared_ptr<jleObject> &obj)
+{
     obj->_containedInScene = this;
-    obj->_instanceName = std::string{obj->objectNameVirtual()} + "_" +
-                         std::to_string(obj->_instanceID);
+    obj->_instanceName = std::string{obj->objectNameVirtual()} + "_" + std::to_string(obj->_instanceID);
 
     obj->replaceChildrenWithTemplate();
     _newSceneObjects.push_back(obj);
@@ -97,8 +104,7 @@ void jleScene::configurateSpawnedObject(const std::shared_ptr<jleObject> &obj) {
 void
 jleScene::startObjects()
 {
-    for(auto&& o : _sceneObjects)
-    {
+    for (auto &&o : _sceneObjects) {
         startObject(&*o);
     }
 }
@@ -110,23 +116,16 @@ jleScene::startObject(jleObject *o)
         o->start();
         o->startComponents();
         o->_isStarted = true;
-        for(auto&& c : o->__childObjects)
-        {
+        for (auto &&c : o->__childObjects) {
             startObject(&*c);
         }
     }
 }
 
 void
-jleScene::saveScene()
-{
-    saveToFile();
-}
-
-void
 jleScene::spawnObject(std::shared_ptr<jleObject> object)
 {
-    configurateSpawnedObject(object);
+    setupObject(object);
 }
 
 std::shared_ptr<jleObject>
@@ -137,3 +136,31 @@ jleScene::spawnObjectWithName(const std::string &name)
     return obj;
 }
 
+void
+jleScene::updateScene(float dt)
+{
+    processNewSceneObjects();
+    updateSceneObjects(dt);
+}
+
+void
+jleScene::updateSceneEditor(float dt)
+{
+    processNewSceneObjects();
+    updateSceneObjectsEditor(dt);
+}
+
+void
+jleScene::onSceneStart()
+{
+}
+
+void
+jleScene::onSceneDestruction()
+{
+}
+
+void
+jleScene::sceneInspectorImGuiRender()
+{
+}

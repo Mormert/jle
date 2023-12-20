@@ -42,7 +42,7 @@ jleScene::spawnObject()
     static_assert(std::is_base_of<jleObject, T>::value, "T must derive from jleObject");
 
     std::shared_ptr<T> newSceneObject = std::make_shared<T>();
-    configurateSpawnedObject(newSceneObject);
+    setupObject(newSceneObject);
 
     return newSceneObject;
 }
@@ -51,7 +51,7 @@ inline std::shared_ptr<jleObject>
 jleScene::spawnObjectTypeByName(const std::string &objName)
 {
     auto newSceneObject = jleTypeReflectionUtils::instantiateObjectByString(objName);
-    configurateSpawnedObject(newSceneObject);
+    setupObject(newSceneObject);
 
     return newSceneObject;
 }

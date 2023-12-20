@@ -13,6 +13,8 @@
 #include "cLightDirectional.h"
 #include "cMesh.h"
 #include "cSkybox.h"
+#include "jleSceneServer.h"
+#include "jleSceneClient.h"
 //#include "cSprite.h"
 //#include "cSpriteDepth.h"
 //#include "cSpritesheet.h"
