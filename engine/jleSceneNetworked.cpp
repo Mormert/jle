@@ -101,6 +101,12 @@ jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneTy
 
     ImGui::Text("Network debugging for: %s", sceneType.c_str());
 
+    if (!host) {
+        ImGui::Text("The %s is not connected/started.", sceneType.c_str());
+        ImGui::End();
+        return;
+    }
+
     ImGui::Text("Scene network ID: %d", mySceneNetID);
     ImGui::Text("Incoming Bandwidth: %d", host->incomingBandwidth);
     ImGui::Text("Outgoing Bandwidth: %d", host->outgoingBandwidth);

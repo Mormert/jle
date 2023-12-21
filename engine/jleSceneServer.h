@@ -32,6 +32,11 @@ protected:
     void setupObject(const std::shared_ptr<jleObject> &obj) override;
 
 private:
+
+    void updateServerSceneObjects(float dt);
+
+    void setupObjectForNetworking(const std::shared_ptr<jleObject> &obj);
+
     void processNetwork() override;
 
     static jleSceneServer &getSceneServerRef(librg_world *w);

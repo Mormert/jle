@@ -73,6 +73,11 @@ public:
     }
 
     [[maybe_unused]] virtual void
+    serverUpdate(float dt)
+    {
+    }
+
+    [[maybe_unused]] virtual void
     editorGizmosRender(bool selected)
     {
     }

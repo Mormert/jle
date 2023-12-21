@@ -10,6 +10,8 @@ typedef void librg_event;
 typedef struct _ENetHost ENetHost;
 typedef struct _ENetPeer ENetPeer;
 
+enum class jleNetOpCode : int8_t { Events, WorldWrite };
+
 class jleSceneNetworked : public jleScene
 {
 protected:

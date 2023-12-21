@@ -93,8 +93,7 @@ jleSceneClient::clientWriteUpdate(librg_world *w, librg_event *e)
     }
 
     auto object = getObjectPointerFromNetEntity(w, entityId);
-    if(!object)
-    {
+    if (!object) {
         return LIBRG_WRITE_REJECT;
     }
 
@@ -206,15 +205,45 @@ jleSceneClient::processNetwork()
         }
     }
 
-    char buffer[1024] = {0};
-    size_t bufferLen = sizeof(buffer);
+    {
+        char packetBuffer[1024] = {0};
 
-    /* serialize peer's world view to a buffer */
-    librg_world_write(_world, localClientSceneId, 0, buffer, &bufferLen, nullptr);
+        // Set op code as first byte
+        packetBuffer[0] = static_cast<char>(jleNetOpCode::WorldWrite);
 
-    /* create packet with actual length, and send it */
-    ENetPacket *packet = enet_packet_create(buffer, bufferLen, ENET_PACKET_FLAG_RELIABLE);
-    enet_peer_send(_peer, 0, packet);
+        // Account for first byte being the op code
+        auto *writeBuffer = &packetBuffer[1];
+        size_t bufferLen = sizeof(packetBuffer) - 1;
+
+        // serialize peer's world view to a buffer
+        librg_world_write(_world, localClientSceneId, 0, writeBuffer, &bufferLen, nullptr);
+
+        const size_t packetBufferLen = bufferLen + 1;
+
+        ENetPacket *packet = enet_packet_create(packetBuffer, packetBufferLen, ENET_PACKET_FLAG_RELIABLE);
+        enet_peer_send(_peer, 0, packet);
+    }
+
+    if (!_eventsQueue.empty()) {
+        std::ostringstream oss;
+
+        // Insert the first byte as the op code
+        oss << static_cast<char>(jleNetOpCode::Events);
+
+        { // Note that we need the archive to go out of scope to completely fill the string stream!
+            cereal::BinaryOutputArchive archive(oss);
+            archive(_eventsQueue);
+        }
+
+        auto writeBufferString = oss.str();
+        auto *packetBuffer = writeBufferString.data();
+        const size_t packetBufferLen = writeBufferString.size();
+
+        ENetPacket *packet = enet_packet_create(packetBuffer, packetBufferLen, ENET_PACKET_FLAG_RELIABLE);
+        enet_peer_send(_peer, 0, packet);
+
+        _eventsQueue.clear();
+    }
 }
 
 jleSceneClient &
@@ -228,6 +257,12 @@ void
 jleSceneClient::sceneInspectorImGuiRender()
 {
     networkSceneDisplayInspectorWindow("Client", sceneName, _client, _world);
+}
+
+void
+jleSceneClient::sendNetworkEvent(std::unique_ptr<jleNetworkEvent> event)
+{
+    _eventsQueue.push_back(std::move(event));
 }
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleSceneClient)

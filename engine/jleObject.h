@@ -22,21 +22,6 @@ class jleObject : public jleSerializedOnlyResource, public std::enable_shared_fr
     JLE_REGISTER_OBJECT_TYPE(jleObject)
     JLE_REGISTER_RESOURCE_TYPE(jleObject, "jobj")
 public:
-    virtual void
-    start()
-    {
-    }
-
-    virtual void
-    update(float dt)
-    {
-    }
-
-    virtual void
-    editorUpdate(float dt)
-    {
-    }
-
     void
     saveToFile() override
     {
@@ -142,9 +127,13 @@ private:
 
     void updateComponentsEditor(float dt);
 
+    void updateComponentsServer(float dt);
+
     void updateChildren(float dt);
 
     void updateChildrenEditor(float dt);
+
+    void updateChildrenServer(float dt);
 
     void addComponentStart(jleComponent *c);
 

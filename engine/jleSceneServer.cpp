@@ -2,6 +2,7 @@
 
 #include "jleSceneServer.h"
 #include "jleEngineSettings.h"
+#include "jleNetworkEvent.h"
 #include "jleProfiler.h"
 
 #include <cereal/archives/binary.hpp>
@@ -149,6 +150,10 @@ jleSceneServer::startServer(int port, int maxClients)
     librg_event_set(_world, LIBRG_WRITE_CREATE, jleSceneServer::serverWriteCreate);
     // librg_event_set(_world, LIBRG_WRITE_CREATE, jleSceneServer::serverReadUpdate);
 
+    for (auto &object : _sceneObjects) {
+        setupObjectForNetworking(object);
+    }
+
     spawnObjectWithName("server_dummy");
 
     return 0;
@@ -159,8 +164,6 @@ jleSceneServer::stopServer()
 {
     if (!librg_world_valid(_world))
         return 1;
-
-    // auto *server = (ENetHost *)librg_world_userdata_get(_server_world);
 
     enet_host_destroy(_server);
     librg_world_destroy(_world);
@@ -182,15 +185,9 @@ void
 jleSceneServer::updateScene(float dt)
 {
     processNewSceneObjects();
-    processNetwork();
+    updateServerSceneObjects(dt);
 
-    for (int32_t i = _sceneObjects.size() - 1; i >= 0; i--) {
-        if (_sceneObjects[i]->_pendingKill) {
-            _sceneObjects[i]->propagateDestroy();
-            _sceneObjects.erase(_sceneObjects.begin() + i);
-            continue;
-        }
-    }
+    processNetwork();
 }
 
 void
@@ -258,9 +255,40 @@ jleSceneServer::processNetwork()
             case ENET_EVENT_TYPE_RECEIVE: {
                 const auto incomingPlayerID = event.peer->incomingPeerID + 1;
 
-                /* handle a newly received event */
-                librg_world_read(
-                    _world, incomingPlayerID, (char *)event.packet->data, event.packet->dataLength, nullptr);
+                // Retrieve the op code as the first byte
+                auto opCode = static_cast<jleNetOpCode>(event.packet->data[0]);
+
+                // Packet actual data comes after op code byte
+                auto *dataBuffer = &event.packet->data[1];
+                const auto dataLength = event.packet->dataLength - 1;
+
+                switch (opCode) {
+                case jleNetOpCode::Events: {
+                    std::vector<std::unique_ptr<jleNetworkEvent>> events;
+
+                    std::string bufferAsString((char *)dataBuffer, dataLength);
+
+                    std::stringstream stream{};
+                    stream << bufferAsString;
+
+                    try {
+                        cereal::BinaryInputArchive archive(stream);
+                        archive(events);
+
+                        for (auto &e : events) {
+                            e->onReceiveFromClient(incomingPlayerID);
+                        }
+                    } catch (std::exception &e) {
+                        LOGE << "[server] failed to parse event data";
+                    }
+
+                } break;
+                case jleNetOpCode::WorldWrite: {
+                    librg_world_read(_world, incomingPlayerID, (char *)dataBuffer, dataLength, nullptr);
+                } break;
+                default:
+                    break;
+                }
 
                 /* Clean up the packet now that we're done using it. */
                 enet_packet_destroy(event.packet);
@@ -301,9 +329,19 @@ void
 jleSceneServer::setupObject(const std::shared_ptr<jleObject> &obj)
 {
     jleScene::setupObject(obj);
+    setupObjectForNetworking(obj);
+}
+
+void
+jleSceneServer::setupObjectForNetworking(const std::shared_ptr<jleObject> &obj)
+{
     const auto entityId = _entityIdGenerateCounter++;
     obj->_networkEntityID = entityId;
     obj->_networkOwnerID = serverOwnedId;
+
+    if (!_server) {
+        return;
+    }
 
     trackEntityObject(entityId, obj);
 
@@ -325,6 +363,22 @@ void
 jleSceneServer::sceneInspectorImGuiRender()
 {
     networkSceneDisplayInspectorWindow("Server", sceneName, _server, _world);
+}
+
+void
+jleSceneServer::updateServerSceneObjects(float dt)
+{
+    JLE_SCOPE_PROFILE_CPU(jleScene_updateSceneObjects)
+    for (int32_t i = _sceneObjects.size() - 1; i >= 0; i--) {
+        if (_sceneObjects[i]->_pendingKill) {
+            _sceneObjects[i]->propagateDestroy();
+            _sceneObjects.erase(_sceneObjects.begin() + i);
+            continue;
+        }
+
+        _sceneObjects[i]->updateComponentsServer(dt);
+        _sceneObjects[i]->updateChildrenServer(dt);
+    }
 }
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleSceneServer)

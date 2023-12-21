@@ -35,7 +35,6 @@ jleScene::updateSceneObjects(float dt)
             continue;
         }
 
-        _sceneObjects[i]->update(dt);
         _sceneObjects[i]->updateComponents(dt);
         _sceneObjects[i]->updateChildren(dt);
     }
@@ -52,7 +51,6 @@ jleScene::updateSceneObjectsEditor(float dt)
             continue;
         }
 
-        _sceneObjects[i]->editorUpdate(dt);
         _sceneObjects[i]->updateComponentsEditor(dt);
         _sceneObjects[i]->updateChildrenEditor(dt);
     }
@@ -66,7 +64,6 @@ jleScene::processNewSceneObjects()
         for (const auto &newObject : _newSceneObjects) {
             if (!newObject->_isStarted) {
                 if (!gEngine->isGameKilled()) {
-                    newObject->start();
                     newObject->startComponents();
                 }
                 newObject->_isStarted = true;
@@ -113,7 +110,6 @@ void
 jleScene::startObject(jleObject *o)
 {
     if (!o->_isStarted) {
-        o->start();
         o->startComponents();
         o->_isStarted = true;
         for (auto &&c : o->__childObjects) {

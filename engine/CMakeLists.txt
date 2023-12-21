@@ -49,6 +49,7 @@ add_library(engine STATIC
         "jleGame.cpp"
         "jleObject.cpp"
         "jleScene.cpp"
+        "jleNetworkEvent.cpp"
         "jleSceneNetworked.cpp"
         "jleSceneServer.cpp"
         "jleSceneClient.cpp"
