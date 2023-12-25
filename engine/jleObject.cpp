@@ -332,7 +332,10 @@ void
 jleObject::propagateOwnedByScene(jleScene *scene)
 {
     _containedInScene = scene;
-    for (auto child : __childObjects) {
+    for (auto &component : _components) {
+        component->_containedInScene = scene;
+    }
+    for (auto &child : __childObjects) {
         child->propagateOwnedByScene(scene);
     }
 }

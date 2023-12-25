@@ -269,7 +269,7 @@ jleSceneServer::processNetwork()
 
                 switch (opCode) {
                 case jleNetOpCode::Events: {
-                    std::vector<std::unique_ptr<jleNetworkEvent>> events;
+                    std::vector<std::unique_ptr<jleClientToServerEvent>> events;
 
                     std::string bufferAsString((char *)dataBuffer, dataLength);
 
@@ -282,7 +282,7 @@ jleSceneServer::processNetwork()
 
                         for (auto &e : events) {
                             e->_serverScene = this;
-                            e->onReceiveFromClient(incomingPlayerID);
+                            e->execute();
                         }
                     } catch (std::exception &e) {
                         LOGE << "[server] failed to parse event data: " << e.what();

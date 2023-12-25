@@ -37,6 +37,7 @@ jleSceneClient::clientReadCreate(librg_world *w, librg_event *e)
 
     entityCreate.object->_networkEntityID = entityId;
     entityCreate.object->_networkOwnerID = entityCreate.entityOwner;
+    entityCreate.object->propagateOwnedByScene(&scene);
     scene._sceneObjects.push_back(entityCreate.object);
 
     setNetEntityToObjectPointer(w, entityId, entityCreate.object);
@@ -236,9 +237,11 @@ jleSceneClient::processNetwork()
         // Insert the first byte as the op code
         oss << static_cast<char>(jleNetOpCode::Events);
 
-        { // Note that we need the archive to go out of scope to completely fill the string stream!
+        try { // Note that we need the archive to go out of scope to completely fill the string stream!
             cereal::BinaryOutputArchive archive(oss);
             archive(_eventsQueue);
+        } catch (std::exception &e) {
+            LOGE << "Failed to write event data: " << e.what();
         }
 
         auto writeBufferString = oss.str();
@@ -266,7 +269,7 @@ jleSceneClient::sceneInspectorImGuiRender()
 }
 
 void
-jleSceneClient::sendNetworkEvent(std::unique_ptr<jleNetworkEvent> event)
+jleSceneClient::sendNetworkEvent(std::unique_ptr<jleClientToServerEvent> event)
 {
     _eventsQueue.push_back(std::move(event));
 }

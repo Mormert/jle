@@ -24,7 +24,7 @@ public:
 
     void sceneInspectorImGuiRender() override;
 
-    void sendNetworkEvent(std::unique_ptr<jleNetworkEvent> event);
+    void sendNetworkEvent(std::unique_ptr<jleClientToServerEvent> event);
 
     template <class Archive>
     void serialize(Archive &archive);
@@ -41,7 +41,7 @@ private:
     ENetHost *_client = nullptr;
     ENetPeer *_peer = nullptr;
 
-    std::vector<std::unique_ptr<jleNetworkEvent>> _eventsQueue;
+    std::vector<std::unique_ptr<jleClientToServerEvent>> _eventsQueue;
 
     //std::unordered_map<uint64_t, std::weak_ptr<jleObject>> _networkedObjects;
 };

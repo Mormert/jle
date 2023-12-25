@@ -3,16 +3,15 @@
 #include "jleNetworkEvent.h"
 #include "jleSceneServer.h"
 
-template <class Archive>
-void
-jleNetworkEvent::serialize(Archive &archive)
-{
-}
-
-JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleNetworkEvent)
 
 jleSceneServer &
-jleNetworkEvent::getSceneServer()
+jleClientToServerEvent::getSceneServer()
 {
     return *_serverScene;
+}
+
+jleSceneClient &
+jleServerToClientEvent::getSceneClient()
+{
+    return *_clientScene;
 }
