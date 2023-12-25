@@ -37,4 +37,30 @@ protected:
                                                    librg_world *world);
 
     librg_world *_world = nullptr;
+
+    struct EntityCreate {
+        int64_t entityOwner;
+        std::shared_ptr<jleObject> object;
+
+        template <class Archive>
+        void
+        serialize(Archive &ar)
+        {
+            ar(CEREAL_NVP(entityOwner), CEREAL_NVP(object));
+        }
+    };
+
+    struct ComponentInEntityUpdate {
+        uint8_t componentIndex;
+        std::vector<char> data;
+
+        template <class Archive>
+        void
+        serialize(Archive &ar)
+        {
+            ar(CEREAL_NVP(componentIndex), CEREAL_NVP(data));
+        }
+    };
+
+    using ComponentsInEntityUpdate = std::vector<ComponentInEntityUpdate>;
 };

@@ -34,20 +34,37 @@ jleSceneServer::serverWriteUpdate(librg_world *w, librg_event *e)
         return LIBRG_WRITE_REJECT;
     }
 
-    std::string string;
-    try {
+    ComponentsInEntityUpdate componentsInEntityUpdate;
+
+    for (uint8_t i = 0; i < object->componentCount(); i++) {
+        componentsInEntityUpdate.push_back({});
+
+        ComponentInEntityUpdate &componentInEntityUpdate =
+            componentsInEntityUpdate[componentsInEntityUpdate.size() - 1];
+
+        componentInEntityUpdate.componentIndex = i;
+
         std::ostringstream oss;
-        { // Note that we need the archive to go out of scope to completely fill the string stream!
+        {
             cereal::JSONOutputArchive archive(oss);
-            archive(*object);
+            object->_components[i]->netSyncOut(archive);
         }
-        string = oss.str();
-    } catch (std::exception &e) {
-        LOGE << "[server] failed parsing write data: " << e.what() << std::endl;
+
+        const auto &str = oss.str();
+        componentInEntityUpdate.data.resize(str.size());
+        std::copy(str.begin(), str.end(), componentInEntityUpdate.data.begin());
     }
 
+    std::ostringstream oss;
+    {
+        cereal::JSONOutputArchive archive(oss);
+        archive(componentsInEntityUpdate);
+    }
+    const auto &string = oss.str();
+
     const char *data = string.data();
-    const auto dataCount = string.size() + 1;
+    const auto dataCount = string.size() + 1; // we need to add +1 here if we're dealing with text-based data (with
+                                              // null terminating character)
 
     char *buffer = librg_event_buffer_get(w, e);
     size_t max_length = librg_event_size_get(w, e);
@@ -67,47 +84,36 @@ jleSceneServer::serverWriteCreate(librg_world *w, librg_event *e)
 {
     int64_t eventOwner = librg_event_owner_get(w, e);
     int64_t entityId = librg_event_entity_get(w, e);
-
     int64_t entityOwner = librg_entity_owner_get(w, entityId);
 
-    char *buffer = librg_event_buffer_get(w, e);
+    EntityCreate entityCreate;
+    entityCreate.object = getObjectPointerFromNetEntity(w, entityId);
+    entityCreate.entityOwner = entityOwner;
 
+    std::ostringstream oss;
+    try {
+        cereal::JSONOutputArchive archive(oss);
+        archive(entityCreate);
+    } catch (std::exception &e) {
+        LOGE << "Failed to serialize created object: " << e.what();
+        return LIBRG_WRITE_REJECT;
+    }
+    auto string = oss.str();
+
+    const char *data = string.data();
+    const auto dataCount = string.size() + 1; // we need to add +1 here if we're dealing with text-based data (with
+                                              // null terminating character)
+    char *buffer = librg_event_buffer_get(w, e);
     size_t max_length = librg_event_size_get(w, e);
-    constexpr size_t dataCount = sizeof(entityOwner);
 
     // check if we have enough space to write
     if (dataCount > max_length) {
         return LIBRG_WRITE_REJECT;
     }
 
-    memcpy(buffer, &entityOwner, sizeof(dataCount));
+    // write data and return how much we've written
+    memcpy(buffer, data, dataCount);
     return dataCount;
-}
-
-int32_t
-jleSceneServer::serverReadUpdate(librg_world *w, librg_event *e)
-{
-    int64_t entityId = librg_event_entity_get(w, e);
-    size_t actual_length = librg_event_size_get(w, e);
-
-    if (actual_length != sizeof(glm::vec3)) {
-        LOGW << "[server] Invalid data size coming from client";
-        return 0;
-    }
-
-    auto *peer = (ENetPeer *)librg_entity_userdata_get(w, entityId);
-    char *buffer = librg_event_buffer_get(w, e);
-
-    // read and update actual position
-    glm::vec3 position{0.f};
-    memcpy(peer->data, buffer, actual_length);
-    memcpy(&position, buffer, actual_length);
-
-    // and update librg actual chunk id
-    librg_chunk chunk = librg_chunk_from_realpos(w, position.x, position.y, position.z);
-    librg_entity_chunk_set(w, entityId, chunk);
-
-    return 0;
 }
 
 int
@@ -148,7 +154,6 @@ jleSceneServer::startServer(int port, int maxClients)
 
     librg_event_set(_world, LIBRG_WRITE_UPDATE, jleSceneServer::serverWriteUpdate);
     librg_event_set(_world, LIBRG_WRITE_CREATE, jleSceneServer::serverWriteCreate);
-    // librg_event_set(_world, LIBRG_WRITE_CREATE, jleSceneServer::serverReadUpdate);
 
     for (auto &object : _sceneObjects) {
         setupObjectForNetworking(object);
@@ -276,10 +281,11 @@ jleSceneServer::processNetwork()
                         archive(events);
 
                         for (auto &e : events) {
+                            e->_serverScene = this;
                             e->onReceiveFromClient(incomingPlayerID);
                         }
                     } catch (std::exception &e) {
-                        LOGE << "[server] failed to parse event data";
+                        LOGE << "[server] failed to parse event data: " << e.what();
                     }
 
                 } break;

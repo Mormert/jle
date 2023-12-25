@@ -42,6 +42,16 @@ public:
     }
 
     virtual void
+    netSyncOut(cereal::JSONOutputArchive &ar)
+    {
+    }
+
+    virtual void
+    netSyncIn(cereal::JSONInputArchive &ar)
+    {
+    }
+
+    virtual void
     start()
     {
     }
@@ -126,6 +136,10 @@ private:
     bool _enableParallelUpdate{false};
     int _parallelUpdateBatchSize = 4;
 };
+
+#define NET_SYNC(...)                                                                                                  \
+    void netSyncOut(cereal::JSONOutputArchive &ar) override { ar(__VA_ARGS__); }                                     \
+    void netSyncIn(cereal::JSONInputArchive &ar) override { ar(__VA_ARGS__); }
 
 CEREAL_REGISTER_TYPE(jleComponent)
 

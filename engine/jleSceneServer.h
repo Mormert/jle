@@ -43,7 +43,6 @@ private:
 
     static int32_t serverWriteUpdate(librg_world *w, librg_event *e);
     static int32_t serverWriteCreate(librg_world *w, librg_event *e);
-    static int32_t serverReadUpdate(librg_world *w, librg_event *e);
 
     ENetHost *_server = nullptr;
 

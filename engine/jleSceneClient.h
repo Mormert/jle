@@ -37,7 +37,6 @@ private:
     static int32_t clientReadCreate(librg_world *w, librg_event *e);
     static int32_t clientReadRemove(librg_world *w, librg_event *e);
     static int32_t clientReadUpdate(librg_world *w, librg_event *e);
-    static int32_t clientWriteUpdate(librg_world *w, librg_event *e);
 
     ENetHost *_client = nullptr;
     ENetPeer *_peer = nullptr;

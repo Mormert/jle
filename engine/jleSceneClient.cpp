@@ -11,17 +11,38 @@ jleSceneClient::clientReadCreate(librg_world *w, librg_event *e)
 {
     int64_t ownerId = librg_event_owner_get(w, e);
     int64_t entityId = librg_event_entity_get(w, e);
-    int64_t entityOwner = *reinterpret_cast<int64_t *>(librg_event_buffer_get(w, e));
+    size_t actualLength = librg_event_size_get(w, e);
 
-    LOGI << "[client] An entity " << (int)entityId << " from owner " << (int)ownerId << " was created.";
+    const size_t bufferLen = actualLength - 1; // we need to remove 1 here if we're dealing with text-based data (with
+                                               // null terminating character)
+
+    char *buffer = librg_event_buffer_get(w, e);
+
+    std::string bufferAsString(buffer, bufferLen);
+
+    std::stringstream stream{};
+    stream << bufferAsString;
 
     auto &scene = getSceneClientRef(w);
-    auto obj = scene.spawnObject<jleObject>();
-    obj->_networkEntityID = entityId;
-    obj->_networkOwnerID = entityOwner;
 
-    setNetEntityToObjectPointer(w, entityId, obj);
-    librg_entity_owner_set(w, entityId, entityOwner);
+    EntityCreate entityCreate;
+
+    try {
+        cereal::JSONInputArchive inputArchive(stream);
+        inputArchive(entityCreate);
+    } catch (std::exception &e) {
+        LOGE << "[client] failed parsing read data: " << e.what() << std::endl;
+        return 0;
+    }
+
+    entityCreate.object->_networkEntityID = entityId;
+    entityCreate.object->_networkOwnerID = entityCreate.entityOwner;
+    scene._sceneObjects.push_back(entityCreate.object);
+
+    setNetEntityToObjectPointer(w, entityId, entityCreate.object);
+    librg_entity_owner_set(w, entityId, entityCreate.entityOwner);
+
+    LOGI << "[client] An entity " << (int)entityId << " from owner " << (int)ownerId << " was created.";
 
     return 0;
 }
@@ -33,7 +54,6 @@ jleSceneClient::clientReadRemove(librg_world *w, librg_event *e)
     int64_t entityId = librg_event_entity_get(w, e);
     LOGI << "[client] Entity " << (int)entityId << " was removed for owner: " << (int)ownerId;
 
-    auto &scene = getSceneClientRef(w);
     auto obj = getObjectPointerFromNetEntity(w, entityId);
     if (obj) {
         if (!obj->pendingKill()) {
@@ -42,7 +62,6 @@ jleSceneClient::clientReadRemove(librg_world *w, librg_event *e)
     }
 
     resetNetEntityToObjectPointer(w, entityId);
-
     return 0;
 }
 
@@ -61,46 +80,34 @@ jleSceneClient::clientReadUpdate(librg_world *w, librg_event *e)
         return 0;
     }
 
-    const size_t bufferLen = actualLength - 1;
+    const size_t bufferLen = actualLength - 1; // we need to remove 1 here if we're dealing with text-based data (with
+                                               // null terminating character)
 
     std::string bufferAsString(buffer, bufferLen);
 
-    std::stringstream stream{};
-    stream << bufferAsString;
-
     try {
-        cereal::JSONInputArchive inputArchive(stream);
-        std::shared_ptr<jleObject> o = std::const_pointer_cast<jleObject>(object);
-        inputArchive(*o);
+        ComponentsInEntityUpdate componentsInEntityUpdate;
+        {
+            std::stringstream stream{};
+            stream << bufferAsString;
+            cereal::JSONInputArchive inputArchive(stream);
+            inputArchive(componentsInEntityUpdate);
+        }
+
+        for (const auto &componentUpdate : componentsInEntityUpdate) {
+            std::stringstream componentStream{};
+            componentStream.write(&componentUpdate.data[0], componentUpdate.data.size());
+
+            cereal::JSONInputArchive componentArchive(componentStream);
+
+            auto component = object->_components[componentUpdate.componentIndex];
+            component->netSyncIn(componentArchive);
+        }
     } catch (std::exception &e) {
-        LOGE << "[client] failed parsing read data: " << e.what() << std::endl;
+        LOGE << "Failed to parse component update data: " << e.what();
     }
 
     return 0;
-}
-
-int32_t
-jleSceneClient::clientWriteUpdate(librg_world *w, librg_event *e)
-{
-    int64_t entityId = librg_event_entity_get(w, e);
-
-    char *buffer = librg_event_buffer_get(w, e);
-    size_t max_length = librg_event_size_get(w, e);
-
-    /* check if we have enough space to write and valid position */
-    if (sizeof(glm::vec3) > max_length) {
-        return LIBRG_WRITE_REJECT;
-    }
-
-    auto object = getObjectPointerFromNetEntity(w, entityId);
-    if (!object) {
-        return LIBRG_WRITE_REJECT;
-    }
-
-    glm::vec3 position{0.f};
-
-    memcpy(buffer, &position, sizeof(glm::vec3));
-    return sizeof(glm::vec3);
 }
 
 void
@@ -127,7 +134,6 @@ jleSceneClient::connectToServer(int port, const char *ipAddress)
     librg_event_set(_world, LIBRG_READ_REMOVE, jleSceneClient::clientReadRemove);
     librg_event_set(_world, LIBRG_READ_CREATE, jleSceneClient::clientReadCreate);
     librg_event_set(_world, LIBRG_READ_UPDATE, jleSceneClient::clientReadUpdate);
-    librg_event_set(_world, LIBRG_WRITE_UPDATE, jleSceneClient::clientWriteUpdate);
 }
 
 void
