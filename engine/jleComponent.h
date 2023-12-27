@@ -42,12 +42,12 @@ public:
     }
 
     virtual void
-    netSyncOut(cereal::JSONOutputArchive &ar)
+    netSyncOut(cereal::BinaryOutputArchive &ar)
     {
     }
 
     virtual void
-    netSyncIn(cereal::JSONInputArchive &ar)
+    netSyncIn(cereal::BinaryInputArchive &ar)
     {
     }
 
@@ -102,6 +102,8 @@ public:
     {
     }
 
+    void syncServerToClient();
+
     void destroy();
 
     bool isDestroyed();
@@ -138,8 +140,8 @@ private:
 };
 
 #define NET_SYNC(...)                                                                                                  \
-    void netSyncOut(cereal::JSONOutputArchive &ar) override { ar(__VA_ARGS__); }                                     \
-    void netSyncIn(cereal::JSONInputArchive &ar) override { ar(__VA_ARGS__); }
+    void netSyncOut(cereal::BinaryOutputArchive &ar) override { ar(__VA_ARGS__); }                                     \
+    void netSyncIn(cereal::BinaryInputArchive &ar) override { ar(__VA_ARGS__); }
 
 CEREAL_REGISTER_TYPE(jleComponent)
 

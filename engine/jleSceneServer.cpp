@@ -46,7 +46,7 @@ jleSceneServer::serverWriteUpdate(librg_world *w, librg_event *e)
 
         std::ostringstream oss;
         {
-            cereal::JSONOutputArchive archive(oss);
+            cereal::BinaryOutputArchive archive(oss);
             object->_components[i]->netSyncOut(archive);
         }
 
@@ -218,8 +218,6 @@ jleSceneServer::processNetwork()
         return;
     }
 
-    // auto *server = (ENetHost *)librg_world_userdata_get(_server_world);
-
     {
         JLE_SCOPE_PROFILE_CPU(jleSceneServer_updateScene_EnetService)
 
@@ -305,15 +303,19 @@ jleSceneServer::processNetwork()
             }
         }
     }
-    /* iterate peers and send them updates */
-    ENetPeer *currentPeer;
-    for (currentPeer = _server->peers; currentPeer < &_server->peers[_server->peerCount]; ++currentPeer) {
+    // iterate peers and send them updates
+    for (ENetPeer *currentPeer = _server->peers; currentPeer < &_server->peers[_server->peerCount]; ++currentPeer) {
         if (currentPeer->state != ENET_PEER_STATE_CONNECTED) {
             continue;
         }
+        char packetBuffer[4096] = {0};
 
-        char buffer[4096] = {0};
-        size_t buffer_length = sizeof(buffer);
+        // Set op code as first byte
+        packetBuffer[0] = static_cast<char>(jleNetOpCode::WorldWrite);
+
+        // Account for first byte being the op code
+        auto *writeBuffer = &packetBuffer[1];
+        size_t bufferLen = sizeof(packetBuffer) - 1;
 
         const auto incomingPlayerID = currentPeer->incomingPeerID + 1;
 
@@ -321,13 +323,43 @@ jleSceneServer::processNetwork()
         librg_world_write(_world,
                           incomingPlayerID,
                           2, /* chunk radius */
-                          buffer,
-                          &buffer_length,
+                          writeBuffer,
+                          &bufferLen,
                           nullptr);
 
+        const size_t packetBufferLen = bufferLen + 1;
+
         /* create packet with actual length, and send it */
-        ENetPacket *packet = enet_packet_create(buffer, buffer_length, ENET_PACKET_FLAG_RELIABLE);
+        ENetPacket *packet = enet_packet_create(packetBuffer, packetBufferLen, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(currentPeer, 0, packet);
+    }
+
+    if (!_eventsBroadcastQueue.empty()) {
+        std::ostringstream oss;
+
+        // Insert the first byte as the op code
+        oss << static_cast<char>(jleNetOpCode::Events);
+
+        try { // Note that we need the archive to go out of scope to completely fill the string stream!
+            cereal::BinaryOutputArchive archive(oss);
+            archive(_eventsBroadcastQueue);
+        } catch (std::exception &e) {
+            LOGE << "Failed to write event data: " << e.what();
+        }
+
+        auto writeBufferString = oss.str();
+        auto *packetBuffer = writeBufferString.data();
+        const size_t packetBufferLen = writeBufferString.size();
+
+        for (ENetPeer *currentPeer = _server->peers; currentPeer < &_server->peers[_server->peerCount]; ++currentPeer) {
+            if (currentPeer->state != ENET_PEER_STATE_CONNECTED) {
+                continue;
+            }
+
+            ENetPacket *packet = enet_packet_create(packetBuffer, packetBufferLen, ENET_PACKET_FLAG_RELIABLE);
+            enet_peer_send(currentPeer, 0, packet);
+        }
+        _eventsBroadcastQueue.clear();
     }
 }
 
@@ -385,6 +417,11 @@ jleSceneServer::updateServerSceneObjects(float dt)
         _sceneObjects[i]->updateComponentsServer(dt);
         _sceneObjects[i]->updateChildrenServer(dt);
     }
+}
+void
+jleSceneServer::sendNetworkEventBroadcast(std::unique_ptr<jleServerToClientEvent> event)
+{
+    _eventsBroadcastQueue.push_back(std::move(event));
 }
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleSceneServer)

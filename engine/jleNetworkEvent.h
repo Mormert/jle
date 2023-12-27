@@ -16,7 +16,7 @@ protected:
     jleSceneServer &getSceneServer();
 
 private:
-    jleSceneServer *_serverScene;
+    jleSceneServer *_serverScene{};
 };
 
 struct jleServerToClientEvent : public jleNetworkEvent {
@@ -25,7 +25,8 @@ protected:
     jleSceneClient &getSceneClient();
 
 private:
-    jleSceneClient *_clientScene;
+    jleSceneClient *_clientScene{};
+    int64_t receivingClientId{};
 };
 
 JLE_REGISTER_NET_EVENT(jleClientToServerEvent)
@@ -35,6 +36,6 @@ template <typename Event>
 std::unique_ptr<Event>
 jleMakeNetEvent()
 {
-    static_assert(std::is_base_of<jleClientToServerEvent, Event>::value, "Event must derive from jleNetworkEvent");
+    static_assert(std::is_base_of<jleNetworkEvent, Event>::value, "Event must derive from jleNetworkEvent");
     return std::make_unique<Event>();
 }

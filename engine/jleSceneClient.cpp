@@ -69,6 +69,8 @@ jleSceneClient::clientReadRemove(librg_world *w, librg_event *e)
 int32_t
 jleSceneClient::clientReadUpdate(librg_world *w, librg_event *e)
 {
+    return 0;
+
     int64_t entityId = librg_event_entity_get(w, e);
     size_t actualLength = librg_event_size_get(w, e);
 
@@ -99,7 +101,7 @@ jleSceneClient::clientReadUpdate(librg_world *w, librg_event *e)
             std::stringstream componentStream{};
             componentStream.write(&componentUpdate.data[0], componentUpdate.data.size());
 
-            cereal::JSONInputArchive componentArchive(componentStream);
+            cereal::BinaryInputArchive componentArchive(componentStream);
 
             auto component = object->_components[componentUpdate.componentIndex];
             component->netSyncIn(componentArchive);
@@ -204,7 +206,42 @@ jleSceneClient::processNetwork()
             LOGI << "[client] A client scene has disconnected from the server";
         } break;
         case ENET_EVENT_TYPE_RECEIVE: {
-            librg_world_read(_world, localClientSceneId, (char *)event.packet->data, event.packet->dataLength, nullptr);
+            // Retrieve the op code as the first byte
+            auto opCode = static_cast<jleNetOpCode>(event.packet->data[0]);
+
+            // Packet actual data comes after op code byte
+            auto *dataBuffer = &event.packet->data[1];
+            const auto dataLength = event.packet->dataLength - 1;
+
+            switch (opCode) {
+            case jleNetOpCode::Events: {
+
+                std::vector<std::unique_ptr<jleServerToClientEvent>> events;
+
+                std::string bufferAsString((char *)dataBuffer, dataLength);
+
+                std::stringstream stream{};
+                stream << bufferAsString;
+
+                try {
+                    cereal::BinaryInputArchive archive(stream);
+                    archive(events);
+
+                    for (auto &e : events) {
+                        e->_clientScene = this;
+                        e->execute();
+                    }
+                } catch (std::exception &e) {
+                    LOGE << "[server] failed to parse event data: " << e.what();
+                }
+
+            } break;
+
+            case jleNetOpCode::WorldWrite: {
+                librg_world_read(_world, localClientSceneId, (char *)dataBuffer, dataLength, nullptr);
+            } break;
+            }
+
             enet_packet_destroy(event.packet);
         } break;
         case ENET_EVENT_TYPE_NONE:

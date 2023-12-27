@@ -14,6 +14,9 @@ enum class jleNetOpCode : int8_t { Events, WorldWrite };
 
 class jleSceneNetworked : public jleScene
 {
+public:
+    std::shared_ptr<jleObject> getObjectPointerFromNetEntity(int64_t entityId);
+
 protected:
     static void trackEntityObject(librg_world *world, int64_t entityId, const std::shared_ptr<jleObject> &object);
     void trackEntityObject(int64_t entityId, const std::shared_ptr<jleObject> &object);
@@ -27,7 +30,6 @@ protected:
     void setNetEntityToObjectPointer(int64_t entityId, std::weak_ptr<jleObject> object);
 
     static std::shared_ptr<jleObject> getObjectPointerFromNetEntity(librg_world *world, int64_t entityId);
-    std::shared_ptr<jleObject> getObjectPointerFromNetEntity(int64_t entityId);
 
     virtual void processNetwork() = 0;
 

@@ -3,6 +3,8 @@
 #pragma once
 
 #include "jleSceneNetworked.h"
+#include "jleNetworkEvent.h"
+
 
 constexpr int serverOwnedId = 0;
 
@@ -24,6 +26,8 @@ public:
     void updateScene(float dt) override;
 
     void sceneInspectorImGuiRender() override;
+
+    void sendNetworkEventBroadcast(std::unique_ptr<jleServerToClientEvent> event);
 
     template <class Archive>
     void serialize(Archive &archive);
@@ -47,6 +51,8 @@ private:
     ENetHost *_server = nullptr;
 
     std::unordered_map<uint64_t, std::vector<std::weak_ptr<jleObject>>> _playerOwnedObjects;
+
+    std::vector<std::unique_ptr<jleServerToClientEvent>> _eventsBroadcastQueue;
 
     int64_t _entityIdGenerateCounter{1};
 };
