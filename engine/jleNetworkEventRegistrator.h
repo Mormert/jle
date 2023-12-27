@@ -7,6 +7,12 @@
 #include <array>
 #include <string_view>
 
+#ifndef NDEBUG
+#define JLE_REGISTER_NET_EVENT_HASH_COLLIDE_CHECK(T) static inline jleNetNameTransform::HashCollideCheck T##_checker(#T);
+#else
+#define JLE_REGISTER_NET_EVENT_HASH_COLLIDE_CHECK(T)
+#endif
+
 // Use this macro to register networked events, and shorten the serialized name for the event using hashing.
 // This works for registering both client to server events, and server to client events as well as any other networked
 // event.
@@ -51,7 +57,7 @@
     };                                                                                                                 \
     }                                                                                                                  \
     }                                                                                                                  \
-    static inline jleNetNameTransform::HashCollideCheck T##_checker(#T);
+    JLE_REGISTER_NET_EVENT_HASH_COLLIDE_CHECK(T)
 
 namespace jleNetNameTransform
 {
