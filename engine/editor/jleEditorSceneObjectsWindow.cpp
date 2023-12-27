@@ -261,7 +261,7 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                         ImGui::Text("Instance name : %s", selectedObjectSafePtr->instanceName().c_str());
                         ImGui::Text("Components attached count: %d", selectedObjectSafePtr->componentCount());
                         ImGui::Text("Instance id: %d", selectedObjectSafePtr->instanceID());
-                        ImGui::Text("NetEntity id: %lld", selectedObjectSafePtr->netEntityID());
+                        ImGui::Text("NetEntity id: %lld", selectedObjectSafePtr->netID());
                         ImGui::Text("NetOwner id: %lld", selectedObjectSafePtr->netOwnerID());
                         ImGui::EndTabItem();
                     }
@@ -290,7 +290,7 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
 
     std::string instanceDisplayName = object->instanceName() + " {" + std::to_string(object->instanceID()) + ", " +
-                                      std::to_string(object->netEntityID()) + ", " +
+                                      std::to_string(object->netID()) + ", " +
                                       std::to_string(object->netOwnerID()) + "}";
     if (object->__templatePath.has_value()) {
         instanceDisplayName += " [T]";

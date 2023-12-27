@@ -15,8 +15,11 @@ protected:
     friend class jleSceneServer;
     jleSceneServer &getSceneServer();
 
+    int32_t getClientId();
+
 private:
     jleSceneServer *_serverScene{};
+    int32_t _clientId;
 };
 
 struct jleServerToClientEvent : public jleNetworkEvent {

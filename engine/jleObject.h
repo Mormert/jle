@@ -100,9 +100,9 @@ public:
 
     uint32_t instanceID() const;
 
-    int64_t netEntityID() const;
+    int32_t netID() const;
 
-    int64_t netOwnerID() const;
+    int32_t netOwnerID() const;
 
     jleTransform &getTransform();
 
@@ -144,8 +144,9 @@ private:
     bool _isStarted = false;
 
     uint32_t _instanceID{};
-    int64_t _networkEntityID{-1};
-    int64_t _networkOwnerID{-1};
+
+    int32_t _netId{-1};
+    int32_t _networkOwnerID{-1};
 
 protected:
     friend class jleGame;

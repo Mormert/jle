@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "jleSceneNetworked.h"
 #include "jleNetworkEvent.h"
+#include "jleSceneNetworked.h"
 
 class jleSceneClient : public jleSceneNetworked
 {
@@ -24,7 +24,13 @@ public:
 
     void sceneInspectorImGuiRender() override;
 
+    void spawnObjectFromServer(const std::shared_ptr<jleObject>& object, int32_t netId, int32_t owner = 0);
+
     void sendNetworkEvent(std::unique_ptr<jleClientToServerEvent> event);
+
+    std::shared_ptr<jleObject> getObjectFromNetId(int32_t netId);
+
+    void setNetIdObject(const std::shared_ptr<jleObject>& object, int32_t netId);
 
     template <class Archive>
     void serialize(Archive &archive);
@@ -32,18 +38,12 @@ public:
 private:
     void processNetwork() override;
 
-    static jleSceneClient &getSceneClientRef(librg_world *w);
-
-    static int32_t clientReadCreate(librg_world *w, librg_event *e);
-    static int32_t clientReadRemove(librg_world *w, librg_event *e);
-    static int32_t clientReadUpdate(librg_world *w, librg_event *e);
-
     ENetHost *_client = nullptr;
     ENetPeer *_peer = nullptr;
 
     std::vector<std::unique_ptr<jleClientToServerEvent>> _eventsQueue;
 
-    //std::unordered_map<uint64_t, std::weak_ptr<jleObject>> _networkedObjects;
+    std::unordered_map<int32_t, std::weak_ptr<jleObject>> _networkedObjects;
 };
 
 JLE_EXTERN_TEMPLATE_CEREAL_H(jleSceneClient)

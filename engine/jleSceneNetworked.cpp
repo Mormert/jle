@@ -3,88 +3,13 @@
 #include "jleSceneNetworked.h"
 
 #include <enet.h>
-#include <librg.h>
 
 #include <utility>
 
 void
-jleSceneNetworked::trackEntityObject(librg_world *world, int64_t entityId, const std::shared_ptr<jleObject> &object)
-{
-    librg_entity_track(world, entityId);
-    setNetEntityToObjectPointer(world, entityId, object);
-}
-
-void
-jleSceneNetworked::trackEntityObject(int64_t entityId, const std::shared_ptr<jleObject> &object)
-{
-    trackEntityObject(_world, entityId, object);
-}
-
-void
-jleSceneNetworked::untrackEntityObject(librg_world *world, int64_t entityId)
-{
-    resetNetEntityToObjectPointer(world, entityId);
-    librg_entity_untrack(world, entityId);
-}
-
-void
-jleSceneNetworked::untrackEntityObject(int64_t entityId)
-{
-    untrackEntityObject(_world, entityId);
-}
-
-void
-jleSceneNetworked::resetNetEntityToObjectPointer(librg_world *world, int64_t entityId)
-{
-    auto *objectWeak = reinterpret_cast<std::weak_ptr<jleObject> *>(librg_entity_userdata_get(world, entityId));
-    delete objectWeak;
-    objectWeak = nullptr;
-}
-
-void
-jleSceneNetworked::setNetEntityToObjectPointer(librg_world *world, int64_t entityId, std::weak_ptr<jleObject> object)
-{
-#ifndef NDEBUG
-    auto previousValue = librg_entity_userdata_get(world, entityId);
-    if (previousValue != nullptr) {
-        LOGE << "Entity id " << entityId << " was already set, causing memory leak";
-    }
-#endif
-
-    librg_entity_userdata_set(world, entityId, new std::weak_ptr<jleObject>(std::move(object)));
-}
-
-void
-jleSceneNetworked::setNetEntityToObjectPointer(int64_t entityId, std::weak_ptr<jleObject> object)
-{
-    setNetEntityToObjectPointer(_world, entityId, std::move(object));
-}
-
-std::shared_ptr<jleObject>
-jleSceneNetworked::getObjectPointerFromNetEntity(librg_world *world, int64_t entityId)
-{
-    auto *objectWeak = reinterpret_cast<std::weak_ptr<jleObject> *>(librg_entity_userdata_get(world, entityId));
-    if (objectWeak->expired()) {
-        return nullptr;
-    }
-    auto object = objectWeak->lock();
-    if (object->pendingKill()) {
-        return nullptr;
-    }
-    return object;
-}
-
-std::shared_ptr<jleObject>
-jleSceneNetworked::getObjectPointerFromNetEntity(int64_t entityId)
-{
-    return getObjectPointerFromNetEntity(_world, entityId);
-}
-
-void
 jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneType,
                                                       const std::string &sceneName,
-                                                      ENetHost *host,
-                                                      librg_world *world)
+                                                      ENetHost *host)
 {
 
     uint16_t mySceneNetID;
@@ -113,45 +38,45 @@ jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneTy
     ImGui::Text("Allocated peers max: %zu", host->peerCount);
     ImGui::Text("Total data sent: %f MB", host->totalSentData / 1000000.f);
 
-    if (ImGui::TreeNode("World Entities")) {
-        int64_t entityIds[1024];
-        size_t entitiesAmount;
-        librg_world_fetch_all(world, entityIds, &entitiesAmount);
-        for (int i = 0; i < entitiesAmount; i++) {
-            auto entityId = entityIds[i];
-            auto owner = librg_entity_owner_get(world, entityId);
-            auto object = getObjectPointerFromNetEntity(world, entityId);
-            if (!object) {
-                continue;
-            }
-            if (owner == mySceneNetID) {
-                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 1.0f, 0.3f, 1.0f));
-            } else {
-                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-            }
-            ImGui::Text("Entity ID: %lld, owner : %lld, obj name: %s",
-                        entityId,
-                        object->netOwnerID(),
-                        object->instanceName().c_str());
-            ImGui::PopStyleColor();
-        }
-        ImGui::TreePop();
-    }
+    /* if (ImGui::TreeNode("World Entities")) {
+         int64_t entityIds[1024];
+         size_t entitiesAmount;
+         librg_world_fetch_all(world, entityIds, &entitiesAmount);
+         for (int i = 0; i < entitiesAmount; i++) {
+             auto entityId = entityIds[i];
+             auto owner = librg_entity_owner_get(world, entityId);
+             auto object = getObjectPointerFromNetEntity(world, entityId);
+             if (!object) {
+                 continue;
+             }
+             if (owner == mySceneNetID) {
+                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 1.0f, 0.3f, 1.0f));
+             } else {
+                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+             }
+             ImGui::Text("Entity ID: %lld, owner : %lld, obj name: %s",
+                         entityId,
+                         object->netOwnerID(),
+                         object->instanceName().c_str());
+             ImGui::PopStyleColor();
+         }
+         ImGui::TreePop();
+     }
 
-    if (ImGui::TreeNode(std::string{sceneType + " Owned Objects"}.c_str())) {
-        int64_t entityIds[1024];
-        size_t entitiesAmount;
-        librg_world_fetch_owner(world, mySceneNetID, entityIds, &entitiesAmount);
-        for (int i = 0; i < entitiesAmount; i++) {
-            auto entityId = entityIds[i];
-            auto object = getObjectPointerFromNetEntity(world, entityId);
-            if (!object) {
-                continue;
-            }
-            ImGui::Text("Entity ID: %lld, obj name: %s", entityId, object->instanceName().c_str());
-        }
-        ImGui::TreePop();
-    }
+     if (ImGui::TreeNode(std::string{sceneType + " Owned Objects"}.c_str())) {
+         int64_t entityIds[1024];
+         size_t entitiesAmount;
+         librg_world_fetch_owner(world, mySceneNetID, entityIds, &entitiesAmount);
+         for (int i = 0; i < entitiesAmount; i++) {
+             auto entityId = entityIds[i];
+             auto object = getObjectPointerFromNetEntity(world, entityId);
+             if (!object) {
+                 continue;
+             }
+             ImGui::Text("Entity ID: %lld, obj name: %s", entityId, object->instanceName().c_str());
+         }
+         ImGui::TreePop();
+     }*/
 
     {
         ENetPeer *currentPeer;
@@ -191,19 +116,20 @@ jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneTy
                         ImGui::TreePop();
                     }
 
-                    if (ImGui::TreeNode("Their Owned Objects")) {
-                        int64_t entityIds[4096];
-                        size_t entitiesAmount;
-                        librg_world_fetch_all(world, entityIds, &entitiesAmount);
-                        for (int i = 0; i < entitiesAmount; i++) {
-                            auto entityId = entityIds[i];
-                            auto object = getObjectPointerFromNetEntity(world, entityId);
-                            if (object->netOwnerID() == theirNetSceneID) {
-                                ImGui::Text("Entity ID: %lld, obj name: %s", entityId, object->instanceName().c_str());
-                            }
-                        }
-                        ImGui::TreePop();
-                    }
+                    /*  if (ImGui::TreeNode("Their Owned Objects")) {
+                          int64_t entityIds[4096];
+                          size_t entitiesAmount;
+                          librg_world_fetch_all(world, entityIds, &entitiesAmount);
+                          for (int i = 0; i < entitiesAmount; i++) {
+                              auto entityId = entityIds[i];
+                              auto object = getObjectPointerFromNetEntity(world, entityId);
+                              if (object->netOwnerID() == theirNetSceneID) {
+                                  ImGui::Text("Entity ID: %lld, obj name: %s", entityId,
+                      object->instanceName().c_str());
+                              }
+                          }
+                          ImGui::TreePop();
+                      }*/
                 }
 
                 ImGui::TreePop();

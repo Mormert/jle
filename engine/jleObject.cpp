@@ -297,13 +297,13 @@ jleObject::instanceID() const
     return _instanceID;
 }
 
-int64_t
-jleObject::netEntityID() const
+int32_t
+jleObject::netID() const
 {
-    return _networkEntityID;
+    return _netId;
 }
 
-int64_t
+int32_t
 jleObject::netOwnerID() const
 {
     return _networkOwnerID;

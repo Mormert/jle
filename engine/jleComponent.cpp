@@ -63,7 +63,7 @@ struct jleComponentNetSyncEvent : public jleServerToClientEvent {
     execute() override
     {
         auto &scene = getSceneClient();
-        if (auto object = scene.getObjectPointerFromNetEntity(netEntityId)) {
+        if (auto object = scene.getObjectFromNetId(netEntityId)) {
             auto component = object->customComponents()[componentIndex];
             try {
                 std::stringstream stream{};
@@ -105,7 +105,7 @@ jleComponent::syncServerToClient()
     event->serializedBinaryData.resize(str.size());
     std::copy(str.begin(), str.end(), event->serializedBinaryData.begin());
 
-    event->netEntityId = object()->netEntityID();
+    event->netEntityId = object()->netID();
 
     for (uint8_t i = 0; i < object()->componentCount(); i++) {
         if (this == object()->customComponents()[i].get()) {

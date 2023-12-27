@@ -2,9 +2,8 @@
 
 #pragma once
 
-#include "jleSceneNetworked.h"
 #include "jleNetworkEvent.h"
-
+#include "jleSceneNetworked.h"
 
 constexpr int serverOwnedId = 0;
 
@@ -29,6 +28,8 @@ public:
 
     void sendNetworkEventBroadcast(std::unique_ptr<jleServerToClientEvent> event);
 
+    void sendNetworkEventToUser(std::unique_ptr<jleServerToClientEvent> event, int32_t userId);
+
     template <class Archive>
     void serialize(Archive &archive);
 
@@ -36,25 +37,23 @@ protected:
     void setupObject(const std::shared_ptr<jleObject> &obj) override;
 
 private:
-
     void updateServerSceneObjects(float dt);
 
     void setupObjectForNetworking(const std::shared_ptr<jleObject> &obj);
 
     void processNetwork() override;
 
-    static jleSceneServer &getSceneServerRef(librg_world *w);
-
-    static int32_t serverWriteUpdate(librg_world *w, librg_event *e);
-    static int32_t serverWriteCreate(librg_world *w, librg_event *e);
+    void objectDestructionNetworked(const std::shared_ptr<jleObject>& object);
 
     ENetHost *_server = nullptr;
 
-    std::unordered_map<uint64_t, std::vector<std::weak_ptr<jleObject>>> _playerOwnedObjects;
+    std::unordered_map<int32_t, std::vector<std::weak_ptr<jleObject>>> _playerOwnedObjects;
 
     std::vector<std::unique_ptr<jleServerToClientEvent>> _eventsBroadcastQueue;
 
-    int64_t _entityIdGenerateCounter{1};
+    std::unordered_map<int32_t, std::vector<std::unique_ptr<jleServerToClientEvent>>> _eventsSpecificUserQueue;
+
+    int32_t _entityIdGenerateCounter{1};
 };
 
 JLE_EXTERN_TEMPLATE_CEREAL_H(jleSceneServer)
