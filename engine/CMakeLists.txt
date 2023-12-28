@@ -99,6 +99,7 @@ add_library(engine STATIC
         "jleAnimationBone.cpp"
         "jleAnimation.cpp"
         "cSkinnedMesh.cpp"
+        "cTransformNetSync.cpp"
         "jleAnimationFinalMatrices.cpp"
         "jleResource.cpp"
         "jleResourceInterface.cpp")
