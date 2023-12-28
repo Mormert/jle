@@ -15,7 +15,7 @@ jleLuaScriptComponent::setupLua(sol::table &self, jleObject *ownerObject)
         if (result.valid()) {
             self = result;
             self["object"] = ownerObject;
-            for (auto &c : ownerObject->customComponents()) {
+            for (auto &c : ownerObject->components()) {
                 c->registerSelfLua(self);
             }
         } else {

@@ -24,19 +24,24 @@ public:
 
     void sceneInspectorImGuiRender() override;
 
-    void spawnObjectFromServer(const std::shared_ptr<jleObject>& object, int32_t netId, int32_t owner = 0);
+    void spawnObjectFromServer(const std::shared_ptr<jleObject> &object, int32_t netId, int32_t owner = 0);
 
     void sendNetworkEvent(std::unique_ptr<jleClientToServerEvent> event);
 
     std::shared_ptr<jleObject> getObjectFromNetId(int32_t netId);
 
-    void setNetIdObject(const std::shared_ptr<jleObject>& object, int32_t netId);
+    void setNetIdObject(const std::shared_ptr<jleObject> &object, int32_t netId);
 
     template <class Archive>
     void serialize(Archive &archive);
 
+protected:
+    void setupObject(const std::shared_ptr<jleObject> &obj) override;
+
 private:
     void processNetwork() override;
+
+    void setupObjectForNetworking(const std::shared_ptr<jleObject> &obj);
 
     ENetHost *_client = nullptr;
     ENetPeer *_peer = nullptr;

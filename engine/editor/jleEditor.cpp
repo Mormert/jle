@@ -398,7 +398,7 @@ jleEditor::renderEditorGizmos()
 void
 jleEditor::renderEditorGizmosObject(jleObject *object)
 {
-    for (auto &&c : object->customComponents()) {
+    for (auto &&c : object->components()) {
         c->editorGizmosRender(true);
     }
     for (auto &&child : object->childObjects()) {

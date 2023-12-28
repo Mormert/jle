@@ -19,6 +19,8 @@
 #include <string_view>
 
 class jleScene;
+class jleSceneClient;
+class jleSceneServer;
 class jleComponent;
 class jleTransform;
 
@@ -112,9 +114,6 @@ public:
 
     jleTransform &getTransform();
 
-    template <typename T>
-    [[nodiscard]] std::shared_ptr<T> addDependencyComponentInStart();
-
     jleObject *object();
 
     jleScene *scene();
@@ -128,6 +127,8 @@ protected:
 
     // The scene in which this component's object lives
     jleScene *_containedInScene{};
+    jleSceneClient *_containedInSceneClient{};
+    jleSceneServer *_containedInSceneServer{};
 
     bool _isDestroyed{false};
 

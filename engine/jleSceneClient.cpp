@@ -27,8 +27,14 @@ jleSceneClient::connectToServer(int port, const char *ipAddress)
 void
 jleSceneClient::disconnectFromServer()
 {
-    enet_peer_disconnect_now(_peer, 0);
-    enet_host_destroy(_client);
+    if (_peer) {
+        enet_peer_disconnect_now(_peer, 0);
+        _peer = nullptr;
+    }
+    if (_client) {
+        enet_host_destroy(_client);
+        _client = nullptr;
+    }
 
     LOGI << "[client] Disconnected scene client: " << path.getVirtualPath();
 }
@@ -177,8 +183,22 @@ jleSceneClient::spawnObjectFromServer(const std::shared_ptr<jleObject> &object, 
     setNetIdObject(object, netId);
     object->_netId = netId;
     object->_networkOwnerID = owner;
+    object->_isStarted = true;
+    setupObjectForNetworking(object);
     _sceneObjects.push_back(object);
-    object->propagateOwnedByScene(this);
+}
+
+void
+jleSceneClient::setupObject(const std::shared_ptr<jleObject> &obj)
+{
+    jleScene::setupObject(obj);
+    setupObjectForNetworking(obj);
+}
+
+void
+jleSceneClient::setupObjectForNetworking(const std::shared_ptr<jleObject> &obj)
+{
+    obj->propagateOwnedBySceneClient(this);
 }
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleSceneClient)

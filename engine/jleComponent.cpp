@@ -64,7 +64,10 @@ struct jleComponentNetSyncEvent : public jleServerToClientEvent {
     {
         auto &scene = getSceneClient();
         if (auto object = scene.getObjectFromNetId(netEntityId)) {
-            auto component = object->customComponents()[componentIndex];
+            if (componentIndex > object->componentCount()) {
+                return;
+            }
+            auto component = object->components()[componentIndex];
             try {
                 std::stringstream stream{};
                 stream.write(&serializedBinaryData[0], serializedBinaryData.size());
@@ -108,7 +111,7 @@ jleComponent::syncServerToClient()
     event->netEntityId = object()->netID();
 
     for (uint8_t i = 0; i < object()->componentCount(); i++) {
-        if (this == object()->customComponents()[i].get()) {
+        if (this == object()->components()[i].get()) {
             event->componentIndex = i;
             break;
         }

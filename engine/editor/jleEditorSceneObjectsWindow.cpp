@@ -239,12 +239,12 @@ jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
                             ImGui::EndPopup();
                         }
 
-                        auto &&customComponents = selectedObjectSafePtr->customComponents();
-                        if (customComponents.size() > 0) {
-                            if (ImGui::BeginMenu("Remove Custom Component")) {
-                                for (int i = customComponents.size() - 1; i >= 0; i--) {
-                                    if (ImGui::MenuItem(customComponents[i]->componentName().data())) {
-                                        customComponents[i]->destroy();
+                        auto &&components = selectedObjectSafePtr->components();
+                        if (components.size() > 0) {
+                            if (ImGui::BeginMenu("Remove Component")) {
+                                for (int i = components.size() - 1; i >= 0; i--) {
+                                    if (ImGui::MenuItem(components[i]->componentName().data())) {
+                                        components[i]->destroy();
                                     }
                                 }
                                 ImGui::EndMenu();

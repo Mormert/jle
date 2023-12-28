@@ -47,7 +47,7 @@ jleObject::addComponent()
     std::shared_ptr<T> newComponent = std::make_shared<T>(this, _containedInScene);
     _components.push_back(newComponent);
 
-    addComponentStart(newComponent.get());
+    addComponentStart(newComponent);
 
     return newComponent;
 };
@@ -63,9 +63,15 @@ jleObject::addComponentByName(const std::string &component_name)
     newComponent->_attachedToObject = this;
     newComponent->_containedInScene = _containedInScene;
 
+    if (networkObjectType() == jleObjectNetworkType::SERVER) {
+        newComponent->_containedInSceneServer = _containedInSceneServer;
+    } else if (networkObjectType() == jleObjectNetworkType::CLIENT) {
+        newComponent->_containedInSceneClient = _containedInSceneClient;
+    }
+
     _components.push_back(newComponent);
 
-    addComponentStart(newComponent.get());
+    addComponentStart(newComponent);
 
     return newComponent;
 }
@@ -80,9 +86,15 @@ jleObject::addComponent(const std::shared_ptr<T> &component)
     c->_attachedToObject = this;
     c->_containedInScene = _containedInScene;
 
+    if (networkObjectType() == jleObjectNetworkType::SERVER) {
+        c->_containedInSceneServer = _containedInSceneServer;
+    } else if (networkObjectType() == jleObjectNetworkType::CLIENT) {
+        c->_containedInSceneClient = _containedInSceneClient;
+    }
+
     _components.push_back(component);
 
-    addComponentStart(component.get());
+    addComponentStart(component);
 }
 
 template <typename T>
@@ -121,20 +133,6 @@ jleObject::getComponentInChildren(jleObject *object)
     }
 
     return nullptr;
-}
-
-template <typename T>
-inline std::shared_ptr<T>
-jleObject::addDependencyComponent(const jleComponent *component)
-{
-    static_assert(std::is_base_of<jleComponent, T>::value, "T must derive from jleComponent");
-
-    std::shared_ptr<T> c = component->_attachedToObject->getComponent<T>();
-    if (!c) {
-        c = component->_attachedToObject->addComponent<T>();
-    }
-
-    return c;
 }
 
 template <typename T>

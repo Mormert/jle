@@ -114,7 +114,11 @@ jleSceneServer::startServer(int port, int maxClients)
 int
 jleSceneServer::stopServer()
 {
-    enet_host_destroy(_server);
+    if(_server)
+    {
+        enet_host_destroy(_server);
+        _server = nullptr;
+    }
 
     LOGI << "[server] Stopped scene server: " << path.getVirtualPath();
 
@@ -321,6 +325,7 @@ jleSceneServer::setupObjectForNetworking(const std::shared_ptr<jleObject> &obj)
     const auto entityId = _entityIdGenerateCounter++;
     obj->_netId = entityId;
     obj->_networkOwnerID = serverOwnedId;
+    obj->propagateOwnedBySceneServer(this);
 
     if (!_server) {
         return;

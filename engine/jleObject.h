@@ -16,6 +16,10 @@
 #include <vector>
 
 class jleScene;
+class jleSceneClient;
+class jleSceneServer;
+
+enum class jleObjectNetworkType : uint8_t { REGULAR, CLIENT, SERVER };
 
 class jleObject : public jleSerializedOnlyResource, public std::enable_shared_from_this<jleObject>
 {
@@ -61,9 +65,6 @@ public:
     std::shared_ptr<T> getComponentInChildren(jleObject *object = nullptr);
 
     template <typename T>
-    std::shared_ptr<T> addDependencyComponent(const jleComponent *component);
-
-    template <typename T>
     std::shared_ptr<T> spawnChildObject();
 
     std::shared_ptr<jleObject> spawnChildObject(const std::string &objName);
@@ -73,11 +74,13 @@ public:
     // Called from components
     void destroyComponent(jleComponent *component);
 
+    void destroyComponentAtIndex(uint32_t index);
+
     void destroyObject();
 
     int componentCount();
 
-    std::vector<std::shared_ptr<jleComponent>> &customComponents();
+    std::vector<std::shared_ptr<jleComponent>> &components();
 
     void attachChildObject(const std::shared_ptr<jleObject> &object);
 
@@ -100,6 +103,8 @@ public:
 
     uint32_t instanceID() const;
 
+    jleObjectNetworkType networkObjectType();
+
     int32_t netID() const;
 
     int32_t netOwnerID() const;
@@ -118,6 +123,8 @@ private:
     void propagateDestroy();
 
     void propagateOwnedByScene(jleScene *scene);
+    void propagateOwnedBySceneClient(jleSceneClient *scene);
+    void propagateOwnedBySceneServer(jleSceneServer *scene);
 
     void replaceChildrenWithTemplate();
 
@@ -135,7 +142,7 @@ private:
 
     void updateChildrenServer(float dt);
 
-    void addComponentStart(jleComponent *c);
+    void addComponentStart(const std::shared_ptr<jleComponent>& c);
 
     std::string _instanceName;
 
@@ -160,6 +167,9 @@ protected:
     jleObject *_parentObject = nullptr;
 
     jleScene *_containedInScene = nullptr;
+
+    jleSceneClient *_containedInSceneClient = nullptr; // is unset if not in a "client scene"
+    jleSceneServer *_containedInSceneServer = nullptr; // is unset if not in a "server scene"
 
     static inline uint32_t _instanceIdCounter{0};
 };

@@ -6,13 +6,85 @@
 #include "jleGameEngine.h"
 #include "jlePathDefines.h"
 #include "jleScene.h"
+#include "jleSceneClient.h"
+#include "jleSceneServer.h"
 #include "jleTransform.h"
 
-#include <filesystem>
 #include <fstream>
 #include <optional>
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleObject)
+
+struct jleAddComponentEvent : public jleServerToClientEvent {
+    void
+    execute() override
+    {
+        auto &scene = getSceneClient();
+        if (auto object = scene.getObjectFromNetId(objectNetId)) {
+            object->addComponent(component);
+        }
+    }
+
+    template <class Archive>
+    void
+    serialize(Archive &archive)
+    {
+        archive(CEREAL_NVP(objectNetId), CEREAL_NVP(component));
+    }
+
+    int32_t objectNetId{};
+    std::shared_ptr<jleComponent> component;
+};
+
+JLE_REGISTER_NET_EVENT(jleAddComponentEvent)
+
+struct jleDestroyComponentEvent : public jleServerToClientEvent {
+    void
+    execute() override
+    {
+        auto &scene = getSceneClient();
+        if (auto object = scene.getObjectFromNetId(objectNetId)) {
+            object->destroyComponentAtIndex(componentIndex);
+        }
+    }
+
+    template <class Archive>
+    void
+    serialize(Archive &archive)
+    {
+        archive(CEREAL_NVP(objectNetId), CEREAL_NVP(componentIndex));
+    }
+
+    int32_t objectNetId{};
+    int8_t componentIndex{};
+};
+
+JLE_REGISTER_NET_EVENT(jleDestroyComponentEvent)
+
+struct jleAttachChildEvent : public jleServerToClientEvent {
+    void
+    execute() override
+    {
+        auto &scene = getSceneClient();
+        if (auto parent = scene.getObjectFromNetId(objectNetIdParent)) {
+            if (auto child = scene.getObjectFromNetId(objectNetIdChild)) {
+                parent->attachChildObject(child);
+            }
+        }
+    }
+
+    template <class Archive>
+    void
+    serialize(Archive &archive)
+    {
+        archive(CEREAL_NVP(objectNetIdParent), CEREAL_NVP(objectNetIdChild));
+    }
+
+    int32_t objectNetIdParent{};
+    int32_t objectNetIdChild{};
+};
+
+JLE_REGISTER_NET_EVENT(jleAttachChildEvent)
 
 jleObject::jleObject() : _transform{this} { _instanceID = _instanceIdCounter++; }
 
@@ -31,8 +103,27 @@ jleObject::destroyComponent(jleComponent *component)
             }
             component->_isDestroyed = true;
             _components.erase(_components.begin() + i);
+
+            if (networkObjectType() == jleObjectNetworkType::SERVER) {
+                auto event = jleMakeNetEvent<jleDestroyComponentEvent>();
+                event->objectNetId = netID();
+                event->componentIndex = static_cast<int8_t>(i);
+                _containedInSceneServer->sendNetworkEventBroadcast(std::move(event));
+            }
         }
     }
+}
+
+void
+jleObject::destroyComponentAtIndex(uint32_t index)
+{
+    if (index > _components.size()) {
+        LOGW << "Tried to destroy component out of bounds at index: " << index;
+        return;
+    }
+    auto component = _components[index];
+    component->_isDestroyed = true;
+    _components.erase(_components.begin() + index);
 }
 
 void
@@ -48,7 +139,7 @@ jleObject::componentCount()
 }
 
 std::vector<std::shared_ptr<jleComponent>> &
-jleObject::customComponents()
+jleObject::components()
 {
     return _components;
 }
@@ -84,6 +175,13 @@ jleObject::attachChildObject(const std::shared_ptr<jleObject> &object)
 
     object->_parentObject = this;
     __childObjects.push_back(object);
+
+    if (networkObjectType() == jleObjectNetworkType::SERVER) {
+        auto event = jleMakeNetEvent<jleAttachChildEvent>();
+        event->objectNetIdParent = netID();
+        event->objectNetIdChild = object->netID();
+        _containedInSceneServer->sendNetworkEventBroadcast(std::move(event));
+    }
 
     // if (auto t = object->component<cTransform>()) {
     // t->flagDirty();
@@ -341,6 +439,34 @@ jleObject::propagateOwnedByScene(jleScene *scene)
 }
 
 void
+jleObject::propagateOwnedBySceneClient(jleSceneClient *scene)
+{
+    _containedInScene = scene;
+    _containedInSceneClient = scene;
+    for (auto &component : _components) {
+        component->_containedInScene = scene;
+        component->_containedInSceneClient = scene;
+    }
+    for (auto &child : __childObjects) {
+        child->propagateOwnedBySceneClient(scene);
+    }
+}
+
+void
+jleObject::propagateOwnedBySceneServer(jleSceneServer *scene)
+{
+    _containedInScene = scene;
+    _containedInSceneServer = scene;
+    for (auto &component : _components) {
+        component->_containedInScene = scene;
+        component->_containedInSceneServer = scene;
+    }
+    for (auto &child : __childObjects) {
+        child->propagateOwnedBySceneServer(scene);
+    }
+}
+
+void
 jleObject::replaceChildrenWithTemplate()
 {
     for (auto &&object : __childObjects) {
@@ -379,7 +505,7 @@ jleObject::propagateDestroy()
 }
 
 void
-jleObject::addComponentStart(jleComponent *c)
+jleObject::addComponentStart(const std::shared_ptr<jleComponent> &c)
 {
     if (!gEngine->isGameKilled()) {
 
@@ -388,6 +514,13 @@ jleObject::addComponentStart(jleComponent *c)
         }
 
         c->start();
+
+        if (networkObjectType() == jleObjectNetworkType::SERVER) {
+            auto event = jleMakeNetEvent<jleAddComponentEvent>();
+            event->component = c;
+            event->objectNetId = netID();
+            _containedInSceneServer->sendNetworkEventBroadcast(std::move(event));
+        }
     }
 }
 
@@ -395,4 +528,15 @@ bool
 jleObject::pendingKill()
 {
     return _pendingKill;
+}
+jleObjectNetworkType
+jleObject::networkObjectType()
+{
+    if (_containedInSceneClient) {
+        return jleObjectNetworkType::CLIENT;
+    }
+    if (_containedInSceneServer) {
+        return jleObjectNetworkType::SERVER;
+    }
+    return jleObjectNetworkType::REGULAR;
 }
