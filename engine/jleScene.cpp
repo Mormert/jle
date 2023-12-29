@@ -1,4 +1,17 @@
-// Copyright (c) 2023. Johan Lind
+/*********************************************************************************************
+ *                                                                                           *
+ *               ,     .     ,                      .   ,--.                                 *
+ *               |     |     |                      |   |            o                       *
+ *               | ,-. |- -- |    ,-: ,-: ,-: ,-. ,-|   |-   ;-. ,-: . ;-. ,-.               *
+ *               | |-' |     |    | | | | | | |-' | |   |    | | | | | | | |-'               *
+ *              -' `-' `-'   `--' `-` `-| `-| `-' `-'   `--' ' ' `-| ' ' ' `-'               *
+ *                                                                                           *
+ *     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     *
+ *          Jet-Lagged Engine (jle) is licenced under GNU General Public License v3.0.       *
+ *     The licence can be found here: https://github.com/Mormert/jle/blob/master/LICENSE     *
+ *                  Copyright (c) 2020-2024 Johan Lind. All rights reserved.                 *
+ *                                                                                           *
+ *********************************************************************************************/
 
 #include "jleScene.h"
 #include "jleGameEngine.h"
@@ -43,7 +56,6 @@ jleScene::updateSceneObjects(float dt)
 void
 jleScene::updateSceneObjectsEditor(float dt)
 {
-
     JLE_SCOPE_PROFILE_CPU(jleScene_updateSceneObejctsEditor)
     for (int32_t i = _sceneObjects.size() - 1; i >= 0; i--) {
         if (_sceneObjects[i]->_pendingKill) {

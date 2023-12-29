@@ -1,3 +1,17 @@
+#############################################################################################
+#                                                                                           #
+#               ,     .     ,                      .   ,--.                                 #
+#               |     |     |                      |   |            o                       #
+#               | ,-. |- -- |    ,-: ,-: ,-: ,-. ,-|   |-   ;-. ,-: . ;-. ,-.               #
+#               | |-' |     |    | | | | | | |-' | |   |    | | | | | | | |-'               #
+#              -' `-' `-'   `--' `-` `-| `-| `-' `-'   `--' ' ' `-| ' ' ' `-'               #
+#                                                                                           #
+#     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     #
+#          Jet-Lagged Engine (jle) is licenced under GNU General Public License v3.0.       #
+#     The licence can be found here: https://github.com/Mormert/jle/blob/master/LICENSE     #
+#                  Copyright (c) 2020-2024 Johan Lind. All rights reserved.                 #
+#                                                                                           #
+#############################################################################################
 
 # This cmake file is intended to be included in the game CMakeLists.txt
 # See the template project's CMakeLists.txt.
@@ -22,13 +36,13 @@ if (BUILD_EMSCRIPTEN)
     set(BUILD_REMOTERY OFF)
 endif ()
 
-add_compile_definitions(_JLE_ENGINE_PATH="${JLE_ENGINE_PATH}/")
-add_compile_definitions(_GAME_RESOURCES_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}/GameResources")
+add_compile_definitions(_JLE_ENGINE_PATH= "${JLE_ENGINE_PATH}/")
+add_compile_definitions(_GAME_RESOURCES_DIRECTORY= "${CMAKE_CURRENT_SOURCE_DIR}/GameResources")
 
-if(MSVC)
+if (MSVC)
     # /bigobj allows us to compile with a heavy amount of templated code
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-endif()
+endif ()
 
 if (MINGW)
     # This -03 issue is similar to the /bigobj fix above, but it uses more optimization...? Hacky. :>
@@ -39,7 +53,7 @@ if (MINGW)
     find_library(WSOCK32_LIBRARY wsock32)
     find_library(WS2_32_LIBRARY ws2_32)
     link_libraries(wsock32 ws2_32)
-endif()
+endif ()
 
 if (BUILD_EDITOR)
     add_definitions(-DBUILD_EDITOR)
@@ -51,12 +65,12 @@ endif ()
 
 if (BUILD_OPENGLES30)
     add_definitions(-DBUILD_OPENGLES30)
-else()
+else ()
     if (BUILD_REMOTERY)
         # We only profile OpenGL on desktop GL, since there was problems in ES
         add_definitions(-DRMT_USE_OPENGL)
     endif ()
-endif()
+endif ()
 
 if (BUILD_EMSCRIPTEN)
     # TODO: Remove having to enable exceptions flag '-fexceptions' since not all browser engines supports exceptions?
