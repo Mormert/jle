@@ -36,8 +36,8 @@ if (BUILD_EMSCRIPTEN)
     set(BUILD_REMOTERY OFF)
 endif ()
 
-add_compile_definitions(_JLE_ENGINE_PATH= "${JLE_ENGINE_PATH}/")
-add_compile_definitions(_GAME_RESOURCES_DIRECTORY= "${CMAKE_CURRENT_SOURCE_DIR}/GameResources")
+add_compile_definitions(JLE_ENGINE_PATH_CMAKE=${JLE_ENGINE_PATH}/)
+add_compile_definitions(GAME_RESOURCES_DIRECTORY_CMAKE=${CMAKE_CURRENT_SOURCE_DIR}/GameResources)
 
 if (MSVC)
     # /bigobj allows us to compile with a heavy amount of templated code

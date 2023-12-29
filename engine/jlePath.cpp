@@ -1,17 +1,15 @@
-/*********************************************************************************************
- *                                                                                           *
- *               ,     .     ,                      .   ,--.                                 *
- *               |     |     |                      |   |            o                       *
- *               | ,-. |- -- |    ,-: ,-: ,-: ,-. ,-|   |-   ;-. ,-: . ;-. ,-.               *
- *               | |-' |     |    | | | | | | |-' | |   |    | | | | | | | |-'               *
- *              -' `-' `-'   `--' `-` `-| `-| `-' `-'   `--' ' ' `-| ' ' ' `-'               *
- *                                                                                           *
- *     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     *
- *          Jet-Lagged Engine (jle) is licenced under GNU General Public License v3.0.       *
- *     The licence can be found here: https://github.com/Mormert/jle/blob/master/LICENSE     *
- *                  Copyright (c) 2020-2024 Johan Lind. All rights reserved.                 *
- *                                                                                           *
- *********************************************************************************************/
+//
+//               ,     .     ,                      .   ,--.
+//               |     |     |                      |   |            o
+//               | ,-. |- -- |    ,-: ,-: ,-: ,-. ,-|   |-   ;-. ,-: . ;-. ,-.
+//               | |-' |     |    | | | | | | |-' | |   |    | | | | | | | |-'
+//              -' `-' `-'   `--' `-` `-| `-| `-' `-'   `--' ' ' `-| ' ' ' `-'
+//
+//     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//          Jet-Lagged Engine (jle) is licenced under GNU General Public License v3.0.
+//     The licence can be found here: https://github.com/Mormert/jle/blob/master/LICENSE
+//                  Copyright (c) 2020-2024 Johan Lind. All rights reserved.
+//
 
 #include "jlePath.h"
 #include "jlePathDefines.h"
@@ -104,7 +102,7 @@ jlePath::findRealPathFromVirtualPath(const std::string &virtualPath)
     }
 
     std::string rootFolderStr;
-    std::string *resourcesDirectory;
+    const std::string *resourcesDirectory;
     switch (rootFolder) {
     case jleRootFolder::EngineResources:
         rootFolderStr = ENGINE_RESOURCES_PREFIX;

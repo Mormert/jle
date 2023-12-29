@@ -20,26 +20,30 @@
 // Wrappers for paths defined in CMakeLists
 
 #if defined(BUILD_EDITOR) || !defined(NDEBUG)
-static std::string JLE_ENGINE_PATH{_JLE_ENGINE_PATH};
+
+#define JLE_Q(x) #x
+#define JLE_QUOTE(x) JLE_Q(x)
+
+static const std::string JLE_ENGINE_PATH{JLE_QUOTE(JLE_ENGINE_PATH_CMAKE)};
 #else
-static std::string JLE_ENGINE_PATH{""};
+static const std::string JLE_ENGINE_PATH{""};
 #endif
 
-static std::string JLE_ENGINE_RESOURCES_PATH{JLE_ENGINE_PATH + "EngineResources"};
-static std::string JLE_EDITOR_RESOURCES_PATH{JLE_ENGINE_PATH + "EditorResources"};
-static std::string JLE_BINARY_RESOURCES_PATH{""};
+static const std::string JLE_ENGINE_RESOURCES_PATH{JLE_ENGINE_PATH + "EngineResources"};
+static const std::string JLE_EDITOR_RESOURCES_PATH{JLE_ENGINE_PATH + "EditorResources"};
+static const std::string JLE_BINARY_RESOURCES_PATH{""};
 
 
 #if defined(BUILD_EDITOR) || !defined(NDEBUG)
-static std::string GAME_RESOURCES_DIRECTORY{_GAME_RESOURCES_DIRECTORY};
+static const std::string GAME_RESOURCES_DIRECTORY{JLE_QUOTE(GAME_RESOURCES_DIRECTORY_CMAKE)};
 #else
 static std::string GAME_RESOURCES_DIRECTORY{"GameResources"};
 #endif
 
-static std::string ENGINE_RESOURCES_PREFIX{"ER:"};
-static std::string EDITOR_RESOURCES_PREFIX{"ED:"};
-static std::string GAME_RESOURCES_PREFIX{"GR:"};
-static std::string BINARY_RESOURCES_PREFIX{"BI:"};
+static const std::string ENGINE_RESOURCES_PREFIX{"ER:"};
+static const std::string EDITOR_RESOURCES_PREFIX{"ED:"};
+static const std::string GAME_RESOURCES_PREFIX{"GR:"};
+static const std::string BINARY_RESOURCES_PREFIX{"BI:"};
 
 enum class jleRootFolder {
     None,            // Opens the file path directly
