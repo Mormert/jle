@@ -140,6 +140,8 @@ struct HashCollideCheck {
             }
         }
 
+        std::cout << str << " network event registered." << std::endl;
+
         auto h = createHash(str);
 
         for (auto &collideCheck : hashCollideChecker) {
