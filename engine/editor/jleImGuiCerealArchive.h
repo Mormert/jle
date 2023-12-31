@@ -674,7 +674,9 @@ private:
         ImGui::DragFloat3("Scaling", matrixScale);
         ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, cpyMatPtr);
 
-        value.setLocalMatrix(cpyMat);
+        if(cpyMat != value.getLocalMatrix()) {
+            value.setLocalMatrix(cpyMat);
+        }
 
         ImGui::PopID();
     }
