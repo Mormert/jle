@@ -127,6 +127,7 @@ public:
     bool pendingKill();
 
 private:
+    friend class jleTransform;
     friend class jleScene;
     friend class jleSceneServer;
     friend class jleSceneClient;

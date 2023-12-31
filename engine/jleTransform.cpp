@@ -16,9 +16,37 @@
 #include "jleTransform.h"
 #include "jleObject.h"
 
+#include "jleNetworkEvent.h"
+#include "jleSceneClient.h"
+#include "jleSceneServer.h"
+
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleTransform)
 
-jleTransform::jleTransform(jleObject *owner){
+struct jleTransformPropagateEvent : public jleServerToClientEvent {
+    void
+    execute() override
+    {
+        auto &scene = getSceneClient();
+        auto object = scene.getObjectFromNetId(netId);
+        object->getTransform().setLocalMatrix(localMatrix);
+    }
+
+    template <class Archive>
+    void
+    serialize(Archive &archive)
+    {
+        archive(CEREAL_NVP(localMatrix), CEREAL_NVP(netId));
+    }
+
+    glm::mat4 localMatrix;
+    int32_t netId;
+};
+
+JLE_REGISTER_NET_EVENT(jleTransformPropagateEvent)
+
+jleTransform::
+jleTransform(jleObject *owner)
+{
     _owner = owner;
 }
 
@@ -70,7 +98,7 @@ jleTransform::setLocalPosition(const glm::vec3 &position)
     propagateMatrix();
 }
 void
-jleTransform::addLocalTranslation(const glm::vec3& position)
+jleTransform::addLocalTranslation(const glm::vec3 &position)
 {
     _local[3][0] += position.x;
     _local[3][1] += position.y;
@@ -111,7 +139,7 @@ jleTransform::getParentWorld()
 }
 
 void
-jleTransform::propagateMatrix()
+jleTransform::propagateMatrixFromObjectSerialization()
 {
     _world = getParentWorld() * getLocalMatrix();
 
@@ -120,6 +148,36 @@ jleTransform::propagateMatrix()
         child->getTransform().propagateMatrix();
     }
 }
+
+void
+jleTransform::propagateMatrix()
+{
+    _world = getParentWorld() * getLocalMatrix();
+
+    auto &children = _owner->childObjects();
+    for (auto &&child : children) {
+        child->getTransform().propagateMatrixChildren();
+    }
+
+    if (_owner && _owner->networkObjectType() == jleObjectNetworkType::SERVER) {
+        auto event = jleMakeNetEvent<jleTransformPropagateEvent>();
+        event->localMatrix = getLocalMatrix();
+        event->netId = _owner->netID();
+        _owner->_containedInSceneServer->sendNetworkEventBroadcast(std::move(event));
+    }
+}
+
+void
+jleTransform::propagateMatrixChildren()
+{
+    _world = getParentWorld() * getLocalMatrix();
+
+    auto &children = _owner->childObjects();
+    for (auto &&child : children) {
+        child->getTransform().propagateMatrixChildren();
+    }
+}
+
 void
 jleTransform::setLocalMatrix(const glm::mat4 &matrix)
 {

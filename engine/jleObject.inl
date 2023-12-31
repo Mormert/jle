@@ -23,9 +23,6 @@ template <class Archive>
 void
 jleObject::serialize(Archive &archive)
 {
-
-    cereal::base_class<jleResourceInterface>(this);
-
     try {
         archive(CEREAL_NVP(__templatePath));
     } catch (std::exception &e) {
@@ -37,8 +34,7 @@ jleObject::serialize(Archive &archive)
         child->_parentObject = this;
     }
 
-    // Update the internal world matrix for children
-    getTransform().propagateMatrix();
+    getTransform().propagateMatrixFromObjectSerialization();
 
     for (auto &&component : _components) {
         component->_attachedToObject = this;

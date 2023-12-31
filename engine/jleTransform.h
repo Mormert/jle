@@ -60,7 +60,10 @@ private:
     friend class jleObject;
     const glm::mat4 &getParentWorld();
 
+    void propagateMatrixFromObjectSerialization();
+
     void propagateMatrix();
+    void propagateMatrixChildren();
 
     jleObject *_owner;
 
