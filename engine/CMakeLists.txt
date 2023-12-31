@@ -54,7 +54,6 @@ add_library(engine STATIC
         "RmlUiImplementation/shell/src/RendererExtensions.cpp"
         "RmlUiImplementation/shell/src/Shell.cpp"
         "RmlUiImplementation/shell/src/ShellFileInterface.cpp"
-        "jleLibrgImpl.c"
         "jleNew.cpp"
         "jleImage.cpp"
         "jleImageFlipped.cpp"
@@ -203,7 +202,6 @@ endif ()
 set(ENET_STATIC ON)
 add_subdirectory(3rdparty/git_submodules/enet)
 target_include_directories(engine PUBLIC 3rdparty/git_submodules/enet/include)
-target_include_directories(engine PUBLIC 3rdparty/git_submodules/librg/code)
 target_link_libraries(engine PUBLIC enet_static)
 
 add_subdirectory(3rdparty/SoLoud)
