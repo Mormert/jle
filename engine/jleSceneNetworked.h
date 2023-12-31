@@ -19,6 +19,7 @@
 
 typedef struct _ENetHost ENetHost;
 typedef struct _ENetPeer ENetPeer;
+typedef struct _ENetCompressor ENetCompressor;
 
 enum class jleNetOpCode : int8_t { Events, WorldWrite };
 
@@ -30,4 +31,12 @@ protected:
     static void networkSceneDisplayInspectorWindow(const std::string &sceneType,
                                                    const std::string &sceneName,
                                                    ENetHost *host);
+
+    void initializeENetCompressor(ENetCompressor &compressor);
+
+private:
+    std::vector<uint8_t> _compressionSrcMemory;
+    std::vector<uint8_t> _compressionDstMemory;
+
+    friend class jleNetworkCompression;
 };

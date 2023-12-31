@@ -16,8 +16,10 @@
 #include "jleSceneNetworked.h"
 
 #include <enet.h>
+#include <zlib/zlib.h>
 
-#include <utility>
+#undef min
+#undef max
 
 void
 jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneType,
@@ -151,4 +153,83 @@ jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneTy
     }
 
     ImGui::End();
+}
+
+static std::vector<uint8_t> testBuffer;
+
+class jleNetworkCompression
+{
+public:
+    static size_t
+    compressData(void *context,
+                 const ENetBuffer *inBuffers,
+                 size_t inBufferCount,
+                 size_t inLimit,
+                 uint8_t *outData,
+                 size_t outLimit)
+    {
+        auto *compressor = (jleSceneNetworked *)(context);
+
+        if (compressor->_compressionSrcMemory.size() < inLimit) {
+            compressor->_compressionSrcMemory.resize(inLimit);
+        }
+
+        int total = inLimit;
+        int ofs = 0;
+        while (total) {
+            for (size_t i = 0; i < inBufferCount; i++) {
+                const int to_copy = std::min(total, int(inBuffers[i].dataLength));
+
+                ::memcpy(&compressor->_compressionSrcMemory[ofs], inBuffers[i].data, to_copy);
+
+                ofs += to_copy;
+                total -= to_copy;
+            }
+        }
+
+        const auto req_size = ::compressBound(ofs);
+        if (compressor->_compressionDstMemory.size() < req_size) {
+            compressor->_compressionDstMemory.resize(req_size);
+        }
+
+        uLongf compressedLen = compressor->_compressionDstMemory.size();
+        int ret = ::compress(
+            &compressor->_compressionDstMemory[0], &compressedLen, &compressor->_compressionSrcMemory[0], ofs);
+
+        if (ret != Z_OK) {
+            return 0;
+        }
+
+        if (compressedLen > outLimit) {
+            // When this happens, we don't send compressed package (happens on small data, ~10's of bytes or so)
+            return 0;
+        }
+
+        ::memcpy(outData, &compressor->_compressionDstMemory[0], compressedLen);
+
+        return compressedLen;
+    }
+
+    static size_t
+    decompressData(void *context, const uint8_t *inData, size_t inLimit, uint8_t *outData, size_t outLimit)
+    {
+        uLongf uncompressedLen = outLimit;
+        int ret = ::uncompress(outData, &uncompressedLen, inData, inLimit);
+
+        if (ret != Z_OK) {
+            LOGE << "Failed to decompress net package";
+            return 0;
+        }
+
+        return uncompressedLen;
+    }
+};
+
+void
+jleSceneNetworked::initializeENetCompressor(ENetCompressor &compressor)
+{
+    compressor.context = this;
+    compressor.compress = jleNetworkCompression::compressData;
+    compressor.decompress = jleNetworkCompression::decompressData;
+    compressor.destroy = nullptr;
 }

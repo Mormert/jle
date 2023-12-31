@@ -108,6 +108,10 @@ jleSceneServer::startServer(int port, int maxClients)
 
     _server = enet_host_create(&address, maxClients, 2, 0, 0);
 
+    ENetCompressor compressor;
+    initializeENetCompressor(compressor);
+    enet_host_compress(_server, &compressor);
+
     if (_server == nullptr) {
         LOGE << "[server] An error occurred while trying to create an ENet server host.";
         return 1;
@@ -127,8 +131,7 @@ jleSceneServer::startServer(int port, int maxClients)
 int
 jleSceneServer::stopServer()
 {
-    if(_server)
-    {
+    if (_server) {
         enet_host_destroy(_server);
         _server = nullptr;
     }
@@ -138,7 +141,11 @@ jleSceneServer::stopServer()
     return 0;
 }
 
-jleSceneServer::~jleSceneServer() { stopServer(); }
+jleSceneServer::~
+jleSceneServer()
+{
+    stopServer();
+}
 
 void
 jleSceneServer::updateScene(float dt)

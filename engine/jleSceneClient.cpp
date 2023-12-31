@@ -28,6 +28,10 @@ jleSceneClient::connectToServer(int port, const char *ipAddress)
     _client = enet_host_create(nullptr, 1, 2, 0, 0);
     _peer = enet_host_connect(_client, &address, 2, 0);
 
+    ENetCompressor compressor;
+    initializeENetCompressor(compressor);
+    enet_host_compress(_client, &compressor);
+
     if (_peer == nullptr) {
         LOGE << "[client] Cannot connect";
         return;
@@ -52,7 +56,11 @@ jleSceneClient::disconnectFromServer()
     LOGI << "[client] Disconnected scene client: " << path.getVirtualPath();
 }
 
-jleSceneClient::~jleSceneClient() { disconnectFromServer(); }
+jleSceneClient::~
+jleSceneClient()
+{
+    disconnectFromServer();
+}
 
 void
 jleSceneClient::updateScene(float dt)
