@@ -15,7 +15,7 @@
 
 #pragma once
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 
 #include "jleEditorImGuiWindowInterface.h"
 #include "jleEditorResourceEdit.h"
@@ -77,4 +77,4 @@ private:
     std::unordered_map<jlePath, std::shared_ptr<jleTexture>> _referencedTextures;
 };
 
-#endif // BUILD_EDITOR
+#endif // JLE_BUILD_EDITOR

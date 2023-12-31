@@ -15,7 +15,7 @@
 
 #pragma once
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 
 #include "ImGui/imgui.h"
 
@@ -25,4 +25,4 @@ namespace ImGui
     void EndGroupPanel();
 }
 
-#endif // BUILD_EDITOR
+#endif // JLE_BUILD_EDITOR

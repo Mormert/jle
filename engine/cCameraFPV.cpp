@@ -66,7 +66,7 @@ cCameraFPV::update(float dt)
         getTransform().setLocalPosition(updatedPosition);
     }
 
-#ifndef BUILD_EDITOR
+#ifndef JLE_BUILD_EDITOR
     if (keyboard->keyPressed(jleKey::TAB)) // Tab
     {
         auto fpsMode = gEngine->input().mouse->isFpsMode();

@@ -15,7 +15,7 @@
 
 #pragma once
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 
 #include "editor/jleEditorImGuiWindowInterface.h"
 
@@ -48,4 +48,4 @@ private:
     void EditTransform(float *cameraView, float *cameraProjection, float *matrix, bool editTransformDecomposition);
 };
 
-#endif // BUILD_EDITOR
+#endif // JLE_BUILD_EDITOR

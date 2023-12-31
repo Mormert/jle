@@ -43,7 +43,7 @@
 // Include whatever GL jle includes
 #include "jleIncludeGL.h"
 
-#ifdef BUILD_OPENGLES30
+#ifdef JLE_BUILD_OPENGLES30
     #define RMLUI_SHADER_HEADER "#version 300 es\nprecision highp float;\n"
 #else
     #define RMLUI_SHADER_HEADER "#version 330\n"

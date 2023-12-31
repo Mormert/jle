@@ -99,7 +99,7 @@ cSkinnedMesh::findAnimator(jleObject *object)
 void
 cSkinnedMesh::editorInspectorImGuiRender()
 {
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
     if (!_animator) {
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.2f, 1.0f));
         ImGui::Text(

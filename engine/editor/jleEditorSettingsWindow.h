@@ -15,7 +15,7 @@
 
 #pragma once
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 
 #include "editor/jleEditorImGuiWindowInterface.h"
 #include <memory>
@@ -28,4 +28,4 @@ public:
     void update(jleGameEngine &ge) override;
 };
 
-#endif // BUILD_EDITOR
+#endif // JLE_BUILD_EDITOR

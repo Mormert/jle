@@ -15,7 +15,7 @@
 
 #pragma once
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 
 #include "jleEditorImGuiWindowInterface.h"
 
@@ -47,4 +47,4 @@ private:
     std::atomic<double> _packagingProgress{};
 };
 
-#endif // BUILD_EDITOR
+#endif // JLE_BUILD_EDITOR

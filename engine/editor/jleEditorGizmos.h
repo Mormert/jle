@@ -16,7 +16,7 @@
 #ifndef JLE_EDITORGIZMOS_H
 #define JLE_EDITORGIZMOS_H
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 
 #include <memory>
 
@@ -45,6 +45,6 @@ private:
     std::unique_ptr<jleEditorGizmosMeshMaterialHolder> _meshMaterialHolder;
 };
 
-#endif // BUILD_EDITOR
+#endif // JLE_BUILD_EDITOR
 
 #endif // JLE_EDITORGIZMOS_H

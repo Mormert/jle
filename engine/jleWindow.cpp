@@ -155,7 +155,7 @@ jleWindow::initWindow()
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     }
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
     glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
     const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -379,7 +379,7 @@ glDebugOutput(GLenum source,
 GLFWwindow *
 jleWindow::initGlfwWindow(int width, int height, const char *title)
 {
-#ifdef BUILD_OPENGLES30
+#ifdef JLE_BUILD_OPENGLES30
     // Runs on OpenGL ES 3.0
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -419,7 +419,7 @@ jleWindow::initGlfwWindow(int width, int height, const char *title)
 
     glfwMakeContextCurrent(glfwWindow);
 #ifndef __EMSCRIPTEN__
-#ifdef BUILD_OPENGLES30
+#ifdef JLE_BUILD_OPENGLES30
     if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)) {
         std::cerr << "ERROR: Failed to initialize GLAD\n";
         exit(1);

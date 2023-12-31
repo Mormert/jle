@@ -15,7 +15,7 @@
 
 #pragma once
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 
 #include "jleEditorImGuiWindowInterface.h"
 
@@ -44,4 +44,4 @@ private:
     void objectTreeRecursive(std::shared_ptr<jleObject> object);
 };
 
-#endif // BUILD_EDITOR
+#endif // JLE_BUILD_EDITOR

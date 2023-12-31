@@ -30,7 +30,7 @@ jleFramebufferShadowMap::jleFramebufferShadowMap(unsigned int width, unsigned in
     glBindTexture(GL_TEXTURE_2D, _texture);
 
     // Attach the texture to the bound framebuffer object as GL_DEPTH_COMPONENT
-#ifdef BUILD_OPENGLES30
+#ifdef JLE_BUILD_OPENGLES30
     // OpenGL ES 3.0 uses 16 bit depth component here instead of default 24 bit
     glTexImage2D(GL_TEXTURE_2D,
                  0,
@@ -86,7 +86,7 @@ jleFramebufferShadowMap::resize(unsigned int width, unsigned int height)
     this->_height = height;
 
     glBindTexture(GL_TEXTURE_2D, _texture);
-#ifdef BUILD_OPENGLES30
+#ifdef JLE_BUILD_OPENGLES30
     // OpenGL ES 3.0 uses 16 bit depth component here instead of default 24 bit
     glTexImage2D(GL_TEXTURE_2D,
                  0,

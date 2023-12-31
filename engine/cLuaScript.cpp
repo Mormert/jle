@@ -17,7 +17,7 @@
 #include "jleGameEngine.h"
 #include "jleLuaEnvironment.h"
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 #include <ImGui/imgui.h>
 #include "editor/jleImGuiExtensions.h"
 #include "editor/jleEditor.h"
@@ -87,7 +87,7 @@ cLuaScript::getSelf()
 void
 cLuaScript::editorInspectorImGuiRender()
 {
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
     if (!gEngine->isGameKilled()) {
 
         ImGui::BeginGroupPanel("Lua Variables");

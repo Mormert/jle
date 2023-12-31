@@ -39,10 +39,6 @@ jleEditorProfilerWindow::update(jleGameEngine &ge)
         drawProfilerRecursive(0);
     }
 
-    ImGui::Separator();
-
-    ImGui::Text("Remotery profiling disabled. Enable by compiling with -DBUILD_REMOTERY");
-
     ImGui::End();
 }
 

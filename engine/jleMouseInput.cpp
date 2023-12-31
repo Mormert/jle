@@ -22,7 +22,7 @@ jleMouseInput::jleMouseInput(std::shared_ptr<jleWindow> window) {
 }
 
 int jleMouseInput::mouseX() {
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
     return _window->cursor().first - _screenBeginX;
 #else
     return _window->cursor().first;
@@ -30,7 +30,7 @@ int jleMouseInput::mouseX() {
 }
 
 int jleMouseInput::mouseY() {
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
     return _window->cursor().second - _screenBeginY;
 #else
     return _window->cursor().second;

@@ -161,7 +161,7 @@ void jleFont::addFontSizePixels(uint32_t sizePixels) {
         glBindTexture(GL_TEXTURE_2D, texture);
         jleStaticOpenGLState::globalActiveTexture = texture;
 
-#ifdef BUILD_OPENGLES30 // Use ALPHA as format on GL ES instead of the RED
+#ifdef JLE_BUILD_OPENGLES30 // Use ALPHA as format on GL ES instead of the RED
                         // component
         glTexImage2D(GL_TEXTURE_2D,
                      0,

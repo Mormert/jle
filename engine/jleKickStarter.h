@@ -34,7 +34,7 @@ void kickStartGame() {
     gameEngine->run();
 }
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 template <typename T>
 void kickStartGameInEditor() {
     LOG_VERBOSE << "Kickstarting the editor";
@@ -46,7 +46,7 @@ void kickStartGameInEditor() {
     gameEngineInEditor->setGame<T>();
     gameEngineInEditor->run();
 }
-#endif // BUILD_EDITOR
+#endif // JLE_BUILD_EDITOR
 
 template <typename T>
 void kickStart() {
@@ -62,7 +62,7 @@ void kickStart() {
         consoleAppender; // Log to command window
     plog::init<0>(plog::verbose, &fileAppender).addAppender(&consoleAppender).addAppender(&dynamicAppender());
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
     kickStartGameInEditor<T>();
 #else
     kickStartGame<T>();

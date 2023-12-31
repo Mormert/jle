@@ -158,7 +158,7 @@
 // Desktop GL 2.0+ has glPolygonMode() which GL ES and WebGL don't have.
 #ifdef GL_POLYGON_MODE
 // <JLE>
-#ifndef BUILD_OPENGLES30
+#ifndef JLE_BUILD_OPENGLES30
 #define IMGUI_IMPL_HAS_POLYGON_MODE
 #endif
 // </JLE>

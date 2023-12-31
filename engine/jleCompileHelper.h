@@ -21,7 +21,7 @@
 
 // Note: this is not needed, it is only used to reduce compile time.
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 
 namespace cereal
 {

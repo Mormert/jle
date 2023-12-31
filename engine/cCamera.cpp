@@ -20,7 +20,7 @@
 #include "jleObject.h"
 #include "jleWindow.h"
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 #include "editor/jleEditor.h"
 #include "editor/jleEditorGizmos.h"
 #include "jle3DGraph.h"
@@ -102,7 +102,7 @@ cCamera::~cCamera()
 void
 cCamera::editorInspectorImGuiRender()
 {
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
     ImGui::Text("Camera Preview");
 
     // Get the texture from the framebuffer
@@ -116,10 +116,10 @@ cCamera::editorInspectorImGuiRender()
 void
 cCamera::editorGizmosRender(bool selected)
 {
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
     auto mesh = gEditor->gizmos().cameraMesh();
     auto material = gEditor->gizmos().cameraMaterial();
     gEngine->renderGraph().sendMesh(
         mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
-#endif // BUILD_EDITOR
+#endif // JLE_BUILD_EDITOR
 }

@@ -31,7 +31,7 @@ jobs:
           version: 3.1.43
 
       - name: Configure CMake with Emscripten SDK
-        run: emcmake cmake gametemplate -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -DBUILD_EDITOR=OFF -DBUILD_EMSCRIPTEN=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+        run: emcmake cmake gametemplate -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -DJLE_BUILD_EDITOR=OFF -DJLE_BUILD_EMSCRIPTEN=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
 
       - name: Build
         run:

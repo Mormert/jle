@@ -311,7 +311,7 @@ jleEditor::initImgui()
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window().glfwWindow(), true);
 
-#ifdef BUILD_OPENGLES30
+#ifdef JLE_BUILD_OPENGLES30
     ImGui_ImplOpenGL3_Init("#version 300 es");
 #else
     ImGui_ImplOpenGL3_Init("#version 330 core");

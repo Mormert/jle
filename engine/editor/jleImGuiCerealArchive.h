@@ -16,14 +16,14 @@
 #ifndef JLEIMGUICEREALARCHIVE_H
 #define JLEIMGUICEREALARCHIVE_H
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 // The following macro only works on arithmetic types: float, int, double, etc, and std::string
 #define JLE_TOOLTIP_ARITHMETIC(TYPE, TIP, NAME) jleToolTip<TYPE>(NAME){TIP};
 #else
 #define JLE_TOOLTIP_ARITHMETIC(TYPE, TIP, NAME) TYPE NAME;
 #endif
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 
 #include "jleComponent.h"
 #include "jleEditor.h"
@@ -779,6 +779,6 @@ CEREAL_SAVE_FUNCTION_NAME(jleImGuiCerealArchiveInternal &ar, T &t)
 CEREAL_REGISTER_ARCHIVE(cereal::jleImGuiCerealArchiveInternal)
 CEREAL_REGISTER_ARCHIVE(cereal::jleImGuiCerealArchive)
 
-#endif // BUILD_EDITOR
+#endif // JLE_BUILD_EDITOR
 
 #endif // JLEIMGUICEREALARCHIVE_H

@@ -94,7 +94,7 @@ private:
 
     float _blendFactor{1.f};
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
     bool _editorPreviewAnimation{false};
 #endif
 };

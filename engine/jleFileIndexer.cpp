@@ -113,7 +113,7 @@ jleFileIndexer::notifyModification(const jlePath &path)
             LOGW << "Failed reloading resource: " << path.getVirtualPath();
         }
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
         gEditor->editorTextEdit().reloadIfOpened(path);
 #endif
     } else {

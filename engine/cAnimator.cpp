@@ -120,7 +120,7 @@ cAnimator::parallelUpdate(float dt)
 void
 cAnimator::editorUpdate(float dt)
 {
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
     if (_editorPreviewAnimation) {
         update(dt);
     }
@@ -200,7 +200,7 @@ cAnimator::animationMatrices()
 void
 cAnimator::editorInspectorImGuiRender()
 {
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
     int p = 0;
     ImGui::Separator();
     for (auto &animation : _animations) {

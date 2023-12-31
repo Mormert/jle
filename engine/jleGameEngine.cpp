@@ -64,7 +64,7 @@ jleGameEngine::jleGameEngine()
 
     LOGI << "Game Resources located at: " << jlePath{"GR:/"}.getRealPath();
     LOGI << "Engine Resources located at: " << jlePath{"ER:/"}.getRealPath();
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
     LOGI << "Editor Resources located at: " << jlePath{"ED:/"}.getRealPath();
 #endif
 
@@ -272,7 +272,7 @@ jleGameEngine::start()
 
     _fullscreen_renderer = std::make_unique<jleFullscreenRendering>();
 
-#ifndef BUILD_EDITOR
+#ifndef JLE_BUILD_EDITOR
     window().addWindowResizeCallback(
         std::bind(&jleGameEngine::gameWindowResizedEvent, this, std::placeholders::_1, std::placeholders::_2));
 #endif

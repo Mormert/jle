@@ -67,6 +67,6 @@ git clone https://github.com/Mormert/jle.git --recurse-submodules
 ```shell
 mkdir build
 cd build
-cmake .. -DBUILD_EDITOR=ON -DCMAKE_BUILD_TYPE=Release
+cmake .. -DJLE_BUILD_EDITOR=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 ```

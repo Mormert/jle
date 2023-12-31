@@ -116,7 +116,7 @@ add_library(engine STATIC
         "jleResource.cpp"
         "jleResourceInterface.cpp")
 
-if (BUILD_EDITOR)
+if (JLE_BUILD_EDITOR)
     target_sources(engine PRIVATE
             "editor/jleEditor.cpp"
             "editor/jleEditorResourceViewer.cpp"
@@ -170,7 +170,7 @@ set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_ZLIB OFF CACHE BOOL "" FORCE)
 # Exclude 3MF since it uses zip_open which caused name conflict with libzip
 add_definitions(-DASSIMP_BUILD_NO_3MF_IMPORTER -DASSIMP_BUILD_NO_3MF_EXPORTER)
-if (BUILD_EMSCRIPTEN)
+if (JLE_BUILD_EMSCRIPTEN)
     set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
 endif ()
 add_subdirectory(3rdparty/git_submodules/assimp)
@@ -182,7 +182,7 @@ target_link_libraries(engine PUBLIC zlib)
 add_subdirectory(3rdparty/lua)
 target_link_libraries(engine PUBLIC vanilla_lua)
 
-if (NOT BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()
+if (NOT JLE_BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()
 
     target_link_libraries(engine PUBLIC ${CMAKE_DL_LIBS})
 
@@ -265,7 +265,7 @@ target_include_directories(engine SYSTEM PUBLIC
 
 target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-if (BUILD_EMSCRIPTEN)
+if (JLE_BUILD_EMSCRIPTEN)
     # When building with Emscripten, it needs to find the pre-loaded assets
     # at the same location as the 'binary'
     FILE(COPY EditorResources DESTINATION ${PROJECT_BINARY_DIR})
@@ -275,7 +275,7 @@ else ()
     FILE(COPY EngineResources DESTINATION ${PROJECT_BINARY_DIR}/${JLE_GAME_BUILD})
 endif ()
 
-if (BUILD_UNITY)
+if (JLE_BUILD_UNITY)
     set_target_properties(engine PROPERTIES
             UNITY_BUILD ON
             UNITY_BUILD_BATCH_SIZE 8)
@@ -294,6 +294,6 @@ if (BUILD_UNITY)
             PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 endif ()
 
-if (BUILD_PRECOMPILED_HEADER)
+if (JLE_BUILD_PRECOMPILED_HEADER)
     target_precompile_headers(engine PRIVATE precompile.h)
 endif ()

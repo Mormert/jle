@@ -15,7 +15,7 @@
 
 #pragma once
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 
 #include "editor/jleEditorImGuiWindowInterface.h"
 
@@ -44,4 +44,4 @@ private:
     bool _wasFocused = false;
 };
 
-#endif // BUILD_EDITOR
+#endif // JLE_BUILD_EDITOR

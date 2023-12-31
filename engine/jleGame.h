@@ -27,7 +27,7 @@
 #include <cereal/archives/json.hpp>
 #include <cereal/archives/binary.hpp>
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 #include "editor/jleImGuiCerealArchive.h"
 #endif
 

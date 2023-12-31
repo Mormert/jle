@@ -22,7 +22,7 @@
 #include "jleResourceRef.h"
 #include <glm/ext/matrix_transform.hpp>
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 #include "ImGui/sol_ImGui.h"
 #endif
 
@@ -48,7 +48,7 @@ jleLuaEnvironment::setupLua(sol::state &lua)
 
     setupLuaGLM(lua);
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
     sol_ImGui::Init(lua);
 #endif
 
@@ -167,7 +167,7 @@ jleLuaEnvironment::setupLua(sol::state &lua)
                                  << s;
     });
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
     // Overwrite print function
     lua.script("function print(s)\n"
                "    LOGV(tostring(s));\n"

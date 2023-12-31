@@ -16,7 +16,7 @@
 #ifndef JLEEDITORTEXTEDIT_H
 #define JLEEDITORTEXTEDIT_H
 
-#ifdef BUILD_EDITOR
+#ifdef JLE_BUILD_EDITOR
 
 
 #include "3rdparty/ImGuiColorTextEdit/TextEditor.h"
@@ -43,6 +43,6 @@ private:
     ImFont* font;
 };
 
-#endif // BUILD_EDITOR
+#endif // JLE_BUILD_EDITOR
 
 #endif // JLEEDITORTEXTEDIT_H
