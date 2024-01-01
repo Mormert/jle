@@ -26,7 +26,7 @@ jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneTy
                                                       const std::string &sceneName,
                                                       ENetHost *host)
 {
-
+#ifdef JLE_BUILD_EDITOR
     uint16_t mySceneNetID;
     std::string otherSceneType;
     if (sceneType == "Server") {
@@ -153,6 +153,7 @@ jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneTy
     }
 
     ImGui::End();
+#endif
 }
 
 static std::vector<uint8_t> testBuffer;

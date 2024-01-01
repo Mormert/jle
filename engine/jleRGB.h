@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleExternalSerialization.h"
+
 #include <glm/glm.hpp>
 
 class jleRGB : public glm::vec3

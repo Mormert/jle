@@ -54,6 +54,11 @@ if (MINGW)
     link_libraries(wsock32 ws2_32)
 endif ()
 
+if (JLE_BUILD_HEADLESS)
+    add_definitions(-DJLE_BUILD_HEADLESS)
+    set(JLE_BUILD_EDITOR OFF)
+endif ()
+
 if (JLE_BUILD_EDITOR)
     add_definitions(-DJLE_BUILD_EDITOR)
 endif ()

@@ -16,18 +16,23 @@
 #pragma once
 
 #include "editor/jleEditor.h"
+#include "jleDynamicLogAppender.h"
 #include "jleGameEngine.h"
 #include <plog/Appenders/ColorConsoleAppender.h>
 #include <plog/Appenders/RollingFileAppender.h>
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Init.h>
-#include "jleDynamicLogAppender.h"
 
 template <typename T>
-void kickStartGame() {
+void
+kickStartGame()
+{
+#ifdef JLE_BUILD_HEADLESS
+    LOG_VERBOSE << "Kickstarting the game in headless build (no graphics)";
+#else
     LOG_VERBOSE << "Kickstarting the game";
-    static_assert(std::is_base_of<jleGame, T>::value,
-                  "T must derive from jleGame");
+#endif
+    static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
 
     auto gameEngine = std::make_unique<jleGameEngine>();
     gameEngine->setGame<T>();
@@ -36,30 +41,27 @@ void kickStartGame() {
 
 #ifdef JLE_BUILD_EDITOR
 template <typename T>
-void kickStartGameInEditor() {
+void
+kickStartGameInEditor()
+{
     LOG_VERBOSE << "Kickstarting the editor";
-    static_assert(std::is_base_of<jleGame, T>::value,
-                  "T must derive from jleGame");
+    static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
 
-    auto gameEngineInEditor =
-        std::make_unique<jleEditor>();
+    auto gameEngineInEditor = std::make_unique<jleEditor>();
     gameEngineInEditor->setGame<T>();
     gameEngineInEditor->run();
 }
 #endif // JLE_BUILD_EDITOR
 
 template <typename T>
-void kickStart() {
-    static_assert(std::is_base_of<jleGame, T>::value,
-                  "T must derive from jleGame");
+void
+kickStart()
+{
+    static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
 
-
-    // Initialize plog when kickstarting, so logging is enabled everywhere after
-    // the kickstart
-    plog::RollingFileAppender<plog::TxtFormatter> fileAppender(
-        "jle_log.plog", 100000, 5);
-    plog::ColorConsoleAppender<plog::TxtFormatter>
-        consoleAppender; // Log to command window
+    // Initialize plog when kickstarting, so logging is enabled everywhere after the kickstart
+    plog::RollingFileAppender<plog::TxtFormatter> fileAppender("jle_log.plog", 100000, 5);
+    plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender; // Log to command window
     plog::init<0>(plog::verbose, &fileAppender).addAppender(&consoleAppender).addAppender(&dynamicAppender());
 
 #ifdef JLE_BUILD_EDITOR

@@ -54,7 +54,8 @@ struct jleGameEngine::jleEngineInternal {
     jleResourceRef<jleEngineSettings> engineSettings;
 };
 
-jleGameEngine::jleGameEngine()
+jleGameEngine::
+jleGameEngine()
 {
     LOGI << "Initializing job system";
     wi::jobsystem::Initialize();
@@ -71,6 +72,7 @@ jleGameEngine::jleGameEngine()
     _internal = std::make_unique<jleEngineInternal>();
     _internal->engineSettings = jleResourceRef<jleEngineSettings>("GR:/settings/enginesettings.es");
 
+#ifndef JLE_BUILD_HEADLESS
     _window = std::make_unique<jleWindow>();
 
     PLOG_INFO << "Initializing the window";
@@ -79,8 +81,6 @@ jleGameEngine::jleGameEngine()
 
     _input = std::make_unique<jleInput>(_window);
 
-    _timerManager = std::make_unique<jleTimerManager>();
-
     _3dRenderer = std::make_unique<jle3DRenderer>();
     _3dRenderGraph = std::make_unique<jle3DGraph>();
     _3dRendererSettings = std::make_unique<jle3DSettings>();
@@ -88,24 +88,30 @@ jleGameEngine::jleGameEngine()
 
     PLOG_INFO << "Initializing sound engine...";
     _soLoud->init();
+#endif
 
     LOG_INFO << "Starting the lua environment";
     _luaEnvironment = std::make_unique<jleLuaEnvironment>();
+
+    _timerManager = std::make_unique<jleTimerManager>();
 
     if (settings().enableNetworking) {
         enet_initialize();
     }
 }
 
-jleGameEngine::~jleGameEngine()
+jleGameEngine::~
+jleGameEngine()
 {
     gEngine = nullptr;
 
     LOGI << "Shutting down job system";
     wi::jobsystem::ShutDown();
 
+#ifndef JLE_BUILD_HEADLESS
     PLOG_INFO << "Destroying the sound engine...";
     _soLoud->deinit();
+#endif
 
     if (settings().enableNetworking) {
         enet_deinitialize();
@@ -173,7 +179,10 @@ jleGameEngine::executeNextFrame()
     auto gameHaltedTemp = gameHalted;
     gameHalted = false;
     update(deltaFrameTime());
+
+#ifndef JLE_BUILD_HEADLESS
     render();
+#endif
     gameHalted = gameHaltedTemp;
 }
 
@@ -259,6 +268,7 @@ jleGameEngine::startRmlUi()
 void
 jleGameEngine::start()
 {
+#ifndef JLE_BUILD_HEADLESS
     constexpr int initialScreenX = 1024;
     constexpr int initialScreenY = 1024;
     mainScreenFramebuffer = std::make_shared<jleFramebufferScreen>(initialScreenX, initialScreenY);
@@ -275,8 +285,9 @@ jleGameEngine::start()
 #ifndef JLE_BUILD_EDITOR
     window().addWindowResizeCallback(
         std::bind(&jleGameEngine::gameWindowResizedEvent, this, std::placeholders::_1, std::placeholders::_2));
-#endif
+#endif // JLE_BUILD_EDITOR
 
+#endif // JLE_BUILD_HEADLESS
     LOG_INFO << "Starting the game engine";
 
     startGame();
@@ -422,14 +433,17 @@ jleGameEngine::mainLoop()
 
     _timerManager->process();
 
+#ifndef JLE_BUILD_HEADLESS
     input().mouse->updateDeltas();
+#endif
 
     update(deltaFrameTime());
 
+#ifndef JLE_BUILD_HEADLESS
     render();
     _window->updateWindow();
-
     running = !_window->windowShouldClose();
+#endif
 
     FrameMark;
 }
