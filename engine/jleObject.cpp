@@ -99,7 +99,12 @@ struct jleAttachChildEvent : public jleServerToClientEvent {
 
 JLE_REGISTER_NET_EVENT(jleAttachChildEvent)
 
-jleObject::jleObject() : _transform{this} { _instanceID = _instanceIdCounter++; }
+jleObject::
+jleObject()
+    : _transform{this}
+{
+    _instanceID = _instanceIdCounter++;
+}
 
 void
 jleObject::destroyComponent(jleComponent *component)
@@ -222,13 +227,21 @@ jleObject::detachObjectFromParent()
     _parentObject = nullptr;
 }
 
-jleObject::jleObject(jleScene *scene) : _containedInScene{scene}, _transform{this} {}
+jleObject::
+jleObject(jleScene *scene)
+    : _containedInScene{scene}, _transform{this}
+{
+}
 
 void
 jleObject::startComponents()
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
-        _components[i]->start();
+        if (networkObjectType() == jleObjectNetworkType::SERVER) {
+            _components[i]->serverStart();
+        } else {
+            _components[i]->start();
+        }
         if (_components[i]->_enableParallelUpdate) {
             gEngine->gameRef().addParallelComponent(_components[i]);
         }
@@ -526,13 +539,15 @@ jleObject::addComponentStart(const std::shared_ptr<jleComponent> &c)
             c->registerSelfLua(luaComponent->getSelf());
         }
 
-        c->start();
-
         if (networkObjectType() == jleObjectNetworkType::SERVER) {
+            c->serverStart();
+
             auto event = jleMakeNetEvent<jleAddComponentEvent>();
             event->component = c;
             event->objectNetId = netID();
             _containedInSceneServer->sendNetworkEventBroadcast(std::move(event));
+        } else {
+            c->start();
         }
     }
 }

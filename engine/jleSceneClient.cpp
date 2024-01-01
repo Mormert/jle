@@ -204,9 +204,11 @@ jleSceneClient::spawnObjectFromServer(const std::shared_ptr<jleObject> &object, 
     setNetIdObject(object, netId);
     object->_netId = netId;
     object->_networkOwnerID = owner;
-    object->_isStarted = true;
     setupObjectForNetworking(object);
     _sceneObjects.push_back(object);
+
+    object->startComponents();
+    object->_isStarted = true;
 }
 
 void
