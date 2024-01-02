@@ -87,53 +87,21 @@ jleSceneClient::processNetwork()
 
     ENetEvent event{};
 
-    const auto localClientSceneId = _client->peers[0].outgoingPeerID + 1;
-
     while (enet_host_service(_client, &event, 0) > 0) {
         switch (event.type) {
         case ENET_EVENT_TYPE_CONNECT: {
             LOGI << "[client] A client scene has connected to the server";
+            _clientId = _client->peers[0].outgoingPeerID + 1;
         } break;
         case ENET_EVENT_TYPE_DISCONNECT:
         case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT: {
             LOGI << "[client] A client scene has disconnected from the server";
         } break;
         case ENET_EVENT_TYPE_RECEIVE: {
-            // Retrieve the op code as the first byte
-            auto opCode = static_cast<jleNetOpCode>(event.packet->data[0]);
+            const char *dataBuffer = reinterpret_cast<char *>(event.packet->data);
+            const auto dataLength = event.packet->dataLength;
 
-            // Packet actual data comes after op code byte
-            auto *dataBuffer = &event.packet->data[1];
-            const auto dataLength = event.packet->dataLength - 1;
-
-            switch (opCode) {
-            case jleNetOpCode::Events: {
-
-                std::vector<std::unique_ptr<jleServerToClientEvent>> events;
-
-                std::string bufferAsString((char *)dataBuffer, dataLength);
-
-                std::stringstream stream{};
-                stream << bufferAsString;
-
-                try {
-                    cereal::BinaryInputArchive archive(stream);
-                    archive(events);
-
-                    for (auto &e : events) {
-                        e->_clientScene = this;
-                        e->execute();
-                    }
-                } catch (std::exception &e) {
-                    LOGE << "[server] failed to parse event data: " << e.what();
-                }
-
-            } break;
-
-            case jleNetOpCode::WorldWrite: {
-
-            } break;
-            }
+            jleExecuteNetEvents<jleServerToClientEvent>(dataBuffer, dataLength, this);
 
             enet_packet_destroy(event.packet);
         } break;
@@ -142,27 +110,16 @@ jleSceneClient::processNetwork()
         }
     }
 
-    if (!_eventsQueue.empty()) {
-        std::ostringstream oss;
+    if (!_eventsQueueToServer.isEmpty()) {
+        const auto data = _eventsQueueToServer.data();
 
-        // Insert the first byte as the op code
-        oss << static_cast<char>(jleNetOpCode::Events);
-
-        try { // Note that we need the archive to go out of scope to completely fill the string stream!
-            cereal::BinaryOutputArchive archive(oss);
-            archive(_eventsQueue);
-        } catch (std::exception &e) {
-            LOGE << "Failed to write event data: " << e.what();
-        }
-
-        auto writeBufferString = oss.str();
-        auto *packetBuffer = writeBufferString.data();
-        const size_t packetBufferLen = writeBufferString.size();
+        auto *packetBuffer = &data[0];
+        const size_t packetBufferLen = data.size();
 
         ENetPacket *packet = enet_packet_create(packetBuffer, packetBufferLen, ENET_PACKET_FLAG_RELIABLE);
         enet_peer_send(_peer, 0, packet);
 
-        _eventsQueue.clear();
+        _eventsQueueToServer.resetQueue();
     }
 }
 
@@ -175,7 +132,7 @@ jleSceneClient::sceneInspectorImGuiRender()
 void
 jleSceneClient::sendNetworkEvent(std::unique_ptr<jleClientToServerEvent> event)
 {
-    _eventsQueue.push_back(std::move(event));
+    _eventsQueueToServer.enqueue(std::move(event));
 }
 
 std::shared_ptr<jleObject>
@@ -209,6 +166,12 @@ jleSceneClient::spawnObjectFromServer(const std::shared_ptr<jleObject> &object, 
 
     object->startComponents();
     object->_isStarted = true;
+}
+
+int32_t
+jleSceneClient::clientId() const
+{
+    return _clientId;
 }
 
 void

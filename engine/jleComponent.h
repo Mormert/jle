@@ -134,7 +134,11 @@ public:
 
     jleObject *object();
 
+    std::shared_ptr<jleObject> getObjectSharedPtr();
+
     jleScene *scene();
+    jleSceneServer *sceneServer();
+    jleSceneClient *sceneClient();
 
 protected:
     friend class jleObject;

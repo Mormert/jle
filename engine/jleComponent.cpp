@@ -20,7 +20,11 @@
 #include "jleSceneClient.h"
 #include "jleSceneServer.h"
 
-jleComponent::jleComponent(jleObject *owner, jleScene *scene) : _attachedToObject{owner}, _containedInScene{scene} {}
+jleComponent::
+jleComponent(jleObject *owner, jleScene *scene)
+    : _attachedToObject{owner}, _containedInScene{scene}
+{
+}
 
 void
 jleComponent::destroy()
@@ -40,10 +44,28 @@ jleComponent::object()
     return _attachedToObject;
 }
 
+std::shared_ptr<jleObject>
+jleComponent::getObjectSharedPtr()
+{
+    return _attachedToObject->shared_from_this();
+}
+
 jleScene *
 jleComponent::scene()
 {
     return _containedInScene;
+}
+
+jleSceneServer *
+jleComponent::sceneServer()
+{
+    return _containedInSceneServer;
+}
+
+jleSceneClient *
+jleComponent::sceneClient()
+{
+    return _containedInSceneClient;
 }
 
 bool

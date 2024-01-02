@@ -48,6 +48,8 @@ public:
     template <class Archive>
     void serialize(Archive &archive);
 
+    int32_t clientId() const;
+
 protected:
     void setupObject(const std::shared_ptr<jleObject> &obj) override;
 
@@ -59,7 +61,9 @@ private:
     ENetHost *_client = nullptr;
     ENetPeer *_peer = nullptr;
 
-    std::vector<std::unique_ptr<jleClientToServerEvent>> _eventsQueue;
+    int32_t _clientId{-1};
+
+    jleNetworkEventOutQueue<jleClientToServerEvent> _eventsQueueToServer;
 
     std::unordered_map<int32_t, std::weak_ptr<jleObject>> _networkedObjects;
 };

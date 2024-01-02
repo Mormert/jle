@@ -76,7 +76,7 @@ struct jleFullSceneSyncEvent : public jleServerToClientEvent {
     {
         auto &scene = getSceneClient();
         for (int i = 0; i < objects.size(); i++) {
-            scene.spawnObjectFromServer(objects[i], objectsNetId[i]);
+            scene.spawnObjectFromServer(objects[i], objectsNetId[i], objectsOwner[i]);
         }
     }
 
@@ -84,11 +84,12 @@ struct jleFullSceneSyncEvent : public jleServerToClientEvent {
     void
     serialize(Archive &archive)
     {
-        archive(CEREAL_NVP(objects), CEREAL_NVP(objectsNetId));
+        archive(CEREAL_NVP(objects), CEREAL_NVP(objectsNetId), CEREAL_NVP(objectsOwner));
     }
 
     std::vector<std::shared_ptr<jleObject>> objects;
-    std::vector<int32_t> objectsNetId;
+    std::vector<int16_t> objectsNetId;
+    std::vector<int16_t> objectsOwner;
 };
 
 JLE_REGISTER_NET_EVENT(jleFullSceneSyncEvent)
@@ -187,18 +188,15 @@ jleSceneServer::processNetwork()
                 // Disable timeouts for the peer
                 enet_peer_timeout(event.peer, 0, 0, 0);
 
-                auto &thisPlayersObjects = _playerOwnedObjects[incomingPlayerID] = {};
-
-                auto player = spawnObjectWithName("player_" + std::to_string(incomingPlayerID));
-                player->_networkOwnerID = incomingPlayerID;
-                thisPlayersObjects.push_back(player);
-
                 auto syncEvent = jleMakeNetEvent<jleFullSceneSyncEvent>();
                 syncEvent->objects = _sceneObjects;
                 for (auto &object : _sceneObjects) {
                     syncEvent->objectsNetId.push_back(object->netID());
+                    syncEvent->objectsOwner.push_back(object->netOwnerID());
                 }
                 sendNetworkEventToUser(std::move(syncEvent), incomingPlayerID);
+
+                onClientConnect(incomingPlayerID);
 
             } break;
             case ENET_EVENT_TYPE_DISCONNECT:
@@ -206,54 +204,16 @@ jleSceneServer::processNetwork()
                 const auto incomingPlayerID = event.peer->incomingPeerID + 1;
                 LOGI << "[server] A user " << incomingPlayerID << " disconnected.";
 
-                auto &thisPlayersObjects = _playerOwnedObjects[incomingPlayerID];
-                for (auto &playerObject : thisPlayersObjects) {
-                    if (auto &&sharedPtr = playerObject.lock()) {
-                        auto event = jleMakeNetEvent<jleDestroyObjectEvent>();
-                        event->objectNetId = sharedPtr->netID();
-                        sharedPtr->destroyObject();
-                    }
-                }
+                destroyAllClientOwnedObjects(incomingPlayerID);
+                onClientDisconnect(incomingPlayerID);
             } break;
 
             case ENET_EVENT_TYPE_RECEIVE: {
                 const auto incomingPlayerID = event.peer->incomingPeerID + 1;
+                const char *dataBuffer = reinterpret_cast<char *>(event.packet->data);
+                const auto dataLength = event.packet->dataLength;
 
-                // Retrieve the op code as the first byte
-                auto opCode = static_cast<jleNetOpCode>(event.packet->data[0]);
-
-                // Packet actual data comes after op code byte
-                auto *dataBuffer = &event.packet->data[1];
-                const auto dataLength = event.packet->dataLength - 1;
-
-                switch (opCode) {
-                case jleNetOpCode::Events: {
-                    std::vector<std::unique_ptr<jleClientToServerEvent>> events;
-
-                    std::string bufferAsString((char *)dataBuffer, dataLength);
-
-                    std::stringstream stream{};
-                    stream << bufferAsString;
-
-                    try {
-                        cereal::BinaryInputArchive archive(stream);
-                        archive(events);
-
-                        for (auto &e : events) {
-                            e->_serverScene = this;
-                            e->_clientId = incomingPlayerID;
-                            e->execute();
-                        }
-                    } catch (std::exception &e) {
-                        LOGE << "[server] failed to parse event data: " << e.what();
-                    }
-
-                } break;
-                case jleNetOpCode::WorldWrite: {
-                } break;
-                default:
-                    break;
-                }
+                jleExecuteNetEvents<jleClientToServerEvent>(dataBuffer, dataLength, this, incomingPlayerID);
 
                 // Clean up the packet now that we're done using it.
                 enet_packet_destroy(event.packet);
@@ -265,54 +225,30 @@ jleSceneServer::processNetwork()
         }
     }
 
-    if (!_eventsBroadcastQueue.empty()) {
-        std::ostringstream oss;
+    if (!_eventsBroadcastQueue.isEmpty()) {
+        const auto data = _eventsBroadcastQueue.data();
 
-        // Insert the first byte as the op code
-        oss << static_cast<char>(jleNetOpCode::Events);
+        auto *packetBuffer = &data[0];
+        const size_t packetBufferLen = data.size();
 
-        try { // Note that we need the archive to go out of scope to completely fill the string stream!
-            cereal::BinaryOutputArchive archive(oss);
-            archive(_eventsBroadcastQueue);
-        } catch (std::exception &e) {
-            LOGE << "Failed to write event data: " << e.what();
-        }
-
-        auto writeBufferString = oss.str();
-        auto *packetBuffer = writeBufferString.data();
-        const size_t packetBufferLen = writeBufferString.size();
-
+        ENetPacket *packet = enet_packet_create(packetBuffer, packetBufferLen, ENET_PACKET_FLAG_RELIABLE);
         for (ENetPeer *currentPeer = _server->peers; currentPeer < &_server->peers[_server->peerCount]; ++currentPeer) {
             if (currentPeer->state != ENET_PEER_STATE_CONNECTED) {
                 continue;
             }
 
-            ENetPacket *packet = enet_packet_create(packetBuffer, packetBufferLen, ENET_PACKET_FLAG_RELIABLE);
             enet_peer_send(currentPeer, 0, packet);
         }
-        _eventsBroadcastQueue.clear();
+        _eventsBroadcastQueue.resetQueue();
     }
 
     if (!_eventsSpecificUserQueue.empty()) {
-        for (auto &userEvents : _eventsSpecificUserQueue) {
-            std::ostringstream oss;
+        for (auto &[clientId, outQueue] : _eventsSpecificUserQueue) {
+            const auto peerId = clientId - 1;
+            const auto data = outQueue.data();
 
-            const auto peerId = userEvents.first - 1;
-            const auto &eventArray = userEvents.second;
-
-            // Insert the first byte as the op code
-            oss << static_cast<char>(jleNetOpCode::Events);
-
-            try { // Note that we need the archive to go out of scope to completely fill the string stream!
-                cereal::BinaryOutputArchive archive(oss);
-                archive(eventArray);
-            } catch (std::exception &e) {
-                LOGE << "Failed to write event data: " << e.what();
-            }
-
-            auto writeBufferString = oss.str();
-            auto *packetBuffer = writeBufferString.data();
-            const size_t packetBufferLen = writeBufferString.size();
+            auto *packetBuffer = &data[0];
+            const size_t packetBufferLen = data.size();
 
             for (ENetPeer *currentPeer = _server->peers; currentPeer < &_server->peers[_server->peerCount];
                  ++currentPeer) {
@@ -327,7 +263,6 @@ jleSceneServer::processNetwork()
                 enet_peer_send(currentPeer, 0, packet);
             }
         }
-
         _eventsSpecificUserQueue.clear();
     }
 }
@@ -344,7 +279,9 @@ jleSceneServer::setupObjectForNetworking(const std::shared_ptr<jleObject> &obj)
 {
     const auto entityId = _entityIdGenerateCounter++;
     obj->_netId = entityId;
-    obj->_networkOwnerID = serverOwnedId;
+    if (obj->_networkOwnerID == -1) {
+        obj->_networkOwnerID = serverOwnedId;
+    }
     obj->propagateOwnedBySceneServer(this);
 
     if (!_server) {
@@ -362,6 +299,23 @@ void
 jleSceneServer::sceneInspectorImGuiRender()
 {
     networkSceneDisplayInspectorWindow("Server", sceneName, _server);
+}
+
+std::shared_ptr<jleObject>
+jleSceneServer::spawnObjectWithOwner(const std::string &objectName, int32_t ownerId)
+{
+    auto newSceneObject = std::make_shared<jleObject>();
+    newSceneObject->_networkOwnerID = ownerId;
+
+    setupObject(newSceneObject);
+    newSceneObject->_instanceName = objectName;
+
+    if (ownerId > 0) {
+        auto &thisPlayersObjects = _playerOwnedObjects[ownerId];
+        thisPlayersObjects.push_back(newSceneObject);
+    }
+
+    return newSceneObject;
 }
 
 void
@@ -384,13 +338,13 @@ jleSceneServer::updateServerSceneObjects(float dt)
 void
 jleSceneServer::sendNetworkEventBroadcast(std::unique_ptr<jleServerToClientEvent> event)
 {
-    _eventsBroadcastQueue.push_back(std::move(event));
+    _eventsBroadcastQueue.enqueue(std::move(event));
 }
 
 void
 jleSceneServer::sendNetworkEventToUser(std::unique_ptr<jleServerToClientEvent> event, int32_t userId)
 {
-    _eventsSpecificUserQueue[userId].push_back(std::move(event));
+    _eventsSpecificUserQueue[userId].enqueue(std::move(event));
 }
 
 void
@@ -399,6 +353,16 @@ jleSceneServer::objectDestructionNetworked(const std::shared_ptr<jleObject> &obj
     auto event = jleMakeNetEvent<jleDestroyObjectEvent>();
     event->objectNetId = object->netID();
     sendNetworkEventBroadcast(std::move(event));
+}
+void
+jleSceneServer::destroyAllClientOwnedObjects(int32_t clientId)
+{
+    auto &thisPlayersObjects = _playerOwnedObjects[clientId];
+    for (auto &playerObject : thisPlayersObjects) {
+        if (auto &&object = playerObject.lock()) {
+            object->destroyObject();
+        }
+    }
 }
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleSceneServer)

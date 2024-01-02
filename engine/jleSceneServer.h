@@ -39,6 +39,8 @@ public:
 
     void sceneInspectorImGuiRender() override;
 
+    std::shared_ptr<jleObject> spawnObjectWithOwner(const std::string &objectName, int32_t ownerId);
+
     void sendNetworkEventBroadcast(std::unique_ptr<jleServerToClientEvent> event);
 
     void sendNetworkEventToUser(std::unique_ptr<jleServerToClientEvent> event, int32_t userId);
@@ -49,6 +51,16 @@ public:
 protected:
     void setupObject(const std::shared_ptr<jleObject> &obj) override;
 
+    virtual void
+    onClientConnect(int32_t clientId)
+    {
+    }
+
+    virtual void
+    onClientDisconnect(int32_t clientId)
+    {
+    }
+
 private:
     void updateServerSceneObjects(float dt);
 
@@ -56,15 +68,17 @@ private:
 
     void processNetwork() override;
 
-    void objectDestructionNetworked(const std::shared_ptr<jleObject>& object);
+    void objectDestructionNetworked(const std::shared_ptr<jleObject> &object);
+
+    void destroyAllClientOwnedObjects(int32_t clientId);
 
     ENetHost *_server = nullptr;
 
     std::unordered_map<int32_t, std::vector<std::weak_ptr<jleObject>>> _playerOwnedObjects;
 
-    std::vector<std::unique_ptr<jleServerToClientEvent>> _eventsBroadcastQueue;
+    jleNetworkEventOutQueue<jleServerToClientEvent> _eventsBroadcastQueue;
 
-    std::unordered_map<int32_t, std::vector<std::unique_ptr<jleServerToClientEvent>>> _eventsSpecificUserQueue;
+    std::unordered_map<int32_t, jleNetworkEventOutQueue<jleServerToClientEvent>> _eventsSpecificUserQueue;
 
     int32_t _entityIdGenerateCounter{1};
 };

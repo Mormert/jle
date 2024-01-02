@@ -21,8 +21,6 @@ typedef struct _ENetHost ENetHost;
 typedef struct _ENetPeer ENetPeer;
 typedef struct _ENetCompressor ENetCompressor;
 
-enum class jleNetOpCode : int8_t { Events, WorldWrite };
-
 class jleSceneNetworked : public jleScene
 {
 protected:
