@@ -237,10 +237,13 @@ void
 jleObject::startComponents()
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
-        if (networkObjectType() == jleObjectNetworkType::SERVER) {
-            _components[i]->serverStart();
-        } else {
-            _components[i]->start();
+        if(!_components[i]->_isStarted) {
+            if (networkObjectType() == jleObjectNetworkType::SERVER) {
+                _components[i]->serverStart();
+            } else {
+                _components[i]->start();
+            }
+            _components[i]->_isStarted = true;
         }
         if (_components[i]->_enableParallelUpdate) {
             gEngine->gameRef().addParallelComponent(_components[i]);
@@ -547,8 +550,10 @@ jleObject::addComponentStart(const std::shared_ptr<jleComponent> &c)
             event->objectNetId = netID();
             _containedInSceneServer->sendNetworkEventBroadcast(std::move(event));
         } else {
+            c->_attachedToObject = this;
             c->start();
         }
+        c->_isStarted = true;
     }
 }
 

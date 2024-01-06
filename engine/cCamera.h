@@ -30,15 +30,15 @@ public:
     void
     serialize(Archive &ar)
     {
-        ar(CEREAL_NVP(_perspective),
-           CEREAL_NVP(_farPlane),
-           CEREAL_NVP(_nearPlane),
-           CEREAL_NVP(_perspectiveFov),
-           CEREAL_NVP(_framebufferSizeX),
-           CEREAL_NVP(_framebufferSizeY),
+        ar(CEREAL_NVP(perspective),
+           CEREAL_NVP(farPlane),
+           CEREAL_NVP(nearPlane),
+           CEREAL_NVP(perspectiveFov),
+           CEREAL_NVP(framebufferSizeX),
+           CEREAL_NVP(framebufferSizeY),
            //CEREAL_NVP(_framebufferFixedAxis),
-           CEREAL_NVP(_framebufferUseFixedAxis),
-           CEREAL_NVP(_matchFramebufferToWindowSize));
+           CEREAL_NVP(framebufferUseFixedAxis),
+           CEREAL_NVP(matchFramebufferToWindowSize));
     }
 
     ~cCamera() override;
@@ -53,18 +53,17 @@ public:
 
     void editorGizmosRender(bool selected) override;
 
+    bool perspective{true};
+    float perspectiveFov{90.f};
+    float farPlane{10000.f};
+    float nearPlane{0.1f};
+    int framebufferSizeX{1024};
+    int framebufferSizeY{1024};
+    bool framebufferUseFixedAxis{false};
+    bool matchFramebufferToWindowSize{false};
+    jleFramebufferInterface::FIXED_AXIS framebufferFixedAxis{jleFramebufferInterface::FIXED_AXIS::width};
+
 protected:
-    float _perspectiveFov{90.f};
-    float _farPlane{10000.f};
-    float _nearPlane{0.1f};
-    int _framebufferSizeX{1024};
-    int _framebufferSizeY{1024};
-    bool _framebufferUseFixedAxis{false};
-    bool _matchFramebufferToWindowSize{false};
-    jleFramebufferInterface::FIXED_AXIS _framebufferFixedAxis{jleFramebufferInterface::FIXED_AXIS::width};
-
-    bool _perspective{false};
-
     int _framebufferCallbackId;
 
     inline static uint32_t sInstanceCounter = 0;

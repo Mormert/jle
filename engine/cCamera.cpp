@@ -49,20 +49,20 @@ void
 cCamera::framebufferResizeCallback(unsigned int width, unsigned int height)
 {
     glm::ivec2 dimensions{width, height};
-    if (_framebufferUseFixedAxis) {
-        if (_framebufferFixedAxis == jleFramebufferInterface::FIXED_AXIS::width) {
+    if (framebufferUseFixedAxis) {
+        if (framebufferFixedAxis == jleFramebufferInterface::FIXED_AXIS::width) {
             const auto aspect = static_cast<float>(height) / static_cast<float>(width);
-            dimensions = jleFramebufferInterface::fixedAxisDimensions(_framebufferFixedAxis, aspect, _framebufferSizeX);
-        } else if (_framebufferFixedAxis == jleFramebufferInterface::FIXED_AXIS::height) {
+            dimensions = jleFramebufferInterface::fixedAxisDimensions(framebufferFixedAxis, aspect, framebufferSizeX);
+        } else if (framebufferFixedAxis == jleFramebufferInterface::FIXED_AXIS::height) {
             const auto aspect = static_cast<float>(width) / static_cast<float>(height);
 
-            dimensions = jleFramebufferInterface::fixedAxisDimensions(_framebufferFixedAxis, aspect, _framebufferSizeY);
+            dimensions = jleFramebufferInterface::fixedAxisDimensions(framebufferFixedAxis, aspect, framebufferSizeY);
         }
     } else {
         dimensions = {width, height};
     }
 
-    if (_matchFramebufferToWindowSize) {
+    if (matchFramebufferToWindowSize) {
         dimensions = {width, height};
     }
 
@@ -77,10 +77,10 @@ cCamera::update(float dt)
     auto width = gEngine->mainScreenFramebuffer->width();
     auto height = gEngine->mainScreenFramebuffer->height();
 
-    if (_perspective && width > 0 && height > 0) {
-        game.mainCamera.setPerspectiveProjection(_perspectiveFov, width, height, _farPlane, _nearPlane);
+    if (perspective && width > 0 && height > 0) {
+        game.mainCamera.setPerspectiveProjection(perspectiveFov, width, height, farPlane, nearPlane);
     } else {
-        game.mainCamera.setOrthographicProjection(width, height, _farPlane, _nearPlane);
+        game.mainCamera.setOrthographicProjection(width, height, farPlane, nearPlane);
     }
 
     jleCameraSimpleFPVController c;

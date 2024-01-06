@@ -160,6 +160,8 @@ protected:
 private:
     bool _enableParallelUpdate{false};
     int _parallelUpdateBatchSize = 4;
+
+    bool _isStarted{false};
 };
 
 #define NET_SYNC(...)                                                                                                  \

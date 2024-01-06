@@ -134,7 +134,7 @@ jleTransform::getParentWorld()
     if (auto p = _owner->parent()) {
         return p->getTransform()._world;
     }
-    static const glm::mat4 identityReturn{1.f};
+    static constexpr glm::mat4 identityReturn{1.f};
     return identityReturn;
 }
 

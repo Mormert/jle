@@ -138,7 +138,7 @@ public:
     }
 
     // Constructs the raw data used for event queue over the network.
-    // Data will be invalid after peek. First 4 bytes (int32) contains amount of events.
+    // First 4 bytes (int32) contains amount of events.
     [[nodiscard]] std::vector<uint8_t>
     data() const
     {
