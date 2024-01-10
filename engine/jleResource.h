@@ -25,6 +25,7 @@
 #include <chrono>
 #include <future>
 #include <iostream>
+#include "jleResourceRef.h"
 #include <memory>
 #include <string>
 #include <thread>
@@ -67,6 +68,11 @@ public:
     std::shared_ptr<T> getResource(const jlePath &path);
 
     std::shared_ptr<jleResourceInterface> getResource(const jlePath &path);
+
+    void storeResource(const std::shared_ptr<jleResourceInterface>& resource, const jlePath& path);
+
+    template <typename T>
+    jleResourceRef<T> storeResource(const std::shared_ptr<T>& resource, const jlePath& path);
 
     // Check to see if a resource is loaded
     bool isResourceLoaded(const jlePath &path);

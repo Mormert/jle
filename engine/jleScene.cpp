@@ -25,13 +25,15 @@ JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleScene)
 
 int jleScene::_scenesCreatedCount{0};
 
-jleScene::jleScene()
+jleScene::
+jleScene()
 {
     sceneName = "Scene_" + std::to_string(_scenesCreatedCount);
     _scenesCreatedCount++;
 }
 
-jleScene::jleScene(const std::string &sceneName)
+jleScene::
+jleScene(const std::string &sceneName)
 {
     this->sceneName = sceneName;
     _scenesCreatedCount++;
@@ -131,9 +133,24 @@ jleScene::startObject(jleObject *o)
 }
 
 void
-jleScene::spawnObject(std::shared_ptr<jleObject> object)
+jleScene::spawnObject(const std::shared_ptr<jleObject> &object)
 {
     setupObject(object);
+}
+
+std::shared_ptr<jleObject>
+jleScene::spawnObjectFromTemplate(const jlePath &path)
+{
+    if (const jleResourceRef<jleObject> templateObject{path}) {
+        std::shared_ptr<jleObject> copyBasedOnTemplate = templateObject->duplicateTemplate();
+        copyBasedOnTemplate->__templatePath = path;
+        spawnObject(copyBasedOnTemplate);
+
+        return copyBasedOnTemplate;
+    }
+
+    LOGE << "Failed loading template object with path " << path.getVirtualPath();
+    return nullptr;
 }
 
 std::shared_ptr<jleObject>

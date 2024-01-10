@@ -267,6 +267,20 @@ jleSceneServer::processNetwork()
     }
 }
 
+std::shared_ptr<jleObject>
+jleSceneServer::getObjectFromNetId(int32_t netId)
+{
+    auto it = _networkedObjects.find(netId);
+    if (it == _networkedObjects.end()) {
+        return nullptr;
+    }
+    if (it->second.expired()) {
+        _networkedObjects.erase(it);
+        return nullptr;
+    }
+    return it->second.lock();
+}
+
 void
 jleSceneServer::setupObject(const std::shared_ptr<jleObject> &obj)
 {
@@ -283,6 +297,8 @@ jleSceneServer::setupObjectForNetworking(const std::shared_ptr<jleObject> &obj)
         obj->_networkOwnerID = serverOwnedId;
     }
     obj->propagateOwnedBySceneServer(this);
+
+    setNetIdObject(obj, entityId);
 
     if (!_server) {
         return;
@@ -363,6 +379,12 @@ jleSceneServer::destroyAllClientOwnedObjects(int32_t clientId)
             object->destroyObject();
         }
     }
+}
+
+void
+jleSceneServer::setNetIdObject(const std::shared_ptr<jleObject> &object, int32_t netId)
+{
+    _networkedObjects.insert(std::make_pair(netId, object));
 }
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleSceneServer)

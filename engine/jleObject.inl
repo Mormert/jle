@@ -157,6 +157,14 @@ jleObject::spawnChildObject()
 }
 
 inline std::shared_ptr<jleObject>
+jleObject::spawnChildObjectFromTemplate(const jlePath &path)
+{
+    auto object = _containedInScene->spawnObjectFromTemplate(path);
+    attachChildObject(object);
+    return object;
+}
+
+inline std::shared_ptr<jleObject>
 jleObject::spawnChildObject(const std::string &objName)
 {
     auto object = _containedInScene->spawnObjectTypeByName(objName);

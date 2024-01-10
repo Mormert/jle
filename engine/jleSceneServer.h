@@ -48,6 +48,8 @@ public:
     template <class Archive>
     void serialize(Archive &archive);
 
+    std::shared_ptr<jleObject> getObjectFromNetId(int32_t netId);
+
 protected:
     void setupObject(const std::shared_ptr<jleObject> &obj) override;
 
@@ -72,6 +74,8 @@ private:
 
     void destroyAllClientOwnedObjects(int32_t clientId);
 
+    void setNetIdObject(const std::shared_ptr<jleObject> &object, int32_t netId);
+
     ENetHost *_server = nullptr;
 
     std::unordered_map<int32_t, std::vector<std::weak_ptr<jleObject>>> _playerOwnedObjects;
@@ -79,6 +83,8 @@ private:
     jleNetworkEventOutQueue<jleServerToClientEvent> _eventsBroadcastQueue;
 
     std::unordered_map<int32_t, jleNetworkEventOutQueue<jleServerToClientEvent>> _eventsSpecificUserQueue;
+
+    std::unordered_map<int32_t, std::weak_ptr<jleObject>> _networkedObjects;
 
     int32_t _entityIdGenerateCounter{1};
 };

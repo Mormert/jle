@@ -237,7 +237,7 @@ void
 jleObject::startComponents()
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
-        if(!_components[i]->_isStarted) {
+        if (!_components[i]->_isStarted) {
             if (networkObjectType() == jleObjectNetworkType::SERVER) {
                 _components[i]->serverStart();
             } else {
@@ -401,9 +401,10 @@ jleObject::duplicateTemplate(bool childChain)
 void
 jleObject::saveAsObjectTemplate()
 {
-    std::ofstream save{jlePath{"GR:otemps/" + _instanceName}.getRealPath() + ".jobj"};
-    cereal::JSONOutputArchive outputArchive(save);
-    outputArchive(shared_from_this());
+    if (path.isEmpty()) {
+        path = jlePath{"GR:otemps/" + _instanceName + ".jobj"};
+    }
+    saveToFile();
 }
 
 void

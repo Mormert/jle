@@ -54,7 +54,8 @@ jleResources::loadResourceFromFile(const jlePath &path, bool forceReload)
     if (!forceReload) {
         auto it = _resources[virtualDrive].find(path);
         if (it != _resources[virtualDrive].end()) {
-            if (it->second.first == typeid(T).hash_code()) {
+            const auto hashCode = typeid(T).hash_code();
+            if (it->second.first == hashCode) {
                 return std::static_pointer_cast<T>(it->second.second);
             } else {
                 LOGW << "Found another type usage from the same resource. Overwriting previous resource for: "
@@ -95,4 +96,15 @@ jleResources::getResource(const jlePath &path)
 {
     const auto prefix = path.getPathVirtualDrive();
     return std::static_pointer_cast<T>(_resources[prefix].at(path));
+}
+
+template <typename T>
+jleResourceRef<T>
+jleResources::storeResource(const std::shared_ptr<T> &resource, const jlePath &path)
+{
+    const auto prefix = path.getPathVirtualDrive();
+    const auto hashCode = typeid(T).hash_code();
+
+    _resources[prefix].insert(std::make_pair(path, std::make_pair(hashCode, resource)));
+    return jleResourceRef<T>{path};
 }

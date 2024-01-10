@@ -572,13 +572,7 @@ jleEditorContentBrowser::selectedFilePopupObjectTemplate(std::filesystem::path &
 
         if (auto &&scene = gEditor->editorSceneObjects().GetSelectedScene().lock()) {
             try {
-                std::shared_ptr<jleObject> object;
-
-                std::ifstream i(file);
-                cereal::JSONInputArchive iarchive{i};
-                iarchive(object);
-                object->__templatePath = jlePath{file.string(), false};
-                scene->spawnObject(object);
+                scene->spawnObjectFromTemplate(jlePath{file.string(), false});
             } catch (std::exception &e) {
                 LOGE << "Failed to load object template: " << e.what();
             }

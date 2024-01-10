@@ -27,8 +27,9 @@ struct jleTransformPropagateEvent : public jleServerToClientEvent {
     execute() override
     {
         auto &scene = getSceneClient();
-        auto object = scene.getObjectFromNetId(netId);
-        object->getTransform().setLocalMatrix(localMatrix);
+        if(auto object = scene.getObjectFromNetId(netId)) {
+            object->getTransform().setLocalMatrix(localMatrix);
+        }
     }
 
     template <class Archive>

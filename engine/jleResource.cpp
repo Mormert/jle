@@ -150,6 +150,13 @@ jleResources::getResource(const jlePath &path)
     return _resources[prefix].at(path).second;
 }
 
+void
+jleResources::storeResource(const std::shared_ptr<jleResourceInterface>& resource, const jlePath &path)
+{
+    const auto prefix = path.getPathVirtualDrive();
+    _resources[prefix].insert(std::make_pair(path, std::make_pair(typeid(resource).hash_code(), resource)));
+}
+
 bool
 jleResources::loadSerializedResource(std::shared_ptr<jleResourceInterface> &resource, const jlePath &path)
 {

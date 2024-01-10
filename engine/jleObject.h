@@ -39,17 +39,6 @@ class jleObject : public jleSerializedOnlyResource, public std::enable_shared_fr
     JLE_REGISTER_OBJECT_TYPE(jleObject)
     JLE_REGISTER_RESOURCE_TYPE(jleObject, "jobj")
 public:
-    void
-    saveToFile() override
-    {
-        if (__templatePath.has_value()) {
-            std::ofstream save{__templatePath->getRealPath()};
-            cereal::JSONOutputArchive outputArchive(save);
-            outputArchive(shared_from_this());
-        } else {
-            LOGE << "Can't save an object that doesn't have a template path set!";
-        }
-    };
 
     std::shared_ptr<jleObject> duplicate(bool childChain = false);
 
@@ -58,9 +47,11 @@ public:
     template <class Archive>
     void serialize(Archive &archive);
 
+    SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedOnlyResource)
+
     jleObject();
 
-    ~jleObject() = default;
+    ~jleObject() override = default;
 
     template <typename T>
     std::shared_ptr<T> addComponent();
@@ -79,6 +70,8 @@ public:
 
     template <typename T>
     std::shared_ptr<T> spawnChildObject();
+
+    std::shared_ptr<jleObject> spawnChildObjectFromTemplate(const jlePath& path);
 
     std::shared_ptr<jleObject> spawnChildObject(const std::string &objName);
 
