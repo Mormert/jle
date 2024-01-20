@@ -24,7 +24,6 @@ class cSkybox : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cSkybox)
 public:
-    explicit cSkybox(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
     template <class Archive>
     void

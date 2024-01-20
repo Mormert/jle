@@ -21,7 +21,6 @@ class cLightDirectional : public cLight
 {
     JLE_REGISTER_COMPONENT_TYPE(cLightDirectional)
 public:
-    explicit cLightDirectional(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
     template <class Archive>
     void

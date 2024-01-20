@@ -25,9 +25,6 @@
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLuaScript)
 
-
-cLuaScript::cLuaScript(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
-
 void
 cLuaScript::start()
 {

@@ -26,7 +26,6 @@ class cMesh : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cMesh)
 public:
-    explicit cMesh(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
     template <class Archive>
     void

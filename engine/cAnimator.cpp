@@ -55,7 +55,7 @@ cAnimator::serialize(Archive &ar)
     }
 }
 
-cAnimator::cAnimator(jleObject *owner, jleScene *scene) : jleComponent(owner, scene)
+cAnimator::cAnimator()
 {
     _animationMatrices = std::make_shared<jleAnimationFinalMatrices>();
 

@@ -15,8 +15,6 @@
 
 #include "cTransformNetSync.h"
 
-cTransformNetSync::cTransformNetSync(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
-
 void
 cTransformNetSync::netSyncOut(cereal::BinaryOutputArchive &ar)
 {

@@ -90,8 +90,6 @@ cCamera::update(float dt)
     game.mainCamera.setViewMatrix(glm::inverse(transformation), c.position);
 }
 
-cCamera::cCamera(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
-
 cCamera::~cCamera()
 {
     sInstanceCounter--;

@@ -23,7 +23,6 @@ class cAseprite : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cAseprite)
 public:
-    explicit cAseprite(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
     template <class Archive>
     void

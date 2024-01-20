@@ -23,7 +23,6 @@ class cLuaScript : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cLuaScript)
 public:
-    explicit cLuaScript(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
     template <class Archive>
     void

@@ -40,10 +40,6 @@ class jleTransform;
 class jleComponent
 {
 public:
-    explicit jleComponent(jleObject *owner, jleScene *scene);
-
-    jleComponent(){};
-
     virtual ~jleComponent() = default;
 
     [[nodiscard]] virtual std::shared_ptr<jleComponent> clone() const = 0;

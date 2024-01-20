@@ -25,8 +25,6 @@
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLight)
 
-
-cLight::cLight(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
 void
 cLight::start()
 {

@@ -19,8 +19,6 @@
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cSkinnedMesh)
 
-cSkinnedMesh::cSkinnedMesh(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
-
 void
 cSkinnedMesh::editorUpdate(float dt)
 {

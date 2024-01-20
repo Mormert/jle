@@ -20,9 +20,6 @@
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cMesh)
 
-
-cMesh::cMesh(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
-
 void
 cMesh::start()
 {}

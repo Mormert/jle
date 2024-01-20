@@ -56,7 +56,7 @@ class cAnimator : public jleComponent, public std::enable_shared_from_this<cAnim
 {
     JLE_REGISTER_COMPONENT_TYPE(cAnimator)
 public:
-    explicit cAnimator(jleObject *owner = nullptr, jleScene *scene = nullptr);
+    explicit cAnimator();
 
     template <class Archive>
     void serialize(Archive &ar);

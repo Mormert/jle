@@ -19,9 +19,6 @@
 #include "jlePathDefines.h"
 #include "jleResource.h"
 
-
-cText::cText(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
-
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cText)
 
 

@@ -21,8 +21,6 @@
 #include "jle3DGraph.h"
 #include "jle3DSettings.h"
 
-cLightDirectional::cLightDirectional(jleObject *owner, jleScene *scene) : cLight(owner, scene) {}
-
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLightDirectional)
 
 void

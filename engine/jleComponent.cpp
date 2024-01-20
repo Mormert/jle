@@ -20,12 +20,6 @@
 #include "jleSceneClient.h"
 #include "jleSceneServer.h"
 
-jleComponent::
-jleComponent(jleObject *owner, jleScene *scene)
-    : _attachedToObject{owner}, _containedInScene{scene}
-{
-}
-
 void
 jleComponent::destroy()
 {

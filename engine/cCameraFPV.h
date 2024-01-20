@@ -22,7 +22,6 @@ class cCameraFPV : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cCameraFPV)
 public:
-    explicit cCameraFPV(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
     template <class Archive>
     void

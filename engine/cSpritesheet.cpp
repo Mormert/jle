@@ -24,8 +24,6 @@
 void cSpritesheet::start() {
 }
 
-cSpritesheet::cSpritesheet(jleObject *owner, jleScene *scene)
-    : jleComponent(owner, scene) {}
 
 void cSpritesheet::update(float dt) {
     if (!_spritesheet) {

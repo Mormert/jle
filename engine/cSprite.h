@@ -28,7 +28,6 @@ class cSprite : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cSprite)
 public:
-    explicit cSprite(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
     template <class Archive>
     void

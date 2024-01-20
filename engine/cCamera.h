@@ -24,7 +24,6 @@ class cCamera : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cCamera)
 public:
-    explicit cCamera(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
     template <class Archive>
     void

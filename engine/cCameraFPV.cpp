@@ -18,8 +18,6 @@
 #include "jleInput.h"
 #include "glm/ext/matrix_transform.hpp"
 
-cCameraFPV::cCameraFPV(jleObject *owner, jleScene *scene) : jleComponent(owner, scene) {}
-
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cCameraFPV)
 
 cCameraFPV::~cCameraFPV() {}

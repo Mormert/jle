@@ -26,7 +26,6 @@ class cSkinnedMesh : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cSkinnedMesh)
 public:
-    explicit cSkinnedMesh(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
     template <class Archive>
     void serialize(Archive &ar);

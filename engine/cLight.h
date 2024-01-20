@@ -23,7 +23,6 @@ class cLight : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cLight)
 public:
-    explicit cLight(jleObject *owner = nullptr, jleScene *scene = nullptr);
 
     template <class Archive>
     void
