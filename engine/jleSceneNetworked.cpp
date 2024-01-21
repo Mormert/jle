@@ -27,15 +27,6 @@ jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneTy
                                                       ENetHost *host)
 {
 #ifdef JLE_BUILD_EDITOR
-    uint16_t mySceneNetID;
-    std::string otherSceneType;
-    if (sceneType == "Server") {
-        mySceneNetID = 0;
-        otherSceneType = "Client";
-    } else { // Else it's a "Client"
-        mySceneNetID = host->peers[0].outgoingPeerID + 1;
-        otherSceneType = "Server";
-    }
 
     ImGui::Begin(std::string{sceneType + " for scene: " + sceneName}.c_str());
 
@@ -45,6 +36,16 @@ jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneTy
         ImGui::Text("The %s is not connected/started.", sceneType.c_str());
         ImGui::End();
         return;
+    }
+
+    uint16_t mySceneNetID;
+    std::string otherSceneType;
+    if (sceneType == "Server") {
+        mySceneNetID = 0;
+        otherSceneType = "Client";
+    } else { // Else it's a "Client"
+        mySceneNetID = host->peers[0].outgoingPeerID + 1;
+        otherSceneType = "Server";
     }
 
     ImGui::Text("Scene network ID: %d", mySceneNetID);
