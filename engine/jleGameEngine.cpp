@@ -143,8 +143,8 @@ jleGameEngine::startGame()
 void
 jleGameEngine::restartGame()
 {
-    game.reset();
     _physics.reset();
+    game.reset();
 
     timerManager().clearTimers();
     startGame();
@@ -154,8 +154,8 @@ void
 jleGameEngine::killGame()
 {
     timerManager().clearTimers();
-    game.reset();
     _physics.reset();
+    game.reset();
 }
 
 void

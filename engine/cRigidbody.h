@@ -23,13 +23,19 @@
 #include "editor/jleImGuiCerealArchive.h"
 #include "jleResourceRef.h"
 
+#include <BulletDynamics/Dynamics/btRigidBody.h>
+#include <LinearMath/btMotionState.h>
+
 class btRigidBody;
 
-class cRigidbody : public jleComponent
+class cRigidbody : public jleComponent, public btMotionState
 {
     JLE_REGISTER_COMPONENT_TYPE(cRigidbody)
 public:
-    explicit cRigidbody(jleObject *owner = nullptr, jleScene *scene = nullptr);
+    cRigidbody() = default;
+
+    // Called when cloned/duplicated
+    cRigidbody(const cRigidbody &other);
 
     template <class Archive>
     void
@@ -46,21 +52,30 @@ public:
 
     void onDestroy() override;
 
-    btRigidBody* getBody();
+    btRigidBody &getBody();
+
+    void setupRigidbody();
+
+    void setupNewRigidbodyAndDeleteOld();
+
+    bool isDynamic();
 
 protected:
-
     friend class jlePhysics;
 
-    void generateCollisionDynamicConvex();
+    // Sync object transform to bullet's physics transform
+    void getWorldTransform(btTransform &centerOfMassWorldTrans) const override;
 
-    void generateCollisionStaticConcave();
+    // Called from bullet on transform update
+    void setWorldTransform(const btTransform &centerOfMassWorldTrans) override;
 
-    JLE_TOOLTIP_ARITHMETIC(float, "Setting mass to 0 makes this rigidbody static", _mass);
+    std::unique_ptr<btRigidBody> createRigidbody(bool isDynamic, btCollisionShape *shape);
 
+    JLE_TOOLTIP_ARITHMETIC(float, "Setting mass to 0 makes this rigidbody static.", _mass);
     glm::vec3 _size{1.f};
 
-    btRigidBody *body;
+    std::unique_ptr<btRigidBody> _body{nullptr};
+    std::unique_ptr<btCollisionShape> _optionalLocalShape{nullptr};
 };
 
 JLE_EXTERN_TEMPLATE_CEREAL_H(cRigidbody)

@@ -15,10 +15,15 @@
 
 #pragma once
 
+#include "BulletCollision/CollisionShapes/btTriangleMesh.h"
 #include "jleResourceInterface.h"
 #include "jleTypeReflectionUtils.h"
 
 #include <glm/glm.hpp>
+
+#include <BulletCollision/CollisionShapes/btConvexHullShape.h>
+#include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
+
 #include <vector>
 
 struct aiMesh;
@@ -48,12 +53,12 @@ public:
                   const std::vector<unsigned int> &indices = {});
 
     static void loadAssimpMesh(aiMesh *assimpMesh,
-                        std::vector<glm::vec3> &out_positions,
-                        std::vector<glm::vec3> &out_normals,
-                        std::vector<glm::vec2> &out_texCoords,
-                        std::vector<glm::vec3> &out_tangents,
-                        std::vector<glm::vec3> &out_bitangents,
-                        std::vector<unsigned int> &out_indices);
+                               std::vector<glm::vec3> &out_positions,
+                               std::vector<glm::vec3> &out_normals,
+                               std::vector<glm::vec2> &out_texCoords,
+                               std::vector<glm::vec3> &out_tangents,
+                               std::vector<glm::vec3> &out_bitangents,
+                               std::vector<unsigned int> &out_indices);
     bool usesIndexing();
 
     unsigned int getVAO();
@@ -74,10 +79,17 @@ public:
 
     void saveToFile() override;
 
+    btBvhTriangleMeshShape *getStaticConcaveShape();
+
+    btConvexHullShape *getDynamicConvexShape();
+
 protected:
     void destroyOldBuffers();
 
-    void saveMeshToAssimpScene(aiScene& scene);
+    void saveMeshToAssimpScene(aiScene &scene);
+
+    void generateStaticConcaveShape();
+    void generateDynamicConvexShape();
 
     unsigned int _trianglesCount{};
 
@@ -95,4 +107,10 @@ protected:
     std::vector<glm::vec3> _tangents{};
     std::vector<glm::vec3> _bitangents{};
     std::vector<unsigned int> _indices{};
+
+private:
+    btTriangleMesh _staticConcaveShapeMeshInterface;
+    std::unique_ptr<btBvhTriangleMeshShape> _staticConcaveShape{nullptr};
+
+    std::unique_ptr<btConvexHullShape> _dynamicConvexShape{nullptr};
 };

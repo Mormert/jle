@@ -203,3 +203,23 @@ jleTransform::getRight()
 {
     return glm::normalize(glm::vec3{getWorldMatrix()[0]});
 }
+
+void
+jleTransform::removeRotations()
+{
+    glm::vec3 translation, skew, scale;
+    glm::quat rotation;
+    glm::vec4 perspective;
+    glm::decompose(getLocalMatrix(), scale, rotation, translation, skew, perspective);
+
+    glm::mat4 newModelMatrix = glm::translate(glm::mat4(1.0f), translation) * glm::scale(glm::mat4(1.0f), scale);
+    setLocalMatrix(newModelMatrix);
+}
+
+void
+jleTransform::rotateTowardsPoint(const glm::vec3& position, const glm::vec3& up)
+{
+    glm::mat4 viewMatrix = glm::lookAt(getLocalPosition(), position, up);
+    glm::mat4 rotationMatrix = glm::inverse(viewMatrix);
+    setLocalMatrix(rotationMatrix);
+}

@@ -12,6 +12,7 @@
  *                  Copyright (c) 2020-2024 Johan Lind. All rights reserved.                 *
  *                                                                                           *
  *********************************************************************************************/
+
 #include "jlePhysics.h"
 #include <glm/ext/matrix_transform.hpp>
 
@@ -20,7 +21,8 @@
 #include "cRigidbody.h"
 #include "jleProfiler.h"
 
-jlePhysics::jlePhysics()
+jlePhysics::
+jlePhysics()
 {
     _collisionConfiguration = std::make_unique<btDefaultCollisionConfiguration>();
 
@@ -38,7 +40,6 @@ jlePhysics::jlePhysics()
     _debugDraw = std::make_unique<jlePhysicsDebugDrawer>();
 
     _dynamicsWorld->setDebugDrawer(&*_debugDraw);
-
 }
 
 void
@@ -47,70 +48,32 @@ jlePhysics::step(float dt)
     JLE_SCOPE_PROFILE_CPU(physics)
 
     _dynamicsWorld->stepSimulation(dt);
-
-    // Update jle objects to new transforms
-    for (int j = _dynamicsWorld->getNumCollisionObjects() - 1; j >= 0; j--) {
-        btCollisionObject *obj = _dynamicsWorld->getCollisionObjectArray()[j];
-        btRigidBody *body = btRigidBody::upcast(obj);
-        btTransform trans;
-        if (body && body->getMotionState()) {
-            body->getMotionState()->getWorldTransform(trans);
-        } else {
-            trans = obj->getWorldTransform();
-        }
-        cRigidbody *jleRigidbody = static_cast<cRigidbody *>(body->getUserPointer());
-        if (jleRigidbody) {
-            glm::mat4 matrix;
-            trans.getOpenGLMatrix((btScalar*)&matrix);
-            matrix = glm::scale(matrix, jleRigidbody->_size);
-            jleRigidbody->getTransform().setWorldMatrix(matrix);
-        }
-    }
-}
-
-btRigidBody *
-jlePhysics::createRigidbody(float mass,
-                            const btTransform &startTransform,
-                            btCollisionShape *shape,
-                            cRigidbody *jleRigidbody)
-{
-    btAssert((!shape || shape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
-
-    // Rigidbody is dynamic if and only if mass is non zero, otherwise static
-    bool isDynamic = (mass != 0.f);
-
-    btVector3 localInertia(0, 0, 0);
-    if (isDynamic) {
-        shape->calculateLocalInertia(mass, localInertia);
-    }
-
-    btDefaultMotionState *myMotionState = new btDefaultMotionState(startTransform);
-
-    btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, shape, localInertia);
-
-    btRigidBody *body = new btRigidBody(cInfo);
-
-    body->setUserIndex(-1);
-    body->setUserPointer(jleRigidbody);
-    _dynamicsWorld->addRigidBody(body);
-    return body;
 }
 
 void
-jlePhysics::deleteRigidbody(btRigidBody *body)
+jlePhysics::addRigidbody(btRigidBody *body)
 {
-    _dynamicsWorld->removeRigidBody(body);
-    btMotionState *ms = body->getMotionState();
-    delete body;
-    delete ms;
+    if (body)
+        _dynamicsWorld->addRigidBody(body);
+}
+void
+jlePhysics::removeRigidbody(btRigidBody *body)
+{
+    if (body)
+        _dynamicsWorld->removeRigidBody(body);
 }
 
 void
 jlePhysics::renderDebug()
 {
-    if(renderDebugEnabled)
-    {
+    if (renderDebugEnabled) {
         JLE_SCOPE_PROFILE_CPU(renderPhysicsDebug)
         _dynamicsWorld->debugDrawWorld();
     }
+}
+
+btDiscreteDynamicsWorld &
+jlePhysics::dynamicsWorld()
+{
+    return *_dynamicsWorld.get();
 }

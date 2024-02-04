@@ -34,8 +34,8 @@
 #include <btBulletDynamicsCommon.h>
 #include <glm/common.hpp>
 
-jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name,
-                                           std::shared_ptr<jleFramebufferInterface> &framebuffer)
+jleSceneEditorWindow::
+jleSceneEditorWindow(const std::string &window_name, std::shared_ptr<jleFramebufferInterface> &framebuffer)
     : jleEditorWindowInterface(window_name)
 {
     _framebuffer = framebuffer;
@@ -227,16 +227,16 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     const static float *identityMatrixPtr = &identityMatrix[0][0];
     // ImGuizmo::DrawGrid(viewMatrix, projectionMatrix, identityMatrixPtr, 25.f);
 
-    /*
+
     // The following commented code is for a camera controller "cube" in the top left corner.
     // It contains a bug, however, and is not really usable at the moment.
 
-    static bool isManipulating = false;
+    /*static bool isManipulating = false;
     static glm::mat4 manipulatingMatrix{1.f};
     static glm::mat4 lastFrameMatrix{1.f};
 
     if (!isManipulating) {
-        manipulatingMatrix = jleEditor::editorCamera.getViewMatrix();
+        manipulatingMatrix = gEditor->camera().getViewMatrix();
     }
 
     ImGuizmo::ViewManipulate(
@@ -246,7 +246,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         ImVec2(128 * globalImguiScale, 128 * globalImguiScale),
         0x10101010);
 
-    if (manipulatingMatrix != jleEditor::editorCamera.getViewMatrix()) {
+    if (manipulatingMatrix != gEditor->camera().getViewMatrix()) {
         // The view manipulate function modified the view matrix
         isManipulating = true;
     }
@@ -258,10 +258,10 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     }
 
     if (isManipulating) {
-        _fpvCamController.recalculateVectorsFromViewMatrix(manipulatingMatrix);
+        auto pos = glm::vec3(manipulatingMatrix[3]);
+        gEditor->camera().setViewMatrix(manipulatingMatrix, pos);
         lastFrameMatrix = manipulatingMatrix;
-    }
-    */
+    }*/
 
     ImGui::SetCursorPosY(ImGui::GetCursorStartPos().y + 5 * globalImguiScale);
     ImGui::SetCursorPosX(ImGui::GetCursorStartPos().x + 5 * globalImguiScale);
@@ -275,24 +275,35 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         if (transformMatrix != worldMatrixBefore) {
             if (!gEngine->isGameKilled()) {
                 if (auto rb = obj->getComponent<cRigidbody>()) {
-                    obj->getTransform().setWorldMatrix(worldMatrixBefore);
+                    if (rb->isDynamic()) {
+                        obj->getTransform().setWorldMatrix(worldMatrixBefore);
 
-                    // Remove scaling from the world matrix (bullet don't want the scaling)
-                    glm::vec3 size;
-                    size.x = glm::length(glm::vec3(worldMatrixBefore[0])); // Basis vector X
-                    size.y = glm::length(glm::vec3(worldMatrixBefore[1])); // Basis vector Y
-                    size.z = glm::length(glm::vec3(worldMatrixBefore[2])); // Basis vector Z
-                    worldMatrixBefore =
-                        glm::scale(worldMatrixBefore, glm::vec3(1.f / size.x, 1.f / size.y, 1.f / size.z));
+                        rb->setupNewRigidbodyAndDeleteOld();
+                        glm::vec3 size;
 
-                    btTransform transform;
-                    transform.setFromOpenGLMatrix((btScalar *)&worldMatrixBefore);
+                        size.x = glm::length(glm::vec3(worldMatrixBefore[0])); // Basis vector X
+                        size.y = glm::length(glm::vec3(worldMatrixBefore[1])); // Basis vector Y
+                        size.z = glm::length(glm::vec3(worldMatrixBefore[2])); // Basis vector Z
+                        rb->getBody().getCollisionShape()->setLocalScaling({size.x, size.y, size.z});
 
-                    rb->getBody()->setWorldTransform(transform);
+                    } else {
+                        // Remove scaling from the world matrix (bullet don't want the scaling for static objects)
+                        glm::vec3 size;
+                        size.x = glm::length(glm::vec3(worldMatrixBefore[0])); // Basis vector X
+                        size.y = glm::length(glm::vec3(worldMatrixBefore[1])); // Basis vector Y
+                        size.z = glm::length(glm::vec3(worldMatrixBefore[2])); // Basis vector Z
 
-                    rb->getBody()->setLinearVelocity(btVector3{0.f, 0.f, 0.f});
-                    rb->getBody()->setAngularVelocity(btVector3{0.f, 0.f, 0.f});
-                    rb->getBody()->activate(true);
+                        obj->getTransform().setWorldMatrix(worldMatrixBefore);
+
+                        worldMatrixBefore =
+                            glm::scale(worldMatrixBefore, glm::vec3(1.f / size.x, 1.f / size.y, 1.f / size.z));
+
+                        btTransform transform;
+                        transform.setFromOpenGLMatrix((btScalar *)&worldMatrixBefore);
+
+                        rb->getBody().setWorldTransform(transform);
+                        rb->getBody().getCollisionShape()->setLocalScaling({size.x, size.y, size.z});
+                    }
                 } else {
                     obj->getTransform().setWorldMatrix(worldMatrixBefore);
                 }
@@ -302,8 +313,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         }
 
         if (auto meshComponent = obj->getComponent<cMesh>()) {
-            if(auto mesh = meshComponent->getMesh())
-            {
+            if (auto mesh = meshComponent->getMesh()) {
                 glm::mat4 modelMatrix = obj->getTransform().getWorldMatrix();
                 glm::mat4 matrix1 = glm::scale(modelMatrix, glm::vec3{1.00514159265f});
                 glm::mat4 matrix2 = glm::scale(modelMatrix, glm::vec3{0.99514159265f});
@@ -358,7 +368,9 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
             fpvCamController.moveDown(cameraSpeed * t);
         }
 
-        gEditor->camera().setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
+        if(dragDelta.x != 0 || dragDelta.y != 0){
+            gEditor->camera().setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
+        }
 
         auto currentScroll = gEngine->input().mouse->scrollY();
         if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentScroll != 0.f) {

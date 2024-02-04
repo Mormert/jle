@@ -37,13 +37,15 @@ public:
 
     void step(float dt);
 
-    btRigidBody* createRigidbody(float mass, const btTransform& startTransform, btCollisionShape* shape, cRigidbody* jleRigidbody);
+    void addRigidbody(btRigidBody *body);
 
-    void deleteRigidbody(btRigidBody* body);
+    void removeRigidbody(btRigidBody *body);
 
-    bool renderDebugEnabled = true;
+    bool renderDebugEnabled = false;
 
     void renderDebug();
+
+    btDiscreteDynamicsWorld& dynamicsWorld();
 
 private:
     btAlignedObjectArray<std::unique_ptr<btCollisionShape>> _collisionShapes;

@@ -16,10 +16,9 @@
 #ifndef JLE_TRANSFORM
 #define JLE_TRANSFORM
 
-
-#include <glm/glm.hpp>
-#include "jleExternalSerialization.h"
 #include "jleCompileHelper.h"
+#include "jleExternalSerialization.h"
+#include <glm/glm.hpp>
 
 class jleObject;
 
@@ -29,8 +28,7 @@ public:
     explicit jleTransform(jleObject *owner);
 
     template <class Archive>
-    void
-    serialize(Archive &ar);
+    void serialize(Archive &ar);
 
     void setWorldPosition(const glm::vec3 &position);
 
@@ -38,9 +36,13 @@ public:
 
     void setLocalPosition(const glm::vec3 &position);
 
-    void setLocalMatrix(const glm::mat4& matrix);
+    void setLocalMatrix(const glm::mat4 &matrix);
 
-    void addLocalTranslation(const glm::vec3& position);
+    void addLocalTranslation(const glm::vec3 &position);
+
+    void removeRotations();
+
+    void rotateTowardsPoint(const glm::vec3 &position, const glm::vec3 &up = {0.0f, 1.0f, 0.0f});
 
     glm::vec3 getForward();
 
