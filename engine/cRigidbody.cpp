@@ -31,7 +31,7 @@ cRigidbody::
 cRigidbody(const cRigidbody &other)
     : jleComponent(other)
 {
-    _mass.item = other._mass.item;
+    _mass = other._mass;
 
     // Explicitly run setup when component cloning
     if (other._body) {

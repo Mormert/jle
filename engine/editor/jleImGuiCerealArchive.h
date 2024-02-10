@@ -66,6 +66,16 @@ struct jleToolTip {
     jleToolTip<T>(T i) { item = i; }
     operator T() { return item; }
 
+    jleToolTip<T>(const jleToolTip<T> &other) : item{other.item}, tip_view{other.tip_view} {}
+
+    jleToolTip<T>& operator=(const jleToolTip<T> &other) {
+        if (this != &other) {
+            item = other.item;
+            tip_view = other.tip_view;
+        }
+        return *this;
+    }
+
     T item{};
 
     template <class Archive>
@@ -82,7 +92,7 @@ struct jleToolTip {
         item = value;
     }
 
-    const std::string_view tip_view;
+    std::string_view tip_view;
 };
 
 namespace cereal

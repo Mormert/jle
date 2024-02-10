@@ -20,6 +20,9 @@
 #include "jleSceneClient.h"
 #include "jleSceneServer.h"
 
+#include <glm/detail/type_quat.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleTransform)
 
 struct jleTransformPropagateEvent : public jleServerToClientEvent {
