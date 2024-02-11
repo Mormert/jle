@@ -8,10 +8,10 @@ on:
 
 jobs:
   build:
-
     name: Wasm_Release
 
     runs-on: ubuntu-latest
+    timeout-minutes: 50
 
     steps:
       - uses: actions/checkout@v2
