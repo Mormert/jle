@@ -25,7 +25,6 @@
 #include <chrono>
 #include <future>
 #include <iostream>
-#include "jleResourceRef.h"
 #include <memory>
 #include <string>
 #include <thread>
@@ -42,6 +41,9 @@
 using jleResourceHolder =
     std::unordered_map<std::string,
                        std::unordered_map<jlePath, std::pair<std::size_t, std::shared_ptr<jleResourceInterface>>>>;
+
+template <typename T>
+struct jleResourceRef;
 
 class jleResources
 {

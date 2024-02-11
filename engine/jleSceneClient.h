@@ -15,8 +15,8 @@
 
 #pragma once
 
-#include "jleNetworkEvent.h"
 #include "jleSceneNetworked.h"
+#include "jleNetworkEventOutQueue.h"
 
 class jleSceneClient : public jleSceneNetworked
 {
@@ -63,7 +63,7 @@ private:
 
     int32_t _clientId{-1};
 
-    jleNetworkEventOutQueue<jleClientToServerEvent> _eventsQueueToServer;
+    jleNetworkEventOutQueue _eventsQueueToServer;
 
     std::unordered_map<int32_t, std::weak_ptr<jleObject>> _networkedObjects;
 };

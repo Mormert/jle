@@ -15,6 +15,7 @@
 
 #include "jleNetworkEvent.h"
 #include "jleSceneServer.h"
+#include "jleSceneClient.h"
 
 jleSceneServer &
 jleClientToServerEvent::getSceneServer()
@@ -32,4 +33,55 @@ jleSceneClient &
 jleServerToClientEvent::getSceneClient()
 {
     return *_clientScene;
+}
+
+void
+jleExecuteClientEventsOnServer(const char *networkBuffer, size_t networkBufferLength, jleSceneServer *scene, int clientId)
+{
+    int32_t amountOfEvents;
+    ::memcpy(&amountOfEvents, &networkBuffer[0], sizeof(int32_t));
+
+    std::stringstream stream{};
+    stream.write(&networkBuffer[sizeof(int32_t)], networkBufferLength - sizeof(int32_t));
+
+    cereal::BinaryInputArchive archive(stream);
+
+    for (int i = 0; i < amountOfEvents; i++) {
+        std::unique_ptr<jleClientToServerEvent> e{nullptr};
+        try {
+            archive(e);
+            if (e) {
+                e->_serverScene = scene;
+                e->_clientId = clientId;
+                e->execute();
+            }
+        } catch (std::exception &ex) {
+            LOGE << "[client] failed to parse event data: " << ex.what();
+        }
+    }
+}
+
+void
+jleExecuteServerEventsOnClient(const char *networkBuffer, size_t networkBufferLength, jleSceneClient *scene)
+{
+    int32_t amountOfEvents;
+    ::memcpy(&amountOfEvents, &networkBuffer[0], sizeof(int32_t));
+
+    std::stringstream stream{};
+    stream.write(&networkBuffer[sizeof(int32_t)], networkBufferLength - sizeof(int32_t));
+
+    cereal::BinaryInputArchive archive(stream);
+
+    for (int i = 0; i < amountOfEvents; i++) {
+        std::unique_ptr<jleServerToClientEvent> e{nullptr};
+        try {
+            archive(e);
+            if (e) {
+                e->_clientScene = scene;
+                e->execute();
+            }
+        } catch (std::exception &ex) {
+            LOGE << "[client] failed to parse event data: " << ex.what();
+        }
+    }
 }

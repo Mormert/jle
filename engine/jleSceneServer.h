@@ -15,8 +15,8 @@
 
 #pragma once
 
-#include "jleNetworkEvent.h"
 #include "jleSceneNetworked.h"
+#include "jleNetworkEventOutQueue.h"
 
 constexpr int serverOwnedId = 0;
 
@@ -80,9 +80,9 @@ private:
 
     std::unordered_map<int32_t, std::vector<std::weak_ptr<jleObject>>> _playerOwnedObjects;
 
-    jleNetworkEventOutQueue<jleServerToClientEvent> _eventsBroadcastQueue;
+    jleNetworkEventOutQueue _eventsBroadcastQueue;
 
-    std::unordered_map<int32_t, jleNetworkEventOutQueue<jleServerToClientEvent>> _eventsSpecificUserQueue;
+    std::unordered_map<int32_t, jleNetworkEventOutQueue> _eventsSpecificUserQueue;
 
     std::unordered_map<int32_t, std::weak_ptr<jleObject>> _networkedObjects;
 

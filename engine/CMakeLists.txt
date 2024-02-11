@@ -62,6 +62,7 @@ add_library(engine STATIC
         "jleObject.cpp"
         "jleScene.cpp"
         "jleNetworkEvent.cpp"
+        "jleNetworkEventOutQueue.cpp"
         "jleSceneNetworked.cpp"
         "jleSceneServer.cpp"
         "jleSceneClient.cpp"
@@ -169,7 +170,8 @@ set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_ZLIB OFF CACHE BOOL "" FORCE)
 # Exclude 3MF since it uses zip_open which caused name conflict with libzip
-add_definitions(-DASSIMP_BUILD_NO_3MF_IMPORTER -DASSIMP_BUILD_NO_3MF_EXPORTER)
+set(ASSIMP_BUILD_3MD_EXPORTER OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_3MD_IMPORTER OFF CACHE BOOL "" FORCE)
 if (JLE_BUILD_EMSCRIPTEN)
     set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
 endif ()

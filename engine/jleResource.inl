@@ -15,6 +15,8 @@
 
 #include "jleResource.h"
 
+#include "jleResourceRef.h"
+
 template <typename T>
 bool
 jleResources::checkFileEndingMatchResourceType(const jlePath &path)

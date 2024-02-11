@@ -14,6 +14,7 @@
  *********************************************************************************************/
 
 #include "jleSceneClient.h"
+#include "jleNetworkEvent.h"
 #include "jleProfiler.h"
 
 #include <enet.h>
@@ -101,7 +102,7 @@ jleSceneClient::processNetwork()
             const char *dataBuffer = reinterpret_cast<char *>(event.packet->data);
             const auto dataLength = event.packet->dataLength;
 
-            jleExecuteNetEvents<jleServerToClientEvent>(dataBuffer, dataLength, this);
+            jleExecuteServerEventsOnClient(dataBuffer, dataLength, this);
 
             enet_packet_destroy(event.packet);
         } break;

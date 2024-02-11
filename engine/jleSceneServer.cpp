@@ -213,7 +213,7 @@ jleSceneServer::processNetwork()
                 const char *dataBuffer = reinterpret_cast<char *>(event.packet->data);
                 const auto dataLength = event.packet->dataLength;
 
-                jleExecuteNetEvents<jleClientToServerEvent>(dataBuffer, dataLength, this, incomingPlayerID);
+                jleExecuteClientEventsOnServer(dataBuffer, dataLength, this, incomingPlayerID);
 
                 // Clean up the packet now that we're done using it.
                 enet_packet_destroy(event.packet);

@@ -19,6 +19,7 @@
 #include "jleGameEngine.h"
 #include "jlePathDefines.h"
 #include "jleScene.h"
+#include "jleNetworkEvent.h"
 #include "jleSceneClient.h"
 #include "jleSceneServer.h"
 #include "jleTransform.h"
