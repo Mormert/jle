@@ -39,3 +39,4 @@
 #include "cLuaScript.h"
 #include "cAnimator.h"
 #include "cSkinnedMesh.h"
+#include "cTransformNetSync.h"

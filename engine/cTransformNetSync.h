@@ -21,8 +21,6 @@ class cTransformNetSync: public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cTransformNetSync)
 public:
-    explicit cTransformNetSync(jleObject *owner = nullptr, jleScene *scene = nullptr);
-
     void netSyncOut(cereal::BinaryOutputArchive &ar) override;
 
     void netSyncIn(cereal::BinaryInputArchive &ar) override;
