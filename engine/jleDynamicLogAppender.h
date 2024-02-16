@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include <plog/Log.h>
 #include <plog/Appenders/DynamicAppender.h>
 

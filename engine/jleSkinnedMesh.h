@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jleMesh.h"
 
 struct jleSkinnedMeshBone {

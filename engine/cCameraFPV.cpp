@@ -14,9 +14,9 @@
  *********************************************************************************************/
 
 #include "cCameraFPV.h"
+#include "glm/ext/matrix_transform.hpp"
 #include "jleGameEngine.h"
 #include "jleInput.h"
-#include "glm/ext/matrix_transform.hpp"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cCameraFPV)
 
@@ -64,17 +64,18 @@ cCameraFPV::update(float dt)
         getTransform().setLocalPosition(updatedPosition);
     }
 
-#ifndef JLE_BUILD_EDITOR
-    if (keyboard->keyPressed(jleKey::TAB)) // Tab
+    JLE_EXEC_IF_NOT(JLE_BUILD_EDITOR)
     {
-        auto fpsMode = gEngine->input().mouse->isFpsMode();
-        if (fpsMode) {
-            gEngine->input().mouse->setFpsMode(false);
-        } else {
-            gEngine->input().mouse->setFpsMode(true);
+        if (keyboard->keyPressed(jleKey::TAB)) // Tab
+        {
+            auto fpsMode = gEngine->input().mouse->isFpsMode();
+            if (fpsMode) {
+                gEngine->input().mouse->setFpsMode(false);
+            } else {
+                gEngine->input().mouse->setFpsMode(true);
+            }
         }
     }
-#endif
 
     float mouseDeltaX = gEngine->input().mouse->xDelta() * 0.078f;
     float mouseDeltaY = -gEngine->input().mouse->yDelta() * 0.078f;

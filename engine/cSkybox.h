@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jle3DSettings.h"
 #include "jleComponent.h"
 #include "jleResourceRef.h"

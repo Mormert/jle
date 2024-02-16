@@ -163,12 +163,14 @@ jleTransform::propagateMatrix()
         child->getTransform().propagateMatrixChildren();
     }
 
+    /*
     if (_owner && _owner->networkObjectType() == jleObjectNetworkType::SERVER) {
         auto event = jleMakeNetEvent<jleTransformPropagateEvent>();
         event->localMatrix = getLocalMatrix();
         event->netId = _owner->netID();
         _owner->_containedInSceneServer->sendNetworkEventBroadcast(std::move(event));
     }
+    */
 }
 
 void

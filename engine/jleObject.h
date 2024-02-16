@@ -16,6 +16,8 @@
 #ifndef JLE_OBJECT
 #define JLE_OBJECT
 
+#include "jleBuildConfig.h"
+
 #include "jlePath.h"
 #include "jleSerializedResource.h"
 #include "jleTransform.h"

@@ -16,6 +16,8 @@
 #ifndef JLE_SCENE
 #define JLE_SCENE
 
+#include "jleBuildConfig.h"
+
 #include <memory>
 #include <vector>
 

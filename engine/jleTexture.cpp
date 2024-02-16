@@ -35,6 +35,8 @@ jleTexture::~jleTexture()
 bool
 jleTexture::loadFromFile(const jlePath &path)
 {
+    JLE_EXEC_IF(JLE_BUILD_HEADLESS) { return true; }
+
     auto fe = path.getFileEnding();
     if (fe != "tex") {
         imagePath = path;

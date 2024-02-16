@@ -16,7 +16,9 @@
 #ifndef JLEEDITORTEXTEDIT_H
 #define JLEEDITORTEXTEDIT_H
 
-#ifdef JLE_BUILD_EDITOR
+#include "jleBuildConfig.h"
+
+#if JLE_BUILD_EDITOR
 
 
 #include "3rdparty/ImGuiColorTextEdit/TextEditor.h"

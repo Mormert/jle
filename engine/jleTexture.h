@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jlePath.h"
 #include "jleSerializedResource.h"
 #include "jleTypeReflectionUtils.h"

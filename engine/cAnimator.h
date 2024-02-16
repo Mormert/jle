@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jleAnimation.h"
 #include "jleComponent.h"
 #include "jleResourceRef.h"
@@ -94,7 +96,7 @@ private:
 
     float _blendFactor{1.f};
 
-#ifdef JLE_BUILD_EDITOR
+#if JLE_BUILD_EDITOR
     bool _editorPreviewAnimation{false};
 #endif
 };

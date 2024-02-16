@@ -18,6 +18,7 @@
 
 target_include_directories(${JLE_GAME_BUILD} SYSTEM PUBLIC)
 
+option(JLE_BUILD_RUNTIME_CONFIGURABLE "Enable runtime configurations passed from command line" OFF)
 option(JLE_BUILD_EDITOR "Build the game in the editor" ON)
 option(JLE_BUILD_HEADLESS "Build the game without graphics (for servers)" OFF)
 option(JLE_BUILD_EMSCRIPTEN "Build with Emscripten targeting WebAssembly" OFF)
@@ -54,18 +55,9 @@ if (MINGW)
     link_libraries(wsock32 ws2_32)
 endif ()
 
-if (JLE_BUILD_HEADLESS)
-    add_definitions(-DJLE_BUILD_HEADLESS)
-    set(JLE_BUILD_EDITOR OFF)
-endif ()
-
-if (JLE_BUILD_EDITOR)
-    add_definitions(-DJLE_BUILD_EDITOR)
-endif ()
-
-if (JLE_BUILD_OPENGLES30)
-    add_definitions(-DJLE_BUILD_OPENGLES30)
-endif ()
+# Defines build-time macros to 0 or 1 depending on configuration
+configure_file(${JLE_ENGINE_PATH}/jleBuildConfig.in.h buildConfig/jleBuildConfig.h)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/buildConfig)
 
 if (JLE_BUILD_EMSCRIPTEN)
     # TODO: Remove having to enable exceptions flag '-fexceptions' since not all browser engines supports exceptions?

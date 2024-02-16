@@ -17,7 +17,9 @@
 
 #pragma once
 
-#ifdef JLE_BUILD_EDITOR
+#include "jleBuildConfig.h"
+
+#if JLE_BUILD_EDITOR
 
 #include "jleEditorImGuiWindowInterface.h"
 

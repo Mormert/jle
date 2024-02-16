@@ -16,7 +16,9 @@
 #ifndef JLE_EDITORGIZMOS_H
 #define JLE_EDITORGIZMOS_H
 
-#ifdef JLE_BUILD_EDITOR
+#include "jleBuildConfig.h"
+
+#if JLE_BUILD_EDITOR
 
 #include <memory>
 

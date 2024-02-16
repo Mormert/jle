@@ -17,22 +17,16 @@
 
 #include "jleBuildConfig.h"
 
-#include "jleComponent.h"
+#include <string>
+#include <vector>
 
-class cTransformNetSync: public jleComponent
+class jleCommandArguments
 {
-    JLE_REGISTER_COMPONENT_TYPE(cTransformNetSync)
 public:
-    void netSyncOut(cereal::BinaryOutputArchive &ar) override;
+    jleCommandArguments(int argc, char *argv[]);
 
-    void netSyncIn(cereal::BinaryInputArchive &ar) override;
+    [[nodiscard]] bool hasArgument(const std::string &arg) const;
 
-    void serverUpdate(float dt) override;
-
-protected:
-    glm::vec3 _color{1.f};
+private:
+    std::vector<std::string> _arguments;
 };
-
-CEREAL_REGISTER_TYPE(cTransformNetSync)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cTransformNetSync)
-

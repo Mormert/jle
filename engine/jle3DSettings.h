@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jleResourceRef.h"
 #include "jleSkybox.h"
 #include <glm/glm.hpp>

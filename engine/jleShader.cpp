@@ -24,6 +24,8 @@
 bool
 jleShader::loadFromFile(const jlePath &path)
 {
+    JLE_EXEC_IF(JLE_BUILD_HEADLESS) { return true; }
+
     std::ifstream load{path.getRealPath()};
     if (!load.good()) {
         return false;
@@ -42,13 +44,16 @@ jleShader::loadFromFile(const jlePath &path)
     last = shaderSource.back();
     auto frag = shaderSource.substr(first, last - first);
 
-#ifdef JLE_BUILD_OPENGLES30
-    vert = "#version 300 es\n" + vert;
-    frag = "#version 300 es\nprecision highp float;\n" + frag;
-#else
-    vert = "#version 330 core\n" + vert;
-    frag = "#version 330 core\n" + frag;
-#endif
+    JLE_EXEC_IF(JLE_BUILD_OPENGLES30)
+    {
+        vert = "#version 300 es\n" + vert;
+        frag = "#version 300 es\nprecision highp float;\n" + frag;
+    }
+    else
+    {
+        vert = "#version 330 core\n" + vert;
+        frag = "#version 330 core\n" + frag;
+    }
 
     unsigned int vertex, fragment;
 

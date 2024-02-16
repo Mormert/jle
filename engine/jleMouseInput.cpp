@@ -17,24 +17,26 @@
 #include "jleProfiler.h"
 #include "jleWindow.h"
 
-jleMouseInput::jleMouseInput(std::shared_ptr<jleWindow> window) {
-    this->_window = std::move(window);
+jleMouseInput::jleMouseInput(std::shared_ptr<jleWindow> window) { this->_window = std::move(window); }
+
+int
+jleMouseInput::mouseX()
+{
+    JLE_EXEC_IF(JLE_BUILD_EDITOR) { return _window->cursor().first - _screenBeginX; }
+    else
+    {
+        return _window->cursor().first;
+    }
 }
 
-int jleMouseInput::mouseX() {
-#ifdef JLE_BUILD_EDITOR
-    return _window->cursor().first - _screenBeginX;
-#else
-    return _window->cursor().first;
-#endif
-}
-
-int jleMouseInput::mouseY() {
-#ifdef JLE_BUILD_EDITOR
-    return _window->cursor().second - _screenBeginY;
-#else
-    return _window->cursor().second;
-#endif
+int
+jleMouseInput::mouseY()
+{
+    JLE_EXEC_IF(JLE_BUILD_EDITOR) { return _window->cursor().second - _screenBeginY; }
+    else
+    {
+        return _window->cursor().second;
+    }
 }
 
 float
@@ -49,9 +51,17 @@ jleMouseInput::yDelta()
     return _deltaY;
 }
 
-float jleMouseInput::scrollX() { return _window->scrollX(); }
+float
+jleMouseInput::scrollX()
+{
+    return _window->scrollX();
+}
 
-float jleMouseInput::scrollY() { return _window->scrollY(); }
+float
+jleMouseInput::scrollY()
+{
+    return _window->scrollY();
+}
 
 void
 jleMouseInput::setScreenBeginCoords(int x, int y)
@@ -67,7 +77,11 @@ jleMouseInput::setScreenSize(int width, int height)
     _screenHeight = height;
 }
 
-void jleMouseInput::isEnabled(bool value) { _isEnabled = value; }
+void
+jleMouseInput::isEnabled(bool value)
+{
+    _isEnabled = value;
+}
 
 bool
 jleMouseInput::mouseClick(jleButton button)

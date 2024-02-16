@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jleFrameBufferInterface.h"
 
 class jleFramebufferPicking : public jleFramebufferInterface

@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jleFrameBufferInterface.h"
 
 // A framebuffer that light sources render to for shadow mapping

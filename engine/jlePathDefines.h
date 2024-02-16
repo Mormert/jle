@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include <string>
 
 // Wrappers for paths defined in CMakeLists

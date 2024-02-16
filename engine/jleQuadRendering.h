@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "glm/ext/scalar_constants.hpp"
 #include "jleCamera.h"
 #include "jleQuads.h"

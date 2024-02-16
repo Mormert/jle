@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jlePath.h"
 
 #define SOL_ALL_SAFETIES_ON 1

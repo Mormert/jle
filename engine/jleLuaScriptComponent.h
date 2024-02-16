@@ -16,6 +16,8 @@
 #ifndef JLE_LUASCRIPTCOMPONENT_H
 #define JLE_LUASCRIPTCOMPONENT_H
 
+#include "jleBuildConfig.h"
+
 #include "jleLuaScript.h"
 
 #define SOL_ALL_SAFETIES_ON 1

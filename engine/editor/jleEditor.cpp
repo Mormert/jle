@@ -52,6 +52,7 @@
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
 #include <implot/implot.h>
+
 #include <plog/Log.h>
 
 struct jleEditor::jleEditorInternal {
@@ -311,11 +312,13 @@ jleEditor::initImgui()
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window().glfwWindow(), true);
 
-#ifdef JLE_BUILD_OPENGLES30
-    ImGui_ImplOpenGL3_Init("#version 300 es");
-#else
-    ImGui_ImplOpenGL3_Init("#version 330 core");
-#endif
+    JLE_EXEC_IF(JLE_BUILD_OPENGLES30)
+    {
+        ImGui_ImplOpenGL3_Init("#version 300 es");
+    }else
+    {
+        ImGui_ImplOpenGL3_Init("#version 330 core");
+    }
 
     io.Fonts->Clear();
     ImGui::Spectrum::LoadFont();

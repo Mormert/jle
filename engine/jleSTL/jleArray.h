@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include <EASTL/array.h>
 
 template <typename T>

@@ -16,7 +16,9 @@
 #ifndef JLE_EDITORRESOURCEEDIT_H
 #define JLE_EDITORRESOURCEEDIT_H
 
-#ifdef JLE_BUILD_EDITOR
+#include "jleBuildConfig.h"
+
+#if JLE_BUILD_EDITOR
 
 #include "jleEditorImGuiWindowInterface.h"
 #include <jleResourceRef.h>

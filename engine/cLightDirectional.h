@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "cLight.h"
 
 class cLightDirectional : public cLight

@@ -16,6 +16,8 @@
 #ifndef JLE_LUASCRIPT_H
 #define JLE_LUASCRIPT_H
 
+#include "jleBuildConfig.h"
+
 #include "jleGameEngine.h"
 #include "jleResourceInterface.h"
 #include "jleTypeReflectionUtils.h"

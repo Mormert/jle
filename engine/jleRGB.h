@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jleExternalSerialization.h"
 
 #include <glm/glm.hpp>

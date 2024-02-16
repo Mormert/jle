@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jleKeyboardInput.h"
 #include "jleMouseInput.h"
 #include <memory>

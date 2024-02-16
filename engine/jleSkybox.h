@@ -16,6 +16,8 @@
 #ifndef JLE_SKYBOX_H
 #define JLE_SKYBOX_H
 
+#include "jleBuildConfig.h"
+
 #include "jleSerializedResource.h"
 #include "jleTypeReflectionUtils.h"
 

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include <EASTL/vector_multiset.h>
 
 template <typename T>

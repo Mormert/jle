@@ -16,11 +16,11 @@
 #ifndef JLE_COMPONENT
 #define JLE_COMPONENT
 
+#include "jleBuildConfig.h"
+
 #include "jleTypeReflectionUtils.h"
 
-#ifdef JLE_BUILD_EDITOR
 #include "editor/jleImGuiCerealArchive.h"
-#endif
 #include <cereal/archives/binary.hpp>
 #include <cereal/archives/json.hpp>
 #include <cereal/types/base_class.hpp>

@@ -16,6 +16,8 @@
 #ifndef JLE_FILECHANGENOTIFIER_H
 #define JLE_FILECHANGENOTIFIER_H
 
+#include "jleBuildConfig.h"
+
 #include "jleGameEngine.h"
 #include "jlePath.h"
 #include <chrono>

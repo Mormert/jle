@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jleSTL/jleStringView.h"
 #include <plog/Log.h>
 

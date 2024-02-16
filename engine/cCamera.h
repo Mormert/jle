@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jleAseprite.h"
 #include "jleComponent.h"
 #include "jleFrameBufferInterface.h"

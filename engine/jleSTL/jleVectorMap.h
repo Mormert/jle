@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include <EASTL/vector_map.h>
 
 template <typename Key, typename T, typename Compare = eastl::less<Key>>

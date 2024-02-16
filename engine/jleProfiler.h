@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jlePathDefines.h"
 #include <chrono>
 #include <string_view>
@@ -59,7 +61,7 @@ private:
 #define JLE_SCOPE_PROFILE_CONCAT(x, y) JLE_SCOPE_PROFILE_CONCAT2(x, y)
 #define JLE_SCOPE_PROFILE_STRINGIZE(x) #x
 
-#ifdef JLE_BUILD_EDITOR
+#if JLE_BUILD_EDITOR
 #define JLE_SCOPE_PROFILE_CPU(profile_name)                                                                            \
     ZoneScoped;                                                                                                        \
     using namespace std::literals::string_view_literals;                                                               \

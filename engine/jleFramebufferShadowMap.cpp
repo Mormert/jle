@@ -30,20 +30,23 @@ jleFramebufferShadowMap::jleFramebufferShadowMap(unsigned int width, unsigned in
     glBindTexture(GL_TEXTURE_2D, _texture);
 
     // Attach the texture to the bound framebuffer object as GL_DEPTH_COMPONENT
-#ifdef JLE_BUILD_OPENGLES30
-    // OpenGL ES 3.0 uses 16 bit depth component here instead of default 24 bit
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 GL_DEPTH_COMPONENT16,
-                 (int)width,
-                 (int)height,
-                 0,
-                 GL_DEPTH_COMPONENT,
-                 GL_UNSIGNED_SHORT,
-                 NULL);
-#else
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-#endif
+    JLE_EXEC_IF(JLE_BUILD_OPENGLES30)
+    {
+        // OpenGL ES 3.0 uses 16 bit depth component here instead of default 24 bit
+        glTexImage2D(GL_TEXTURE_2D,
+                     0,
+                     GL_DEPTH_COMPONENT16,
+                     (int)width,
+                     (int)height,
+                     0,
+                     GL_DEPTH_COMPONENT,
+                     GL_UNSIGNED_SHORT,
+                     NULL);
+    }
+    else
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    }
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -86,20 +89,23 @@ jleFramebufferShadowMap::resize(unsigned int width, unsigned int height)
     this->_height = height;
 
     glBindTexture(GL_TEXTURE_2D, _texture);
-#ifdef JLE_BUILD_OPENGLES30
-    // OpenGL ES 3.0 uses 16 bit depth component here instead of default 24 bit
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 GL_DEPTH_COMPONENT16,
-                 (int)width,
-                 (int)height,
-                 0,
-                 GL_DEPTH_COMPONENT,
-                 GL_UNSIGNED_SHORT,
-                 NULL);
-#else
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-#endif
+    JLE_EXEC_IF(JLE_BUILD_OPENGLES30)
+    {
+        // OpenGL ES 3.0 uses 16 bit depth component here instead of default 24 bit
+        glTexImage2D(GL_TEXTURE_2D,
+                     0,
+                     GL_DEPTH_COMPONENT16,
+                     (int)width,
+                     (int)height,
+                     0,
+                     GL_DEPTH_COMPONENT,
+                     GL_UNSIGNED_SHORT,
+                     NULL);
+    }
+    else
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    }
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 

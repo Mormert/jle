@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jleComponent.h"
 
 #include <glm/vec3.hpp>

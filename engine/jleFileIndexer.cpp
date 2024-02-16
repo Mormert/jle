@@ -72,7 +72,7 @@ jleFileIndexer::sweep(std::vector<jlePath> &erased, std::vector<jlePath> &added,
     for (auto &dir : _directories) {
 
         for (auto &file : std::filesystem::recursive_directory_iterator(dir)) {
-            auto end = file.path().string()[file.path().string().size()-1];
+            auto end = file.path().string()[file.path().string().size() - 1];
             if (end == '~') {
                 continue;
             }
@@ -113,9 +113,7 @@ jleFileIndexer::notifyModification(const jlePath &path)
             LOGW << "Failed reloading resource: " << path.getVirtualPath();
         }
 
-#ifdef JLE_BUILD_EDITOR
-        gEditor->editorTextEdit().reloadIfOpened(path);
-#endif
+        JLE_EXEC_IF(JLE_BUILD_EDITOR) { gEditor->editorTextEdit().reloadIfOpened(path); }
     } else {
         LOGI << "File modified: " << path.getVirtualPath();
     }

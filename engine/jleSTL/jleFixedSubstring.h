@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include <EASTL/fixed_substring.h>
 
 template <typename T>

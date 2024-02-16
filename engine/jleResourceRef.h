@@ -16,6 +16,8 @@
 #ifndef JLE_RESOURCEREF_H
 #define JLE_RESOURCEREF_H
 
+#include "jleBuildConfig.h"
+
 #include <cereal/cereal.hpp>
 #include "jlePath.h"
 

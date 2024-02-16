@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include <EASTL/fixed_allocator.h>
 
 using jleFixedAllocator = eastl::fixed_allocator;

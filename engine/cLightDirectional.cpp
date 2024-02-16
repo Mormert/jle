@@ -36,7 +36,7 @@ cLightDirectional::update(float dt)
 void
 cLightDirectional::editorGizmosRender(bool selected)
 {
-#ifdef JLE_BUILD_EDITOR
+#if JLE_BUILD_EDITOR
     auto mesh = gEditor->gizmos().sunMesh();
     std::shared_ptr<jleMaterial> material = gEditor->gizmos().sunMaterial();
     gEngine->renderGraph().sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);

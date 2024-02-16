@@ -18,6 +18,8 @@
 #ifndef JLE_EXTERNALSERIALIZATION_H
 #define JLE_EXTERNALSERIALIZATION_H
 
+#include "jleBuildConfig.h"
+
 #include <cereal/cereal.hpp>
 
 // clang-format off

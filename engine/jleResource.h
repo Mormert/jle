@@ -16,6 +16,8 @@
 #ifndef JLE_RESOURCE
 #define JLE_RESOURCE
 
+#include "jleBuildConfig.h"
+
 #include "jlePath.h"
 #include "jleResourceInterface.h"
 #include "jleSerializedResource.h"

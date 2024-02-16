@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "cCamera.h"
 #include "jleCamera.h"
 

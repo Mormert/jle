@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jleResourceInterface.h"
 
 #define SAVE_SHARED_THIS_SERIALIZED_JSON(PARENT_TYPE)                                                                  \

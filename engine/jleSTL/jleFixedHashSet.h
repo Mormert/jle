@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include <EASTL/fixed_hash_set.h>
 
 template <typename T, size_t nodeCount, bool bEnableOverflow = true>

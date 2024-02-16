@@ -44,7 +44,7 @@ cLight::editorUpdate(float dt)
 void
 cLight::editorGizmosRender(bool selected)
 {
-#ifdef JLE_BUILD_EDITOR
+#if JLE_BUILD_EDITOR
     auto mesh = gEditor->gizmos().lightLampMesh();
     std::shared_ptr<jleMaterial> material = gEditor->gizmos().lampMaterial();
     auto matrix = glm::translate(glm::mat4{1.0f}, _attachedToObject->getTransform().getWorldPosition());

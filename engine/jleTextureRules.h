@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #define JLE_TEXTURE_DIR_SHADOW 0x84C0
 #define JLE_TEXTURE_POINT_SHADOW 0x84C1
 #define JLE_TEXTURE_ALBEDO 0x84C2

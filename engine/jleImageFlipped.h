@@ -17,6 +17,8 @@
 #ifndef JLE_IMAGEFLIPPED_H
 #define JLE_IMAGEFLIPPED_H
 
+#include "jleBuildConfig.h"
+
 #include "jleImage.h"
 
 class jleImageFlipped : public jleImage

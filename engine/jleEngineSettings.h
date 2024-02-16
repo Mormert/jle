@@ -16,6 +16,8 @@
 #ifndef JLE_ENGINESETTINGS
 #define JLE_ENGINESETTINGS
 
+#include "jleBuildConfig.h"
+
 #include "jleSerializedResource.h"
 #include "jleTypeReflectionUtils.h"
 #include "jleWindowSettings.h"

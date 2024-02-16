@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include <EASTL/string_view.h>
 
 using jleStringView = eastl::string_view;

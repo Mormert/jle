@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jleFrameBufferInterface.h"
 
 // A framebuffer that renders to the screen. Thus, it does NOT contain a depth buffer.

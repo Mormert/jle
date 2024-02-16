@@ -16,6 +16,8 @@
 #ifndef JLE_MATERIAL_H
 #define JLE_MATERIAL_H
 
+#include "jleBuildConfig.h"
+
 #include "jleCompileHelper.h"
 #include "jleResourceInterface.h"
 #include "jleTypeReflectionUtils.h"

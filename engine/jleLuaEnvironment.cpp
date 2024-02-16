@@ -22,7 +22,7 @@
 #include "jleResourceRef.h"
 #include <glm/ext/matrix_transform.hpp>
 
-#ifdef JLE_BUILD_EDITOR
+#if JLE_BUILD_IMGUI
 #include "ImGui/sol_ImGui.h"
 #endif
 
@@ -48,9 +48,7 @@ jleLuaEnvironment::setupLua(sol::state &lua)
 
     setupLuaGLM(lua);
 
-#ifdef JLE_BUILD_EDITOR
-    sol_ImGui::Init(lua);
-#endif
+    JLE_EXEC_IF(JLE_BUILD_IMGUI) { sol_ImGui::Init(lua); }
 
     lua.set_function("loadScript", [&](const std::string path) { loadScript(path.c_str()); });
 
@@ -167,12 +165,13 @@ jleLuaEnvironment::setupLua(sol::state &lua)
                                  << s;
     });
 
-#ifdef JLE_BUILD_EDITOR
-    // Overwrite print function
-    lua.script("function print(s)\n"
-               "    LOGV(tostring(s));\n"
-               "end");
-#endif
+    JLE_EXEC_IF(JLE_BUILD_EDITOR)
+    {
+        // Overwrite print function
+        lua.script("function print(s)\n"
+                   "    LOGV(tostring(s));\n"
+                   "end");
+    }
 
     for (auto &c : jleTypeReflectionUtils::registeredComponentsRef()) {
         auto instance = c.second();

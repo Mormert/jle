@@ -21,8 +21,7 @@
 #include "stb_image.h"
 #include <plog/Log.h>
 
-//JLE_EXTERN_TEMPLATE_CEREAL_CPP(WindowSettings)
-
+// JLE_EXTERN_TEMPLATE_CEREAL_CPP(WindowSettings)
 
 void
 jleWindow::error_callback(int error, const char *description)
@@ -155,14 +154,16 @@ jleWindow::initWindow()
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     }
 
-#ifdef JLE_BUILD_EDITOR
-    glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
-
-    const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    _glfwWindow = initGlfwWindow(mode->width, mode->height, windowSettings.WindowTitle.c_str());
-#else
-    _glfwWindow = initGlfwWindow(windowSettings.width, windowSettings.height, windowSettings.WindowTitle.c_str());
-#endif
+    JLE_EXEC_IF(JLE_BUILD_EDITOR)
+    {
+        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+        const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        _glfwWindow = initGlfwWindow(mode->width, mode->height, windowSettings.WindowTitle.c_str());
+    }
+    else
+    {
+        _glfwWindow = initGlfwWindow(windowSettings.width, windowSettings.height, windowSettings.WindowTitle.c_str());
+    }
 
     glfwSetKeyCallback(_glfwWindow, glfwKeyCallback);
     glfwSetScrollCallback(_glfwWindow, glfwScrollCallback);
@@ -379,17 +380,20 @@ glDebugOutput(GLenum source,
 GLFWwindow *
 jleWindow::initGlfwWindow(int width, int height, const char *title)
 {
-#ifdef JLE_BUILD_OPENGLES30
-    // Runs on OpenGL ES 3.0
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-#else
-    // Runs on OpenGL Core 3.3
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-#endif
+    JLE_EXEC_IF(JLE_BUILD_OPENGLES30)
+    {
+        // Runs on OpenGL ES 3.0
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    }
+    else
+    {
+        // Runs on OpenGL Core 3.3
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    }
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // To Enable MSAA
@@ -419,17 +423,20 @@ jleWindow::initGlfwWindow(int width, int height, const char *title)
 
     glfwMakeContextCurrent(glfwWindow);
 #ifndef __EMSCRIPTEN__
-#ifdef JLE_BUILD_OPENGLES30
-    if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)) {
-        std::cerr << "ERROR: Failed to initialize GLAD\n";
-        exit(1);
+    JLE_EXEC_IF(JLE_BUILD_OPENGLES30)
+    {
+        if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)) {
+            std::cerr << "ERROR: Failed to initialize GLAD\n";
+            exit(1);
+        }
     }
-#else
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cerr << "ERROR: Failed to initialize GLAD\n";
-        exit(1);
+    else
+    {
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+            std::cerr << "ERROR: Failed to initialize GLAD\n";
+            exit(1);
+        }
     }
-#endif
 #endif
 
     // Set the debug output for OpenGL errors

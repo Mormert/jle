@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jleNetworkEventRegistrator.h"
 
 #include <cereal/archives/binary.hpp>

@@ -176,8 +176,9 @@ jleMesh::makeMesh(const std::vector<glm::vec3> &positions,
                   const std::vector<glm::vec3> &bitangents,
                   const std::vector<unsigned int> &indices)
 {
-    destroyOldBuffers();
+    JLE_EXEC_IF(JLE_BUILD_HEADLESS) { return; }
 
+    destroyOldBuffers();
     glGenVertexArrays(1, &_vao);
     glBindVertexArray(_vao);
 
@@ -243,11 +244,7 @@ jleMesh::makeMesh(const std::vector<glm::vec3> &positions,
     _indices = indices;
 }
 
-jleMesh::~
-jleMesh()
-{
-    destroyOldBuffers();
-}
+jleMesh::~jleMesh() { destroyOldBuffers(); }
 
 void
 jleMesh::destroyOldBuffers()

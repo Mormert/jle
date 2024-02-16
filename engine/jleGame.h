@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include <memory>
 #include <vector>
 
@@ -23,13 +25,11 @@
 #include "jleProfiler.h"
 #include "jleResource.h"
 #include "jleScene.h"
+#include "editor/jleImGuiCerealArchive.h"
 
 #include <cereal/archives/json.hpp>
 #include <cereal/archives/binary.hpp>
 
-#ifdef JLE_BUILD_EDITOR
-#include "editor/jleImGuiCerealArchive.h"
-#endif
 
 #include <execution>
 #include <fstream>

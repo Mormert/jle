@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jleWindowSettings.h"
 #include "jleIncludeGL.h"
 

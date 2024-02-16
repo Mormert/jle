@@ -16,14 +16,16 @@
 #ifndef JLEIMGUICEREALARCHIVE_H
 #define JLEIMGUICEREALARCHIVE_H
 
-#ifdef JLE_BUILD_EDITOR
+#include "jleBuildConfig.h"
+
+#if JLE_BUILD_EDITOR
 // The following macro only works on arithmetic types: float, int, double, etc, and std::string
 #define JLE_TOOLTIP_ARITHMETIC(TYPE, TIP, NAME) jleToolTip<TYPE>(NAME){TIP};
 #else
 #define JLE_TOOLTIP_ARITHMETIC(TYPE, TIP, NAME) TYPE NAME;
 #endif
 
-#ifdef JLE_BUILD_EDITOR
+#if JLE_BUILD_EDITOR
 
 #include "jleComponent.h"
 #include "jleEditor.h"

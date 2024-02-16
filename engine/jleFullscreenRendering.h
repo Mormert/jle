@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jleShader.h"
 #include "jleResourceRef.h"
 

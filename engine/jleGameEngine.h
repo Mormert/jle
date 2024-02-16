@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include <memory>
 #include <unordered_map>
 #include <functional>
@@ -177,8 +179,8 @@ protected:
 
     int _fps = 0;
     float _deltaTime = 0;
-    float _currentFrame = 0;
-    float _lastFrame = 0;
+    double _currentFrame = 0;
+    double _lastFrame = 0;
 
     std::unique_ptr<jlePhysics> _physics;
     std::shared_ptr<jleLuaEnvironment> _luaEnvironment;

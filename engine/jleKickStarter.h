@@ -15,7 +15,10 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "editor/jleEditor.h"
+#include "jleCommandArguments.h"
 #include "jleDynamicLogAppender.h"
 #include "jleGameEngine.h"
 #include <plog/Appenders/ColorConsoleAppender.h>
@@ -23,50 +26,73 @@
 #include <plog/Formatters/TxtFormatter.h>
 #include <plog/Init.h>
 
-template <typename T>
-void
-kickStartGame()
+class jleKickStarter
 {
-#ifdef JLE_BUILD_HEADLESS
-    LOG_VERBOSE << "Kickstarting the game in headless build (no graphics)";
-#else
-    LOG_VERBOSE << "Kickstarting the game";
-#endif
-    static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
+public:
+    template <typename T>
+    void
+    kickStartGame()
+    {
+        JLE_EXEC_IF(JLE_BUILD_HEADLESS) { LOG_VERBOSE << "Kickstarting the game in headless build (no graphics)"; }
+        else
+        {
+            LOG_VERBOSE << "Kickstarting the game";
+        }
+        static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
 
-    auto gameEngine = std::make_unique<jleGameEngine>();
-    gameEngine->setGame<T>();
-    gameEngine->run();
-}
+        auto gameEngine = std::make_unique<jleGameEngine>();
+        gameEngine->setGame<T>();
+        gameEngine->run();
+    }
 
-#ifdef JLE_BUILD_EDITOR
-template <typename T>
-void
-kickStartGameInEditor()
-{
-    LOG_VERBOSE << "Kickstarting the editor";
-    static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
+#if JLE_BUILD_EDITOR
+    template <typename T>
+    void
+    kickStartGameInEditor()
+    {
+        LOG_VERBOSE << "Kickstarting the editor";
+        static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
 
-    auto gameEngineInEditor = std::make_unique<jleEditor>();
-    gameEngineInEditor->setGame<T>();
-    gameEngineInEditor->run();
-}
+        auto gameEngineInEditor = std::make_unique<jleEditor>();
+        gameEngineInEditor->setGame<T>();
+        gameEngineInEditor->run();
+    }
 #endif // JLE_BUILD_EDITOR
 
-template <typename T>
-void
-kickStart()
-{
-    static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
+    template <typename T>
+    void
+    kickStart(int argc, char *argv[])
+    {
+        static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
 
-    // Initialize plog when kickstarting, so logging is enabled everywhere after the kickstart
-    plog::RollingFileAppender<plog::TxtFormatter> fileAppender("jle_log.plog", 100000, 5);
-    plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender; // Log to command window
-    plog::init<0>(plog::verbose, &fileAppender).addAppender(&consoleAppender).addAppender(&dynamicAppender());
-
-#ifdef JLE_BUILD_EDITOR
-    kickStartGameInEditor<T>();
-#else
-    kickStartGame<T>();
+#if JLE_BUILD_RUNTIME_CONFIGURABLE
+        jleCommandArguments arguments{argc, argv};
+        configureRuntime(arguments);
 #endif
-}
+
+        // Initialize plog when kickstarting, so logging is enabled everywhere after the kickstart
+        plog::RollingFileAppender<plog::TxtFormatter> fileAppender("jle_log.plog", 100000, 5);
+        plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender; // Log to command window
+        plog::init<0>(plog::verbose, &fileAppender).addAppender(&consoleAppender).addAppender(&dynamicAppender());
+
+        JLE_EXEC_IF(JLE_BUILD_EDITOR) { kickStartGameInEditor<T>(); }
+        else
+        {
+            kickStartGame<T>();
+        }
+    }
+
+protected:
+#if JLE_BUILD_RUNTIME_CONFIGURABLE
+    virtual void
+    configureRuntime(const jleCommandArguments &commandLineArguments)
+    {
+        if (commandLineArguments.hasArgument("-game")) {
+            JLE_BUILD_EDITOR_RUNTIME = false;
+        }
+        if (commandLineArguments.hasArgument("-headless")) {
+            JLE_BUILD_HEADLESS_RUNTIME = true;
+        }
+    }
+#endif
+};

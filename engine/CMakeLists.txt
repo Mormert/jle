@@ -77,6 +77,7 @@ add_library(engine STATIC
         "jleFullscreenRendering.cpp"
         "jleDynamicLogAppender.cpp"
         "jleShader.cpp"
+        "jleCommandArguments.cpp"
         "jleTexture.cpp"
         "jleWindow.cpp"
         "jleTransform.cpp"
@@ -160,7 +161,6 @@ if (JLE_BUILD_EDITOR)
     add_definitions(-DRMLUI_ENABLE_PROFILING)
     add_subdirectory(3rdparty/git_submodules/tracy)
     target_link_libraries(engine PUBLIC Tracy::TracyClient)
-
 endif ()
 
 # TODO: Move Assimp to be editor only

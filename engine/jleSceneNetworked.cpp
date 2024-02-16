@@ -26,7 +26,7 @@ jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneTy
                                                       const std::string &sceneName,
                                                       ENetHost *host)
 {
-#ifdef JLE_BUILD_EDITOR
+#if JLE_BUILD_IMGUI
 
     ImGui::Begin(std::string{sceneType + " for scene: " + sceneName}.c_str());
 

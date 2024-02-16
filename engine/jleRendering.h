@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include "jle3DRenderer.h"
 #include "jleCamera.h"
 #include "jleFrameBufferInterface.h"

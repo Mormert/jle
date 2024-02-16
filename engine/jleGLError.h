@@ -16,6 +16,8 @@
 #ifndef JLE_GLERROR
 #define JLE_GLERROR
 
+#include "jleBuildConfig.h"
+
 #include "jleIncludeGL.h"
 
 #include <string>

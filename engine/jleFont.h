@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include <glm/glm.hpp>
 #include <map>
 #include <memory>

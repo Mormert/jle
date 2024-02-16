@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "jleBuildConfig.h"
+
 #include <cereal/types/polymorphic.hpp>
 
 #include <array>
