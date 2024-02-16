@@ -3,8 +3,9 @@
 #include "jleKickStarter.h"
 
 int
-main()
+main(int argc, char *argv[])
 {
-    kickStart<GameTemplate>();
+    auto kickstarter = jleKickStarter{};
+    kickstarter.kickStart<GameTemplate>(argc, argv);
     return 0;
 }
