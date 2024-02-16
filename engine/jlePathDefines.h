@@ -21,7 +21,7 @@
 
 // Wrappers for paths defined in CMakeLists
 
-#if defined(JLE_BUILD_EDITOR) || !defined(NDEBUG)
+#if JLE_BUILD_EDITOR || !defined(NDEBUG)
 
 #define JLE_Q(x) #x
 #define JLE_QUOTE(x) JLE_Q(x)
@@ -36,7 +36,7 @@ static const std::string JLE_EDITOR_RESOURCES_PATH{JLE_ENGINE_PATH + "EditorReso
 static const std::string JLE_BINARY_RESOURCES_PATH{""};
 
 
-#if defined(JLE_BUILD_EDITOR) || !defined(NDEBUG)
+#if JLE_BUILD_EDITOR || !defined(NDEBUG)
 static const std::string GAME_RESOURCES_DIRECTORY{JLE_QUOTE(GAME_RESOURCES_DIRECTORY_CMAKE)};
 #else
 static std::string GAME_RESOURCES_DIRECTORY{"GameResources"};
