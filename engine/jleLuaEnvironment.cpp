@@ -48,7 +48,12 @@ jleLuaEnvironment::setupLua(sol::state &lua)
 
     setupLuaGLM(lua);
 
-    JLE_EXEC_IF(JLE_BUILD_IMGUI) { sol_ImGui::Init(lua); }
+    JLE_EXEC_IF(JLE_BUILD_IMGUI)
+    {
+#if JLE_BUILD_IMGUI
+        sol_ImGui::Init(lua);
+#endif
+    }
 
     lua.set_function("loadScript", [&](const std::string path) { loadScript(path.c_str()); });
 
