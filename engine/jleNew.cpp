@@ -16,6 +16,8 @@
 #include "jleNew.h"
 #include <Tracy.hpp>
 
+#include <cstdlib>
+
 void *
 operator new[](size_t size, const char *pName, int flags, unsigned int debugFlags, const char *file, int line)
 {
