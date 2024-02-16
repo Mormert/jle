@@ -75,7 +75,12 @@ public:
         plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender; // Log to command window
         plog::init<0>(plog::verbose, &fileAppender).addAppender(&consoleAppender).addAppender(&dynamicAppender());
 
-        JLE_EXEC_IF(JLE_BUILD_EDITOR) { kickStartGameInEditor<T>(); }
+        JLE_EXEC_IF(JLE_BUILD_EDITOR)
+        {
+#if JLE_BUILD_EDITOR
+            kickStartGameInEditor<T>();
+#endif
+        }
         else
         {
             kickStartGame<T>();
