@@ -56,6 +56,8 @@ struct jleGameEngine::jleEngineInternal {
 
 jleGameEngine::jleGameEngine()
 {
+    LOGI << "Project built on: " << __DATE__ ", at " << __TIME__;
+
     LOGI << "Initializing job system";
     wi::jobsystem::Initialize();
 
