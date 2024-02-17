@@ -157,8 +157,6 @@ jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneTy
 #endif
 }
 
-static std::vector<uint8_t> testBuffer;
-
 class jleNetworkCompression
 {
 public:
