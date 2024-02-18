@@ -68,6 +68,9 @@ private:
     jleNetworkEventOutQueue _eventsQueueToServer;
 
     std::unordered_map<int32_t, std::weak_ptr<jleObject>> _networkedObjects;
+
+    std::string _ipAddressToConnectTo{"127.0.0.1"};
+    int _portToConnectTo{314};
 };
 
 JLE_EXTERN_TEMPLATE_CEREAL_H(jleSceneClient)

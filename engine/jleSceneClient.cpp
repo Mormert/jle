@@ -73,7 +73,7 @@ jleSceneClient::updateScene(float dt)
 void
 jleSceneClient::onSceneStart()
 {
-    connectToServer();
+    connectToServer(_portToConnectTo, _ipAddressToConnectTo.c_str());
 }
 
 void
@@ -195,4 +195,9 @@ void
 jleSceneClient::serialize(Archive &archive)
 {
     archive(cereal::base_class<jleScene>(this));
+
+    try {
+        archive(CEREAL_NVP(_ipAddressToConnectTo), CEREAL_NVP(_portToConnectTo));
+    } catch (std::exception &e) {
+    }
 }

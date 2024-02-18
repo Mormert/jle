@@ -58,7 +58,7 @@ jleGameEngine::jleGameEngine()
 {
     LOGI << "Project built on: " << __DATE__ ", at " << __TIME__;
 
-    LOGI << "Initializing job system";
+    LOGI << "Initializing job system, available hardware threads: " << std::thread::hardware_concurrency();
     wi::jobsystem::Initialize();
 
     gEngine = this;
@@ -468,7 +468,7 @@ jleGameEngine::refreshDeltaTimes()
         auto now = std::chrono::system_clock::now();
         auto milliseconds_since_epoch =
             std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
-        _currentFrame = static_cast<double>(milliseconds_since_epoch);
+        _currentFrame = static_cast<double>(milliseconds_since_epoch) * 0.001f;
     }
     else
     {
