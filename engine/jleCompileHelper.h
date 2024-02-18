@@ -16,7 +16,7 @@
 #ifndef JLE_COMPILE_HELPER
 #define JLE_COMPILE_HELPER
 
-#include "jleBuildConfig.h"
+#include "jleCommon.h"
 
 // These macros are used to reduce compile times by having the serialisation function from cereal
 // only be compiled once for the archives used in jle, in one .cpp file, and not spread out across multiple.

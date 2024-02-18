@@ -112,7 +112,7 @@ jleSkinnedMesh::loadAssimpSkinnedMesh(aiMesh *assimpMesh,
             } else {
                 boneId = out_boneMapping[boneName].index;
             }
-            assert(boneId != -1);
+            jleAssert(boneId != -1);
 
             auto weights = assimpMesh->mBones[boneIndex]->mWeights;
             const int numWeights = assimpMesh->mBones[boneIndex]->mNumWeights;
@@ -120,7 +120,7 @@ jleSkinnedMesh::loadAssimpSkinnedMesh(aiMesh *assimpMesh,
             for (int weightIndex = 0; weightIndex < numWeights; weightIndex++) {
                 int vertexId = weights[weightIndex].mVertexId;
                 float weight = weights[weightIndex].mWeight;
-                assert(vertexId <= out_positions.size());
+                jleAssert(vertexId <= out_positions.size());
 
                 const auto setVertexBoneData = [&](int vertexId, int boneId, float weight) {
                     for (int i = 0; i < 4; i++) {

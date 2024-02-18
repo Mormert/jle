@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "jleBuildConfig.h"
+#include "jleCommon.h"
 
 #include "jle3DGraph.h"
 #include "jle3DSettings.h"

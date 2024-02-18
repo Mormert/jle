@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "jleBuildConfig.h"
+#include "jleCommon.h"
 
 #include <memory>
 #include <unordered_map>

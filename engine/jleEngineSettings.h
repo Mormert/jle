@@ -16,7 +16,7 @@
 #ifndef JLE_ENGINESETTINGS
 #define JLE_ENGINESETTINGS
 
-#include "jleBuildConfig.h"
+#include "jleCommon.h"
 
 #include "jleSerializedResource.h"
 #include "jleTypeReflectionUtils.h"

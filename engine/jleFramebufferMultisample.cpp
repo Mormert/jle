@@ -90,7 +90,7 @@ jleFramebufferMultisample::setSamples(unsigned int samples)
 {
     int highestSamples;
     glGetIntegerv(GL_SAMPLES, &highestSamples);
-    assert(samples < highestSamples);
+    jleAssert(samples < highestSamples);
 
     _msaaSamples = samples;
     resize(_width, _height);

@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "jleBuildConfig.h"
+#include "jleCommon.h"
 
 #if JLE_BUILD_EDITOR
 

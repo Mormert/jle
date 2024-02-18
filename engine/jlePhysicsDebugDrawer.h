@@ -16,7 +16,7 @@
 #ifndef JLE_PHYSICSDEBUGDRAWER_H
 #define JLE_PHYSICSDEBUGDRAWER_H
 
-#include "jleBuildConfig.h"
+#include "jleCommon.h"
 
 #include <LinearMath/btIDebugDraw.h>
 #include <glm/glm.hpp>

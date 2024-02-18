@@ -173,7 +173,7 @@ void
 jleObject::attachChildObject(const std::shared_ptr<jleObject> &object)
 {
     // The objects must live in the same scene
-    assert(object->_containedInScene == _containedInScene);
+    jleAssert(object->_containedInScene == _containedInScene);
     if (object->_parentObject) {
         // Remove the object from previous parent, if any
         auto it = std::find(

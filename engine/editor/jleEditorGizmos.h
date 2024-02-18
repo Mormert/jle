@@ -16,7 +16,7 @@
 #ifndef JLE_EDITORGIZMOS_H
 #define JLE_EDITORGIZMOS_H
 
-#include "jleBuildConfig.h"
+#include "jleCommon.h"
 
 #if JLE_BUILD_EDITOR
 

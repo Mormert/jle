@@ -16,7 +16,7 @@
 #ifndef JLEEDITORTEXTEDIT_H
 #define JLEEDITORTEXTEDIT_H
 
-#include "jleBuildConfig.h"
+#include "jleCommon.h"
 
 #if JLE_BUILD_EDITOR
 

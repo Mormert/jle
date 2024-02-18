@@ -81,7 +81,7 @@ cRigidbody::setWorldTransform(const btTransform &centerOfMassWorldTrans)
 std::unique_ptr<btRigidBody>
 cRigidbody::createRigidbody(bool isDynamic, btCollisionShape *shape)
 {
-    btAssert((!shape || shape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
+    jleAssert((!shape || shape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
 
     btVector3 localInertia(0, 0, 0);
     if (isDynamic) {

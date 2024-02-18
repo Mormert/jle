@@ -30,7 +30,7 @@ struct jleTransformPropagateEvent : public jleServerToClientEvent {
     execute() override
     {
         auto &scene = getSceneClient();
-        if(auto object = scene.getObjectFromNetId(netId)) {
+        if (auto object = scene.getObjectFromNetId(netId)) {
             object->getTransform().setLocalMatrix(localMatrix);
         }
     }
@@ -187,6 +187,8 @@ jleTransform::propagateMatrixChildren()
 void
 jleTransform::setLocalMatrix(const glm::mat4 &matrix)
 {
+    jleAssertOnce(!glm::isnan(matrix[0][0]) && "Matrix should not contain NaN values");
+
     _local = matrix;
     propagateMatrix();
 }
@@ -222,9 +224,10 @@ jleTransform::removeRotations()
 }
 
 void
-jleTransform::rotateTowardsPoint(const glm::vec3& position, const glm::vec3& up)
+jleTransform::rotateTowardsPoint(const glm::vec3 &position, const glm::vec3 &up)
 {
-    glm::mat4 viewMatrix = glm::lookAt(getLocalPosition(), position, up);
+    const auto &pos = getLocalPosition();
+    glm::mat4 viewMatrix = glm::lookAt(pos, position, up);
     glm::mat4 rotationMatrix = glm::inverse(viewMatrix);
     setLocalMatrix(rotationMatrix);
 }

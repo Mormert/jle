@@ -16,7 +16,7 @@
 #ifndef JLE_PHYSICS_H
 #define JLE_PHYSICS_H
 
-#include "jleBuildConfig.h"
+#include "jleCommon.h"
 
 #include <BulletCollision/BroadphaseCollision/btBroadphaseInterface.h>
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcher.h>

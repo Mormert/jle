@@ -16,7 +16,7 @@
 #ifndef JLE_TYPE_REFLECTION_UTILS
 #define JLE_TYPE_REFLECTION_UTILS
 
-#include "jleBuildConfig.h"
+#include "jleCommon.h"
 
 #include "jlePath.h"
 #include "jleResource.h"

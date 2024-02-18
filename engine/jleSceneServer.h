@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "jleBuildConfig.h"
+#include "jleCommon.h"
 
 #include "jleSceneNetworked.h"
 #include "jleNetworkEventOutQueue.h"

@@ -124,7 +124,7 @@ jleAnimation::readBonesFromMesh(const aiAnimation *animation, const aiMesh *mesh
 void
 jleAnimation::readHierarchyData(jleAnimationNode &dest, aiNode *src)
 {
-    assert(src);
+    jleAssert(src);
 
     dest.name = src->mName.C_Str();
     dest.transformation = glm::transpose(glm::make_mat4(&src->mTransformation.a1));

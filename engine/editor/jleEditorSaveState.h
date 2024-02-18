@@ -16,7 +16,7 @@
 #ifndef JLE_EDITORSAVESTATE
 #define JLE_EDITORSAVESTATE
 
-#include "jleBuildConfig.h"
+#include "jleCommon.h"
 
 #include "jleSerializedResource.h"
 #include "jleTypeReflectionUtils.h"

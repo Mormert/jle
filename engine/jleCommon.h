@@ -13,38 +13,12 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#ifndef JLE_LUASCRIPTCOMPONENT_H
-#define JLE_LUASCRIPTCOMPONENT_H
+#ifndef JLE_COMMON_H
+#define JLE_COMMON_H
 
-#include "jleCommon.h"
+#include "jleBuildConfig.h"
+#include "jleAssert.h"
 
-#include "jleLuaScript.h"
+#include <plog/Log.h>
 
-#define SOL_ALL_SAFETIES_ON 1
-#include <sol2/sol.hpp>
-
-class jleLuaScriptComponent : public jleLuaScript
-{
-public:
-    JLE_REGISTER_RESOURCE_TYPE(jleLuaScriptComponent, "lua");
-
-    void setupLua(sol::table &self, jleObject *ownerObject);
-
-    void loadScript() override;
-
-    void startLua(sol::table &self);
-    void updateLua(sol::table &self, float dt);
-    void onDestroyLua(sol::table &self);
-
-private:
-    sol::protected_function _setupLua;
-    sol::protected_function _startLua;
-    sol::protected_function _updateLua;
-    sol::protected_function _onDestroyLua;
-
-};
-
-CEREAL_REGISTER_TYPE(jleLuaScriptComponent)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleLuaScript, jleLuaScriptComponent)
-
-#endif // JLE_LUASCRIPTCOMPONENT_H
+#endif //JLE_COMMON_H

@@ -33,8 +33,8 @@ jleFramebufferInterface::~jleFramebufferInterface()
 void
 jleFramebufferInterface::blitToOther(jleFramebufferInterface &framebuffer, bool includeDepth)
 {
-    assert(width() == framebuffer.width());
-    assert(height() == framebuffer.height());
+    jleAssert(width() == framebuffer.width());
+    jleAssert(height() == framebuffer.height());
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, _framebuffer);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer._framebuffer);
@@ -80,7 +80,7 @@ unsigned int
 jleFramebufferInterface::texture() const
 {
     // Note: the framebuffer doesn't have to keep a texture!
-    assert(_texture > 0);
+    jleAssert(_texture > 0);
     return _texture;
 }
 
