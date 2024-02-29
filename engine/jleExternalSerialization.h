@@ -71,4 +71,56 @@ namespace glm{
     }
 }
 
+// clang-format on
+
+// Lua / Sol2
+
+#include <sol2/sol.hpp>
+
+namespace sol
+{
+template <class Archive>
+void
+save(Archive &archive, const sol::table &luaTable)
+{
+    for (auto &pair : luaTable) {
+        auto keyType = pair.first.get_type();
+        auto valueType = pair.second.get_type();
+
+        std::string key;
+        if (keyType == sol::type::string) {
+            key = pair.first.as<std::string>();
+        } else if (keyType == sol::type::number) {
+            key = std::to_string(pair.first.as<int>());
+        }
+
+        switch (valueType) {
+        case sol::type::table: {
+            sol::table innerTable = pair.second.as<sol::table>();
+            archive(cereal::make_nvp(key, innerTable));
+            break;
+        }
+        case sol::type::string: {
+            std::string str = pair.second.as<std::string>();
+            archive(cereal::make_nvp(key, str));
+            break;
+        }
+        case sol::type::number: {
+            double number = pair.second.as<double>();
+            archive(cereal::make_nvp(key, number));
+            break;
+        }
+        }
+    }
+}
+
+template <class Archive>
+void
+load(Archive &archive, sol::table &luaTable)
+{
+    // Currently not supporting loading of lua tables from archive
+}
+
+} // namespace sol
+
 #endif // JLE_EXTERNALSERIALIZATION_H

@@ -87,7 +87,8 @@ jleLuaScriptComponent::loadScript()
     auto &lua = _luaEnvironment->getState();
 
     try {
-        lua.script(_sourceCode);
+        const auto absoluteSrcCodePath = path.getRealPath();
+        lua.script(_sourceCode, absoluteSrcCodePath);
 
         auto setup = lua[_luaScriptName]["setup"];
         auto start = lua[_luaScriptName]["start"];
@@ -95,25 +96,25 @@ jleLuaScriptComponent::loadScript()
         auto onDestroy = lua[_luaScriptName]["onDestroy"];
 
         if (!setup.valid() || !setup.is<sol::function>()) {
-            LOGE << "Expected " + _luaScriptName + ".setup function was not found!";
+            LOGE << "Expected " + _luaScriptName + ".setup() function was not found!";
             faultyState = true;
             return;
         }
 
         if (!start.valid() || !start.is<sol::function>()) {
-            LOGE << "Expected " + _luaScriptName + ".start function was not found!";
+            LOGE << "Expected " + _luaScriptName + ".start(self) function was not found!";
             faultyState = true;
             return;
         }
 
         if (!update.valid() || !update.is<sol::function>()) {
-            LOGE << "Expected " + _luaScriptName + ".update function was not found!";
+            LOGE << "Expected " + _luaScriptName + ".update(self, dt) function was not found!";
             faultyState = true;
             return;
         }
 
         if (!onDestroy.valid() || !onDestroy.is<sol::function>()) {
-            LOGE << "Expected " + _luaScriptName + ".onDestroy function was not found!";
+            LOGE << "Expected " + _luaScriptName + ".onDestroy(self) function was not found!";
             faultyState = true;
             return;
         }

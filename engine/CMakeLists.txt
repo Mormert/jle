@@ -184,6 +184,8 @@ target_link_libraries(engine PUBLIC zlib)
 add_subdirectory(3rdparty/lua)
 target_link_libraries(engine PUBLIC vanilla_lua)
 
+add_subdirectory(3rdparty/luasocket)
+
 if (NOT JLE_BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()
 
     target_link_libraries(engine PUBLIC ${CMAKE_DL_LIBS})

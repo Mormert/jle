@@ -41,7 +41,8 @@ void
 jleLuaScript::loadScript()
 {
     try {
-        _luaEnvironment->getState().script(_sourceCode);
+        const auto absoluteSrcCodePath = path.getRealPath();
+        _luaEnvironment->getState().script(_sourceCode, absoluteSrcCodePath);
         faultyState = false;
     } catch (std::exception &e) {
         LOGE << "Loading script failed: " << e.what();
