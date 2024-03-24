@@ -26,7 +26,7 @@
 #include "ImGui/sol_ImGui.h"
 #endif
 
-jleLuaEnvironment::jleLuaEnvironment()
+jleLuaEnvironment::jleLuaEnvironment() : _scriptFilesWatcher({jlePath{"GR:/scripts"}.getRealPath()}, true, false, false)
 {
     _luaState = sol::state{};
     setupLua(_luaState);
@@ -500,6 +500,19 @@ jleLuaEnvironment::getState()
 }
 
 void
+jleLuaEnvironment::setupScriptLoader()
+{
+    _scriptFilesWatcher.setNotifyAddedCallback([&](const jlePath &path) {
+        if (path.getFileEnding() == "lua") {
+            loadScript(path);
+        }
+    });
+
+    // Load all Lua scripts is the to-be-watched folder
+    _scriptFilesWatcher.periodicSweep();
+}
+
+void
 jleLuaEnvironment::loadScript(const jlePath &path)
 {
     // Loads script and it will be placed in resource holder
@@ -522,3 +535,18 @@ jleLuaEnvironment::loadedScripts()
 {
     return _loadedScripts;
 }
+
+std::unordered_map<std::string, jleLuaClass> &
+jleLuaEnvironment::loadedLuaClasses()
+{
+    return _loadedLuaClasses;
+}
+
+#if JLE_BUILD_EDITOR
+void
+jleLuaEnvironment::loadNewlyAddedScripts()
+{
+    _scriptFilesWatcher.periodicSweepThreaded();
+}
+
+#endif

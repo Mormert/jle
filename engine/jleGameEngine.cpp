@@ -93,6 +93,7 @@ jleGameEngine::jleGameEngine()
 
     LOG_INFO << "Starting the lua environment";
     _luaEnvironment = std::make_unique<jleLuaEnvironment>();
+    _luaEnvironment->setupScriptLoader();
 
     _timerManager = std::make_unique<jleTimerManager>();
 

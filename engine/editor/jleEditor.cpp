@@ -383,7 +383,8 @@ jleEditor::updateEditorLoadedScenes(float dt)
 void
 jleEditor::update(float dt)
 {
-    _fileIndexer->periodicSweep();
+    _fileIndexer->periodicSweepThreaded();
+    _luaEnvironment->loadNewlyAddedScripts();
     jleGameEngine::update(dt);
     if (isGameKilled()) {
         JLE_SCOPE_PROFILE_CPU(updateEditorLoadedScenes)

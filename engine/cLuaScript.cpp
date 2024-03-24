@@ -17,11 +17,6 @@
 #include "jleGameEngine.h"
 #include "jleLuaEnvironment.h"
 
-#if JLE_BUILD_EDITOR
-#include "editor/jleImGuiExtensions.h"
-#include "editor/jleEditor.h"
-#endif
-
 #if JLE_BUILD_IMGUI
 #include <ImGui/imgui.h>
 #endif
@@ -31,48 +26,32 @@ JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLuaScript)
 void
 cLuaScript::start()
 {
-    if (!_scriptRef) {
-        LOGE << "Can't start script since there is a reference issue";
-        runUpdate = false;
-        return;
+    if (!_isInitialized) {
+        initializeLuaComponent();
     }
-
-    _scriptRef->setupLua(_self, _attachedToObject);
-
-    if (!_specializationScript.empty()) {
-        sol::load_result fx = gEngine->luaEnvironment()->getState().load(_specializationScript);
-        if (!fx.valid()) {
-            sol::error err = fx;
-            LOGE << "Failed to load specialization script for " << _attachedToObject->instanceName() << ": "
-                 << err.what();
-        }
-
-        fx(_self);
-    }
-
-    _scriptRef->startLua(_self);
 }
 
 void
 cLuaScript::update(float dt)
 {
-    if (runUpdate) {
-        try {
-            _scriptRef->updateLua(_self, dt);
-        } catch (std::exception &e) {
-            LOGE << "Error running lua update: " << e.what();
-            runUpdate = false;
-        }
+    const auto luaClass = gEngine->luaEnvironment()->getState()[_luaClass.luaClassName];
+
+    try {
+        sol::protected_function updateFunc = luaClass["update"];
+        updateFunc(_self, dt);
+    } catch (std::exception &e) {
+        LOGE << "Error running lua update: " << e.what();
     }
 }
 
 void
 cLuaScript::onDestroy()
 {
+    const auto luaClass = gEngine->luaEnvironment()->getState()[_luaClass.luaClassName];
+
     try {
-        if (_scriptRef) {
-            _scriptRef->onDestroyLua(_self);
-        }
+        sol::protected_function destroyFunc = luaClass["destroy"];
+        destroyFunc(_self);
     } catch (std::exception &e) {
         LOGE << "Error running lua destroy: " << e.what();
     }
@@ -85,31 +64,46 @@ cLuaScript::getSelf()
 }
 
 void
-cLuaScript::editorInspectorImGuiRender()
+cLuaScript::initializeLuaComponent()
 {
-#if JLE_BUILD_IMGUI
-    if (!gEngine->isGameKilled()) {
+    const auto luaClass = gEngine->luaEnvironment()->getState()[_luaClass.luaClassName];
 
-        ImGui::BeginGroupPanel("Lua Variables");
+    gEngine->luaEnvironment()->loadedLuaClasses()[_luaClass.luaClassName];
 
-        try {
-            sol::protected_function f = gEditor->luaEnvironment()->getState()["luaEditor"]["tableImGui"];
-            if (f.valid()) {
-                auto res = f(getSelf());
-                if (!res.valid()) {
-                    sol::error err = res;
-                    ImGui::Text("Lua Error: %s", err.what());
-                }
-            }
-        } catch (std::exception &e) {
-            ImGui::Text("Lua Error: %s", e.what());
+    try{
+        sol::protected_function classConstructor = luaClass["new"];
+        if (classConstructor.valid()) {
+            _self = classConstructor(luaClass);
+            _self["object"] = object();
+
+            _isInitialized = true;
+        } else {
+            LOGE << "Failed to initialize Lua class component on cLuaScript " << _luaClass.luaClassName;
+            _isInitialized = false;
+        }
+    }catch(std::exception&e){
+        LOGE << "Failed to initialize Lua class component on cLuaScript " << _luaClass.luaClassName << " reason: " << e.what();
+        _isInitialized = false;
+    }
+
+}
+
+template <class Archive>
+void
+cLuaScript::serialize(Archive &ar)
+{
+    try {
+        ar(CEREAL_NVP(_luaClass));
+
+        if (!_isInitialized) {
+            initializeLuaComponent();
         }
 
-        ImGui::EndGroupPanel();
-
-    }else
-    {
-        ImGui::Text("Start the game to see Lua variables");
+        auto it = gEngine->luaEnvironment()->loadedLuaClasses().find(_luaClass.luaClassName);
+        if (it != gEngine->luaEnvironment()->loadedLuaClasses().end()) {
+            it->second.serializeClass(ar, _self);
+        }
+    } catch (std::exception &e) {
+        LOGE << "Failed to serialize cLuaScript";
     }
-#endif
 }

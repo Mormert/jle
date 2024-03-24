@@ -15,47 +15,18 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include <string>
 
-#include "jleLuaClass.h"
-#include "jlePath.h"
-
-#define SOL_ALL_SAFETIES_ON 1
-#include <sol2/sol.hpp>
-
-class jleLuaScript;
-
-class jleLuaEnvironment
+class jleLuaClassSerialization
 {
 public:
-    jleLuaEnvironment();
+    template <class Archive>
+    std::string save_minimal( Archive const & ) const
+    { return luaClassName; }
 
-    void loadScript(const jlePath& path);
+    template <class Archive>
+    void load_minimal( Archive const &, std::string const & value )
+    { luaClassName = value; }
 
-    void executeScript(const char* script);
-
-    [[nodiscard]] sol::state& getState();
-
-    void setupScriptLoader();
-
-    std::unordered_map<jlePath, std::shared_ptr<jleLuaScript>>& loadedScripts();
-
-    std::unordered_map<std::string, jleLuaClass>& loadedLuaClasses();
-
-#if JLE_BUILD_EDITOR
-    void loadNewlyAddedScripts();
-#endif
-
-private:
-    void setupLua(sol::state& lua);
-
-    void setupLuaGLM(sol::state& lua);
-
-    jleFileIndexer _scriptFilesWatcher;
-
-    std::unordered_map<std::string, jleLuaClass> _loadedLuaClasses;
-
-    std::unordered_map<jlePath, std::shared_ptr<jleLuaScript>> _loadedScripts;
-
-    sol::state _luaState;
+    std::string luaClassName;
 };

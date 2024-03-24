@@ -44,6 +44,14 @@ jleLuaScript::loadScript()
         const auto absoluteSrcCodePath = path.getRealPath();
         _luaEnvironment->getState().script(_sourceCode, absoluteSrcCodePath);
         faultyState = false;
+
+        const auto classes = jleLuaClass::getLuaClassesFromLuaSrc(path, _sourceCode);
+
+        for (auto &c : classes) {
+            const auto &className = c.getClassName();
+            _luaEnvironment->loadedLuaClasses()[className] = c;
+        }
+
     } catch (std::exception &e) {
         LOGE << "Loading script failed: " << e.what();
         faultyState = true;

@@ -16,13 +16,15 @@
 #ifndef JLE_FILECHANGENOTIFIER_H
 #define JLE_FILECHANGENOTIFIER_H
 
-#include "jleBuildConfig.h"
+#include "jleCommon.h"
 
 #include "jleGameEngine.h"
 #include "jlePath.h"
+
+#include <plog/Log.h>
+
 #include <chrono>
 #include <filesystem>
-#include <plog/Log.h>
 #include <string>
 #include <vector>
 
@@ -30,10 +32,17 @@
 #include "jleSTL/jleVectorMap.h"
 #include "jleSTL/jleVectorSet.h"
 
+#include <WickedEngine/wiJobSystem.h>
+
 class jleFileIndexer
 {
 public:
-    explicit jleFileIndexer(const std::vector<std::string> &directories);
+    explicit jleFileIndexer(const std::vector<std::string> &directories,
+                            bool notifyAdd = true,
+                            bool notifyMod = true,
+                            bool notifyErase = true);
+
+    void periodicSweepThreaded();
 
     void periodicSweep();
 
@@ -45,6 +54,10 @@ public:
 
     const jleVectorSet<jlePath> *getIndexedFilesPtr(const jleString &extension);
 
+    void setNotifyAddedCallback(std::function<void(const jlePath &)> callback);
+    void setNotifyModificationCallback(std::function<void(const jlePath &)> callback);
+    void setNotifyEraseCallback(std::function<void(const jlePath &)> callback);
+
 private:
     void sweep(std::vector<jlePath> &erased, std::vector<jlePath> &added, std::vector<jlePath> &modified);
 
@@ -54,11 +67,26 @@ private:
 
     void notifyErase(const jlePath &path);
 
+    bool _notifyAdd;
+    bool _notifyModify;
+    bool _notifyErase;
+
+    std::function<void(const jlePath &)> _notifyAddedCallback;
+    std::function<void(const jlePath &)> _notifyModificationCallback;
+    std::function<void(const jlePath &)> _notifyEraseCallback;
+
     std::vector<std::string> _directories;
 
     jleVectorSet<jlePath> _indexedFiles;
 
     jleVectorMap<jleString, jleVectorSet<jlePath>> _indexedFilesWithExtension;
+
+    std::vector<jlePath> _erased;
+    std::vector<jlePath> _added;
+    std::vector<jlePath> _modified;
+    wi::jobsystem::context _sweepingCtx;
+
+    std::unordered_map<std::string, std::filesystem::file_time_type> _pathsMonitored;
 };
 
 #endif // JLE_FILECHANGENOTIFIER_H

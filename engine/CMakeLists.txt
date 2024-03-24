@@ -90,6 +90,7 @@ add_library(engine STATIC
         "jle3DRenderer.cpp"
         "jle3DGraph.cpp"
         "cCameraFPV.cpp"
+        "jleLuaClass.cpp"
         "jleMesh.cpp"
         "cMesh.cpp"
         "jleSkybox.cpp"
@@ -103,7 +104,6 @@ add_library(engine STATIC
         "cRigidbody.cpp"
         "cLuaScript.cpp"
         "jleLuaScript.cpp"
-        "jleLuaScriptComponent.cpp"
         "jleFileIndexer.cpp"
         "jleLuaEnvironment.cpp"
         "jleGLError.cpp"
@@ -121,6 +121,7 @@ add_library(engine STATIC
 if (JLE_BUILD_EDITOR)
     target_sources(engine PRIVATE
             "editor/jleEditor.cpp"
+            "editor/jleImGuiCerealArchive.cpp"
             "editor/jleEditorResourceViewer.cpp"
             "editor/jleEditorResourceViewer.cpp"
             "editor/jleEditorSettingsWindow.cpp"

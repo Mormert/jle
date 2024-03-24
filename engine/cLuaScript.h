@@ -18,20 +18,16 @@
 #include "jleBuildConfig.h"
 
 #include "jleComponent.h"
-#include "jleLuaScriptComponent.h"
+#include "jleLuaClassSerialization.h"
+#include "jleLuaScript.h"
 #include "jleResourceRef.h"
 
 class cLuaScript : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cLuaScript)
 public:
-
     template <class Archive>
-    void
-    serialize(Archive &ar)
-    {
-        ar( CEREAL_NVP(_scriptRef), CEREAL_NVP(_specializationScript));
-    }
+    void serialize(Archive &ar);
 
     void start() override;
 
@@ -39,23 +35,18 @@ public:
 
     void onDestroy() override;
 
-    sol::table& getSelf();
-
-    bool runUpdate = true;
-
-    void editorInspectorImGuiRender() override;
+    sol::table &getSelf();
 
 private:
-    jleResourceRef<jleLuaScriptComponent> _scriptRef;
-    std::string _specializationScript = "local self = ...;\n";
-    sol::table _self;
+    void initializeLuaComponent();
+    bool _isInitialized{false};
 
-    std::function<void(sol::table, float)> _updateLua;
-    std::function<void(sol::table)> _onDestroyLua;
+    jleLuaClassSerialization _luaClass;
+
+    sol::table _self;
 };
 
 JLE_EXTERN_TEMPLATE_CEREAL_H(cLuaScript)
-
 
 CEREAL_REGISTER_TYPE(cLuaScript)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cLuaScript)
