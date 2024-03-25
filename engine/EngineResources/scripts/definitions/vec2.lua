@@ -1,6 +1,8 @@
 ---@meta
 
 ---@class vec2
+---@field x number
+---@field y number
 vec2 = {}
 
 ---@param x number

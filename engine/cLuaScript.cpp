@@ -74,7 +74,7 @@ cLuaScript::initializeLuaComponent()
         sol::protected_function classConstructor = luaClass["new"];
         if (classConstructor.valid()) {
             _self = classConstructor(luaClass);
-            _self["object"] = object();
+            _self.set_function("getObject", [&]() { return object(); });
 
             _isInitialized = true;
         } else {
@@ -86,6 +86,31 @@ cLuaScript::initializeLuaComponent()
         _isInitialized = false;
     }
 
+}
+
+namespace {
+    void deep_copy(sol::state& lua, const sol::table& src, sol::table& dest) {
+        if (src.is<sol::table>()) {
+            sol::table src_table = src;
+            for (auto const& kv_pair : src_table) {
+                sol::object key = kv_pair.first;
+                sol::object value = kv_pair.second;
+                if (value.is<sol::table>()) {
+                    sol::table nested_dest_table = lua.create_table();
+                    deep_copy(lua, value, nested_dest_table);
+                    dest[key] = nested_dest_table;
+                } else {
+                    dest[key] = value;
+                }
+            }
+        }
+    }
+}
+
+cLuaScript::cLuaScript(const cLuaScript &other) {
+    _luaClass = other._luaClass;
+    initializeLuaComponent();
+    deep_copy(gEngine->luaEnvironment()->getState(), other._self, _self);
 }
 
 template <class Archive>

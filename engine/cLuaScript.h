@@ -26,6 +26,11 @@ class cLuaScript : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cLuaScript)
 public:
+    cLuaScript() = default;
+
+    // Called when cloned/duplicated
+    cLuaScript(const cLuaScript &other);
+
     template <class Archive>
     void serialize(Archive &ar);
 

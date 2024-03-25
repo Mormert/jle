@@ -1,6 +1,10 @@
 ---@meta
 
 ---@class vec4
+---@field x number
+---@field y number
+---@field z number
+---@field w number
 vec4 = {}
 
 ---@param x number

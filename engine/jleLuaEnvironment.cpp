@@ -84,21 +84,21 @@ jleLuaEnvironment::setupLua(sol::state &lua)
                      [&](int key) { return gEngine->input().keyboard->keyReleased(static_cast<jleKey>(key)); });
 
     lua.new_usertype<jleTransform>("jleTransform",
-                                   "localPos",
+                                   "getLocalPosition",
                                    &jleTransform::getLocalPosition,
-                                   "worldPos",
+                                   "getWorldPosition",
                                    &jleTransform::getWorldPosition,
-                                   "setLocalPos",
+                                   "setLocalPosition",
                                    &jleTransform::setLocalPosition,
-                                   "setWorldPos",
+                                   "setWorldPosition",
                                    &jleTransform::setWorldPosition,
-                                   "worldMatrix",
+                                   "getWorldMatrix",
                                    &jleTransform::getWorldMatrix,
-                                   "localMatrix",
+                                   "getLocalMatrix",
                                    &jleTransform::getLocalMatrix,
-                                   "forward",
+                                   "getForward",
                                    &jleTransform::getForward,
-                                   "setWorldMat",
+                                   "setWorldMatrix",
                                    &jleTransform::setWorldMatrix);
 
     lua.new_usertype<jleObject>(
