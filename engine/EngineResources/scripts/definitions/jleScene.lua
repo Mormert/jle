@@ -1,15 +1,14 @@
 ---@meta
 
 ---@class jleScene
+---@field name string
 jleScene = {}
 
----@return string
-function jleScene.name() end
-
 ---@return jleObject
-function jleScene.spawnObjectWithName() end
+---@param name string
+function jleScene:spawnObjectWithName(name) end
 
-function jleScene.destroy() end
+function jleScene:destroy() end
 
 ---@return table
-function jleScene.objects() end
+function jleScene:objects() end

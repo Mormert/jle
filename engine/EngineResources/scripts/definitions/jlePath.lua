@@ -16,22 +16,22 @@ function jlePath.new(path) end
 function jlePath.new(path, isVirtual) end
 
 ---@return string
-function jlePath.getPathVirtualDrive() end
+function jlePath:getPathVirtualDrive() end
 
 ---@return string
-function jlePath.getVirtualPathConst() end
+function jlePath:getVirtualPathConst() end
 
 ---@return string
-function jlePath.getRealPathConst() end
+function jlePath:getRealPathConst() end
 
 ---@return boolean
-function jlePath.isEmpty() end
+function jlePath:isEmpty() end
 
 ---@return string
-function jlePath.getFileEnding() end
+function jlePath:getFileEnding() end
 
 ---@return string
-function jlePath.getFileNameNoEnding() end
+function jlePath:getFileNameNoEnding() end
 
 ---@return string
 function jlePath.__tostring() end

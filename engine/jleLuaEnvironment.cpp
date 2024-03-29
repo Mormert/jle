@@ -20,6 +20,7 @@
 #include "jleObject.h"
 #include "jlePath.h"
 #include "jleResourceRef.h"
+#include "jlePathDefines.h"
 #include <glm/ext/matrix_transform.hpp>
 
 #if JLE_BUILD_IMGUI
@@ -55,7 +56,11 @@ jleLuaEnvironment::setupLua(sol::state &lua)
 #endif
     }
 
-    lua.set_function("loadScript", [&](const std::string path) { loadScript(path.c_str()); });
+    lua["JLE_ENGINE_RESOURCES_PATH"] = JLE_ENGINE_RESOURCES_PATH;
+    lua["JLE_EDITOR_RESOURCES_PATH"] = JLE_EDITOR_RESOURCES_PATH;
+
+    auto scriptLoadingTable = lua.create_named_table("ScriptEnv");
+    scriptLoadingTable.set_function("loadScript", [&](const std::string path) { loadScript(path.c_str()); });
 
     lua.new_usertype<jlePath>(
         "jlePath",
@@ -75,13 +80,23 @@ jleLuaEnvironment::setupLua(sol::state &lua)
         sol::meta_function::to_string,
         &jlePath::getVirtualPathConst);
 
-    lua.set_function("keyDown", [&](int key) { return gEngine->input().keyboard->keyDown(static_cast<jleKey>(key)); });
+    auto inputTable = lua.create_named_table("Input");
 
-    lua.set_function("keyPressed",
-                     [&](int key) { return gEngine->input().keyboard->keyPressed(static_cast<jleKey>(key)); });
+    inputTable.set_function("keyDown",
+                            [&](int key) { return gEngine->input().keyboard->keyDown(static_cast<jleKey>(key)); });
+    inputTable.set_function("keyPressed",
+                            [&](int key) { return gEngine->input().keyboard->keyPressed(static_cast<jleKey>(key)); });
+    inputTable.set_function("keyReleased",
+                            [&](int key) { return gEngine->input().keyboard->keyReleased(static_cast<jleKey>(key)); });
 
-    lua.set_function("keyReleased",
-                     [&](int key) { return gEngine->input().keyboard->keyReleased(static_cast<jleKey>(key)); });
+    inputTable.set_function("mouseX", [&]() { return gEngine->input().mouse->mouseX(); });
+    inputTable.set_function("mouseY", [&]() { return gEngine->input().mouse->mouseY(); });
+    inputTable.set_function("mouseScrollX", [&]() { return gEngine->input().mouse->scrollX(); });
+    inputTable.set_function("mouseScrollY", [&]() { return gEngine->input().mouse->scrollY(); });
+    inputTable.set_function("mouseDeltaX", [&]() { return gEngine->input().mouse->xDelta(); });
+    inputTable.set_function("mouseDeltaY", [&]() { return gEngine->input().mouse->yDelta(); });
+    inputTable.set_function(
+        "mouseClick", [&](int button) { return gEngine->input().mouse->mouseClick(static_cast<jleButton>(button)); });
 
     lua.new_usertype<jleTransform>("jleTransform",
                                    "getLocalPosition",
@@ -134,7 +149,6 @@ jleLuaEnvironment::setupLua(sol::state &lua)
 
     lua.set_function("LOGE", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::error)) {
-            ;
         } else
             (*plog::get<0>()) += plog::Record(plog::error, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
                                  << s;
@@ -142,7 +156,6 @@ jleLuaEnvironment::setupLua(sol::state &lua)
 
     lua.set_function("LOGF", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::fatal)) {
-            ;
         } else
             (*plog::get<0>()) += plog::Record(plog::fatal, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
                                  << s;
@@ -150,21 +163,18 @@ jleLuaEnvironment::setupLua(sol::state &lua)
 
     lua.set_function("LOGI", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::info)) {
-            ;
         } else
             (*plog::get<0>()) += plog::Record(plog::info, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
                                  << s;
     });
     lua.set_function("LOGW", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::warning)) {
-            ;
         } else
             (*plog::get<0>()) += plog::Record(plog::warning, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
                                  << s;
     });
     lua.set_function("LOGV", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::verbose)) {
-            ;
         } else
             (*plog::get<0>()) += plog::Record(plog::verbose, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
                                  << s;
