@@ -34,6 +34,15 @@ cLuaScript::start()
     jleTransform *trans = &obj->getTransform();
     _self["object"] = obj;
     _self["transform"] = trans;
+
+    const auto luaClass = gEngine->luaEnvironment()->getState()[_luaClass.luaClassName];
+
+    try {
+        sol::protected_function startFunc = luaClass["start"];
+        startFunc(_self);
+    } catch (std::exception &e) {
+        LOGE << "Error running lua start: " << e.what();
+    }
 }
 
 void

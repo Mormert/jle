@@ -71,7 +71,7 @@ public:
 
     void editorUpdate(float dt) override;
 
-    void registerLua(sol::state& lua, sol::table &table) override;
+    void registerLua(sol::state& lua) override;
 
     void calculateBoneTransform(const jleAnimationNode& node, const glm::mat4& parentTransform, cAnimatorAnimation& animation);
 

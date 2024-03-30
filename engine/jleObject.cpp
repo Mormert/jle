@@ -540,10 +540,6 @@ jleObject::addComponentStart(const std::shared_ptr<jleComponent> &c)
 {
     if (!gEngine->isGameKilled()) {
 
-        if (auto luaComponent = getComponent<cLuaScript>()) {
-            c->registerSelfLua(luaComponent->getSelf());
-        }
-
         if (networkObjectType() == jleObjectNetworkType::SERVER) {
             c->serverStart();
 

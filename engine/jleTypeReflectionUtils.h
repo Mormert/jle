@@ -45,7 +45,10 @@ private:
                                                                                                                        \
 public:                                                                                                                \
     std::shared_ptr<jleComponent> clone() const override { return std::make_shared<component_name>(*this); }           \
-    void registerSelfLua(sol::table &self) override { self[componentName()] = this; }                                  \
+    virtual void registerLuaComponentFunctions(sol::usertype<jleObject> &luaObjType)                                   \
+    {                                                                                                                  \
+        registerLuaComponentFunctions_Impl<component_name>(luaObjType);                                                \
+    }                                                                                                                  \
                                                                                                                        \
 private:
 
@@ -70,9 +73,7 @@ public:                                                                         
     }
 
 class jleObject;
-
 class jleComponent;
-
 class jleResourceInterface;
 
 class jleTypeReflectionUtils

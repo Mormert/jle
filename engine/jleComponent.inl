@@ -15,3 +15,14 @@
 
 #include "jleComponent.h"
 #include "jleObject.h"
+
+template <typename T>
+void
+jleComponent::registerLuaComponentFunctions_Impl(sol::usertype<jleObject> &luaObjType)
+{
+    std::string addComp = "addComponent_" + std::string{componentName()};
+    luaObjType.set_function(addComp.c_str(), [](jleObject &o) { return o.addComponent<T>(); });
+
+    std::string getComp = "getComponent_" + std::string{componentName()};
+    luaObjType.set_function(getComp.c_str(), [](jleObject &o) { return o.getComponent<T>(); });
+}

@@ -11,10 +11,6 @@ jleObject = {}
 ---@return jleTransform
 function jleObject:transform() end
 
----@param componentName string
----@return boolean
-function jleObject:addComponent(componentName) end
-
 ---@return jleObject
 function jleObject:duplicate() end
 

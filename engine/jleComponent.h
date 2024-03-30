@@ -44,8 +44,6 @@ public:
 
     [[nodiscard]] virtual std::shared_ptr<jleComponent> clone() const = 0;
 
-    virtual void registerSelfLua(sol::table &self) = 0;
-
     template <class Archive>
     void
     serialize(Archive &archive)
@@ -113,18 +111,13 @@ public:
     {
     }
 
-    virtual void
-    registerLua(sol::state &lua, sol::table &table)
-    {
-    }
-
     void syncServerToClient();
 
     void destroy();
 
     bool isDestroyed();
 
-    virtual const std::string_view componentName() const = 0;
+    [[nodiscard]] virtual const std::string_view componentName() const = 0;
 
     jleTransform &getTransform();
 
@@ -139,6 +132,19 @@ public:
 protected:
     friend class jleObject;
     friend class jleScene;
+    friend class jleLuaEnvironment;
+
+    virtual void
+    registerLua(sol::state &lua)
+    {
+    }
+
+    template <typename T>
+    void registerLuaComponentFunctions_Impl(sol::usertype<jleObject>& luaObjType);
+
+    virtual void registerLuaComponentFunctions(sol::usertype<jleObject>& luaObjType)
+    {
+    }
 
     // The object that owns this component
     jleObject *_attachedToObject{};

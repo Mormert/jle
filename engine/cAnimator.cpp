@@ -128,7 +128,7 @@ cAnimator::editorUpdate(float dt)
 }
 
 void
-cAnimator::registerLua(sol::state &lua, sol::table &table)
+cAnimator::registerLua(sol::state &lua)
 {
     lua.new_usertype<cAnimator>("cAnimator", sol::base_classes, sol::bases<jleComponent>(), "setAnimation", &cAnimator::setAnimation);
 }

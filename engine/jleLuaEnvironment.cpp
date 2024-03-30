@@ -19,8 +19,8 @@
 #include "jleLuaScript.h"
 #include "jleObject.h"
 #include "jlePath.h"
-#include "jleResourceRef.h"
 #include "jlePathDefines.h"
+#include "jleResourceRef.h"
 #include <glm/ext/matrix_transform.hpp>
 
 #if JLE_BUILD_IMGUI
@@ -116,14 +116,12 @@ jleLuaEnvironment::setupLua(sol::state &lua)
                                    "setWorldMatrix",
                                    &jleTransform::setWorldMatrix);
 
-    lua.new_usertype<jleObject>(
+    sol::usertype<jleObject> jleObjectType = lua.new_usertype<jleObject>(
         "jleObject",
         "name",
         &jleObject::_instanceName,
         "transform",
         &jleObject::getTransform,
-        "addComponent",
-        &jleObject::addComponentByName,
         "duplicate",
         [](jleObject &object) { return object.duplicate().get(); },
         "destroy",
@@ -136,6 +134,15 @@ jleLuaEnvironment::setupLua(sol::state &lua)
         sol::readonly(&jleObject::_instanceID),
         "scene",
         sol::readonly(&jleObject::_containedInScene));
+
+    for (auto &c : jleTypeReflectionUtils::registeredComponentsRef()) {
+        auto instance = c.second();
+        instance->registerLuaComponentFunctions(jleObjectType);
+        instance->registerLua(lua);
+    }
+
+    lua.new_usertype<jleComponent>(
+        "jleComponent", "destroy", &jleComponent::destroy, "isDestroyed", &jleComponent::isDestroyed);
 
     lua.new_usertype<jleScene>("jleScene",
                                "name",
@@ -186,12 +193,6 @@ jleLuaEnvironment::setupLua(sol::state &lua)
         lua.script("function print(s)\n"
                    "    LOGV(tostring(s));\n"
                    "end");
-    }
-
-    for (auto &c : jleTypeReflectionUtils::registeredComponentsRef()) {
-        auto instance = c.second();
-        auto table = lua.create_table(c.first);
-        instance->registerLua(lua, table);
     }
 }
 

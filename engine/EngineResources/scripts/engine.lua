@@ -4,8 +4,8 @@ local packagePath = package.path
 local packageCPath = package.cpath
 
 -- Appending location to find packages like LuaPanda etc
-packagePath = packagePath .. ";C:/dev/rpg/jle/engine/EngineResources/scripts/3rdparty/?.lua"
-packageCPath = packageCPath .. ";C:/dev/rpg/jle/engine/EngineResources/scripts/3rdparty/?.dll"
+packagePath = packagePath .. ";" .. JLE_ENGINE_RESOURCES_PATH .. "/scripts/3rdparty/?.lua"
+packageCPath = packageCPath .. ";" .. JLE_ENGINE_RESOURCES_PATH .. "/scripts/3rdparty/?.dll"
 
 -- Update the package path
 package.path = packagePath

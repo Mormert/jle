@@ -138,3 +138,17 @@ MouseButtonKeyCode = {
     BUTTON_RIGHT    = 1,
     BUTTON_MIDDLE   = 3    
 }
+
+EngineComponent = 
+{
+    LIGHT = "cLight",
+    DIRECTIONAL_LIGHT = "cDirectionalLight",
+    ANIMATOR = "cAnimator",
+    CAMERA = "cCamera",
+    CAMERA_FPV = "cCameraFPV",
+    LUA_SCRIPT = "cLuaScript",
+    MESH = "cMesh",
+    SKINNED_MESH = "cSkinnedMesh",
+    RIGIDBODY = "cRigidbody",
+    SKYBOX = "cSkybox"
+}

@@ -44,7 +44,7 @@ cLightDirectional::editorGizmosRender(bool selected)
 }
 
 void
-cLightDirectional::registerLua(sol::state &lua, sol::table &table)
+cLightDirectional::registerLua(sol::state &lua)
 {
-
+    lua.new_usertype<cLightDirectional>("cLightDirectional", sol::base_classes, sol::bases<cLight>());
 }
