@@ -14,6 +14,7 @@
  *********************************************************************************************/
 
 #include "jleLuaEnvironment.h"
+#include "jleFileIndexer.h"
 #include "jleInput.h"
 #include "jleKeyboardInput.h"
 #include "jleLuaScript.h"
@@ -21,7 +22,6 @@
 #include "jlePath.h"
 #include "jlePathDefines.h"
 #include "jleResourceRef.h"
-#include "jleFileIndexer.h"
 #include <glm/ext/matrix_transform.hpp>
 
 #if JLE_BUILD_IMGUI
@@ -38,6 +38,8 @@ jleLuaEnvironment::jleLuaEnvironment()
     _luaState = sol::state{};
     setupLua(_luaState);
 }
+
+jleLuaEnvironment::~jleLuaEnvironment() {}
 
 void
 jleLuaEnvironment::setupLua(sol::state &lua)

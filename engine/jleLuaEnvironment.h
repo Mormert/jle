@@ -31,6 +31,8 @@ class jleLuaEnvironment
 public:
     jleLuaEnvironment();
 
+    ~jleLuaEnvironment();
+
     void loadScript(const jlePath& path);
 
     void executeScript(const char* script);
