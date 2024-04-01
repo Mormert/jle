@@ -21,14 +21,20 @@
 #include "jlePath.h"
 #include "jlePathDefines.h"
 #include "jleResourceRef.h"
+#include "jleFileIndexer.h"
 #include <glm/ext/matrix_transform.hpp>
 
 #if JLE_BUILD_IMGUI
 #include "ImGui/sol_ImGui.h"
 #endif
 
-jleLuaEnvironment::jleLuaEnvironment() : _scriptFilesWatcher({jlePath{"GR:/scripts"}.getRealPath()}, true, false, false)
+jleLuaEnvironment::jleLuaEnvironment()
 {
+    std::vector<std::string> directories;
+    directories.push_back(jlePath{"GR:/scripts"}.getRealPath());
+
+    _scriptFilesWatcher = std::make_unique<jleFileIndexer>(directories, true, false, false);
+
     _luaState = sol::state{};
     setupLua(_luaState);
 }
@@ -513,14 +519,14 @@ jleLuaEnvironment::getState()
 void
 jleLuaEnvironment::setupScriptLoader()
 {
-    _scriptFilesWatcher.setNotifyAddedCallback([&](const jlePath &path) {
+    _scriptFilesWatcher->setNotifyAddedCallback([&](const jlePath &path) {
         if (path.getFileEnding() == "lua") {
             loadScript(path);
         }
     });
 
     // Load all Lua scripts is the to-be-watched folder
-    _scriptFilesWatcher.periodicSweep();
+    _scriptFilesWatcher->periodicSweep();
 }
 
 void
@@ -557,7 +563,7 @@ jleLuaEnvironment::loadedLuaClasses()
 void
 jleLuaEnvironment::loadNewlyAddedScripts()
 {
-    _scriptFilesWatcher.periodicSweepThreaded();
+    _scriptFilesWatcher->periodicSweepThreaded();
 }
 
 #endif

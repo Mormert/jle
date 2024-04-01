@@ -24,6 +24,7 @@
 #include <sol2/sol.hpp>
 
 class jleLuaScript;
+class jleFileIndexer;
 
 class jleLuaEnvironment
 {
@@ -51,7 +52,7 @@ private:
 
     void setupLuaGLM(sol::state& lua);
 
-    jleFileIndexer _scriptFilesWatcher;
+    std::unique_ptr<jleFileIndexer> _scriptFilesWatcher;
 
     std::unordered_map<std::string, jleLuaClass> _loadedLuaClasses;
 
