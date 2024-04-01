@@ -40,9 +40,9 @@ public:
     void
     load_minimal(Archive const &, std::string const &value)
     {
+        _virtualPath = value;
         fixSlashes(_virtualPath);
         _realPath = findRealPathFromVirtualPath(_virtualPath);
-        _virtualPath = value;
         _hash = std::hash<std::string>()(_virtualPath);
     }
 
