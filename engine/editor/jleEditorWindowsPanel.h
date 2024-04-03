@@ -36,6 +36,11 @@ public:
     inline void dockspaceupdate(jleGameEngine &ge);
 
 private:
+    std::shared_ptr<jleTexture> _crossIcon;           // X
+    std::shared_ptr<jleTexture> _maximizeIcon;        // [ ]
+    std::shared_ptr<jleTexture> _minimizeIcon;        // -
+    std::shared_ptr<jleTexture> _jleIcon;
+
     std::vector<std::shared_ptr<jleEditorWindowInterface>> windows;
 
     jleEditorGameControllerWidget _gameController;

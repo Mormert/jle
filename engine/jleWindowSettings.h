@@ -33,7 +33,7 @@ public:
     unsigned int width = 1920, height = 1080;
     unsigned int widthMin = 500, heightMin = 500;
 
-    jlePath iconPath{"ED:/jle_icon48.png.png"};
+    jlePath iconPath{"ED:/jle_icon48.png"};
 
     bool isRezisable = true;
     bool shouldDisplayCursor = true;

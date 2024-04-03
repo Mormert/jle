@@ -16,13 +16,20 @@
 #include "jleEditorWindowsPanel.h"
 
 #include "jleGameEditorWindow.h"
+#include "jleEngineSettings.h"
+#include "jleWindow.h"
 
 #include <ImGui/imgui.h>
 #include <plog/Log.h>
 
+
 jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name)
     : jleEditorWindowInterface{window_name}, _gameController{"Game Controller"}
 {
+    _crossIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/cross.png"});
+    _maximizeIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/maximize.png"});
+    _minimizeIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/minimize.png"});
+    _jleIcon = gEngine->resources().loadResourceFromFile<jleTexture>(gEngine->settings().windowSettings.iconPath);
 }
 
 void
@@ -104,6 +111,15 @@ void
 jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine &ge)
 {
     if (ImGui::BeginMenuBar()) {
+
+        const float menuBarWidth = ImGui::GetWindowWidth();
+        const float menuBarHeight = ImGui::GetFrameHeightWithSpacing();
+
+        ImGui::SetCursorPosX(1.f);
+
+        const float iconDimWidthHeight = std::max(_jleIcon->width() * 0.5f, menuBarHeight);
+        ImGui::Image((void *)(intptr_t)_jleIcon->id(), ImVec2{iconDimWidthHeight, iconDimWidthHeight});
+
         if (ImGui::BeginMenu("Manage Windows")) {
             for (auto &&window : windows) {
                 if (window->opened()) {
@@ -125,11 +141,8 @@ jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine &ge)
         }
 
         auto windowWidth = ImGui::GetWindowSize().x;
-        ImGui::SetCursorPosX((windowWidth)*0.5f);
-
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetColumnWidth() -
-                             ImGui::CalcTextSize("Avg FPS: XXXX   Run Time: HH:MM:SS.MMM").x - ImGui::GetScrollX() -
-                             2 * ImGui::GetStyle().ItemSpacing.x);
+        const float textOffset = ImGui::CalcTextSize("Avg FPS: XXXX  |  Run Time: HH:MM:SS.MMM").x * 0.5f;
+        ImGui::SetCursorPosX((windowWidth) * 0.5f - textOffset);
 
         // clang-format off
         const auto formatTime = [](int value)
@@ -150,9 +163,73 @@ jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine &ge)
         // clang-format on
 
         const auto rolling120FramesAvgFps = (int)ImGui::GetIO().Framerate;
-        ImGui::Text("Avg FPS: %4d  Run Time: %s",
+        ImGui::Text("Avg FPS: %4d  |  Run Time: %s",
                     rolling120FramesAvgFps,
                     formatTime(static_cast<int>(ge.currentFrameTime() * 1000.f)).c_str());
+
+        {
+            ImGuiStyle &style = ImGui::GetStyle();
+
+            const float originalFrameRounding = style.FrameRounding;
+            const ImVec2 originalItemSpacing = style.ItemSpacing;
+
+            // Set FrameRounding to 0 to create sharp corners
+            style.FrameRounding = 0.0f;
+
+            // Set ItemSpacing to 0 to remove the gap between buttons
+            style.ItemSpacing = ImVec2(0, style.ItemSpacing.y);
+
+            const ImVec4 menuBarColor = style.Colors[ImGuiCol_MenuBarBg];
+            const ImVec4 buttonHoveredColor = ImVec4(menuBarColor.x * 1.1f,
+                                                     menuBarColor.y * 1.1f,
+                                                     menuBarColor.z * 1.1f,
+                                                     menuBarColor.w);
+
+            const float ratio = 0.5f * menuBarHeight / _crossIcon->height();
+            const ImVec2 buttonSize{(float)_crossIcon->width() * ratio, (float)_crossIcon->height() * ratio};
+            const float buttonWidth = buttonSize.x + style.FramePadding.x * 2;
+            const float totalButtonWidth = 3 * buttonWidth;
+            const float offset = menuBarWidth - totalButtonWidth - style.ItemSpacing.x * 2;
+
+            ImGui::SetCursorPosX(offset);
+
+            {
+                ImGui::PushStyleColor(ImGuiCol_Button, menuBarColor);
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonHoveredColor);
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, buttonHoveredColor);
+                ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
+
+                if (ImGui::ImageButton((void *)(intptr_t)_minimizeIcon->id(), buttonSize)) {
+                    glfwIconifyWindow(gEngine->window().glfwWindow());
+                }
+
+                if (ImGui::ImageButton((void *)(intptr_t)_maximizeIcon->id(), buttonSize)) {
+                    const auto window = gEngine->window().glfwWindow();
+                    if (glfwGetWindowAttrib(window, GLFW_MAXIMIZED)) {
+                        glfwRestoreWindow(window);
+                    } else {
+                        glfwMaximizeWindow(window);
+                    }
+                }
+
+                ImVec4 grayRedHoveredColor = ImVec4(0.7f, 0.2f, 0.2f, 1.0f);
+                {
+                    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, grayRedHoveredColor);
+
+                    if (ImGui::ImageButton((void *)(intptr_t)_crossIcon->id(), buttonSize)) {
+                        glfwSetWindowShouldClose(gEngine->window().glfwWindow(), true);
+                    }
+                    ImGui::PopStyleColor();
+                }
+
+                // Pop the style colors
+                ImGui::PopStyleColor(4);
+            }
+
+            // Restore the original FrameRounding and ItemSpacing values
+            style.FrameRounding = originalFrameRounding;
+            style.ItemSpacing = originalItemSpacing;
+        }
 
         ImGui::EndMenuBar();
     }

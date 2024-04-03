@@ -81,6 +81,8 @@ public:
     GLFWwindow *
     glfwWindow();
 
+    static GLFWwindow *initGlfwWindow(int width, int height, const char *title);
+
 protected:
     GLFWwindow *_glfwWindow;
     static inline jleWindow *_activeWindow;
@@ -93,7 +95,6 @@ protected:
     bool cursorVisible{false};
 
 private:
-    static GLFWwindow *initGlfwWindow(int width, int height, const char *title);
     inline static bool sPressedKeys[512];
     inline static bool sReleasedKeys[512];
 
