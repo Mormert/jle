@@ -20,9 +20,12 @@
 
 #include "editor/jleImGuiCerealArchive.h"
 
+#include <cereal/cereal.hpp>
 #include <cereal/archives/binary.hpp>
 #include <cereal/archives/json.hpp>
-#include <cereal/cereal.hpp>
+#include <cereal/types/vector.hpp>
+#include <cereal/types/string.hpp>
+
 #include <sol2/sol.hpp>
 
 #include <string>
@@ -30,10 +33,12 @@
 
 namespace cereal
 {
-class JSONOutputArchive;
-class JSONInputArchive;
+#if JLE_BUILD_EDITOR
 class jleImGuiCerealArchive;
 class jleImGuiCerealArchiveInternal;
+#endif
+class JSONOutputArchive;
+class JSONInputArchive;
 class BinaryOutputArchive;
 class BinaryInputArchive;
 } // namespace cereal
