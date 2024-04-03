@@ -15,6 +15,7 @@
 
 #include "jleLuaClass.h"
 #include "jleLuaEnvironment.h"
+#include "jleGameEngine.h"
 
 #include <sstream>
 
