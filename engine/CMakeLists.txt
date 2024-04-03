@@ -185,7 +185,11 @@ target_link_libraries(engine PUBLIC zlib)
 add_subdirectory(3rdparty/lua)
 target_link_libraries(engine PUBLIC vanilla_lua)
 
-add_subdirectory(3rdparty/luasocket)
+if (JLE_BUILD_EDITOR AND WIN32)
+    add_subdirectory(3rdparty/luasocket)
+    add_dependencies(engine socket_core)
+    add_dependencies(engine mime_core)
+endif ()
 
 if (NOT JLE_BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()
 
