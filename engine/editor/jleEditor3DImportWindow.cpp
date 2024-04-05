@@ -57,6 +57,49 @@ jleEditor3DImportWindow::update(jleGameEngine &ge)
     ImGui::End();
 }
 
+
+void sanitizeAssimpsNames(const aiScene* scene)
+{
+    // Iterate through all material names
+    for (unsigned int i = 0; i < scene->mNumMaterials; ++i) {
+        aiString materialName;
+        scene->mMaterials[i]->Get(AI_MATKEY_NAME, materialName);
+        for (unsigned int j = 0; j < materialName.length; ++j) {
+            if (materialName.data[j] == '.') {
+                materialName.data[j] = '_';
+            }
+        }
+        scene->mMaterials[i]->AddProperty(&materialName, AI_MATKEY_NAME);
+    }
+
+    // Iterate through all animation names
+    for (unsigned int i = 0; i < scene->mNumAnimations; ++i) {
+        std::string name = scene->mAnimations[i]->mName.C_Str();
+        std::replace(name.begin(), name.end(), '.', '_');
+        scene->mAnimations[i]->mName.Set(name);
+    }
+
+    // Iterate through all mesh names
+    for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
+        std::string name = scene->mMeshes[i]->mName.C_Str();
+        std::replace(name.begin(), name.end(), '.', '_');
+        scene->mMeshes[i]->mName.Set(name);
+    }
+
+    // Iterate through all node names
+    std::function<void(aiNode*)> processNode = [&](aiNode *node) {
+        std::string name = node->mName.C_Str();
+        std::replace(name.begin(), name.end(), '.', '_');
+        node->mName.Set(name);
+
+        for (unsigned int i = 0; i < node->mNumChildren; ++i) {
+            processNode(node->mChildren[i]);
+        }
+    };
+
+    processNode(scene->mRootNode);
+}
+
 bool
 jleEditor3DImportWindow::importModel(const jlePath &path)
 {
@@ -64,12 +107,14 @@ jleEditor3DImportWindow::importModel(const jlePath &path)
 
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(
-        pathStr, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
+        pathStr, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_FlipUVs | aiProcess_GenUVCoords);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         LOGE << "Error loading mesh with Assimp" << importer.GetErrorString();
         return false;
     }
+
+    sanitizeAssimpsNames(scene);
 
     std::vector<jleResourceRef<jleMaterialPBR>> createdMaterials;
 
@@ -104,6 +149,24 @@ jleEditor3DImportWindow::importModel(const jlePath &path)
         setTexture(aiTextureType_BASE_COLOR, material->_albedo.textureRef());
         setTexture(aiTextureType_NORMALS, material->_normal.textureRef());
         setTexture(aiTextureType_OPACITY, material->_opacity.textureRef());
+
+        aiColor4D materialColor;
+        if (AI_SUCCESS == assimpMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, materialColor)) {
+            material->_albedo.color().r = materialColor.r;
+            material->_albedo.color().g = materialColor.g;
+            material->_albedo.color().b = materialColor.b;
+            material->_opacity.alpha() = materialColor.a;
+        }
+
+        float metallic{};
+        if (AI_SUCCESS == assimpMaterial->Get(AI_MATKEY_METALLIC_FACTOR, metallic)) {
+            material->_metallic.alpha() = metallic;
+        }
+
+        float roughness{};
+        if (AI_SUCCESS == assimpMaterial->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness)) {
+            material->_roughness.alpha() = roughness;
+        }
 
         material->saveToFile();
         createdMaterials.push_back(material);

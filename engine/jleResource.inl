@@ -70,11 +70,18 @@ jleResources::loadResourceFromFile(const jlePath &path, bool forceReload)
     newResource->path = path;
 
     bool loadSuccess = false;
-    if constexpr (std::is_base_of<jleSerializedOnlyResource, T>::value) {
-        if (!loadSerializedResource(newResource, path)) {
-            LOGE << "Failed to load serialized resource " << path.getVirtualPath();
-        } else {
-            loadSuccess = true;
+    if constexpr (std::is_base_of<jleSerializedResource, T>::value) {
+        if (newResource->getPrimaryFileAssociation() == path.getFileEnding()) {
+            if (!loadSerializedResource(newResource, path)) {
+                LOGE << "Failed to load serialized resource " << path.getVirtualPath();
+            } else {
+                loadSuccess = true;
+            }
+        }
+
+        if constexpr (!std::is_base_of<jleSerializedOnlyResource, T>::value)
+        {
+            loadSuccess = newResource->loadFromFile(path);
         }
     } else {
         loadSuccess = newResource->loadFromFile(path);

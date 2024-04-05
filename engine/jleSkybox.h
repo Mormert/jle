@@ -25,7 +25,7 @@
 #include "jleImageFlipped.h"
 
 
-class jleSkybox : public jleSerializedResource, public std::enable_shared_from_this<jleSkybox>
+class jleSkybox : public jleSerializedResource
 {
 public:
     JLE_REGISTER_RESOURCE_TYPE(jleSkybox, {"skyb"})
@@ -66,6 +66,6 @@ protected:
 };
 
 CEREAL_REGISTER_TYPE(jleSkybox)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedOnlyResource, jleSkybox)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleSkybox)
 
 #endif // JLE_SKYBOX_H

@@ -14,16 +14,17 @@
  *********************************************************************************************/
 
 #include "jleTexture.h"
-
-#include "stb_image.h"
-
-#include "jleIncludeGL.h"
-
 #include "jleGameEngine.h"
 #include "jleImage.h"
+#include "jleIncludeGL.h"
+#include "jleRenderThread.h"
+
 #include <plog/Log.h>
+#include <stb_image.h>
 
 #include <iostream>
+
+jleTexture::jleTexture() {}
 
 jleTexture::~jleTexture()
 {
@@ -42,31 +43,36 @@ jleTexture::loadFromFile(const jlePath &path)
         imagePath = path;
     }
 
-    auto image = jleImage{imagePath};
+    _image = std::make_unique<jleImage>(imagePath);
 
-    _width = image.width();
-    _height = image.height();
-    _nrChannels = image.nrChannels();
+    _width = _image->width();
+    _height = _image->height();
+    _nrChannels = _image->nrChannels();
 
-    glGenTextures(1, &_id);
+    if (!_image->data()) {
+        PLOG_ERROR << "Failed to generate OpenGL texture " << _id << " with path: " << path.getVirtualPath();
+        return false;
+    }
 
-    glBindTexture(GL_TEXTURE_2D, _id);
+    gEngine->renderThread().runOnRenderThread([this, path]() {
+        glGenTextures(1, &_id);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glBindTexture(GL_TEXTURE_2D, _id);
 
-    if (image.data()) {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        // set texture filtering parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
         GLenum format = GL_RGBA;
-        if (image.nrChannels() == 1)
+        if (_image->nrChannels() == 1)
             format = GL_RED;
-        else if (image.nrChannels() == 2)
+        else if (_image->nrChannels() == 2)
             format = GL_RED;
-        else if (image.nrChannels() == 3)
+        else if (_image->nrChannels() == 3)
             format = GL_RGB;
-        else if (image.nrChannels() == 4)
+        else if (_image->nrChannels() == 4)
             format = GL_RGBA;
 
         glBindTexture(GL_TEXTURE_2D, _id);
@@ -79,7 +85,7 @@ jleTexture::loadFromFile(const jlePath &path)
         }
 
         glTexImage2D(
-            GL_TEXTURE_2D, 0, format, image.width(), image.height(), 0, format, GL_UNSIGNED_BYTE, image.data());
+            GL_TEXTURE_2D, 0, format, _image->width(), _image->height(), 0, format, GL_UNSIGNED_BYTE, _image->data());
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
@@ -88,15 +94,10 @@ jleTexture::loadFromFile(const jlePath &path)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         PLOG_VERBOSE << "Generated OpenGL texture (ID=" << _id << ") " << path.getVirtualPath() << " ("
-                     << image.nrChannels() << " channels)";
+                     << _image->nrChannels() << " channels)";
 
         glBindTexture(GL_TEXTURE_2D, 0);
-
-    } else {
-        PLOG_ERROR << "Failed to generate OpenGL texture " << _id << " with path: " << path.getVirtualPath();
-
-        return false;
-    }
+    });
 
     return true;
 }

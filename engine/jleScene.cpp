@@ -17,6 +17,7 @@
 #include "jleGameEngine.h"
 #include "jleObject.h"
 #include "jleProfiler.h"
+#include "jlePhysics.h"
 
 #include <filesystem>
 #include <iostream>
@@ -28,16 +29,13 @@ int jleScene::_scenesCreatedCount{0};
 jleScene::
 jleScene()
 {
+    _physics = std::make_unique<jlePhysics>();
+
     sceneName = "Scene_" + std::to_string(_scenesCreatedCount);
     _scenesCreatedCount++;
 }
 
-jleScene::
-jleScene(const std::string &sceneName)
-{
-    this->sceneName = sceneName;
-    _scenesCreatedCount++;
-}
+jleScene::~jleScene() = default;
 
 void
 jleScene::updateSceneObjects(float dt)
@@ -102,6 +100,12 @@ jleScene::destroyScene()
     onSceneDestruction();
 }
 
+jlePhysics &
+jleScene::getPhysics()
+{
+    return *_physics;
+}
+
 void
 jleScene::setupObject(const std::shared_ptr<jleObject> &obj)
 {
@@ -164,6 +168,8 @@ jleScene::spawnObjectWithName(const std::string &name)
 void
 jleScene::updateScene(float dt)
 {
+    getPhysics().step(dt);
+
     processNewSceneObjects();
     updateSceneObjects(dt);
 }

@@ -56,7 +56,7 @@ jleLuaScript::loadScript()
         LOGE << "Loading script failed: " << e.what();
         faultyState = true;
     }
-    _luaEnvironment->loadedScripts().insert(std::make_pair(path, shared_from_this()));
+    _luaEnvironment->loadedScripts().insert(std::make_pair(path, std::static_pointer_cast<jleLuaScript>(shared_from_this())));
 }
 
 void

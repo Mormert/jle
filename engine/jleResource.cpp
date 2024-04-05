@@ -31,12 +31,12 @@ jleResources::loadResourceFromFile(const jlePath &path)
 }
 
 void
-jleResources::reloadSerializedResource(const std::shared_ptr<jleSerializedOnlyResource> &resource)
+jleResources::reloadSerializedResource(const std::shared_ptr<jleSerializedResource> &resource)
 {
     jlePath path = resource->path;
     try {
         std::ifstream i(path.getRealPath());
-        std::shared_ptr<jleSerializedOnlyResource> f = std::const_pointer_cast<jleSerializedOnlyResource>(resource);
+        std::shared_ptr<jleSerializedResource> f = std::const_pointer_cast<jleSerializedResource>(resource);
         cereal::JSONInputArchive archive{i};
         archive(f);
         if (!f->loadFromFile(path)) {
@@ -52,17 +52,17 @@ jleResources::reloadSerializedResource(const std::shared_ptr<jleSerializedOnlyRe
     }
 }
 
-std::shared_ptr<jleSerializedOnlyResource>
+std::shared_ptr<jleSerializedResource>
 jleResources::loadSerializedResourceFromFile(const jlePath &path, bool forceReload)
 {
     const auto prefix = path.getPathVirtualDrive();
 
-    std::shared_ptr<jleSerializedOnlyResource> ptr{};
+    std::shared_ptr<jleSerializedResource> ptr{};
 
     if (!forceReload) {
         auto it = _resources[prefix].find(path);
         if (it != _resources[prefix].end()) {
-            return std::static_pointer_cast<jleSerializedOnlyResource>(it->second.second);
+            return std::static_pointer_cast<jleSerializedResource>(it->second.second);
         }
     }
 
@@ -164,8 +164,7 @@ jleResources::loadSerializedResource(std::shared_ptr<jleResourceInterface> &reso
         try {
             std::ifstream i(path.getRealPath());
             cereal::JSONInputArchive iarchive{i};
-            std::shared_ptr<jleSerializedOnlyResource> sr =
-                std::static_pointer_cast<jleSerializedOnlyResource>(resource);
+            std::shared_ptr<jleSerializedResource> sr = std::static_pointer_cast<jleSerializedResource>(resource);
             iarchive(sr);
             resource = sr;
             resource->path = path;

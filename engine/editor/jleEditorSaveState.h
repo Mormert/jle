@@ -28,7 +28,7 @@
 #include <cereal/archives/binary.hpp>
 #include "editor/jleImGuiCerealArchive.h"
 
-struct jleEditorSaveState : public jleSerializedOnlyResource, public std::enable_shared_from_this<jleEditorSaveState> {
+struct jleEditorSaveState : public jleSerializedOnlyResource {
     template <class Archive>
     void
     serialize(Archive &archive)

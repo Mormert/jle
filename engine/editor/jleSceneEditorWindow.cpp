@@ -206,7 +206,9 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     ImGui::SameLine();
 
     if (!gEngine->isGameKilled()) {
-        ImGui::Checkbox("Physics Debug", &gEngine->physics().renderDebugEnabled);
+        if (auto &&scene = gEditor->editorSceneObjects().GetSelectedScene().lock()) {
+            ImGui::Checkbox("Physics Debug", &scene->getPhysics().renderDebugEnabled);
+        }
     }
 
     ImGui::SameLine();

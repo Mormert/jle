@@ -41,7 +41,7 @@ jleComponent::object()
 std::shared_ptr<jleObject>
 jleComponent::getObjectSharedPtr()
 {
-    return _attachedToObject->shared_from_this();
+    return std::static_pointer_cast<jleObject>(_attachedToObject->shared_from_this());
 }
 
 jleScene *

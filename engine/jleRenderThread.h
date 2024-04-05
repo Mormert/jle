@@ -13,34 +13,20 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#ifndef JLE_LUASCRIPT_H
-#define JLE_LUASCRIPT_H
+#pragma once
 
-#include "jleBuildConfig.h"
+#include <functional>
+#include <moodycamel/concurrentqueue.h>
 
-#include "jleGameEngine.h"
-#include "jleResourceInterface.h"
-#include "jleTypeReflectionUtils.h"
-
-class jleLuaScript : public jleResourceInterface
+class jleRenderThread
 {
 public:
-    JLE_REGISTER_RESOURCE_TYPE(jleLuaScript, "lua");
+    // Called from any game thread to execute render code on the render thread
+    // before next render frame.
+    void runOnRenderThread(const std::function<void()> &task);
 
-    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
-
-    virtual void loadScript();
-
-    void saveToFile() override;
-
-protected:
-    std::string _luaScriptName;
-    std::string _sourceCode;
-    std::shared_ptr<jleLuaEnvironment> _luaEnvironment;
-    bool faultyState = true;
+    // Process the render queue, called from the render thread
+    void processRenderQueue();
+private:
+    moodycamel::ConcurrentQueue<std::function<void()>> _renderQueue;
 };
-
-CEREAL_REGISTER_TYPE(jleLuaScript)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleResourceInterface, jleLuaScript)
-
-#endif // JLE_LUASCRIPT_H

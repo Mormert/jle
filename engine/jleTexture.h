@@ -26,10 +26,12 @@
 
 #include <cereal/cereal.hpp>
 
-class jleTexture : public jleSerializedResource, public std::enable_shared_from_this<jleTexture>
+class jleImage;
+
+class jleTexture : public jleSerializedResource
 {
 public:
-    jleTexture() = default;
+    jleTexture();
 
     JLE_REGISTER_RESOURCE_TYPE(jleTexture, "tex", "png", "jpg", "tga", "bmp", "psd", "jpeg")
 
@@ -61,7 +63,9 @@ public:
 private:
     int32_t _width = 0, _height = 0, _nrChannels = 0;
     unsigned int _id = UINT_MAX; // OpenGL Texture ID
+
+    std::unique_ptr<jleImage> _image{};
 };
 
 CEREAL_REGISTER_TYPE(jleTexture)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedOnlyResource, jleTexture)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleTexture)

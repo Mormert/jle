@@ -36,13 +36,13 @@ class jleEngineSettings;
 class jleInput;
 class jleWindow;
 class jleTimerManager;
-class jlePhysics;
 class jle3DRenderer;
 class jle3DSettings;
 class jle3DGraph;
 class jleFullscreenRendering;
 class jleFramebufferInterface;
 class jleLuaEnvironment;
+class jleRenderThread;
 
 class jleGameEngine;
 inline jleGameEngine *gEngine;
@@ -77,6 +77,8 @@ public:
 
     jle3DSettings &renderSettings();
 
+    jleRenderThread &renderThread();
+
     [[nodiscard]] jleEngineSettings &settings();
 
     [[nodiscard]] int fps() const;
@@ -108,8 +110,6 @@ public:
     void unhaltGame();
 
     void executeNextFrame();
-
-    jlePhysics &physics();
 
     [[nodiscard]] bool isGameKilled() const;
 
@@ -166,12 +166,12 @@ protected:
     friend class jleSceneEditorWindow;
     std::unique_ptr<jle3DRenderer> _3dRenderer;
     std::unique_ptr<jle3DGraph> _3dRenderGraph;
+    std::unique_ptr<jle3DGraph> _3dRenderGraphForRendering;
     std::unique_ptr<jle3DSettings> _3dRendererSettings;
+    std::unique_ptr<jleRenderThread> _renderThread;
 
     struct jleEngineInternal;
     std::unique_ptr<jleEngineInternal> _internal;
-
-    void resetRenderGraphForNewFrame();
 
     jle3DRenderer &renderer();
 
@@ -182,7 +182,6 @@ protected:
     double _currentFrame = 0;
     double _lastFrame = 0;
 
-    std::unique_ptr<jlePhysics> _physics;
     std::shared_ptr<jleLuaEnvironment> _luaEnvironment;
 
     std::unique_ptr<jleGame> game;

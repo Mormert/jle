@@ -23,7 +23,7 @@
 #include "jleWindowSettings.h"
 #include "jleResourceRef.h"
 
-class jleEngineSettings : public jleSerializedOnlyResource, public std::enable_shared_from_this<jleEngineSettings>
+class jleEngineSettings : public jleSerializedOnlyResource
 {
 public:
     JLE_REGISTER_RESOURCE_TYPE(jleEngineSettings, "es")

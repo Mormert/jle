@@ -39,7 +39,6 @@ public:
 
 private:
 
-    // Using a static weak_ptr here so that it won't impact deletion
     std::weak_ptr<jleObject> selectedObject;
     std::weak_ptr<jleScene> selectedScene;
 

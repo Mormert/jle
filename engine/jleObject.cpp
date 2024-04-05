@@ -331,12 +331,6 @@ jleObject::parent()
     return _parentObject;
 }
 
-std::weak_ptr<jleObject>
-jleObject::weakPtrToThis()
-{
-    return weak_from_this();
-}
-
 std::shared_ptr<jleObject>
 jleObject::duplicate(bool childChain)
 {
@@ -442,7 +436,7 @@ void
 jleObject::tryFindChildWithInstanceId(int instanceId, std::shared_ptr<jleObject> &outObject)
 {
     if (instanceId == instanceID()) {
-        outObject = shared_from_this();
+        outObject = std::static_pointer_cast<jleObject>(shared_from_this());
         return;
     }
 

@@ -14,6 +14,8 @@
  *********************************************************************************************/
 
 #include "jleMesh.h"
+#include "jleRenderThread.h"
+
 #include "tiny_obj_loader.h"
 #include <plog/Log.h>
 #include <stdio.h>
@@ -176,60 +178,6 @@ jleMesh::makeMesh(const std::vector<glm::vec3> &positions,
                   const std::vector<glm::vec3> &bitangents,
                   const std::vector<unsigned int> &indices)
 {
-    JLE_EXEC_IF(JLE_BUILD_HEADLESS) { return; }
-
-    destroyOldBuffers();
-    glGenVertexArrays(1, &_vao);
-    glBindVertexArray(_vao);
-
-    if (!positions.empty()) {
-        glGenBuffers(1, &_vbo_pos);
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo_pos);
-        glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(glm::vec3), &positions[0], GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
-        glEnableVertexAttribArray(0);
-    }
-
-    if (!normals.empty()) {
-        glGenBuffers(1, &_vbo_normal);
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo_normal);
-        glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals[0], GL_STATIC_DRAW);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
-        glEnableVertexAttribArray(1);
-    }
-
-    if (!texCoords.empty()) {
-        glGenBuffers(1, &_vbo_texcoords);
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo_texcoords);
-        glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(glm::vec2), &texCoords[0], GL_STATIC_DRAW);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
-        glEnableVertexAttribArray(2);
-    }
-
-    if (!tangents.empty()) {
-        glGenBuffers(1, &_vbo_tangent);
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo_tangent);
-        glBufferData(GL_ARRAY_BUFFER, tangents.size() * sizeof(glm::vec3), &tangents[0], GL_STATIC_DRAW);
-        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
-        glEnableVertexAttribArray(3);
-    }
-
-    if (!bitangents.empty()) {
-        glGenBuffers(1, &_vbo_bitangent);
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo_bitangent);
-        glBufferData(GL_ARRAY_BUFFER, bitangents.size() * sizeof(glm::vec3), &bitangents[0], GL_STATIC_DRAW);
-        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
-        glEnableVertexAttribArray(4);
-    }
-
-    if (!indices.empty()) {
-        glGenBuffers(1, &_ebo);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-    }
-
-    // glBindVertexArray(0);
-
     if (indices.size() > 0) {
         _trianglesCount = indices.size();
     } else {
@@ -242,6 +190,72 @@ jleMesh::makeMesh(const std::vector<glm::vec3> &positions,
     _tangents = tangents;
     _bitangents = bitangents;
     _indices = indices;
+
+    JLE_EXEC_IF(JLE_BUILD_HEADLESS) { return; }
+
+    auto thiz = std::static_pointer_cast<jleMesh>(shared_from_this());
+
+    gEngine->renderThread().runOnRenderThread([thiz]() {
+        thiz->destroyOldBuffers();
+        glGenVertexArrays(1, &thiz->_vao);
+        glBindVertexArray(thiz->_vao);
+
+        if (!thiz->_positions.empty()) {
+            glGenBuffers(1, &thiz->_vbo_pos);
+            glBindBuffer(GL_ARRAY_BUFFER, thiz->_vbo_pos);
+            glBufferData(
+                GL_ARRAY_BUFFER, thiz->_positions.size() * sizeof(glm::vec3), &thiz->_positions[0], GL_STATIC_DRAW);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+            glEnableVertexAttribArray(0);
+        }
+
+        if (!thiz->_normals.empty()) {
+            glGenBuffers(1, &thiz->_vbo_normal);
+            glBindBuffer(GL_ARRAY_BUFFER, thiz->_vbo_normal);
+            glBufferData(
+                GL_ARRAY_BUFFER, thiz->_normals.size() * sizeof(glm::vec3), &thiz->_normals[0], GL_STATIC_DRAW);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+            glEnableVertexAttribArray(1);
+        }
+
+        if (!thiz->_texCoords.empty()) {
+            glGenBuffers(1, &thiz->_vbo_texcoords);
+            glBindBuffer(GL_ARRAY_BUFFER, thiz->_vbo_texcoords);
+            glBufferData(
+                GL_ARRAY_BUFFER, thiz->_texCoords.size() * sizeof(glm::vec2), &thiz->_texCoords[0], GL_STATIC_DRAW);
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+            glEnableVertexAttribArray(2);
+        }
+
+        if (!thiz->_tangents.empty()) {
+            glGenBuffers(1, &thiz->_vbo_tangent);
+            glBindBuffer(GL_ARRAY_BUFFER, thiz->_vbo_tangent);
+            glBufferData(
+                GL_ARRAY_BUFFER, thiz->_tangents.size() * sizeof(glm::vec3), &thiz->_tangents[0], GL_STATIC_DRAW);
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+            glEnableVertexAttribArray(3);
+        }
+
+        if (!thiz->_bitangents.empty()) {
+            glGenBuffers(1, &thiz->_vbo_bitangent);
+            glBindBuffer(GL_ARRAY_BUFFER, thiz->_vbo_bitangent);
+            glBufferData(
+                GL_ARRAY_BUFFER, thiz->_bitangents.size() * sizeof(glm::vec3), &thiz->_bitangents[0], GL_STATIC_DRAW);
+            glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+            glEnableVertexAttribArray(4);
+        }
+
+        if (!thiz->_indices.empty()) {
+            glGenBuffers(1, &thiz->_ebo);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, thiz->_ebo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                         thiz->_indices.size() * sizeof(unsigned int),
+                         &thiz->_indices[0],
+                         GL_STATIC_DRAW);
+        }
+
+        // glBindVertexArray(0);
+    });
 }
 
 jleMesh::~jleMesh() { destroyOldBuffers(); }
@@ -282,7 +296,7 @@ jleMesh::destroyOldBuffers()
 bool
 jleMesh::usesIndexing()
 {
-    return _ebo > 0;
+    return !_indices.empty();
 }
 
 bool
@@ -351,6 +365,7 @@ jleMesh::loadAssimpMesh(aiMesh *assimpMesh,
             out_normals.push_back(normal);
         }
 
+        // Does the mesh have UVs?
         if (assimpMesh->mTextureCoords[0]) {
             glm::vec2 coords;
 
@@ -369,6 +384,15 @@ jleMesh::loadAssimpMesh(aiMesh *assimpMesh,
             tangent.y = assimpMesh->mBitangents[j].y;
             tangent.z = assimpMesh->mBitangents[j].z;
             out_bitangents.push_back(bitangent);
+        } else {
+            glm::vec2 defaultCoords(0.0f, 0.0f);
+            out_texCoords.push_back(defaultCoords);
+
+            glm::vec3 defaultTangent(1.0f, 0.0f, 0.0f);
+            out_tangents.push_back(defaultTangent);
+
+            glm::vec3 defaultBitangent(0.0f, 1.0f, 0.0f);
+            out_bitangents.push_back(defaultBitangent);
         }
     }
 
@@ -429,7 +453,8 @@ jleMesh::saveToFile()
     if (ret == aiReturn_SUCCESS) {
         LOGI << "Exported " << path.getVirtualPath() << " successfully.";
     } else {
-        LOGE << "Failed to save mesh: " << path.getVirtualPath();
+        const char *errorString = exporter.GetErrorString();
+        LOGE << "Failed to save mesh: " << path.getVirtualPath() << ", reason: " << errorString;
     }
 }
 

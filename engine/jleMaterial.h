@@ -48,7 +48,7 @@ enum class jleBlendMode : int32_t {
     SRC_ALPHA_SATURATE
 };
 
-class jleMaterial : public jleSerializedOnlyResource, public std::enable_shared_from_this<jleMaterial>
+class jleMaterial : public jleSerializedOnlyResource
 {
 public:
     JLE_REGISTER_RESOURCE_TYPE(jleMaterial, "mat")

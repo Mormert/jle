@@ -64,9 +64,9 @@ private:
 #if JLE_BUILD_EDITOR
 #define JLE_SCOPE_PROFILE_CPU(profile_name)                                                                            \
     ZoneScoped;                                                                                                        \
-    using namespace std::literals::string_view_literals;                                                               \
-    jleProfiler::jleProfilerRAII THIS_SCOPE_IS_PROFILED{                                                               \
-        JLE_SCOPE_PROFILE_CONCAT(JLE_SCOPE_PROFILE_STRINGIZE(profile_name), sv)};
+    //using namespace std::literals::string_view_literals;                                                               \
+    //jleProfiler::jleProfilerRAII THIS_SCOPE_IS_PROFILED{                                                               \
+    //    JLE_SCOPE_PROFILE_CONCAT(JLE_SCOPE_PROFILE_STRINGIZE(profile_name), sv)};
 
 #define JLE_SCOPE_PROFILE_GPU(profile_name) ZoneScoped
 

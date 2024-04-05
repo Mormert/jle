@@ -119,7 +119,7 @@ cRigidbody::setupRigidbody()
         _body = createRigidbody(isDynamic, staticConcaveShape);
     }
 
-    gEngine->physics().addRigidbody(_body.get());
+    scene()->getPhysics().addRigidbody(_body.get());
 
     _body->activate();
 }
@@ -127,7 +127,7 @@ cRigidbody::setupRigidbody()
 void
 cRigidbody::setupNewRigidbodyAndDeleteOld()
 {
-    gEngine->physics().removeRigidbody(_body.get());
+    scene()->getPhysics().removeRigidbody(_body.get());
     setupRigidbody();
 }
 
@@ -140,7 +140,7 @@ cRigidbody::isDynamic()
 void
 cRigidbody::onDestroy()
 {
-    gEngine->physics().removeRigidbody(_body.get());
+    scene()->getPhysics().removeRigidbody(_body.get());
 }
 
 btRigidBody &

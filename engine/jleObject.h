@@ -36,7 +36,7 @@ class jleSceneServer;
 
 enum class jleObjectNetworkType : uint8_t { REGULAR, CLIENT, SERVER };
 
-class jleObject : public jleSerializedOnlyResource, public std::enable_shared_from_this<jleObject>
+class jleObject : public jleSerializedOnlyResource
 {
     JLE_REGISTER_OBJECT_TYPE(jleObject)
     JLE_REGISTER_RESOURCE_TYPE(jleObject, "jobj")
@@ -99,8 +99,6 @@ public:
     void tryFindChildWithInstanceId(int instanceId, std::shared_ptr<jleObject> &outObject);
 
     jleObject *parent();
-
-    [[nodiscard]] std::weak_ptr<jleObject> weakPtrToThis();
 
     // If this object is based on a template
     std::optional<jlePath> __templatePath{};

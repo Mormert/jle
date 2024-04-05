@@ -30,6 +30,7 @@
 #include "jleResourceRef.h"
 #include "jleTimerManager.h"
 #include "jleWindow.h"
+#include "jleRenderThread.h"
 
 #include <enet.h>
 #include <plog/Log.h>
@@ -63,6 +64,8 @@ jleGameEngine::jleGameEngine()
 
     gEngine = this;
     _resources = std::make_unique<jleResources>();
+
+    _renderThread = std::make_unique<jleRenderThread>();
 
     LOGI << "Game Resources located at: " << jlePath{"GR:/"}.getRealPath();
     LOGI << "Engine Resources located at: " << jlePath{"ER:/"}.getRealPath();
@@ -129,10 +132,10 @@ jleGameEngine::startGame()
         return;
     }
 
-    if (!_physics) {
+  /*  if (!_physics) {
         // Re-initialize the physics
         _physics = std::make_unique<jlePhysics>();
-    }
+    }*/
 
     game = _gameCreator();
     game->start();
@@ -145,7 +148,7 @@ jleGameEngine::startGame()
 void
 jleGameEngine::restartGame()
 {
-    _physics.reset();
+    //_physics.reset();
     game.reset();
 
     timerManager().clearTimers();
@@ -156,7 +159,7 @@ void
 jleGameEngine::killGame()
 {
     timerManager().clearTimers();
-    _physics.reset();
+    //_physics.reset();
     game.reset();
 }
 
@@ -184,12 +187,6 @@ jleGameEngine::executeNextFrame()
 
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS) { render(); }
     gameHalted = gameHaltedTemp;
-}
-
-jlePhysics &
-jleGameEngine::physics()
-{
-    return *_physics;
 }
 
 bool
@@ -297,7 +294,9 @@ jleGameEngine::start()
 void
 jleGameEngine::resizeMainFramebuffer(unsigned int width, unsigned int height)
 {
-    mainScreenFramebuffer->resize(width, height);
+    renderThread().runOnRenderThread([this, width, height](){
+        mainScreenFramebuffer->resize(width, height);
+    });
 
     const auto &inputMouse = gEngine->input().mouse;
     inputMouse->setScreenSize(width, height);
@@ -362,8 +361,9 @@ jleGameEngine::update(float dt)
         {
             JLE_SCOPE_PROFILE_CPU(RmlUi)
             // context->Update();
-        } physics()
-            .step(dt);
+        }
+
+        //physics().step(dt);
     }
 }
 
@@ -371,6 +371,9 @@ void
 jleGameEngine::render()
 {
     JLE_SCOPE_PROFILE_CPU(jleGameEngine_render)
+
+    _renderThread->processRenderQueue();
+
     if (!gameHalted && game) {
 
         // Render to game view
@@ -381,12 +384,12 @@ jleGameEngine::render()
         }
 
         // Render to the MSAA framebuffer, then blit the result over to the main framebuffer
-        renderer().render(msaa, gameRef().mainCamera, renderGraph(), renderSettings());
+        renderer().render(msaa, gameRef().mainCamera, *_3dRenderGraphForRendering, renderSettings());
         msaa.blitToOther(*mainScreenFramebuffer);
 
         _fullscreen_renderer->renderFramebufferFullscreen(*mainScreenFramebuffer, window().width(), window().height());
 
-        resetRenderGraphForNewFrame();
+        //resetRenderGraphForNewFrame();
     }
 }
 
@@ -436,8 +439,13 @@ jleGameEngine::mainLoop()
 
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS) { input().mouse->updateDeltas(); }
 
+    wi::jobsystem::context ctx;
+
+    // Game thread
+    //wi::jobsystem::Execute(ctx, [&](wi::jobsystem::JobArgs args) { update(deltaFrameTime()); });
     update(deltaFrameTime());
 
+    // Render thread
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
     {
         render();
@@ -449,6 +457,12 @@ jleGameEngine::mainLoop()
         std::chrono::milliseconds duration(16);
         std::this_thread::sleep_for(duration);
     }
+
+    Wait(ctx);
+
+    // Double buffer move
+    _3dRenderGraphForRendering = std::move(_3dRenderGraph);
+    _3dRenderGraph = std::make_unique<jle3DGraph>();
 
     FrameMark;
 }
@@ -485,12 +499,7 @@ jleGameEngine::renderer()
 {
     return *_3dRenderer.get();
 }
-void
-jleGameEngine::resetRenderGraphForNewFrame()
-{
-    JLE_SCOPE_PROFILE_CPU(ResetRenderGraph);
-    _3dRenderGraph = std::make_unique<jle3DGraph>();
-}
+
 float
 jleGameEngine::lastFrameTime() const
 {
@@ -521,6 +530,13 @@ jleGameEngine::renderSettings()
 {
     return *_3dRendererSettings.get();
 }
+
+jleRenderThread &
+jleGameEngine::renderThread()
+{
+    return *_renderThread;
+}
+
 jle3DGraph &
 jleGameEngine::renderGraph()
 {

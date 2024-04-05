@@ -62,9 +62,9 @@ public:
     template <typename T>
     std::shared_ptr<T> loadResourceFromFile(const jlePath &path, bool forceReload = false);
 
-    void reloadSerializedResource(const std::shared_ptr<jleSerializedOnlyResource> &resource);
+    void reloadSerializedResource(const std::shared_ptr<jleSerializedResource> &resource);
 
-    std::shared_ptr<jleSerializedOnlyResource> loadSerializedResourceFromFile(const jlePath &path,
+    std::shared_ptr<jleSerializedResource> loadSerializedResourceFromFile(const jlePath &path,
                                                                           bool forceReload = false);
 
     // Get a resource that is already loaded

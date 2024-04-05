@@ -29,9 +29,10 @@
 #include <cereal/types/memory.hpp>
 #include <cereal/types/vector.hpp>
 
+class jlePhysics;
 class jleObject;
 
-class jleScene : public jleSerializedOnlyResource, public std::enable_shared_from_this<jleScene>
+class jleScene : public jleSerializedOnlyResource
 {
 public:
     JLE_REGISTER_RESOURCE_TYPE(jleScene, "scn")
@@ -46,13 +47,11 @@ public:
         }
         std::ofstream save{path.getRealPath()};
         cereal::JSONOutputArchive outputArchive(save);
-        std::shared_ptr<jleSerializedOnlyResource> thiz = shared_from_this();
+        std::shared_ptr<jleSerializedOnlyResource> thiz = std::static_pointer_cast<jleSerializedOnlyResource>(shared_from_this());
         outputArchive(thiz);
     };
 
-    explicit jleScene(const std::string &sceneName);
-
-    ~jleScene() override = default;
+    ~jleScene() override;
 
     template <class Archive>
     void serialize(Archive &archive);
@@ -84,6 +83,8 @@ public:
 
     void destroyScene();
 
+    jlePhysics& getPhysics();
+
     bool bPendingSceneDestruction = false;
 
     std::vector<std::shared_ptr<jleObject>> &sceneObjects();
@@ -108,6 +109,8 @@ private:
     void startObject(jleObject *o);
 
     static int _scenesCreatedCount;
+
+    std::unique_ptr<jlePhysics> _physics;
 };
 
 JLE_EXTERN_TEMPLATE_CEREAL_H(jleScene)

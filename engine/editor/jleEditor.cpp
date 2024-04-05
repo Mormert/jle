@@ -46,6 +46,7 @@
 #include "jleResourceRef.h"
 #include "jleSceneEditorWindow.h"
 #include "jleWindow.h"
+#include "jleRenderThread.h"
 
 #include <ImGui/ImGuizmo.h>
 #include <ImGui/imgui.h>
@@ -183,15 +184,15 @@ jleEditor::render()
 
     renderGameView();
 
-    renderEditorGizmos();
+    //renderEditorGizmos();
 
-    renderEditorGridGizmo();
+    //renderEditorGridGizmo();
 
     renderEditorSceneView();
 
     renderEditorUI();
 
-    resetRenderGraphForNewFrame();
+    //resetRenderGraphForNewFrame();
 
     glCheckError("Main Editor Render");
 }
@@ -201,6 +202,8 @@ jleEditor::renderGameView()
 {
     JLE_SCOPE_PROFILE_CPU(RenderGameView);
 
+    _renderThread->processRenderQueue();
+
     if (!gameHalted && game) {
         // Render to game view
         static jleFramebufferMultisample msaa{mainScreenFramebuffer->width(), mainScreenFramebuffer->height(), 4};
@@ -209,8 +212,11 @@ jleEditor::renderGameView()
             msaa.resize(mainScreenFramebuffer->width(), mainScreenFramebuffer->height());
         }
 
-        renderer().render(msaa, game->mainCamera, renderGraph(), renderSettings());
-        msaa.blitToOther(*mainScreenFramebuffer);
+        if(_3dRenderGraphForRendering)
+        {
+            renderer().render(msaa, game->mainCamera, *_3dRenderGraphForRendering, renderSettings());
+            msaa.blitToOther(*mainScreenFramebuffer);
+        }
     }
 
     glCheckError("Render MSAA Game View");
@@ -222,7 +228,11 @@ jleEditor::renderEditorSceneView()
     JLE_SCOPE_PROFILE_CPU(RenderEditorSceneView);
 
     if (!isGameKilled()) {
-        physics().renderDebug();
+        if (auto &&scene = gEditor->editorSceneObjects().GetSelectedScene().lock()) {
+            if (scene->getPhysics().renderDebugEnabled) {
+                scene->getPhysics().renderDebug();
+            }
+        }
     }
 
     if (perspectiveCamera) {
@@ -242,7 +252,10 @@ jleEditor::renderEditorSceneView()
     }
 
     // Render to editor scene view
-    renderer().render(msaa, gEditor->camera(), renderGraph(), renderSettings());
+    if(_3dRenderGraphForRendering)
+    {
+        renderer().render(msaa, gEditor->camera(), *_3dRenderGraphForRendering, renderSettings());
+    }
     msaa.blitToOther(*editorScreenFramebuffer);
 
     glCheckError("Render MSAA Scene View");
@@ -356,7 +369,7 @@ jleEditor::mainEditorWindowResized(int w, int h)
     }
 
     if (w * h > scale3) {
-        io.FontGlobalScale = 1.75f;
+        io.FontGlobalScale = 2.0f;
     }
 }
 

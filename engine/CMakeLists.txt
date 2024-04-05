@@ -116,7 +116,8 @@ add_library(engine STATIC
         "cTransformNetSync.cpp"
         "jleAnimationFinalMatrices.cpp"
         "jleResource.cpp"
-        "jleResourceInterface.cpp")
+        "jleResourceInterface.cpp"
+        "jleRenderThread.cpp")
 
 if (JLE_BUILD_EDITOR)
     target_sources(engine PRIVATE

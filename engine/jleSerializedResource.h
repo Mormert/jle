@@ -24,12 +24,34 @@
     {                                                                                                                  \
         std::ofstream save{path.getRealPath()};                                                                        \
         cereal::JSONOutputArchive outputArchive(save);                                                                 \
-        std::shared_ptr<PARENT_TYPE> thiz = shared_from_this();                                                        \
+        std::shared_ptr<PARENT_TYPE> thiz = std::static_pointer_cast<PARENT_TYPE>(shared_from_this());                 \
         outputArchive(thiz);                                                                                           \
     };
 
+
+
+// Derive from this whenever a resource relies on save/load from serialization archives, but also implements a
+// loadFromFile() member function.
+class jleSerializedResource : public jleResourceInterface
+{
+public:
+    jleSerializedResource() = default;
+
+    ~jleSerializedResource() override = default;
+
+    template <class Archive>
+    void
+    serialize(Archive &ar)
+    {
+        // Empty serialization function
+    }
+};
+
+CEREAL_REGISTER_TYPE(jleSerializedResource)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleResourceInterface, jleSerializedResource)
+
 // Derive from this whenever a resource only relies on save/load via serialization archives
-class jleSerializedOnlyResource : public jleResourceInterface
+class jleSerializedOnlyResource : public jleSerializedResource
 {
 public:
     jleSerializedOnlyResource() = default;
@@ -53,19 +75,5 @@ public:
     }
 };
 
-// Derive from this whenever a resource relies on save/load from serialization archives, but also implements a
-// loadFromFile() member function.
-class jleSerializedResource : public jleResourceInterface
-{
-public:
-    jleSerializedResource() = default;
-
-    ~jleSerializedResource() override = default;
-
-    template <class Archive>
-    void
-    serialize(Archive &ar)
-    {
-        // Empty serialization function
-    }
-};
+CEREAL_REGISTER_TYPE(jleSerializedOnlyResource)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedResource, jleSerializedOnlyResource)

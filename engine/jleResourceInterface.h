@@ -28,7 +28,7 @@
 #include <plog/Log.h>
 #include <string>
 
-class jleResourceInterface
+class jleResourceInterface : public std::enable_shared_from_this<jleResourceInterface>
 {
 public:
     jleResourceInterface() = default;
@@ -53,3 +53,5 @@ public:
 
     jlePath path;
 };
+
+CEREAL_REGISTER_TYPE(jleResourceInterface)

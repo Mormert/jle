@@ -14,9 +14,11 @@
  *********************************************************************************************/
 
 #include "jleShader.h"
-#include <plog/Log.h>
-
+#include "jleRenderThread.h"
 #include "jleIncludeGL.h"
+
+
+#include <plog/Log.h>
 
 #include <fstream>
 #include <string>
@@ -55,44 +57,48 @@ jleShader::loadFromFile(const jlePath &path)
         frag = "#version 330 core\n" + frag;
     }
 
-    unsigned int vertex, fragment;
+    gEngine->renderThread().runOnRenderThread([this, vert, frag, path]() {
+        unsigned int vertex, fragment;
 
-    vertex = glCreateShader(GL_VERTEX_SHADER);
-    const char *vert_c = vert.c_str();
-    glShaderSource(vertex, 1, &vert_c, NULL);
-    glCompileShader(vertex);
-    if (!checkCompileErrors(vertex, "VERTEX")) {
-        glDeleteShader(vertex);
-        return false;
-    }
+        vertex = glCreateShader(GL_VERTEX_SHADER);
+        const char *vert_c = vert.c_str();
+        glShaderSource(vertex, 1, &vert_c, NULL);
+        glCompileShader(vertex);
+        if (!checkCompileErrors(vertex, "VERTEX")) {
+            glDeleteShader(vertex);
+            return;
+        }
 
-    fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    const char *frag_c = frag.c_str();
-    glShaderSource(fragment, 1, &frag_c, NULL);
-    glCompileShader(fragment);
-    if (!checkCompileErrors(fragment, "FRAGMENT")) {
+        fragment = glCreateShader(GL_FRAGMENT_SHADER);
+        const char *frag_c = frag.c_str();
+        glShaderSource(fragment, 1, &frag_c, NULL);
+        glCompileShader(fragment);
+        if (!checkCompileErrors(fragment, "FRAGMENT")) {
+            glDeleteShader(vertex);
+            glDeleteShader(fragment);
+            return;
+        }
+
+        _program = glCreateProgram();
+        glAttachShader(_program, vertex);
+        glAttachShader(_program, fragment);
+
+        glLinkProgram(_program);
+        if (!checkCompileErrors(_program, "PROGRAM")) {
+            glDeleteShader(vertex);
+            glDeleteShader(fragment);
+            glDeleteProgram(_program);
+            _program = 0;
+            return;
+        }
+
         glDeleteShader(vertex);
         glDeleteShader(fragment);
-        return false;
-    }
 
-    _program = glCreateProgram();
-    glAttachShader(_program, vertex);
-    glAttachShader(_program, fragment);
+        LOGV << "Compiled GLSL shader program: " << path.getVirtualPath();
+    });
 
-    glLinkProgram(_program);
-    if (!checkCompileErrors(_program, "PROGRAM")) {
-        glDeleteShader(vertex);
-        glDeleteShader(fragment);
-        glDeleteProgram(_program);
-        _program = 0;
-        return false;
-    }
 
-    glDeleteShader(vertex);
-    glDeleteShader(fragment);
-
-    LOGV << "Compiled GLSL shader program: " << path.getVirtualPath();
 
     return true;
 }
