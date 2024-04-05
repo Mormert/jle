@@ -16,6 +16,10 @@
 #include "jleWindow.h"
 #include "jleProfiler.h"
 
+#if JLE_BUILD_RUNTIME_CONFIGURABLE
+#include "jleCommandArguments.h"
+#endif
+
 #include <iostream>
 
 #include "stb_image.h"
@@ -346,7 +350,12 @@ jleWindow::initWindow()
     }
     else
     {
-        _glfwWindow = initGlfwWindow(windowSettings.width, windowSettings.height, windowSettings.WindowTitle.c_str());
+#if JLE_BUILD_RUNTIME_CONFIGURABLE
+        std::string windowTitle = windowSettings.WindowTitle + " [" + jleCommandArguments::getInstance().getProgramArgsString() + "]";
+#else
+        std::string windowTitle = windowSettings.WindowTitle;
+#endif
+        _glfwWindow = initGlfwWindow(windowSettings.width, windowSettings.height, windowTitle.c_str());
     }
 
     glfwSetKeyCallback(_glfwWindow, glfwKeyCallback);

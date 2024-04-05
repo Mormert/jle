@@ -66,8 +66,9 @@ public:
         static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
 
 #if JLE_BUILD_RUNTIME_CONFIGURABLE
-        jleCommandArguments arguments{argc, argv};
-        configureRuntime(arguments);
+        auto& commandArguments = jleCommandArguments::getInstance();
+        commandArguments.parse(argc, argv);
+        configureRuntime(commandArguments);
 #endif
 
         // Initialize plog when kickstarting, so logging is enabled everywhere after the kickstart

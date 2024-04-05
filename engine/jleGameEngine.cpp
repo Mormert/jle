@@ -27,10 +27,10 @@
 #include "jleLuaEnvironment.h"
 #include "jleMouseInput.h"
 #include "jlePhysics.h"
+#include "jleRenderThread.h"
 #include "jleResourceRef.h"
 #include "jleTimerManager.h"
 #include "jleWindow.h"
-#include "jleRenderThread.h"
 
 #include <enet.h>
 #include <plog/Log.h>
@@ -132,10 +132,10 @@ jleGameEngine::startGame()
         return;
     }
 
-  /*  if (!_physics) {
-        // Re-initialize the physics
-        _physics = std::make_unique<jlePhysics>();
-    }*/
+    /*  if (!_physics) {
+          // Re-initialize the physics
+          _physics = std::make_unique<jlePhysics>();
+      }*/
 
     game = _gameCreator();
     game->start();
@@ -148,7 +148,6 @@ jleGameEngine::startGame()
 void
 jleGameEngine::restartGame()
 {
-    //_physics.reset();
     game.reset();
 
     timerManager().clearTimers();
@@ -159,7 +158,6 @@ void
 jleGameEngine::killGame()
 {
     timerManager().clearTimers();
-    //_physics.reset();
     game.reset();
 }
 
@@ -294,9 +292,7 @@ jleGameEngine::start()
 void
 jleGameEngine::resizeMainFramebuffer(unsigned int width, unsigned int height)
 {
-    renderThread().runOnRenderThread([this, width, height](){
-        mainScreenFramebuffer->resize(width, height);
-    });
+    renderThread().runOnRenderThread([this, width, height]() { mainScreenFramebuffer->resize(width, height); });
 
     const auto &inputMouse = gEngine->input().mouse;
     inputMouse->setScreenSize(width, height);
@@ -363,7 +359,7 @@ jleGameEngine::update(float dt)
             // context->Update();
         }
 
-        //physics().step(dt);
+        // physics().step(dt);
     }
 }
 
@@ -383,13 +379,14 @@ jleGameEngine::render()
             msaa.resize(mainScreenFramebuffer->width(), mainScreenFramebuffer->height());
         }
 
+        if (_3dRenderGraphForRendering) {
+            renderer().render(msaa, gameRef().mainCamera, *_3dRenderGraphForRendering, renderSettings());
+        }
+
         // Render to the MSAA framebuffer, then blit the result over to the main framebuffer
-        renderer().render(msaa, gameRef().mainCamera, *_3dRenderGraphForRendering, renderSettings());
         msaa.blitToOther(*mainScreenFramebuffer);
 
         _fullscreen_renderer->renderFramebufferFullscreen(*mainScreenFramebuffer, window().width(), window().height());
-
-        //resetRenderGraphForNewFrame();
     }
 }
 
@@ -433,6 +430,8 @@ jleGameEngine::mainLoop()
     jleProfiler::NewFrame();
     JLE_SCOPE_PROFILE_CPU(mainLoop)
 
+    auto frameStart = std::chrono::steady_clock::now();
+
     refreshDeltaTimes();
 
     _timerManager->process();
@@ -442,8 +441,8 @@ jleGameEngine::mainLoop()
     wi::jobsystem::context ctx;
 
     // Game thread
-    //wi::jobsystem::Execute(ctx, [&](wi::jobsystem::JobArgs args) { update(deltaFrameTime()); });
-    update(deltaFrameTime());
+    wi::jobsystem::Execute(ctx, [&](wi::jobsystem::JobArgs args) { update(deltaFrameTime()); });
+    // update(deltaFrameTime());
 
     // Render thread
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
@@ -454,8 +453,9 @@ jleGameEngine::mainLoop()
     }
     else
     {
-        std::chrono::milliseconds duration(16);
-        std::this_thread::sleep_for(duration);
+        constexpr float simulationFrequency = 60.f;
+        constexpr int sleepForMs = static_cast<int>(1000 / simulationFrequency);
+        std::this_thread::sleep_until(frameStart + std::chrono::milliseconds(sleepForMs));
     }
 
     Wait(ctx);

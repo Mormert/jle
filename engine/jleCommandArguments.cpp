@@ -15,10 +15,15 @@
 
 #include "jleCommandArguments.h"
 
-jleCommandArguments::jleCommandArguments(int argc, char **argv) {
+void jleCommandArguments::parse(int argc, char **argv)
+{
     _arguments.resize(argc - 1);
     for (int i = 1; i < argc; ++i) {
         _arguments[i - 1] = argv[i];
+        _programArgsString += argv[i];
+        if (i < argc - 1) {
+            _programArgsString += " ";
+        }
     }
 }
 
@@ -33,3 +38,15 @@ jleCommandArguments::hasArgument(const std::string &arg) const
     return false;
 }
 
+const std::string &
+jleCommandArguments::getProgramArgsString()
+{
+    return _programArgsString;
+}
+
+jleCommandArguments &
+jleCommandArguments::getInstance()
+{
+    static jleCommandArguments args;
+    return args;
+}
