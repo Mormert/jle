@@ -144,7 +144,7 @@ jleWindow::width() const
     return windowSettings.width;
 }
 
-#ifdef WIN32
+#if defined(WIN32) && JLE_BUILD_EDITOR
 
 WNDPROC g_glfwWndProc = nullptr;
 
@@ -315,7 +315,7 @@ initWindowForEditor_Win32()
     return glfwWindow;
 }
 
-#endif // WIN32
+#endif // WIN32 && JLE_BUILD_EDITOR
 
 void
 jleWindow::initWindow()
@@ -336,7 +336,7 @@ jleWindow::initWindow()
 
     JLE_EXEC_IF(JLE_BUILD_EDITOR)
     {
-#ifdef WIN32
+#if defined(WIN32) && JLE_BUILD_EDITOR
         _glfwWindow = initWindowForEditor_Win32();
 #else
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
