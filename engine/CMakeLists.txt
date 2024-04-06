@@ -306,6 +306,14 @@ if (JLE_BUILD_UNITY)
             "3rdparty/ImGui/ImGuizmo.cpp"
             "3rdparty/glad/glad.cpp"
             PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+
+    if(JLE_BUILD_EDITOR)
+        if(APPLE)
+            set_source_files_properties(
+                    "editor/jleMacOSWindow.mm"
+                    PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+        endif ()
+    endif ()
 endif ()
 
 if (JLE_BUILD_PRECOMPILED_HEADER)
