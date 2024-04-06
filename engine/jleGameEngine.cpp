@@ -280,8 +280,11 @@ jleGameEngine::start()
 
         JLE_EXEC_IF_NOT(JLE_BUILD_EDITOR)
         {
-            window().addWindowResizeCallback(
-                std::bind(&jleGameEngine::gameWindowResizedEvent, this, std::placeholders::_1, std::placeholders::_2));
+            const auto gameWindowResizeFunc = [&](const jleWindowResizeEvent& resizeEvent){
+                gameWindowResizedEvent(resizeEvent.framebufferWidth, resizeEvent.framebufferHeight);
+            };
+
+            window().addWindowResizeCallback(gameWindowResizeFunc);
         }
     }
     LOG_INFO << "Starting the game engine";

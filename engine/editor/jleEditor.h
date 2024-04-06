@@ -36,6 +36,7 @@ class jleEditorGizmos;
 class jleEditorSaveState;
 class jlePath;
 class jleObject;
+struct jleWindowResizeEvent;
 
 class jleEditor;
 inline jleEditor *gEditor;
@@ -100,7 +101,7 @@ private:
 
     void addImGuiWindow(std::shared_ptr<jleEditorWindowInterface> window);
 
-    void mainEditorWindowResized(int w, int h);
+    void mainEditorWindowResized(const jleWindowResizeEvent& resizeEvent);
 
     std::vector<std::shared_ptr<jleEditorWindowInterface>> _imGuiWindows;
 

@@ -155,11 +155,11 @@ jleEditor::start()
     addImGuiWindow(frameGraph);
 
     gEngine->window().addWindowResizeCallback(
-        std::bind(&jleEditor::mainEditorWindowResized, this, std::placeholders::_1, std::placeholders::_2));
+        std::bind(&jleEditor::mainEditorWindowResized, this, std::placeholders::_1));
 
-    int w, h;
-    glfwGetFramebufferSize(gEngine->window().glfwWindow(), &w, &h);
-    gEngine->window().executeResizeCallbacks(w, h);
+    int x, y;
+    glfwGetFramebufferSize(gEngine->window().glfwWindow(), &x, &y);
+    gEngine->window().glfwFramebufferSizeCallback(gEngine->window().glfwWindow(), x,y);
 
     LOG_INFO << "Starting the game in editor mode";
 
@@ -344,10 +344,15 @@ jleEditor::addImGuiWindow(std::shared_ptr<jleEditorWindowInterface> window)
 }
 
 void
-jleEditor::mainEditorWindowResized(int w, int h)
+jleEditor::mainEditorWindowResized(const jleWindowResizeEvent& resizeEvent)
 {
     auto &&io = ImGui::GetIO();
     io.FontGlobalScale = 1.0f;
+    int w = resizeEvent.framebufferWidth;
+    int h = resizeEvent.framebufferHeight;
+
+    w = static_cast<int>(static_cast<float>(w) / resizeEvent.contentScaleX);
+    h = static_cast<int>(static_cast<float>(h)  / resizeEvent.contentScaleY);
 
     constexpr int scale0 = 1080 * 720;
     constexpr int scale1 = 1920 * 1080;

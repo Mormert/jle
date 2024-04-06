@@ -287,8 +287,8 @@ static void SetupCallbacks(GLFWwindow* window)
         //});
 
 
-        gEngine->window().addWindowResizeCallback([&](int w, int h){
-            data->render_interface.SetViewport(w, h);
-            RmlGLFW::ProcessFramebufferSizeCallback(data->context, w, h);
+        gEngine->window().addWindowResizeCallback([&](const jleWindowResizeEvent& resizeEvent){
+            data->render_interface.SetViewport(resizeEvent.framebufferWidth, resizeEvent.framebufferHeight);
+            RmlGLFW::ProcessFramebufferSizeCallback(data->context, resizeEvent.framebufferWidth, resizeEvent.framebufferHeight);
         });
 }

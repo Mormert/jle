@@ -158,6 +158,10 @@ if (JLE_BUILD_EDITOR)
             "3rdparty/implot/implot.cpp"
             "3rdparty/implot/implot_items.cpp")
 
+    if(APPLE)
+        target_sources(engine PRIVATE "editor/jleMacOSWindow.mm")
+    endif ()
+
     add_definitions(-DTRACY_ENABLE)
     add_definitions(-DTRACY_ON_DEMAND)
     add_definitions(-DRMLUI_ENABLE_PROFILING)

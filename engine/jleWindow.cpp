@@ -61,14 +61,35 @@ jleWindow::glfwScrollCallback(GLFWwindow *window, double xoffset, double yoffset
 }
 
 void
-jleWindow::glfwFramebufferSizeCallback(GLFWwindow *window, int width, int height)
+jleWindow::glfwFramebufferSizeCallback(GLFWwindow *window, int fbWidth, int fbHeight)
 {
+    _activeWindow->windowSettings.width = static_cast<unsigned int>(fbWidth);
+    _activeWindow->windowSettings.height = static_cast<unsigned int>(fbHeight);
 
-    _activeWindow->windowSettings.width = static_cast<unsigned int>(width);
-    _activeWindow->windowSettings.height = static_cast<unsigned int>(height);
+    jleWindowResizeEvent resizeEvent{};
+
+    auto monitor = glfwGetWindowMonitor(window);
+    if(!monitor)
+    {
+        monitor = glfwGetPrimaryMonitor();
+    }
+
+    // Get the physical size of the monitor in millimeters
+    glfwGetMonitorPhysicalSize(monitor, &resizeEvent.monitorPhysicalSizeWidth, &resizeEvent.monitorPhysicalSizeHeight);
+
+    glfwGetMonitorContentScale(monitor, &resizeEvent.contentScaleX, &resizeEvent.contentScaleY);
+
+    // Calculate DPI
+    float dpiX = (float)fbWidth / ((float)resizeEvent.monitorPhysicalSizeWidth / 25.4f);
+    float dpiY = (float)fbHeight / ((float)resizeEvent.monitorPhysicalSizeHeight / 25.4f);
+
+    resizeEvent.framebufferWidth = fbWidth;
+    resizeEvent.framebufferHeight = fbHeight;
+    resizeEvent.dpiWidth = dpiX;
+    resizeEvent.dpiHeight = dpiY;
 
     // Call all subscribed callbacks
-    _activeWindow->executeResizeCallbacks(width, height);
+    _activeWindow->executeResizeCallbacks(resizeEvent);
 }
 
 #ifdef __EMSCRIPTEN__
@@ -77,7 +98,6 @@ EMSCRIPTEN_KEEPALIVE
 int
 resize_canvas_js(int width, int height)
 {
-
     glViewport(0, 0, width, height);
 
     printf("Change window size: %d, %d", width, height);
@@ -346,6 +366,11 @@ jleWindow::initWindow()
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
         const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         _glfwWindow = initGlfwWindow(mode->width, mode->height, windowSettings.WindowTitle.c_str());
+
+#ifdef __APPLE__
+        customizeTitleBarMacOS(_glfwWindow);
+#endif
+
 #endif
     }
     else
@@ -439,7 +464,7 @@ jleWindow::cursor()
 }
 
 unsigned int
-jleWindow::addWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback)
+jleWindow::addWindowResizeCallback(std::function<void(const jleWindowResizeEvent& resizeEvent)> callback)
 {
     unsigned int i = 0;
 
@@ -448,7 +473,7 @@ jleWindow::addWindowResizeCallback(std::function<void(unsigned int, unsigned int
          ++it, ++i) {
     }
 
-    windowResizedCallbacks.insert(std::make_pair(i, std::bind(callback, std::placeholders::_1, std::placeholders::_2)));
+    windowResizedCallbacks.insert(std::make_pair(i, [callback](auto && PH1) { callback(std::forward<decltype(PH1)>(PH1)); }));
 
     return i;
 }
@@ -460,10 +485,10 @@ jleWindow::removeWindowResizeCallback(unsigned int callback_id)
 }
 
 void
-jleWindow::executeResizeCallbacks(int w, int h)
+jleWindow::executeResizeCallbacks(const jleWindowResizeEvent& resizeEvent)
 {
     for (const auto &callback : windowResizedCallbacks) {
-        callback.second(w, h);
+        callback.second(resizeEvent);
     }
 }
 

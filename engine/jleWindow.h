@@ -23,6 +23,27 @@
 #include <map>
 #include <memory>
 
+#ifdef __APPLE__
+void customizeTitleBarMacOS(GLFWwindow* window);
+#endif
+
+struct jleWindowResizeEvent{
+    // Main framebuffer dimensions
+    int framebufferWidth;
+    int framebufferHeight;
+
+    // The physical size of the monitor in millimeters
+    int monitorPhysicalSizeWidth;
+    int monitorPhysicalSizeHeight;
+
+    float dpiWidth;
+    float dpiHeight;
+
+    // The content scale is the ratio between the current DPI and the platform's default DPI
+    float contentScaleX;
+    float contentScaleY;
+};
+
 class jleWindow {
 public:
     ~jleWindow();
@@ -52,11 +73,11 @@ public:
 
     void initWindow();
 
-    unsigned int addWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback);
+    unsigned int addWindowResizeCallback(std::function<void(const jleWindowResizeEvent& resizeEvent)> callback);
 
     void removeWindowResizeCallback(unsigned int callback_id);
 
-    void executeResizeCallbacks(int w, int h);
+    void executeResizeCallbacks(const jleWindowResizeEvent& resizeEvent);
 
     void updateWindow();
 
@@ -98,6 +119,6 @@ private:
     inline static bool sPressedKeys[512];
     inline static bool sReleasedKeys[512];
 
-    std::map<unsigned int, std::function<void(unsigned int, unsigned int)>>
+    std::map<unsigned int, std::function<void(const jleWindowResizeEvent& resizeEvent)>>
         windowResizedCallbacks;
 };
