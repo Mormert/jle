@@ -87,6 +87,10 @@ jleFileIndexer::sweep(std::vector<jlePath> &erased, std::vector<jlePath> &added,
     }
 
     for (auto &dir : _directories) {
+        if(!std::filesystem::exists(dir))
+        {
+            continue;
+        }
         for (auto &file : std::filesystem::recursive_directory_iterator(dir)) {
             auto end = file.path().string()[file.path().string().size() - 1];
             if (end == '~') {
