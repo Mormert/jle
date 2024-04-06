@@ -389,7 +389,7 @@ jleEditor::updateEditorLoadedScenes(float dt)
 {
     JLE_SCOPE_PROFILE_CPU(jleEditor_updateEditorLoadedScenes)
     for (int i = _editorScenes.size() - 1; i >= 0; i--) {
-        if (_editorScenes[i]->bPendingSceneDestruction) {
+        if (!_editorScenes[i] || _editorScenes[i]->bPendingSceneDestruction) {
             _editorScenes.erase(_editorScenes.begin() + i);
             continue;
         }

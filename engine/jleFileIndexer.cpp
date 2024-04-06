@@ -30,6 +30,11 @@ jleFileIndexer::jleFileIndexer(const std::vector<std::string> &directories,
 {
 }
 
+jleFileIndexer::~jleFileIndexer() {
+    // Wait for jobs to complete
+    Wait(_sweepingCtx);
+}
+
 void
 jleFileIndexer::periodicSweepThreaded()
 {

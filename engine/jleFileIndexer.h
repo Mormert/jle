@@ -42,6 +42,8 @@ public:
                             bool notifyMod = true,
                             bool notifyErase = true);
 
+    ~jleFileIndexer();
+
     void periodicSweepThreaded();
 
     void periodicSweep();
