@@ -181,9 +181,14 @@ jleGameEngine::executeNextFrame()
     LOG_VERBOSE << "Next frame dt: " << gEngine->deltaFrameTime();
     auto gameHaltedTemp = gameHalted;
     gameHalted = false;
-    update(deltaFrameTime());
 
-    JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS) { render(); }
+    wi::jobsystem::context ctx;
+
+    // Game thread
+    wi::jobsystem::Execute(ctx, [&](wi::jobsystem::JobArgs args) { update(deltaFrameTime()); });
+
+    // Render thread
+    JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS) { render(ctx); }
     gameHalted = gameHaltedTemp;
 }
 
@@ -367,7 +372,7 @@ jleGameEngine::update(float dt)
 }
 
 void
-jleGameEngine::render()
+jleGameEngine::render(wi::jobsystem::context& ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleGameEngine_render)
 
@@ -450,7 +455,7 @@ jleGameEngine::mainLoop()
     // Render thread
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
     {
-        render();
+        render(ctx);
         _window->updateWindow();
         running = !_window->windowShouldClose();
     }

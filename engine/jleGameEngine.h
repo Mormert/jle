@@ -17,9 +17,9 @@
 
 #include "jleCommon.h"
 
+#include <functional>
 #include <memory>
 #include <unordered_map>
-#include <functional>
 
 namespace SoLoud
 {
@@ -29,6 +29,11 @@ namespace Rml
 {
 class Context;
 };
+
+namespace wi::jobsystem
+{
+struct context;
+}
 
 class jleGame;
 class jleResources;
@@ -152,7 +157,7 @@ protected:
 
     virtual void update(float dt);
 
-    virtual void render();
+    virtual void render(wi::jobsystem::context& ctx);
 
     virtual void exiting();
 

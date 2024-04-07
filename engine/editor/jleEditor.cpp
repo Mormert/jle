@@ -178,18 +178,20 @@ jleEditor::start()
 }
 
 void
-jleEditor::render()
+jleEditor::render(wi::jobsystem::context& ctx)
 {
     JLE_SCOPE_PROFILE_GPU(EditorRender);
 
     renderGameView();
 
-    //renderEditorGizmos();
-
-    //renderEditorGridGizmo();
+    renderEditorGridGizmo();
 
     renderEditorSceneView();
 
+    // UI can touch game state, so we need to for game logic update to complete
+    Wait(ctx);
+
+    renderEditorGizmos();
     renderEditorUI();
 
     //resetRenderGraphForNewFrame();

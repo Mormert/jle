@@ -50,7 +50,7 @@ public:
 
     void start() override;
 
-    void render() override;
+    void render(wi::jobsystem::context& ctx) override;
 
     void update(float dt) override;
 
