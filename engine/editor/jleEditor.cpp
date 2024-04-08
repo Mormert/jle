@@ -184,13 +184,13 @@ jleEditor::render(wi::jobsystem::context& ctx)
 
     renderGameView();
 
-    renderEditorGridGizmo();
 
     renderEditorSceneView();
 
     // UI can touch game state, so we need to for game logic update to complete
     Wait(ctx);
 
+    renderEditorGridGizmo();
     renderEditorGizmos();
     renderEditorUI();
 
