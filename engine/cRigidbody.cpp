@@ -15,9 +15,9 @@
 
 #include "cRigidbody.h"
 
+#include "cMesh.h"
 #include "jleGameEngine.h"
 #include "jlePhysics.h"
-#include "cMesh.h"
 
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
@@ -27,9 +27,7 @@
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cRigidbody)
 
-cRigidbody::
-cRigidbody(const cRigidbody &other)
-    : jleComponent(other)
+cRigidbody::cRigidbody(const cRigidbody &other) : jleComponent(other)
 {
     _mass = other._mass;
 
@@ -86,13 +84,14 @@ cRigidbody::createRigidbody(bool isDynamic, btCollisionShape *shape)
     btVector3 localInertia(0, 0, 0);
     if (isDynamic) {
         shape->calculateLocalInertia(_mass, localInertia);
-    }else {
+    } else {
         _size.x = glm::length(glm::vec3(getTransform().getWorldMatrix()[0])); // Basis vector X
         _size.y = glm::length(glm::vec3(getTransform().getWorldMatrix()[1])); // Basis vector Y
         _size.z = glm::length(glm::vec3(getTransform().getWorldMatrix()[2])); // Basis vector Z
 
         auto v = btVector3{_size.x, _size.y, _size.z};
-        _optionalLocalShape = std::make_unique<btScaledBvhTriangleMeshShape>(reinterpret_cast<btBvhTriangleMeshShape*>(shape), v);
+        _optionalLocalShape =
+            std::make_unique<btScaledBvhTriangleMeshShape>(reinterpret_cast<btBvhTriangleMeshShape *>(shape), v);
         shape = _optionalLocalShape.get();
     }
 
@@ -102,6 +101,7 @@ cRigidbody::createRigidbody(bool isDynamic, btCollisionShape *shape)
 
     body->setUserIndex(-1);
     body->setUserPointer(this);
+
     return body;
 }
 
@@ -120,6 +120,8 @@ cRigidbody::setupRigidbody()
     }
 
     scene()->getPhysics().addRigidbody(_body.get());
+
+    setWorldMatrixAndScaleRigidbody(getTransform().getWorldMatrix());
 
     _body->activate();
 }
@@ -147,4 +149,37 @@ btRigidBody &
 cRigidbody::getBody()
 {
     return *_body.get();
+}
+
+void
+cRigidbody::setWorldMatrixAndScaleRigidbody(const glm::mat4 &worldMatrix)
+{
+    if (isDynamic()) {
+        getTransform().setWorldMatrix(worldMatrix);
+
+        setupNewRigidbodyAndDeleteOld();
+        glm::vec3 size;
+
+        size.x = glm::length(glm::vec3(worldMatrix[0])); // Basis vector X
+        size.y = glm::length(glm::vec3(worldMatrix[1])); // Basis vector Y
+        size.z = glm::length(glm::vec3(worldMatrix[2])); // Basis vector Z
+        getBody().getCollisionShape()->setLocalScaling({size.x, size.y, size.z});
+
+    } else {
+        // Remove scaling from the world matrix (bullet don't want the scaling for static objects)
+        glm::vec3 size;
+        size.x = glm::length(glm::vec3(worldMatrix[0])); // Basis vector X
+        size.y = glm::length(glm::vec3(worldMatrix[1])); // Basis vector Y
+        size.z = glm::length(glm::vec3(worldMatrix[2])); // Basis vector Z
+
+        getTransform().setWorldMatrix(worldMatrix);
+
+        const glm::mat4 scaledMatrix = glm::scale(worldMatrix, glm::vec3(1.f / size.x, 1.f / size.y, 1.f / size.z));
+
+        btTransform transform;
+        transform.setFromOpenGLMatrix((btScalar *)&scaledMatrix);
+
+        getBody().setWorldTransform(transform);
+        getBody().getCollisionShape()->setLocalScaling({size.x, size.y, size.z});
+    }
 }

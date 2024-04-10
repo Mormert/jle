@@ -56,6 +56,8 @@ public:
 
     btRigidBody &getBody();
 
+    void setWorldMatrixAndScaleRigidbody(const glm::mat4& worldMatrix);
+
     void setupRigidbody();
 
     void setupNewRigidbodyAndDeleteOld();

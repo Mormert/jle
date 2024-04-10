@@ -38,7 +38,7 @@ public:
 
     void update(jleGameEngine &ge) override;
 
-    bool importModel(const jlePath &path);
+    bool importModel(const jlePath &importPath, const jlePath& destinationPath);
 
 private:
     void processNode(const aiScene *scene,
@@ -47,7 +47,7 @@ private:
                      std::vector<std::shared_ptr<jleMesh>> &createdMeshes,
                      std::vector<jleResourceRef<jleMaterialPBR>> &createdMaterials);
 
-    bool _importWithSkinning;
+    bool _importWithSkinning{};
 };
 
 #endif // JLE_BUILD_EDITOR

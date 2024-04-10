@@ -15,12 +15,12 @@
 
 #include "jleEditor3DImportWindow.h"
 #include "cMesh.h"
-#include "jleSkinnedMesh.h"
 #include "cSkinnedMesh.h"
 #include "jleEditor.h"
 #include "jleMaterial.h"
 #include "jleMesh.h"
 #include "jlePath.h"
+#include "jleSkinnedMesh.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -42,23 +42,34 @@ jleEditor3DImportWindow::update(jleGameEngine &ge)
     ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_NoCollapse);
 
-    ImGui::Checkbox("Import With Skinning", &_importWithSkinning);
+    ImGui::Checkbox("Import with skinning (animated FBX)", &_importWithSkinning);
 
     {
-        static char buf[128];
-        ImGui::InputText("Import 3D model path", buf, sizeof(buf));
+        ImGui::Text("Specify import path and destination for import. Import using jlePath syntax. (e.g. "
+                    "GR:/MyFolder/MyAsset.fbx)");
+
+        static char bufImport[128];
+        ImGui::InputText("Import 3D model path", bufImport, sizeof(bufImport));
+
+        static char bufDestination[128];
+        ImGui::InputText("Destination folder", bufDestination, sizeof(bufDestination));
 
         if (ImGui::Button("Process")) {
-            jlePath path = buf;
-            importModel(path);
+            jlePath pathImport = bufImport;
+            jlePath pathDest = bufImport;
+            if (pathImport.isEmpty() || pathDest.isEmpty()) {
+                LOGW << "Paths not specified for 3D model import!";
+            } else {
+                importModel(pathImport, pathDest);
+            }
         }
     }
 
     ImGui::End();
 }
 
-
-void sanitizeAssimpsNames(const aiScene* scene)
+void
+sanitizeAssimpsNames(const aiScene *scene)
 {
     // Iterate through all material names
     for (unsigned int i = 0; i < scene->mNumMaterials; ++i) {
@@ -68,6 +79,9 @@ void sanitizeAssimpsNames(const aiScene* scene)
             if (materialName.data[j] == '.') {
                 materialName.data[j] = '_';
             }
+            if (materialName.data[j] == ' ') {
+                materialName.data[j] = '_';
+            }
         }
         scene->mMaterials[i]->AddProperty(&materialName, AI_MATKEY_NAME);
     }
@@ -75,6 +89,7 @@ void sanitizeAssimpsNames(const aiScene* scene)
     // Iterate through all animation names
     for (unsigned int i = 0; i < scene->mNumAnimations; ++i) {
         std::string name = scene->mAnimations[i]->mName.C_Str();
+        std::replace(name.begin(), name.end(), ' ', '_');
         std::replace(name.begin(), name.end(), '.', '_');
         scene->mAnimations[i]->mName.Set(name);
     }
@@ -82,13 +97,15 @@ void sanitizeAssimpsNames(const aiScene* scene)
     // Iterate through all mesh names
     for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
         std::string name = scene->mMeshes[i]->mName.C_Str();
+        std::replace(name.begin(), name.end(), ' ', '_');
         std::replace(name.begin(), name.end(), '.', '_');
         scene->mMeshes[i]->mName.Set(name);
     }
 
     // Iterate through all node names
-    std::function<void(aiNode*)> processNode = [&](aiNode *node) {
+    std::function<void(aiNode *)> processNode = [&](aiNode *node) {
         std::string name = node->mName.C_Str();
+        std::replace(name.begin(), name.end(), ' ', '_');
         std::replace(name.begin(), name.end(), '.', '_');
         node->mName.Set(name);
 
@@ -101,13 +118,14 @@ void sanitizeAssimpsNames(const aiScene* scene)
 }
 
 bool
-jleEditor3DImportWindow::importModel(const jlePath &path)
+jleEditor3DImportWindow::importModel(const jlePath &importPath, const jlePath &destinationPath)
 {
-    auto pathStr = path.getRealPath();
+    auto pathStr = importPath.getRealPath();
 
     Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(
-        pathStr, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_FlipUVs | aiProcess_GenUVCoords);
+    const aiScene *scene = importer.ReadFile(pathStr,
+                                             aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace |
+                                                 aiProcess_FlipUVs | aiProcess_GenUVCoords);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         LOGE << "Error loading mesh with Assimp" << importer.GetErrorString();
@@ -122,7 +140,8 @@ jleEditor3DImportWindow::importModel(const jlePath &path)
         auto assimpMaterial = scene->mMaterials[i];
         std::string materialName = assimpMaterial->GetName().C_Str();
 
-        auto material = jleResourceRef<jleMaterialPBR>(jlePath{path.getVirtualFolder() + '/' + materialName + ".mat"});
+        auto material =
+            jleResourceRef<jleMaterialPBR>(jlePath{destinationPath.getVirtualFolder() + '/' + materialName + ".mat"});
 
         const auto setTexture = [&](aiTextureType textureType, jleResourceRef<jleTexture> &textureRef) {
             if (assimpMaterial->GetTextureCount(textureType)) {
@@ -138,7 +157,7 @@ jleEditor3DImportWindow::importModel(const jlePath &path)
 
                 std::replace(assimpPathStr.begin(), assimpPathStr.end(), ' ', '_');
 
-                std::string virtualMaterialPath = path.getVirtualFolder() + '/' + assimpPathStr;
+                std::string virtualMaterialPath = destinationPath.getVirtualFolder() + '/' + assimpPathStr;
                 textureRef = jleResourceRef<jleTexture>(jlePath{virtualMaterialPath});
             }
         };
@@ -225,7 +244,7 @@ jleEditor3DImportWindow::importModel(const jlePath &path)
             createdMesh = mesh;
         }
 
-        createdMesh->path = jlePath{path.getVirtualFolder() + '/' + meshName + ".fbx"};
+        createdMesh->path = jlePath{destinationPath.getVirtualFolder() + '/' + meshName + ".fbx"};
         createdMesh->saveToFile();
 
         createdMeshes.push_back(createdMesh);

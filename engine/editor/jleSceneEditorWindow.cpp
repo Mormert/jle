@@ -277,35 +277,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         if (transformMatrix != worldMatrixBefore) {
             if (!gEngine->isGameKilled()) {
                 if (auto rb = obj->getComponent<cRigidbody>()) {
-                    if (rb->isDynamic()) {
-                        obj->getTransform().setWorldMatrix(worldMatrixBefore);
-
-                        rb->setupNewRigidbodyAndDeleteOld();
-                        glm::vec3 size;
-
-                        size.x = glm::length(glm::vec3(worldMatrixBefore[0])); // Basis vector X
-                        size.y = glm::length(glm::vec3(worldMatrixBefore[1])); // Basis vector Y
-                        size.z = glm::length(glm::vec3(worldMatrixBefore[2])); // Basis vector Z
-                        rb->getBody().getCollisionShape()->setLocalScaling({size.x, size.y, size.z});
-
-                    } else {
-                        // Remove scaling from the world matrix (bullet don't want the scaling for static objects)
-                        glm::vec3 size;
-                        size.x = glm::length(glm::vec3(worldMatrixBefore[0])); // Basis vector X
-                        size.y = glm::length(glm::vec3(worldMatrixBefore[1])); // Basis vector Y
-                        size.z = glm::length(glm::vec3(worldMatrixBefore[2])); // Basis vector Z
-
-                        obj->getTransform().setWorldMatrix(worldMatrixBefore);
-
-                        worldMatrixBefore =
-                            glm::scale(worldMatrixBefore, glm::vec3(1.f / size.x, 1.f / size.y, 1.f / size.z));
-
-                        btTransform transform;
-                        transform.setFromOpenGLMatrix((btScalar *)&worldMatrixBefore);
-
-                        rb->getBody().setWorldTransform(transform);
-                        rb->getBody().getCollisionShape()->setLocalScaling({size.x, size.y, size.z});
-                    }
+                    rb->setWorldMatrixAndScaleRigidbody(worldMatrixBefore);
                 } else {
                     obj->getTransform().setWorldMatrix(worldMatrixBefore);
                 }

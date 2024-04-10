@@ -182,16 +182,20 @@ jleEditor::render(wi::jobsystem::context& ctx)
 {
     JLE_SCOPE_PROFILE_GPU(EditorRender);
 
+// TODO : This needs to be restructured.
+// Possibly fix with ECS/context passing struct
+    Wait(ctx);
+
+
     renderGameView();
 
 
     renderEditorSceneView();
 
     // UI can touch game state, so we need to for game logic update to complete
-    Wait(ctx);
 
     renderEditorGridGizmo();
-    renderEditorGizmos();
+    //renderEditorGizmos(); // disable since for some reason we're rendering it into the game view lol
     renderEditorUI();
 
     //resetRenderGraphForNewFrame();
