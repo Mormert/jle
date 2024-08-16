@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include "BulletCollision/CollisionShapes/btTriangleMesh.h"
 #include "jleResourceInterface.h"

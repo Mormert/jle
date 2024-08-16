@@ -14,26 +14,26 @@
  *********************************************************************************************/
 
 #include "jleLuaEnvironment.h"
-#include "jleFileIndexer.h"
-#include "jleInput.h"
-#include "jleKeyboardInput.h"
+#include "core/jleFileWatcher.h"
 #include "jleLuaScript.h"
 #include "jleObject.h"
 #include "jlePath.h"
 #include "jlePathDefines.h"
 #include "jleResourceRef.h"
+#include "modules/input/hardware/jleKeyboardInput.h"
+#include "modules/input/jleInput.h"
 #include <glm/ext/matrix_transform.hpp>
 
 #if JLE_BUILD_IMGUI
 #include "ImGui/sol_ImGui.h"
 #endif
 
-jleLuaEnvironment::jleLuaEnvironment()
+jleLuaEnvironment::jleLuaEnvironment() : _scriptFilesWatcher({})
 {
     std::vector<std::string> directories;
     directories.push_back(jlePath{"GR:/scripts"}.getRealPath());
 
-    _scriptFilesWatcher = std::make_unique<jleFileIndexer>(directories, true, false, false);
+    _scriptFilesWatcher.setWatchDirectories(directories);
 
     _luaState = sol::state{};
     setupLua(_luaState);
@@ -521,14 +521,11 @@ jleLuaEnvironment::getState()
 void
 jleLuaEnvironment::setupScriptLoader()
 {
-    _scriptFilesWatcher->setNotifyAddedCallback([&](const jlePath &path) {
-        if (path.getFileEnding() == "lua") {
-            loadScript(path);
-        }
-    });
-
-    // Load all Lua scripts is the to-be-watched folder
-    _scriptFilesWatcher->periodicSweep();
+    // Load all Lua scripts in the to-be-watched folder
+    const auto result = _scriptFilesWatcher.sweep();
+    for (const auto &added : result.added) {
+        loadScript(added);
+    }
 }
 
 void
@@ -565,7 +562,21 @@ jleLuaEnvironment::loadedLuaClasses()
 void
 jleLuaEnvironment::loadNewlyAddedScripts()
 {
-    _scriptFilesWatcher->periodicSweepThreaded();
+    ZoneScopedNC("jleLuaEnvironment_loadNewlyAddedScripts", 0xe57395);
+
+    if (_fileWatchFuture.valid()) {
+        if (_fileWatchFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
+            const auto result = _fileWatchFuture.get();
+
+            for (auto &added : result.added) {
+                if (added.getFileEnding() == "lua") {
+                    loadScript(added);
+                }
+            }
+        }
+    } else {
+        _fileWatchFuture = std::async(std::launch::async, [&]() { return _scriptFilesWatcher.sweep(); });
+    }
 }
 
 #endif

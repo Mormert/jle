@@ -16,12 +16,12 @@
 #ifndef JLE_ENGINESETTINGS
 #define JLE_ENGINESETTINGS
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
+#include "jleResourceRef.h"
 #include "jleSerializedResource.h"
 #include "jleTypeReflectionUtils.h"
-#include "jleWindowSettings.h"
-#include "jleResourceRef.h"
+#include "modules/windowing/jleWindowSettings.h"
 
 class jleEngineSettings : public jleSerializedOnlyResource
 {

@@ -14,23 +14,22 @@
  *********************************************************************************************/
 
 #include "jleGameEditorWindow.h"
-#include "jleInput.h"
-#include "jleWindow.h"
-#include "jleFrameBufferInterface.h"
-#include "jleMouseInput.h"
+#include "modules/graphics/core/jleFrameBufferInterface.h"
+#include "modules/input/hardware/jleMouseInput.h"
+#include "modules/input/jleInput.h"
+#include "modules/windowing/jleWindow.h"
 
-#include "jleIncludeGL.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 
 #include <ImGui/imgui.h>
 
 
 jleGameEditorWindow::jleGameEditorWindow(const std::string &window_name) : jleEditorWindowInterface{window_name}
 {
-    gGameEditorWindow = this;
 }
 
 void
-jleGameEditorWindow::update(jleGameEngine &ge)
+jleGameEditorWindow::renderUI(jleGameEngine &ge)
 {
     if (!isOpened) {
         return;

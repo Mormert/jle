@@ -26,16 +26,16 @@
  *
  */
 
-#include "jleWindow.h"
 #include "jleGameEngine.h"
+#include "modules/windowing/jleWindow.h"
 
 #include "RmlUi_Backend.h"
 #include "RmlUi_Platform_GLFW.h"
 #include "RmlUi_Renderer_GL3.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 #include <RmlUi/Core/Context.h>
 #include <RmlUi/Core/Input.h>
 #include <RmlUi/Core/Profiling.h>
-#include "jleIncludeGL.h"
 
 static void SetupCallbacks(GLFWwindow* window);
 

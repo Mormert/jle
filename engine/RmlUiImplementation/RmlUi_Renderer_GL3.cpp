@@ -29,7 +29,7 @@
 #include "jleBuildConfig.h"
 
 // Include whatever GL jle includes
-#include "jleIncludeGL.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 
 #include "RmlUi_Renderer_GL3.h"
 #include <RmlUi/Core/Core.h>

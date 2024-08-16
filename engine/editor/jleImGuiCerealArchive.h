@@ -27,10 +27,10 @@
 
 #if JLE_BUILD_EDITOR
 
+#include "core/jleFileWatcher.h"
 #include "jleComponent.h"
 #include "jleEditor.h"
 #include "jleExternalSerialization.h"
-#include "jleFileIndexer.h"
 #include "jleLuaClassSerialization.h"
 #include "jleRGB.h"
 #include "jleResourceRef.h"

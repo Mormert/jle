@@ -21,7 +21,7 @@
 jleEditorResourceEdit::jleEditorResourceEdit(const std::string &window_name) : jleEditorWindowInterface(window_name) {}
 
 void
-jleEditorResourceEdit::update(jleGameEngine &ge)
+jleEditorResourceEdit::renderUI(jleGameEngine &ge)
 {
     std::vector<jlePath> toBeRemoved{};
 

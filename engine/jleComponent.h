@@ -16,7 +16,7 @@
 #ifndef JLE_COMPONENT
 #define JLE_COMPONENT
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include "jleTypeReflectionUtils.h"
 

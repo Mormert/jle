@@ -15,6 +15,9 @@
 
 #include "jleImGuiCerealArchive.h"
 #include "jleLuaEnvironment.h"
+#include "core/jleResourceIndexer.h"
+
+#include <jleVectorSet.h>
 
 void
 cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, jleTextureRefOrRGBA &value)
@@ -117,7 +120,7 @@ cereal::jleImGuiCerealArchive::draw_ui_reference(const char *name,
 
     bool existsSomeFiles = false;
     for (auto &extension : fileExtensions) {
-        auto e = gEditor->fileIndexer().getIndexedFilesPtr(extension.c_str());
+        auto e = gEditor->resourceIndexer().getIndexedFilesPtr(extension.c_str());
         if (!e->empty()) {
             existsSomeFiles = true;
         }

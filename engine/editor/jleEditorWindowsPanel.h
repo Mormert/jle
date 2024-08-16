@@ -25,15 +25,22 @@
 class jleEditorWindowsPanel : public jleEditorWindowInterface
 {
 public:
+
+    struct jleEditorWindowsPanelRenderContext
+    {
+        const jleFrameInfo& frameInfo;
+        jleGameEngine& gameEngine;
+    };
+
     explicit jleEditorWindowsPanel(const std::string &window_name);
 
-    void update(jleGameEngine &ge) override;
+    void renderUI(const jleEditorWindowsPanelRenderContext& context);
 
     void addWindow(std::shared_ptr<jleEditorWindowInterface> window);
 
-    inline void menuButtonsupdate(jleGameEngine &ge);
+    inline void menuButtonsupdate(const jleEditorWindowsPanelRenderContext& context);
 
-    inline void dockspaceupdate(jleGameEngine &ge);
+    inline void dockspaceupdate(const jleEditorWindowsPanelRenderContext& context);
 
 private:
     std::shared_ptr<jleTexture> _crossIcon;           // X

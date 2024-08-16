@@ -16,7 +16,7 @@
 #ifndef JLE_PHYSICS_H
 #define JLE_PHYSICS_H
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include <BulletCollision/BroadphaseCollision/btBroadphaseInterface.h>
 #include <BulletCollision/CollisionDispatch/btCollisionDispatcher.h>
@@ -31,6 +31,7 @@
 #include <memory>
 
 class cRigidbody;
+class jle3DGraph;
 
 class jlePhysics
 {
@@ -45,7 +46,7 @@ public:
 
     bool renderDebugEnabled = false;
 
-    void renderDebug();
+    void renderDebug(jle3DGraph& graph);
 
     btDiscreteDynamicsWorld& dynamicsWorld();
 
@@ -58,7 +59,7 @@ private:
     std::unique_ptr<btDefaultCollisionConfiguration> _collisionConfiguration;
     std::unique_ptr<btDiscreteDynamicsWorld> _dynamicsWorld;
 
-    std::unique_ptr<btIDebugDraw> _debugDraw;
+    std::unique_ptr<jlePhysicsDebugDrawer> _debugDraw;
 };
 
 #endif // JLE_PHYSICS_H

@@ -33,7 +33,7 @@ public:
                                      const std::shared_ptr<jleEditorTextEdit> &editorTextEdit,
                                      const std::shared_ptr<jleEditorResourceEdit> &editorResourceEdit);
 
-    void update(jleGameEngine &ge) override;
+    void renderUI(jleGameEngine &ge);
 
 private:
     std::shared_ptr<jleTexture> _fileIcon;

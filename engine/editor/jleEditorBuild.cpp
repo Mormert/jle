@@ -15,8 +15,8 @@
 
 #include "jleEditorBuild.h"
 
+#include "core/jleResourceIndexer.h"
 #include "jleEditor.h"
-#include "jleFileIndexer.h"
 #include "jleScopeProfileLog.h"
 
 #include "3rdparty/WickedEngine/wiJobSystem.h"
@@ -26,7 +26,7 @@
 jleEditorBuild::jleEditorBuild(const std::string &window_name) : jleEditorWindowInterface(window_name) {}
 void
 
-jleEditorBuild::update(jleGameEngine &ge)
+jleEditorBuild::renderUI(jleGameEngine &ge, jleResourceIndexer& resourceIndexer)
 {
     if (!isOpened) {
         return;
@@ -41,7 +41,7 @@ jleEditorBuild::update(jleGameEngine &ge)
         ImGui::Text("Packaging job in progress (%2f %%)\nDon't close the editor during this process...",
                     _packagingProgress * 100.0);
     } else {
-        auto &indexedFiles = gEditor->fileIndexer().getIndexedFiles();
+        auto &indexedFiles = resourceIndexer.getIndexedFiles();
 
         ImGui::Text("Amount of items to package: %zu", indexedFiles.size());
         if (ImGui::Button("Package Resources")) {

@@ -123,9 +123,6 @@ jleCameraSimpleFPVController::applyPerspectiveMouseMovementDelta(glm::vec2 delta
     calculatePerspectiveVectors();
 }
 
-// TODO:
-// https://gitlab.com/muffinman007/OpenGL_360_Camera_Quarternion/blob/master/Camera.h
-
 void
 jleCameraSimpleFPVController::calculatePerspectiveVectors()
 {

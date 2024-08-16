@@ -16,7 +16,7 @@
 #ifndef JLE_SCENE
 #define JLE_SCENE
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include <memory>
 #include <vector>

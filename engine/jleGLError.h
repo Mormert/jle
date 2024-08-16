@@ -18,7 +18,7 @@
 
 #include "jleBuildConfig.h"
 
-#include "jleIncludeGL.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 
 #include <string>
 #include <plog/Log.h>

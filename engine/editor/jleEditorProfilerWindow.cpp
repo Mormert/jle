@@ -24,7 +24,7 @@
 jleEditorProfilerWindow::jleEditorProfilerWindow(const std::string &window_name) : jleEditorWindowInterface{window_name} {}
 
 void
-jleEditorProfilerWindow::update(jleGameEngine &ge)
+jleEditorProfilerWindow::renderUI(jleGameEngine &ge)
 {
     if (!isOpened) {
         return;

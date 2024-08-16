@@ -14,14 +14,14 @@
  *********************************************************************************************/
 
 #include "jleQuadRendering.h"
-#include "jleFrameBufferInterface.h"
 #include "jlePathDefines.h"
 #include "jleProfiler.h"
+#include "modules/graphics/core/jleFrameBufferInterface.h"
 #include <plog/Log.h>
 #include <random>
 #include <thread>
 
-#include "jleIncludeGL.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 

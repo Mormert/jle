@@ -22,7 +22,7 @@
 jleEditorSettingsWindow::jleEditorSettingsWindow(const std::string &window_name) : jleEditorWindowInterface{window_name} {}
 
 void
-jleEditorSettingsWindow::update(jleGameEngine &ge)
+jleEditorSettingsWindow::renderUI(jleGameEngine &ge)
 {
     if (!isOpened) {
         return;

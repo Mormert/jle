@@ -31,7 +31,7 @@ class jleEditorResourceEdit : public jleEditorWindowInterface
 public:
     explicit jleEditorResourceEdit(const std::string &window_name);
 
-    void update(jleGameEngine &ge) override;
+    void renderUI(jleGameEngine &ge);
 
     bool tryOpen(const jlePath &path);
 

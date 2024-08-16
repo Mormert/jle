@@ -15,9 +15,9 @@
 
 #include "jleEditorWindowsPanel.h"
 
-#include "jleGameEditorWindow.h"
 #include "jleEngineSettings.h"
-#include "jleWindow.h"
+#include "jleGameEditorWindow.h"
+#include "modules/windowing/jleWindow.h"
 
 #include <ImGui/imgui.h>
 #include <plog/Log.h>
@@ -33,9 +33,9 @@ jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name)
 }
 
 void
-jleEditorWindowsPanel::update(jleGameEngine &ge)
+jleEditorWindowsPanel::renderUI(const jleEditorWindowsPanelRenderContext& context)
 {
-    dockspaceupdate(ge);
+    dockspaceupdate(context);
 }
 
 void
@@ -45,7 +45,7 @@ jleEditorWindowsPanel::addWindow(std::shared_ptr<jleEditorWindowInterface> windo
 }
 
 void
-jleEditorWindowsPanel::dockspaceupdate(jleGameEngine &ge)
+jleEditorWindowsPanel::dockspaceupdate(const jleEditorWindowsPanelRenderContext& context)
 {
 
     static bool opt_fullscreen = true;
@@ -102,13 +102,13 @@ jleEditorWindowsPanel::dockspaceupdate(jleGameEngine &ge)
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
     }
 
-    menuButtonsupdate(ge);
+    menuButtonsupdate(context);
 
     ImGui::End();
 }
 
 void
-jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine &ge)
+jleEditorWindowsPanel::menuButtonsupdate(const jleEditorWindowsPanelRenderContext& context)
 {
     if (ImGui::BeginMenuBar()) {
 
@@ -136,7 +136,7 @@ jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine &ge)
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Game Controller")) {
-            _gameController.update(ge);
+            _gameController.render(context.gameEngine);
             ImGui::EndMenu();
         }
 
@@ -165,7 +165,7 @@ jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine &ge)
         const auto rolling120FramesAvgFps = (int)ImGui::GetIO().Framerate;
         ImGui::Text("Avg FPS: %4d  |  Run Time: %s",
                     rolling120FramesAvgFps,
-                    formatTime(static_cast<int>(ge.currentFrameTime() * 1000.f)).c_str());
+                    formatTime(static_cast<int>(context.frameInfo.getCurrentFrameTime() * 1000.f)).c_str());
 
         {
             ImGuiStyle &style = ImGui::GetStyle();

@@ -18,8 +18,8 @@
 
 #include "btBulletDynamicsCommon.h"
 
-#include "cRigidbody.h"
 #include "jleProfiler.h"
+#include "modules/physics/components/cRigidbody.h"
 
 jlePhysics::
 jlePhysics()
@@ -64,10 +64,11 @@ jlePhysics::removeRigidbody(btRigidBody *body)
 }
 
 void
-jlePhysics::renderDebug()
+jlePhysics::renderDebug(jle3DGraph& graph)
 {
     if (renderDebugEnabled) {
         JLE_SCOPE_PROFILE_CPU(renderPhysicsDebug)
+        _debugDraw->set3DGraph(&graph);
         _dynamicsWorld->debugDrawWorld();
     }
 }

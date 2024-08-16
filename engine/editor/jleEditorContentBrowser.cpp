@@ -161,7 +161,7 @@ jleEditorContentBrowser::contentHierarchy(std::string directoryPath, const std::
 }
 
 void
-jleEditorContentBrowser::update(jleGameEngine &ge)
+jleEditorContentBrowser::renderUI(jleGameEngine &ge)
 {
     if (!isOpened) {
         return;
@@ -570,7 +570,7 @@ jleEditorContentBrowser::selectedFilePopupObjectTemplate(std::filesystem::path &
             objectName.resize(dot);
         }
 
-        if (auto &&scene = gEditor->editorSceneObjects().GetSelectedScene().lock()) {
+        if (auto &&scene = gEditor->getEditorSceneObjectsWindow().GetSelectedScene().lock()) {
             try {
                 scene->spawnObjectFromTemplate(jlePath{file.string(), false});
             } catch (std::exception &e) {

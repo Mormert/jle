@@ -37,7 +37,7 @@ jleEditorSceneObjectsWindow::GetSelectedObject()
 }
 
 void
-jleEditorSceneObjectsWindow::update(jleGameEngine &ge)
+jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge)
 {
     if (!isOpened) {
         return;

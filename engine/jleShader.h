@@ -16,7 +16,7 @@
 #ifndef JLE_SHADER_H
 #define JLE_SHADER_H
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include "jleResourceInterface.h"
 #include "jleTextureRules.h"

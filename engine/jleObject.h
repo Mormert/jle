@@ -16,7 +16,7 @@
 #ifndef JLE_OBJECT
 #define JLE_OBJECT
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include "jlePath.h"
 #include "jleSerializedResource.h"

@@ -27,7 +27,7 @@ jleEditorNotifications::jleEditorNotifications(const std::string &windowName) : 
 jleEditorNotifications::~jleEditorNotifications() { dynamicAppender().removeAppender(this); }
 
 void
-jleEditorNotifications::update(jleGameEngine &ge)
+jleEditorNotifications::renderUI(jleGameEngine &ge)
 {
     using namespace std::chrono;
     long long now = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();

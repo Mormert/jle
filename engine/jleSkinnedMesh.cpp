@@ -22,7 +22,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "jleIncludeGL.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 
 void
 jleSkinnedMesh::destroyOldBuffersSkinned()

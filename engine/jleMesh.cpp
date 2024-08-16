@@ -18,14 +18,13 @@
 
 #include "tiny_obj_loader.h"
 #include <plog/Log.h>
-#include <stdio.h>
 
 #include <assimp/Exporter.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-#include "jleIncludeGL.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 
 bool
 jleMesh::loadFromFile(const jlePath &path)

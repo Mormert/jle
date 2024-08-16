@@ -14,8 +14,8 @@
  *********************************************************************************************/
 
 #include "jlePhysicsDebugDrawer.h"
-#include "jle3DGraph.h"
 #include "jleGameEngine.h"
+#include "modules/graphics/jle3DGraph.h"
 
 void
 jlePhysicsDebugDrawer::setDebugMode(int debugMode)
@@ -64,8 +64,7 @@ jlePhysicsDebugDrawer::drawLine(const btVector3 &from1, const btVector3 &to1, co
     auto from = glm::vec3(from1.x(), from1.y(), from1.z());
     auto to = glm::vec3(to1.x(), to1.y(), to1.z());
     auto color = glm::vec3(color1.x(), color1.y(), color1.z());
-    gEngine->renderGraph().sendLine(jle3DLineVertex{from, color, glm::vec3{1.f, 0.f, 0.f}},
-                                              {to, color, glm::vec3{1.f, 0.f, 0.f}});
+    _graph->sendLine(jle3DLineVertex{from, color, glm::vec3{1.f, 0.f, 0.f}}, {to, color, glm::vec3{1.f, 0.f, 0.f}});
 }
 
 void
@@ -80,3 +79,9 @@ jlePhysicsDebugDrawer::getDefaultColors() const
 }
 
 jlePhysicsDebugDrawer::~jlePhysicsDebugDrawer() {}
+
+void
+jlePhysicsDebugDrawer::set3DGraph(jle3DGraph *graph)
+{
+    _graph = graph;
+}

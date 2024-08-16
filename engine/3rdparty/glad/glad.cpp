@@ -847,7 +847,7 @@
         Too many extensions
 */
 
-#include "jleIncludeGL.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

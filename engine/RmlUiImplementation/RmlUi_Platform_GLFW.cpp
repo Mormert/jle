@@ -27,12 +27,12 @@
  */
 
 #include "RmlUi_Platform_GLFW.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 #include <RmlUi/Core/Context.h>
 #include <RmlUi/Core/Input.h>
 #include <RmlUi/Core/Log.h>
 #include <RmlUi/Core/StringUtilities.h>
 #include <RmlUi/Core/SystemInterface.h>
-#include "jleIncludeGL.h"
 
 #include <plog/Log.h>
 

@@ -16,12 +16,12 @@
 #ifndef JLE_EDITORSAVESTATE
 #define JLE_EDITORSAVESTATE
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
+#include "core/jleCompileHelper.h"
+#include "glm/glm.hpp"
 #include "jleSerializedResource.h"
 #include "jleTypeReflectionUtils.h"
-#include "jleCompileHelper.h"
-#include "glm/glm.hpp"
 
 #include <cereal/cereal.hpp>
 #include <cereal/archives/json.hpp>

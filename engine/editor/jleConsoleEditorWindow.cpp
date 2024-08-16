@@ -160,7 +160,7 @@ void jleConsoleEditorWindow::execCommand(const char *command_line) {
     ScrollToBottom = true;
 }
 
-void jleConsoleEditorWindow::update(jleGameEngine &ge) {
+void jleConsoleEditorWindow::renderUI(jleGameEngine &ge) {
     if (!isOpened) {
         return;
     }

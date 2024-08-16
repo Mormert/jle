@@ -14,40 +14,42 @@
  *********************************************************************************************/
 
 #include "jleSceneEditorWindow.h"
-#include "cMesh.h"
-#include "cRigidbody.h"
-#include "jle3DGraph.h"
-#include "jle3DRenderer.h"
-#include "jle3DSettings.h"
 #include "jleEditor.h"
 #include "jleEditorGizmos.h"
 #include "jleEditorSceneObjectsWindow.h"
-#include "jleFramebufferPicking.h"
 #include "jleGame.h"
-#include "jleIncludeGL.h"
-#include "jleInput.h"
 #include "jlePhysics.h"
 #include "jleTexture.h"
-#include "jleWindow.h"
+#include "modules/graphics/core/jleFramebufferMultisample.h"
+#include "modules/graphics/core/jleFramebufferPicking.h"
+#include "modules/graphics/core/jleIncludeGL.h"
+#include "modules/graphics/jle3DGraph.h"
+#include "modules/graphics/jle3DRenderer.h"
+#include "modules/graphics/jle3DSettings.h"
+#include "modules/graphics/runtime/components/cMesh.h"
+#include "modules/input/jleInput.h"
+#include "modules/physics/components/cRigidbody.h"
+#include "modules/windowing/jleWindow.h"
+#include <modules/graphics/core/jleFramebufferScreen.h>
 
 #include <ImGui/imgui.h>
 #include <btBulletDynamicsCommon.h>
 #include <glm/common.hpp>
 
-jleSceneEditorWindow::
-jleSceneEditorWindow(const std::string &window_name, std::shared_ptr<jleFramebufferInterface> &framebuffer)
-    : jleEditorWindowInterface(window_name)
+jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name) : jleEditorWindowInterface(window_name)
 {
-    _framebuffer = framebuffer;
+    constexpr int initialX = 1024, initialY = 1024;
+    _framebuffer = std::make_shared<jleFramebufferScreen>(initialX, initialY);
 
     _pickingFramebuffer = std::make_unique<jleFramebufferPicking>(_framebuffer->width(), _framebuffer->height());
+    _msaa = std::make_unique<jleFramebufferMultisample>(_framebuffer->width(), _framebuffer->height(), 4);
 
     auto pos = gEditor->camera().getPosition();
     fpvCamController.position = pos;
 }
 
 void
-jleSceneEditorWindow::update(jleGameEngine &ge)
+jleSceneEditorWindow::renderUI(jleGameEngine &ge)
 {
     if (!isOpened) {
         return;
@@ -105,7 +107,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         _framebuffer->resize(_lastGameWindowWidth, _lastGameWindowHeight);
     }
 
-    const auto &selectedObject = gEditor->editorSceneObjects().GetSelectedObject();
+    const auto &selectedObject = gEditor->getEditorSceneObjectsWindow().GetSelectedObject();
 
     glBindTexture(GL_TEXTURE_2D, (unsigned int)_framebuffer->texture());
 
@@ -162,7 +164,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
                     std::shared_ptr<jleObject> o{};
                     object->tryFindChildWithInstanceId(pickedID, o);
                     if (o) {
-                        gEditor->editorSceneObjects().SetSelectedObject(o);
+                        gEditor->getEditorSceneObjectsWindow().SetSelectedObject(o);
                     }
                 }
             }
@@ -206,7 +208,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     ImGui::SameLine();
 
     if (!gEngine->isGameKilled()) {
-        if (auto &&scene = gEditor->editorSceneObjects().GetSelectedScene().lock()) {
+        if (auto &&scene = gEditor->getEditorSceneObjectsWindow().GetSelectedScene().lock()) {
             ImGui::Checkbox("Physics Debug", &scene->getPhysics().renderDebugEnabled);
         }
     }
@@ -228,7 +230,6 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     static const auto identityMatrix = glm::mat4{1.f};
     const static float *identityMatrixPtr = &identityMatrix[0][0];
     // ImGuizmo::DrawGrid(viewMatrix, projectionMatrix, identityMatrixPtr, 25.f);
-
 
     // The following commented code is for a camera controller "cube" in the top left corner.
     // It contains a bug, however, and is not really usable at the moment.
@@ -342,7 +343,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
             fpvCamController.moveDown(cameraSpeed * t);
         }
 
-        if(dragDelta.x != 0 || dragDelta.y != 0){
+        if (dragDelta.x != 0 || dragDelta.y != 0) {
             gEditor->camera().setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
         }
 
@@ -358,6 +359,27 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
 
     ImGui::End();
 }
+
+void
+jleSceneEditorWindow::render(jle3DGraph &graph, const jleEditorModulesContext &context)
+{
+    if (context.editor.perspectiveCamera) {
+        gEditor->camera().setPerspectiveProjection(45.f, _framebuffer->width(), _framebuffer->height(), 10000.f, 0.1f);
+    } else {
+        gEditor->camera().setOrthographicProjection(
+            _framebuffer->width() * orthoZoomValue, _framebuffer->height() * orthoZoomValue, 10000.f, -10000.f);
+    }
+
+    if (_framebuffer->width() != _msaa->width() || _framebuffer->height() != _msaa->height()) {
+        _msaa->resize(_framebuffer->width(), _framebuffer->height());
+    }
+
+    context.engineModulesContext.rendererModule.render(
+        *_msaa, gEditor->camera(), graph, context.engine.renderSettings());
+
+    _msaa->blitToOther(*_framebuffer);
+}
+
 void
 jleSceneEditorWindow::EditTransform(float *cameraView,
                                     float *cameraProjection,

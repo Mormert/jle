@@ -14,15 +14,15 @@
  *********************************************************************************************/
 
 #include "jleObject.h"
-#include "cLuaScript.h"
 #include "jleGame.h"
 #include "jleGameEngine.h"
+#include "jleNetworkEvent.h"
 #include "jlePathDefines.h"
 #include "jleScene.h"
-#include "jleNetworkEvent.h"
 #include "jleSceneClient.h"
 #include "jleSceneServer.h"
 #include "jleTransform.h"
+#include "modules/scripting/components/cLuaScript.h"
 
 #include <fstream>
 #include <optional>

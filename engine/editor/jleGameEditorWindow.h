@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #if JLE_BUILD_EDITOR
 
@@ -28,9 +28,7 @@ class jleGameEditorWindow : public jleEditorWindowInterface
 public:
     explicit jleGameEditorWindow(const std::string &window_name);
 
-    void update(jleGameEngine &ge) override;
-
-    static inline jleGameEditorWindow *gGameEditorWindow;
+    void renderUI(jleGameEngine &ge);
 
     int width() const;
 

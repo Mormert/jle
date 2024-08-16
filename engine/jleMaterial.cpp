@@ -13,7 +13,7 @@
  *                                                                                           *
  *********************************************************************************************/
 #include "jleMaterial.h"
-#include "jleIncludeGL.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterial)
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterialPBR)

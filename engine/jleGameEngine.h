@@ -15,7 +15,8 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
+#include "modules/jleEngineModulesContext.h"
 
 #include <functional>
 #include <memory>
@@ -51,6 +52,25 @@ class jleRenderThread;
 
 class jleGameEngine;
 inline jleGameEngine *gEngine;
+
+class jleFrameInfo
+{
+public:
+    // clang-format off
+    [[nodiscard]] inline int getFps() const                 { return _fps;}
+    [[nodiscard]] inline float getDeltaTime() const         { return _deltaTime; }
+    [[nodiscard]] inline double getCurrentFrameTime() const { return _currentFrame; }
+    [[nodiscard]] inline double getLastFrameTime() const    { return _lastFrame; }
+    // clang-format on
+
+private:
+    int _fps = 0;
+    float _deltaTime = 0;
+    double _currentFrame = 0;
+    double _lastFrame = 0;
+
+    friend class jleGameEngine;
+};
 
 class jleGameEngine
 {
@@ -124,18 +144,23 @@ public:
 
     std::shared_ptr<jleLuaEnvironment> &luaEnvironment();
 
-    static inline Rml::Context *context{};
+    static inline Rml::Context *rmlContext_notUsed{};
 
 private:
+    std::unique_ptr<jleEngineModulesContext> _modulesContext;
+
     void mainLoop();
 
     bool running{false};
 
+#ifdef __EMSCRIPTEN__
+    static jleGameEngine* _emscriptenEnginePtr;
     static void
     mainLoopEmscripten()
     {
-        gEngine->mainLoop();
+        _emscriptenEnginePtr->mainLoop();
     }
+#endif
 
     void loop();
 
@@ -149,7 +174,7 @@ private:
     std::unordered_map<unsigned int, std::function<void(unsigned int, unsigned int)>> _gameWindowResizedCallbacks;
 
 protected:
-    virtual void start();
+    virtual void start(const jleEngineModulesContext &context);
 
     void startRmlUi();
 
@@ -157,7 +182,7 @@ protected:
 
     virtual void update(float dt);
 
-    virtual void render(wi::jobsystem::context& ctx);
+    virtual void render(wi::jobsystem::context &ctx);
 
     virtual void exiting();
 
@@ -181,11 +206,7 @@ protected:
     jle3DRenderer &renderer();
 
     void refreshDeltaTimes();
-
-    int _fps = 0;
-    float _deltaTime = 0;
-    double _currentFrame = 0;
-    double _lastFrame = 0;
+    jleFrameInfo _frameInfo{};
 
     std::shared_ptr<jleLuaEnvironment> _luaEnvironment;
 

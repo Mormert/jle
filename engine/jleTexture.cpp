@@ -16,8 +16,8 @@
 #include "jleTexture.h"
 #include "jleGameEngine.h"
 #include "jleImage.h"
-#include "jleIncludeGL.h"
 #include "jleRenderThread.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 
 #include <plog/Log.h>
 #include <stb_image.h>

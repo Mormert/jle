@@ -29,7 +29,7 @@ class jleEditorSceneObjectsWindow : public jleEditorWindowInterface
 public:
     explicit jleEditorSceneObjectsWindow(const std::string &window_name);
 
-    void update(jleGameEngine &ge) override;
+    void renderUI(jleGameEngine &ge);
 
     std::weak_ptr<jleObject> &GetSelectedObject();
 

@@ -20,11 +20,12 @@
 #if JLE_BUILD_EDITOR
 
 #include "jleGameEngine.h"
+#include "modules/jleEditorModulesContext.h"
 
-#include <vector>
 #include <string>
+#include <vector>
 
-class jleFileIndexer;
+class jleFileWatcher;
 class jleEditorWindowInterface;
 class jleFramebufferInterface;
 class jleSceneEditorWindow;
@@ -36,6 +37,7 @@ class jleEditorGizmos;
 class jleEditorSaveState;
 class jlePath;
 class jleObject;
+class jleResourceIndexer;
 struct jleWindowResizeEvent;
 
 class jleEditor;
@@ -48,20 +50,20 @@ public:
 
     ~jleEditor() override;
 
-    void start() override;
+    void start(const jleEngineModulesContext &context) override;
 
-    void render(wi::jobsystem::context& ctx) override;
+    void render(wi::jobsystem::context &ctx) override;
 
     void update(float dt) override;
 
-    std::shared_ptr<jleFramebufferInterface> editorScreenFramebuffer;
+    // std::shared_ptr<jleFramebufferInterface> editorScreenFramebuffer;
 
-    jleCamera& camera();
+    jleCamera &camera();
     bool perspectiveCamera = true;
 
-    jleEditorGizmos& gizmos();
+    jleEditorGizmos &gizmos();
 
-    jleEditorSaveState& saveState();
+    jleEditorSaveState &saveState();
 
     void updateEditorLoadedScenes(float dt);
 
@@ -69,19 +71,19 @@ public:
 
     jleEditorTextEdit &editorTextEdit();
 
-    jleEditorSceneObjectsWindow &editorSceneObjects();
+    jleEditorSceneObjectsWindow &getEditorSceneObjectsWindow();
 
-    jleFileIndexer& fileIndexer();
+    jleResourceIndexer &resourceIndexer();
 
-    bool
-    checkSceneIsActiveEditor(const std::string &sceneName);
+    bool checkSceneIsActiveEditor(const std::string &sceneName);
 
-    std::shared_ptr<jleScene>
-    loadScene(const jlePath &scenePath, bool startObjects = true);
+    std::shared_ptr<jleScene> loadScene(const jlePath &scenePath, bool startObjects = true);
 
 private:
     struct jleEditorInternal;
     std::unique_ptr<jleEditorInternal> _internal;
+
+    std::unique_ptr<jleEditorModulesContext> _editorContext;
 
     void exiting() override;
 
@@ -101,7 +103,10 @@ private:
 
     void addImGuiWindow(std::shared_ptr<jleEditorWindowInterface> window);
 
-    void mainEditorWindowResized(const jleWindowResizeEvent& resizeEvent);
+    void mainEditorWindowResized(const jleWindowResizeEvent &resizeEvent);
+
+    class jleEditorWindows;
+    std::unique_ptr<jleEditorWindows> _editorWindows{};
 
     std::vector<std::shared_ptr<jleEditorWindowInterface>> _imGuiWindows;
 
@@ -111,7 +116,7 @@ private:
 
     std::shared_ptr<jleEditorSceneObjectsWindow> _editorSceneObjects;
 
-    std::unique_ptr<jleFileIndexer> _fileIndexer;
+    std::unique_ptr<jleResourceIndexer> _resourceIndexer;
 
     std::shared_ptr<jleEditorTextEdit> _textEditWindow;
 

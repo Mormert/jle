@@ -15,8 +15,7 @@
 
 #include "jleShader.h"
 #include "jleRenderThread.h"
-#include "jleIncludeGL.h"
-
+#include "modules/graphics/core/jleIncludeGL.h"
 
 #include <plog/Log.h>
 

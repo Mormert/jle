@@ -15,9 +15,9 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
-#include "jleCompileHelper.h"
+#include "core/jleCompileHelper.h"
 #include "jlePath.h"
 
 #include <cereal/archives/json.hpp>

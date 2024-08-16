@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #if JLE_BUILD_EDITOR
 
@@ -47,7 +47,7 @@ public:
 
     void execCommand(const char *command_line);
 
-    virtual void update(jleGameEngine &ge) override;
+    void renderUI(jleGameEngine &ge);
 
     static int textEditCallbackStub(ImGuiInputTextCallbackData *data);
 

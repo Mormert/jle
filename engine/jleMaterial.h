@@ -16,19 +16,19 @@
 #ifndef JLE_MATERIAL_H
 #define JLE_MATERIAL_H
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
-#include "jleCompileHelper.h"
+#include "core/jleCompileHelper.h"
 #include "jleResourceInterface.h"
 #include "jleTypeReflectionUtils.h"
 
-#include "jle3DGraph.h"
-#include "jle3DSettings.h"
 #include "jleCamera.h"
 #include "jleResourceRef.h"
 #include "jleShader.h"
 #include "jleTexture.h"
 #include "jleTextureRefOrRGBA.h"
+#include "modules/graphics/jle3DGraph.h"
+#include "modules/graphics/jle3DSettings.h"
 
 #include "editor/jleImGuiCerealArchive.h"
 #include <cereal/archives/json.hpp>

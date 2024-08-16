@@ -22,7 +22,7 @@ jleEditorFrameGraphWindow::jleEditorFrameGraphWindow(const std::string &window_n
 }
 
 void
-jleEditorFrameGraphWindow::update(jleGameEngine &ge)
+jleEditorFrameGraphWindow::renderUI(jleGameEngine &ge)
 {
     static std::vector<float> data{};
     static bool enabled = false;

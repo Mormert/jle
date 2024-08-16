@@ -26,7 +26,9 @@ class jleEditorResourceViewer : public jleEditorWindowInterface
 public:
     explicit jleEditorResourceViewer(const std::string &window_name);
 
-    void update(jleGameEngine &ge) override;
+    void renderUI(jleGameEngine &ge);
+
+    void update(jleResources& resourcesModule);
 };
 
 #endif // JLE_BUILD_EDITOR

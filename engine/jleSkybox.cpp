@@ -16,8 +16,8 @@
 #include "jleSkybox.h"
 #include "jleImage.h"
 
-#include "jleIncludeGL.h"
 #include "jleResourceRef.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 
 #include <vector>
 

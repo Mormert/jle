@@ -14,13 +14,13 @@
  *********************************************************************************************/
 
 #include "jleEditor3DImportWindow.h"
-#include "cMesh.h"
-#include "cSkinnedMesh.h"
 #include "jleEditor.h"
 #include "jleMaterial.h"
 #include "jleMesh.h"
 #include "jlePath.h"
 #include "jleSkinnedMesh.h"
+#include "modules/graphics/runtime/components/cMesh.h"
+#include "modules/graphics/runtime/components/cSkinnedMesh.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -33,7 +33,7 @@ jleEditor3DImportWindow::jleEditor3DImportWindow(const std::string &window_name)
 }
 
 void
-jleEditor3DImportWindow::update(jleGameEngine &ge)
+jleEditor3DImportWindow::renderUI(jleGameEngine &ge)
 {
     if (!isOpened) {
         return;
