@@ -61,9 +61,6 @@ public:
 
     std::shared_ptr<jleObject> spawnObjectFromTemplate(const jlePath& path);
 
-    // Spawn a jleObject derived class, similar to spawnObject<>().
-    std::shared_ptr<jleObject> spawnObjectTypeByName(const std::string &objName);
-
     // Spawn a generic jleObject, with specified name
     std::shared_ptr<jleObject> spawnObjectWithName(const std::string &name);
 

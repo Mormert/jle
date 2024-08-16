@@ -17,40 +17,6 @@
 #include "jleResource.h"
 #include "jleTypeReflectionUtils.h"
 
-template <typename T>
-inline void
-jleTypeReflectionUtils::registerObject()
-{
-    static_assert(std::is_base_of<jleObject, T>::value, "T must derive from jleObject");
-
-    std::string oName{T::objectName()};
-    std::function<std::shared_ptr<T>()> oCreationFunc = []() { return std::make_shared<T>(); };
-
-    registeredObjectsRef().insert(std::make_pair(oName, oCreationFunc));
-}
-
-template <typename T>
-[[maybe_unused]] inline void
-jleTypeReflectionUtils::registerComponent()
-{
-    static_assert(std::is_base_of<jleComponent, T>::value, "T must derive from jleComponent");
-
-    std::string cName{T::objectName()};
-    std::function<std::shared_ptr<T>()> cCreationFunc = []() { return std::make_shared<T>(); };
-
-    registeredObjectsRef().insert(std::make_pair(cName, cCreationFunc));
-}
-
-inline std::shared_ptr<jleObject>
-jleTypeReflectionUtils::instantiateObjectByString(const std::string &str)
-{
-    auto it = registeredObjectsRef().find(str);
-    if (it == registeredObjectsRef().end()) {
-        return nullptr;
-    }
-    return it->second();
-}
-
 inline std::shared_ptr<jleComponent>
 jleTypeReflectionUtils::instantiateComponentByString(const std::string &str)
 {
@@ -89,12 +55,12 @@ jleTypeReflectionUtils::registeredResourcesRef()
     return *_registeredResourcesPtr;
 }
 
-inline std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path)>> &
+inline std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path, jleResources& resources)>> &
 jleTypeReflectionUtils::registeredFileTypeLoadersRef()
 {
     if (!_registeredFileTypeLoadersPtr) {
         _registeredFileTypeLoadersPtr = std::make_unique<
-            std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path)>>>();
+            std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path, jleResources& resources)>>>();
     }
     return *_registeredFileTypeLoadersPtr;
 }
@@ -140,6 +106,6 @@ jleResourceTypeRegistrator<T>::jleResourceTypeRegistrator(const std::string &rNa
 
     for (const auto &extension : fileExtensions) {
         jleTypeReflectionUtils::registeredFileTypeLoadersRef().insert(std::make_pair(
-            extension, [](const jlePath &path) { return gEngine->resources().loadResourceFromFile<T>(path); }));
+            extension, [](const jlePath &path, jleResources& resources) { return resources.loadResourceFromFile<T>(path); }));
     }
 }

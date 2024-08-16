@@ -79,14 +79,6 @@ class jleResourceInterface;
 class jleTypeReflectionUtils
 {
 public:
-    template <typename T>
-    [[maybe_unused]] static void registerObject();
-
-    template <typename T>
-    [[maybe_unused]] static void registerComponent();
-
-    static std::shared_ptr<jleObject> instantiateObjectByString(const std::string &str);
-
     static std::shared_ptr<jleComponent> instantiateComponentByString(const std::string &str);
 
     static std::map<std::string, std::function<std::shared_ptr<jleObject>()>> &registeredObjectsRef();
@@ -100,7 +92,7 @@ public:
 
     static std::map<std::string, jleRegisteredResourceInterfaceData> &registeredResourcesRef();
 
-    static std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path)>> &
+    static std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path, jleResources& resources)>> &
     registeredFileTypeLoadersRef();
 
 private:
@@ -117,7 +109,8 @@ private:
         nullptr};
 
     static inline std::unique_ptr<
-        std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path)>>>
+        std::map<std::string,
+                 std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path, jleResources &resources)>>>
         _registeredFileTypeLoadersPtr{nullptr};
 };
 

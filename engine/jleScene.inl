@@ -60,15 +60,6 @@ jleScene::spawnObject()
     return newSceneObject;
 }
 
-inline std::shared_ptr<jleObject>
-jleScene::spawnObjectTypeByName(const std::string &objName)
-{
-    auto newSceneObject = jleTypeReflectionUtils::instantiateObjectByString(objName);
-    setupObject(newSceneObject);
-
-    return newSceneObject;
-}
-
 inline std::vector<std::shared_ptr<jleObject>> &
 jleScene::sceneObjects()
 {

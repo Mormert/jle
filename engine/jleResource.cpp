@@ -23,7 +23,7 @@ jleResources::loadResourceFromFile(const jlePath &path)
     const auto fileEnding = path.getFileEnding();
     auto it = typeLoaders.find(fileEnding);
     if (it != typeLoaders.end()) {
-        return it->second(path);
+        return it->second(path, *this);
     } else {
         LOGE << "Failed to load non-registered file type with extension " << fileEnding;
         return nullptr;

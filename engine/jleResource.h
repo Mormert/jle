@@ -56,7 +56,7 @@ public:
     jleResources &operator=(const jleResources &) = delete;
     jleResources &operator=(jleResources &&) = delete;
 
-    static std::shared_ptr<jleResourceInterface> loadResourceFromFile(const jlePath &path);
+    std::shared_ptr<jleResourceInterface> loadResourceFromFile(const jlePath &path);
 
     // Gets a shared_ptr to a resource from file, or a shared_ptr to an already loaded copy of that resource
     template <typename T>
