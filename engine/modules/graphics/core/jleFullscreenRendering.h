@@ -20,6 +20,8 @@
 #include "jleShader.h"
 #include "jleResourceRef.h"
 
+class jleResources;
+
 class jleFramebufferInterface;
 
 class jleFullscreenRendering {
@@ -29,7 +31,7 @@ public:
     jleFullscreenRendering(jleFullscreenRendering &&e) = delete;
     jleFullscreenRendering &operator=(jleFullscreenRendering &&e) = delete;
 
-    jleFullscreenRendering();
+    jleFullscreenRendering(jleResources& resources);
 
     ~jleFullscreenRendering();
 

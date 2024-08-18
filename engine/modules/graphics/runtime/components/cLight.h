@@ -33,11 +33,11 @@ public:
         ar(CEREAL_NVP(_color));
     }
 
-    void start() override;
+    void start(jleEngineModulesContext& ctx) override;
 
-    void update(float dt) override;
+    void update(jleEngineModulesContext& ctx) override;
 
-    void editorUpdate(float dt) override;
+    void editorUpdate(jleEngineModulesContext& ctx) override;
 
     void editorGizmosRender(bool selected) override;
 

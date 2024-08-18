@@ -36,12 +36,12 @@ jleEditorSettingsWindow::renderUI(jleGameEngine &ge)
                       ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 
     cereal::jleImGuiCerealArchive archive;
-    archive(gEngine->settings());
+    archive(ge.settings());
 
     ImGui::EndChild();
 
     if (ImGui::Button("Save Settings")) {
-        gEngine->settings().saveToFile();
+        ge.settings().saveToFile();
     }
 
     ImGui::SameLine();

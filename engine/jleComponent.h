@@ -61,12 +61,12 @@ public:
     }
 
     virtual void
-    start()
+    start(jleEngineModulesContext& ctx)
     {
     }
 
     virtual void
-    serverStart()
+    serverStart(jleEngineModulesContext& ctx)
     {
     }
 
@@ -76,12 +76,12 @@ public:
     }
 
     virtual void
-    update(float dt)
+    update(jleEngineModulesContext& ctx)
     {
     }
 
     virtual void
-    parallelUpdate(float dt)
+    parallelUpdate(jleEngineModulesContext& ctx)
     {
         // Danger zone, enabled by enableParallelUpdate() in component constructor.
         // Called on all components of this type concurrently before recursive scene graph update().
@@ -92,12 +92,12 @@ public:
     bool parallelUpdateEnabled();
 
     [[maybe_unused]] virtual void
-    editorUpdate(float dt)
+    editorUpdate(jleEngineModulesContext& ctx)
     {
     }
 
     [[maybe_unused]] virtual void
-    serverUpdate(float dt)
+    serverUpdate(jleEngineModulesContext& ctx)
     {
     }
 

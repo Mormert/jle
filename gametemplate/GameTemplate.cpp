@@ -6,6 +6,6 @@ GameTemplate::start()
 {
 }
 void
-GameTemplate::update(float dt)
+GameTemplate::update(jleEngineModulesContext& ctx)
 {
 }

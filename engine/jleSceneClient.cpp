@@ -57,17 +57,13 @@ jleSceneClient::disconnectFromServer()
     LOGI << "[client] Disconnected scene client: " << path.getVirtualPath();
 }
 
-jleSceneClient::~
-jleSceneClient()
-{
-    disconnectFromServer();
-}
+jleSceneClient::~jleSceneClient() { disconnectFromServer(); }
 
 void
-jleSceneClient::updateScene(float dt)
+jleSceneClient::updateScene(jleEngineModulesContext &ctx)
 {
-    jleScene::updateScene(dt);
-    processNetwork();
+    jleScene::updateScene(ctx);
+    processNetwork(ctx);
 }
 
 void
@@ -82,7 +78,7 @@ jleSceneClient::onSceneDestruction()
     disconnectFromServer();
 }
 void
-jleSceneClient::processNetwork()
+jleSceneClient::processNetwork(jleEngineModulesContext& ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleSceneClientProcessNetwork)
 
@@ -102,7 +98,7 @@ jleSceneClient::processNetwork()
             const char *dataBuffer = reinterpret_cast<char *>(event.packet->data);
             const auto dataLength = event.packet->dataLength;
 
-            jleExecuteServerEventsOnClient(dataBuffer, dataLength, this);
+            jleExecuteServerEventsOnClient(ctx, dataBuffer, dataLength, this);
 
             enet_packet_destroy(event.packet);
         } break;
@@ -157,7 +153,10 @@ jleSceneClient::setNetIdObject(const std::shared_ptr<jleObject> &object, int32_t
 }
 
 void
-jleSceneClient::spawnObjectFromServer(const std::shared_ptr<jleObject> &object, int32_t netId, int32_t owner)
+jleSceneClient::spawnObjectFromServer(jleEngineModulesContext &ctx,
+                                      const std::shared_ptr<jleObject> &object,
+                                      int32_t netId,
+                                      int32_t owner)
 {
     setNetIdObject(object, netId);
     object->_netId = netId;
@@ -165,7 +164,7 @@ jleSceneClient::spawnObjectFromServer(const std::shared_ptr<jleObject> &object, 
     setupObjectForNetworking(object);
     _sceneObjects.push_back(object);
 
-    object->startComponents();
+    object->startComponents(ctx);
     object->_isStarted = true;
 }
 

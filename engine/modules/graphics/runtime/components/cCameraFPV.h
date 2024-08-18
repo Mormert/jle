@@ -34,7 +34,7 @@ public:
 
     ~cCameraFPV() override;
 
-    void update(float dt) override;
+    void update(jleEngineModulesContext& ctx) override;
 
 protected:
     float _moveSpeed{100.f};

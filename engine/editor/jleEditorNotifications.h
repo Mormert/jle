@@ -27,7 +27,7 @@
 
 class jleEditorNotifications : public jleEditorWindowInterface, public plog::IAppender {
 public:
-    explicit jleEditorNotifications(const std::string& windowName);
+    explicit jleEditorNotifications(const std::string& windowName, jleResources& resources);
 
     ~jleEditorNotifications() override;
 

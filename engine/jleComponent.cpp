@@ -89,7 +89,7 @@ jleComponent::enableParallelUpdate(int batchSize)
 
 struct jleComponentNetSyncEvent : public jleServerToClientEvent {
     void
-    execute() override
+    execute(jleEngineModulesContext& ctx) override
     {
         auto &scene = getSceneClient();
         if (auto object = scene.getObjectFromNetId(netEntityId)) {

@@ -375,7 +375,7 @@ jleSceneEditorWindow::render(jle3DGraph &graph, const jleEditorModulesContext &c
     }
 
     context.engineModulesContext.rendererModule.render(
-        *_msaa, gEditor->camera(), graph, context.engine.renderSettings());
+        *_msaa, gEditor->camera(), graph, context.engine.renderSettings(), context.engineModulesContext.resourcesModule);
 
     _msaa->blitToOther(*_framebuffer);
 }

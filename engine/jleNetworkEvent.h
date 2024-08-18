@@ -23,9 +23,11 @@
 #include <plog/Log.h>
 #include <sstream>
 
+struct jleEngineModulesContext;
+
 struct jleNetworkEvent {
     virtual ~jleNetworkEvent() = default;
-    virtual void execute() = 0;
+    virtual void execute(jleEngineModulesContext &ctx) = 0;
 };
 
 class jleScene;
@@ -34,7 +36,11 @@ class jleSceneClient;
 
 struct jleClientToServerEvent : public jleNetworkEvent {
 protected:
-    friend void jleExecuteClientEventsOnServer(const char *networkBuffer, size_t networkBufferLength, jleSceneServer *scene, int clientId);
+    friend void jleExecuteClientEventsOnServer(jleEngineModulesContext &ctx,
+                                               const char *networkBuffer,
+                                               size_t networkBufferLength,
+                                               jleSceneServer *scene,
+                                               int clientId);
     friend class jleSceneServer;
     jleSceneServer &getSceneServer();
 
@@ -47,7 +53,10 @@ private:
 
 struct jleServerToClientEvent : public jleNetworkEvent {
 protected:
-    friend void jleExecuteServerEventsOnClient(const char *networkBuffer, size_t networkBufferLength, jleSceneClient* scene);
+    friend void jleExecuteServerEventsOnClient(jleEngineModulesContext &ctx,
+                                               const char *networkBuffer,
+                                               size_t networkBufferLength,
+                                               jleSceneClient *scene);
     friend class jleSceneClient;
 
     jleSceneClient &getSceneClient();
@@ -67,5 +76,13 @@ jleMakeNetEvent()
     return std::make_unique<Event>();
 }
 
-void jleExecuteClientEventsOnServer(const char *networkBuffer, size_t networkBufferLength, jleSceneServer* scene, int clientId);
-void jleExecuteServerEventsOnClient(const char *networkBuffer, size_t networkBufferLength, jleSceneClient* scene);
+void jleExecuteClientEventsOnServer(jleEngineModulesContext &ctx,
+                                    const char *networkBuffer,
+                                    size_t networkBufferLength,
+                                    jleSceneServer *scene,
+                                    int clientId);
+
+void jleExecuteServerEventsOnClient(jleEngineModulesContext &ctx,
+                                    const char *networkBuffer,
+                                    size_t networkBufferLength,
+                                    jleSceneClient *scene);

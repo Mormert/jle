@@ -24,7 +24,7 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLightDirectional)
 
 void
-cLightDirectional::update(float dt)
+cLightDirectional::update(jleEngineModulesContext& ctx)
 {
     gEngine->renderSettings().useDirectionalLight = true;
     auto mat4 = getTransform().getWorldMatrix();

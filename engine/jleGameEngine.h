@@ -174,15 +174,15 @@ private:
     std::unordered_map<unsigned int, std::function<void(unsigned int, unsigned int)>> _gameWindowResizedCallbacks;
 
 protected:
-    virtual void start(const jleEngineModulesContext &context);
+    virtual void start(jleEngineModulesContext &context);
 
     void startRmlUi();
 
     void killRmlUi();
 
-    virtual void update(float dt);
+    virtual void update(jleEngineModulesContext& ctx);
 
-    virtual void render(wi::jobsystem::context &ctx);
+    virtual void render(jleEngineModulesContext& modulesContext, wi::jobsystem::context &jobsCtx);
 
     virtual void exiting();
 
@@ -210,6 +210,6 @@ protected:
 
     std::shared_ptr<jleLuaEnvironment> _luaEnvironment;
 
-    std::unique_ptr<jleGame> game;
-    bool gameHalted = false;
+    std::unique_ptr<jleGame> _game;
+    bool _gameHalted = false;
 };

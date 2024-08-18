@@ -32,14 +32,15 @@ class jleShader;
 class jle3DRenderer
 {
 public:
-    jle3DRenderer();
+    jle3DRenderer(jleResources &resources);
 
     virtual ~jle3DRenderer();
 
     void render(jleFramebufferInterface &framebufferOut,
                 const jleCamera &camera,
                 jle3DGraph &graph,
-                const jle3DSettings &settings);
+                const jle3DSettings &settings,
+                jleResources& resources);
 
     void renderMeshesPicking(jleFramebufferInterface &framebufferOut, const jleCamera &camera, const jle3DGraph &graph);
 
@@ -47,12 +48,14 @@ private:
     void renderMeshes(const jleCamera &camera,
                       const std::vector<jle3DQueuedMesh> &meshes,
                       const std::vector<jle3DRendererLight> &lights,
-                      const jle3DSettings &settings);
+                      const jle3DSettings &settings,
+                      jleResources &resources);
 
     void renderSkinnedMeshes(const jleCamera &camera,
                              const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
                              const std::vector<jle3DRendererLight> &lights,
-                             const jle3DSettings &settings);
+                             const jle3DSettings &settings,
+                             jleResources &resources);
 
     void sortTranslucentMeshes(const jleCamera &camera, std::vector<jle3DQueuedMesh> &translucentMeshes);
 

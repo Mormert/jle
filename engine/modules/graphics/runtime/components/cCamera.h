@@ -43,9 +43,9 @@ public:
 
     ~cCamera() override;
 
-    void start() override;
+    void start(jleEngineModulesContext& ctx) override;
 
-    void update(float dt) override;
+    void update(jleEngineModulesContext& ctx) override;
 
     void editorInspectorImGuiRender() override;
 

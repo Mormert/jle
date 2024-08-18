@@ -23,9 +23,9 @@ class jleEditor;
 class jleEditorModulesContext
 {
 public:
-    explicit jleEditorModulesContext(const jleEngineModulesContext& engineModules, jleGameEngine& engine, jleEditor& editor);
+    explicit jleEditorModulesContext(jleEngineModulesContext& engineModules, jleGameEngine& engine, jleEditor& editor);
 
-    const jleEngineModulesContext& engineModulesContext;
+    jleEngineModulesContext& engineModulesContext;
     jleGameEngine& engine;
     jleEditor& editor;
 };

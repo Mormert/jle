@@ -33,7 +33,7 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cCamera)
 
 void
-cCamera::start()
+cCamera::start(jleEngineModulesContext& ctx)
 {
     sInstanceCounter++;
 
@@ -73,7 +73,7 @@ cCamera::framebufferResizeCallback(unsigned int width, unsigned int height)
 }
 
 void
-cCamera::update(float dt)
+cCamera::update(jleEngineModulesContext& ctx)
 {
     auto &game = ((jleGameEngine *)gEngine)->gameRef();
 

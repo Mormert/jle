@@ -63,13 +63,13 @@ public:
     template <class Archive>
     void serialize(Archive &ar);
 
-    void start() override;
+    void start(jleEngineModulesContext& ctx) override;
 
-    void update(float dt) override;
+    void update(jleEngineModulesContext& ctx) override;
 
-    void parallelUpdate(float dt) override;
+    void parallelUpdate(jleEngineModulesContext& ctx) override;
 
-    void editorUpdate(float dt) override;
+    void editorUpdate(jleEngineModulesContext& ctx) override;
 
     void registerLua(sol::state& lua) override;
 
@@ -79,7 +79,7 @@ public:
 
     void editorInspectorImGuiRender() override;
 
-    void setAnimation(const jlePath& path);
+    void setAnimation(const jlePath& path, jleResources& resources);
 
 private:
 

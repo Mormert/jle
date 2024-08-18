@@ -38,18 +38,18 @@ cRigidbody::cRigidbody(const cRigidbody &other) : jleComponent(other)
 }
 
 void
-cRigidbody::editorUpdate(float dt)
+cRigidbody::editorUpdate(jleEngineModulesContext& ctx)
 {
 }
 
 void
-cRigidbody::start()
+cRigidbody::start(jleEngineModulesContext& ctx)
 {
     setupRigidbody();
 }
 
 void
-cRigidbody::update(float dt)
+cRigidbody::update(jleEngineModulesContext& ctx)
 {
 }
 

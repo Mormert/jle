@@ -27,7 +27,7 @@ public:
 
     void netSyncIn(cereal::BinaryInputArchive &ar) override;
 
-    void serverUpdate(float dt) override;
+    void serverUpdate(jleEngineModulesContext& ctx) override;
 
 protected:
     glm::vec3 _color{1.f};

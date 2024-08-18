@@ -50,11 +50,11 @@ public:
 
     ~jleEditor() override;
 
-    void start(const jleEngineModulesContext &context) override;
+    void start(jleEngineModulesContext &context) override;
 
-    void render(wi::jobsystem::context &ctx) override;
+    void render(jleEngineModulesContext& modulesContext, wi::jobsystem::context &jobsCtx) override;
 
-    void update(float dt) override;
+    void update(jleEngineModulesContext& ctx) override;
 
     // std::shared_ptr<jleFramebufferInterface> editorScreenFramebuffer;
 
@@ -65,7 +65,7 @@ public:
 
     jleEditorSaveState &saveState();
 
-    void updateEditorLoadedScenes(float dt);
+    void updateEditorLoadedScenes(jleEngineModulesContext& ctx);
 
     std::vector<std::shared_ptr<jleScene>> &getEditorScenes();
 
@@ -77,7 +77,7 @@ public:
 
     bool checkSceneIsActiveEditor(const std::string &sceneName);
 
-    std::shared_ptr<jleScene> loadScene(const jlePath &scenePath, bool startObjects = true);
+    std::shared_ptr<jleScene> loadScene(const jlePath &scenePath, jleEngineModulesContext& ctx, bool startObjects = true);
 
 private:
     struct jleEditorInternal;
@@ -87,7 +87,7 @@ private:
 
     void exiting() override;
 
-    void renderGameView();
+    void renderGameView(jleResources& resources);
 
     void renderEditorSceneView();
 

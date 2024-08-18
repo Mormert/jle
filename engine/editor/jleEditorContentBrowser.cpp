@@ -161,7 +161,7 @@ jleEditorContentBrowser::contentHierarchy(std::string directoryPath, const std::
 }
 
 void
-jleEditorContentBrowser::renderUI(jleGameEngine &ge)
+jleEditorContentBrowser::renderUI(jleEngineModulesContext& ctx)
 {
     if (!isOpened) {
         return;
@@ -170,11 +170,11 @@ jleEditorContentBrowser::renderUI(jleGameEngine &ge)
     // contentHierarchy(JLE_ENGINE_PATH + "/EditorResources", "Editor");
     contentHierarchy(GAME_RESOURCES_DIRECTORY, "Game Resources");
 
-    contentBrowser();
+    contentBrowser(ctx);
 }
 
 void
-jleEditorContentBrowser::contentBrowser()
+jleEditorContentBrowser::contentBrowser(jleEngineModulesContext& ctx)
 {
     ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_MenuBar);
 
@@ -393,7 +393,7 @@ jleEditorContentBrowser::contentBrowser()
 
         if (!_fileSelected.empty() && ImGui::BeginPopup("selected_file_popup")) {
 
-            selectedFilePopup(_fileSelected);
+            selectedFilePopup(_fileSelected, ctx);
             ImGui::EndPopup();
         }
 
@@ -412,7 +412,7 @@ jleEditorContentBrowser::contentBrowser()
 }
 
 void
-jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file)
+jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file, jleEngineModulesContext& ctx)
 {
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
@@ -428,11 +428,11 @@ jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file)
     }
 
     if (fileExtension == ".scn") {
-        selectedFilePopupScene(file);
+        selectedFilePopupScene(file, ctx);
     }
 
     if (fileExtension == ".jobj") {
-        selectedFilePopupObjectTemplate(file);
+        selectedFilePopupObjectTemplate(file, ctx.resourcesModule);
     }
 
     openAsText(file);
@@ -525,7 +525,7 @@ jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file)
 }
 
 void
-jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file)
+jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file, jleEngineModulesContext& ctx)
 {
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
@@ -541,7 +541,7 @@ jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file)
             }
 
             auto &game = ((jleGameEngine *)gEngine)->gameRef();
-            game.loadScene(jlePath{file.string(), false});
+            game.loadScene(jlePath{file.string(), false}, ctx);
         }
     } else {
         if (ImGui::Button("Load Scene (Editor)", size)) {
@@ -551,13 +551,13 @@ jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file)
                 sceneName.resize(dot);
             }
 
-            gEditor->loadScene(jlePath{file.string(), false}, false);
+            gEditor->loadScene(jlePath{file.string(), false}, ctx, false);
         }
     }
 }
 
 void
-jleEditorContentBrowser::selectedFilePopupObjectTemplate(std::filesystem::path &file)
+jleEditorContentBrowser::selectedFilePopupObjectTemplate(std::filesystem::path &file, jleResources& resources)
 {
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
@@ -572,7 +572,7 @@ jleEditorContentBrowser::selectedFilePopupObjectTemplate(std::filesystem::path &
 
         if (auto &&scene = gEditor->getEditorSceneObjectsWindow().GetSelectedScene().lock()) {
             try {
-                scene->spawnObjectFromTemplate(jlePath{file.string(), false});
+                scene->spawnObjectFromTemplate(jlePath{file.string(), false}, resources);
             } catch (std::exception &e) {
                 LOGE << "Failed to load object template: " << e.what();
             }

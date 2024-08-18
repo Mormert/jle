@@ -36,11 +36,11 @@ public:
         ar(CEREAL_NVP(_meshRef), CEREAL_NVP(_materialRef));
     }
 
-    void editorUpdate(float dt) override;
+    void editorUpdate(jleEngineModulesContext& ctx) override;
 
-    void start() override;
+    void start(jleEngineModulesContext& ctx) override;
 
-    void update(float dt) override;
+    void update(jleEngineModulesContext& ctx) override;
 
     std::shared_ptr<jleMesh> getMesh();
     std::shared_ptr<jleMaterial> getMaterial();

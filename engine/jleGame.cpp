@@ -20,7 +20,7 @@
 
 
 void
-jleGame::updateActiveScenes(float dt)
+jleGame::updateActiveScenes(jleEngineModulesContext& ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleGame_updateActiveScenes)
     for (int i = _activeScenes.size() - 1; i >= 0; i--) {
@@ -29,7 +29,7 @@ jleGame::updateActiveScenes(float dt)
             continue;
         }
 
-        _activeScenes[i]->updateScene(dt);
+        _activeScenes[i]->updateScene(ctx);
     }
 }
 
@@ -40,7 +40,7 @@ jleGame::activeScenesRef()
 }
 
 std::shared_ptr<jleScene>
-jleGame::loadScene(const jlePath &scenePath)
+jleGame::loadScene(const jlePath &scenePath, jleEngineModulesContext& ctx)
 {
     std::shared_ptr<jleScene> scene = gEngine->resources().loadResourceFromFile<jleScene>(scenePath, true);
     if (scene) {
@@ -48,7 +48,7 @@ jleGame::loadScene(const jlePath &scenePath)
         if (it == _activeScenes.end()) {
             _activeScenes.push_back(scene);
             scene->onSceneStart();
-            scene->startObjects();
+            scene->startObjects(ctx);
         } else {
             LOG_WARNING << "Loaded scene is already loaded";
         }
@@ -60,7 +60,7 @@ jleGame::loadScene(const jlePath &scenePath)
 jleGame::jleGame() {}
 
 void
-jleGame::parallelUpdates(float dt)
+jleGame::parallelUpdates(jleEngineModulesContext& ctx)
 {
     ZoneScoped;
     wi::jobsystem::context parallelUpdatesCtx;
@@ -73,11 +73,11 @@ jleGame::parallelUpdates(float dt)
 
             int batchSize = components[0]->parallelUpdateBatchSize();
             wi::jobsystem::Dispatch(
-                parallelUpdatesCtx, components.size(), batchSize, [components, dt](wi::jobsystem::JobArgs args) {
+                parallelUpdatesCtx, components.size(), batchSize, [&](wi::jobsystem::JobArgs args) {
                     ZoneScopedNC("ParallelUpdate", 0xFF8200);
                     const int componentIdx = args.jobIndex;
                     auto &component = components[componentIdx];
-                    component->parallelUpdate(dt);
+                    component->parallelUpdate(ctx);
                 });
         }
 

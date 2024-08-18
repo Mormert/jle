@@ -22,11 +22,11 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cSkybox)
 
 void
-cSkybox::start()
+cSkybox::start(jleEngineModulesContext& ctx)
 {
 }
 
 void
-cSkybox::update(float dt)
+cSkybox::update(jleEngineModulesContext& ctx)
 {
 }

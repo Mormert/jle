@@ -36,7 +36,7 @@ jleServerToClientEvent::getSceneClient()
 }
 
 void
-jleExecuteClientEventsOnServer(const char *networkBuffer, size_t networkBufferLength, jleSceneServer *scene, int clientId)
+jleExecuteClientEventsOnServer(jleEngineModulesContext& ctx, const char *networkBuffer, size_t networkBufferLength, jleSceneServer *scene, int clientId)
 {
     int32_t amountOfEvents;
     ::memcpy(&amountOfEvents, &networkBuffer[0], sizeof(int32_t));
@@ -53,7 +53,7 @@ jleExecuteClientEventsOnServer(const char *networkBuffer, size_t networkBufferLe
             if (e) {
                 e->_serverScene = scene;
                 e->_clientId = clientId;
-                e->execute();
+                e->execute(ctx);
             }
         } catch (std::exception &ex) {
             LOGE << "[client] failed to parse event data: " << ex.what();
@@ -62,7 +62,7 @@ jleExecuteClientEventsOnServer(const char *networkBuffer, size_t networkBufferLe
 }
 
 void
-jleExecuteServerEventsOnClient(const char *networkBuffer, size_t networkBufferLength, jleSceneClient *scene)
+jleExecuteServerEventsOnClient(jleEngineModulesContext& ctx, const char *networkBuffer, size_t networkBufferLength, jleSceneClient *scene)
 {
     int32_t amountOfEvents;
     ::memcpy(&amountOfEvents, &networkBuffer[0], sizeof(int32_t));
@@ -78,7 +78,7 @@ jleExecuteServerEventsOnClient(const char *networkBuffer, size_t networkBufferLe
             archive(e);
             if (e) {
                 e->_clientScene = scene;
-                e->execute();
+                e->execute(ctx);
             }
         } catch (std::exception &ex) {
             LOGE << "[client] failed to parse event data: " << ex.what();

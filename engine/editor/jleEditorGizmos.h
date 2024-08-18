@@ -24,11 +24,12 @@
 
 class jleMesh;
 class jleMaterial;
+class jleResources;
 
 class jleEditorGizmos
 {
 public:
-    jleEditorGizmos();
+    jleEditorGizmos(jleResources& resources);
     ~jleEditorGizmos();
 
     std::shared_ptr<jleMesh> lightLampMesh();

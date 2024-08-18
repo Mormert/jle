@@ -32,11 +32,11 @@ public:
     template <class Archive>
     void serialize(Archive &ar);
 
-    void editorUpdate(float dt) override;
+    void editorUpdate(jleEngineModulesContext& ctx) override;
 
-    void start() override;
+    void start(jleEngineModulesContext& ctx) override;
 
-    void update(float dt) override;
+    void update(jleEngineModulesContext& ctx) override;
 
     std::shared_ptr<jleSkinnedMesh> getMesh();
     std::shared_ptr<jleMaterial> getMaterial();

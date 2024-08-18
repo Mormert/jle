@@ -43,7 +43,7 @@ jleObject::serialize(Archive &archive)
 }
 template <typename T>
 inline std::shared_ptr<T>
-jleObject::addComponent()
+jleObject::addComponent(jleEngineModulesContext &ctx)
 {
     static_assert(std::is_base_of<jleComponent, T>::value, "T must derive from jleComponent");
 
@@ -59,13 +59,13 @@ jleObject::addComponent()
 
     _components.push_back(newComponent);
 
-    addComponentStart(newComponent);
+    addComponentStart(newComponent, ctx);
 
     return newComponent;
 };
 
 inline std::shared_ptr<jleComponent>
-jleObject::addComponentByName(const std::string &component_name)
+jleObject::addComponentByName(const std::string &component_name, jleEngineModulesContext &ctx)
 {
     auto newComponent = jleTypeReflectionUtils::instantiateComponentByString(component_name);
     if (!newComponent) {
@@ -83,14 +83,14 @@ jleObject::addComponentByName(const std::string &component_name)
 
     _components.push_back(newComponent);
 
-    addComponentStart(newComponent);
+    addComponentStart(newComponent, ctx);
 
     return newComponent;
 }
 
 template <typename T>
 void
-jleObject::addComponent(const std::shared_ptr<T> &component)
+jleObject::addComponent(const std::shared_ptr<T> &component, jleEngineModulesContext &ctx)
 {
     static_assert(std::is_base_of<jleComponent, T>::value, "T must derive from jleComponent");
 
@@ -106,7 +106,7 @@ jleObject::addComponent(const std::shared_ptr<T> &component)
 
     _components.push_back(component);
 
-    addComponentStart(component);
+    addComponentStart(component, ctx);
 }
 
 template <typename T>
@@ -160,9 +160,9 @@ jleObject::spawnChildObject()
 }
 
 inline std::shared_ptr<jleObject>
-jleObject::spawnChildObjectFromTemplate(const jlePath &path)
+jleObject::spawnChildObjectFromTemplate(const jlePath &path, jleResources &resources)
 {
-    auto object = _containedInScene->spawnObjectFromTemplate(path);
+    auto object = _containedInScene->spawnObjectFromTemplate(path, resources);
     attachChildObject(object);
     return object;
 }

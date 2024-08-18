@@ -59,18 +59,18 @@ public:
     template <typename T>
     std::shared_ptr<T> spawnObject();
 
-    std::shared_ptr<jleObject> spawnObjectFromTemplate(const jlePath& path);
+    std::shared_ptr<jleObject> spawnObjectFromTemplate(const jlePath& path, jleResources& resources);
 
     // Spawn a generic jleObject, with specified name
     std::shared_ptr<jleObject> spawnObjectWithName(const std::string &name);
 
     void spawnObject(const std::shared_ptr<jleObject> &object);
 
-    void startObjects();
+    void startObjects(jleEngineModulesContext& ctx);
 
-    virtual void updateScene(float dt);
+    virtual void updateScene(jleEngineModulesContext& ctx);
 
-    virtual void updateSceneEditor(float dt);
+    virtual void updateSceneEditor(jleEngineModulesContext& ctx);
 
     virtual void onSceneStart();
 
@@ -96,14 +96,14 @@ protected:
 
     virtual void setupObject(const std::shared_ptr<jleObject> &obj);
 
-    void processNewSceneObjects();
+    void processNewSceneObjects(jleEngineModulesContext& ctx);
 
 private:
-    void updateSceneObjects(float dt);
+    void updateSceneObjects(jleEngineModulesContext& ctx);
 
-    void updateSceneObjectsEditor(float dt);
+    void updateSceneObjectsEditor(jleEngineModulesContext& ctx);
 
-    void startObject(jleObject *o);
+    void startObject(jleObject *o, jleEngineModulesContext& ctx);
 
     static int _scenesCreatedCount;
 

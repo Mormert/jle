@@ -17,11 +17,11 @@
 #include "jleDynamicLogAppender.h"
 #include <ImGui/imgui.h>
 
-jleEditorNotifications::jleEditorNotifications(const std::string &windowName) : jleEditorWindowInterface(windowName)
+jleEditorNotifications::jleEditorNotifications(const std::string &windowName, jleResources& resources) : jleEditorWindowInterface(windowName)
 {
     dynamicAppender().addAppender(this);
 
-    _errorImage = jleResourceRef<jleTexture>(jlePath{"ED:icons/error.png"});
+    _errorImage = jleResourceRef<jleTexture>(jlePath{"ED:icons/error.png"}, resources);
 }
 
 jleEditorNotifications::~jleEditorNotifications() { dynamicAppender().removeAppender(this); }

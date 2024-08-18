@@ -18,11 +18,11 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterial)
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterialPBR)
 
-
 void
 jleMaterial::useMaterial(const jleCamera &camera,
                          const std::vector<jle3DRendererLight> &lights,
-                         const jle3DSettings &settings)
+                         const jle3DSettings &settings,
+                         jleResources &resources)
 {
     auto &shader = *_shaderRef.get();
 
@@ -30,6 +30,12 @@ jleMaterial::useMaterial(const jleCamera &camera,
     shader.SetMat4("uView", camera.getViewMatrix());
     shader.SetMat4("uProj", camera.getProjectionMatrix());
     shader.SetVec3("uCameraPosition", camera.getPosition());
+}
+
+void
+jleMaterial::setShader(const jleResourceRef<jleShader> &shaderRef)
+{
+    _shaderRef = shaderRef;
 }
 
 std::shared_ptr<jleShader>
@@ -60,8 +66,14 @@ jleMaterial::serialize(Archive &ar)
 void
 jleMaterialPBR::useMaterial(const jleCamera &camera,
                             const std::vector<jle3DRendererLight> &lights,
-                            const jle3DSettings &settings)
+                            const jle3DSettings &settings,
+                            jleResources &resources)
 {
+    // Temporary solution, loading the default shader here, before I figure something better out
+    if (!_shaderRef) {
+        _shaderRef = jleResourceRef<jleShader>(jlePath{"ER:/shaders/defaultMesh.glsl"}, resources);
+    }
+
     auto &shader = *_shaderRef.get();
 
     // Limit to 4 lights
@@ -163,9 +175,7 @@ jleMaterialPBR::isTranslucent()
     return _isTranslucent;
 }
 
-jleMaterialPBR::jleMaterialPBR() {
-    _shaderRef = jleResourceRef<jleShader>("ER:/shaders/defaultMesh.glsl");
-}
+jleMaterialPBR::jleMaterialPBR() {}
 
 template <class Archive>
 void

@@ -14,7 +14,7 @@
  *********************************************************************************************/
 
 #include "jleEditorModulesContext.h"
-jleEditorModulesContext::jleEditorModulesContext(const jleEngineModulesContext &engineModules,
+jleEditorModulesContext::jleEditorModulesContext(jleEngineModulesContext &engineModules,
                                                  jleGameEngine &engine,
                                                  jleEditor &editor)
     : engineModulesContext(engineModules), engine(engine), editor(editor)

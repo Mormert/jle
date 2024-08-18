@@ -79,8 +79,7 @@ jleResources::loadResourceFromFile(const jlePath &path, bool forceReload)
             }
         }
 
-        if constexpr (!std::is_base_of<jleSerializedOnlyResource, T>::value)
-        {
+        if constexpr (!std::is_base_of<jleSerializedOnlyResource, T>::value) {
             loadSuccess = newResource->loadFromFile(path);
         }
     } else {

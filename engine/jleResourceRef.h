@@ -22,6 +22,7 @@
 #include "jlePath.h"
 
 class jleResourceInterface;
+class jleResources;
 
 template <typename T>
 struct jleResourceRef {
@@ -30,10 +31,10 @@ struct jleResourceRef {
 
     jleResourceRef() = default;
 
-    explicit jleResourceRef(const jlePath &path, bool loadLater = false) : path{path}
+    explicit jleResourceRef(const jlePath &path, jleResources& resources ,bool loadLater = false) : path{path}
     {
         if (!loadLater) {
-            loadResource();
+            loadResource(resources);
         }
     };
 
@@ -43,10 +44,10 @@ struct jleResourceRef {
     template <class Archive>
     void load_minimal( Archive const &, std::string const & value );
 
-    void reloadWithNewPath(const jlePath& path);
+    void reloadWithNewPath(const jlePath& path, jleResources& resources);
 
     // Load resource from file
-    void loadResource();
+    void loadResource(jleResources& resources);
 
     // Save resource to file, if the resource implementation have a save function
     void saveResource();

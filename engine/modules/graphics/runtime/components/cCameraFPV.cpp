@@ -23,8 +23,10 @@ JLE_EXTERN_TEMPLATE_CEREAL_CPP(cCameraFPV)
 cCameraFPV::~cCameraFPV() {}
 
 void
-cCameraFPV::update(float dt)
+cCameraFPV::update(jleEngineModulesContext& ctx)
 {
+    const auto dt = ctx.frameInfo.getDeltaTime();
+
     auto &&keyboard = gEngine->input().keyboard;
 
     auto updatedPosition = getTransform().getLocalPosition();

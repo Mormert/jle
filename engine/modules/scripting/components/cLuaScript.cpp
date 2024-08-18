@@ -24,7 +24,7 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLuaScript)
 
 void
-cLuaScript::start()
+cLuaScript::start(jleEngineModulesContext& ctx)
 {
     if (!_isInitialized) {
         initializeLuaComponent();
@@ -46,13 +46,13 @@ cLuaScript::start()
 }
 
 void
-cLuaScript::update(float dt)
+cLuaScript::update(jleEngineModulesContext& ctx)
 {
     const auto luaClass = gEngine->luaEnvironment()->getState()[_luaClass.luaClassName];
 
     try {
         sol::protected_function updateFunc = luaClass["update"];
-        updateFunc(_self, dt);
+        updateFunc(_self, ctx.frameInfo.getDeltaTime());
     } catch (std::exception &e) {
         LOGE << "Error running lua update: " << e.what();
     }

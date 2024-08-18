@@ -56,12 +56,12 @@ public:
     ~jleObject() override = default;
 
     template <typename T>
-    std::shared_ptr<T> addComponent();
+    std::shared_ptr<T> addComponent(jleEngineModulesContext& ctx);
 
     template <typename T>
-    void addComponent(const std::shared_ptr<T> &component);
+    void addComponent(const std::shared_ptr<T> &component, jleEngineModulesContext& ctx);
 
-    std::shared_ptr<jleComponent> addComponentByName(const std::string &component_name);
+    std::shared_ptr<jleComponent> addComponentByName(const std::string &component_name, jleEngineModulesContext& ctx);
 
     template <typename T>
     std::shared_ptr<T> getComponent();
@@ -73,7 +73,7 @@ public:
     template <typename T>
     std::shared_ptr<T> spawnChildObject();
 
-    std::shared_ptr<jleObject> spawnChildObjectFromTemplate(const jlePath& path);
+    std::shared_ptr<jleObject> spawnChildObjectFromTemplate(const jlePath& path, jleResources& resources);
 
     std::shared_ptr<jleObject> spawnChildObject(const std::string &objName);
 
@@ -135,21 +135,21 @@ private:
 
     void replaceChildrenWithTemplate();
 
-    void startComponents();
+    void startComponents(jleEngineModulesContext& ctx);
 
-    void updateComponents(float dt);
+    void updateComponents(jleEngineModulesContext& ctx);
 
-    void updateComponentsEditor(float dt);
+    void updateComponentsEditor(jleEngineModulesContext& ctx);
 
-    void updateComponentsServer(float dt);
+    void updateComponentsServer(jleEngineModulesContext& ctx);
 
-    void updateChildren(float dt);
+    void updateChildren(jleEngineModulesContext& ctx);
 
-    void updateChildrenEditor(float dt);
+    void updateChildrenEditor(jleEngineModulesContext& ctx);
 
-    void updateChildrenServer(float dt);
+    void updateChildrenServer(jleEngineModulesContext& ctx);
 
-    void addComponentStart(const std::shared_ptr<jleComponent>& c);
+    void addComponentStart(const std::shared_ptr<jleComponent>& c, jleEngineModulesContext& ctx);
 
     std::string _instanceName;
 

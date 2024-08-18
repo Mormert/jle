@@ -26,19 +26,19 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLight)
 
 void
-cLight::start()
+cLight::start(jleEngineModulesContext& ctx)
 {
 }
 void
-cLight::update(float dt)
+cLight::update(jleEngineModulesContext& ctx)
 {
     gEngine->renderGraph().sendLight(getTransform().getWorldPosition(), _color);
 }
 
 void
-cLight::editorUpdate(float dt)
+cLight::editorUpdate(jleEngineModulesContext& ctx)
 {
-    update(dt);
+    update(ctx);
 }
 
 void

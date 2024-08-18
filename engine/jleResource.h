@@ -34,15 +34,17 @@
 #include <unordered_map>
 #include <vector>
 
-#include <cereal/archives/json.hpp>
 #include <cereal/archives/binary.hpp>
+#include <cereal/archives/json.hpp>
 #include <cereal/cereal.hpp>
 #include <cereal/types/memory.hpp>
 #include <cereal/types/polymorphic.hpp>
 
+using hashCode = std::size_t;
+
 using jleResourceHolder =
     std::unordered_map<std::string,
-                       std::unordered_map<jlePath, std::pair<std::size_t, std::shared_ptr<jleResourceInterface>>>>;
+                       std::unordered_map<jlePath, std::pair<hashCode, std::shared_ptr<jleResourceInterface>>>>;
 
 template <typename T>
 struct jleResourceRef;
@@ -73,10 +75,10 @@ public:
 
     std::shared_ptr<jleResourceInterface> getResource(const jlePath &path);
 
-    void storeResource(const std::shared_ptr<jleResourceInterface>& resource, const jlePath& path);
+    void storeResource(const std::shared_ptr<jleResourceInterface> &resource, const jlePath &path);
 
     template <typename T>
-    jleResourceRef<T> storeResource(const std::shared_ptr<T>& resource, const jlePath& path);
+    jleResourceRef<T> storeResource(const std::shared_ptr<T> &resource, const jlePath &path);
 
     // Check to see if a resource is loaded
     bool isResourceLoaded(const jlePath &path);
@@ -97,9 +99,9 @@ private:
     static inline int _periodicCleanCounter{0};
 
     template <typename T>
-    static bool checkFileEndingMatchResourceType(const jlePath& path);
+    static bool checkFileEndingMatchResourceType(const jlePath &path);
 
-    static bool loadSerializedResource(std::shared_ptr<jleResourceInterface>& resource, const jlePath& path);
+    static bool loadSerializedResource(std::shared_ptr<jleResourceInterface> &resource, const jlePath &path);
 
     void periodicResourcesCleanUp();
 };

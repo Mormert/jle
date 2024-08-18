@@ -73,7 +73,7 @@ jleGameEngine::jleGameEngine()
     JLE_EXEC_IF(JLE_BUILD_EDITOR) { LOGI << "Editor Resources located at: " << jlePath{"ED:/"}.getRealPath(); }
 
     _internal = std::make_unique<jleEngineInternal>();
-    _internal->engineSettings = jleResourceRef<jleEngineSettings>("GR:/settings/enginesettings.es");
+    _internal->engineSettings = jleResourceRef<jleEngineSettings>("GR:/settings/enginesettings.es", *_resources);
 
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
     {
@@ -85,7 +85,7 @@ jleGameEngine::jleGameEngine()
 
         _input = std::make_unique<jleInput>(*_window);
 
-        _3dRenderer = std::make_unique<jle3DRenderer>();
+        _3dRenderer = std::make_unique<jle3DRenderer>(*_resources);
         _3dRenderGraph = std::make_unique<jle3DGraph>();
         _3dRendererSettings = std::make_unique<jle3DSettings>();
         _soLoud = std::make_unique<SoLoud::Soloud>();
@@ -96,7 +96,7 @@ jleGameEngine::jleGameEngine()
 
     LOG_INFO << "Starting the lua environment";
     _luaEnvironment = std::make_unique<jleLuaEnvironment>();
-    _luaEnvironment->setupScriptLoader();
+    _luaEnvironment->loadInitialScripts(*_resources);
 
     _timerManager = std::make_unique<jleTimerManager>();
 
@@ -104,7 +104,8 @@ jleGameEngine::jleGameEngine()
         enet_initialize();
     }
 
-    _modulesContext = std::make_unique<jleEngineModulesContext>(*_3dRenderer, *_input, *_window, *_resources, _frameInfo);
+    _modulesContext =
+        std::make_unique<jleEngineModulesContext>(*_3dRenderer, *_input, *_window, *_resources, _frameInfo);
 }
 
 jleGameEngine::~jleGameEngine()
@@ -123,34 +124,34 @@ jleGameEngine::~jleGameEngine()
     if (settings().enableNetworking) {
         enet_deinitialize();
     }
+
+    _game.reset();
+    _resources.reset();
+
 }
 
 void
 jleGameEngine::startGame()
 {
     if (!_gameCreator) {
-        LOG_WARNING << "Game has not been set! Use SetGame<jleGameDerived>() "
-                       "before starting the game.";
+        LOG_WARNING << "Game has not been set! Use SetGame<jleGameDerived>() before starting the game.";
         return;
     }
 
-    /*  if (!_physics) {
-          // Re-initialize the physics
-          _physics = std::make_unique<jlePhysics>();
-      }*/
+    jleEngineModulesContext &context = *_modulesContext;
 
-    game = _gameCreator();
-    game->start();
+    _game = _gameCreator();
+    _game->start(context);
 
     for (auto &scenePath : settings().initialScenesToLoad) {
-        game->loadScene(scenePath);
+        _game->loadScene(scenePath, context);
     }
 }
 
 void
 jleGameEngine::restartGame()
 {
-    game.reset();
+    _game.reset();
 
     timerManager().clearTimers();
     startGame();
@@ -160,44 +161,45 @@ void
 jleGameEngine::killGame()
 {
     timerManager().clearTimers();
-    game.reset();
+    _game.reset();
 }
 
 void
 jleGameEngine::haltGame()
 {
     // TODO: Halt timers
-    gameHalted = true;
+    _gameHalted = true;
 }
 
 void
 jleGameEngine::unhaltGame()
 {
     // TODO: Unhalt timers
-    gameHalted = false;
+    _gameHalted = false;
 }
 
 void
 jleGameEngine::executeNextFrame()
 {
     LOG_VERBOSE << "Next frame dt: " << deltaFrameTime();
-    auto gameHaltedTemp = gameHalted;
-    gameHalted = false;
+    auto gameHaltedTemp = _gameHalted;
+    _gameHalted = false;
 
-    wi::jobsystem::context ctx;
+    wi::jobsystem::context jobsCtx;
+    jleEngineModulesContext modulesContext = *_modulesContext;
 
     // Game thread
-    wi::jobsystem::Execute(ctx, [&](wi::jobsystem::JobArgs args) { update(deltaFrameTime()); });
+    wi::jobsystem::Execute(jobsCtx, [&](wi::jobsystem::JobArgs args) { update(modulesContext); });
 
     // Render thread
-    JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS) { render(ctx); }
-    gameHalted = gameHaltedTemp;
+    JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS) { render(modulesContext, jobsCtx); }
+    _gameHalted = gameHaltedTemp;
 }
 
 bool
 jleGameEngine::isGameKilled() const
 {
-    if (game) {
+    if (_game) {
         return false;
     }
     return true;
@@ -206,13 +208,13 @@ jleGameEngine::isGameKilled() const
 bool
 jleGameEngine::isGameHalted() const
 {
-    return gameHalted;
+    return _gameHalted;
 }
 
 jleGame &
 jleGameEngine::gameRef()
 {
-    return *game;
+    return *_game;
 }
 
 void
@@ -268,7 +270,7 @@ jleGameEngine::startRmlUi()
 }
 
 void
-jleGameEngine::start(const jleEngineModulesContext& context)
+jleGameEngine::start(jleEngineModulesContext &context)
 {
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
     {
@@ -279,15 +281,17 @@ jleGameEngine::start(const jleEngineModulesContext& context)
         const auto &mouse = context.inputModule.mouse;
         mouse->setScreenSize(initialScreenX, initialScreenY);
 
-        luaEnvironment()->loadScript("ER:/scripts/engine.lua");
+        luaEnvironment()->loadScript("ER:/scripts/engine.lua", context.resourcesModule);
+        luaEnvironment()->loadScript("ER:/scripts/globals.lua", context.resourcesModule);
+
 
         startRmlUi();
 
-        _fullscreen_renderer = std::make_unique<jleFullscreenRendering>();
+        _fullscreen_renderer = std::make_unique<jleFullscreenRendering>(context.resourcesModule);
 
         JLE_EXEC_IF_NOT(JLE_BUILD_EDITOR)
         {
-            const auto gameWindowResizeFunc = [&](const jleWindowResizeEvent& resizeEvent){
+            const auto gameWindowResizeFunc = [&](const jleWindowResizeEvent &resizeEvent) {
                 gameWindowResizedEvent(resizeEvent.framebufferWidth, resizeEvent.framebufferHeight);
             };
 
@@ -346,23 +350,23 @@ jleGameEngine::gameWindowResizedEvent(unsigned int w, unsigned int h)
 }
 
 void
-jleGameEngine::update(float dt)
+jleGameEngine::update(jleEngineModulesContext &ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleGameEngine_Update)
-    if (!gameHalted && game) {
+    if (!_gameHalted && _game) {
         {
             JLE_SCOPE_PROFILE_CPU(jleGameEngine_updateGame)
-            game->update(dt);
+            _game->update(ctx);
         }
 
         {
             JLE_SCOPE_PROFILE_CPU(jleGameEngine_parallelUpdates);
-            game->parallelUpdates(dt);
+            _game->parallelUpdates(ctx);
         }
 
         {
             JLE_SCOPE_PROFILE_CPU(jleGameEngine_updateActiveScenes)
-            game->updateActiveScenes(dt);
+            _game->updateActiveScenes(ctx);
         }
         {
             JLE_SCOPE_PROFILE_CPU(RmlUi)
@@ -374,13 +378,13 @@ jleGameEngine::update(float dt)
 }
 
 void
-jleGameEngine::render(wi::jobsystem::context& ctx)
+jleGameEngine::render(jleEngineModulesContext &modulesContext, wi::jobsystem::context &jobsCtx)
 {
     JLE_SCOPE_PROFILE_CPU(jleGameEngine_render)
 
     _renderThread->processRenderQueue();
 
-    if (!gameHalted && game) {
+    if (!_gameHalted && _game) {
 
         // Render to game view
         static jleFramebufferMultisample msaa{mainScreenFramebuffer->width(), mainScreenFramebuffer->height(), 4};
@@ -390,7 +394,11 @@ jleGameEngine::render(wi::jobsystem::context& ctx)
         }
 
         if (_3dRenderGraphForRendering) {
-            renderer().render(msaa, gameRef().mainCamera, *_3dRenderGraphForRendering, renderSettings());
+            renderer().render(msaa,
+                              gameRef().mainCamera,
+                              *_3dRenderGraphForRendering,
+                              renderSettings(),
+                              modulesContext.resourcesModule);
         }
 
         // Render to the MSAA framebuffer, then blit the result over to the main framebuffer
@@ -449,16 +457,17 @@ jleGameEngine::mainLoop()
 
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS) { input().mouse->updateDeltas(); }
 
-    wi::jobsystem::context ctx;
+    wi::jobsystem::context jobsCtx;
+    jleEngineModulesContext &modulesContext = *_modulesContext;
 
     // Game thread
-    wi::jobsystem::Execute(ctx, [&](wi::jobsystem::JobArgs args) { update(deltaFrameTime()); });
+    wi::jobsystem::Execute(jobsCtx, [&](wi::jobsystem::JobArgs args) { update(modulesContext); });
     // update(deltaFrameTime());
 
     // Render thread
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
     {
-        render(ctx);
+        render(modulesContext, jobsCtx);
         _window->updateWindow();
         running = !_window->windowShouldClose();
     }
@@ -469,7 +478,7 @@ jleGameEngine::mainLoop()
         std::this_thread::sleep_until(frameStart + std::chrono::milliseconds(sleepForMs));
     }
 
-    Wait(ctx);
+    Wait(jobsCtx);
 
     // Double buffer move
     _3dRenderGraphForRendering = std::move(_3dRenderGraph);

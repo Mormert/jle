@@ -20,20 +20,20 @@
 
 template <typename T>
 void
-jleResourceRef<T>::loadResource()
+jleResourceRef<T>::loadResource(jleResources& resources)
 {
     ptr = nullptr;
     if (!path.isEmpty()) {
-        ptr = gEngine->resources().loadResourceFromFile<T>(path);
+        ptr = resources.loadResourceFromFile<T>(path);
     }
 }
 
 template <typename T>
 void
-jleResourceRef<T>::reloadWithNewPath(const jlePath &path)
+jleResourceRef<T>::reloadWithNewPath(const jlePath &newPath, jleResources& resources)
 {
-    this->path = path;
-    loadResource();
+    path = newPath;
+    loadResource(resources);
 }
 
 template <typename T>

@@ -30,11 +30,11 @@ public:
         //ar(CEREAL_NVP(_mass));
     }
 
-    void editorUpdate(float dt) override;
+    void editorUpdate(jleEngineModulesContext& ctx) override;
 
     void start() override;
 
-    void update(float dt) override;
+    void update(jleEngineModulesContext& ctx) override;
 
     void onDestroy() override;
 

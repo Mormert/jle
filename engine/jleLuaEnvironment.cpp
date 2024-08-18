@@ -39,7 +39,10 @@ jleLuaEnvironment::jleLuaEnvironment() : _scriptFilesWatcher({})
     setupLua(_luaState);
 }
 
-jleLuaEnvironment::~jleLuaEnvironment() {}
+jleLuaEnvironment::~jleLuaEnvironment() {
+
+    int a = 3;
+}
 
 void
 jleLuaEnvironment::setupLua(sol::state &lua)
@@ -68,7 +71,8 @@ jleLuaEnvironment::setupLua(sol::state &lua)
     lua["JLE_EDITOR_RESOURCES_PATH"] = JLE_EDITOR_RESOURCES_PATH;
 
     auto scriptLoadingTable = lua.create_named_table("ScriptEnv");
-    scriptLoadingTable.set_function("loadScript", [&](const std::string path) { loadScript(path.c_str()); });
+    scriptLoadingTable.set_function(
+        "loadScriptIntoLuaEnv", [&](const std::string path, jleResources &resources) { loadScript(path.c_str(), resources); });
 
     lua.new_usertype<jlePath>(
         "jlePath",
@@ -519,20 +523,21 @@ jleLuaEnvironment::getState()
 }
 
 void
-jleLuaEnvironment::setupScriptLoader()
+jleLuaEnvironment::loadInitialScripts(jleResources &resources)
 {
     // Load all Lua scripts in the to-be-watched folder
     const auto result = _scriptFilesWatcher.sweep();
     for (const auto &added : result.added) {
-        loadScript(added);
+        loadScript(added, resources);
     }
 }
 
 void
-jleLuaEnvironment::loadScript(const jlePath &path)
+jleLuaEnvironment::loadScript(const jlePath &path, jleResources &resources)
 {
     // Loads script and it will be placed in resource holder
-    auto script = jleResourceRef<jleLuaScript>(path);
+    auto script = jleResourceRef<jleLuaScript>(path, resources);
+    script->loadScriptIntoLuaEnv(*this);
     _loadedScripts.insert(std::make_pair(path, script.get()));
 }
 
@@ -560,7 +565,7 @@ jleLuaEnvironment::loadedLuaClasses()
 
 #if JLE_BUILD_EDITOR
 void
-jleLuaEnvironment::loadNewlyAddedScripts()
+jleLuaEnvironment::loadNewlyAddedScripts(jleResources &resources)
 {
     ZoneScopedNC("jleLuaEnvironment_loadNewlyAddedScripts", 0xe57395);
 
@@ -570,7 +575,7 @@ jleLuaEnvironment::loadNewlyAddedScripts()
 
             for (auto &added : result.added) {
                 if (added.getFileEnding() == "lua") {
-                    loadScript(added);
+                    loadScript(added, resources);
                 }
             }
         }

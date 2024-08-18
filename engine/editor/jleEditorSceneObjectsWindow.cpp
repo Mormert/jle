@@ -37,7 +37,7 @@ jleEditorSceneObjectsWindow::GetSelectedObject()
 }
 
 void
-jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge)
+jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext& ctx)
 {
     if (!isOpened) {
         return;
@@ -242,7 +242,7 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge)
                             ar(componentBeingAdded);
 
                             if (ImGui::Button("Add Component")) {
-                                selectedObjectSafePtr->addComponent(componentBeingAdded);
+                                selectedObjectSafePtr->addComponent(componentBeingAdded, ctx);
                                 componentBeingAdded.reset();
                             }
                             ImGui::SameLine();

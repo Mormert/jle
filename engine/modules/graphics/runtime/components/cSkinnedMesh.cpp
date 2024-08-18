@@ -20,24 +20,24 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cSkinnedMesh)
 
 void
-cSkinnedMesh::editorUpdate(float dt)
+cSkinnedMesh::editorUpdate(jleEngineModulesContext& ctx)
 {
     if (_animator && _animator->isDestroyed()) {
         _animator.reset();
     }
 
     findAnimator(object());
-    update(dt);
+    update(ctx);
 }
 
 void
-cSkinnedMesh::start()
+cSkinnedMesh::start(jleEngineModulesContext& ctx)
 {
     findAnimator(object());
 }
 
 void
-cSkinnedMesh::update(float dt)
+cSkinnedMesh::update(jleEngineModulesContext& ctx)
 {
     std::shared_ptr<jleAnimationFinalMatrices> animationMatrices;
     if (_animator) {

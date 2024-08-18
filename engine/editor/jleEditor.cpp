@@ -64,7 +64,7 @@ struct jleEditor::jleEditorInternal {
 class jleEditor::jleEditorWindows
 {
 public:
-    explicit jleEditorWindows(const jleEditorSaveState &saveState)
+    explicit jleEditorWindows(const jleEditorModulesContext &ctx)
     {
         // Note: Important that menu comes first here, since the others are
         // dependent on the menu's dockspace.
@@ -75,9 +75,9 @@ public:
         resourceEditor = std::make_shared<jleEditorResourceEdit>("Resource Edit");
 
         sceneWindow = std::make_shared<jleSceneEditorWindow>("Scene Window");
-        sceneWindow->fpvCamController.position = saveState.cameraPosition;
-        sceneWindow->fpvCamController.yaw = saveState.cameraYaw;
-        sceneWindow->fpvCamController.pitch = saveState.cameraPitch;
+        sceneWindow->fpvCamController.position = ctx.editor.saveState().cameraPosition;
+        sceneWindow->fpvCamController.yaw = ctx.editor.saveState().cameraYaw;
+        sceneWindow->fpvCamController.pitch = ctx.editor.saveState().cameraPitch;
         menu->addWindow(sceneWindow);
 
         gameWindow = std::make_shared<jleGameEditorWindow>("Game Window");
@@ -107,7 +107,7 @@ public:
         import3DWindow = std::make_shared<jleEditor3DImportWindow>("Model Importer");
         menu->addWindow(import3DWindow);
 
-        notifications = std::make_shared<jleEditorNotifications>("Notifications");
+        notifications = std::make_shared<jleEditorNotifications>("Notifications", ctx.engineModulesContext.resourcesModule);
 
         frameGraph = std::make_shared<jleEditorFrameGraphWindow>("Frame Graph");
     }
@@ -138,12 +138,12 @@ public:
         gameWindow->renderUI(context.engine);
         console->renderUI(context.engine);
         settingsWindow->renderUI(context.engine);
-        editorSceneObjects->renderUI(context.engine);
-        contentBrowser->renderUI(context.engine);
+        editorSceneObjects->renderUI(context.engine, context.engineModulesContext);
+        contentBrowser->renderUI(context.engineModulesContext);
         buildTool->renderUI(context.engine, context.editor.resourceIndexer());
         resourceViewer->renderUI(context.engine);
         profilerWindow->renderUI(context.engine);
-        import3DWindow->renderUI(context.engine);
+        import3DWindow->renderUI(context.engine, context.engineModulesContext);
         notifications->renderUI(context.engine);
         frameGraph->renderUI(context.engine);
     }
@@ -152,19 +152,21 @@ public:
 jleEditor::jleEditor()
 {
     gEditor = this;
-    _internal = std::make_unique<jleEditorInternal>();
-    _camera = std::make_unique<jleCamera>();
-    _gizmos = std::make_unique<jleEditorGizmos>();
+
 }
 
 void
-jleEditor::start(const jleEngineModulesContext &context)
+jleEditor::start(jleEngineModulesContext &context)
 {
     _editorContext = std::make_unique<jleEditorModulesContext>(context, *this, *this);
 
+    _internal = std::make_unique<jleEditorInternal>();
+    _camera = std::make_unique<jleCamera>();
+    _gizmos = std::make_unique<jleEditorGizmos>(_editorContext->engineModulesContext.resourcesModule);
+
     LOG_INFO << "Starting the editor";
 
-    _internal->editorSaveState = jleResourceRef<jleEditorSaveState>(jlePath{"BI:editor_save.edsave"});
+    _internal->editorSaveState = jleResourceRef<jleEditorSaveState>(jlePath{"BI:editor_save.edsave"}, context.resourcesModule);
 
     std::vector<std::string> directoriesForNotification;
     directoriesForNotification.push_back(jlePath{"ER:/"}.getRealPath());
@@ -180,7 +182,7 @@ jleEditor::start(const jleEngineModulesContext &context)
 
     // editorScreenFramebuffer = std::make_shared<jleFramebufferScreen>(initialScreenX, initialScreenY);
 
-    _editorWindows = std::make_unique<jleEditorWindows>(*_internal->editorSaveState.get());
+    _editorWindows = std::make_unique<jleEditorWindows>(*_editorContext);
 
     _sceneWindow = _editorWindows->sceneWindow;
     _editorSceneObjects = _editorWindows->editorSceneObjects;
@@ -194,8 +196,10 @@ jleEditor::start(const jleEngineModulesContext &context)
 
     LOG_INFO << "Starting the game in editor mode";
 
-    luaEnvironment()->loadScript("ER:/scripts/engine.lua");
-    luaEnvironment()->loadScript("ED:/scripts/editor.lua");
+    luaEnvironment()->loadScript("ER:/scripts/engine.lua", context.resourcesModule);
+    luaEnvironment()->loadScript("ER:/scripts/globals.lua", context.resourcesModule);
+
+    luaEnvironment()->loadScript("ED:/scripts/editor.lua", context.resourcesModule);
 
     startRmlUi();
 
@@ -204,20 +208,20 @@ jleEditor::start(const jleEngineModulesContext &context)
     }
 
     for (auto &&scenePath : saveState().loadedScenePaths) {
-        loadScene(scenePath, false);
+        loadScene(scenePath, context, false);
     }
 }
 
 void
-jleEditor::render(wi::jobsystem::context &ctx)
+jleEditor::render(jleEngineModulesContext& modulesContext, wi::jobsystem::context &jobsCtx)
 {
     JLE_SCOPE_PROFILE_GPU(EditorRender);
 
     // TODO : This needs to be restructured.
     // Possibly fix with ECS/context passing struct
-    Wait(ctx);
+    Wait(jobsCtx);
 
-    renderGameView();
+    renderGameView(modulesContext.resourcesModule);
 
     renderEditorSceneView();
 
@@ -233,13 +237,13 @@ jleEditor::render(wi::jobsystem::context &ctx)
 }
 
 void
-jleEditor::renderGameView()
+jleEditor::renderGameView(jleResources& resources)
 {
     JLE_SCOPE_PROFILE_CPU(RenderGameView);
 
     _renderThread->processRenderQueue();
 
-    if (!gameHalted && game) {
+    if (!_gameHalted && _game) {
         // Render to game view
         static jleFramebufferMultisample msaa{mainScreenFramebuffer->width(), mainScreenFramebuffer->height(), 4};
 
@@ -248,7 +252,7 @@ jleEditor::renderGameView()
         }
 
         if (_3dRenderGraphForRendering) {
-            renderer().render(msaa, game->mainCamera, *_3dRenderGraphForRendering, renderSettings());
+            renderer().render(msaa, _game->mainCamera, *_3dRenderGraphForRendering, renderSettings(), resources);
             msaa.blitToOther(*mainScreenFramebuffer);
         }
     }
@@ -371,17 +375,17 @@ jleEditor::mainEditorWindowResized(const jleWindowResizeEvent &resizeEvent)
     constexpr int scale2 = 2048 * 1536;
     constexpr int scale3 = 4096 * 1728;
 
-    io.FontGlobalScale = 1.0;
+    io.FontGlobalScale = 1.0f;
 
-    if (w * h > scale0) {
-        io.FontGlobalScale = 1.0;
+    if (w * h >= scale0) {
+        io.FontGlobalScale = 1.0f;
     }
 
-    if (w * h > scale1) {
+    if (w * h >= scale1) {
         io.FontGlobalScale = 1.25f;
     }
 
-    if (w * h > scale2) {
+    if (w * h >= scale2) {
         io.FontGlobalScale = 1.5f;
     }
 
@@ -397,7 +401,7 @@ jleEditor::getEditorScenes()
 }
 
 void
-jleEditor::updateEditorLoadedScenes(float dt)
+jleEditor::updateEditorLoadedScenes(jleEngineModulesContext& ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleEditor_updateEditorLoadedScenes)
     for (int i = _editorScenes.size() - 1; i >= 0; i--) {
@@ -406,20 +410,20 @@ jleEditor::updateEditorLoadedScenes(float dt)
             continue;
         }
 
-        _editorScenes[i]->updateSceneEditor(dt);
+        _editorScenes[i]->updateSceneEditor(ctx);
     }
 }
 
 void
-jleEditor::update(float dt)
+jleEditor::update(jleEngineModulesContext& ctx)
 {
     _resourceIndexer->update(resources(), *_editorWindows->textEditWindow);
 
-    _luaEnvironment->loadNewlyAddedScripts();
-    jleGameEngine::update(dt);
+    _luaEnvironment->loadNewlyAddedScripts(ctx.resourcesModule);
+    jleGameEngine::update(ctx);
     if (isGameKilled()) {
         JLE_SCOPE_PROFILE_CPU(updateEditorLoadedScenes)
-        updateEditorLoadedScenes(dt);
+        updateEditorLoadedScenes(ctx);
     }
 }
 
@@ -571,7 +575,7 @@ jleEditor::checkSceneIsActiveEditor(const std::string &sceneName)
 }
 
 std::shared_ptr<jleScene>
-jleEditor::loadScene(const jlePath &scenePath, bool startObjects)
+jleEditor::loadScene(const jlePath &scenePath, jleEngineModulesContext& ctx, bool startObjects)
 {
     auto scene = gEngine->resources().loadResourceFromFile<jleScene>(scenePath, true);
 
@@ -579,7 +583,7 @@ jleEditor::loadScene(const jlePath &scenePath, bool startObjects)
     if (it == _editorScenes.end()) {
         _editorScenes.push_back(scene);
         if (startObjects) {
-            scene->startObjects();
+            scene->startObjects(ctx);
         }
     } else {
         LOG_WARNING << "Loaded scene is already loaded";

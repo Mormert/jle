@@ -59,12 +59,15 @@ public:
 
     virtual void useMaterial(const jleCamera &camera,
                              const std::vector<jle3DRendererLight> &lights,
-                             const jle3DSettings &settings);
+                             const jle3DSettings &settings,
+                             jleResources& resources);
 
     template <class Archive>
     void serialize(Archive &ar);
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedOnlyResource)
+
+    void setShader(const jleResourceRef<jleShader>& shaderRef);
 
     std::shared_ptr<jleShader> getShader();
 
@@ -90,7 +93,8 @@ public:
 
     void useMaterial(const jleCamera &camera,
                      const std::vector<jle3DRendererLight> &lights,
-                     const jle3DSettings &settings) override;
+                     const jle3DSettings &settings,
+                     jleResources& resources) override;
 
     template <class Archive>
     void serialize(Archive &ar);

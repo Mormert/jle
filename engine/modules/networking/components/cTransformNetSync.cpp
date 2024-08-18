@@ -31,7 +31,7 @@ cTransformNetSync::netSyncIn(cereal::BinaryInputArchive &ar)
 }
 
 void
-cTransformNetSync::serverUpdate(float dt)
+cTransformNetSync::serverUpdate(jleEngineModulesContext& ctx)
 {
     syncServerToClient();
 }

@@ -33,7 +33,7 @@ public:
 
     void registerLua(sol::state& lua) override;
 
-    void update(float dt) override;
+    void update(jleEngineModulesContext& ctx) override;
 
     void editorGizmosRender(bool selected) override;
 };

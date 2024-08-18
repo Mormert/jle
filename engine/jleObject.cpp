@@ -31,11 +31,11 @@ JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleObject)
 
 struct jleAddComponentEvent : public jleServerToClientEvent {
     void
-    execute() override
+    execute(jleEngineModulesContext& ctx) override
     {
         auto &scene = getSceneClient();
         if (auto object = scene.getObjectFromNetId(objectNetId)) {
-            object->addComponent(component);
+            object->addComponent(component, ctx);
         }
     }
 
@@ -54,7 +54,7 @@ JLE_REGISTER_NET_EVENT(jleAddComponentEvent)
 
 struct jleDestroyComponentEvent : public jleServerToClientEvent {
     void
-    execute() override
+    execute(jleEngineModulesContext& ctx) override
     {
         auto &scene = getSceneClient();
         if (auto object = scene.getObjectFromNetId(objectNetId)) {
@@ -77,7 +77,7 @@ JLE_REGISTER_NET_EVENT(jleDestroyComponentEvent)
 
 struct jleAttachChildEvent : public jleServerToClientEvent {
     void
-    execute() override
+    execute(jleEngineModulesContext& ctx) override
     {
         auto &scene = getSceneClient();
         if (auto parent = scene.getObjectFromNetId(objectNetIdParent)) {
@@ -235,14 +235,14 @@ jleObject(jleScene *scene)
 }
 
 void
-jleObject::startComponents()
+jleObject::startComponents(jleEngineModulesContext& ctx)
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
         if (!_components[i]->_isStarted) {
             if (networkObjectType() == jleObjectNetworkType::SERVER) {
-                _components[i]->serverStart();
+                _components[i]->serverStart(ctx);
             } else {
-                _components[i]->start();
+                _components[i]->start(ctx);
             }
             _components[i]->_isStarted = true;
         }
@@ -253,31 +253,31 @@ jleObject::startComponents()
 }
 
 void
-jleObject::updateComponents(float dt)
+jleObject::updateComponents(jleEngineModulesContext& ctx)
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
-        _components[i]->update(dt);
+        _components[i]->update(ctx);
     }
 }
 
 void
-jleObject::updateComponentsEditor(float dt)
+jleObject::updateComponentsEditor(jleEngineModulesContext& ctx)
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
-        _components[i]->editorUpdate(dt);
+        _components[i]->editorUpdate(ctx);
     }
 }
 
 void
-jleObject::updateComponentsServer(float dt)
+jleObject::updateComponentsServer(jleEngineModulesContext& ctx)
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
-        _components[i]->serverUpdate(dt);
+        _components[i]->serverUpdate(ctx);
     }
 }
 
 void
-jleObject::updateChildren(float dt)
+jleObject::updateChildren(jleEngineModulesContext& ctx)
 {
     for (int32_t i = __childObjects.size() - 1; i >= 0; i--) {
         if (__childObjects[i]->_pendingKill) {
@@ -286,15 +286,15 @@ jleObject::updateChildren(float dt)
             continue;
         }
 
-        __childObjects[i]->updateComponents(dt);
+        __childObjects[i]->updateComponents(ctx);
 
         // Recursively update children after this object has updated
-        __childObjects[i]->updateChildren(dt);
+        __childObjects[i]->updateChildren(ctx);
     }
 }
 
 void
-jleObject::updateChildrenEditor(float dt)
+jleObject::updateChildrenEditor(jleEngineModulesContext& ctx)
 {
     for (int32_t i = __childObjects.size() - 1; i >= 0; i--) {
         if (__childObjects[i]->_pendingKill) {
@@ -302,15 +302,15 @@ jleObject::updateChildrenEditor(float dt)
             continue;
         }
 
-        __childObjects[i]->updateComponentsEditor(dt);
+        __childObjects[i]->updateComponentsEditor(ctx);
 
         // Recursively update children after this object has updated
-        __childObjects[i]->updateChildrenEditor(dt);
+        __childObjects[i]->updateChildrenEditor(ctx);
     }
 }
 
 void
-jleObject::updateChildrenServer(float dt)
+jleObject::updateChildrenServer(jleEngineModulesContext& ctx)
 {
     for (int32_t i = __childObjects.size() - 1; i >= 0; i--) {
         if (__childObjects[i]->_pendingKill) {
@@ -318,10 +318,10 @@ jleObject::updateChildrenServer(float dt)
             continue;
         }
 
-        __childObjects[i]->updateComponentsServer(dt);
+        __childObjects[i]->updateComponentsServer(ctx);
 
         // Recursively update children after this object has updated
-        __childObjects[i]->updateChildrenServer(dt);
+        __childObjects[i]->updateChildrenServer(ctx);
     }
 }
 
@@ -530,12 +530,12 @@ jleObject::propagateDestroy()
 }
 
 void
-jleObject::addComponentStart(const std::shared_ptr<jleComponent> &c)
+jleObject::addComponentStart(const std::shared_ptr<jleComponent> &c, jleEngineModulesContext& ctx)
 {
     if (!gEngine->isGameKilled()) {
 
         if (networkObjectType() == jleObjectNetworkType::SERVER) {
-            c->serverStart();
+            c->serverStart(ctx);
 
             auto event = jleMakeNetEvent<jleAddComponentEvent>();
             event->component = c;
@@ -543,7 +543,7 @@ jleObject::addComponentStart(const std::shared_ptr<jleComponent> &c)
             _containedInSceneServer->sendNetworkEventBroadcast(std::move(event));
         } else {
             c->_attachedToObject = this;
-            c->start();
+            c->start(ctx);
         }
         c->_isStarted = true;
     }

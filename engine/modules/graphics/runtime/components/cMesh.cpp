@@ -21,11 +21,11 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cMesh)
 
 void
-cMesh::start()
+cMesh::start(jleEngineModulesContext& ctx)
 {}
 
 void
-cMesh::update(float dt)
+cMesh::update(jleEngineModulesContext& ctx)
 {
     if (_meshRef) {
         std::shared_ptr<jleMesh> mesh = _meshRef.get();
@@ -36,9 +36,9 @@ cMesh::update(float dt)
 }
 
 void
-cMesh::editorUpdate(float dt)
+cMesh::editorUpdate(jleEngineModulesContext& ctx)
 {
-    update(dt);
+    update(ctx);
 }
 
 std::shared_ptr<jleMesh>

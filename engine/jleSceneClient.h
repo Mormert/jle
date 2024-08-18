@@ -17,8 +17,8 @@
 
 #include "core/jleCommon.h"
 
-#include "jleSceneNetworked.h"
 #include "jleNetworkEventOutQueue.h"
+#include "jleSceneNetworked.h"
 
 class jleSceneClient : public jleSceneNetworked
 {
@@ -35,11 +35,14 @@ public:
 
     void onSceneDestruction() override;
 
-    void updateScene(float dt) override;
+    void updateScene(jleEngineModulesContext &ctx) override;
 
     void sceneInspectorImGuiRender() override;
 
-    void spawnObjectFromServer(const std::shared_ptr<jleObject> &object, int32_t netId, int32_t owner = 0);
+    void spawnObjectFromServer(jleEngineModulesContext &ctx,
+                               const std::shared_ptr<jleObject> &object,
+                               int32_t netId,
+                               int32_t owner = 0);
 
     void sendNetworkEvent(std::unique_ptr<jleClientToServerEvent> event);
 
@@ -56,7 +59,7 @@ protected:
     void setupObject(const std::shared_ptr<jleObject> &obj) override;
 
 private:
-    void processNetwork() override;
+    void processNetwork(jleEngineModulesContext& ctx) override;
 
     void setupObjectForNetworking(const std::shared_ptr<jleObject> &obj);
 

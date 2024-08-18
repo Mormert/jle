@@ -24,7 +24,7 @@ typedef struct _ENetCompressor ENetCompressor;
 class jleSceneNetworked : public jleScene
 {
 protected:
-    virtual void processNetwork() = 0;
+    virtual void processNetwork(jleEngineModulesContext& ctx) = 0;
 
     static void networkSceneDisplayInspectorWindow(const std::string &sceneType,
                                                    const std::string &sceneName,

@@ -29,15 +29,17 @@ public:
 
     [[nodiscard]] bool loadFromFile(const jlePath &path) override;
 
-    virtual void loadScript();
-
     void saveToFile() override;
 
 protected:
+
+    friend class jleLuaEnvironment;
+    void loadScriptIntoLuaEnv(jleLuaEnvironment& luaEnvironment);
+
     std::string _luaScriptName;
     std::string _sourceCode;
-    std::shared_ptr<jleLuaEnvironment> _luaEnvironment;
-    bool faultyState = true;
+
+    bool _failsLoading = true;
 };
 
 CEREAL_REGISTER_TYPE(jleLuaScript)

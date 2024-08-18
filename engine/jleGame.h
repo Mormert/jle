@@ -44,16 +44,16 @@ public:
     virtual ~jleGame() = default;
 
     virtual void
-    update(float dt)
+    update(jleEngineModulesContext& ctx)
     {
     }
 
     virtual void
-    start()
+    start(jleEngineModulesContext& ctx)
     {
     }
 
-    void updateActiveScenes(float dt);
+    void updateActiveScenes(jleEngineModulesContext& ctx);
 
     template <typename T>
     std::shared_ptr<T>
@@ -69,13 +69,13 @@ public:
         return newScene;
     }
 
-    std::shared_ptr<jleScene> loadScene(const jlePath &scenePath);
+    std::shared_ptr<jleScene> loadScene(const jlePath &scenePath, jleEngineModulesContext& ctx);
 
     std::vector<std::shared_ptr<jleScene>> &activeScenesRef();
 
     jleCamera mainCamera{jleCameraProjection::Orthographic};
 
-    void parallelUpdates(float dt);
+    void parallelUpdates(jleEngineModulesContext& ctx);
 
     void addParallelComponent(const std::shared_ptr<jleComponent> &component);
 

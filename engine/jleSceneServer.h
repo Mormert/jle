@@ -37,7 +37,7 @@ public:
 
     void onSceneDestruction() override;
 
-    void updateScene(float dt) override;
+    void updateScene(jleEngineModulesContext& ctx) override;
 
     void sceneInspectorImGuiRender() override;
 
@@ -56,7 +56,7 @@ protected:
     void setupObject(const std::shared_ptr<jleObject> &obj) override;
 
     virtual void
-    onClientConnect(int32_t clientId)
+    onClientConnect(jleEngineModulesContext& ctx, int32_t clientId)
     {
     }
 
@@ -66,11 +66,11 @@ protected:
     }
 
 private:
-    void updateServerSceneObjects(float dt);
+    void updateServerSceneObjects(jleEngineModulesContext& ctx);
 
     void setupObjectForNetworking(const std::shared_ptr<jleObject> &obj);
 
-    void processNetwork() override;
+    void processNetwork(jleEngineModulesContext& ctx) override;
 
     void objectDestructionNetworked(const std::shared_ptr<jleObject> &object);
 

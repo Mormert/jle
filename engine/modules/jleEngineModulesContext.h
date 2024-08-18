@@ -25,11 +25,8 @@ class jle3DRenderer;
 class jleFrameInfo;
 
 struct jleEngineModulesContext {
-    explicit jleEngineModulesContext(jle3DRenderer &renderer,
-                                     jleInput &input,
-                                     jleWindow &window,
-                                     jleResources &resources,
-                                     jleFrameInfo& info);
+    explicit jleEngineModulesContext(
+        jle3DRenderer &renderer, jleInput &input, jleWindow &window, jleResources &resources, jleFrameInfo &info);
 
     // Modules
     jle3DRenderer &rendererModule;
@@ -38,5 +35,5 @@ struct jleEngineModulesContext {
     jleInput &inputModule;
 
     // Utilities
-    jleFrameInfo& frameInfo;
+    jleFrameInfo &frameInfo;
 };

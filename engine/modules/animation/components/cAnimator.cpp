@@ -63,7 +63,7 @@ cAnimator::cAnimator()
 }
 
 void
-cAnimator::start()
+cAnimator::start(jleEngineModulesContext& ctx)
 {
     for (auto &animation : _animations) {
         animation.currentAnimationLocal = *animation.currentAnimation.get();
@@ -71,7 +71,7 @@ cAnimator::start()
 }
 
 void
-cAnimator::update(float dt)
+cAnimator::update(jleEngineModulesContext& ctx)
 {
     /* std::for_each(std::execution::par, _animations.begin(), _animations.end(), [&](cAnimatorAnimation &animation) {
          if (animation.currentAnimation) {
@@ -94,8 +94,10 @@ cAnimator::update(float dt)
 }
 
 void
-cAnimator::parallelUpdate(float dt)
+cAnimator::parallelUpdate(jleEngineModulesContext& ctx)
 {
+    const auto dt = ctx.frameInfo.getDeltaTime();
+
     for (auto &animation : _animations) {
         ZoneScopedN("AnimBlendIteration");
         // if (animation.currentAnimationLocal) {
@@ -118,11 +120,11 @@ cAnimator::parallelUpdate(float dt)
 }
 
 void
-cAnimator::editorUpdate(float dt)
+cAnimator::editorUpdate(jleEngineModulesContext& ctx)
 {
 #if JLE_BUILD_EDITOR
     if (_editorPreviewAnimation) {
-        update(dt);
+        update(ctx);
     }
 #endif
 }
@@ -290,12 +292,12 @@ cAnimator::applyRootMotion()
 
 
 void
-cAnimator::setAnimation(const jlePath &path)
+cAnimator::setAnimation(const jlePath &path, jleResources& resources)
 {
     _animations.clear();
     _animations.push_back({});
     _animations[0].currentAnimation.path = path;
-    _animations[0].currentAnimation.loadResource();
+    _animations[0].currentAnimation.loadResource(resources);
 
     for (auto &animation : _animations) {
         animation.currentAnimationLocal = *animation.currentAnimation.get();

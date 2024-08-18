@@ -34,20 +34,20 @@ public:
 
     ~jleLuaEnvironment();
 
-    void loadScript(const jlePath& path);
+    void loadScript(const jlePath& path, jleResources& resources);
 
     void executeScript(const char* script);
 
     [[nodiscard]] sol::state& getState();
 
-    void setupScriptLoader();
+    void loadInitialScripts(jleResources& resources);
 
     std::unordered_map<jlePath, std::shared_ptr<jleLuaScript>>& loadedScripts();
 
     std::unordered_map<std::string, jleLuaClass>& loadedLuaClasses();
 
 #if JLE_BUILD_EDITOR
-    void loadNewlyAddedScripts();
+    void loadNewlyAddedScripts(jleResources& resources);
 #endif
 
 private:
