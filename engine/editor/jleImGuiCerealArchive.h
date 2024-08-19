@@ -100,23 +100,35 @@ struct jleToolTip {
     std::string_view tip_view;
 };
 
+struct jleSerializationContext {
+    jleSerializationContext(jleResources &r, jleLuaEnvironment &l) : resources{r}, luaEnvironment{l} {}
+
+    jleResources &resources;
+    jleLuaEnvironment &luaEnvironment;
+};
+
 namespace cereal
 {
 
 class jleImGuiCerealArchiveInternal : public OutputArchive<jleImGuiCerealArchiveInternal>
 {
 public:
-    jleImGuiCerealArchiveInternal() : OutputArchive<jleImGuiCerealArchiveInternal>(this) {}
+    jleImGuiCerealArchiveInternal(jleSerializationContext &context)
+        : ctx{context}, OutputArchive<jleImGuiCerealArchiveInternal>(this)
+    {
+    }
+
     ~jleImGuiCerealArchiveInternal() override = default;
 
     std::string nextPolymorhphicTypeName{};
+    jleSerializationContext &ctx;
 };
 
 class jleImGuiCerealArchive : public InputArchive<jleImGuiCerealArchive>
 {
 
 public:
-    jleImGuiCerealArchive() : InputArchive<jleImGuiCerealArchive>(this) {}
+    jleImGuiCerealArchive(jleSerializationContext &context) : ctx(context), InputArchive<jleImGuiCerealArchive>(this) {}
 
     ~jleImGuiCerealArchive() override = default;
 
@@ -141,6 +153,7 @@ private:
     bool draw_ui_reference(const char *name, std::string &value, std::vector<std::string> fileExtensions);
     bool draw_ui_lua_reference(const char *name, std::string &value);
 
+    // clang-format off
     void draw_ui(jleImGuiCerealArchive &ar, const char *name, jleLuaClassSerialization &value);
     void draw_ui(jleImGuiCerealArchive &ar, const char *name, jlePath &value);
     void draw_ui(jleImGuiCerealArchive &ar, const char *name, uint32_t &value);
@@ -158,6 +171,7 @@ private:
     void draw_ui(jleImGuiCerealArchive &ar, const char *name, jleRGBA &value);
     void draw_ui(jleImGuiCerealArchive &ar, const char *name, glm::quat &value);
     void draw_ui(jleImGuiCerealArchive &ar, const char *name, jleTransform &value);
+    // clang-format on
 
     template <class T>
     void
@@ -339,7 +353,7 @@ private:
 
         ImGui::BeginGroupPanel(name.c_str());
 
-        jleImGuiCerealArchiveInternal archiveInternal;
+        jleImGuiCerealArchiveInternal archiveInternal{ar.ctx};
         archiveInternal(ptr);
 
         ImGui::EndGroupPanel();
@@ -375,6 +389,9 @@ private:
 
 public:
     int elementCount = 0;
+
+private:
+    jleSerializationContext &ctx;
 };
 
 template <class T>
@@ -414,7 +431,7 @@ CEREAL_SAVE_FUNCTION_NAME(jleImGuiCerealArchiveInternal &ar,
     std::shared_ptr<T> f = std::const_pointer_cast<T>(t.value.ptr);
 
     if (auto component = std::dynamic_pointer_cast<jleComponent>(f)) {
-        jleImGuiCerealArchive nonPolymorphicArchive;
+        jleImGuiCerealArchive nonPolymorphicArchive{ar.ctx};
         nonPolymorphicArchive.elementCount += 1;
 
         ImGui::PushID(nonPolymorphicArchive.elementCount);
@@ -428,7 +445,7 @@ CEREAL_SAVE_FUNCTION_NAME(jleImGuiCerealArchiveInternal &ar,
 
         ImGui::PopID();
     } else {
-        jleImGuiCerealArchive nonPolymorphicArchive;
+        jleImGuiCerealArchive nonPolymorphicArchive{ar.ctx};
         nonPolymorphicArchive.draw(nonPolymorphicArchive, ar.nextPolymorhphicTypeName + " (ptr)", *f.get());
     }
 }

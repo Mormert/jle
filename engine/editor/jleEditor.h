@@ -95,11 +95,11 @@ private:
 
     void initImgui();
 
-    void renderEditorGizmos();
+    void renderEditorGizmos(jle3DGraph& renderGraph);
 
     void renderEditorGridGizmo();
 
-    void renderEditorGizmosObject(jleObject *object);
+    void renderEditorGizmosObject(jleObject *object, jle3DGraph& renderGraph);
 
     void addImGuiWindow(std::shared_ptr<jleEditorWindowInterface> window);
 

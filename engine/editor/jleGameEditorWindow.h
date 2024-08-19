@@ -28,7 +28,7 @@ class jleGameEditorWindow : public jleEditorWindowInterface
 public:
     explicit jleGameEditorWindow(const std::string &window_name);
 
-    void renderUI(jleGameEngine &ge);
+    void renderUI(jleGameEngine &ge, jleInput& input);
 
     int width() const;
 

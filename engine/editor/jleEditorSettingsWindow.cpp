@@ -14,15 +14,17 @@
  *********************************************************************************************/
 
 #include "jleEditorSettingsWindow.h"
-#include <ImGui/imgui.h>
 #include "jleEditor.h"
 #include "jleEngineSettings.h"
 #include "jleImGuiCerealArchive.h"
+#include <ImGui/imgui.h>
 
-jleEditorSettingsWindow::jleEditorSettingsWindow(const std::string &window_name) : jleEditorWindowInterface{window_name} {}
+jleEditorSettingsWindow::jleEditorSettingsWindow(const std::string &window_name) : jleEditorWindowInterface{window_name}
+{
+}
 
 void
-jleEditorSettingsWindow::renderUI(jleGameEngine &ge)
+jleEditorSettingsWindow::renderUI(jleEditorModulesContext &ctx)
 {
     if (!isOpened) {
         return;
@@ -35,13 +37,16 @@ jleEditorSettingsWindow::renderUI(jleGameEngine &ge)
     ImGui::BeginChild("settings hierarchy view",
                       ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 
-    cereal::jleImGuiCerealArchive archive;
-    archive(ge.settings());
+    jleSerializationContext serializationContext{ctx.engineModulesContext.resourcesModule,
+                                                 ctx.engineModulesContext.luaEnvironment};
+
+    cereal::jleImGuiCerealArchive archive{serializationContext};
+    archive(ctx.engine.settings());
 
     ImGui::EndChild();
 
     if (ImGui::Button("Save Settings")) {
-        ge.settings().saveToFile();
+        ctx.engine.settings().saveToFile();
     }
 
     ImGui::SameLine();

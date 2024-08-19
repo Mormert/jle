@@ -14,8 +14,8 @@
  *********************************************************************************************/
 
 #include "jleImGuiCerealArchive.h"
-#include "jleLuaEnvironment.h"
 #include "core/jleResourceIndexer.h"
+#include "jleLuaEnvironment.h"
 
 #include <jleVectorSet.h>
 
@@ -198,7 +198,8 @@ cereal::jleImGuiCerealArchive::draw_ui_reference(const char *name,
 }
 
 bool
-cereal::jleImGuiCerealArchive::draw_ui_lua_reference(const char *name, std::string &className)
+cereal::jleImGuiCerealArchive::draw_ui_lua_reference(const char *name,
+                                                     std::string &className)
 {
     ImGui::PushID(elementCount++);
 
@@ -211,7 +212,7 @@ cereal::jleImGuiCerealArchive::draw_ui_lua_reference(const char *name, std::stri
         className = std::string(charData.data());
     }
 
-    const auto &loadedClasses = gEngine->luaEnvironment()->loadedLuaClasses();
+    const auto &loadedClasses = ctx.luaEnvironment.loadedLuaClasses();
 
     static std::set<int> isOpenSet;
 
@@ -290,7 +291,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar,
     charData.resize(1000);
 
     const auto &className = value.luaClassName;
-    const auto &loadedClasses = gEngine->luaEnvironment()->loadedLuaClasses();
+    const auto &loadedClasses = ctx.luaEnvironment.loadedLuaClasses();
 
     bool validClassName = false;
     auto it = loadedClasses.find(className);

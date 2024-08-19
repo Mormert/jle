@@ -115,7 +115,7 @@ cCamera::editorInspectorImGuiRender()
 #endif
 }
 void
-cCamera::editorGizmosRender(bool selected)
+cCamera::editorGizmosRender(bool selected, jle3DGraph& renderGraph)
 {
 #if JLE_BUILD_EDITOR
     auto mesh = gEditor->gizmos().cameraMesh();

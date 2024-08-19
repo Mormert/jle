@@ -35,7 +35,7 @@ public:
 
     void update(jleEngineModulesContext& ctx) override;
 
-    void editorGizmosRender(bool selected) override;
+    void editorGizmosRender(bool selected, jle3DGraph& renderGraph) override;
 };
 
 JLE_EXTERN_TEMPLATE_CEREAL_H(cLightDirectional)

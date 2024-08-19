@@ -26,14 +26,16 @@
 #include <memory>
 #include <unordered_map>
 
+class jleSerializationContext;
+
 class jleEditorResourceEdit : public jleEditorWindowInterface
 {
 public:
     explicit jleEditorResourceEdit(const std::string &window_name);
 
-    void renderUI(jleGameEngine &ge);
+    void renderUI(jleSerializationContext& ctx);
 
-    bool tryOpen(const jlePath &path);
+    bool tryOpen(const jlePath &path, jleResources& resources);
 
 private:
 

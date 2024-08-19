@@ -27,7 +27,8 @@
 
 #include "plog/Appenders/IAppender.h"
 
-class jleConsoleEditorWindow : public jleEditorWindowInterface, public plog::IAppender {
+class jleConsoleEditorWindow : public jleEditorWindowInterface, public plog::IAppender
+{
 public:
     explicit jleConsoleEditorWindow(const std::string &window_name);
 
@@ -45,9 +46,9 @@ public:
 
     void addLog(const char *fmt, ...) IM_FMTARGS(2);
 
-    void execCommand(const char *command_line);
+    void execCommand(const char *command_line, jleLuaEnvironment &luaEnvironment);
 
-    void renderUI(jleGameEngine &ge);
+    void renderUI(jleGameEngine &ge, jleLuaEnvironment &luaEnvironment);
 
     static int textEditCallbackStub(ImGuiInputTextCallbackData *data);
 

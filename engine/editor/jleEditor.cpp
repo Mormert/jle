@@ -68,7 +68,7 @@ public:
     {
         // Note: Important that menu comes first here, since the others are
         // dependent on the menu's dockspace.
-        menu = std::make_shared<jleEditorWindowsPanel>("Menu");
+        menu = std::make_shared<jleEditorWindowsPanel>("Menu", ctx.engineModulesContext.resourcesModule, ctx.engine.settings());
 
         textEditWindow = std::make_shared<jleEditorTextEdit>("Text Editor");
 
@@ -129,15 +129,17 @@ public:
     std::shared_ptr<jleEditorFrameGraphWindow> frameGraph;
 
     void
-    renderUI(const jleEditorModulesContext &context) const
+    renderUI(jleEditorModulesContext &context) const
     {
-        menu->renderUI({context.engineModulesContext.frameInfo, context.engine});
+        menu->renderUI({context.engineModulesContext.frameInfo, context.engine, context.engineModulesContext.windowModule});
         textEditWindow->renderUI();
-        resourceEditor->renderUI(context.engine);
+
+        jleSerializationContext serializationContext{context.engineModulesContext.resourcesModule, context.engineModulesContext.luaEnvironment};
+        resourceEditor->renderUI(serializationContext);
         sceneWindow->renderUI(context.engine);
-        gameWindow->renderUI(context.engine);
-        console->renderUI(context.engine);
-        settingsWindow->renderUI(context.engine);
+        gameWindow->renderUI(context.engine, context.engineModulesContext.inputModule);
+        console->renderUI(context.engine, context.engineModulesContext.luaEnvironment);
+        settingsWindow->renderUI(context);
         editorSceneObjects->renderUI(context.engine, context.engineModulesContext);
         contentBrowser->renderUI(context.engineModulesContext);
         buildTool->renderUI(context.engine, context.editor.resourceIndexer());
@@ -228,7 +230,7 @@ jleEditor::render(jleEngineModulesContext& modulesContext, wi::jobsystem::contex
     // UI can touch game state, so we need to for game logic update to complete
 
     renderEditorGridGizmo();
-    // renderEditorGizmos(); // disable since for some reason we're rendering it into the game view lol
+    // renderEditorGizmos(modulesContext.renderGraph); // disable since for some reason we're rendering it into the game view lol
     renderEditorUI();
 
     // resetRenderGraphForNewFrame();
@@ -428,33 +430,33 @@ jleEditor::update(jleEngineModulesContext& ctx)
 }
 
 void
-jleEditor::renderEditorGizmos()
+jleEditor::renderEditorGizmos(jle3DGraph& renderGraph)
 {
     JLE_SCOPE_PROFILE_CPU(renderEditorGizmos)
 
     if (!gEngine->isGameKilled()) {
         for (const auto &scene : gEngine->gameRef().activeScenesRef()) {
             for (auto &&o : scene->sceneObjects()) {
-                renderEditorGizmosObject(o.get());
+                renderEditorGizmosObject(o.get(), renderGraph);
             }
         }
     }
 
     for (const auto &scene : gEditor->getEditorScenes()) {
         for (auto &&o : scene->sceneObjects()) {
-            renderEditorGizmosObject(o.get());
+            renderEditorGizmosObject(o.get(), renderGraph);
         }
     }
 }
 
 void
-jleEditor::renderEditorGizmosObject(jleObject *object)
+jleEditor::renderEditorGizmosObject(jleObject *object, jle3DGraph& renderGraph)
 {
     for (auto &&c : object->components()) {
-        c->editorGizmosRender(true);
+        c->editorGizmosRender(true, renderGraph);
     }
     for (auto &&child : object->childObjects()) {
-        renderEditorGizmosObject(child.get());
+        renderEditorGizmosObject(child.get(), renderGraph);
     }
 }
 void

@@ -30,9 +30,10 @@ public:
     {
         const jleFrameInfo& frameInfo;
         jleGameEngine& gameEngine;
+        jleWindow& window;
     };
 
-    explicit jleEditorWindowsPanel(const std::string &window_name);
+    explicit jleEditorWindowsPanel(const std::string &window_name, jleResources& resources, jleEngineSettings& settings);
 
     void renderUI(const jleEditorWindowsPanelRenderContext& context);
 

@@ -102,7 +102,7 @@ public:
     }
 
     [[maybe_unused]] virtual void
-    editorGizmosRender(bool selected)
+    editorGizmosRender(bool selected, jle3DGraph& renderGraph)
     {
     }
 

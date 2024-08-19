@@ -437,7 +437,7 @@ jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file, jleEngin
 
     openAsText(file);
 
-    openAsResource(file);
+    openAsResource(file, ctx.resourcesModule);
 
     { // Delete File
         static bool opened = false;
@@ -592,12 +592,12 @@ jleEditorContentBrowser::openAsText(std::filesystem::path &file)
 }
 
 void
-jleEditorContentBrowser::openAsResource(std::filesystem::path &file)
+jleEditorContentBrowser::openAsResource(std::filesystem::path &file, jleResources& resources)
 {
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
 
     if (ImGui::Button("Open As Resource", size)) {
-        _editorResourceEdit->tryOpen(jlePath{file.string(), false});
+        _editorResourceEdit->tryOpen(jlePath{file.string(), false}, resources);
     }
 }

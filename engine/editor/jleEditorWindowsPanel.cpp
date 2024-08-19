@@ -23,13 +23,13 @@
 #include <plog/Log.h>
 
 
-jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name)
+jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name, jleResources& resources, jleEngineSettings& settings)
     : jleEditorWindowInterface{window_name}, _gameController{"Game Controller"}
 {
-    _crossIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/cross.png"});
-    _maximizeIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/maximize.png"});
-    _minimizeIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/minimize.png"});
-    _jleIcon = gEngine->resources().loadResourceFromFile<jleTexture>(gEngine->settings().windowSettings.iconPath);
+    _crossIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/cross.png"});
+    _maximizeIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/maximize.png"});
+    _minimizeIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/minimize.png"});
+    _jleIcon = resources.loadResourceFromFile<jleTexture>(settings.windowSettings.iconPath);
 }
 
 void
@@ -200,11 +200,11 @@ jleEditorWindowsPanel::menuButtonsupdate(const jleEditorWindowsPanelRenderContex
                 ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
 
                 if (ImGui::ImageButton((void *)(intptr_t)_minimizeIcon->id(), buttonSize)) {
-                    glfwIconifyWindow(gEngine->window().glfwWindow());
+                    glfwIconifyWindow(context.window.glfwWindow());
                 }
 
                 if (ImGui::ImageButton((void *)(intptr_t)_maximizeIcon->id(), buttonSize)) {
-                    const auto window = gEngine->window().glfwWindow();
+                    const auto window = context.window.glfwWindow();
                     if (glfwGetWindowAttrib(window, GLFW_MAXIMIZED)) {
                         glfwRestoreWindow(window);
                     } else {
@@ -217,7 +217,7 @@ jleEditorWindowsPanel::menuButtonsupdate(const jleEditorWindowsPanelRenderContex
                     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, grayRedHoveredColor);
 
                     if (ImGui::ImageButton((void *)(intptr_t)_crossIcon->id(), buttonSize)) {
-                        glfwSetWindowShouldClose(gEngine->window().glfwWindow(), true);
+                        glfwSetWindowShouldClose(context.window.glfwWindow(), true);
                     }
                     ImGui::PopStyleColor();
                 }

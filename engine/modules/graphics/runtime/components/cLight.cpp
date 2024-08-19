@@ -32,7 +32,7 @@ cLight::start(jleEngineModulesContext& ctx)
 void
 cLight::update(jleEngineModulesContext& ctx)
 {
-    gEngine->renderGraph().sendLight(getTransform().getWorldPosition(), _color);
+    ctx.renderGraph.sendLight(getTransform().getWorldPosition(), _color);
 }
 
 void
@@ -42,13 +42,13 @@ cLight::editorUpdate(jleEngineModulesContext& ctx)
 }
 
 void
-cLight::editorGizmosRender(bool selected)
+cLight::editorGizmosRender(bool selected, jle3DGraph& renderGraph)
 {
 #if JLE_BUILD_EDITOR
     auto mesh = gEditor->gizmos().lightLampMesh();
     std::shared_ptr<jleMaterial> material = gEditor->gizmos().lampMaterial();
     auto matrix = glm::translate(glm::mat4{1.0f}, _attachedToObject->getTransform().getWorldPosition());
-    gEngine->renderGraph().sendMesh(mesh, material, matrix, _attachedToObject->instanceID(), false);
+    renderGraph.sendMesh(mesh, material, matrix, _attachedToObject->instanceID(), false);
 #endif // JLE_BUILD_EDITOR
 }
 

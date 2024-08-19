@@ -26,20 +26,20 @@ JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLightDirectional)
 void
 cLightDirectional::update(jleEngineModulesContext& ctx)
 {
-    gEngine->renderSettings().useDirectionalLight = true;
+    ctx.renderSettings.useDirectionalLight = true;
     auto mat4 = getTransform().getWorldMatrix();
 
-    gEngine->renderSettings().setDirectionalLight(mat4, _color);
+    ctx.renderSettings.setDirectionalLight(mat4, _color);
 }
 
 
 void
-cLightDirectional::editorGizmosRender(bool selected)
+cLightDirectional::editorGizmosRender(bool selected,jle3DGraph& renderGraph)
 {
 #if JLE_BUILD_EDITOR
     auto mesh = gEditor->gizmos().sunMesh();
     std::shared_ptr<jleMaterial> material = gEditor->gizmos().sunMaterial();
-    gEngine->renderGraph().sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
+    renderGraph.sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 #endif // JLE_BUILD_EDITOR
 }
 

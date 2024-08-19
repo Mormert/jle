@@ -29,7 +29,7 @@ jleGameEditorWindow::jleGameEditorWindow(const std::string &window_name) : jleEd
 }
 
 void
-jleGameEditorWindow::renderUI(jleGameEngine &ge)
+jleGameEditorWindow::renderUI(jleGameEngine &ge, jleInput& input)
 {
     if (!isOpened) {
         return;
@@ -54,7 +54,7 @@ jleGameEditorWindow::renderUI(jleGameEngine &ge)
         ImGui::SetCursorPosY(ImGui::GetWindowHeight() / 2.f);
 
         if (ImGui::Button("   Start Game   ")) {
-            gEngine->startGame();
+            ge.startGame();
         }
 
         ImGui::End();
@@ -69,8 +69,8 @@ jleGameEditorWindow::renderUI(jleGameEngine &ge)
     _windowPositionX = cursorScreenPos.x - viewport->Pos.x;
     _windowPositionY = cursorScreenPos.y - viewport->Pos.y;
 
-    const auto &internalInputMouse = gEngine->input().mouse;
-    const auto &engineFramebufferMain = gEngine->mainScreenFramebuffer;
+    const auto &internalInputMouse = input.mouse;
+    const auto &engineFramebufferMain = ge.mainScreenFramebuffer;
     internalInputMouse->setScreenBeginCoords(_windowPositionX, _windowPositionY);
     internalInputMouse->setScreenSize(width(), height());
 
@@ -79,7 +79,7 @@ jleGameEditorWindow::renderUI(jleGameEngine &ge)
         _lastGameWindowWidth = ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset;
         _lastGameWindowHeight = ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset;
 
-        gEngine->gameWindowResizedEvent((int)_lastGameWindowWidth, (int)_lastGameWindowHeight);
+        ge.gameWindowResizedEvent((int)_lastGameWindowWidth, (int)_lastGameWindowHeight);
     }
 
     // Get the texture from the framebuffer

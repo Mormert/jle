@@ -16,7 +16,6 @@
 #include "cMesh.h"
 #include "jleGameEngine.h"
 #include "jleResource.h"
-#include "modules/graphics/jle3DGraph.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cMesh)
 
@@ -30,7 +29,7 @@ cMesh::update(jleEngineModulesContext& ctx)
     if (_meshRef) {
         std::shared_ptr<jleMesh> mesh = _meshRef.get();
         std::shared_ptr<jleMaterial> material = _materialRef.get();
-        gEngine->renderGraph().sendMesh(
+        ctx.renderGraph.sendMesh(
             mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), true);
     }
 }

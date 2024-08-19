@@ -42,7 +42,7 @@ jleGame::activeScenesRef()
 std::shared_ptr<jleScene>
 jleGame::loadScene(const jlePath &scenePath, jleEngineModulesContext& ctx)
 {
-    std::shared_ptr<jleScene> scene = gEngine->resources().loadResourceFromFile<jleScene>(scenePath, true);
+    std::shared_ptr<jleScene> scene = ctx.resourcesModule.loadResourceFromFile<jleScene>(scenePath, true);
     if (scene) {
         auto it = std::find(_activeScenes.begin(), _activeScenes.end(), scene);
         if (it == _activeScenes.end()) {

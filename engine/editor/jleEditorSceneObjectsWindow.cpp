@@ -37,7 +37,7 @@ jleEditorSceneObjectsWindow::GetSelectedObject()
 }
 
 void
-jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext& ctx)
+jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext &ctx)
 {
     if (!isOpened) {
         return;
@@ -141,8 +141,8 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
             }
         };
 
-        if (!gEngine->isGameKilled()) {
-            for (auto scene : gEngine->gameRef().activeScenesRef()) {
+        if (!ge.isGameKilled()) {
+            for (auto scene : ge.gameRef().activeScenesRef()) {
                 sceneUi(scene, " (game)", false);
             }
         } else {
@@ -210,7 +210,8 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
                                 selectedObjectSafePtr->__templatePath.reset();
                             }
                         } else {
-                            cereal::jleImGuiCerealArchive ar1;
+                            jleSerializationContext serializationContext{ctx.resourcesModule, ctx.luaEnvironment};
+                            cereal::jleImGuiCerealArchive ar1{serializationContext};
                             ar1(*selectedObjectSafePtr);
                         }
 
@@ -238,7 +239,9 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
 
                         if (ImGui::BeginPopupModal("Add Component Popup", &openedPopup, 0)) {
 
-                            cereal::jleImGuiCerealArchiveInternal ar;
+                            jleSerializationContext serializationContext{ctx.resourcesModule, ctx.luaEnvironment};
+
+                            cereal::jleImGuiCerealArchiveInternal ar{serializationContext};
                             ar(componentBeingAdded);
 
                             if (ImGui::Button("Add Component")) {
@@ -279,7 +282,6 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
                         ImGui::EndTabItem();
                     }
                     ImGui::EndTabBar();
-
                 }
             }
 
@@ -303,8 +305,8 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
 
     std::string instanceDisplayName = object->instanceName() + " {" + std::to_string(object->instanceID()) + ", " +
-                                      std::to_string(object->netID()) + ", " +
-                                      std::to_string(object->netOwnerID()) + "}";
+                                      std::to_string(object->netID()) + ", " + std::to_string(object->netOwnerID()) +
+                                      "}";
     if (object->__templatePath.has_value()) {
         instanceDisplayName += " [T]";
     }

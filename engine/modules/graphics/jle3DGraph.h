@@ -87,6 +87,12 @@ public:
 
     void sendLight(const glm::vec3 &position, const glm::vec3 &color);
 
+    inline void
+    emptyQueues()
+    {
+        *this = {};
+    }
+
 private:
     std::vector<jle3DQueuedMesh> _meshes;
     std::vector<jle3DQueuedMesh> _translucentMeshes;
@@ -95,4 +101,3 @@ private:
     std::vector<jle3DLineVertex> _lines;
     std::vector<jle3DRendererLight> _lights;
 };
-

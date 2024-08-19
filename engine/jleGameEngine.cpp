@@ -104,8 +104,8 @@ jleGameEngine::jleGameEngine()
         enet_initialize();
     }
 
-    _modulesContext =
-        std::make_unique<jleEngineModulesContext>(*_3dRenderer, *_input, *_window, *_resources, _frameInfo);
+    _modulesContext = std::make_unique<jleEngineModulesContext>(
+        *_3dRenderer, *_3dRendererSettings, *_3dRenderGraph, *_input, *_luaEnvironment, *_window, *_resources, _frameInfo);
 }
 
 jleGameEngine::~jleGameEngine()
@@ -127,7 +127,6 @@ jleGameEngine::~jleGameEngine()
 
     _game.reset();
     _resources.reset();
-
 }
 
 void
@@ -283,7 +282,6 @@ jleGameEngine::start(jleEngineModulesContext &context)
 
         luaEnvironment()->loadScript("ER:/scripts/engine.lua", context.resourcesModule);
         luaEnvironment()->loadScript("ER:/scripts/globals.lua", context.resourcesModule);
-
 
         startRmlUi();
 
@@ -480,9 +478,9 @@ jleGameEngine::mainLoop()
 
     Wait(jobsCtx);
 
-    // Double buffer move
-    _3dRenderGraphForRendering = std::move(_3dRenderGraph);
-    _3dRenderGraph = std::make_unique<jle3DGraph>();
+    // Double buffer COPY (todo: don't make a copy here, instead move it..)
+    _3dRenderGraphForRendering = std::make_unique<jle3DGraph>(*_3dRenderGraph);
+    _3dRenderGraph->emptyQueues();
 
     FrameMark;
 }

@@ -39,7 +39,7 @@ public:
 
     void editorUpdate(jleEngineModulesContext& ctx) override;
 
-    void editorGizmosRender(bool selected) override;
+    void editorGizmosRender(bool selected, jle3DGraph& renderGraph) override;
 
     void registerLua(sol::state& lua) override;
 

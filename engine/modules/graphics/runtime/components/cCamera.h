@@ -51,7 +51,7 @@ public:
 
     void framebufferResizeCallback(unsigned int width, unsigned int height);
 
-    void editorGizmosRender(bool selected) override;
+    void editorGizmosRender(bool selected, jle3DGraph& renderGraph) override;
 
     bool perspective{true};
     float perspectiveFov{90.f};
