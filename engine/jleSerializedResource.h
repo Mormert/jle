@@ -20,15 +20,13 @@
 #include "jleResourceInterface.h"
 
 #define SAVE_SHARED_THIS_SERIALIZED_JSON(PARENT_TYPE)                                                                  \
-    void saveToFile() override                                                                                         \
+    void saveToFile(jleSerializationContext &ctx) override                                                             \
     {                                                                                                                  \
         std::ofstream save{path.getRealPath()};                                                                        \
-        cereal::JSONOutputArchive outputArchive(save);                                                                 \
+        jleJSONOutputArchive outputArchive(save, ctx);                                                         \
         std::shared_ptr<PARENT_TYPE> thiz = std::static_pointer_cast<PARENT_TYPE>(shared_from_this());                 \
         outputArchive(thiz);                                                                                           \
     };
-
-
 
 // Derive from this whenever a resource relies on save/load from serialization archives, but also implements a
 // loadFromFile() member function.

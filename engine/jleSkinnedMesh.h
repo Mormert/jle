@@ -58,7 +58,7 @@ public:
                          const std::vector<glm::vec4> &boneWeights,
                          const std::unordered_map<std::string, jleSkinnedMeshBone> &boneMapping);
 
-    void saveToFile() override;
+    void saveToFile(jleSerializationContext& ctx) override;
 
     std::unordered_map<std::string, jleSkinnedMeshBone> &
     getBoneMapping();

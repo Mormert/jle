@@ -20,9 +20,9 @@
 
 #include "jleTypeReflectionUtils.h"
 
-#include "editor/jleImGuiCerealArchive.h"
-#include <cereal/archives/binary.hpp>
-#include <cereal/archives/json.hpp>
+#include "editor/jleImGuiArchive.h"
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
 #include <cereal/types/base_class.hpp>
 #include <cereal/types/memory.hpp>
 
@@ -51,12 +51,12 @@ public:
     }
 
     virtual void
-    netSyncOut(cereal::BinaryOutputArchive &ar)
+    netSyncOut(jleBinaryOutputArchive &ar)
     {
     }
 
     virtual void
-    netSyncIn(cereal::BinaryInputArchive &ar)
+    netSyncIn(jleBinaryInputArchive &ar)
     {
     }
 
@@ -71,7 +71,7 @@ public:
     }
 
     virtual void
-    onDestroy()
+    onDestroy(jleEngineModulesContext& ctx)
     {
     }
 
@@ -111,9 +111,9 @@ public:
     {
     }
 
-    void syncServerToClient();
+    void syncServerToClient(jleSerializationContext& serializationContext);
 
-    void destroy();
+    void destroy(jleEngineModulesContext& ctx);
 
     bool isDestroyed();
 
@@ -167,8 +167,8 @@ private:
 };
 
 #define NET_SYNC(...)                                                                                                  \
-    void netSyncOut(cereal::BinaryOutputArchive &ar) override { ar(__VA_ARGS__); }                                     \
-    void netSyncIn(cereal::BinaryInputArchive &ar) override { ar(__VA_ARGS__); }
+    void netSyncOut(jleBinaryOutputArchive &ar) override { ar(__VA_ARGS__); }                                     \
+    void netSyncIn(jleBinaryInputArchive &ar) override { ar(__VA_ARGS__); }
 
 CEREAL_REGISTER_TYPE(jleComponent)
 

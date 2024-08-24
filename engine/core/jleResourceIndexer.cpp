@@ -97,8 +97,10 @@ jleResourceIndexer::update(jleResources &resources)
 void
 jleResourceIndexer::update(jleResources &resources, jleEditorTextEdit &textEdit)
 {
+#if JLE_BUILD_EDITOR
     CallbacksContext ctx{[&](const jlePath &path) { textEdit.reloadIfOpened(path); }};
     internalUpdate(resources, ctx);
+#endif
 }
 
 void

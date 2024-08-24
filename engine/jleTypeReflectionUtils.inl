@@ -55,12 +55,12 @@ jleTypeReflectionUtils::registeredResourcesRef()
     return *_registeredResourcesPtr;
 }
 
-inline std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path, jleResources& resources)>> &
+inline std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path, jleSerializationContext& ctx)>> &
 jleTypeReflectionUtils::registeredFileTypeLoadersRef()
 {
     if (!_registeredFileTypeLoadersPtr) {
         _registeredFileTypeLoadersPtr = std::make_unique<
-            std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path, jleResources& resources)>>>();
+            std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path, jleSerializationContext& ctx)>>>();
     }
     return *_registeredFileTypeLoadersPtr;
 }
@@ -106,6 +106,6 @@ jleResourceTypeRegistrator<T>::jleResourceTypeRegistrator(const std::string &rNa
 
     for (const auto &extension : fileExtensions) {
         jleTypeReflectionUtils::registeredFileTypeLoadersRef().insert(std::make_pair(
-            extension, [](const jlePath &path, jleResources& resources) { return resources.loadResourceFromFile<T>(path); }));
+            extension, [](const jlePath &path, jleSerializationContext& ctx) { return ctx.resources->loadResourceFromFile<T>(path, ctx); }));
     }
 }

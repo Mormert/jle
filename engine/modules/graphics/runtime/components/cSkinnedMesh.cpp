@@ -51,7 +51,7 @@ cSkinnedMesh::update(jleEngineModulesContext& ctx)
     if (_skinnedMeshRef) {
         std::shared_ptr<jleSkinnedMesh> mesh = _skinnedMeshRef.get();
         std::shared_ptr<jleMaterial> material = _materialRef.get();
-        gEngine->renderGraph().sendSkinnedMesh(
+        ctx.renderGraph.sendSkinnedMesh(
             mesh, material, animationMatrices, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), true);
     }
 }

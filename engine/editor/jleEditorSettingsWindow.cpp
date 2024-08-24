@@ -16,7 +16,7 @@
 #include "jleEditorSettingsWindow.h"
 #include "jleEditor.h"
 #include "jleEngineSettings.h"
-#include "jleImGuiCerealArchive.h"
+#include "jleImGuiArchive.h"
 #include <ImGui/imgui.h>
 
 jleEditorSettingsWindow::jleEditorSettingsWindow(const std::string &window_name) : jleEditorWindowInterface{window_name}
@@ -37,16 +37,16 @@ jleEditorSettingsWindow::renderUI(jleEditorModulesContext &ctx)
     ImGui::BeginChild("settings hierarchy view",
                       ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 
-    jleSerializationContext serializationContext{ctx.engineModulesContext.resourcesModule,
-                                                 ctx.engineModulesContext.luaEnvironment};
+    jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
+                                                 &ctx.engineModulesContext.luaEnvironment};
 
-    cereal::jleImGuiCerealArchive archive{serializationContext};
+    jleImGuiArchive archive{serializationContext};
     archive(ctx.engine.settings());
 
     ImGui::EndChild();
 
     if (ImGui::Button("Save Settings")) {
-        ctx.engine.settings().saveToFile();
+        ctx.engine.settings().saveToFile(serializationContext);
     }
 
     ImGui::SameLine();

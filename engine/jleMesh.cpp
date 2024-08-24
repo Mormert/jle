@@ -440,7 +440,7 @@ jleMesh::indices()
 }
 
 void
-jleMesh::saveToFile()
+jleMesh::saveToFile(jleSerializationContext& ctx)
 {
     aiScene scene;
     saveMeshToAssimpScene(scene);

@@ -18,11 +18,11 @@
 #include "core/jleCommon.h"
 #include "jlePath.h"
 
-#include "editor/jleImGuiCerealArchive.h"
+#include "editor/jleImGuiArchive.h"
 
 #include <cereal/cereal.hpp>
-#include <cereal/archives/binary.hpp>
-#include <cereal/archives/json.hpp>
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
 #include <cereal/types/vector.hpp>
 #include <cereal/types/string.hpp>
 
@@ -37,10 +37,10 @@ namespace cereal
 class jleImGuiCerealArchive;
 class jleImGuiCerealArchiveInternal;
 #endif
-class JSONOutputArchive;
-class JSONInputArchive;
-class BinaryOutputArchive;
-class BinaryInputArchive;
+class jleJSONOutputArchive;
+class jleJSONInputArchive;
+class jleBinaryOutputArchive;
+class jleBinaryInputArchive;
 } // namespace cereal
 
 class jleLuaClass
@@ -88,11 +88,11 @@ private:
 
 // clang-format off
 #if JLE_BUILD_EDITOR
-extern template void jleLuaClass::serializeClass(cereal::jleImGuiCerealArchive &ar, sol::table &luaTable);
-extern template void jleLuaClass::serializeClass(cereal::jleImGuiCerealArchiveInternal &ar, sol::table &luaTable);
+extern template void jleLuaClass::serializeClass(jleImGuiArchive &ar, sol::table &luaTable);
+extern template void jleLuaClass::serializeClass(jleImGuiArchiveInternal &ar, sol::table &luaTable);
 #endif
-extern template void jleLuaClass::serializeClass(cereal::JSONOutputArchive &ar, sol::table &luaTable);
-extern template void jleLuaClass::serializeClass(cereal::JSONInputArchive &ar, sol::table &luaTable);
-extern template void jleLuaClass::serializeClass(cereal::BinaryOutputArchive &ar, sol::table &luaTable);
-extern template void jleLuaClass::serializeClass(cereal::BinaryInputArchive &ar, sol::table &luaTable);
+extern template void jleLuaClass::serializeClass(jleJSONOutputArchive &ar, sol::table &luaTable);
+extern template void jleLuaClass::serializeClass(jleJSONInputArchive &ar, sol::table &luaTable);
+extern template void jleLuaClass::serializeClass(jleBinaryOutputArchive &ar, sol::table &luaTable);
+extern template void jleLuaClass::serializeClass(jleBinaryInputArchive &ar, sol::table &luaTable);
 // clang-format on

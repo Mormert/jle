@@ -22,7 +22,7 @@
 #include "jleMesh.h"
 #include "jleTransform.h"
 
-#include "editor/jleImGuiCerealArchive.h"
+#include "editor/jleImGuiArchive.h"
 #include "jleResourceRef.h"
 
 #include <BulletDynamics/Dynamics/btRigidBody.h>
@@ -52,7 +52,7 @@ public:
 
     void update(jleEngineModulesContext& ctx) override;
 
-    void onDestroy() override;
+    void onDestroy(jleEngineModulesContext& ctx) override;
 
     btRigidBody &getBody();
 

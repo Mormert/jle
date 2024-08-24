@@ -18,7 +18,7 @@
 #include "ImGui/imgui_stdlib.h"
 #include "jleEditor.h"
 #include "jleGame.h"
-#include "jleImGuiCerealArchive.h"
+#include "jleImGuiArchive.h"
 #include "jleTypeReflectionUtils.h"
 #include <ImGui/imgui.h>
 
@@ -134,7 +134,8 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
                 { // Save Scene
                     if (canSaveScene) {
                         if (ImGui::Button("Save Scene", ImVec2(138 * globalImguiScale, 0))) {
-                            scene->saveToFile();
+                            jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+                            scene->saveToFile(serializationContext);
                         }
                     }
                 }
@@ -164,7 +165,7 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
             auto &sceneObjectsRef = selectedSceneSafePtr->sceneObjects();
             for (int32_t i = sceneObjectsRef.size() - 1; i >= 0; i--) {
                 if (sceneObjectsRef[i]) {
-                    objectTreeRecursive(sceneObjectsRef[i]);
+                    objectTreeRecursive(sceneObjectsRef[i], ctx);
                 }
             }
         }
@@ -210,8 +211,8 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
                                 selectedObjectSafePtr->__templatePath.reset();
                             }
                         } else {
-                            jleSerializationContext serializationContext{ctx.resourcesModule, ctx.luaEnvironment};
-                            cereal::jleImGuiCerealArchive ar1{serializationContext};
+                            jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+                            jleImGuiArchive ar1{serializationContext};
                             ar1(*selectedObjectSafePtr);
                         }
 
@@ -239,9 +240,8 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
 
                         if (ImGui::BeginPopupModal("Add Component Popup", &openedPopup, 0)) {
 
-                            jleSerializationContext serializationContext{ctx.resourcesModule, ctx.luaEnvironment};
-
-                            cereal::jleImGuiCerealArchiveInternal ar{serializationContext};
+                            jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+                            jleImGuiArchiveInternal ar{serializationContext};
                             ar(componentBeingAdded);
 
                             if (ImGui::Button("Add Component")) {
@@ -260,7 +260,7 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
                             if (ImGui::BeginMenu("Remove Component")) {
                                 for (int i = components.size() - 1; i >= 0; i--) {
                                     if (ImGui::MenuItem(components[i]->componentName().data())) {
-                                        components[i]->destroy();
+                                        components[i]->destroy(ctx);
                                     }
                                 }
                                 ImGui::EndMenu();
@@ -300,7 +300,7 @@ jleEditorSceneObjectsWindow::SetSelectedObject(std::shared_ptr<jleObject> object
 }
 
 void
-jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> object)
+jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> object, jleEngineModulesContext &ctx)
 {
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
 
@@ -339,7 +339,8 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
         }
 
         if (ImGui::Button("Save Template", ImVec2(138 * globalImguiScale, 0))) {
-            object->saveAsObjectTemplate();
+            jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+            object->saveAsObjectTemplate(serializationContext);
         }
 
         if (ImGui::Button("Duplicate", ImVec2(138 * globalImguiScale, 0))) {
@@ -415,7 +416,7 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
     if (open) {
         auto &childObjectsRef = object->childObjects();
         for (int32_t i = childObjectsRef.size() - 1; i >= 0; i--) {
-            objectTreeRecursive(childObjectsRef[i]);
+            objectTreeRecursive(childObjectsRef[i], ctx);
         }
         ImGui::TreePop();
     }

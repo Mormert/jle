@@ -233,7 +233,9 @@ jleEditorContentBrowser::contentBrowser(jleEngineModulesContext& ctx)
                 auto createdResource = newResourceFunction();
                 jlePath path = jlePath{_selectedDirectory.string() + "/" + std::string{newFileName}, false};
                 createdResource->path = path;
-                createdResource->saveToFile();
+
+                jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+                createdResource->saveToFile(serializationContext);
                 openedNewResource = false;
             }
 

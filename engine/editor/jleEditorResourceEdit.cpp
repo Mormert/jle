@@ -16,7 +16,7 @@
 #include "jleEditorResourceEdit.h"
 #include "jleGameEngine.h"
 
-#include "editor/jleImGuiCerealArchive.h"
+#include "editor/jleImGuiArchive.h"
 
 jleEditorResourceEdit::jleEditorResourceEdit(const std::string &window_name) : jleEditorWindowInterface(window_name) {}
 
@@ -40,20 +40,20 @@ jleEditorResourceEdit::renderUI(jleSerializationContext &ctx)
                           ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 
         {
-            cereal::jleImGuiCerealArchiveInternal ar1{ctx};
+            jleImGuiArchiveInternal ar1{ctx};
             ar1(resource);
         }
 
         ImGui::EndChild();
 
         if (resource && ImGui::Button("Save Resource")) {
-            resource->saveToFile();
+            resource->saveToFile(ctx);
         }
 
         ImGui::SameLine();
 
         if (resource && ImGui::Button("Reload Resource")) {
-            ctx.resources.reloadSerializedResource(resource);
+            ctx.resources->reloadSerializedResource(resource);
         }
 
         ImGui::End();

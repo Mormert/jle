@@ -77,10 +77,10 @@ public:
 
     std::shared_ptr<jleObject> spawnChildObject(const std::string &objName);
 
-    void saveAsObjectTemplate();
+    void saveAsObjectTemplate(jleSerializationContext& serializationContext);
 
     // Called from components
-    void destroyComponent(jleComponent *component);
+    void destroyComponent(jleComponent *component, jleEngineModulesContext& ctx);
 
     void destroyComponentAtIndex(uint32_t index);
 
@@ -127,7 +127,7 @@ private:
 
     explicit jleObject(jleScene *scene);
 
-    void propagateDestroy();
+    void propagateDestroy(jleEngineModulesContext& ctx);
 
     void propagateOwnedByScene(jleScene *scene);
     void propagateOwnedBySceneClient(jleSceneClient *scene);

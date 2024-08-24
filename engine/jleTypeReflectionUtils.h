@@ -92,7 +92,9 @@ public:
 
     static std::map<std::string, jleRegisteredResourceInterfaceData> &registeredResourcesRef();
 
-    static std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path, jleResources& resources)>> &
+    static std::map<
+        std::string,
+        std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path, jleSerializationContext &ctx)>> &
     registeredFileTypeLoadersRef();
 
 private:
@@ -108,9 +110,9 @@ private:
     static inline std::unique_ptr<std::map<std::string, jleRegisteredResourceInterfaceData>> _registeredResourcesPtr{
         nullptr};
 
-    static inline std::unique_ptr<
-        std::map<std::string,
-                 std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path, jleResources &resources)>>>
+    static inline std::unique_ptr<std::map<
+        std::string,
+        std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path, jleSerializationContext &ctx)>>>
         _registeredFileTypeLoadersPtr{nullptr};
 };
 

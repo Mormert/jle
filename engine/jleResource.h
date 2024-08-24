@@ -34,8 +34,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include <cereal/archives/binary.hpp>
-#include <cereal/archives/json.hpp>
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
 #include <cereal/cereal.hpp>
 #include <cereal/types/memory.hpp>
 #include <cereal/types/polymorphic.hpp>
@@ -58,11 +58,13 @@ public:
     jleResources &operator=(const jleResources &) = delete;
     jleResources &operator=(jleResources &&) = delete;
 
-    std::shared_ptr<jleResourceInterface> loadResourceFromFile(const jlePath &path);
+    std::shared_ptr<jleResourceInterface> loadResourceFromFile(const jlePath &path, jleSerializationContext = {});
 
     // Gets a shared_ptr to a resource from file, or a shared_ptr to an already loaded copy of that resource
     template <typename T>
-    std::shared_ptr<T> loadResourceFromFile(const jlePath &path, bool forceReload = false);
+    std::shared_ptr<T> loadResourceFromFile(const jlePath &path,
+                                            jleSerializationContext ctx = {},
+                                            bool forceReload = false);
 
     void reloadSerializedResource(const std::shared_ptr<jleSerializedResource> &resource);
 
@@ -101,7 +103,9 @@ private:
     template <typename T>
     static bool checkFileEndingMatchResourceType(const jlePath &path);
 
-    static bool loadSerializedResource(std::shared_ptr<jleResourceInterface> &resource, const jlePath &path);
+    static bool loadSerializedResource(std::shared_ptr<jleResourceInterface> &resource,
+                                       const jlePath &path,
+                                       jleSerializationContext &ctx);
 
     void periodicResourcesCleanUp();
 };

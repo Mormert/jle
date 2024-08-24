@@ -16,7 +16,7 @@
 #include "modules/graphics/core/jleIncludeGL.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterial)
-JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterialPBR)
+//JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterialPBR)
 
 void
 jleMaterial::useMaterial(const jleCamera &camera,
@@ -177,25 +177,3 @@ jleMaterialPBR::isTranslucent()
 
 jleMaterialPBR::jleMaterialPBR() {}
 
-template <class Archive>
-void
-jleMaterialPBR::serialize(Archive &ar)
-{
-    try {
-        ar(cereal::base_class<jleMaterial>(this),
-           CEREAL_NVP(_albedo),
-           CEREAL_NVP(_normal),
-           CEREAL_NVP(_metallic),
-           CEREAL_NVP(_roughness),
-           CEREAL_NVP(_opacity),
-           CEREAL_NVP(_usePointShadows),
-           CEREAL_NVP(_useDirectionalShadows),
-           CEREAL_NVP(_useSkyboxEnvironmentMap),
-           CEREAL_NVP(_isTranslucent),
-           CEREAL_NVP(_singleChannelOpacity),
-           CEREAL_NVP(_blendModeSrc),
-           CEREAL_NVP(_blendModeDst));
-    } catch (std::exception &e) {
-        LOGE << "Failed loading material:" << e.what();
-    }
-}

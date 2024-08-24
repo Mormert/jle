@@ -57,7 +57,7 @@ jleLuaScript::loadScriptIntoLuaEnv(jleLuaEnvironment& luaEnvironment)
 }
 
 void
-jleLuaScript::saveToFile()
+jleLuaScript::saveToFile(jleSerializationContext& ctx)
 {
     std::ofstream save{path.getRealPath()};
     save << _sourceCode;

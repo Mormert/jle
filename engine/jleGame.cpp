@@ -18,9 +18,8 @@
 
 #include <3rdparty/WickedEngine/wiJobSystem.h>
 
-
 void
-jleGame::updateActiveScenes(jleEngineModulesContext& ctx)
+jleGame::updateActiveScenes(jleEngineModulesContext &ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleGame_updateActiveScenes)
     for (int i = _activeScenes.size() - 1; i >= 0; i--) {
@@ -40,9 +39,10 @@ jleGame::activeScenesRef()
 }
 
 std::shared_ptr<jleScene>
-jleGame::loadScene(const jlePath &scenePath, jleEngineModulesContext& ctx)
+jleGame::loadScene(const jlePath &scenePath, jleEngineModulesContext &ctx)
 {
-    std::shared_ptr<jleScene> scene = ctx.resourcesModule.loadResourceFromFile<jleScene>(scenePath, true);
+    std::shared_ptr<jleScene> scene = ctx.resourcesModule.loadResourceFromFile<jleScene>(
+        scenePath, {&ctx.resourcesModule, &ctx.luaEnvironment}, true);
     if (scene) {
         auto it = std::find(_activeScenes.begin(), _activeScenes.end(), scene);
         if (it == _activeScenes.end()) {
@@ -60,7 +60,7 @@ jleGame::loadScene(const jlePath &scenePath, jleEngineModulesContext& ctx)
 jleGame::jleGame() {}
 
 void
-jleGame::parallelUpdates(jleEngineModulesContext& ctx)
+jleGame::parallelUpdates(jleEngineModulesContext &ctx)
 {
     ZoneScoped;
     wi::jobsystem::context parallelUpdatesCtx;
@@ -72,13 +72,12 @@ jleGame::parallelUpdates(jleEngineModulesContext& ctx)
         if (!components.empty()) {
 
             int batchSize = components[0]->parallelUpdateBatchSize();
-            wi::jobsystem::Dispatch(
-                parallelUpdatesCtx, components.size(), batchSize, [&](wi::jobsystem::JobArgs args) {
-                    ZoneScopedNC("ParallelUpdate", 0xFF8200);
-                    const int componentIdx = args.jobIndex;
-                    auto &component = components[componentIdx];
-                    component->parallelUpdate(ctx);
-                });
+            wi::jobsystem::Dispatch(parallelUpdatesCtx, components.size(), batchSize, [&](wi::jobsystem::JobArgs args) {
+                ZoneScopedNC("ParallelUpdate", 0xFF8200);
+                const int componentIdx = args.jobIndex;
+                auto &component = components[componentIdx];
+                component->parallelUpdate(ctx);
+            });
         }
 
         {

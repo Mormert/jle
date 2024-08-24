@@ -23,9 +23,9 @@ class cTransformNetSync: public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cTransformNetSync)
 public:
-    void netSyncOut(cereal::BinaryOutputArchive &ar) override;
+    void netSyncOut(jleBinaryOutputArchive &ar) override;
 
-    void netSyncIn(cereal::BinaryInputArchive &ar) override;
+    void netSyncIn(jleBinaryInputArchive &ar) override;
 
     void serverUpdate(jleEngineModulesContext& ctx) override;
 

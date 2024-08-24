@@ -34,9 +34,11 @@ jleResources::checkFileEndingMatchResourceType(const jlePath &path)
 
 template <typename T>
 std::shared_ptr<T>
-jleResources::loadResourceFromFile(const jlePath &path, bool forceReload)
+jleResources::loadResourceFromFile(const jlePath &path, jleSerializationContext ctx, bool forceReload)
 {
     static_assert(std::is_base_of<jleResourceInterface, T>::value, "T must derive from jleResourceInterface");
+
+    ctx.resources = this;
 
     if (!checkFileEndingMatchResourceType<T>(path)) {
         const auto &possibleFileEndingsForThisType = T::getFileAssociationsStatic();
@@ -72,7 +74,7 @@ jleResources::loadResourceFromFile(const jlePath &path, bool forceReload)
     bool loadSuccess = false;
     if constexpr (std::is_base_of<jleSerializedResource, T>::value) {
         if (newResource->getPrimaryFileAssociation() == path.getFileEnding()) {
-            if (!loadSerializedResource(newResource, path)) {
+            if (!loadSerializedResource(newResource, path, ctx)) {
                 LOGE << "Failed to load serialized resource " << path.getVirtualPath();
             } else {
                 loadSuccess = true;

@@ -21,13 +21,13 @@
 
 // clang-format off
 #if JLE_BUILD_EDITOR
-template void jleLuaClass::serializeClass(cereal::jleImGuiCerealArchive &ar, sol::table &luaTable);
-template void jleLuaClass::serializeClass(cereal::jleImGuiCerealArchiveInternal &ar, sol::table &luaTable);
+template void jleLuaClass::serializeClass(jleImGuiArchive &ar, sol::table &luaTable);
+template void jleLuaClass::serializeClass(jleImGuiArchiveInternal &ar, sol::table &luaTable);
 #endif
-template void jleLuaClass::serializeClass(cereal::JSONOutputArchive &ar, sol::table &luaTable);
-template void jleLuaClass::serializeClass(cereal::JSONInputArchive &ar, sol::table &luaTable);
-template void jleLuaClass::serializeClass(cereal::BinaryOutputArchive &ar, sol::table &luaTable);
-template void jleLuaClass::serializeClass(cereal::BinaryInputArchive &ar, sol::table &luaTable);
+template void jleLuaClass::serializeClass(jleJSONOutputArchive &ar, sol::table &luaTable);
+template void jleLuaClass::serializeClass(jleJSONInputArchive &ar, sol::table &luaTable);
+template void jleLuaClass::serializeClass(jleBinaryOutputArchive &ar, sol::table &luaTable);
+template void jleLuaClass::serializeClass(jleBinaryInputArchive &ar, sol::table &luaTable);
 // clang-format on
 
 std::vector<jleLuaClass>

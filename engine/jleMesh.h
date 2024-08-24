@@ -79,7 +79,7 @@ public:
 
     const std::vector<unsigned int> &indices();
 
-    void saveToFile() override;
+    void saveToFile(jleSerializationContext& ctx) override;
 
     btBvhTriangleMeshShape *getStaticConcaveShape();
 

@@ -19,7 +19,7 @@
 
 #include "jleNetworkEventRegistrator.h"
 
-#include <cereal/archives/binary.hpp>
+#include "serialization/jleBinaryArchive.h"
 #include <plog/Log.h>
 #include <sstream>
 

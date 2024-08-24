@@ -20,15 +20,15 @@
 #include <memory>
 #include <vector>
 
+#include "editor/jleImGuiArchive.h"
 #include "jleCamera.h"
 #include "jleGameEngine.h"
 #include "jleProfiler.h"
 #include "jleResource.h"
 #include "jleScene.h"
-#include "editor/jleImGuiCerealArchive.h"
 
-#include <cereal/archives/json.hpp>
-#include <cereal/archives/binary.hpp>
+#include "serialization/jleJSONArchive.h"
+#include "serialization/jleBinaryArchive.h"
 
 
 #include <execution>

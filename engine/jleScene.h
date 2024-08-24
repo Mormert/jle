@@ -40,13 +40,13 @@ public:
     jleScene();
 
     void
-    saveToFile() override
+    saveToFile(jleSerializationContext& ctx) override
     {
         if (path.isEmpty()) {
             path = jlePath{"GR:scenes/" + sceneName + getDotPrimaryFileExtension()};
         }
         std::ofstream save{path.getRealPath()};
-        cereal::JSONOutputArchive outputArchive(save);
+        jleJSONOutputArchive outputArchive(save, ctx);
         std::shared_ptr<jleSerializedOnlyResource> thiz = std::static_pointer_cast<jleSerializedOnlyResource>(shared_from_this());
         outputArchive(thiz);
     };

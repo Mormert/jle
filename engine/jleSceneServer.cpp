@@ -19,7 +19,7 @@
 #include "jleProfiler.h"
 #include "jleSceneClient.h"
 
-#include <cereal/archives/binary.hpp>
+#include "serialization/jleBinaryArchive.h"
 #include <cereal/cereal.hpp>
 
 #include <enet.h>
@@ -341,7 +341,7 @@ jleSceneServer::updateServerSceneObjects(jleEngineModulesContext& ctx)
     for (int32_t i = _sceneObjects.size() - 1; i >= 0; i--) {
         if (_sceneObjects[i]->_pendingKill) {
             objectDestructionNetworked(_sceneObjects[i]);
-            _sceneObjects[i]->propagateDestroy();
+            _sceneObjects[i]->propagateDestroy(ctx);
             _sceneObjects.erase(_sceneObjects.begin() + i);
             continue;
         }

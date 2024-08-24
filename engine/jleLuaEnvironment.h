@@ -21,6 +21,8 @@
 #include "jlePath.h"
 #include "core/jleFileWatcher.h"
 
+#include <future>
+
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol2/sol.hpp>
 

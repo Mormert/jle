@@ -30,9 +30,9 @@
 #include "modules/graphics/jle3DGraph.h"
 #include "modules/graphics/jle3DSettings.h"
 
-#include "editor/jleImGuiCerealArchive.h"
-#include <cereal/archives/json.hpp>
-#include <cereal/archives/binary.hpp>
+#include "editor/jleImGuiArchive.h"
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
 #include <cereal/cereal.hpp>
 
 enum class jleBlendMode : int32_t {
@@ -97,7 +97,26 @@ public:
                      jleResources& resources) override;
 
     template <class Archive>
-    void serialize(Archive &ar);
+    void serialize(Archive &ar)
+    {
+        try {
+            ar(cereal::base_class<jleMaterial>(this),
+               CEREAL_NVP(_albedo),
+               CEREAL_NVP(_normal),
+               CEREAL_NVP(_metallic),
+               CEREAL_NVP(_roughness),
+               CEREAL_NVP(_opacity),
+               CEREAL_NVP(_usePointShadows),
+               CEREAL_NVP(_useDirectionalShadows),
+               CEREAL_NVP(_useSkyboxEnvironmentMap),
+               CEREAL_NVP(_isTranslucent),
+               CEREAL_NVP(_singleChannelOpacity),
+               CEREAL_NVP(_blendModeSrc),
+               CEREAL_NVP(_blendModeDst));
+        } catch (std::exception &e) {
+            LOGE << "Failed loading material:" << e.what();
+        }
+    }
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleMaterial)
 
@@ -119,7 +138,7 @@ public:
     jleBlendMode _blendModeDst{};
 };
 
-JLE_EXTERN_TEMPLATE_CEREAL_H(jleMaterialPBR)
+//JLE_EXTERN_TEMPLATE_CEREAL_H(jleMaterialPBR)
 
 
 CEREAL_REGISTER_TYPE(jleMaterialPBR)

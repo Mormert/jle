@@ -16,14 +16,14 @@
 #include "cTransformNetSync.h"
 
 void
-cTransformNetSync::netSyncOut(cereal::BinaryOutputArchive &ar)
+cTransformNetSync::netSyncOut(jleBinaryOutputArchive &ar)
 {
     auto &m = object()->getTransform().getLocalMatrix();
     ar(m);
 }
 
 void
-cTransformNetSync::netSyncIn(cereal::BinaryInputArchive &ar)
+cTransformNetSync::netSyncIn(jleBinaryInputArchive &ar)
 {
     glm::mat4 m;
     ar(m);
@@ -33,5 +33,6 @@ cTransformNetSync::netSyncIn(cereal::BinaryInputArchive &ar)
 void
 cTransformNetSync::serverUpdate(jleEngineModulesContext& ctx)
 {
-    syncServerToClient();
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+    syncServerToClient(serializationContext);
 }

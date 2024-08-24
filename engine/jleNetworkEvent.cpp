@@ -44,7 +44,8 @@ jleExecuteClientEventsOnServer(jleEngineModulesContext& ctx, const char *network
     std::stringstream stream{};
     stream.write(&networkBuffer[sizeof(int32_t)], networkBufferLength - sizeof(int32_t));
 
-    cereal::BinaryInputArchive archive(stream);
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+    jleBinaryInputArchive archive(stream, serializationContext);
 
     for (int i = 0; i < amountOfEvents; i++) {
         std::unique_ptr<jleClientToServerEvent> e{nullptr};
@@ -70,7 +71,8 @@ jleExecuteServerEventsOnClient(jleEngineModulesContext& ctx, const char *network
     std::stringstream stream{};
     stream.write(&networkBuffer[sizeof(int32_t)], networkBufferLength - sizeof(int32_t));
 
-    cereal::BinaryInputArchive archive(stream);
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+    jleBinaryInputArchive archive(stream, serializationContext);
 
     for (int i = 0; i < amountOfEvents; i++) {
         std::unique_ptr<jleServerToClientEvent> e{nullptr};

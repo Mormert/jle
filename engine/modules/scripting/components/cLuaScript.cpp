@@ -27,7 +27,7 @@ void
 cLuaScript::start(jleEngineModulesContext& ctx)
 {
     if (!_isInitialized) {
-        initializeLuaComponent();
+        initializeLuaComponent(ctx.luaEnvironment);
     }
 
     jleObject *obj = object();
@@ -35,7 +35,7 @@ cLuaScript::start(jleEngineModulesContext& ctx)
     _self["object"] = obj;
     _self["transform"] = trans;
 
-    const auto luaClass = gEngine->luaEnvironment()->getState()[_luaClass.luaClassName];
+    const auto luaClass = ctx.luaEnvironment.getState()[_luaClass.luaClassName];
 
     try {
         sol::protected_function startFunc = luaClass["start"];
@@ -48,7 +48,7 @@ cLuaScript::start(jleEngineModulesContext& ctx)
 void
 cLuaScript::update(jleEngineModulesContext& ctx)
 {
-    const auto luaClass = gEngine->luaEnvironment()->getState()[_luaClass.luaClassName];
+    const auto luaClass = ctx.luaEnvironment.getState()[_luaClass.luaClassName];
 
     try {
         sol::protected_function updateFunc = luaClass["update"];
@@ -59,9 +59,9 @@ cLuaScript::update(jleEngineModulesContext& ctx)
 }
 
 void
-cLuaScript::onDestroy()
+cLuaScript::onDestroy(jleEngineModulesContext& ctx)
 {
-    const auto luaClass = gEngine->luaEnvironment()->getState()[_luaClass.luaClassName];
+    const auto luaClass = ctx.luaEnvironment.getState()[_luaClass.luaClassName];
 
     try {
         sol::protected_function destroyFunc = luaClass["destroy"];
@@ -78,11 +78,11 @@ cLuaScript::getSelf()
 }
 
 void
-cLuaScript::initializeLuaComponent()
+cLuaScript::initializeLuaComponent(jleLuaEnvironment& luaEnvironment)
 {
-    const auto luaClass = gEngine->luaEnvironment()->getState()[_luaClass.luaClassName];
+    const auto luaClass = luaEnvironment.getState()[_luaClass.luaClassName];
 
-    gEngine->luaEnvironment()->loadedLuaClasses()[_luaClass.luaClassName];
+    luaEnvironment.loadedLuaClasses()[_luaClass.luaClassName];
 
     try {
         sol::protected_function classConstructor = luaClass["new"];
@@ -126,7 +126,7 @@ deep_copy(sol::state &lua, const sol::table &src, sol::table &dest)
 cLuaScript::cLuaScript(const cLuaScript &other)
 {
     _luaClass = other._luaClass;
-    initializeLuaComponent();
+    initializeLuaComponent(*gEngine->luaEnvironment());
     deep_copy(gEngine->luaEnvironment()->getState(), other._self, _self);
 }
 
@@ -135,10 +135,13 @@ void
 cLuaScript::serialize(Archive &ar)
 {
     try {
+        jleSerializationContext &ctx = ar.ctx;
+        assert(ctx.luaEnvironment);
+
         ar(CEREAL_NVP(_luaClass));
 
         if (!_isInitialized) {
-            initializeLuaComponent();
+            initializeLuaComponent(*ctx.luaEnvironment);
         }
 
         auto it = gEngine->luaEnvironment()->loadedLuaClasses().find(_luaClass.luaClassName);

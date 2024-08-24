@@ -20,9 +20,9 @@
 #include "core/jleCompileHelper.h"
 #include "jlePath.h"
 
-#include <cereal/archives/json.hpp>
-#include <cereal/archives/binary.hpp>
-#include "editor/jleImGuiCerealArchive.h"
+#include "editor/jleImGuiArchive.h"
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
 
 #include <string>
 

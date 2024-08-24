@@ -217,7 +217,7 @@ jleSkinnedMesh::loadSkinnedAssimp(const jlePath &path)
 }
 
 void
-jleSkinnedMesh::saveToFile()
+jleSkinnedMesh::saveToFile(jleSerializationContext& ctx)
 {
     aiScene scene;
     jleMesh::saveMeshToAssimpScene(scene);

@@ -108,7 +108,7 @@ jleObject()
 }
 
 void
-jleObject::destroyComponent(jleComponent *component)
+jleObject::destroyComponent(jleComponent *component, jleEngineModulesContext& ctx)
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
         if (_components[i].get() == component) {
@@ -118,7 +118,7 @@ jleObject::destroyComponent(jleComponent *component)
                     luaScriptComponent->getSelf()[component->componentName()] = sol::lua_nil;
                 }
 
-                component->onDestroy();
+                component->onDestroy(ctx);
             }
             component->_isDestroyed = true;
             _components.erase(_components.begin() + i);
@@ -281,7 +281,7 @@ jleObject::updateChildren(jleEngineModulesContext& ctx)
 {
     for (int32_t i = __childObjects.size() - 1; i >= 0; i--) {
         if (__childObjects[i]->_pendingKill) {
-            __childObjects[i]->propagateDestroy();
+            __childObjects[i]->propagateDestroy(ctx);
             __childObjects.erase(__childObjects.begin() + i);
             continue;
         }
@@ -394,12 +394,12 @@ jleObject::duplicateTemplate(bool childChain)
 }
 
 void
-jleObject::saveAsObjectTemplate()
+jleObject::saveAsObjectTemplate(jleSerializationContext& serializationContext)
 {
     if (path.isEmpty()) {
         path = jlePath{"GR:otemps/" + _instanceName + ".jobj"};
     }
-    saveToFile();
+    saveToFile(serializationContext);
 }
 
 void
@@ -515,17 +515,17 @@ jleObject::replaceChildrenWithTemplate()
 }
 
 void
-jleObject::propagateDestroy()
+jleObject::propagateDestroy(jleEngineModulesContext& ctx)
 {
     for (auto &&c : _components) {
-        c->onDestroy();
+        c->onDestroy(ctx);
         if (c->parallelUpdateEnabled() && !gEngine->isGameKilled()) {
             gEngine->gameRef().removeParallelComponent(c);
         }
     }
 
     for (auto &&o : __childObjects) {
-        o->propagateDestroy();
+        o->propagateDestroy(ctx);
     }
 }
 

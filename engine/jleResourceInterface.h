@@ -20,8 +20,8 @@
 #include "core/jleCompileHelper.h"
 #include "jlePath.h"
 
-#include <cereal/archives/json.hpp>
-#include <cereal/archives/binary.hpp>
+#include "serialization/jleJSONArchive.h"
+#include "serialization/jleBinaryArchive.h"
 #include <cereal/cereal.hpp>
 #include <cereal/types/polymorphic.hpp>
 #include <fstream>
@@ -40,7 +40,7 @@ public:
     loadFromFile(const jlePath &path) = 0;
 
     // Optionally implement logic for saving data to file
-    [[maybe_unused]] virtual void saveToFile(){};
+    [[maybe_unused]] virtual void saveToFile(jleSerializationContext& ctx){};
 
     bool hasFileExtension(const std::string &fileExtensionTest);
 

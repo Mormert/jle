@@ -26,7 +26,7 @@
 jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name, jleResources& resources, jleEngineSettings& settings)
     : jleEditorWindowInterface{window_name}, _gameController{"Game Controller"}
 {
-    _crossIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/cross.png"});
+    _crossIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/cross.png"}, {});
     _maximizeIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/maximize.png"});
     _minimizeIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/minimize.png"});
     _jleIcon = resources.loadResourceFromFile<jleTexture>(settings.windowSettings.iconPath);

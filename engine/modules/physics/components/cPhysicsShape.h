@@ -36,7 +36,7 @@ public:
 
     void update(jleEngineModulesContext& ctx) override;
 
-    void onDestroy() override;
+    void onDestroy(jleEngineModulesContext& ctx) override;
 
 protected:
     //std::unique_ptr<btCollisionShape> _optionalLocalShape{nullptr};

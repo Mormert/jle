@@ -27,6 +27,8 @@
 
 #if JLE_BUILD_EDITOR
 
+#include "serialization/jleSerialization.h"
+
 #include "core/jleFileWatcher.h"
 #include "jleComponent.h"
 #include "jleEditor.h"
@@ -100,41 +102,29 @@ struct jleToolTip {
     std::string_view tip_view;
 };
 
-struct jleSerializationContext {
-    jleSerializationContext(jleResources &r, jleLuaEnvironment &l) : resources{r}, luaEnvironment{l} {}
-
-    jleResources &resources;
-    jleLuaEnvironment &luaEnvironment;
-};
-
-namespace cereal
-{
-
-class jleImGuiCerealArchiveInternal : public OutputArchive<jleImGuiCerealArchiveInternal>
+class jleImGuiArchiveInternal : public jleSerializationArchive, public cereal::OutputArchive<jleImGuiArchiveInternal>
 {
 public:
-    jleImGuiCerealArchiveInternal(jleSerializationContext &context)
-        : ctx{context}, OutputArchive<jleImGuiCerealArchiveInternal>(this)
+    jleImGuiArchiveInternal(jleSerializationContext &context)
+        : jleSerializationArchive{context}, OutputArchive<jleImGuiArchiveInternal>(this)
     {
     }
 
-    ~jleImGuiCerealArchiveInternal() override = default;
+    ~jleImGuiArchiveInternal() override = default;
 
     std::string nextPolymorhphicTypeName{};
-    jleSerializationContext &ctx;
 };
 
-class jleImGuiCerealArchive : public InputArchive<jleImGuiCerealArchive>
+class jleImGuiArchive : public jleSerializationArchive, public cereal::InputArchive<jleImGuiArchive>
 {
-
 public:
-    jleImGuiCerealArchive(jleSerializationContext &context) : ctx(context), InputArchive<jleImGuiCerealArchive>(this) {}
+    jleImGuiArchive(jleSerializationContext &context) : jleSerializationArchive(context), InputArchive<jleImGuiArchive>(this) {}
 
-    ~jleImGuiCerealArchive() override = default;
+    ~jleImGuiArchive() override = default;
 
     template <class T>
     void
-    draw(jleImGuiCerealArchive &ar, std::string name, T &value)
+    draw(jleImGuiArchive &ar, std::string name, T &value)
     {
         elementCount += 1;
 
@@ -146,36 +136,36 @@ public:
     }
 
 private:
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, jleTextureRefOrRGBA &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, jleTextureRefOrRGB &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, jleTextureRefOrAlpha &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, jleTextureRefOrRGBA &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, jleTextureRefOrRGB &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, jleTextureRefOrAlpha &value);
 
     bool draw_ui_reference(const char *name, std::string &value, std::vector<std::string> fileExtensions);
     bool draw_ui_lua_reference(const char *name, std::string &value);
 
     // clang-format off
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, jleLuaClassSerialization &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, jlePath &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, uint32_t &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, int32_t &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, uint64_t &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, int64_t &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, float &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, double &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, bool &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, std::string &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, glm::vec2 &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, glm::vec3 &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, glm::vec4 &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, jleRGB &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, jleRGBA &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, glm::quat &value);
-    void draw_ui(jleImGuiCerealArchive &ar, const char *name, jleTransform &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, jleLuaClassSerialization &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, jlePath &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, uint32_t &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, int32_t &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, uint64_t &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, int64_t &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, float &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, double &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, bool &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, std::string &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, glm::vec2 &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, glm::vec3 &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, glm::vec4 &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, jleRGB &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, jleRGBA &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, glm::quat &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, jleTransform &value);
     // clang-format on
 
     template <class T>
     void
-    draw_ui(jleImGuiCerealArchive &ar, std::string name, std::vector<T> &vector)
+    draw_ui(jleImGuiArchive &ar, std::string name, std::vector<T> &vector)
     {
         int removeIndex = -1;
 
@@ -239,21 +229,21 @@ private:
 
     template <class KEY, class VALUE>
     void
-    draw_ui(jleImGuiCerealArchive &ar, std::string name, std::map<KEY, VALUE> &map)
+    draw_ui(jleImGuiArchive &ar, std::string name, std::map<KEY, VALUE> &map)
     {
         STD_MAPS_IMPL
     }
 
     template <class KEY, class VALUE>
     void
-    draw_ui(jleImGuiCerealArchive &ar, std::string name, std::unordered_map<KEY, VALUE> &map)
+    draw_ui(jleImGuiArchive &ar, std::string name, std::unordered_map<KEY, VALUE> &map)
     {
         STD_MAPS_IMPL
     }
 
     template <class T, std::enable_if_t<!std::is_enum<T>{}> * = nullptr>
     void
-    draw_ui(jleImGuiCerealArchive &ar, std::string name, T &value)
+    draw_ui(jleImGuiArchive &ar, std::string name, T &value)
     {
         elementCount += 1;
 
@@ -269,7 +259,7 @@ private:
 
     template <class T>
     void
-    draw_ui(jleImGuiCerealArchive &ar, const char *name, jleToolTip<T> &value)
+    draw_ui(jleImGuiArchive &ar, const char *name, jleToolTip<T> &value)
     {
         ImGui::PushID(elementCount++);
 
@@ -284,7 +274,7 @@ private:
 
     template <class T>
     void
-    draw_ui(jleImGuiCerealArchive &ar, std::string name, jleToolTip<T> &value)
+    draw_ui(jleImGuiArchive &ar, std::string name, jleToolTip<T> &value)
     {
         ImGui::PushID(elementCount++);
 
@@ -299,7 +289,7 @@ private:
 
     template <class T>
     void
-    draw_ui(jleImGuiCerealArchive &ar, std::string name, const T &value)
+    draw_ui(jleImGuiArchive &ar, std::string name, const T &value)
     {
         ImGui::PushID(elementCount++);
         auto cpy = value;
@@ -310,7 +300,7 @@ private:
 
     template <class E, std::enable_if_t<std::is_enum<E>{}> * = nullptr>
     void
-    draw_ui(jleImGuiCerealArchive &ar, std::string name, E &e)
+    draw_ui(jleImGuiArchive &ar, std::string name, E &e)
     {
         ImGui::PushID(elementCount++);
 
@@ -347,13 +337,13 @@ private:
 
     template <class T>
     void
-    draw_ui(jleImGuiCerealArchive &ar, std::string name, std::shared_ptr<T> &ptr)
+    draw_ui(jleImGuiArchive &ar, std::string name, std::shared_ptr<T> &ptr)
     {
         ImGui::PushID(elementCount++);
 
         ImGui::BeginGroupPanel(name.c_str());
 
-        jleImGuiCerealArchiveInternal archiveInternal{ar.ctx};
+        jleImGuiArchiveInternal archiveInternal{ar.ctx};
         archiveInternal(ptr);
 
         ImGui::EndGroupPanel();
@@ -363,7 +353,7 @@ private:
 
     template <class T>
     void
-    draw_ui(jleImGuiCerealArchive &ar, const char *name, jleResourceRef<T> &value)
+    draw_ui(jleImGuiArchive &ar, const char *name, jleResourceRef<T> &value)
     {
         ImGui::PushID(elementCount++);
 
@@ -389,14 +379,11 @@ private:
 
 public:
     int elementCount = 0;
-
-private:
-    jleSerializationContext &ctx;
 };
 
 template <class T>
 inline void
-CEREAL_LOAD_FUNCTION_NAME(jleImGuiCerealArchive &ar, NameValuePair<T> &t)
+CEREAL_LOAD_FUNCTION_NAME(jleImGuiArchive &ar, cereal::NameValuePair<T> &t)
 {
     std::string newName = t.name;
 
@@ -416,22 +403,23 @@ CEREAL_LOAD_FUNCTION_NAME(jleImGuiCerealArchive &ar, NameValuePair<T> &t)
     ar.draw<T>(ar, newName, t.value);
 }
 
-template <class T, traits::EnableIf<std::is_arithmetic<T>::value> = traits::sfinae>
+template <class T, cereal::traits::EnableIf<std::is_arithmetic<T>::value> = cereal::traits::sfinae>
 inline void
-CEREAL_LOAD_FUNCTION_NAME(jleImGuiCerealArchive &ar, T &t)
+CEREAL_LOAD_FUNCTION_NAME(jleImGuiArchive &ar, T &t)
 {
     ar.draw<T>(ar, "", t);
 }
 
 template <class T>
 inline void
-CEREAL_SAVE_FUNCTION_NAME(jleImGuiCerealArchiveInternal &ar,
-                          NameValuePair<cereal::memory_detail::PtrWrapper<const std::shared_ptr<const T> &>> const &t)
+CEREAL_SAVE_FUNCTION_NAME(
+    jleImGuiArchiveInternal &ar,
+                          cereal::NameValuePair<cereal::memory_detail::PtrWrapper<const std::shared_ptr<const T> &>> const &t)
 {
     std::shared_ptr<T> f = std::const_pointer_cast<T>(t.value.ptr);
 
     if (auto component = std::dynamic_pointer_cast<jleComponent>(f)) {
-        jleImGuiCerealArchive nonPolymorphicArchive{ar.ctx};
+        jleImGuiArchive nonPolymorphicArchive{ar.ctx};
         nonPolymorphicArchive.elementCount += 1;
 
         ImGui::PushID(nonPolymorphicArchive.elementCount);
@@ -445,31 +433,30 @@ CEREAL_SAVE_FUNCTION_NAME(jleImGuiCerealArchiveInternal &ar,
 
         ImGui::PopID();
     } else {
-        jleImGuiCerealArchive nonPolymorphicArchive{ar.ctx};
+        jleImGuiArchive nonPolymorphicArchive{ar.ctx};
         nonPolymorphicArchive.draw(nonPolymorphicArchive, ar.nextPolymorhphicTypeName + " (ptr)", *f.get());
     }
 }
 
 template <class T>
 inline void
-CEREAL_SAVE_FUNCTION_NAME(jleImGuiCerealArchiveInternal &ar, NameValuePair<T> const &t)
+CEREAL_SAVE_FUNCTION_NAME(jleImGuiArchiveInternal &ar, cereal::NameValuePair<T> const &t)
 {
     if constexpr (std::is_same_v<std::string &, T>) {
         ar.nextPolymorhphicTypeName = t.value;
     }
 }
 
-template <class T, traits::EnableIf<std::is_arithmetic<T>::value> = traits::sfinae>
+template <class T, cereal::traits::EnableIf<std::is_arithmetic<T>::value> = cereal::traits::sfinae>
 inline void
-CEREAL_SAVE_FUNCTION_NAME(jleImGuiCerealArchiveInternal &ar, T &t)
+CEREAL_SAVE_FUNCTION_NAME(jleImGuiArchiveInternal &ar, T &t)
 {
     // Do nothing
 }
 
-} // namespace cereal
 
-CEREAL_REGISTER_ARCHIVE(cereal::jleImGuiCerealArchiveInternal)
-CEREAL_REGISTER_ARCHIVE(cereal::jleImGuiCerealArchive)
+CEREAL_REGISTER_ARCHIVE(jleImGuiArchiveInternal)
+CEREAL_REGISTER_ARCHIVE(jleImGuiArchive)
 
 #endif // JLE_BUILD_EDITOR
 

@@ -16,7 +16,7 @@
 #pragma once
 
 #include <plog/Log.h>
-#include <cereal/archives/binary.hpp>
+#include "serialization/jleBinaryArchive.h"
 
 #include <memory>
 #include <sstream>
@@ -45,6 +45,6 @@ public:
 
 protected:
     std::ostringstream _eventOutputStream{std::ios::binary};
-    std::unique_ptr<cereal::BinaryOutputArchive> _eventOutputArchive{nullptr};
+    std::unique_ptr<jleBinaryOutputArchive> _eventOutputArchive{nullptr};
     int32_t _queuedEvents{0};
 };

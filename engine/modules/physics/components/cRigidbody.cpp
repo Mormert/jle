@@ -140,7 +140,7 @@ cRigidbody::isDynamic()
 }
 
 void
-cRigidbody::onDestroy()
+cRigidbody::onDestroy(jleEngineModulesContext& ctx)
 {
     scene()->getPhysics().removeRigidbody(_body.get());
 }

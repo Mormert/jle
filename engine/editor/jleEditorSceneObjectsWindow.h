@@ -29,7 +29,7 @@ class jleEditorSceneObjectsWindow : public jleEditorWindowInterface
 public:
     explicit jleEditorSceneObjectsWindow(const std::string &window_name);
 
-    void renderUI(jleGameEngine &ge, jleEngineModulesContext& ctx);
+    void renderUI(jleGameEngine &ge, jleEngineModulesContext &ctx);
 
     std::weak_ptr<jleObject> &GetSelectedObject();
 
@@ -38,11 +38,10 @@ public:
     std::weak_ptr<jleScene> &GetSelectedScene();
 
 private:
-
     std::weak_ptr<jleObject> selectedObject;
     std::weak_ptr<jleScene> selectedScene;
 
-    void objectTreeRecursive(std::shared_ptr<jleObject> object);
+    void objectTreeRecursive(std::shared_ptr<jleObject> object, jleEngineModulesContext &ctx);
 };
 
 #endif // JLE_BUILD_EDITOR

@@ -189,7 +189,8 @@ jleEditor3DImportWindow::importModel(const jlePath &importPath,
             material->_roughness.alpha() = roughness;
         }
 
-        material->saveToFile();
+        jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+        material->saveToFile(serializationContext);
         createdMaterials.push_back(material);
     }
 
@@ -247,7 +248,9 @@ jleEditor3DImportWindow::importModel(const jlePath &importPath,
         }
 
         createdMesh->path = jlePath{destinationPath.getVirtualFolder() + '/' + meshName + ".fbx"};
-        createdMesh->saveToFile();
+
+        jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+        createdMesh->saveToFile(serializationContext);
 
         createdMeshes.push_back(createdMesh);
     }

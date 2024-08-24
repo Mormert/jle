@@ -60,6 +60,7 @@ private:
 class jleTextureRefOrAlpha
 {
 public:
+
     template <class Archive>
     void serialize(Archive &ar);
 

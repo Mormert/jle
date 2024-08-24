@@ -29,7 +29,7 @@ public:
 
     [[nodiscard]] bool loadFromFile(const jlePath &path) override;
 
-    void saveToFile() override;
+    void saveToFile(jleSerializationContext& ctx) override;
 
 protected:
 
