@@ -37,7 +37,7 @@ jleEditorSceneObjectsWindow::GetSelectedObject()
 }
 
 void
-jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext &ctx)
+jleEditorSceneObjectsWindow::renderUI(jleEditorModulesContext &ctx)
 {
     if (!isOpened) {
         return;
@@ -47,9 +47,9 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
     if (ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_MenuBar)) {
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("Create Scene")) {
-                if (!ge.isGameKilled()) {
+                if (!ctx.engineModulesContext.gameRuntime.isGameKilled()) {
                     if (ImGui::MenuItem("jleScene")) {
-                        ge.gameRef().createScene<jleScene>();
+                        ctx.engineModulesContext.gameRuntime.getGame().createScene<jleScene>();
                     }
                 } else {
                     if (ImGui::MenuItem("jleScene")) {
@@ -134,7 +134,7 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
                 { // Save Scene
                     if (canSaveScene) {
                         if (ImGui::Button("Save Scene", ImVec2(138 * globalImguiScale, 0))) {
-                            jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+                            jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule, &ctx.engineModulesContext.luaEnvironment};
                             scene->saveToFile(serializationContext);
                         }
                     }
@@ -142,8 +142,8 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
             }
         };
 
-        if (!ge.isGameKilled()) {
-            for (auto scene : ge.gameRef().activeScenesRef()) {
+        if (!ctx.engineModulesContext.gameRuntime.isGameKilled()) {
+            for (auto scene : ctx.engineModulesContext.gameRuntime.getGame().activeScenesRef()) {
                 sceneUi(scene, " (game)", false);
             }
         } else {
@@ -165,7 +165,7 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
             auto &sceneObjectsRef = selectedSceneSafePtr->sceneObjects();
             for (int32_t i = sceneObjectsRef.size() - 1; i >= 0; i--) {
                 if (sceneObjectsRef[i]) {
-                    objectTreeRecursive(sceneObjectsRef[i], ctx);
+                    objectTreeRecursive(sceneObjectsRef[i], ctx.engineModulesContext);
                 }
             }
         }
@@ -211,8 +211,7 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
                                 selectedObjectSafePtr->__templatePath.reset();
                             }
                         } else {
-                            jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
-                            jleImGuiArchive ar1{serializationContext};
+                            jleImGuiArchive ar1{ctx};
                             ar1(*selectedObjectSafePtr);
                         }
 
@@ -240,12 +239,11 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
 
                         if (ImGui::BeginPopupModal("Add Component Popup", &openedPopup, 0)) {
 
-                            jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
-                            jleImGuiArchiveInternal ar{serializationContext};
+                            jleImGuiArchiveInternal ar{ctx};
                             ar(componentBeingAdded);
 
                             if (ImGui::Button("Add Component")) {
-                                selectedObjectSafePtr->addComponent(componentBeingAdded, ctx);
+                                selectedObjectSafePtr->addComponent(componentBeingAdded, ctx.engineModulesContext);
                                 componentBeingAdded.reset();
                             }
                             ImGui::SameLine();
@@ -260,7 +258,7 @@ jleEditorSceneObjectsWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext
                             if (ImGui::BeginMenu("Remove Component")) {
                                 for (int i = components.size() - 1; i >= 0; i--) {
                                     if (ImGui::MenuItem(components[i]->componentName().data())) {
-                                        components[i]->destroy(ctx);
+                                        components[i]->destroy(ctx.engineModulesContext);
                                     }
                                 }
                                 ImGui::EndMenu();

@@ -23,13 +23,14 @@
 
 class jleObject;
 class jleScene;
+class jleEditorModulesContext;
 
 class jleEditorSceneObjectsWindow : public jleEditorWindowInterface
 {
 public:
     explicit jleEditorSceneObjectsWindow(const std::string &window_name);
 
-    void renderUI(jleGameEngine &ge, jleEngineModulesContext &ctx);
+    void renderUI(jleEditorModulesContext &ctx);
 
     std::weak_ptr<jleObject> &GetSelectedObject();
 

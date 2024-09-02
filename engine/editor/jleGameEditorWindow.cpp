@@ -29,7 +29,7 @@ jleGameEditorWindow::jleGameEditorWindow(const std::string &window_name) : jleEd
 }
 
 void
-jleGameEditorWindow::renderUI(jleGameEngine &ge, jleInput& input)
+jleGameEditorWindow::renderUI(jleEngineModulesContext &ctx, jleInput& input)
 {
     if (!isOpened) {
         return;
@@ -41,7 +41,7 @@ jleGameEditorWindow::renderUI(jleGameEngine &ge, jleInput& input)
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, flags);
 
-    if (ge.isGameKilled()) {
+    if (ctx.gameRuntime.isGameKilled()) {
         ImGuiStyle &style = ImGui::GetStyle();
 
         float size = ImGui::CalcTextSize("   Start Game   ").x + style.FramePadding.x * 2.0f;
@@ -54,7 +54,7 @@ jleGameEditorWindow::renderUI(jleGameEngine &ge, jleInput& input)
         ImGui::SetCursorPosY(ImGui::GetWindowHeight() / 2.f);
 
         if (ImGui::Button("   Start Game   ")) {
-            ge.startGame();
+            ctx.gameRuntime.startGame(ctx);
         }
 
         ImGui::End();
@@ -70,7 +70,6 @@ jleGameEditorWindow::renderUI(jleGameEngine &ge, jleInput& input)
     _windowPositionY = cursorScreenPos.y - viewport->Pos.y;
 
     const auto &internalInputMouse = input.mouse;
-    const auto &engineFramebufferMain = ge.mainScreenFramebuffer;
     internalInputMouse->setScreenBeginCoords(_windowPositionX, _windowPositionY);
     internalInputMouse->setScreenSize(width(), height());
 
@@ -79,25 +78,25 @@ jleGameEditorWindow::renderUI(jleGameEngine &ge, jleInput& input)
         _lastGameWindowWidth = ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset;
         _lastGameWindowHeight = ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset;
 
-        ge.gameWindowResizedEvent((int)_lastGameWindowWidth, (int)_lastGameWindowHeight);
+        ctx.gameRuntime.gameWindowResizedEvent((int)_lastGameWindowWidth, (int)_lastGameWindowHeight);
     }
 
     // Get the texture from the framebuffer
-    glBindTexture(GL_TEXTURE_2D, (unsigned int)ge.mainScreenFramebuffer->texture());
-    ImGui::Image((void *)(intptr_t)ge.mainScreenFramebuffer->texture(),
+    glBindTexture(GL_TEXTURE_2D, (unsigned int)ctx.gameRuntime.mainGameScreenFramebuffer->texture());
+    ImGui::Image((void *)(intptr_t)ctx.gameRuntime.mainGameScreenFramebuffer->texture(),
                  ImVec2(_lastGameWindowWidth, _lastGameWindowHeight),
                  ImVec2(0, 1),
                  ImVec2(1, 0));
 
     if (ImGui::IsWindowFocused() != _wasFocused) {
         _wasFocused = ImGui::IsWindowFocused();
-        ge.input().setInputEnabled(_wasFocused);
+        ctx.inputModule.setInputEnabled(_wasFocused);
     }
 
-    if (ImGui::IsWindowFocused() && ge.input().mouse->isFpsMode() && ImGui::IsKeyPressed(ImGuiKey_Tab)) {
-        ge.input().mouse->setFpsMode(false);
+    if (ImGui::IsWindowFocused() && ctx.inputModule.mouse->isFpsMode() && ImGui::IsKeyPressed(ImGuiKey_Tab)) {
+        ctx.inputModule.mouse->setFpsMode(false);
     } else if (ImGui::IsKeyPressed(ImGuiKey_Tab)) {
-        ge.input().mouse->setFpsMode(true);
+        ctx.inputModule.mouse->setFpsMode(true);
     }
 
     ImGui::End();

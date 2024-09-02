@@ -49,7 +49,7 @@ jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name) : jle
 }
 
 void
-jleSceneEditorWindow::renderUI(jleGameEngine &ge)
+jleSceneEditorWindow::renderUI(jleEngineModulesContext &ctx)
 {
     if (!isOpened) {
         return;
@@ -152,8 +152,8 @@ jleSceneEditorWindow::renderUI(jleGameEngine &ge)
             LOGI << "Picked object with id: " << pickedID;
 
             std::vector<std::shared_ptr<jleScene>> scenes;
-            if (!gEngine->isGameKilled()) {
-                auto &game = ((jleGameEngine *)gEngine)->gameRef();
+            if (!ctx.gameRuntime.isGameKilled()) {
+                auto &game = ctx.gameRuntime.getGame();
                 scenes = game.activeScenesRef();
             }
 
@@ -207,7 +207,7 @@ jleSceneEditorWindow::renderUI(jleGameEngine &ge)
 
     ImGui::SameLine();
 
-    if (!gEngine->isGameKilled()) {
+    if (!ctx.gameRuntime.isGameKilled()) {
         if (auto &&scene = gEditor->getEditorSceneObjectsWindow().GetSelectedScene().lock()) {
             ImGui::Checkbox("Physics Debug", &scene->getPhysics().renderDebugEnabled);
         }
@@ -276,7 +276,7 @@ jleSceneEditorWindow::renderUI(jleGameEngine &ge)
         EditTransform((float *)viewMatrix, (float *)projectionMatrix, (float *)&worldMatrixBefore[0][0], true);
         glm::mat4 transformMatrix = obj->getTransform().getWorldMatrix();
         if (transformMatrix != worldMatrixBefore) {
-            if (!gEngine->isGameKilled()) {
+            if (!ctx.gameRuntime.isGameKilled()) {
                 if (auto rb = obj->getComponent<cRigidbody>()) {
                     rb->setWorldMatrixAndScaleRigidbody(worldMatrixBefore);
                 } else {
@@ -303,7 +303,7 @@ jleSceneEditorWindow::renderUI(jleGameEngine &ge)
 
     // If window is hovered and Gizmo is not being moved/used
     if (ImGui::IsWindowHovered() && !ImGuizmo::IsUsing()) {
-        auto t = ge.deltaFrameTime();
+        auto t = ctx.frameInfo.getDeltaTime();
         auto dragDelta = ImGui::GetMouseDragDelta(1);
 
         if (gEditor->camera().getProjectionType() == jleCameraProjection::Perspective ||
@@ -349,10 +349,10 @@ jleSceneEditorWindow::renderUI(jleGameEngine &ge)
 
         auto currentScroll = gEngine->input().mouse->scrollY();
         if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentScroll != 0.f) {
-            orthoZoomValue -= currentScroll * 1.f * ge.deltaFrameTime();
+            orthoZoomValue -= currentScroll * 1.f * ctx.frameInfo.getDeltaTime();
             orthoZoomValue = glm::clamp(orthoZoomValue, 0.01f, 2.f);
         } else if (currentScroll != 0.f) {
-            cameraSpeed += currentScroll * 200.f * ge.deltaFrameTime();
+            cameraSpeed += currentScroll * 200.f * ctx.frameInfo.getDeltaTime();
             cameraSpeed = glm::clamp(cameraSpeed, 0.2f, 500.f);
         }
     }

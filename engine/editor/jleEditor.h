@@ -52,7 +52,7 @@ public:
 
     void start(jleEngineModulesContext &context) override;
 
-    void render(jleEngineModulesContext& modulesContext, wi::jobsystem::context &jobsCtx) override;
+    void render(jleEngineModulesContext& ctx, wi::jobsystem::context &jobsCtx) override;
 
     void update(jleEngineModulesContext& ctx) override;
 
@@ -87,15 +87,15 @@ private:
 
     void exiting() override;
 
-    void renderGameView(jleResources& resources);
+    void renderGameView(jleGameRuntime& runtime, jleResources& resources);
 
-    void renderEditorSceneView();
+    void renderEditorSceneView(jleEngineModulesContext &ctx);
 
     void renderEditorUI();
 
     void initImgui();
 
-    void renderEditorGizmos(jle3DGraph& renderGraph);
+    void renderEditorGizmos(jle3DGraph& renderGraph, jleGameRuntime& gameRuntime);
 
     void renderEditorGridGizmo();
 

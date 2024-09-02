@@ -25,8 +25,7 @@
 
 #include <glm/glm.hpp>
 
-struct cAnimatorAnimation
-{
+struct cAnimatorAnimation {
     jleResourceRef<jleAnimation> currentAnimation{};
     jleAnimation currentAnimationLocal;
     jleAnimationFinalMatrices animationMatrices{};
@@ -48,11 +47,9 @@ struct cAnimatorAnimation
 
     template <class Archive>
     void serialize(Archive &ar);
-
 };
 
 JLE_EXTERN_TEMPLATE_CEREAL_H(cAnimatorAnimation)
-
 
 class cAnimator : public jleComponent, public std::enable_shared_from_this<cAnimator>
 {
@@ -63,26 +60,28 @@ public:
     template <class Archive>
     void serialize(Archive &ar);
 
-    void start(jleEngineModulesContext& ctx) override;
+    void start(jleEngineModulesContext &ctx) override;
 
-    void update(jleEngineModulesContext& ctx) override;
+    void update(jleEngineModulesContext &ctx) override;
 
-    void parallelUpdate(jleEngineModulesContext& ctx) override;
+    void parallelUpdate(jleEngineModulesContext &ctx) override;
 
-    void editorUpdate(jleEngineModulesContext& ctx) override;
+    void editorUpdate(jleEngineModulesContext &ctx) override;
 
-    void registerLua(sol::state& lua) override;
+    void registerLua(sol::state &lua) override;
 
-    void calculateBoneTransform(const jleAnimationNode& node, const glm::mat4& parentTransform, cAnimatorAnimation& animation);
+    void calculateBoneTransform(jleEngineModulesContext &ctx,
+                                const jleAnimationNode &node,
+                                const glm::mat4 &parentTransform,
+                                cAnimatorAnimation &animation);
 
-    const std::shared_ptr<jleAnimationFinalMatrices>& animationMatrices();
+    const std::shared_ptr<jleAnimationFinalMatrices> &animationMatrices();
 
-    void editorInspectorImGuiRender() override;
+    void editorInspectorImGuiRender(jleEditorModulesContext& ctx) override;
 
-    void setAnimation(const jlePath& path, jleResources& resources);
+    void setAnimation(const jlePath &path, jleResources &resources);
 
 private:
-
     void blendAnimations();
 
     void applyRootMotion();

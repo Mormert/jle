@@ -36,7 +36,7 @@ public:
                                       const std::weak_ptr<void> &data);
 
 private:
-    friend class jleGameEngine;
+    friend class jleGameRuntime;
 
     void process();
 

@@ -33,9 +33,9 @@ jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name, jle
 }
 
 void
-jleEditorWindowsPanel::renderUI(const jleEditorWindowsPanelRenderContext& context)
+jleEditorWindowsPanel::renderUI(jleEngineModulesContext& ctx)
 {
-    dockspaceupdate(context);
+    dockspaceupdate(ctx);
 }
 
 void
@@ -45,7 +45,7 @@ jleEditorWindowsPanel::addWindow(std::shared_ptr<jleEditorWindowInterface> windo
 }
 
 void
-jleEditorWindowsPanel::dockspaceupdate(const jleEditorWindowsPanelRenderContext& context)
+jleEditorWindowsPanel::dockspaceupdate(jleEngineModulesContext& ctx)
 {
 
     static bool opt_fullscreen = true;
@@ -102,13 +102,13 @@ jleEditorWindowsPanel::dockspaceupdate(const jleEditorWindowsPanelRenderContext&
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
     }
 
-    menuButtonsupdate(context);
+    menuButtonsupdate(ctx);
 
     ImGui::End();
 }
 
 void
-jleEditorWindowsPanel::menuButtonsupdate(const jleEditorWindowsPanelRenderContext& context)
+jleEditorWindowsPanel::menuButtonsupdate(jleEngineModulesContext& ctx)
 {
     if (ImGui::BeginMenuBar()) {
 
@@ -136,7 +136,7 @@ jleEditorWindowsPanel::menuButtonsupdate(const jleEditorWindowsPanelRenderContex
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Game Controller")) {
-            _gameController.render(context.gameEngine);
+            _gameController.render(ctx);
             ImGui::EndMenu();
         }
 
@@ -165,7 +165,7 @@ jleEditorWindowsPanel::menuButtonsupdate(const jleEditorWindowsPanelRenderContex
         const auto rolling120FramesAvgFps = (int)ImGui::GetIO().Framerate;
         ImGui::Text("Avg FPS: %4d  |  Run Time: %s",
                     rolling120FramesAvgFps,
-                    formatTime(static_cast<int>(context.frameInfo.getCurrentFrameTime() * 1000.f)).c_str());
+                    formatTime(static_cast<int>(ctx.frameInfo.getCurrentFrameTime() * 1000.f)).c_str());
 
         {
             ImGuiStyle &style = ImGui::GetStyle();
@@ -200,11 +200,11 @@ jleEditorWindowsPanel::menuButtonsupdate(const jleEditorWindowsPanelRenderContex
                 ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
 
                 if (ImGui::ImageButton((void *)(intptr_t)_minimizeIcon->id(), buttonSize)) {
-                    glfwIconifyWindow(context.window.glfwWindow());
+                    glfwIconifyWindow(ctx.windowModule.glfwWindow());
                 }
 
                 if (ImGui::ImageButton((void *)(intptr_t)_maximizeIcon->id(), buttonSize)) {
-                    const auto window = context.window.glfwWindow();
+                    const auto window = ctx.windowModule.glfwWindow();
                     if (glfwGetWindowAttrib(window, GLFW_MAXIMIZED)) {
                         glfwRestoreWindow(window);
                     } else {
@@ -217,7 +217,7 @@ jleEditorWindowsPanel::menuButtonsupdate(const jleEditorWindowsPanelRenderContex
                     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, grayRedHoveredColor);
 
                     if (ImGui::ImageButton((void *)(intptr_t)_crossIcon->id(), buttonSize)) {
-                        glfwSetWindowShouldClose(context.window.glfwWindow(), true);
+                        glfwSetWindowShouldClose(ctx.windowModule.glfwWindow(), true);
                     }
                     ImGui::PopStyleColor();
                 }

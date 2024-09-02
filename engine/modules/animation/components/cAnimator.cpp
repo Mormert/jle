@@ -17,8 +17,8 @@
 
 #include "jleProfiler.h"
 #include "jleResourceRef.h"
-#include "modules/graphics/runtime/components/cSkinnedMesh.h"
 #include "modules/graphics/jle3DGraph.h"
+#include "modules/graphics/runtime/components/cSkinnedMesh.h"
 
 #include "editor/jleEditor.h"
 
@@ -63,7 +63,7 @@ cAnimator::cAnimator()
 }
 
 void
-cAnimator::start(jleEngineModulesContext& ctx)
+cAnimator::start(jleEngineModulesContext &ctx)
 {
     for (auto &animation : _animations) {
         animation.currentAnimationLocal = *animation.currentAnimation.get();
@@ -71,7 +71,7 @@ cAnimator::start(jleEngineModulesContext& ctx)
 }
 
 void
-cAnimator::update(jleEngineModulesContext& ctx)
+cAnimator::update(jleEngineModulesContext &ctx)
 {
     /* std::for_each(std::execution::par, _animations.begin(), _animations.end(), [&](cAnimatorAnimation &animation) {
          if (animation.currentAnimation) {
@@ -94,7 +94,7 @@ cAnimator::update(jleEngineModulesContext& ctx)
 }
 
 void
-cAnimator::parallelUpdate(jleEngineModulesContext& ctx)
+cAnimator::parallelUpdate(jleEngineModulesContext &ctx)
 {
     const auto dt = ctx.frameInfo.getDeltaTime();
 
@@ -110,7 +110,8 @@ cAnimator::parallelUpdate(jleEngineModulesContext& ctx)
         }
         animation.currentTime = fmod(animation.currentTime, animation.currentAnimationLocal.getDuration());
 
-        calculateBoneTransform(animation.currentAnimationLocal.getRootNode(), glm::identity<glm::mat4>(), animation);
+        calculateBoneTransform(
+            ctx, animation.currentAnimationLocal.getRootNode(), glm::identity<glm::mat4>(), animation);
         // }
     }
 
@@ -120,7 +121,7 @@ cAnimator::parallelUpdate(jleEngineModulesContext& ctx)
 }
 
 void
-cAnimator::editorUpdate(jleEngineModulesContext& ctx)
+cAnimator::editorUpdate(jleEngineModulesContext &ctx)
 {
 #if JLE_BUILD_EDITOR
     if (_editorPreviewAnimation) {
@@ -132,11 +133,13 @@ cAnimator::editorUpdate(jleEngineModulesContext& ctx)
 void
 cAnimator::registerLua(sol::state &lua)
 {
-    lua.new_usertype<cAnimator>("cAnimator", sol::base_classes, sol::bases<jleComponent>(), "setAnimation", &cAnimator::setAnimation);
+    lua.new_usertype<cAnimator>(
+        "cAnimator", sol::base_classes, sol::bases<jleComponent>(), "setAnimation", &cAnimator::setAnimation);
 }
 
 void
-cAnimator::calculateBoneTransform(const jleAnimationNode &node,
+cAnimator::calculateBoneTransform(jleEngineModulesContext &ctx,
+                                  const jleAnimationNode &node,
                                   const glm::mat4 &parentTransform,
                                   cAnimatorAnimation &animation)
 {
@@ -155,7 +158,7 @@ cAnimator::calculateBoneTransform(const jleAnimationNode &node,
         bone->update(animation.currentTime);
         nodeTransform = bone->getLocalTransform();
 
-        if (!gEngine->isGameKilled()) {
+        if (!ctx.gameRuntime.isGameKilled()) {
             if (bone->getName() == _rootMotionBone && _enableRootMotion) {
                 auto newPos = glm::vec3(bone->getLocalTransform()[3]);
 
@@ -189,7 +192,7 @@ cAnimator::calculateBoneTransform(const jleAnimationNode &node,
     }
 
     for (int i = 0; i < node.childNodes.size(); ++i) {
-        calculateBoneTransform(node.childNodes[i], globalTransformation, animation);
+        calculateBoneTransform(ctx, node.childNodes[i], globalTransformation, animation);
     }
 }
 
@@ -200,7 +203,7 @@ cAnimator::animationMatrices()
 }
 
 void
-cAnimator::editorInspectorImGuiRender()
+cAnimator::editorInspectorImGuiRender(jleEditorModulesContext& ctx)
 {
 #if JLE_BUILD_IMGUI
     int p = 0;
@@ -209,13 +212,13 @@ cAnimator::editorInspectorImGuiRender()
         ImGui::PushID(p++);
         ImGui::Text("%s", animation.currentAnimationLocal.path.getVirtualPath().c_str());
         // if (animation.currentAnimation) {
-        if (gEditor->isGameKilled()) {
+       // if (gEditor.isGameKilled()) {
             if (ImGui::IsItemEdited()) {
                 if (!_editorPreviewAnimation) {
                     _animationMatrices = std::make_shared<jleAnimationFinalMatrices>();
                 }
             }
-        }
+       // }
         ImGui::SliderFloat("Current Time", &animation.currentTime, 0.f, animation.currentAnimationLocal.getDuration());
         //}
         ImGui::PopID();
@@ -290,9 +293,8 @@ cAnimator::applyRootMotion()
     }
 }
 
-
 void
-cAnimator::setAnimation(const jlePath &path, jleResources& resources)
+cAnimator::setAnimation(const jlePath &path, jleResources &resources)
 {
     _animations.clear();
     _animations.push_back({});

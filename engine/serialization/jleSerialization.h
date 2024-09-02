@@ -15,6 +15,10 @@
 
 #pragma once
 
+#if JLE_BUILD_EDITOR
+#include "modules/jleEditorModulesContext.h"
+#endif
+
 class jleResources;
 class jleLuaEnvironment;
 
@@ -37,3 +41,16 @@ public:
 
     jleSerializationContext ctx;
 };
+
+#if JLE_BUILD_EDITOR
+class jleSerializationArchive_EditorOnly : public jleSerializationArchive
+{
+public:
+    jleSerializationArchive_EditorOnly(jleSerializationContext context, jleEditorModulesContext &editorContext)
+        : jleSerializationArchive(context), editorCtx{editorContext}
+    {
+    }
+
+    jleEditorModulesContext &editorCtx;
+};
+#endif

@@ -30,6 +30,7 @@ class jleEditorContentBrowser : public jleEditorWindowInterface
 {
 public:
     explicit jleEditorContentBrowser(const std::string &window_name,
+                                     jleResources& resources,
                                      const std::shared_ptr<jleEditorTextEdit> &editorTextEdit,
                                      const std::shared_ptr<jleEditorResourceEdit> &editorResourceEdit);
 

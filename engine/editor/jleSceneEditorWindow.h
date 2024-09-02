@@ -34,7 +34,7 @@ class jleSceneEditorWindow : public jleEditorWindowInterface
 public:
     explicit jleSceneEditorWindow(const std::string &window_name);
 
-    void renderUI(jleGameEngine &ge);
+    void renderUI(jleEngineModulesContext &ctx);
 
     void render(jle3DGraph& graph, const jleEditorModulesContext& context);
 

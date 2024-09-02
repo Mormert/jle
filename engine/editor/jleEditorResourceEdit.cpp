@@ -21,7 +21,7 @@
 jleEditorResourceEdit::jleEditorResourceEdit(const std::string &window_name) : jleEditorWindowInterface(window_name) {}
 
 void
-jleEditorResourceEdit::renderUI(jleSerializationContext &ctx)
+jleEditorResourceEdit::renderUI(jleEditorModulesContext &ctx)
 {
     std::vector<jlePath> toBeRemoved{};
 
@@ -47,13 +47,15 @@ jleEditorResourceEdit::renderUI(jleSerializationContext &ctx)
         ImGui::EndChild();
 
         if (resource && ImGui::Button("Save Resource")) {
-            resource->saveToFile(ctx);
+            jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
+                                                         &ctx.engineModulesContext.luaEnvironment};
+            resource->saveToFile(serializationContext);
         }
 
         ImGui::SameLine();
 
         if (resource && ImGui::Button("Reload Resource")) {
-            ctx.resources->reloadSerializedResource(resource);
+            ctx.engineModulesContext.resourcesModule.reloadSerializedResource(resource);
         }
 
         ImGui::End();

@@ -44,7 +44,7 @@ public:
     jleResourceRef<jleSkinnedMesh>& getMeshRef();
     jleResourceRef<jleMaterial>& getMaterialRef();
 
-    void editorInspectorImGuiRender() override;
+    void editorInspectorImGuiRender(jleEditorModulesContext& ctx) override;
 
 protected:
 

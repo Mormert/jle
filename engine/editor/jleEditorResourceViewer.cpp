@@ -18,7 +18,7 @@
 #include "jleGameEngine.h"
 #include "jleResource.h"
 
-void jleEditorResourceViewer::renderUI(jleGameEngine &ge) {
+void jleEditorResourceViewer::renderUI(jleEngineModulesContext &ctx) {
     if (!isOpened) {
         return;
     }
@@ -26,7 +26,7 @@ void jleEditorResourceViewer::renderUI(jleGameEngine &ge) {
     ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_NoCollapse);
 
-    auto &resources = ge.resources();
+    auto &resources = ctx.resourcesModule;
 
     std::vector<jlePath> resourcesToBeUnloaded;
     for (auto &&drive : resources.resourcesMap()) {

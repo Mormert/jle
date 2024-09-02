@@ -33,7 +33,7 @@ class jleEditorResourceEdit : public jleEditorWindowInterface
 public:
     explicit jleEditorResourceEdit(const std::string &window_name);
 
-    void renderUI(jleSerializationContext& ctx);
+    void renderUI(jleEditorModulesContext& ctx);
 
     bool tryOpen(const jlePath &path, jleResources& resources);
 

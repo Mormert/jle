@@ -33,7 +33,7 @@ jleEditor3DImportWindow::jleEditor3DImportWindow(const std::string &window_name)
 }
 
 void
-jleEditor3DImportWindow::renderUI(jleGameEngine &ge, jleEngineModulesContext &ctx)
+jleEditor3DImportWindow::renderUI(jleEngineModulesContext &ctx)
 {
     if (!isOpened) {
         return;

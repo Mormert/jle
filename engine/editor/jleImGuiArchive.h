@@ -102,11 +102,15 @@ struct jleToolTip {
     std::string_view tip_view;
 };
 
-class jleImGuiArchiveInternal : public jleSerializationArchive, public cereal::OutputArchive<jleImGuiArchiveInternal>
+class jleImGuiArchiveInternal : public jleSerializationArchive_EditorOnly,
+                                public cereal::OutputArchive<jleImGuiArchiveInternal>
 {
 public:
-    jleImGuiArchiveInternal(jleSerializationContext &context)
-        : jleSerializationArchive{context}, OutputArchive<jleImGuiArchiveInternal>(this)
+    explicit jleImGuiArchiveInternal(jleEditorModulesContext &context)
+        : jleSerializationArchive_EditorOnly(jleSerializationContext{&context.engineModulesContext.resourcesModule,
+                                                                     &context.engineModulesContext.luaEnvironment},
+                                             context),
+          OutputArchive<jleImGuiArchiveInternal>(this)
     {
     }
 
@@ -115,10 +119,16 @@ public:
     std::string nextPolymorhphicTypeName{};
 };
 
-class jleImGuiArchive : public jleSerializationArchive, public cereal::InputArchive<jleImGuiArchive>
+class jleImGuiArchive : public jleSerializationArchive_EditorOnly, public cereal::InputArchive<jleImGuiArchive>
 {
 public:
-    jleImGuiArchive(jleSerializationContext &context) : jleSerializationArchive(context), InputArchive<jleImGuiArchive>(this) {}
+    explicit jleImGuiArchive(jleEditorModulesContext &context)
+        : jleSerializationArchive_EditorOnly(jleSerializationContext{&context.engineModulesContext.resourcesModule,
+                                                                     &context.engineModulesContext.luaEnvironment},
+                                             context),
+          InputArchive<jleImGuiArchive>(this)
+    {
+    }
 
     ~jleImGuiArchive() override = default;
 
@@ -343,7 +353,7 @@ private:
 
         ImGui::BeginGroupPanel(name.c_str());
 
-        jleImGuiArchiveInternal archiveInternal{ar.ctx};
+        jleImGuiArchiveInternal archiveInternal{ar.editorCtx};
         archiveInternal(ptr);
 
         ImGui::EndGroupPanel();
@@ -414,12 +424,12 @@ template <class T>
 inline void
 CEREAL_SAVE_FUNCTION_NAME(
     jleImGuiArchiveInternal &ar,
-                          cereal::NameValuePair<cereal::memory_detail::PtrWrapper<const std::shared_ptr<const T> &>> const &t)
+    cereal::NameValuePair<cereal::memory_detail::PtrWrapper<const std::shared_ptr<const T> &>> const &t)
 {
     std::shared_ptr<T> f = std::const_pointer_cast<T>(t.value.ptr);
 
     if (auto component = std::dynamic_pointer_cast<jleComponent>(f)) {
-        jleImGuiArchive nonPolymorphicArchive{ar.ctx};
+        jleImGuiArchive nonPolymorphicArchive{ar.editorCtx};
         nonPolymorphicArchive.elementCount += 1;
 
         ImGui::PushID(nonPolymorphicArchive.elementCount);
@@ -427,13 +437,13 @@ CEREAL_SAVE_FUNCTION_NAME(
         if (ImGui::TreeNodeEx(std::string{ar.nextPolymorhphicTypeName + " (ptr)"}.c_str(),
                               ImGuiTreeNodeFlags_DefaultOpen)) {
             nonPolymorphicArchive(*f);
-            component->editorInspectorImGuiRender();
+            component->editorInspectorImGuiRender(ar.editorCtx);
             ImGui::TreePop();
         }
 
         ImGui::PopID();
     } else {
-        jleImGuiArchive nonPolymorphicArchive{ar.ctx};
+        jleImGuiArchive nonPolymorphicArchive{ar.editorCtx};
         nonPolymorphicArchive.draw(nonPolymorphicArchive, ar.nextPolymorhphicTypeName + " (ptr)", *f.get());
     }
 }
@@ -453,7 +463,6 @@ CEREAL_SAVE_FUNCTION_NAME(jleImGuiArchiveInternal &ar, T &t)
 {
     // Do nothing
 }
-
 
 CEREAL_REGISTER_ARCHIVE(jleImGuiArchiveInternal)
 CEREAL_REGISTER_ARCHIVE(jleImGuiArchive)

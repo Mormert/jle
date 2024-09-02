@@ -112,7 +112,7 @@ jleObject::destroyComponent(jleComponent *component, jleEngineModulesContext& ct
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
         if (_components[i].get() == component) {
-            if (!gEngine->isGameKilled()) {
+            if (!ctx.gameRuntime.isGameKilled()) {
 
                 if (auto luaScriptComponent = getComponent<cLuaScript>()) {
                     luaScriptComponent->getSelf()[component->componentName()] = sol::lua_nil;
@@ -247,7 +247,7 @@ jleObject::startComponents(jleEngineModulesContext& ctx)
             _components[i]->_isStarted = true;
         }
         if (_components[i]->_enableParallelUpdate) {
-            gEngine->gameRef().addParallelComponent(_components[i]);
+            ctx.gameRuntime.getGame().addParallelComponent(_components[i]);
         }
     }
 }
@@ -519,8 +519,8 @@ jleObject::propagateDestroy(jleEngineModulesContext& ctx)
 {
     for (auto &&c : _components) {
         c->onDestroy(ctx);
-        if (c->parallelUpdateEnabled() && !gEngine->isGameKilled()) {
-            gEngine->gameRef().removeParallelComponent(c);
+        if (c->parallelUpdateEnabled() && !ctx.gameRuntime.isGameKilled()) {
+            ctx.gameRuntime.getGame().removeParallelComponent(c);
         }
     }
 
@@ -532,7 +532,7 @@ jleObject::propagateDestroy(jleEngineModulesContext& ctx)
 void
 jleObject::addComponentStart(const std::shared_ptr<jleComponent> &c, jleEngineModulesContext& ctx)
 {
-    if (!gEngine->isGameKilled()) {
+    if (!ctx.gameRuntime.isGameKilled()) {
 
         if (networkObjectType() == jleObjectNetworkType::SERVER) {
             c->serverStart(ctx);

@@ -95,7 +95,7 @@ cSkinnedMesh::findAnimator(jleObject *object)
 }
 
 void
-cSkinnedMesh::editorInspectorImGuiRender()
+cSkinnedMesh::editorInspectorImGuiRender(jleEditorModulesContext& ctx)
 {
 #if JLE_BUILD_IMGUI
     if (!_animator) {

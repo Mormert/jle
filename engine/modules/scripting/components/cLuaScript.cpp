@@ -144,8 +144,8 @@ cLuaScript::serialize(Archive &ar)
             initializeLuaComponent(*ctx.luaEnvironment);
         }
 
-        auto it = gEngine->luaEnvironment()->loadedLuaClasses().find(_luaClass.luaClassName);
-        if (it != gEngine->luaEnvironment()->loadedLuaClasses().end()) {
+        auto it = ctx.luaEnvironment->loadedLuaClasses().find(_luaClass.luaClassName);
+        if (it != ctx.luaEnvironment->loadedLuaClasses().end()) {
             it->second.serializeClass(ar, _self);
         }
     } catch (std::exception &e) {

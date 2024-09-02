@@ -22,7 +22,7 @@ jleEditorFrameGraphWindow::jleEditorFrameGraphWindow(const std::string &window_n
 }
 
 void
-jleEditorFrameGraphWindow::renderUI(jleGameEngine &ge)
+jleEditorFrameGraphWindow::renderUI(jleEngineModulesContext &ctx)
 {
     static std::vector<float> data{};
     static bool enabled = false;
@@ -36,7 +36,7 @@ jleEditorFrameGraphWindow::renderUI(jleGameEngine &ge)
         }
 
         if (enabled) {
-            data.push_back(ge.deltaFrameTime() * 1000.f);
+            data.push_back(ctx.frameInfo.getDeltaTime() * 1000.f);
         }
 
         ImPlot::SetNextAxesLimits(-25.0, 175.0, -25.0, 175.0, ImGuiCond_FirstUseEver);

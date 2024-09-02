@@ -37,15 +37,16 @@ jleEditorSettingsWindow::renderUI(jleEditorModulesContext &ctx)
     ImGui::BeginChild("settings hierarchy view",
                       ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 
-    jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
-                                                 &ctx.engineModulesContext.luaEnvironment};
-
-    jleImGuiArchive archive{serializationContext};
-    archive(ctx.engine.settings());
+    {
+        jleImGuiArchive archive{ctx};
+        archive(ctx.engine.settings());
+    }
 
     ImGui::EndChild();
 
     if (ImGui::Button("Save Settings")) {
+        jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
+                                                     &ctx.engineModulesContext.luaEnvironment};
         ctx.engine.settings().saveToFile(serializationContext);
     }
 

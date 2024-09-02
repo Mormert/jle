@@ -26,46 +26,46 @@ jleEditorGameControllerWidget::jleEditorGameControllerWidget(
     : jleEditorWindowInterface{window_name} {
 }
 
-void jleEditorGameControllerWidget::render(jleGameEngine &ge) {
+void jleEditorGameControllerWidget::render(jleEngineModulesContext& ctx) {
 
     const ImVec2 iconSize{ImGui::GetWindowHeight() - 3,
                           ImGui::GetWindowHeight() - 3};
 
-    if (ge.isGameKilled()) {
+    if (ctx.gameRuntime.isGameKilled()) {
         if (ImGui::Button(("Start Game"))) {
             LOG_VERBOSE << "Starting the game.";
-            ge.startGame();
+            ctx.gameRuntime.startGame(ctx);
         }
     }
     else {
         if (ImGui::Button(("Restart Game"))) {
             LOG_VERBOSE << "Restarting the game.";
-            ge.restartGame();
+            ctx.gameRuntime.restartGame(ctx);
         }
         if (ImGui::Button(("Kill Game"))) {
             LOG_VERBOSE << "Killing the game.";
-            ge.killGame();
+            ctx.gameRuntime.killGame();
         }
     }
 
     ImGui::SameLine();
 
-    if (!ge.isGameHalted()) {
+    if (!ctx.gameRuntime.isGameHalted()) {
         if (ImGui::Button(("Pause Game"))) {
             LOG_VERBOSE << "Pausing the game.";
-            ge.haltGame();
+            ctx.gameRuntime.haltGame();
         }
     }
     else {
         if (ImGui::Button(("Continue Game"))) {
             LOG_VERBOSE << "Continue playing the game.";
-            ge.unhaltGame();
+            ctx.gameRuntime.unhaltGame();
         }
         ImGui::SameLine();
         if (ImGui::Button(("Skip Frame"))) {
             LOG_VERBOSE << "Going one frame forward.";
-            if (!ge.isGameKilled()) {
-                ge.executeNextFrame();
+            if (!ctx.gameRuntime.isGameKilled()) {
+                ctx.gameRuntime.executeNextFrame(ctx);
             }
         }
     }

@@ -36,6 +36,7 @@ class jleSceneClient;
 class jleSceneServer;
 class jleComponent;
 class jleTransform;
+class jleEditorModulesContext;
 
 class jleComponent
 {
@@ -107,7 +108,7 @@ public:
     }
 
     [[maybe_unused]] virtual void
-    editorInspectorImGuiRender()
+    editorInspectorImGuiRender(jleEditorModulesContext& ctx)
     {
     }
 

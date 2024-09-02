@@ -35,7 +35,7 @@ class jleEditor3DImportWindow : public jleEditorWindowInterface
 public:
     explicit jleEditor3DImportWindow(const std::string &window_name);
 
-    void renderUI(jleGameEngine &ge, jleEngineModulesContext& ctx);
+    void renderUI(jleEngineModulesContext &ctx);
 
     bool importModel(const jlePath &importPath, const jlePath &destinationPath, jleEngineModulesContext& ctx);
 

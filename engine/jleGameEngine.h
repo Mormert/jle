@@ -16,6 +16,7 @@
 #pragma once
 
 #include "core/jleCommon.h"
+#include "modules/game/jleGameRuntime.h"
 #include "modules/jleEngineModulesContext.h"
 
 #include <functional>
@@ -49,6 +50,7 @@ class jleFullscreenRendering;
 class jleFramebufferInterface;
 class jleLuaEnvironment;
 class jleRenderThread;
+class jleGameRuntime;
 
 class jleGameEngine;
 inline jleGameEngine *gEngine;
@@ -79,16 +81,9 @@ public:
 
     explicit jleGameEngine();
 
-    template <class T>
-    void
-    setGame()
-    {
-        _gameCreator = []() { return std::make_unique<T>(); };
-    }
+    template <class T>void setGame(){_gameRuntime->_gameCreator = []() { return std::make_unique<T>(); };}
 
     void run();
-
-    jleTimerManager &timerManager();
 
     SoLoud::Soloud &soLoud();
 
@@ -114,34 +109,6 @@ public:
 
     [[nodiscard]] float lastFrameTime() const;
 
-    std::shared_ptr<jleFramebufferInterface> mainScreenFramebuffer;
-
-    void resizeMainFramebuffer(unsigned int width, unsigned int height);
-
-    int addGameWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback);
-
-    void removeGameWindowResizeCallback(unsigned int callbackId);
-
-    void executeGameWindowResizedCallbacks(unsigned int w, unsigned int h);
-
-    void startGame();
-
-    void restartGame();
-
-    void killGame();
-
-    void haltGame();
-
-    void unhaltGame();
-
-    void executeNextFrame();
-
-    [[nodiscard]] bool isGameKilled() const;
-
-    [[nodiscard]] bool isGameHalted() const;
-
-    jleGame &gameRef();
-
     std::shared_ptr<jleLuaEnvironment> &luaEnvironment();
 
     static inline Rml::Context *rmlContext_notUsed{};
@@ -154,7 +121,7 @@ private:
     bool running{false};
 
 #ifdef __EMSCRIPTEN__
-    static jleGameEngine* _emscriptenEnginePtr;
+    static jleGameEngine *_emscriptenEnginePtr;
     static void
     mainLoopEmscripten()
     {
@@ -164,14 +131,7 @@ private:
 
     void loop();
 
-    std::function<std::unique_ptr<jleGame>()> _gameCreator;
-
     std::unique_ptr<jleFullscreenRendering> _fullscreen_renderer;
-
-    friend class jleGameEditorWindow;
-    void gameWindowResizedEvent(unsigned int w, unsigned int h);
-
-    std::unordered_map<unsigned int, std::function<void(unsigned int, unsigned int)>> _gameWindowResizedCallbacks;
 
 protected:
     virtual void start(jleEngineModulesContext &context);
@@ -180,11 +140,14 @@ protected:
 
     void killRmlUi();
 
-    virtual void update(jleEngineModulesContext& ctx);
+    virtual void update(jleEngineModulesContext &ctx);
 
-    virtual void render(jleEngineModulesContext& modulesContext, wi::jobsystem::context &jobsCtx);
+    virtual void render(jleEngineModulesContext &modulesContext, wi::jobsystem::context &jobsCtx);
 
     virtual void exiting();
+
+    friend class jleGameRuntime;
+    std::unique_ptr<jleGameRuntime> _gameRuntime;
 
     std::unique_ptr<jleResources> _resources;
     // std::unique_ptr<jleFontData> _fontData;
@@ -209,7 +172,4 @@ protected:
     jleFrameInfo _frameInfo{};
 
     std::shared_ptr<jleLuaEnvironment> _luaEnvironment;
-
-    std::unique_ptr<jleGame> _game;
-    bool _gameHalted = false;
 };

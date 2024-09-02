@@ -102,8 +102,3 @@ jleFramebufferInterface::jleFramebufferInterface(unsigned int width, unsigned in
     : _width{width}, _height{height}
 {
 }
-std::shared_ptr<jleFramebufferInterface>
-jleFramebufferInterface::GetMainScreenFramebuffer()
-{
-    return std::shared_ptr<jleFramebufferInterface>();
-}

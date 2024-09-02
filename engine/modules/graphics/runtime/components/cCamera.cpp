@@ -33,23 +33,17 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cCamera)
 
 void
-cCamera::start(jleEngineModulesContext& ctx)
+cCamera::start(jleEngineModulesContext &ctx)
 {
     sInstanceCounter++;
 
     if (sInstanceCounter > 1) {
         LOG_ERROR << "More than one camera detected!";
     }
-
-    _framebufferCallbackId = gEngine->addGameWindowResizeCallback([this](auto &&PH1, auto &&PH2) {
-        framebufferResizeCallback(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
-    });
-
-    framebufferResizeCallback(gEngine->window().width(), gEngine->window().height());
 }
 
 void
-cCamera::framebufferResizeCallback(unsigned int width, unsigned int height)
+cCamera::onFramebufferSizeChanged(jleEngineModulesContext &ctx, unsigned int width, unsigned int height)
 {
     glm::ivec2 dimensions{width, height};
     if (framebufferUseFixedAxis) {
@@ -68,17 +62,21 @@ cCamera::framebufferResizeCallback(unsigned int width, unsigned int height)
     if (matchFramebufferToWindowSize) {
         dimensions = {width, height};
     }
-
-    gEngine->resizeMainFramebuffer(dimensions.x, dimensions.y);
 }
 
 void
-cCamera::update(jleEngineModulesContext& ctx)
+cCamera::update(jleEngineModulesContext &ctx)
 {
-    auto &game = ((jleGameEngine *)gEngine)->gameRef();
+    auto &game = ctx.gameRuntime.getGame();
 
-    auto width = gEngine->mainScreenFramebuffer->width();
-    auto height = gEngine->mainScreenFramebuffer->height();
+    auto width = ctx.gameRuntime.mainGameScreenFramebuffer->width();
+    auto height = ctx.gameRuntime.mainGameScreenFramebuffer->height();
+
+    if (width != previousFrameScreenX || height != previousFrameScreenY) {
+        onFramebufferSizeChanged(ctx, width, height);
+        previousFrameScreenX = width;
+        previousFrameScreenY = height;
+    }
 
     if (perspective && width > 0 && height > 0) {
         game.mainCamera.setPerspectiveProjection(perspectiveFov, width, height, farPlane, nearPlane);
@@ -93,29 +91,25 @@ cCamera::update(jleEngineModulesContext& ctx)
     game.mainCamera.setViewMatrix(glm::inverse(transformation), c.position);
 }
 
-cCamera::~cCamera()
-{
-    sInstanceCounter--;
-    if (gEngine)
-        gEngine->removeGameWindowResizeCallback(_framebufferCallbackId);
-}
+cCamera::~cCamera() { sInstanceCounter--; }
 
 void
-cCamera::editorInspectorImGuiRender()
+cCamera::editorInspectorImGuiRender(jleEditorModulesContext &ctx)
 {
 #if JLE_BUILD_IMGUI
     ImGui::Text("Camera Preview");
 
     // Get the texture from the framebuffer
-    auto fb = gEngine->mainScreenFramebuffer;
+    auto &fb = ctx.engineModulesContext.gameRuntime.mainGameScreenFramebuffer;
     glBindTexture(GL_TEXTURE_2D, (unsigned int)fb->texture());
     ImGui::Image(
         (void *)(intptr_t)fb->texture(), ImVec2(fb->width() / 4.f, fb->height() / 4.f), ImVec2(0, 1), ImVec2(1, 0));
 
 #endif
 }
+
 void
-cCamera::editorGizmosRender(bool selected, jle3DGraph& renderGraph)
+cCamera::editorGizmosRender(bool selected, jle3DGraph &renderGraph)
 {
 #if JLE_BUILD_EDITOR
     auto mesh = gEditor->gizmos().cameraMesh();

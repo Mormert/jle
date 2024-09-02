@@ -37,7 +37,7 @@ class jleEditorBuild : public jleEditorWindowInterface, public libzippp::ZipProg
 public:
     explicit jleEditorBuild(const std::string &window_name);
 
-    void renderUI(jleGameEngine &ge, jleResourceIndexer& resourceIndexer);
+    void renderUI(jleEngineModulesContext &ctx, jleResourceIndexer& resourceIndexer);
 
     void progression(double p) override;
 

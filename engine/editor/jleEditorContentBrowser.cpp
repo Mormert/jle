@@ -14,12 +14,12 @@
  *********************************************************************************************/
 
 #include "jleEditorContentBrowser.h"
-#include <ImGui/imgui.h>
 #include "ImGui/imgui_stdlib.h"
 #include "jleEditor.h"
 #include "jleEditorSceneObjectsWindow.h"
 #include "jleEditorTextEdit.h"
 #include "jleResource.h"
+#include <ImGui/imgui.h>
 
 #include <plog/Log.h>
 
@@ -31,29 +31,30 @@
 #include <utility>
 
 jleEditorContentBrowser::jleEditorContentBrowser(const std::string &window_name,
+                                                 jleResources &resources,
                                                  const std::shared_ptr<jleEditorTextEdit> &editorTextEdit,
                                                  const std::shared_ptr<jleEditorResourceEdit> &editorResourceEdit)
     : jleEditorWindowInterface(window_name)
 {
-    _directoryIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/directory.png"});
-    _fileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/files.png"});
-    _backDirectoryIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/back_directory.png"});
+    _directoryIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/directory.png"});
+    _fileIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/files.png"});
+    _backDirectoryIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/back_directory.png"});
 
-    _sceneFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/scene.png"});
+    _sceneFileIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/scene.png"});
 
-    _imageFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/image.png"});
+    _imageFileIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/image.png"});
 
-    _jsonFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/json.png"});
+    _jsonFileIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/json.png"});
 
-    _luaFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/script.png"});
+    _luaFileIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/script.png"});
 
-    _shaderFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/shader.png"});
+    _shaderFileIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/shader.png"});
 
-    _materialFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/material.png"});
+    _materialFileIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/material.png"});
 
-    _objTemplateFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/obj_template.png"});
+    _objTemplateFileIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/obj_template.png"});
 
-    _obj3dFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/object.png"});
+    _obj3dFileIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/object.png"});
 
     _selectedDirectory = GAME_RESOURCES_DIRECTORY;
 
@@ -161,7 +162,7 @@ jleEditorContentBrowser::contentHierarchy(std::string directoryPath, const std::
 }
 
 void
-jleEditorContentBrowser::renderUI(jleEngineModulesContext& ctx)
+jleEditorContentBrowser::renderUI(jleEngineModulesContext &ctx)
 {
     if (!isOpened) {
         return;
@@ -174,7 +175,7 @@ jleEditorContentBrowser::renderUI(jleEngineModulesContext& ctx)
 }
 
 void
-jleEditorContentBrowser::contentBrowser(jleEngineModulesContext& ctx)
+jleEditorContentBrowser::contentBrowser(jleEngineModulesContext &ctx)
 {
     ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_MenuBar);
 
@@ -346,7 +347,7 @@ jleEditorContentBrowser::contentBrowser(jleEngineModulesContext& ctx)
                         if (it != _referencedTextures.end()) {
                             iconTexture = it->second;
                         } else {
-                            iconTexture = gEngine->resources().loadResourceFromFile<jleTexture>(
+                            iconTexture = ctx.resourcesModule.loadResourceFromFile<jleTexture>(
                                 jlePath{dir_entry.path().string(), false});
                             _referencedTextures.insert(std::make_pair(path, iconTexture));
                         }
@@ -414,7 +415,7 @@ jleEditorContentBrowser::contentBrowser(jleEngineModulesContext& ctx)
 }
 
 void
-jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file, jleEngineModulesContext& ctx)
+jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file, jleEngineModulesContext &ctx)
 {
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
@@ -527,13 +528,13 @@ jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file, jleEngin
 }
 
 void
-jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file, jleEngineModulesContext& ctx)
+jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file, jleEngineModulesContext &ctx)
 {
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
 
-    if (!gEngine->isGameKilled()) {
+    if (!ctx.gameRuntime.isGameKilled()) {
         if (ImGui::Button("Load Scene (Game)", size)) {
 
             std::string sceneName = file.filename().string();
@@ -542,7 +543,7 @@ jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file, jle
                 sceneName.resize(dot);
             }
 
-            auto &game = ((jleGameEngine *)gEngine)->gameRef();
+            auto &game = ctx.gameRuntime.getGame();
             game.loadScene(jlePath{file.string(), false}, ctx);
         }
     } else {
@@ -559,7 +560,7 @@ jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file, jle
 }
 
 void
-jleEditorContentBrowser::selectedFilePopupObjectTemplate(std::filesystem::path &file, jleResources& resources)
+jleEditorContentBrowser::selectedFilePopupObjectTemplate(std::filesystem::path &file, jleResources &resources)
 {
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
@@ -594,7 +595,7 @@ jleEditorContentBrowser::openAsText(std::filesystem::path &file)
 }
 
 void
-jleEditorContentBrowser::openAsResource(std::filesystem::path &file, jleResources& resources)
+jleEditorContentBrowser::openAsResource(std::filesystem::path &file, jleResources &resources)
 {
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};

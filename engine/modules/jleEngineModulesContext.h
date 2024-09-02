@@ -26,28 +26,38 @@ class jle3DRenderer;
 struct jle3DSettings;
 class jle3DGraph;
 class jleFrameInfo;
+class jleGameRuntime;
+class jleEngineSettings;
+class jleRenderThread;
 
 struct jleEngineModulesContext {
-    explicit jleEngineModulesContext(jle3DRenderer &renderer,
+    explicit jleEngineModulesContext(jleGameRuntime &gameRuntime,
+                                     jle3DRenderer &renderer,
+                                     jleRenderThread &renderThread,
                                      jle3DSettings &renderSettings,
                                      jle3DGraph &renderGraph,
+                                     jleEngineSettings &engineSettings,
                                      jleInput &input,
-                                     jleLuaEnvironment& luaEnvironment,
+                                     jleLuaEnvironment &luaEnvironment,
                                      jleWindow &window,
                                      jleResources &resources,
                                      jleFrameInfo &info);
 
     // Modules
+    jleGameRuntime &gameRuntime;
     jle3DRenderer &rendererModule;
     jleWindow &windowModule;
     jleResources &resourcesModule;
     jleInput &inputModule;
-    jleLuaEnvironment& luaEnvironment;
+    jleLuaEnvironment &luaEnvironment;
 
     // Rendering
+    jleRenderThread &renderThread;
     jle3DSettings &renderSettings;
     jle3DGraph &renderGraph;
 
     // Utilities
     jleFrameInfo &frameInfo;
+
+    jleEngineSettings &settings;
 };

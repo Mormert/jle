@@ -25,7 +25,6 @@ class cCamera : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cCamera)
 public:
-
     template <class Archive>
     void
     serialize(Archive &ar)
@@ -36,22 +35,22 @@ public:
            CEREAL_NVP(perspectiveFov),
            CEREAL_NVP(framebufferSizeX),
            CEREAL_NVP(framebufferSizeY),
-           //CEREAL_NVP(_framebufferFixedAxis),
+           // CEREAL_NVP(_framebufferFixedAxis),
            CEREAL_NVP(framebufferUseFixedAxis),
            CEREAL_NVP(matchFramebufferToWindowSize));
     }
 
     ~cCamera() override;
 
-    void start(jleEngineModulesContext& ctx) override;
+    void start(jleEngineModulesContext &ctx) override;
 
-    void update(jleEngineModulesContext& ctx) override;
+    void update(jleEngineModulesContext &ctx) override;
 
-    void editorInspectorImGuiRender() override;
+    void editorInspectorImGuiRender(jleEditorModulesContext &ctx) override;
 
-    void framebufferResizeCallback(unsigned int width, unsigned int height);
+    void onFramebufferSizeChanged(jleEngineModulesContext& ctx, unsigned int width, unsigned int height);
 
-    void editorGizmosRender(bool selected, jle3DGraph& renderGraph) override;
+    void editorGizmosRender(bool selected, jle3DGraph &renderGraph) override;
 
     bool perspective{true};
     float perspectiveFov{90.f};
@@ -64,7 +63,9 @@ public:
     jleFramebufferInterface::FIXED_AXIS framebufferFixedAxis{jleFramebufferInterface::FIXED_AXIS::width};
 
 protected:
-    int _framebufferCallbackId;
+
+    int previousFrameScreenX{};
+    int previousFrameScreenY{};
 
     inline static uint32_t sInstanceCounter = 0;
 };

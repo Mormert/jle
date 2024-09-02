@@ -75,7 +75,7 @@ jleScene::processNewSceneObjects(jleEngineModulesContext& ctx)
     if (!_newSceneObjects.empty()) {
         for (const auto &newObject : _newSceneObjects) {
             if (!newObject->_isStarted) {
-                if (!gEngine->isGameKilled()) {
+                if (!ctx.gameRuntime.isGameKilled()) {
                     newObject->startComponents(ctx);
                 }
                 newObject->_isStarted = true;

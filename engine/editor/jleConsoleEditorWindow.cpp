@@ -160,7 +160,7 @@ void jleConsoleEditorWindow::execCommand(const char *command_line, jleLuaEnviron
     ScrollToBottom = true;
 }
 
-void jleConsoleEditorWindow::renderUI(jleGameEngine &ge, jleLuaEnvironment& luaEnvironment) {
+void jleConsoleEditorWindow::renderUI(jleEngineModulesContext &ctx, jleLuaEnvironment& luaEnvironment) {
     if (!isOpened) {
         return;
     }
