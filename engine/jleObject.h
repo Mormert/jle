@@ -71,11 +71,11 @@ public:
     std::shared_ptr<T> getComponentInChildren(jleObject *object = nullptr);
 
     template <typename T>
-    std::shared_ptr<T> spawnChildObject();
+    std::shared_ptr<T> spawnChildObject(jleSerializationContext& ctx);
 
-    std::shared_ptr<jleObject> spawnChildObjectFromTemplate(const jlePath& path, jleResources& resources);
+    std::shared_ptr<jleObject> spawnChildObjectFromTemplate(const jlePath& path, jleSerializationContext& ctx);
 
-    std::shared_ptr<jleObject> spawnChildObject(const std::string &objName);
+    std::shared_ptr<jleObject> spawnChildObject(const std::string &objName, jleSerializationContext& ctx);
 
     void saveAsObjectTemplate(jleSerializationContext& serializationContext);
 
@@ -133,7 +133,7 @@ private:
     void propagateOwnedBySceneClient(jleSceneClient *scene);
     void propagateOwnedBySceneServer(jleSceneServer *scene);
 
-    void replaceChildrenWithTemplate();
+    void replaceChildrenWithTemplate(jleSerializationContext& ctx);
 
     void startComponents(jleEngineModulesContext& ctx);
 

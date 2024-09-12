@@ -101,7 +101,7 @@ struct jleComponentNetSyncEvent : public jleServerToClientEvent {
                 std::stringstream stream{};
                 stream.write(&serializedBinaryData[0], serializedBinaryData.size());
 
-                jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+                jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
                 jleBinaryInputArchive archive(stream, serializationContext);
                 component->netSyncIn(archive);
             } catch (std::exception &e) {

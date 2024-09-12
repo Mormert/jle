@@ -44,7 +44,7 @@ jleExecuteClientEventsOnServer(jleEngineModulesContext& ctx, const char *network
     std::stringstream stream{};
     stream.write(&networkBuffer[sizeof(int32_t)], networkBufferLength - sizeof(int32_t));
 
-    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
     jleBinaryInputArchive archive(stream, serializationContext);
 
     for (int i = 0; i < amountOfEvents; i++) {
@@ -71,7 +71,7 @@ jleExecuteServerEventsOnClient(jleEngineModulesContext& ctx, const char *network
     std::stringstream stream{};
     stream.write(&networkBuffer[sizeof(int32_t)], networkBufferLength - sizeof(int32_t));
 
-    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
     jleBinaryInputArchive archive(stream, serializationContext);
 
     for (int i = 0; i < amountOfEvents; i++) {

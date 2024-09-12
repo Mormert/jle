@@ -5,3 +5,6 @@ jleResources = {}
 
 ---@class jleEngineModulesContext
 jleEngineModulesContext = {}
+
+---@class jleSerializationContext
+jleSerializationContext = {}

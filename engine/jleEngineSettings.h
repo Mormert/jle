@@ -29,7 +29,6 @@ public:
     JLE_REGISTER_RESOURCE_TYPE(jleEngineSettings, "es")
 
     WindowSettings windowSettings;
-    bool enableNetworking{true};
     std::vector<jlePath> initialScenesToLoad;
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedOnlyResource)
@@ -41,7 +40,7 @@ public:
     serialize(Archive &ar)
     {
         try {
-            ar(CEREAL_NVP(windowSettings), CEREAL_NVP(enableNetworking), CEREAL_NVP(initialScenesToLoad));
+            ar(CEREAL_NVP(windowSettings), CEREAL_NVP(initialScenesToLoad));
         } catch (std::exception &e) {
         }
     }

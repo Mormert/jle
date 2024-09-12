@@ -22,7 +22,7 @@ void
 jleMaterial::useMaterial(const jleCamera &camera,
                          const std::vector<jle3DRendererLight> &lights,
                          const jle3DSettings &settings,
-                         jleResources &resources)
+                         jleSerializationContext &serializationContext)
 {
     auto &shader = *_shaderRef.get();
 
@@ -67,11 +67,11 @@ void
 jleMaterialPBR::useMaterial(const jleCamera &camera,
                             const std::vector<jle3DRendererLight> &lights,
                             const jle3DSettings &settings,
-                            jleResources &resources)
+                            jleSerializationContext &serializationContext)
 {
     // Temporary solution, loading the default shader here, before I figure something better out
     if (!_shaderRef) {
-        _shaderRef = jleResourceRef<jleShader>(jlePath{"ER:/shaders/defaultMesh.glsl"}, resources);
+        _shaderRef = jleResourceRef<jleShader>(jlePath{"ER:/shaders/defaultMesh.glsl"}, serializationContext);
     }
 
     auto &shader = *_shaderRef.get();

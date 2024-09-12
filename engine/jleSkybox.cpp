@@ -22,7 +22,7 @@
 #include <vector>
 
 bool
-jleSkybox::loadFromFile(const jlePath &path)
+jleSkybox::loadFromFile(jleSerializationContext& ctx, const jlePath &path)
 {
     constexpr float skyboxVertices[] = {// positions
                                         -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,

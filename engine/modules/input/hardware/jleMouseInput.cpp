@@ -17,7 +17,7 @@
 #include "jleProfiler.h"
 #include "modules/windowing/jleWindow.h"
 
-jleMouseInput::jleMouseInput(jleWindow& window) : _window{window} { }
+jleMouseInput::jleMouseInput(jleWindow &window) : _window{window} {}
 
 int
 jleMouseInput::mouseX()
@@ -78,16 +78,28 @@ jleMouseInput::setScreenSize(int width, int height)
 }
 
 void
-jleMouseInput::isEnabled(bool value)
+jleMouseInput::setEnabled(bool value)
 {
     _isEnabled = value;
 }
 
 bool
+jleMouseInput::isEnabled()
+{
+    return _isEnabled;
+}
+
+bool
 jleMouseInput::mouseClick(jleButton button)
 {
+    return mouseClick_int(static_cast<int>(button));
+}
+
+bool
+jleMouseInput::mouseClick_int(int button)
+{
     if (_isEnabled) {
-        return _window.mouseClick(static_cast<int>(button));
+        return _window.mouseClick(button);
     }
     return false;
 }

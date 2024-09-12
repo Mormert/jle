@@ -23,13 +23,13 @@
 #include <plog/Log.h>
 
 
-jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name, jleResources& resources, jleEngineSettings& settings)
+jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name, jleSerializationContext& serializationContext, jleEngineSettings& settings)
     : jleEditorWindowInterface{window_name}, _gameController{"Game Controller"}
 {
-    _crossIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/cross.png"}, {});
-    _maximizeIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/maximize.png"});
-    _minimizeIcon = resources.loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/minimize.png"});
-    _jleIcon = resources.loadResourceFromFile<jleTexture>(settings.windowSettings.iconPath);
+    _crossIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/cross.png"}, serializationContext);
+    _maximizeIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/maximize.png"}, serializationContext);
+    _minimizeIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/minimize.png"}, serializationContext);
+    _jleIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(settings.windowSettings.iconPath, serializationContext);
 }
 
 void

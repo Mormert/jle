@@ -69,9 +69,9 @@ jleGameEditorWindow::renderUI(jleEngineModulesContext &ctx, jleInput& input)
     _windowPositionX = cursorScreenPos.x - viewport->Pos.x;
     _windowPositionY = cursorScreenPos.y - viewport->Pos.y;
 
-    const auto &internalInputMouse = input.mouse;
-    internalInputMouse->setScreenBeginCoords(_windowPositionX, _windowPositionY);
-    internalInputMouse->setScreenSize(width(), height());
+    auto &internalInputMouse = input.mouse;
+    internalInputMouse.setScreenBeginCoords(_windowPositionX, _windowPositionY);
+    internalInputMouse.setScreenSize(width(), height());
 
     if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset == _lastGameWindowWidth &&
           ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset == _lastGameWindowHeight)) {
@@ -93,10 +93,10 @@ jleGameEditorWindow::renderUI(jleEngineModulesContext &ctx, jleInput& input)
         ctx.inputModule.setInputEnabled(_wasFocused);
     }
 
-    if (ImGui::IsWindowFocused() && ctx.inputModule.mouse->isFpsMode() && ImGui::IsKeyPressed(ImGuiKey_Tab)) {
-        ctx.inputModule.mouse->setFpsMode(false);
+    if (ImGui::IsWindowFocused() && ctx.inputModule.mouse.isFpsMode() && ImGui::IsKeyPressed(ImGuiKey_Tab)) {
+        ctx.inputModule.mouse.setFpsMode(false);
     } else if (ImGui::IsKeyPressed(ImGuiKey_Tab)) {
-        ctx.inputModule.mouse->setFpsMode(true);
+        ctx.inputModule.mouse.setFpsMode(true);
     }
 
     ImGui::End();

@@ -47,15 +47,15 @@
 #define JLE_LINE_DRAW_BATCH_SIZE 32768
 
 struct jle3DRenderer::jle3DRendererShaders {
-    jle3DRendererShaders(jleResources &resources)
-        : defaultMeshShader{jlePath{"ER:/shaders/defaultMesh.glsl"}, resources},
-          missingMaterialShader{jlePath{"ER:/shaders/missingMaterialShader.glsl"}, resources},
-          skyboxShader{jlePath{"ER:/shaders/skybox.glsl"}, resources},
-          pickingShader{jlePath{"ER:/shaders/picking.glsl"}, resources},
-          shadowMappingShader{jlePath{"ER:/shaders/shadowMapping.glsl"}, resources},
-          shadowMappingPointShader{jlePath{"ER:/shaders/shadowMappingPoint.glsl"}, resources},
-          debugDepthQuad{jlePath{"ER:/shaders/debugDepthQuad.glsl"}, resources},
-          linesShader{jlePath{"ER:/shaders/lines.glsl"}, resources}
+    jle3DRendererShaders(jleSerializationContext &ctx)
+        : defaultMeshShader{jlePath{"ER:/shaders/defaultMesh.glsl"}, ctx},
+          missingMaterialShader{jlePath{"ER:/shaders/missingMaterialShader.glsl"}, ctx},
+          skyboxShader{jlePath{"ER:/shaders/skybox.glsl"}, ctx},
+          pickingShader{jlePath{"ER:/shaders/picking.glsl"}, ctx},
+          shadowMappingShader{jlePath{"ER:/shaders/shadowMapping.glsl"}, ctx},
+          shadowMappingPointShader{jlePath{"ER:/shaders/shadowMappingPoint.glsl"}, ctx},
+          debugDepthQuad{jlePath{"ER:/shaders/debugDepthQuad.glsl"}, ctx},
+          linesShader{jlePath{"ER:/shaders/lines.glsl"}, ctx}
     {
     }
 
@@ -69,9 +69,9 @@ struct jle3DRenderer::jle3DRendererShaders {
     jleResourceRef<jleShader> skyboxShader;
 };
 
-jle3DRenderer::jle3DRenderer(jleResources& resources)
+jle3DRenderer::jle3DRenderer(jleSerializationContext& ctx)
 {
-    _shaders = std::make_unique<jle3DRendererShaders>(resources);
+    _shaders = std::make_unique<jle3DRendererShaders>(ctx);
 
     // Generate buffers for line drawing
     glGenVertexArrays(1, &_lineVAO);
@@ -108,7 +108,7 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
                       const jleCamera &camera,
                       jle3DGraph &graph,
                       const jle3DSettings &settings,
-                      jleResources& resources)
+                      jleSerializationContext& ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_render)
 
@@ -151,13 +151,13 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 
     {
         JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes_Opaque)
-        renderMeshes(camera, graph._meshes, graph._lights, settings, resources);
+        renderMeshes(camera, graph._meshes, graph._lights, settings, ctx);
         glCheckError("3D Render - Opaque Meshes");
     }
 
     {
         JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderSkinnedMeshes_Opaque)
-        renderSkinnedMeshes(camera, graph._skinnedMeshes, graph._lights, settings, resources);
+        renderSkinnedMeshes(camera, graph._skinnedMeshes, graph._lights, settings, ctx);
         glCheckError("3D Render - Opaque Skinned Meshes");
     }
 
@@ -176,7 +176,7 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
             wi::jobsystem::Wait(sortCtx);
         }
 
-        renderMeshes(camera, graph._translucentMeshes, graph._lights, settings, resources);
+        renderMeshes(camera, graph._translucentMeshes, graph._lights, settings, ctx);
         glCheckError("3D Render - Translucent Meshes");
     }
 
@@ -202,7 +202,7 @@ jle3DRenderer::renderMeshes(const jleCamera &camera,
                             const std::vector<jle3DQueuedMesh> &meshes,
                             const std::vector<jle3DRendererLight> &lights,
                             const jle3DSettings &settings,
-                            jleResources& resources)
+                            jleSerializationContext& ctx)
 {
     for (auto &&mesh : meshes) {
         JLE_SCOPE_PROFILE_GPU(MeshRender);
@@ -212,18 +212,21 @@ jle3DRenderer::renderMeshes(const jleCamera &camera,
             _shaders->missingMaterialShader->SetMat4("uProj", camera.getProjectionMatrix());
             _shaders->missingMaterialShader->SetMat4("uModel", mesh.transform);
         } else {
-            mesh.material->useMaterial(camera, lights, settings, resources);
+            mesh.material->useMaterial(camera, lights, settings, ctx);
             mesh.material->getShader()->SetMat4("uModel", mesh.transform);
             mesh.material->getShader()->SetBool("uUseSkinning", false);
         }
 
-        glBindVertexArray(mesh.mesh->getVAO());
-        if (mesh.mesh->usesIndexing()) {
-            glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
-        } else {
-            glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+        const auto vao = mesh.mesh->getVAO();
+        if (vao != 0) {
+            glBindVertexArray(vao);
+            if (mesh.mesh->usesIndexing()) {
+                glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+            } else {
+                glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+            }
+            glBindVertexArray(0);
         }
-        glBindVertexArray(0);
     }
 }
 
@@ -232,7 +235,7 @@ jle3DRenderer::renderSkinnedMeshes(const jleCamera &camera,
                                    const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
                                    const std::vector<jle3DRendererLight> &lights,
                                    const jle3DSettings &settings,
-                                   jleResources& resources)
+                                   jleSerializationContext& ctx)
 {
     for (auto &&mesh : skinnedMeshes) {
         JLE_SCOPE_PROFILE_GPU(SkinnedMeshRender);
@@ -242,7 +245,7 @@ jle3DRenderer::renderSkinnedMeshes(const jleCamera &camera,
             _shaders->missingMaterialShader->SetMat4("uProj", camera.getProjectionMatrix());
             _shaders->missingMaterialShader->SetMat4("uModel", mesh.transform);
         } else {
-            mesh.material->useMaterial(camera, lights, settings, resources);
+            mesh.material->useMaterial(camera, lights, settings, ctx);
             mesh.material->getShader()->SetMat4("uModel", mesh.transform);
             mesh.material->getShader()->SetBool("uUseSkinning", true);
 
@@ -457,13 +460,16 @@ jle3DRenderer::renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jl
 
         shader.SetBool("uUseSkinning", false);
 
-        glBindVertexArray(mesh.mesh->getVAO());
-        if (mesh.mesh->usesIndexing()) {
-            glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
-        } else {
-            glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+        const auto vao = mesh.mesh->getVAO();
+        if (vao != 0) {
+            glBindVertexArray(vao);
+            if (mesh.mesh->usesIndexing()) {
+                glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+            } else {
+                glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+            }
+            glBindVertexArray(0);
         }
-        glBindVertexArray(0);
     }
 }
 

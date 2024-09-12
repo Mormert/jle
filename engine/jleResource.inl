@@ -34,7 +34,7 @@ jleResources::checkFileEndingMatchResourceType(const jlePath &path)
 
 template <typename T>
 std::shared_ptr<T>
-jleResources::loadResourceFromFile(const jlePath &path, jleSerializationContext ctx, bool forceReload)
+jleResources::loadResourceFromFileT(const jlePath &path, jleSerializationContext& ctx, bool forceReload)
 {
     static_assert(std::is_base_of<jleResourceInterface, T>::value, "T must derive from jleResourceInterface");
 
@@ -82,10 +82,10 @@ jleResources::loadResourceFromFile(const jlePath &path, jleSerializationContext 
         }
 
         if constexpr (!std::is_base_of<jleSerializedOnlyResource, T>::value) {
-            loadSuccess = newResource->loadFromFile(path);
+            loadSuccess = newResource->loadFromFile(ctx, path);
         }
     } else {
-        loadSuccess = newResource->loadFromFile(path);
+        loadSuccess = newResource->loadFromFile(ctx, path);
     }
 
     _resources[virtualDrive].erase(path);

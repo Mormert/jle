@@ -107,12 +107,12 @@ jleScene::getPhysics()
 }
 
 void
-jleScene::setupObject(const std::shared_ptr<jleObject> &obj)
+jleScene::setupObject(const std::shared_ptr<jleObject> &obj, jleSerializationContext& ctx)
 {
     obj->_containedInScene = this;
     obj->_instanceName = std::string{obj->objectNameVirtual()} + "_" + std::to_string(obj->_instanceID);
 
-    obj->replaceChildrenWithTemplate();
+    obj->replaceChildrenWithTemplate(ctx);
     _newSceneObjects.push_back(obj);
 }
 
@@ -137,18 +137,18 @@ jleScene::startObject(jleObject *o, jleEngineModulesContext& ctx)
 }
 
 void
-jleScene::spawnObject(const std::shared_ptr<jleObject> &object)
+jleScene::spawnObject(const std::shared_ptr<jleObject> &object, jleSerializationContext& ctx)
 {
-    setupObject(object);
+    setupObject(object, ctx);
 }
 
 std::shared_ptr<jleObject>
-jleScene::spawnObjectFromTemplate(const jlePath &path, jleResources& resources)
+jleScene::spawnObjectFromTemplate(const jlePath &path, jleSerializationContext& ctx)
 {
-    if (const jleResourceRef<jleObject> templateObject{path, resources}) {
+    if (const jleResourceRef<jleObject> templateObject{path, ctx}) {
         std::shared_ptr<jleObject> copyBasedOnTemplate = templateObject->duplicateTemplate();
         copyBasedOnTemplate->__templatePath = path;
-        spawnObject(copyBasedOnTemplate);
+        spawnObject(copyBasedOnTemplate, ctx);
 
         return copyBasedOnTemplate;
     }
@@ -158,9 +158,9 @@ jleScene::spawnObjectFromTemplate(const jlePath &path, jleResources& resources)
 }
 
 std::shared_ptr<jleObject>
-jleScene::spawnObjectWithName(const std::string &name)
+jleScene::spawnObjectWithName(const std::string &name, jleSerializationContext& ctx)
 {
-    auto obj = spawnObject<jleObject>();
+    auto obj = spawnObject<jleObject>(ctx);
     obj->_instanceName = name;
     return obj;
 }
@@ -183,7 +183,7 @@ jleScene::updateSceneEditor(jleEngineModulesContext& ctx)
 }
 
 void
-jleScene::onSceneStart()
+jleScene::onSceneStart(jleEngineModulesContext& ctx)
 {
 }
 

@@ -45,24 +45,23 @@ public:
     void updateDeltas();
 
     int mouseX();
-
     int mouseY();
 
-    float xDelta() const;
-
-    float yDelta() const;
+    [[nodiscard]] float xDelta() const;
+    [[nodiscard]] float yDelta() const;
 
     float scrollX();
-
     float scrollY();
 
     bool mouseClick(jleButton button);
+    bool mouseClick_int(int button);
 
     void setScreenBeginCoords(int x, int y);
-
     void setScreenSize(int width, int height);
 
-    void isEnabled(bool value);
+    void setEnabled(bool value);
+    [[nodiscard]] bool isEnabled();
+
 
     void setFpsMode(bool fpsMode);
 

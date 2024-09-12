@@ -30,7 +30,7 @@ class jleEditorContentBrowser : public jleEditorWindowInterface
 {
 public:
     explicit jleEditorContentBrowser(const std::string &window_name,
-                                     jleResources& resources,
+                                     jleSerializationContext& serializationContext,
                                      const std::shared_ptr<jleEditorTextEdit> &editorTextEdit,
                                      const std::shared_ptr<jleEditorResourceEdit> &editorResourceEdit);
 
@@ -67,7 +67,7 @@ private:
 
     void selectedFilePopupScene(std::filesystem::path &file, jleEngineModulesContext &ctx);
 
-    void selectedFilePopupObjectTemplate(std::filesystem::path &file, jleResources &resources);
+    void selectedFilePopupObjectTemplate(std::filesystem::path &file, jleSerializationContext& ctx);
 
     void openAsText(std::filesystem::path &file);
 

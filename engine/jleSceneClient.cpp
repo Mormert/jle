@@ -67,7 +67,7 @@ jleSceneClient::updateScene(jleEngineModulesContext &ctx)
 }
 
 void
-jleSceneClient::onSceneStart()
+jleSceneClient::onSceneStart(jleEngineModulesContext& ctx)
 {
     connectToServer(_portToConnectTo, _ipAddressToConnectTo.c_str());
 }
@@ -175,9 +175,9 @@ jleSceneClient::clientId() const
 }
 
 void
-jleSceneClient::setupObject(const std::shared_ptr<jleObject> &obj)
+jleSceneClient::setupObject(const std::shared_ptr<jleObject> &obj, jleSerializationContext& ctx)
 {
-    jleScene::setupObject(obj);
+    jleScene::setupObject(obj, ctx);
     setupObjectForNetworking(obj);
 }
 

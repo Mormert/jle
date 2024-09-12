@@ -26,7 +26,7 @@ class jleEditorWindowsPanel : public jleEditorWindowInterface
 {
 public:
     explicit jleEditorWindowsPanel(const std::string &window_name,
-                                   jleResources &resources,
+                                   jleSerializationContext& serializationContext,
                                    jleEngineSettings &settings);
 
     void renderUI(jleEngineModulesContext &ctx);

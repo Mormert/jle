@@ -18,7 +18,7 @@
 #include "jleLuaEnvironment.h"
 
 bool
-jleLuaScript::loadFromFile(const jlePath &path)
+jleLuaScript::loadFromFile(jleSerializationContext& ctx, const jlePath &path)
 {
     std::ifstream load{path.getRealPath()};
     if (!load.good()) {

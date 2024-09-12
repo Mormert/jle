@@ -49,7 +49,7 @@ jleEditorSceneObjectsWindow::renderUI(jleEditorModulesContext &ctx)
             if (ImGui::BeginMenu("Create Scene")) {
                 if (!ctx.engineModulesContext.gameRuntime.isGameKilled()) {
                     if (ImGui::MenuItem("jleScene")) {
-                        ctx.engineModulesContext.gameRuntime.getGame().createScene<jleScene>();
+                        ctx.engineModulesContext.gameRuntime.getGame().createScene<jleScene>(ctx.engineModulesContext);
                     }
                 } else {
                     if (ImGui::MenuItem("jleScene")) {
@@ -57,7 +57,7 @@ jleEditorSceneObjectsWindow::renderUI(jleEditorModulesContext &ctx)
                         std::shared_ptr<jleScene> newScene = std::make_shared<jleScene>();
                         gEditor->getEditorScenes().push_back(newScene);
 
-                        newScene->onSceneStart();
+                        newScene->onSceneStart(ctx.engineModulesContext);
                     }
                 }
 
@@ -68,7 +68,10 @@ jleEditorSceneObjectsWindow::renderUI(jleEditorModulesContext &ctx)
                 if (ImGui::BeginMenu("Create Object")) {
                     for (auto &&objectType : jleTypeReflectionUtils::registeredObjectsRef()) {
                         if (ImGui::MenuItem(objectType.first.c_str())) {
-                            selectedScene.lock()->spawnObject<jleObject>();
+                            jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
+                                                                         &ctx.engineModulesContext.luaEnvironment,
+                                                                         &ctx.engineModulesContext.renderThread};
+                            selectedScene.lock()->spawnObject<jleObject>(serializationContext);
                         }
                     }
                     ImGui::EndMenu();
@@ -134,7 +137,9 @@ jleEditorSceneObjectsWindow::renderUI(jleEditorModulesContext &ctx)
                 { // Save Scene
                     if (canSaveScene) {
                         if (ImGui::Button("Save Scene", ImVec2(138 * globalImguiScale, 0))) {
-                            jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule, &ctx.engineModulesContext.luaEnvironment};
+                            jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
+                                                                         &ctx.engineModulesContext.luaEnvironment,
+                                                                         &ctx.engineModulesContext.renderThread};
                             scene->saveToFile(serializationContext);
                         }
                     }
@@ -326,7 +331,11 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
         if (ImGui::BeginMenu("Create Object")) {
             for (auto &&objectType : jleTypeReflectionUtils::registeredObjectsRef()) {
                 if (ImGui::MenuItem(objectType.first.c_str())) {
-                    object->spawnChildObject(objectType.first);
+
+                    jleSerializationContext serializationContext{
+                        &ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+
+                    object->spawnChildObject(objectType.first, serializationContext);
                 }
             }
             ImGui::EndMenu();
@@ -337,7 +346,7 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
         }
 
         if (ImGui::Button("Save Template", ImVec2(138 * globalImguiScale, 0))) {
-            jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+            jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
             object->saveAsObjectTemplate(serializationContext);
         }
 

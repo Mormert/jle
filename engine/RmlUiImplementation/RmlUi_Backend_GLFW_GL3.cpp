@@ -62,7 +62,7 @@ struct BackendData {
 };
 static Rml::UniquePtr<BackendData> data;
 
-bool Backend::Initialize(const char* name, int width, int height, bool allow_resize)
+bool Backend::Initialize(const char* name, int width, int height, bool allow_resize, GLFWwindow* glfWwindow)
 {
 	RMLUI_ASSERT(!data);
 
@@ -105,7 +105,7 @@ bool Backend::Initialize(const char* name, int width, int height, bool allow_res
 	if (!data || !data->render_interface)
 		return false;
 
-        GLFWwindow* window = gEngine->window().glfwWindow();
+        GLFWwindow* window = glfWwindow;
 	data->window = window;
 	data->system_interface.SetWindow(window);
 	data->system_interface.LogMessage(Rml::Log::LT_INFO, "renderer_message");
@@ -286,8 +286,8 @@ static void SetupCallbacks(GLFWwindow* window)
 	//glfwSetFramebufferSizeCallback(window, [](GLFWwindow* /*window*/, int width, int height) {
         //});
 
-
-        gEngine->window().addWindowResizeCallback([&](const jleWindowResizeEvent& resizeEvent){
+        jleWindow* w = reinterpret_cast<jleWindow *>(glfwGetWindowUserPointer(window));
+        w->addWindowResizeCallback([&](const jleWindowResizeEvent& resizeEvent){
             data->render_interface.SetViewport(resizeEvent.framebufferWidth, resizeEvent.framebufferHeight);
             RmlGLFW::ProcessFramebufferSizeCallback(data->context, resizeEvent.framebufferWidth, resizeEvent.framebufferHeight);
         });

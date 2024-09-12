@@ -142,8 +142,9 @@ jleEditor3DImportWindow::importModel(const jlePath &importPath,
         auto assimpMaterial = scene->mMaterials[i];
         std::string materialName = assimpMaterial->GetName().C_Str();
 
+        jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
         auto material = jleResourceRef<jleMaterialPBR>(
-            jlePath{destinationPath.getVirtualFolder() + '/' + materialName + ".mat"}, ctx.resourcesModule);
+            jlePath{destinationPath.getVirtualFolder() + '/' + materialName + ".mat"}, serializationContext);
 
         const auto setTexture = [&](aiTextureType textureType, jleResourceRef<jleTexture> &textureRef) {
             if (assimpMaterial->GetTextureCount(textureType)) {
@@ -160,7 +161,7 @@ jleEditor3DImportWindow::importModel(const jlePath &importPath,
                 std::replace(assimpPathStr.begin(), assimpPathStr.end(), ' ', '_');
 
                 std::string virtualMaterialPath = destinationPath.getVirtualFolder() + '/' + assimpPathStr;
-                textureRef = jleResourceRef<jleTexture>(jlePath{virtualMaterialPath}, ctx.resourcesModule);
+                textureRef = jleResourceRef<jleTexture>(jlePath{virtualMaterialPath}, serializationContext);
             }
         };
 
@@ -189,7 +190,6 @@ jleEditor3DImportWindow::importModel(const jlePath &importPath,
             material->_roughness.alpha() = roughness;
         }
 
-        jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
         material->saveToFile(serializationContext);
         createdMaterials.push_back(material);
     }
@@ -249,7 +249,7 @@ jleEditor3DImportWindow::importModel(const jlePath &importPath,
 
         createdMesh->path = jlePath{destinationPath.getVirtualFolder() + '/' + meshName + ".fbx"};
 
-        jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment};
+        jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
         createdMesh->saveToFile(serializationContext);
 
         createdMeshes.push_back(createdMesh);
@@ -258,7 +258,10 @@ jleEditor3DImportWindow::importModel(const jlePath &importPath,
     auto rootNode = scene->mRootNode;
 
     auto objectsScene = gEditor->getEditorScenes()[0];
-    auto parentObject = objectsScene->spawnObject<jleObject>();
+
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+
+    auto parentObject = objectsScene->spawnObject<jleObject>(serializationContext);
     processNode(scene, rootNode, parentObject, createdMeshes, createdMaterials, ctx);
 
     return true;
@@ -298,25 +301,27 @@ jleEditor3DImportWindow::processNode(const aiScene *scene,
 
     object->getTransform().setLocalMatrix(localTransform);
 
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+
     if (_importWithSkinning) {
         auto mesh = object->addComponent<cSkinnedMesh>(ctx);
         if (node->mNumMeshes >= 1) {
             mesh->getMeshRef() =
-                jleResourceRef<jleSkinnedMesh>(createdMeshes[node->mMeshes[0]]->path, ctx.resourcesModule);
+                jleResourceRef<jleSkinnedMesh>(createdMeshes[node->mMeshes[0]]->path, serializationContext);
             mesh->getMaterialRef().reloadWithNewPath(
-                createdMaterials[scene->mMeshes[node->mMeshes[0]]->mMaterialIndex].path, ctx.resourcesModule);
+                createdMaterials[scene->mMeshes[node->mMeshes[0]]->mMaterialIndex].path, serializationContext);
         }
     } else {
         auto mesh = object->addComponent<cMesh>(ctx);
         if (node->mNumMeshes >= 1) {
-            mesh->getMeshRef() = jleResourceRef<jleMesh>(createdMeshes[node->mMeshes[0]]->path, ctx.resourcesModule);
+            mesh->getMeshRef() = jleResourceRef<jleMesh>(createdMeshes[node->mMeshes[0]]->path, serializationContext);
             mesh->getMaterialRef().reloadWithNewPath(
-                createdMaterials[scene->mMeshes[node->mMeshes[0]]->mMaterialIndex].path, ctx.resourcesModule);
+                createdMaterials[scene->mMeshes[node->mMeshes[0]]->mMaterialIndex].path, serializationContext);
         }
     }
 
     for (int i = 0; i < node->mNumChildren; ++i) {
-        auto child = object->spawnChildObject<jleObject>();
+        auto child = object->spawnChildObject<jleObject>(serializationContext);
         processNode(scene, node->mChildren[i], child, createdMeshes, createdMaterials, ctx);
     }
 }

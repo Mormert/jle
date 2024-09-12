@@ -31,7 +31,7 @@ public:
     jleFullscreenRendering(jleFullscreenRendering &&e) = delete;
     jleFullscreenRendering &operator=(jleFullscreenRendering &&e) = delete;
 
-    jleFullscreenRendering(jleResources& resources);
+    jleFullscreenRendering(jleSerializationContext& ctx);
 
     ~jleFullscreenRendering();
 

@@ -79,7 +79,7 @@ public:
 
     void editorInspectorImGuiRender(jleEditorModulesContext& ctx) override;
 
-    void setAnimation(const jlePath &path, jleResources &resources);
+    void setAnimation(const jlePath &path, jleSerializationContext& ctx);
 
 private:
     void blendAnimations();

@@ -29,11 +29,11 @@ public:
 
     ~jleSceneServer() override;
 
-    int startServer(int port = 314, int maxClients = 4);
+    int startServer(jleEngineModulesContext& ctx, int port = 314, int maxClients = 4);
 
     int stopServer();
 
-    void onSceneStart() override;
+    void onSceneStart(jleEngineModulesContext& ctx) override;
 
     void onSceneDestruction() override;
 
@@ -41,7 +41,7 @@ public:
 
     void sceneInspectorImGuiRender() override;
 
-    std::shared_ptr<jleObject> spawnObjectWithOwner(const std::string &objectName, int32_t ownerId);
+    std::shared_ptr<jleObject> spawnObjectWithOwner(jleEngineModulesContext& ctx, const std::string &objectName, int32_t ownerId);
 
     void sendNetworkEventBroadcast(std::unique_ptr<jleServerToClientEvent> event);
 
@@ -53,7 +53,7 @@ public:
     std::shared_ptr<jleObject> getObjectFromNetId(int32_t netId);
 
 protected:
-    void setupObject(const std::shared_ptr<jleObject> &obj) override;
+    void setupObject(const std::shared_ptr<jleObject> &obj, jleSerializationContext& ctx) override;
 
     virtual void
     onClientConnect(jleEngineModulesContext& ctx, int32_t clientId)

@@ -48,7 +48,8 @@ jleEditorResourceEdit::renderUI(jleEditorModulesContext &ctx)
 
         if (resource && ImGui::Button("Save Resource")) {
             jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
-                                                         &ctx.engineModulesContext.luaEnvironment};
+                                                         &ctx.engineModulesContext.luaEnvironment,
+                                                         &ctx.engineModulesContext.renderThread};
             resource->saveToFile(serializationContext);
         }
 

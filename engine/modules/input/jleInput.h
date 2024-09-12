@@ -28,13 +28,12 @@ class jleInput
 public:
     ~jleInput() = default;
 
-    explicit jleInput(jleWindow& window);
+    explicit jleInput(jleWindow &window);
 
-    const std::unique_ptr<jleKeyboardInput> keyboard;
-    const std::unique_ptr<jleMouseInput> mouse;
+    jleKeyboardInput keyboard;
+    jleMouseInput mouse;
 
     void setInputEnabled(bool isEnabled);
-
     [[nodiscard]] bool getInputEnabled() const;
 
 private:

@@ -64,7 +64,7 @@ public:
     }
 
     bool
-    loadFromFile(const jlePath &path) final
+    loadFromFile(jleSerializationContext& ctx, const jlePath &path) final
     {
         // This empty interface function should never be called, instead the macro
         // SAVE_SHARED_THIS_SERIALIZED_JSON should be used!

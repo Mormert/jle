@@ -37,7 +37,7 @@ public:
 
     // Should implement logic for loading data from file into derived class
     [[nodiscard]] virtual bool
-    loadFromFile(const jlePath &path) = 0;
+    loadFromFile(jleSerializationContext& ctx, const jlePath &path) = 0;
 
     // Optionally implement logic for saving data to file
     [[maybe_unused]] virtual void saveToFile(jleSerializationContext& ctx){};

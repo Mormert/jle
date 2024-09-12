@@ -58,12 +58,12 @@ public:
     jleResources &operator=(const jleResources &) = delete;
     jleResources &operator=(jleResources &&) = delete;
 
-    std::shared_ptr<jleResourceInterface> loadResourceFromFile(const jlePath &path, jleSerializationContext = {});
+    std::shared_ptr<jleResourceInterface> loadResourceFromFile(const jlePath &path, jleSerializationContext& ctx);
 
     // Gets a shared_ptr to a resource from file, or a shared_ptr to an already loaded copy of that resource
     template <typename T>
-    std::shared_ptr<T> loadResourceFromFile(const jlePath &path,
-                                            jleSerializationContext ctx = {},
+    std::shared_ptr<T> loadResourceFromFileT(const jlePath &path,
+                                            jleSerializationContext& ctx,
                                             bool forceReload = false);
 
     void reloadSerializedResource(const std::shared_ptr<jleSerializedResource> &resource);

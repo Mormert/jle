@@ -41,13 +41,15 @@ jleGame::activeScenesRef()
 std::shared_ptr<jleScene>
 jleGame::loadScene(const jlePath &scenePath, jleEngineModulesContext &ctx)
 {
-    std::shared_ptr<jleScene> scene = ctx.resourcesModule.loadResourceFromFile<jleScene>(
-        scenePath, {&ctx.resourcesModule, &ctx.luaEnvironment}, true);
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+
+    std::shared_ptr<jleScene> scene =
+        ctx.resourcesModule.loadResourceFromFileT<jleScene>(scenePath, serializationContext, true);
     if (scene) {
         auto it = std::find(_activeScenes.begin(), _activeScenes.end(), scene);
         if (it == _activeScenes.end()) {
             _activeScenes.push_back(scene);
-            scene->onSceneStart();
+            scene->onSceneStart(ctx);
             scene->startObjects(ctx);
         } else {
             LOG_WARNING << "Loaded scene is already loaded";

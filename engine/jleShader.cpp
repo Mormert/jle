@@ -23,7 +23,7 @@
 #include <string>
 
 bool
-jleShader::loadFromFile(const jlePath &path)
+jleShader::loadFromFile(jleSerializationContext &ctx, const jlePath &path)
 {
     JLE_EXEC_IF(JLE_BUILD_HEADLESS) { return true; }
 
@@ -56,48 +56,49 @@ jleShader::loadFromFile(const jlePath &path)
         frag = "#version 330 core\n" + frag;
     }
 
-    gEngine->renderThread().runOnRenderThread([this, vert, frag, path]() {
-        unsigned int vertex, fragment;
+    jleAssert(ctx.renderThread);
+    if (ctx.renderThread) {
+        ctx.renderThread->runOnRenderThread([this, vert, frag, path]() {
+            unsigned int vertex, fragment;
 
-        vertex = glCreateShader(GL_VERTEX_SHADER);
-        const char *vert_c = vert.c_str();
-        glShaderSource(vertex, 1, &vert_c, NULL);
-        glCompileShader(vertex);
-        if (!checkCompileErrors(vertex, "VERTEX")) {
-            glDeleteShader(vertex);
-            return;
-        }
+            vertex = glCreateShader(GL_VERTEX_SHADER);
+            const char *vert_c = vert.c_str();
+            glShaderSource(vertex, 1, &vert_c, NULL);
+            glCompileShader(vertex);
+            if (!checkCompileErrors(vertex, "VERTEX")) {
+                glDeleteShader(vertex);
+                return;
+            }
 
-        fragment = glCreateShader(GL_FRAGMENT_SHADER);
-        const char *frag_c = frag.c_str();
-        glShaderSource(fragment, 1, &frag_c, NULL);
-        glCompileShader(fragment);
-        if (!checkCompileErrors(fragment, "FRAGMENT")) {
+            fragment = glCreateShader(GL_FRAGMENT_SHADER);
+            const char *frag_c = frag.c_str();
+            glShaderSource(fragment, 1, &frag_c, NULL);
+            glCompileShader(fragment);
+            if (!checkCompileErrors(fragment, "FRAGMENT")) {
+                glDeleteShader(vertex);
+                glDeleteShader(fragment);
+                return;
+            }
+
+            _program = glCreateProgram();
+            glAttachShader(_program, vertex);
+            glAttachShader(_program, fragment);
+
+            glLinkProgram(_program);
+            if (!checkCompileErrors(_program, "PROGRAM")) {
+                glDeleteShader(vertex);
+                glDeleteShader(fragment);
+                glDeleteProgram(_program);
+                _program = 0;
+                return;
+            }
+
             glDeleteShader(vertex);
             glDeleteShader(fragment);
-            return;
-        }
 
-        _program = glCreateProgram();
-        glAttachShader(_program, vertex);
-        glAttachShader(_program, fragment);
-
-        glLinkProgram(_program);
-        if (!checkCompileErrors(_program, "PROGRAM")) {
-            glDeleteShader(vertex);
-            glDeleteShader(fragment);
-            glDeleteProgram(_program);
-            _program = 0;
-            return;
-        }
-
-        glDeleteShader(vertex);
-        glDeleteShader(fragment);
-
-        LOGV << "Compiled GLSL shader program: " << path.getVirtualPath();
-    });
-
-
+            LOGV << "Compiled GLSL shader program: " << path.getVirtualPath();
+        });
+    }
 
     return true;
 }

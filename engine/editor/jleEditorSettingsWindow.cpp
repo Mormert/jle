@@ -45,8 +45,8 @@ jleEditorSettingsWindow::renderUI(jleEditorModulesContext &ctx)
     ImGui::EndChild();
 
     if (ImGui::Button("Save Settings")) {
-        jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
-                                                     &ctx.engineModulesContext.luaEnvironment};
+        jleSerializationContext serializationContext{
+            &ctx.engineModulesContext.resourcesModule, &ctx.engineModulesContext.luaEnvironment, nullptr};
         ctx.engine.settings().saveToFile(serializationContext);
     }
 

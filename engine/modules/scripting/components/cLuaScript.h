@@ -52,6 +52,8 @@ private:
 
     jleLuaClassSerialization _luaClass;
 
+    jleLuaEnvironment* _luaEnvironment;
+
     sol::table _self;
 };
 

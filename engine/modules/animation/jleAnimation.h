@@ -38,7 +38,7 @@ public:
 
     jleAnimation() = default;
 
-    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(jleSerializationContext& ctx, const jlePath &path) override;
 
     jleAnimation(const std::string &path, jleSkinnedMesh &mesh);
 

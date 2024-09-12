@@ -20,29 +20,28 @@
 
 template <typename T>
 void
-jleResourceRef<T>::loadResource(jleResources& resources)
+jleResourceRef<T>::loadResource(jleSerializationContext &ctx)
 {
     ptr = nullptr;
     if (!path.isEmpty()) {
-        ptr = resources.loadResourceFromFile<T>(path);
+        ptr = ctx.resources->loadResourceFromFileT<T>(path, ctx);
     }
 }
 
 template <typename T>
 void
-jleResourceRef<T>::reloadWithNewPath(const jlePath &newPath, jleResources& resources)
+jleResourceRef<T>::reloadWithNewPath(const jlePath &newPath, jleSerializationContext& ctx)
 {
     path = newPath;
-    loadResource(resources);
+    loadResource(ctx);
 }
 
 template <typename T>
 void
-jleResourceRef<T>::saveResource()
+jleResourceRef<T>::saveResource(jleSerializationContext &ctx)
 {
-    ptr->saveToFile();
+    ptr->saveToFile(ctx);
 }
-
 
 template <typename T>
 template <class Archive>
@@ -55,11 +54,13 @@ jleResourceRef<T>::save_minimal(const Archive &) const
 template <typename T>
 template <class Archive>
 void
-jleResourceRef<T>::load_minimal(const Archive &, const std::string &value)
+jleResourceRef<T>::load_minimal(const Archive &ar, const std::string &value)
 {
     path = jlePath{value};
     ptr = nullptr;
     if (!path.isEmpty()) {
-        ptr = gEngine->resources().loadResourceFromFile<T>(path);
+        jleSerializationContext &ctx = const_cast<jleSerializationContext&>(ar.ctx);
+        jleAssert(ctx.resources);
+        ptr = ctx.resources->loadResourceFromFileT<T>(path, ctx);
     }
 }

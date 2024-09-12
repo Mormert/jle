@@ -108,7 +108,8 @@ class jleImGuiArchiveInternal : public jleSerializationArchive_EditorOnly,
 public:
     explicit jleImGuiArchiveInternal(jleEditorModulesContext &context)
         : jleSerializationArchive_EditorOnly(jleSerializationContext{&context.engineModulesContext.resourcesModule,
-                                                                     &context.engineModulesContext.luaEnvironment},
+                                                                     &context.engineModulesContext.luaEnvironment,
+                                                                     &context.engineModulesContext.renderThread},
                                              context),
           OutputArchive<jleImGuiArchiveInternal>(this)
     {
@@ -124,7 +125,8 @@ class jleImGuiArchive : public jleSerializationArchive_EditorOnly, public cereal
 public:
     explicit jleImGuiArchive(jleEditorModulesContext &context)
         : jleSerializationArchive_EditorOnly(jleSerializationContext{&context.engineModulesContext.resourcesModule,
-                                                                     &context.engineModulesContext.luaEnvironment},
+                                                                     &context.engineModulesContext.luaEnvironment,
+                                                                     &context.engineModulesContext.renderThread},
                                              context),
           InputArchive<jleImGuiArchive>(this)
     {

@@ -114,7 +114,7 @@ cCamera::editorGizmosRender(bool selected, jle3DGraph &renderGraph)
 #if JLE_BUILD_EDITOR
     auto mesh = gEditor->gizmos().cameraMesh();
     auto material = gEditor->gizmos().cameraMaterial();
-    gEngine->renderGraph().sendMesh(
+    renderGraph.sendMesh(
         mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 #endif // JLE_BUILD_EDITOR
 }

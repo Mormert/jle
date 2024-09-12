@@ -42,7 +42,7 @@ public:
         ar(CEREAL_NVP(imagePath));
     }
 
-    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(jleSerializationContext& ctx, const jlePath &path) override;
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedResource)
 

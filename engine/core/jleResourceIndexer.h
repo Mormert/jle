@@ -17,22 +17,23 @@
 
 #include "jleFileWatcher.h"
 
-#include <jleVectorSet.h>
 #include <jleString.h>
 #include <jleVectorMap.h>
+#include <jleVectorSet.h>
 
 #include <future>
 
 class jleEditorTextEdit;
 class jleResources;
+class jleSerializationContext;
 
 class jleResourceIndexer
 {
 public:
     explicit jleResourceIndexer(const std::vector<std::string> &directories);
 
-    void update(jleResources &resources);
-    void update(jleResources &resources, jleEditorTextEdit &textEdit);
+    void update(jleSerializationContext &ctx);
+    void update(jleSerializationContext &ctx, jleEditorTextEdit &textEdit);
 
     // Gets all indexed files in the system
     const jleVectorSet<jlePath> &getIndexedFiles();
@@ -42,15 +43,14 @@ public:
     const jleVectorSet<jlePath> *getIndexedFilesPtr(const jleString &extension);
 
 private:
-
-    struct CallbacksContext{
+    struct CallbacksContext {
         std::function<void(const jlePath &)> modifiedCallback{};
     };
 
-    void internalUpdate(jleResources &resources, const CallbacksContext& callbacks);
+    void internalUpdate(jleSerializationContext &ctx, const CallbacksContext &callbacks);
 
     void notifyAdded(const jlePath &path);
-    void notifyModification(const jlePath &path, jleResources &resources);
+    void notifyModification(const jlePath &path, jleSerializationContext &ctx);
     void notifyErase(const jlePath &path);
 
     jleFileWatcher _fileWatcher;

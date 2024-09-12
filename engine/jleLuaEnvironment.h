@@ -36,20 +36,20 @@ public:
 
     ~jleLuaEnvironment();
 
-    void loadScript(const jlePath& path, jleResources& resources);
+    void loadScript(const jlePath& path, jleSerializationContext& ctx);
 
     void executeScript(const char* script);
 
     [[nodiscard]] sol::state& getState();
 
-    void loadInitialScripts(jleResources& resources);
+    void loadInitialScripts(jleSerializationContext &ctx);
 
     std::unordered_map<jlePath, std::shared_ptr<jleLuaScript>>& loadedScripts();
 
     std::unordered_map<std::string, jleLuaClass>& loadedLuaClasses();
 
 #if JLE_BUILD_EDITOR
-    void loadNewlyAddedScripts(jleResources& resources);
+    void loadNewlyAddedScripts(jleSerializationContext& ctx);
 #endif
 
 private:

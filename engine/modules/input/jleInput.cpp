@@ -19,7 +19,7 @@
 #include "modules/input/hardware/jleMouseInput.h"
 
 jleInput::jleInput(jleWindow& window)
-    : keyboard{std::make_unique<jleKeyboardInput>(window)}, mouse{std::make_unique<jleMouseInput>(window)}
+    : keyboard{window}, mouse{window}
 {
 }
 
@@ -27,8 +27,8 @@ void
 jleInput::setInputEnabled(bool isEnabled)
 {
     _isInputEnabled = isEnabled;
-    keyboard->isEnabled(isEnabled);
-    mouse->isEnabled(isEnabled);
+    keyboard.setEnabled(isEnabled);
+    mouse.setEnabled(isEnabled);
 }
 
 bool

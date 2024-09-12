@@ -50,7 +50,13 @@ jleKeyboardInput::keyDown(jleKey key, bool ignoreInputEnabled)
 }
 
 void
-jleKeyboardInput::isEnabled(bool value)
+jleKeyboardInput::setEnabled(bool value)
 {
     _isEnabled = value;
+}
+
+bool
+jleKeyboardInput::isEnabled()
+{
+    return _isEnabled;
 }

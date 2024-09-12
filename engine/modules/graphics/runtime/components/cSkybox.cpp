@@ -22,11 +22,14 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cSkybox)
 
 void
-cSkybox::start(jleEngineModulesContext& ctx)
+cSkybox::start(jleEngineModulesContext &ctx)
 {
+    if (_skybox) {
+        ctx.renderSettings.skybox = _skybox;
+    }
 }
 
 void
-cSkybox::update(jleEngineModulesContext& ctx)
+cSkybox::update(jleEngineModulesContext &ctx)
 {
 }

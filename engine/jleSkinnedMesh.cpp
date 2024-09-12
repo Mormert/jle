@@ -144,7 +144,7 @@ jleSkinnedMesh::loadAssimpSkinnedMesh(aiMesh *assimpMesh,
 }
 
 bool
-jleSkinnedMesh::loadFromFile(const jlePath &path)
+jleSkinnedMesh::loadFromFile(jleSerializationContext& ctx, const jlePath &path)
 {
     bool ret = loadSkinnedAssimp(path);
     if (!ret) {

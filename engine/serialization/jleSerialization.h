@@ -21,17 +21,24 @@
 
 class jleResources;
 class jleLuaEnvironment;
+class jleRenderThread;
 
 struct jleSerializationContext {
     jleSerializationContext() = default;
 
-    jleSerializationContext(jleResources *r, jleLuaEnvironment *l) : resources(r), luaEnvironment(l) {}
+    jleSerializationContext(jleResources *r, jleLuaEnvironment *l, jleRenderThread *rt)
+        : resources(r), luaEnvironment(l), renderThread(rt)
+    {
+    }
 
     // Optional, need to be null checked
     jleResources *resources{nullptr};
 
     // Optional, need to be null checked
     jleLuaEnvironment *luaEnvironment{nullptr};
+
+    // Optional, need to be null checked
+    jleRenderThread *renderThread{nullptr};
 };
 
 class jleSerializationArchive

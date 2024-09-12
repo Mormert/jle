@@ -63,11 +63,11 @@ jleResourceIndexer::notifyAdded(const jlePath &path)
 }
 
 void
-jleResourceIndexer::notifyModification(const jlePath &path, jleResources &resources)
+jleResourceIndexer::notifyModification(const jlePath &path, jleSerializationContext &ctx)
 {
-    if (resources.isResourceLoaded(path)) {
+    if (ctx.resources->isResourceLoaded(path)) {
         LOGI << "File modified: " << path.getVirtualPath() << " (reloading resource)";
-        if (!resources.getResource(path)->loadFromFile(path)) {
+        if (!ctx.resources->getResource(path)->loadFromFile(ctx, path)) {
             LOGW << "Failed reloading resource: " << path.getVirtualPath();
         }
     } else {
@@ -88,23 +88,23 @@ jleResourceIndexer::notifyErase(const jlePath &path)
 }
 
 void
-jleResourceIndexer::update(jleResources &resources)
+jleResourceIndexer::update(jleSerializationContext &ctx)
 {
-    CallbacksContext ctx{};
-    internalUpdate(resources, ctx);
+    CallbacksContext callbacksContext{};
+    internalUpdate(ctx, callbacksContext);
 }
 
 void
-jleResourceIndexer::update(jleResources &resources, jleEditorTextEdit &textEdit)
+jleResourceIndexer::update(jleSerializationContext &ctx, jleEditorTextEdit &textEdit)
 {
 #if JLE_BUILD_EDITOR
-    CallbacksContext ctx{[&](const jlePath &path) { textEdit.reloadIfOpened(path); }};
-    internalUpdate(resources, ctx);
+    CallbacksContext callbacksContext{[&](const jlePath &path) { textEdit.reloadIfOpened(path); }};
+    internalUpdate(ctx, callbacksContext);
 #endif
 }
 
 void
-jleResourceIndexer::internalUpdate(jleResources &resources, const CallbacksContext &callbacks)
+jleResourceIndexer::internalUpdate(jleSerializationContext &ctx, const CallbacksContext &callbacks)
 {
     ZoneScopedNC("jleResourceIndexer_internalUpdate", 0xe57395);
 
@@ -121,7 +121,7 @@ jleResourceIndexer::internalUpdate(jleResources &resources, const CallbacksConte
             }
 
             for (auto &modified : result.modified) {
-                notifyModification(modified, resources);
+                notifyModification(modified, ctx);
 
                 if (callbacks.modifiedCallback) {
                     callbacks.modifiedCallback(modified);

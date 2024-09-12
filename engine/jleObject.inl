@@ -149,28 +149,28 @@ jleObject::getComponentInChildren(jleObject *object)
 
 template <typename T>
 inline std::shared_ptr<T>
-jleObject::spawnChildObject()
+jleObject::spawnChildObject(jleSerializationContext& ctx)
 {
     // We still want the object to be spawned initially in the scene,
     // but to immediately be moved over to the object's ownership.
     // This is because the scene will run the start() methods on the new object.
-    std::shared_ptr<T> object = _containedInScene->spawnObject<T>();
+    std::shared_ptr<T> object = _containedInScene->spawnObject<T>(ctx);
     attachChildObject(object);
     return object;
 }
 
 inline std::shared_ptr<jleObject>
-jleObject::spawnChildObjectFromTemplate(const jlePath &path, jleResources &resources)
+jleObject::spawnChildObjectFromTemplate(const jlePath &path, jleSerializationContext &ctx)
 {
-    auto object = _containedInScene->spawnObjectFromTemplate(path, resources);
+    auto object = _containedInScene->spawnObjectFromTemplate(path, ctx);
     attachChildObject(object);
     return object;
 }
 
 inline std::shared_ptr<jleObject>
-jleObject::spawnChildObject(const std::string &objName)
+jleObject::spawnChildObject(const std::string &objName, jleSerializationContext &ctx)
 {
-    auto object = _containedInScene->spawnObject<jleObject>();
+    auto object = _containedInScene->spawnObject<jleObject>(ctx);
     attachChildObject(object);
     return object;
 }

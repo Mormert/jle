@@ -492,14 +492,14 @@ jleObject::propagateOwnedBySceneServer(jleSceneServer *scene)
 }
 
 void
-jleObject::replaceChildrenWithTemplate()
+jleObject::replaceChildrenWithTemplate(jleSerializationContext& ctx)
 {
     for (auto &&object : __childObjects) {
         // Replace child object with template object, if it is based on one
         if (object->__templatePath.has_value()) {
             auto path = object->__templatePath;
             try {
-                auto original = gEngine->resources().loadResourceFromFile<jleObject>(object->__templatePath.value());
+                auto original = ctx.resources->loadResourceFromFileT<jleObject>(object->__templatePath.value(), ctx);
 
                 auto copy = original->duplicateTemplate();
                 object = copy;
@@ -510,7 +510,7 @@ jleObject::replaceChildrenWithTemplate()
             }
         }
 
-        object->replaceChildrenWithTemplate();
+        object->replaceChildrenWithTemplate(ctx);
     }
 }
 

@@ -31,7 +31,7 @@ class jleSkinnedMesh : public jleMesh
 public:
     JLE_REGISTER_RESOURCE_TYPE(jleSkinnedMesh, "smesh", "smesh.fbx")
 
-    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(jleSerializationContext& ctx, const jlePath &path) override;
 
     ~jleSkinnedMesh() override;
 

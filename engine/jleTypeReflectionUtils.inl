@@ -106,6 +106,6 @@ jleResourceTypeRegistrator<T>::jleResourceTypeRegistrator(const std::string &rNa
 
     for (const auto &extension : fileExtensions) {
         jleTypeReflectionUtils::registeredFileTypeLoadersRef().insert(std::make_pair(
-            extension, [](const jlePath &path, jleSerializationContext& ctx) { return ctx.resources->loadResourceFromFile<T>(path, ctx); }));
+            extension, [](const jlePath &path, jleSerializationContext& ctx) { return ctx.resources->loadResourceFromFileT<T>(path, ctx); }));
     }
 }

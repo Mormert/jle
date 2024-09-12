@@ -60,7 +60,7 @@ public:
     virtual void useMaterial(const jleCamera &camera,
                              const std::vector<jle3DRendererLight> &lights,
                              const jle3DSettings &settings,
-                             jleResources& resources);
+                             jleSerializationContext &serializationContext);
 
     template <class Archive>
     void serialize(Archive &ar);
@@ -94,7 +94,7 @@ public:
     void useMaterial(const jleCamera &camera,
                      const std::vector<jle3DRendererLight> &lights,
                      const jle3DSettings &settings,
-                     jleResources& resources) override;
+                     jleSerializationContext &serializationContext) override;
 
     template <class Archive>
     void serialize(Archive &ar)

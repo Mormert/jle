@@ -34,7 +34,7 @@ jleTexture::~jleTexture()
 }
 
 bool
-jleTexture::loadFromFile(const jlePath &path)
+jleTexture::loadFromFile(jleSerializationContext &ctx, const jlePath &path)
 {
     JLE_EXEC_IF(JLE_BUILD_HEADLESS) { return true; }
 
@@ -54,50 +54,60 @@ jleTexture::loadFromFile(const jlePath &path)
         return false;
     }
 
-    gEngine->renderThread().runOnRenderThread([this, path]() {
-        glGenTextures(1, &_id);
+    jleAssert(ctx.renderThread);
+    if (ctx.renderThread) {
+        ctx.renderThread->runOnRenderThread([this, path]() {
+            glGenTextures(1, &_id);
 
-        glBindTexture(GL_TEXTURE_2D, _id);
+            glBindTexture(GL_TEXTURE_2D, _id);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        // set texture filtering parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            // set texture filtering parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-        GLenum format = GL_RGBA;
-        if (_image->nrChannels() == 1)
-            format = GL_RED;
-        else if (_image->nrChannels() == 2)
-            format = GL_RED;
-        else if (_image->nrChannels() == 3)
-            format = GL_RGB;
-        else if (_image->nrChannels() == 4)
-            format = GL_RGBA;
+            GLenum format = GL_RGBA;
+            if (_image->nrChannels() == 1)
+                format = GL_RED;
+            else if (_image->nrChannels() == 2)
+                format = GL_RED;
+            else if (_image->nrChannels() == 3)
+                format = GL_RGB;
+            else if (_image->nrChannels() == 4)
+                format = GL_RGBA;
 
-        glBindTexture(GL_TEXTURE_2D, _id);
-        if (format == GL_RGBA) {
-            // Byte alignment 4 is defaulted for RGBA images
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-        } else {
-            // Needed to load images with different byte alignments
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        }
+            glBindTexture(GL_TEXTURE_2D, _id);
+            if (format == GL_RGBA) {
+                // Byte alignment 4 is defaulted for RGBA images
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+            } else {
+                // Needed to load images with different byte alignments
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            }
 
-        glTexImage2D(
-            GL_TEXTURE_2D, 0, format, _image->width(), _image->height(), 0, format, GL_UNSIGNED_BYTE, _image->data());
-        glGenerateMipmap(GL_TEXTURE_2D);
+            glTexImage2D(GL_TEXTURE_2D,
+                         0,
+                         format,
+                         _image->width(),
+                         _image->height(),
+                         0,
+                         format,
+                         GL_UNSIGNED_BYTE,
+                         _image->data());
+            glGenerateMipmap(GL_TEXTURE_2D);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        PLOG_VERBOSE << "Generated OpenGL texture (ID=" << _id << ") " << path.getVirtualPath() << " ("
-                     << _image->nrChannels() << " channels)";
+            PLOG_VERBOSE << "Generated OpenGL texture (ID=" << _id << ") " << path.getVirtualPath() << " ("
+                         << _image->nrChannels() << " channels)";
 
-        glBindTexture(GL_TEXTURE_2D, 0);
-    });
+            glBindTexture(GL_TEXTURE_2D, 0);
+        });
+    }
 
     return true;
 }

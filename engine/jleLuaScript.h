@@ -27,7 +27,7 @@ class jleLuaScript : public jleResourceInterface
 public:
     JLE_REGISTER_RESOURCE_TYPE(jleLuaScript, "lua");
 
-    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(jleSerializationContext& ctx, const jlePath &path) override;
 
     void saveToFile(jleSerializationContext& ctx) override;
 

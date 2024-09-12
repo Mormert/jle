@@ -52,9 +52,6 @@ class jleLuaEnvironment;
 class jleRenderThread;
 class jleGameRuntime;
 
-class jleGameEngine;
-inline jleGameEngine *gEngine;
-
 class jleFrameInfo
 {
 public:
@@ -142,7 +139,7 @@ protected:
 
     virtual void update(jleEngineModulesContext &ctx);
 
-    virtual void render(jleEngineModulesContext &modulesContext, wi::jobsystem::context &jobsCtx);
+    virtual void render(jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx);
 
     virtual void exiting();
 

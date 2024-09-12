@@ -26,22 +26,23 @@ class cSkybox : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cSkybox)
 public:
-
     template <class Archive>
     void
     serialize(Archive &ar)
     {
         ar(CEREAL_NVP(_skybox));
 
-        if(_skybox.get())
-        {
-            gEngine->renderSettings().skybox = _skybox;
+        if constexpr (std::is_base_of<jleSerializationArchive_EditorOnly, Archive>()) {
+            if (_skybox.get()) {
+                jleSerializationArchive_EditorOnly &archiveEditorOnly = ar;
+                archiveEditorOnly.editorCtx.engineModulesContext.renderSettings.skybox = _skybox;
+            }
         }
     }
 
-    void start(jleEngineModulesContext& ctx) override;
+    void start(jleEngineModulesContext &ctx) override;
 
-    void update(jleEngineModulesContext& ctx) override;
+    void update(jleEngineModulesContext &ctx) override;
 
 protected:
     jleResourceRef<jleSkybox> _skybox;

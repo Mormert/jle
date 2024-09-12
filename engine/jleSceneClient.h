@@ -31,7 +31,7 @@ public:
 
     void disconnectFromServer();
 
-    void onSceneStart() override;
+    void onSceneStart(jleEngineModulesContext& ctx) override;
 
     void onSceneDestruction() override;
 
@@ -56,7 +56,7 @@ public:
     int32_t clientId() const;
 
 protected:
-    void setupObject(const std::shared_ptr<jleObject> &obj) override;
+    void setupObject(const std::shared_ptr<jleObject> &obj, jleSerializationContext& ctx) override;
 
 private:
     void processNetwork(jleEngineModulesContext& ctx) override;

@@ -39,6 +39,7 @@ class jlePath;
 class jleObject;
 class jleResourceIndexer;
 struct jleWindowResizeEvent;
+class jleSerializationContext;
 
 class jleEditor;
 inline jleEditor *gEditor;
@@ -52,9 +53,9 @@ public:
 
     void start(jleEngineModulesContext &context) override;
 
-    void render(jleEngineModulesContext& ctx, wi::jobsystem::context &jobsCtx) override;
+    void render(jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx) override;
 
-    void update(jleEngineModulesContext& ctx) override;
+    void update(jleEngineModulesContext &ctx) override;
 
     // std::shared_ptr<jleFramebufferInterface> editorScreenFramebuffer;
 
@@ -65,7 +66,7 @@ public:
 
     jleEditorSaveState &saveState();
 
-    void updateEditorLoadedScenes(jleEngineModulesContext& ctx);
+    void updateEditorLoadedScenes(jleEngineModulesContext &ctx);
 
     std::vector<std::shared_ptr<jleScene>> &getEditorScenes();
 
@@ -77,7 +78,9 @@ public:
 
     bool checkSceneIsActiveEditor(const std::string &sceneName);
 
-    std::shared_ptr<jleScene> loadScene(const jlePath &scenePath, jleEngineModulesContext& ctx, bool startObjects = true);
+    std::shared_ptr<jleScene> loadScene(const jlePath &scenePath,
+                                        jleEngineModulesContext &ctx,
+                                        bool startObjects = true);
 
 private:
     struct jleEditorInternal;
@@ -87,7 +90,7 @@ private:
 
     void exiting() override;
 
-    void renderGameView(jleGameRuntime& runtime, jleResources& resources);
+    void renderGameView(jleGameRuntime &runtime, jleSerializationContext &ctx);
 
     void renderEditorSceneView(jleEngineModulesContext &ctx);
 
@@ -95,11 +98,11 @@ private:
 
     void initImgui();
 
-    void renderEditorGizmos(jle3DGraph& renderGraph, jleGameRuntime& gameRuntime);
+    void renderEditorGizmos(jle3DGraph &renderGraph, jleGameRuntime &gameRuntime);
 
     void renderEditorGridGizmo();
 
-    void renderEditorGizmosObject(jleObject *object, jle3DGraph& renderGraph);
+    void renderEditorGizmosObject(jleObject *object, jle3DGraph &renderGraph);
 
     void addImGuiWindow(std::shared_ptr<jleEditorWindowInterface> window);
 

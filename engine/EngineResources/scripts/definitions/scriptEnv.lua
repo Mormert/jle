@@ -4,5 +4,5 @@
 ScriptEnv = {}
 
 ---@param scriptPath string
----@param resources jleResources
-function ScriptEnv.loadScriptIntoLuaEnv(scriptPath, resources) end
+---@param serializationContext jleSerializationContext
+function ScriptEnv.loadScriptIntoLuaEnv(scriptPath, serializationContext) end

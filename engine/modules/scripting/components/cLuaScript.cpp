@@ -82,6 +82,8 @@ cLuaScript::initializeLuaComponent(jleLuaEnvironment& luaEnvironment)
 {
     const auto luaClass = luaEnvironment.getState()[_luaClass.luaClassName];
 
+    _luaEnvironment = &luaEnvironment;
+
     luaEnvironment.loadedLuaClasses()[_luaClass.luaClassName];
 
     try {
@@ -126,8 +128,9 @@ deep_copy(sol::state &lua, const sol::table &src, sol::table &dest)
 cLuaScript::cLuaScript(const cLuaScript &other)
 {
     _luaClass = other._luaClass;
-    initializeLuaComponent(*gEngine->luaEnvironment());
-    deep_copy(gEngine->luaEnvironment()->getState(), other._self, _self);
+    _luaEnvironment = other._luaEnvironment;
+    initializeLuaComponent(*_luaEnvironment);
+    deep_copy(_luaEnvironment->getState(), other._self, _self);
 }
 
 template <class Archive>

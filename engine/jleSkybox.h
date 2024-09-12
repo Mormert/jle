@@ -48,7 +48,7 @@ public:
 
     jleSkybox() = default;
 
-    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(jleSerializationContext& ctx, const jlePath &path) override;
 
     jleResourceRef<jleImageFlipped> _right;
     jleResourceRef<jleImageFlipped> _left;

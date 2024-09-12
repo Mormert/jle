@@ -27,7 +27,7 @@ cCameraFPV::update(jleEngineModulesContext& ctx)
 {
     const auto dt = ctx.frameInfo.getDeltaTime();
 
-    auto &&keyboard = gEngine->input().keyboard;
+    auto &&keyboard = ctx.inputModule.keyboard;
 
     auto updatedPosition = getTransform().getLocalPosition();
 
@@ -37,28 +37,28 @@ cCameraFPV::update(jleEngineModulesContext& ctx)
 
     glm::vec3 addedPosition{0.f};
 
-    if (keyboard->keyDown(jleKey::A)) {
+    if (keyboard.keyDown(jleKey::A)) {
         addedPosition -= right;
     }
-    if (keyboard->keyDown(jleKey::D)) {
+    if (keyboard.keyDown(jleKey::D)) {
         addedPosition += right;
     }
-    if (keyboard->keyDown(jleKey::W)) {
+    if (keyboard.keyDown(jleKey::W)) {
         addedPosition -= forward;
     }
-    if (keyboard->keyDown(jleKey::S)) {
+    if (keyboard.keyDown(jleKey::S)) {
         addedPosition += forward;
     }
-    if (keyboard->keyDown(jleKey::SPACE)) {
+    if (keyboard.keyDown(jleKey::SPACE)) {
         addedPosition -= up;
     }
-    if (keyboard->keyDown(jleKey::LEFT_CONTROL)) {
+    if (keyboard.keyDown(jleKey::LEFT_CONTROL)) {
         addedPosition += up;
     }
 
     if (addedPosition != glm::vec3{0.f}) {
         addedPosition = glm::normalize(addedPosition) * dt * _moveSpeed;
-        if (keyboard->keyDown(jleKey::LEFT_SHIFT)) {
+        if (keyboard.keyDown(jleKey::LEFT_SHIFT)) {
             addedPosition *= 2.5f;
         }
         updatedPosition += addedPosition;
@@ -68,19 +68,19 @@ cCameraFPV::update(jleEngineModulesContext& ctx)
 
     JLE_EXEC_IF_NOT(JLE_BUILD_EDITOR)
     {
-        if (keyboard->keyPressed(jleKey::TAB)) // Tab
+        if (keyboard.keyPressed(jleKey::TAB)) // Tab
         {
-            auto fpsMode = gEngine->input().mouse->isFpsMode();
+            auto fpsMode = ctx.inputModule.mouse.isFpsMode();
             if (fpsMode) {
-                gEngine->input().mouse->setFpsMode(false);
+                ctx.inputModule.mouse.setFpsMode(false);
             } else {
-                gEngine->input().mouse->setFpsMode(true);
+                ctx.inputModule.mouse.setFpsMode(true);
             }
         }
     }
 
-    float mouseDeltaX = gEngine->input().mouse->xDelta() * 0.078f;
-    float mouseDeltaY = -gEngine->input().mouse->yDelta() * 0.078f;
+    float mouseDeltaX = ctx.inputModule.mouse.xDelta() * 0.078f;
+    float mouseDeltaY = -ctx.inputModule.mouse.yDelta() * 0.078f;
 
     glm::mat4 worldMatrix = getTransform().getWorldMatrix();
 

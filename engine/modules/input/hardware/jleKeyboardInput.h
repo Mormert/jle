@@ -145,9 +145,10 @@ enum class jleKey : int {
     MENU = 348
 };
 
-class jleKeyboardInput {
+class jleKeyboardInput
+{
 public:
-    explicit jleKeyboardInput(const jleWindow& window);
+    explicit jleKeyboardInput(const jleWindow &window);
 
     bool keyPressed(jleKey key);
 
@@ -155,10 +156,12 @@ public:
 
     bool keyDown(jleKey key, bool ignoreInputEnabled = false);
 
-    void isEnabled(bool value);
+    void setEnabled(bool value);
+
+    [[nodiscard]] bool isEnabled();
 
 private:
-    const jleWindow& _window;
+    const jleWindow &_window;
 
     bool _isEnabled = true;
 };

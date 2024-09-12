@@ -20,7 +20,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 bool
-jleAnimation::loadFromFile(const jlePath &path)
+jleAnimation::loadFromFile(jleSerializationContext& ctx, const jlePath &path)
 {
     Assimp::Importer importer;
     // importer.SetPropertyBool("AI_CONFIG_FBX_USE_SKELETON_BONE_CONTAINER", true);

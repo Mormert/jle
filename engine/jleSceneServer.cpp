@@ -95,13 +95,8 @@ struct jleFullSceneSyncEvent : public jleServerToClientEvent {
 JLE_REGISTER_NET_EVENT(jleFullSceneSyncEvent)
 
 int
-jleSceneServer::startServer(int port, int maxClients)
+jleSceneServer::startServer(jleEngineModulesContext& ctx, int port, int maxClients)
 {
-    if (!gEngine->settings().enableNetworking) {
-        LOGE << "[server] Trying to use networked features but networking disabled in settings";
-        return 1;
-    }
-
     ENetAddress address = {0};
 
     address.host = ENET_HOST_ANY;
@@ -124,7 +119,9 @@ jleSceneServer::startServer(int port, int maxClients)
         setupObjectForNetworking(object);
     }
 
-    spawnObjectWithName("server_dummy");
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+
+    spawnObjectWithName("server_dummy", serializationContext);
 
     return 0;
 }
@@ -158,9 +155,9 @@ jleSceneServer::updateScene(jleEngineModulesContext& ctx)
 }
 
 void
-jleSceneServer::onSceneStart()
+jleSceneServer::onSceneStart(jleEngineModulesContext& ctx)
 {
-    startServer();
+    startServer(ctx);
 }
 
 void
@@ -282,9 +279,9 @@ jleSceneServer::getObjectFromNetId(int32_t netId)
 }
 
 void
-jleSceneServer::setupObject(const std::shared_ptr<jleObject> &obj)
+jleSceneServer::setupObject(const std::shared_ptr<jleObject> &obj, jleSerializationContext& ctx)
 {
-    jleScene::setupObject(obj);
+    jleScene::setupObject(obj, ctx);
     setupObjectForNetworking(obj);
 }
 
@@ -318,12 +315,14 @@ jleSceneServer::sceneInspectorImGuiRender()
 }
 
 std::shared_ptr<jleObject>
-jleSceneServer::spawnObjectWithOwner(const std::string &objectName, int32_t ownerId)
+jleSceneServer::spawnObjectWithOwner(jleEngineModulesContext& ctx, const std::string &objectName, int32_t ownerId)
 {
     auto newSceneObject = std::make_shared<jleObject>();
     newSceneObject->_networkOwnerID = ownerId;
 
-    setupObject(newSceneObject);
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+
+    setupObject(newSceneObject, serializationContext);
     newSceneObject->_instanceName = objectName;
 
     if (ownerId > 0) {

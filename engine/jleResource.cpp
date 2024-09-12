@@ -17,7 +17,7 @@
 #include "jleTypeReflectionUtils.h"
 
 std::shared_ptr<jleResourceInterface>
-jleResources::loadResourceFromFile(const jlePath &path, jleSerializationContext ctx)
+jleResources::loadResourceFromFile(const jlePath &path, jleSerializationContext& ctx)
 {
     ctx.resources = this;
     const auto &typeLoaders = jleTypeReflectionUtils::registeredFileTypeLoadersRef();
@@ -39,10 +39,10 @@ jleResources::reloadSerializedResource(const std::shared_ptr<jleSerializedResour
         std::ifstream i(path.getRealPath());
         std::shared_ptr<jleSerializedResource> f = std::const_pointer_cast<jleSerializedResource>(resource);
 
-        jleSerializationContext ctx = {this, nullptr};
+        jleSerializationContext ctx = {this, nullptr, nullptr};
         jleJSONInputArchive archive{i, ctx};
         archive(f);
-        if (!f->loadFromFile(path)) {
+        if (!f->loadFromFile(ctx, path)) {
             LOGE << "Failed reloading serialized resource file: " << resource->path.getVirtualPath();
         }
 
@@ -72,13 +72,13 @@ jleResources::loadSerializedResourceFromFile(const jlePath &path, bool forceRelo
     try {
         std::ifstream i(path.getRealPath());
 
-        jleSerializationContext ctx = {this, nullptr};
+        jleSerializationContext ctx = {this, nullptr, nullptr};
         jleJSONInputArchive iarchive{i, ctx};
         iarchive(ptr);
 
         ptr->path = path;
 
-        if (ptr->loadFromFile(path) == false) {
+        if (ptr->loadFromFile(ctx, path) == false) {
             LOGE << "Failed loading serialized resource's internals";
         }
 

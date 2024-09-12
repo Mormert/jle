@@ -23,8 +23,8 @@
 
 #include <glm/glm.hpp>
 
-#include <BulletCollision/CollisionShapes/btConvexHullShape.h>
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
+#include <BulletCollision/CollisionShapes/btConvexHullShape.h>
 
 #include <vector>
 
@@ -38,12 +38,9 @@ public:
 
     ~jleMesh() override;
 
-    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(jleSerializationContext &ctx, const jlePath &path) override;
 
-    // Synchronous OBJ loading
-    bool loadFromObj(const jlePath &path);
-
-    bool loadAssimp(const jlePath &path);
+    bool loadAssimp(const jlePath &path, jleRenderThread *renderThread);
 
     // Lays out the attributes in the order:
     // position (0), normal (1), texcoords (2), tangent (3), bitangent (4)
@@ -52,7 +49,8 @@ public:
                   const std::vector<glm::vec2> &texCoords = {},
                   const std::vector<glm::vec3> &tangents = {},
                   const std::vector<glm::vec3> &bitangents = {},
-                  const std::vector<unsigned int> &indices = {});
+                  const std::vector<unsigned int> &indices = {},
+                  jleRenderThread *renderThread = nullptr);
 
     static void loadAssimpMesh(aiMesh *assimpMesh,
                                std::vector<glm::vec3> &out_positions,
@@ -79,7 +77,7 @@ public:
 
     const std::vector<unsigned int> &indices();
 
-    void saveToFile(jleSerializationContext& ctx) override;
+    void saveToFile(jleSerializationContext &ctx) override;
 
     btBvhTriangleMeshShape *getStaticConcaveShape();
 

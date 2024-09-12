@@ -294,12 +294,12 @@ cAnimator::applyRootMotion()
 }
 
 void
-cAnimator::setAnimation(const jlePath &path, jleResources &resources)
+cAnimator::setAnimation(const jlePath &path, jleSerializationContext& ctx)
 {
     _animations.clear();
     _animations.push_back({});
     _animations[0].currentAnimation.path = path;
-    _animations[0].currentAnimation.loadResource(resources);
+    _animations[0].currentAnimation.loadResource(ctx);
 
     for (auto &animation : _animations) {
         animation.currentAnimationLocal = *animation.currentAnimation.get();

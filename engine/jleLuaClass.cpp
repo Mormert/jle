@@ -154,6 +154,8 @@ jleLuaClass::serializeClass(Archive &ar, sol::table &luaTable)
         return;
     }
 
+    jleSerializationContext &ctx = ar.ctx;
+
     for (const auto &attribute : _attributes) {
 
         const auto &type = attribute.first;
@@ -240,7 +242,7 @@ jleLuaClass::serializeClass(Archive &ar, sol::table &luaTable)
         } break;
         case LuaType::SerializableLuaClass: {
             const auto &luaClassName = type.luaClass;
-            const auto &luaEnv = gEngine->luaEnvironment();
+            const auto &luaEnv = ctx.luaEnvironment;
             auto &loadedClasses = luaEnv->loadedLuaClasses();
 
             auto x = luaTable[name];
@@ -266,7 +268,7 @@ jleLuaClass::serializeClass(Archive &ar, sol::table &luaTable)
         } break;
         case LuaType::DerivedFromLuaClass: {
             const auto &luaClassName = type.luaClass;
-            const auto &luaEnv = gEngine->luaEnvironment();
+            const auto &luaEnv = ctx.luaEnvironment;
             auto &loadedClasses = luaEnv->loadedLuaClasses();
 
             auto it = loadedClasses.find(luaClassName);

@@ -23,6 +23,8 @@ template <class Archive>
 void
 jleScene::serialize(Archive &archive)
 {
+    jleSerializationContext &ctx = archive.ctx;
+
     archive(CEREAL_NVP(sceneName), CEREAL_NVP(_sceneObjects));
 
     for (auto &&object : _sceneObjects) {
@@ -30,7 +32,8 @@ jleScene::serialize(Archive &archive)
         if (object->__templatePath.has_value()) {
             auto path = object->__templatePath;
             try {
-                auto original = gEngine->resources().loadResourceFromFile<jleObject>(object->__templatePath.value());
+
+                auto original = ctx.resources->loadResourceFromFileT<jleObject>(object->__templatePath.value(), ctx);
 
                 auto copy = original->duplicateTemplate();
                 object = copy;
@@ -42,7 +45,7 @@ jleScene::serialize(Archive &archive)
             }
         }
 
-        object->replaceChildrenWithTemplate();
+        object->replaceChildrenWithTemplate(ctx);
 
         object->propagateOwnedByScene(this);
     }
@@ -50,12 +53,12 @@ jleScene::serialize(Archive &archive)
 
 template <typename T>
 inline std::shared_ptr<T>
-jleScene::spawnObject()
+jleScene::spawnObject(jleSerializationContext& ctx)
 {
     static_assert(std::is_base_of<jleObject, T>::value, "T must derive from jleObject");
 
     std::shared_ptr<T> newSceneObject = std::make_shared<T>();
-    setupObject(newSceneObject);
+    setupObject(newSceneObject, ctx);
 
     return newSceneObject;
 }

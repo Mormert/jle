@@ -39,10 +39,7 @@ jleLuaEnvironment::jleLuaEnvironment() : _scriptFilesWatcher({})
     setupLua(_luaState);
 }
 
-jleLuaEnvironment::~jleLuaEnvironment() {
-
-    int a = 3;
-}
+jleLuaEnvironment::~jleLuaEnvironment() { int a = 3; }
 
 void
 jleLuaEnvironment::setupLua(sol::state &lua)
@@ -71,8 +68,9 @@ jleLuaEnvironment::setupLua(sol::state &lua)
     lua["JLE_EDITOR_RESOURCES_PATH"] = JLE_EDITOR_RESOURCES_PATH;
 
     auto scriptLoadingTable = lua.create_named_table("ScriptEnv");
-    scriptLoadingTable.set_function(
-        "loadScriptIntoLuaEnv", [&](const std::string path, jleResources &resources) { loadScript(path.c_str(), resources); });
+    scriptLoadingTable.set_function("loadScriptIntoLuaEnv", [&](const std::string path, jleSerializationContext &serializationContext) {
+        loadScript(path.c_str(), serializationContext);
+    });
 
     lua.new_usertype<jlePath>(
         "jlePath",
@@ -92,23 +90,45 @@ jleLuaEnvironment::setupLua(sol::state &lua)
         sol::meta_function::to_string,
         &jlePath::getVirtualPathConst);
 
-    auto inputTable = lua.create_named_table("Input");
+    lua.new_usertype<jleKeyboardInput>("jleKeyboardInput",
+                                       "keyPressed",
+                                       &jleKeyboardInput::keyPressed,
+                                       "keyReleased",
+                                       &jleKeyboardInput::keyReleased,
+                                       "keyDown",
+                                       &jleKeyboardInput::keyDown,
+                                       "setEnabled",
+                                       &jleKeyboardInput::setEnabled,
+                                       "isEnabled",
+                                       &jleKeyboardInput::isEnabled);
 
-    inputTable.set_function("keyDown",
-                            [&](int key) { return gEngine->input().keyboard->keyDown(static_cast<jleKey>(key)); });
-    inputTable.set_function("keyPressed",
-                            [&](int key) { return gEngine->input().keyboard->keyPressed(static_cast<jleKey>(key)); });
-    inputTable.set_function("keyReleased",
-                            [&](int key) { return gEngine->input().keyboard->keyReleased(static_cast<jleKey>(key)); });
+    lua.new_usertype<jleMouseInput>("jleMouseInput",
+                                    "mouseX",
+                                    &jleMouseInput::mouseX,
+                                    "mouseY",
+                                    &jleMouseInput::mouseY,
+                                    "xDelta",
+                                    &jleMouseInput::xDelta,
+                                    "yDelta",
+                                    &jleMouseInput::yDelta,
+                                    "scrollX",
+                                    &jleMouseInput::scrollX,
+                                    "scrollY",
+                                    &jleMouseInput::scrollY,
+                                    "mouseClick",
+                                    &jleMouseInput::mouseClick_int,
+                                    "setEnabled",
+                                    &jleMouseInput::setEnabled,
+                                    "isEnabled",
+                                    &jleMouseInput::isEnabled,
+                                    "setFpsMode",
+                                    &jleMouseInput::setFpsMode,
+                                    "isFpsMode",
+                                    &jleMouseInput::isFpsMode);
 
-    inputTable.set_function("mouseX", [&]() { return gEngine->input().mouse->mouseX(); });
-    inputTable.set_function("mouseY", [&]() { return gEngine->input().mouse->mouseY(); });
-    inputTable.set_function("mouseScrollX", [&]() { return gEngine->input().mouse->scrollX(); });
-    inputTable.set_function("mouseScrollY", [&]() { return gEngine->input().mouse->scrollY(); });
-    inputTable.set_function("mouseDeltaX", [&]() { return gEngine->input().mouse->xDelta(); });
-    inputTable.set_function("mouseDeltaY", [&]() { return gEngine->input().mouse->yDelta(); });
-    inputTable.set_function(
-        "mouseClick", [&](int button) { return gEngine->input().mouse->mouseClick(static_cast<jleButton>(button)); });
+    // TODO: Add accessor to this somewhere
+    lua.new_usertype<jleInput>(
+        "jleInput", "keyboard", sol::readonly(&jleInput::keyboard), "mouse", sol::readonly(&jleInput::mouse));
 
     lua.new_usertype<jleTransform>("jleTransform",
                                    "getLocalPosition",
@@ -523,20 +543,20 @@ jleLuaEnvironment::getState()
 }
 
 void
-jleLuaEnvironment::loadInitialScripts(jleResources &resources)
+jleLuaEnvironment::loadInitialScripts(jleSerializationContext &ctx)
 {
     // Load all Lua scripts in the to-be-watched folder
     const auto result = _scriptFilesWatcher.sweep();
     for (const auto &added : result.added) {
-        loadScript(added, resources);
+        loadScript(added, ctx);
     }
 }
 
 void
-jleLuaEnvironment::loadScript(const jlePath &path, jleResources &resources)
+jleLuaEnvironment::loadScript(const jlePath &path, jleSerializationContext& ctx)
 {
     // Loads script and it will be placed in resource holder
-    auto script = jleResourceRef<jleLuaScript>(path, resources);
+    auto script = jleResourceRef<jleLuaScript>(path, ctx);
     script->loadScriptIntoLuaEnv(*this);
     _loadedScripts.insert(std::make_pair(path, script.get()));
 }
@@ -565,7 +585,7 @@ jleLuaEnvironment::loadedLuaClasses()
 
 #if JLE_BUILD_EDITOR
 void
-jleLuaEnvironment::loadNewlyAddedScripts(jleResources &resources)
+jleLuaEnvironment::loadNewlyAddedScripts(jleSerializationContext& ctx)
 {
     ZoneScopedNC("jleLuaEnvironment_loadNewlyAddedScripts", 0xe57395);
 
@@ -575,7 +595,7 @@ jleLuaEnvironment::loadNewlyAddedScripts(jleResources &resources)
 
             for (auto &added : result.added) {
                 if (added.getFileEnding() == "lua") {
-                    loadScript(added, resources);
+                    loadScript(added, ctx);
                 }
             }
         }

@@ -63,7 +63,6 @@ jleGameEngine::jleGameEngine()
     LOGI << "Initializing job system, available hardware threads: " << std::thread::hardware_concurrency();
     wi::jobsystem::Initialize();
 
-    gEngine = this;
     _resources = std::make_unique<jleResources>();
 
     _renderThread = std::make_unique<jleRenderThread>();
@@ -73,8 +72,15 @@ jleGameEngine::jleGameEngine()
 
     JLE_EXEC_IF(JLE_BUILD_EDITOR) { LOGI << "Editor Resources located at: " << jlePath{"ED:/"}.getRealPath(); }
 
+    LOG_INFO << "Starting the lua environment";
+    _luaEnvironment = std::make_unique<jleLuaEnvironment>();
+
+    jleSerializationContext serializationContext{_resources.get(), _luaEnvironment.get(), _renderThread.get()};
+
+    _luaEnvironment->loadInitialScripts(serializationContext);
+
     _internal = std::make_unique<jleEngineInternal>();
-    _internal->engineSettings = jleResourceRef<jleEngineSettings>("GR:/settings/enginesettings.es", *_resources);
+    _internal->engineSettings = jleResourceRef<jleEngineSettings>("GR:/settings/enginesettings.es", serializationContext);
 
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
     {
@@ -86,7 +92,7 @@ jleGameEngine::jleGameEngine()
 
         _input = std::make_unique<jleInput>(*_window);
 
-        _3dRenderer = std::make_unique<jle3DRenderer>(*_resources);
+        _3dRenderer = std::make_unique<jle3DRenderer>(serializationContext);
         _3dRenderGraph = std::make_unique<jle3DGraph>();
         _3dRendererSettings = std::make_unique<jle3DSettings>();
         _soLoud = std::make_unique<SoLoud::Soloud>();
@@ -95,15 +101,11 @@ jleGameEngine::jleGameEngine()
         _soLoud->init();
     }
 
-    LOG_INFO << "Starting the lua environment";
-    _luaEnvironment = std::make_unique<jleLuaEnvironment>();
-    _luaEnvironment->loadInitialScripts(*_resources);
+
 
     _timerManager = std::make_unique<jleTimerManager>();
 
-    if (settings().enableNetworking) {
-        enet_initialize();
-    }
+    enet_initialize();
 
     _gameRuntime = std::make_unique<jleGameRuntime>(*this);
 
@@ -122,8 +124,6 @@ jleGameEngine::jleGameEngine()
 
 jleGameEngine::~jleGameEngine()
 {
-    gEngine = nullptr;
-
     LOGI << "Shutting down job system";
     wi::jobsystem::ShutDown();
 
@@ -133,9 +133,7 @@ jleGameEngine::~jleGameEngine()
         _soLoud->deinit();
     }
 
-    if (settings().enableNetworking) {
-        enet_deinitialize();
-    }
+    enet_deinitialize();
 
     _gameRuntime.reset();
     _resources.reset();
@@ -154,7 +152,7 @@ jleGameEngine::startRmlUi()
     }
 
     // Constructs the system and render interfaces, creates a window, and attaches the renderer.
-    if (!Backend::Initialize("RmlUiWindow", width, height, true)) {
+    if (!Backend::Initialize("RmlUiWindow", width, height, true, _window->glfwWindow())) {
         LOGE << "Failed to init backend for RmlUi";
         return;
     }
@@ -194,21 +192,23 @@ jleGameEngine::startRmlUi()
 }
 
 void
-jleGameEngine::start(jleEngineModulesContext &context)
+jleGameEngine::start(jleEngineModulesContext &ctx)
 {
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
     {
-        luaEnvironment()->loadScript("ER:/scripts/engine.lua", context.resourcesModule);
-        luaEnvironment()->loadScript("ER:/scripts/globals.lua", context.resourcesModule);
+        jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+
+        luaEnvironment()->loadScript("ER:/scripts/engine.lua", serializationContext);
+        luaEnvironment()->loadScript("ER:/scripts/globals.lua", serializationContext);
 
         startRmlUi();
 
-        _fullscreen_renderer = std::make_unique<jleFullscreenRendering>(context.resourcesModule);
+        _fullscreen_renderer = std::make_unique<jleFullscreenRendering>(serializationContext);
 
         JLE_EXEC_IF_NOT(JLE_BUILD_EDITOR)
         {
             const auto gameWindowResizeFunc = [&](const jleWindowResizeEvent &resizeEvent) {
-                context.gameRuntime.gameWindowResizedEvent(resizeEvent.framebufferWidth, resizeEvent.framebufferHeight);
+                ctx.gameRuntime.gameWindowResizedEvent(resizeEvent.framebufferWidth, resizeEvent.framebufferHeight);
             };
 
             window().addWindowResizeCallback(gameWindowResizeFunc);
@@ -216,7 +216,7 @@ jleGameEngine::start(jleEngineModulesContext &context)
     }
     LOG_INFO << "Starting the game engine";
 
-    _gameRuntime->startGame(context);
+    _gameRuntime->startGame(ctx);
 }
 
 void
@@ -226,38 +226,39 @@ jleGameEngine::update(jleEngineModulesContext &ctx)
 }
 
 void
-jleGameEngine::render(jleEngineModulesContext &modulesContext, wi::jobsystem::context &jobsCtx)
+jleGameEngine::render(jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx)
 {
     JLE_SCOPE_PROFILE_CPU(jleGameEngine_render)
 
     _renderThread->processRenderQueue();
 
-    if (!modulesContext.gameRuntime.isGameHalted() && modulesContext.gameRuntime._game != nullptr) {
+    if (!ctx.gameRuntime.isGameHalted() && ctx.gameRuntime._game != nullptr) {
 
         // Render to game view
-        static jleFramebufferMultisample msaa{modulesContext.gameRuntime.mainGameScreenFramebuffer->width(),
-                                              modulesContext.gameRuntime.mainGameScreenFramebuffer->height(),
+        static jleFramebufferMultisample msaa{
+            ctx.gameRuntime.mainGameScreenFramebuffer->width(), ctx.gameRuntime.mainGameScreenFramebuffer->height(),
                                               4};
 
-        if (modulesContext.gameRuntime.mainGameScreenFramebuffer->width() != msaa.width() ||
-            modulesContext.gameRuntime.mainGameScreenFramebuffer->height() != msaa.height()) {
-            msaa.resize(modulesContext.gameRuntime.mainGameScreenFramebuffer->width(),
-                        modulesContext.gameRuntime.mainGameScreenFramebuffer->height());
+        if (ctx.gameRuntime.mainGameScreenFramebuffer->width() != msaa.width() ||
+            ctx.gameRuntime.mainGameScreenFramebuffer->height() != msaa.height()) {
+            msaa.resize(ctx.gameRuntime.mainGameScreenFramebuffer->width(),
+                        ctx.gameRuntime.mainGameScreenFramebuffer->height());
         }
 
         if (_3dRenderGraphForRendering) {
+            jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
             renderer().render(msaa,
-                              modulesContext.gameRuntime.getGame().mainCamera,
+                              ctx.gameRuntime.getGame().mainCamera,
                               *_3dRenderGraphForRendering,
                               renderSettings(),
-                              modulesContext.resourcesModule);
+                              serializationContext);
         }
 
         // Render to the MSAA framebuffer, then blit the result over to the main framebuffer
-        msaa.blitToOther(*modulesContext.gameRuntime.mainGameScreenFramebuffer);
+        msaa.blitToOther(*ctx.gameRuntime.mainGameScreenFramebuffer);
 
         _fullscreen_renderer->renderFramebufferFullscreen(
-            *modulesContext.gameRuntime.mainGameScreenFramebuffer, window().width(), window().height());
+            *ctx.gameRuntime.mainGameScreenFramebuffer, window().width(), window().height());
     }
 }
 
@@ -306,7 +307,7 @@ jleGameEngine::mainLoop()
 
     refreshDeltaTimes();
 
-    JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS) { input().mouse->updateDeltas(); }
+    JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS) { input().mouse.updateDeltas(); }
 
     wi::jobsystem::context jobsCtx;
     jleEngineModulesContext &modulesContext = *_modulesContext;

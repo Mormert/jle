@@ -66,10 +66,14 @@ class jleEditor::jleEditorWindows
 public:
     explicit jleEditorWindows(const jleEditorModulesContext &ctx)
     {
+
+        jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
+                                                     &ctx.engineModulesContext.luaEnvironment,
+                                                     &ctx.engineModulesContext.renderThread};
+
         // Note: Important that menu comes first here, since the others are
         // dependent on the menu's dockspace.
-        menu = std::make_shared<jleEditorWindowsPanel>(
-            "Menu", ctx.engineModulesContext.resourcesModule, ctx.engine.settings());
+        menu = std::make_shared<jleEditorWindowsPanel>("Menu", serializationContext, ctx.engine.settings());
 
         textEditWindow = std::make_shared<jleEditorTextEdit>("Text Editor");
 
@@ -94,7 +98,7 @@ public:
         menu->addWindow(editorSceneObjects);
 
         contentBrowser = std::make_shared<jleEditorContentBrowser>(
-            "Content Browser", ctx.engineModulesContext.resourcesModule, textEditWindow, resourceEditor);
+            "Content Browser", serializationContext, textEditWindow, resourceEditor);
         menu->addWindow(contentBrowser);
 
         buildTool = std::make_shared<jleEditorBuild>("Build Tool");
@@ -109,8 +113,7 @@ public:
         import3DWindow = std::make_shared<jleEditor3DImportWindow>("Model Importer");
         menu->addWindow(import3DWindow);
 
-        notifications =
-            std::make_shared<jleEditorNotifications>("Notifications", ctx.engineModulesContext.resourcesModule);
+        notifications = std::make_shared<jleEditorNotifications>("Notifications", serializationContext);
 
         frameGraph = std::make_shared<jleEditorFrameGraphWindow>("Frame Graph");
     }
@@ -138,7 +141,8 @@ public:
         textEditWindow->renderUI();
 
         jleSerializationContext serializationContext{&context.engineModulesContext.resourcesModule,
-                                                     &context.engineModulesContext.luaEnvironment};
+                                                     &context.engineModulesContext.luaEnvironment,
+                                                     &context.engineModulesContext.renderThread};
         resourceEditor->renderUI(context);
         sceneWindow->renderUI(context.engineModulesContext);
         gameWindow->renderUI(context.engineModulesContext, context.engineModulesContext.inputModule);
@@ -158,18 +162,20 @@ public:
 jleEditor::jleEditor() { gEditor = this; }
 
 void
-jleEditor::start(jleEngineModulesContext &context)
+jleEditor::start(jleEngineModulesContext &ctx)
 {
-    _editorContext = std::make_unique<jleEditorModulesContext>(context, *this, *this);
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+
+    _editorContext = std::make_unique<jleEditorModulesContext>(ctx, *this, *this);
 
     _internal = std::make_unique<jleEditorInternal>();
     _camera = std::make_unique<jleCamera>();
-    _gizmos = std::make_unique<jleEditorGizmos>(_editorContext->engineModulesContext.resourcesModule);
+    _gizmos = std::make_unique<jleEditorGizmos>(serializationContext);
 
     LOG_INFO << "Starting the editor";
 
     _internal->editorSaveState =
-        jleResourceRef<jleEditorSaveState>(jlePath{"BI:editor_save.edsave"}, context.resourcesModule);
+        jleResourceRef<jleEditorSaveState>(jlePath{"BI:editor_save.edsave"}, serializationContext);
 
     std::vector<std::string> directoriesForNotification;
     directoriesForNotification.push_back(jlePath{"ER:/"}.getRealPath());
@@ -184,28 +190,28 @@ jleEditor::start(jleEngineModulesContext &context)
     _sceneWindow = _editorWindows->sceneWindow;
     _editorSceneObjects = _editorWindows->editorSceneObjects;
 
-    context.windowModule.addWindowResizeCallback(
+    ctx.windowModule.addWindowResizeCallback(
         std::bind(&jleEditor::mainEditorWindowResized, this, std::placeholders::_1));
 
     int x, y;
-    glfwGetFramebufferSize(context.windowModule.glfwWindow(), &x, &y);
-    context.windowModule.glfwFramebufferSizeCallback(context.windowModule.glfwWindow(), x, y);
+    glfwGetFramebufferSize(ctx.windowModule.glfwWindow(), &x, &y);
+    ctx.windowModule.glfwFramebufferSizeCallback(ctx.windowModule.glfwWindow(), x, y);
 
     LOG_INFO << "Starting the game in editor mode";
 
-    luaEnvironment()->loadScript("ER:/scripts/engine.lua", context.resourcesModule);
-    luaEnvironment()->loadScript("ER:/scripts/globals.lua", context.resourcesModule);
+    luaEnvironment()->loadScript("ER:/scripts/engine.lua", serializationContext);
+    luaEnvironment()->loadScript("ER:/scripts/globals.lua", serializationContext);
 
-    luaEnvironment()->loadScript("ED:/scripts/editor.lua", context.resourcesModule);
+    luaEnvironment()->loadScript("ED:/scripts/editor.lua", serializationContext);
 
     startRmlUi();
 
     if (saveState().gameRunning) {
-        context.gameRuntime.startGame(context);
+        ctx.gameRuntime.startGame(ctx);
     }
 
     for (auto &&scenePath : saveState().loadedScenePaths) {
-        loadScene(scenePath, context, false);
+        loadScene(scenePath, ctx, false);
     }
 }
 
@@ -218,7 +224,8 @@ jleEditor::render(jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx)
     // Possibly fix with ECS/context passing struct
     Wait(jobsCtx);
 
-    renderGameView(ctx.gameRuntime, ctx.resourcesModule);
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+    renderGameView(ctx.gameRuntime, serializationContext);
 
     renderEditorSceneView(ctx);
 
@@ -235,7 +242,7 @@ jleEditor::render(jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx)
 }
 
 void
-jleEditor::renderGameView(jleGameRuntime &runtime, jleResources &resources)
+jleEditor::renderGameView(jleGameRuntime &runtime, jleSerializationContext &ctx)
 {
     JLE_SCOPE_PROFILE_CPU(RenderGameView);
 
@@ -252,8 +259,7 @@ jleEditor::renderGameView(jleGameRuntime &runtime, jleResources &resources)
         }
 
         if (_3dRenderGraphForRendering) {
-            renderer().render(
-                msaa, runtime.getGame().mainCamera, *_3dRenderGraphForRendering, renderSettings(), resources);
+            renderer().render(msaa, runtime.getGame().mainCamera, *_3dRenderGraphForRendering, renderSettings(), ctx);
             msaa.blitToOther(*runtime.mainGameScreenFramebuffer);
         }
     }
@@ -418,9 +424,10 @@ jleEditor::updateEditorLoadedScenes(jleEngineModulesContext &ctx)
 void
 jleEditor::update(jleEngineModulesContext &ctx)
 {
-    _resourceIndexer->update(resources(), *_editorWindows->textEditWindow);
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+    _resourceIndexer->update(serializationContext, *_editorWindows->textEditWindow);
 
-    _luaEnvironment->loadNewlyAddedScripts(ctx.resourcesModule);
+    _luaEnvironment->loadNewlyAddedScripts(serializationContext);
     jleGameEngine::update(ctx);
     if (ctx.gameRuntime.isGameKilled()) {
         JLE_SCOPE_PROFILE_CPU(updateEditorLoadedScenes)
@@ -544,7 +551,8 @@ jleEditor::exiting()
     // saveState().orthographicCamera = !static_cast<bool>(projectionType);
 
     jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
-                                                 &ctx.engineModulesContext.luaEnvironment};
+                                                 &ctx.engineModulesContext.luaEnvironment,
+                                                 &ctx.engineModulesContext.renderThread};
 
     saveState().saveToFile(serializationContext);
 
@@ -584,8 +592,9 @@ jleEditor::checkSceneIsActiveEditor(const std::string &sceneName)
 std::shared_ptr<jleScene>
 jleEditor::loadScene(const jlePath &scenePath, jleEngineModulesContext &ctx, bool startObjects)
 {
-    auto scene = ctx.resourcesModule.loadResourceFromFile<jleScene>(
-        scenePath, {&ctx.resourcesModule, &ctx.luaEnvironment}, true);
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+
+    auto scene = ctx.resourcesModule.loadResourceFromFileT<jleScene>(scenePath, serializationContext, true);
 
     auto it = std::find(_editorScenes.begin(), _editorScenes.end(), scene);
     if (it == _editorScenes.end()) {

@@ -76,7 +76,7 @@ jleSceneEditorWindow::renderUI(jleEngineModulesContext &ctx)
     const int32_t windowPositionY = int32_t(cursorScreenPos.y) - viewport->Pos.y;
 
     const auto previousFrameCursorPos = _lastCursorPos;
-    _lastCursorPos = gEngine->window().cursor();
+    _lastCursorPos = ctx.windowModule.cursor();
     const int32_t mouseX = _lastCursorPos.first;
     const int32_t mouseY = _lastCursorPos.second;
     const int32_t mouseDeltaX = mouseX - previousFrameCursorPos.first;
@@ -131,7 +131,7 @@ jleSceneEditorWindow::renderUI(jleEngineModulesContext &ctx)
     // Note here that the ImGui::Image is the item that is being clicked on!
     if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && canSelectObject) {
 
-        gEngine->renderer().renderMeshesPicking(*_pickingFramebuffer, gEditor->camera(), gEngine->renderGraph());
+        ctx.rendererModule.renderMeshesPicking(*_pickingFramebuffer, gEditor->camera(), ctx.renderGraph);
 
         _pickingFramebuffer->bind();
 
@@ -347,7 +347,7 @@ jleSceneEditorWindow::renderUI(jleEngineModulesContext &ctx)
             gEditor->camera().setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
         }
 
-        auto currentScroll = gEngine->input().mouse->scrollY();
+        auto currentScroll = ctx.inputModule.mouse.scrollY();
         if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentScroll != 0.f) {
             orthoZoomValue -= currentScroll * 1.f * ctx.frameInfo.getDeltaTime();
             orthoZoomValue = glm::clamp(orthoZoomValue, 0.01f, 2.f);
@@ -361,9 +361,9 @@ jleSceneEditorWindow::renderUI(jleEngineModulesContext &ctx)
 }
 
 void
-jleSceneEditorWindow::render(jle3DGraph &graph, const jleEditorModulesContext &context)
+jleSceneEditorWindow::render(jle3DGraph &graph, const jleEditorModulesContext &ctx)
 {
-    if (context.editor.perspectiveCamera) {
+    if (ctx.editor.perspectiveCamera) {
         gEditor->camera().setPerspectiveProjection(45.f, _framebuffer->width(), _framebuffer->height(), 10000.f, 0.1f);
     } else {
         gEditor->camera().setOrthographicProjection(
@@ -374,8 +374,12 @@ jleSceneEditorWindow::render(jle3DGraph &graph, const jleEditorModulesContext &c
         _msaa->resize(_framebuffer->width(), _framebuffer->height());
     }
 
-    context.engineModulesContext.rendererModule.render(
-        *_msaa, gEditor->camera(), graph, context.engine.renderSettings(), context.engineModulesContext.resourcesModule);
+    jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
+                                                 &ctx.engineModulesContext.luaEnvironment,
+                                                 &ctx.engineModulesContext.renderThread};
+
+    ctx.engineModulesContext.rendererModule.render(
+        *_msaa, gEditor->camera(), graph, ctx.engine.renderSettings(), serializationContext);
 
     _msaa->blitToOther(*_framebuffer);
 }

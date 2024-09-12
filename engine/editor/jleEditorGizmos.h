@@ -20,6 +20,8 @@
 
 #if JLE_BUILD_EDITOR
 
+#include "serialization/jleSerialization.h"
+
 #include <memory>
 
 class jleMesh;
@@ -29,7 +31,7 @@ class jleResources;
 class jleEditorGizmos
 {
 public:
-    jleEditorGizmos(jleResources& resources);
+    jleEditorGizmos(jleSerializationContext& ctx);
     ~jleEditorGizmos();
 
     std::shared_ptr<jleMesh> lightLampMesh();
