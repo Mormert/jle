@@ -13,11 +13,11 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#include "jle3DGraph.h"
+#include "jleFramePacket.h"
 #include "jleMaterial.h"
 
 void
-jle3DGraph::sendMesh(std::shared_ptr<jleMesh> &mesh,
+jleFramePacket::sendMesh(std::shared_ptr<jleMesh> &mesh,
                      std::shared_ptr<jleMaterial> &material,
                      const glm::mat4 &transform,
                      int instanceId,
@@ -31,7 +31,7 @@ jle3DGraph::sendMesh(std::shared_ptr<jleMesh> &mesh,
 }
 
 void
-jle3DGraph::sendSkinnedMesh(std::shared_ptr<jleSkinnedMesh> &mesh,
+jleFramePacket::sendSkinnedMesh(std::shared_ptr<jleSkinnedMesh> &mesh,
                             std::shared_ptr<jleMaterial> &material,
                             std::shared_ptr<jleAnimationFinalMatrices> &matrices,
                             const glm::mat4 &transform,
@@ -42,32 +42,32 @@ jle3DGraph::sendSkinnedMesh(std::shared_ptr<jleSkinnedMesh> &mesh,
 }
 
 void
-jle3DGraph::sendLineStrip(const std::vector<jle3DLineVertex> &lines)
+jleFramePacket::sendLineStrip(const std::vector<jle3DLineVertex> &lines)
 {
     _lineStrips.emplace_back(lines);
 }
 
 void
-jle3DGraph::sendLines(const std::vector<jle3DLineVertex> &lines)
+jleFramePacket::sendLines(const std::vector<jle3DLineVertex> &lines)
 {
     _lines.insert(std::end(_lines), std::begin(lines), std::end(lines));
 }
 
 void
-jle3DGraph::sendLine(const jle3DLineVertex &from, const jle3DLineVertex &to)
+jleFramePacket::sendLine(const jle3DLineVertex &from, const jle3DLineVertex &to)
 {
     _lines.emplace_back(from);
     _lines.emplace_back(to);
 }
 
 void
-jle3DGraph::sendLight(const glm::vec3 &position, const glm::vec3 &color)
+jleFramePacket::sendLight(const glm::vec3 &position, const glm::vec3 &color)
 {
     _lights.emplace_back(jle3DRendererLight{position, color});
 }
 
 void
-jle3DGraph::sendLine(const glm::vec3 &from, const glm::vec3 &to)
+jleFramePacket::sendLine(const glm::vec3 &from, const glm::vec3 &to)
 {
     _lines.emplace_back(jle3DLineVertex{from, glm::vec3{1.f}, glm::vec3{1.f, 0.f, 0.f}});
     _lines.emplace_back(jle3DLineVertex{to, glm::vec3{1.f}, glm::vec3{1.f, 0.f, 0.f}});

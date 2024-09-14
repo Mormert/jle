@@ -139,27 +139,23 @@ public:
     {
         menu->renderUI(context.engineModulesContext);
         textEditWindow->renderUI();
-
-        jleSerializationContext serializationContext{&context.engineModulesContext.resourcesModule,
-                                                     &context.engineModulesContext.luaEnvironment,
-                                                     &context.engineModulesContext.renderThread};
         resourceEditor->renderUI(context);
-        sceneWindow->renderUI(context.engineModulesContext);
+        sceneWindow->renderUI(context);
         gameWindow->renderUI(context.engineModulesContext, context.engineModulesContext.inputModule);
         console->renderUI(context.engineModulesContext, context.engineModulesContext.luaEnvironment);
         settingsWindow->renderUI(context);
         editorSceneObjects->renderUI(context);
-        contentBrowser->renderUI(context.engineModulesContext);
+        contentBrowser->renderUI(context);
         buildTool->renderUI(context.engineModulesContext, context.editor.resourceIndexer());
         resourceViewer->renderUI(context.engineModulesContext);
         profilerWindow->renderUI(context.engineModulesContext);
-        import3DWindow->renderUI(context.engineModulesContext);
+        import3DWindow->renderUI(context);
         notifications->renderUI(context.engineModulesContext);
         frameGraph->renderUI(context.engineModulesContext);
     }
 };
 
-jleEditor::jleEditor() { gEditor = this; }
+jleEditor::jleEditor() {}
 
 void
 jleEditor::start(jleEngineModulesContext &ctx)
@@ -169,7 +165,6 @@ jleEditor::start(jleEngineModulesContext &ctx)
     _editorContext = std::make_unique<jleEditorModulesContext>(ctx, *this, *this);
 
     _internal = std::make_unique<jleEditorInternal>();
-    _camera = std::make_unique<jleCamera>();
     _gizmos = std::make_unique<jleEditorGizmos>(serializationContext);
 
     LOG_INFO << "Starting the editor";
@@ -227,16 +222,15 @@ jleEditor::render(jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx)
     jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
     renderGameView(ctx.gameRuntime, serializationContext);
 
+    if(_previousFramePacket)
+    {
+        _editorWindows->sceneWindow->renderEditorGrid(*_previousFramePacket);
+        renderEditorGizmos(*_previousFramePacket, ctx.gameRuntime);
+    }
+
     renderEditorSceneView(ctx);
 
-    // UI can touch game state, so we need to for game logic update to complete
-
-    renderEditorGridGizmo();
-    // renderEditorGizmos(modulesContext.renderGraph); // disable since for some reason we're rendering it into the game
-    // view lol
     renderEditorUI();
-
-    // resetRenderGraphForNewFrame();
 
     glCheckError("Main Editor Render");
 }
@@ -258,8 +252,8 @@ jleEditor::renderGameView(jleGameRuntime &runtime, jleSerializationContext &ctx)
             msaa.resize(runtime.mainGameScreenFramebuffer->width(), runtime.mainGameScreenFramebuffer->height());
         }
 
-        if (_3dRenderGraphForRendering) {
-            renderer().render(msaa, runtime.getGame().mainCamera, *_3dRenderGraphForRendering, renderSettings(), ctx);
+        if (_previousFramePacket) {
+            renderer().render(msaa, runtime.getGame().mainCamera, *_previousFramePacket, renderSettings(), ctx);
             msaa.blitToOther(*runtime.mainGameScreenFramebuffer);
         }
     }
@@ -273,17 +267,17 @@ jleEditor::renderEditorSceneView(jleEngineModulesContext &ctx)
     JLE_SCOPE_PROFILE_CPU(RenderEditorSceneView);
 
     if (!ctx.gameRuntime.isGameKilled()) {
-        if (auto &&scene = gEditor->getEditorSceneObjectsWindow().GetSelectedScene().lock()) {
+        if (auto &&scene = getEditorSceneObjectsWindow().GetSelectedScene().lock()) {
             if (scene->getPhysics().renderDebugEnabled) {
-                if (_3dRenderGraphForRendering) {
-                    scene->getPhysics().renderDebug(*_3dRenderGraphForRendering);
+                if (_previousFramePacket) {
+                    scene->getPhysics().renderDebug(*_previousFramePacket);
                 }
             }
         }
     }
 
-    if (_3dRenderGraphForRendering) {
-        _editorWindows->sceneWindow->render(*_3dRenderGraphForRendering, *_editorContext);
+    if (_previousFramePacket) {
+        _editorWindows->sceneWindow->render(*_previousFramePacket, *_editorContext);
     }
 
     glCheckError("Render MSAA Scene View");
@@ -436,7 +430,7 @@ jleEditor::update(jleEngineModulesContext &ctx)
 }
 
 void
-jleEditor::renderEditorGizmos(jle3DGraph &renderGraph, jleGameRuntime &gameRuntime)
+jleEditor::renderEditorGizmos(jleFramePacket &renderGraph, jleGameRuntime &gameRuntime)
 {
     JLE_SCOPE_PROFILE_CPU(renderEditorGizmos)
 
@@ -448,7 +442,7 @@ jleEditor::renderEditorGizmos(jle3DGraph &renderGraph, jleGameRuntime &gameRunti
         }
     }
 
-    for (const auto &scene : gEditor->getEditorScenes()) {
+    for (const auto &scene : getEditorScenes()) {
         for (auto &&o : scene->sceneObjects()) {
             renderEditorGizmosObject(o.get(), renderGraph);
         }
@@ -456,82 +450,13 @@ jleEditor::renderEditorGizmos(jle3DGraph &renderGraph, jleGameRuntime &gameRunti
 }
 
 void
-jleEditor::renderEditorGizmosObject(jleObject *object, jle3DGraph &renderGraph)
+jleEditor::renderEditorGizmosObject(jleObject *object, jleFramePacket &renderGraph)
 {
     for (auto &&c : object->components()) {
-        c->editorGizmosRender(true, renderGraph);
+        c->editorGizmosRender(renderGraph, *_gizmos);
     }
     for (auto &&child : object->childObjects()) {
         renderEditorGizmosObject(child.get(), renderGraph);
-    }
-}
-void
-jleEditor::renderEditorGridGizmo()
-{
-    JLE_SCOPE_PROFILE_CPU(renderEditorGridGizmo)
-
-    jle3DLineVertex v1{glm::vec3{0.f}, glm::vec3{1.f, 0.f, 0.f}, {1.0f, 0.44f, 1.2f}};
-    jle3DLineVertex v2 = v1;
-    v2.position = glm::vec3{100.f, 0.f, 0.f};
-    v1.position = glm::vec3{-100.f, 0.f, 0.f};
-
-    renderGraph().sendLine(v1, v2);
-
-    v2.position = glm::vec3{0.f, 100.f, 0.f};
-    v1.position = glm::vec3{0.f, -100.f, 0.f};
-    v1.color = glm::vec3{0.f, 1.f, 0.f};
-    v2.color = glm::vec3{0.f, 1.f, 0.f};
-    renderGraph().sendLine(v1, v2);
-
-    v2.position = glm::vec3{0.f, 0.f, 100.f};
-    v1.position = glm::vec3{0.f, 0.f, -100.f};
-    v1.color = glm::vec3{0.f, 0.f, 1.f};
-    v2.color = glm::vec3{0.f, 0.f, 1.f};
-    renderGraph().sendLine(v1, v2);
-
-    v1.color = glm::vec3(1.0f, 0.3f, 0.3f);
-    v2.color = glm::vec3(1.0f, 0.3f, 0.3f);
-    auto pos = gEditor->camera().getPosition();
-
-    float scale = 1.f;
-    if (abs(pos.y) < 50.f) {
-        scale = 0.5f;
-    }
-
-    if (abs(pos.y) < 10.f) {
-        scale = 0.1f;
-    }
-
-    pos.y = 0;
-    pos.x = glm::round(pos.x / (100.f * scale)) * (100.f * scale);
-    pos.z = glm::round(pos.z / (100.f * scale)) * (100.f * scale);
-
-    v1.position = pos;
-    v1.position.z = -1000 * scale + pos.z;
-    v2.position = pos;
-    v2.position.z = 1000 * scale + pos.z;
-
-    v1.color = glm::vec3{0.3f, 0.3f, 0.7f};
-    v2.color = glm::vec3{0.3f, 0.3f, 0.7f};
-
-    for (int i = -10; i <= 10; i++) {
-        v1.position.x = 100.f * scale * i + pos.x;
-        v2.position.x = 100.f * scale * i + pos.x;
-        renderGraph().sendLine(v1, v2);
-    }
-
-    v1.position = pos;
-    v1.position.x = -1000 * scale + pos.x;
-    v2.position = pos;
-    v2.position.x = 1000 * scale + pos.x;
-
-    v1.color = glm::vec3{0.7f, 0.3f, 0.3f};
-    v2.color = glm::vec3{0.7f, 0.3f, 0.3f};
-
-    for (int i = -10; i <= 10; i++) {
-        v1.position.z = 100.f * scale * i + pos.z;
-        v2.position.z = 100.f * scale * i + pos.z;
-        renderGraph().sendLine(v1, v2);
     }
 }
 
@@ -541,7 +466,7 @@ jleEditor::exiting()
     auto ctx = *_editorContext;
 
     saveState().gameRunning = !ctx.engineModulesContext.gameRuntime.isGameKilled();
-    saveState().cameraPosition = gEditor->camera().getPosition();
+    saveState().cameraPosition = _editorWindows->sceneWindow->getCameraPosition();
     saveState().loadedScenePaths.clear();
     for (auto &&scene : _editorScenes) {
         saveState().loadedScenePaths.push_back(scene->path);
@@ -571,11 +496,6 @@ jleEditor::getEditorSceneObjectsWindow()
     return *_editorSceneObjects;
 }
 
-jleCamera &
-jleEditor::camera()
-{
-    return *_camera.get();
-}
 bool
 
 jleEditor::checkSceneIsActiveEditor(const std::string &sceneName)

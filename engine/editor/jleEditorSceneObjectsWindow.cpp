@@ -55,7 +55,7 @@ jleEditorSceneObjectsWindow::renderUI(jleEditorModulesContext &ctx)
                     if (ImGui::MenuItem("jleScene")) {
 
                         std::shared_ptr<jleScene> newScene = std::make_shared<jleScene>();
-                        gEditor->getEditorScenes().push_back(newScene);
+                        ctx.editor.getEditorScenes().push_back(newScene);
 
                         newScene->onSceneStart(ctx.engineModulesContext);
                     }
@@ -152,7 +152,7 @@ jleEditorSceneObjectsWindow::renderUI(jleEditorModulesContext &ctx)
                 sceneUi(scene, " (game)", false);
             }
         } else {
-            for (auto scene : gEditor->getEditorScenes()) {
+            for (auto scene : ctx.editor.getEditorScenes()) {
                 sceneUi(scene, " (editor)", true);
             }
         }

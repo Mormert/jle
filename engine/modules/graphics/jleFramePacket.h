@@ -56,7 +56,7 @@ struct jle3DQueuedSkinnedMesh {
     bool castShadows;
 };
 
-class jle3DGraph
+class jleFramePacket
 {
 private:
     friend class jle3DRenderer;

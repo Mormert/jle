@@ -23,7 +23,7 @@
 #if JLE_BUILD_EDITOR
 #include "editor/jleEditor.h"
 #include "editor/jleEditorGizmos.h"
-#include "modules/graphics/jle3DGraph.h"
+#include "modules/graphics/jleFramePacket.h"
 #endif
 
 #if JLE_BUILD_IMGUI
@@ -109,11 +109,11 @@ cCamera::editorInspectorImGuiRender(jleEditorModulesContext &ctx)
 }
 
 void
-cCamera::editorGizmosRender(bool selected, jle3DGraph &renderGraph)
+cCamera::editorGizmosRender(jleFramePacket & renderGraph, jleEditorGizmos& gizmos)
 {
 #if JLE_BUILD_EDITOR
-    auto mesh = gEditor->gizmos().cameraMesh();
-    auto material = gEditor->gizmos().cameraMaterial();
+    auto mesh = gizmos.cameraMesh();
+    auto material = gizmos.cameraMaterial();
     renderGraph.sendMesh(
         mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 #endif // JLE_BUILD_EDITOR

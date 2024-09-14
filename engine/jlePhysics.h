@@ -31,7 +31,7 @@
 #include <memory>
 
 class cRigidbody;
-class jle3DGraph;
+class jleFramePacket;
 
 class jlePhysics
 {
@@ -46,7 +46,7 @@ public:
 
     bool renderDebugEnabled = false;
 
-    void renderDebug(jle3DGraph& graph);
+    void renderDebug(jleFramePacket & graph);
 
     btDiscreteDynamicsWorld& dynamicsWorld();
 

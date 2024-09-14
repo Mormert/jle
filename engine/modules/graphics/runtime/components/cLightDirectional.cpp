@@ -18,8 +18,8 @@
 #include "editor/jleEditor.h"
 #include "editor/jleEditorGizmos.h"
 
-#include "modules/graphics/jle3DGraph.h"
 #include "modules/graphics/jle3DSettings.h"
+#include "modules/graphics/jleFramePacket.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLightDirectional)
 
@@ -34,11 +34,11 @@ cLightDirectional::update(jleEngineModulesContext& ctx)
 
 
 void
-cLightDirectional::editorGizmosRender(bool selected,jle3DGraph& renderGraph)
+cLightDirectional::editorGizmosRender(jleFramePacket & renderGraph, jleEditorGizmos& gizmos)
 {
 #if JLE_BUILD_EDITOR
-    auto mesh = gEditor->gizmos().sunMesh();
-    std::shared_ptr<jleMaterial> material = gEditor->gizmos().sunMaterial();
+    auto mesh = gizmos.sunMesh();
+    std::shared_ptr<jleMaterial> material = gizmos.sunMaterial();
     renderGraph.sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 #endif // JLE_BUILD_EDITOR
 }

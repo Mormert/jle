@@ -17,9 +17,9 @@
 
 #include "core/jleCommon.h"
 
-#include "jle3DGraph.h"
 #include "jle3DSettings.h"
 #include "jleCamera.h"
+#include "jleFramePacket.h"
 #include "modules/graphics/core/jleFrameBufferInterface.h"
 
 #include <memory>
@@ -38,11 +38,11 @@ public:
 
     void render(jleFramebufferInterface &framebufferOut,
                 const jleCamera &camera,
-                jle3DGraph &graph,
+                jleFramePacket &graph,
                 const jle3DSettings &settings,
                 jleSerializationContext& ctx);
 
-    void renderMeshesPicking(jleFramebufferInterface &framebufferOut, const jleCamera &camera, const jle3DGraph &graph);
+    void renderMeshesPicking(jleFramebufferInterface &framebufferOut, const jleCamera &camera, const jleFramePacket &graph);
 
 private:
     void renderMeshes(const jleCamera &camera,
@@ -74,7 +74,7 @@ private:
                                 const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
                                 const jle3DSettings &settings);
 
-    void renderPointLights(const jleCamera &camera, const jle3DGraph &graph);
+    void renderPointLights(const jleCamera &camera, const jleFramePacket &graph);
 
     void bindShadowmapFramebuffers(const jle3DSettings &settings);
 

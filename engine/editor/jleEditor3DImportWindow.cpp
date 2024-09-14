@@ -33,7 +33,7 @@ jleEditor3DImportWindow::jleEditor3DImportWindow(const std::string &window_name)
 }
 
 void
-jleEditor3DImportWindow::renderUI(jleEngineModulesContext &ctx)
+jleEditor3DImportWindow::renderUI(jleEditorModulesContext &ctx)
 {
     if (!isOpened) {
         return;
@@ -120,8 +120,9 @@ sanitizeAssimpsNames(const aiScene *scene)
 bool
 jleEditor3DImportWindow::importModel(const jlePath &importPath,
                                      const jlePath &destinationPath,
-                                     jleEngineModulesContext &ctx)
+                                     jleEditorModulesContext &editorCtx)
 {
+    auto ctx = editorCtx.engineModulesContext;
     auto pathStr = importPath.getRealPath();
 
     Assimp::Importer importer;
@@ -257,7 +258,7 @@ jleEditor3DImportWindow::importModel(const jlePath &importPath,
 
     auto rootNode = scene->mRootNode;
 
-    auto objectsScene = gEditor->getEditorScenes()[0];
+    auto objectsScene = editorCtx.editor.getEditorScenes()[0];
 
     jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
 

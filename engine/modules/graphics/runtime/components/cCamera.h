@@ -50,7 +50,7 @@ public:
 
     void onFramebufferSizeChanged(jleEngineModulesContext& ctx, unsigned int width, unsigned int height);
 
-    void editorGizmosRender(bool selected, jle3DGraph &renderGraph) override;
+    void editorGizmosRender(jleFramePacket & renderGraph, jleEditorGizmos& gizmos) override;
 
     bool perspective{true};
     float perspectiveFov{90.f};

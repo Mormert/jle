@@ -15,7 +15,7 @@
 
 #include "jlePhysicsDebugDrawer.h"
 #include "jleGameEngine.h"
-#include "modules/graphics/jle3DGraph.h"
+#include "modules/graphics/jleFramePacket.h"
 
 void
 jlePhysicsDebugDrawer::setDebugMode(int debugMode)
@@ -81,7 +81,7 @@ jlePhysicsDebugDrawer::getDefaultColors() const
 jlePhysicsDebugDrawer::~jlePhysicsDebugDrawer() {}
 
 void
-jlePhysicsDebugDrawer::set3DGraph(jle3DGraph *graph)
+jlePhysicsDebugDrawer::set3DGraph(jleFramePacket *graph)
 {
     _graph = graph;
 }

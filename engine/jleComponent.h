@@ -37,6 +37,7 @@ class jleSceneServer;
 class jleComponent;
 class jleTransform;
 class jleEditorModulesContext;
+class jleEditorGizmos;
 
 class jleComponent
 {
@@ -103,7 +104,7 @@ public:
     }
 
     [[maybe_unused]] virtual void
-    editorGizmosRender(bool selected, jle3DGraph& renderGraph)
+    editorGizmosRender(jleFramePacket & renderGraph, jleEditorGizmos& gizmos)
     {
     }
 

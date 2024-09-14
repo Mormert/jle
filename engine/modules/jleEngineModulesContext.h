@@ -24,7 +24,7 @@ class jleInput;
 class jleLuaEnvironment;
 class jle3DRenderer;
 struct jle3DSettings;
-class jle3DGraph;
+class jleFramePacket;
 class jleFrameInfo;
 class jleGameRuntime;
 class jleEngineSettings;
@@ -35,7 +35,7 @@ struct jleEngineModulesContext {
                                      jle3DRenderer &renderer,
                                      jleRenderThread &renderThread,
                                      jle3DSettings &renderSettings,
-                                     jle3DGraph &renderGraph,
+                                     jleFramePacket &renderGraph,
                                      jleEngineSettings &engineSettings,
                                      jleInput &input,
                                      jleLuaEnvironment &luaEnvironment,
@@ -54,7 +54,7 @@ struct jleEngineModulesContext {
     // Rendering
     jleRenderThread &renderThread;
     jle3DSettings &renderSettings;
-    jle3DGraph &renderGraph;
+    jleFramePacket &renderGraph;
 
     // Utilities
     jleFrameInfo &frameInfo;

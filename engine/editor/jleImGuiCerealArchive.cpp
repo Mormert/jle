@@ -120,7 +120,7 @@ jleImGuiArchive::draw_ui_reference(const char *name,
 
     bool existsSomeFiles = false;
     for (auto &extension : fileExtensions) {
-        auto e = gEditor->resourceIndexer().getIndexedFilesPtr(extension.c_str());
+        auto e = editorCtx.editor.resourceIndexer().getIndexedFilesPtr(extension.c_str());
         if (!e->empty()) {
             existsSomeFiles = true;
         }

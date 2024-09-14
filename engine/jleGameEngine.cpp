@@ -26,9 +26,9 @@
 #include "modules/graphics/core/jleFramebufferMultisample.h"
 #include "modules/graphics/core/jleFramebufferScreen.h"
 #include "modules/graphics/core/jleFullscreenRendering.h"
-#include "modules/graphics/jle3DGraph.h"
 #include "modules/graphics/jle3DRenderer.h"
 #include "modules/graphics/jle3DSettings.h"
+#include "modules/graphics/jleFramePacket.h"
 #include "modules/input/hardware/jleMouseInput.h"
 #include "modules/input/jleInput.h"
 #include "modules/windowing/jleWindow.h"
@@ -93,7 +93,7 @@ jleGameEngine::jleGameEngine()
         _input = std::make_unique<jleInput>(*_window);
 
         _3dRenderer = std::make_unique<jle3DRenderer>(serializationContext);
-        _3dRenderGraph = std::make_unique<jle3DGraph>();
+        _currentFramePacket = std::make_unique<jleFramePacket>();
         _3dRendererSettings = std::make_unique<jle3DSettings>();
         _soLoud = std::make_unique<SoLoud::Soloud>();
 
@@ -113,7 +113,7 @@ jleGameEngine::jleGameEngine()
                                                                 *_3dRenderer,
                                                                 *_renderThread,
                                                                 *_3dRendererSettings,
-                                                                *_3dRenderGraph,
+                                                                *_currentFramePacket,
                                                                 *_internal->engineSettings.get(),
                                                                 *_input,
                                                                 *_luaEnvironment,
@@ -245,11 +245,11 @@ jleGameEngine::render(jleEngineModulesContext &ctx, wi::jobsystem::context &jobs
                         ctx.gameRuntime.mainGameScreenFramebuffer->height());
         }
 
-        if (_3dRenderGraphForRendering) {
+        if (_previousFramePacket) {
             jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
             renderer().render(msaa,
                               ctx.gameRuntime.getGame().mainCamera,
-                              *_3dRenderGraphForRendering,
+                              *_previousFramePacket,
                               renderSettings(),
                               serializationContext);
         }
@@ -333,8 +333,8 @@ jleGameEngine::mainLoop()
     Wait(jobsCtx);
 
     // Double buffer COPY (todo: don't make a copy here, instead move it..)
-    _3dRenderGraphForRendering = std::make_unique<jle3DGraph>(*_3dRenderGraph);
-    _3dRenderGraph->emptyQueues();
+    _previousFramePacket = std::make_unique<jleFramePacket>(*_currentFramePacket);
+    _currentFramePacket->emptyQueues();
 
     FrameMark;
 }
@@ -409,10 +409,10 @@ jleGameEngine::renderThread()
     return *_renderThread;
 }
 
-jle3DGraph &
-jleGameEngine::renderGraph()
+jleFramePacket &
+jleGameEngine::currentFramePacket()
 {
-    return *_3dRenderGraph.get();
+    return *_currentFramePacket.get();
 }
 jleInput &
 jleGameEngine::input()

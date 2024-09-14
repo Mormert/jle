@@ -22,7 +22,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-class jle3DGraph;
+class jleFramePacket;
 
 class jlePhysicsDebugDrawer : public btIDebugDraw
 {
@@ -52,9 +52,9 @@ public:
     void flushLines() override;
 
 private:
-    void set3DGraph(jle3DGraph *graph);
+    void set3DGraph(jleFramePacket *graph);
 
-    jle3DGraph *_graph;
+    jleFramePacket *_graph;
     friend class jlePhysics;
 };
 

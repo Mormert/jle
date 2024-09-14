@@ -17,7 +17,7 @@
 
 #include "jleProfiler.h"
 #include "jleResourceRef.h"
-#include "modules/graphics/jle3DGraph.h"
+#include "modules/graphics/jleFramePacket.h"
 #include "modules/graphics/runtime/components/cSkinnedMesh.h"
 
 #include "editor/jleEditor.h"

@@ -14,9 +14,9 @@
  *********************************************************************************************/
 
 #include "jle3DRenderer.h"
-#include "jle3DGraph.h"
 #include "jle3DSettings.h"
 #include "jleCamera.h"
+#include "jleFramePacket.h"
 #include "jleGLError.h"
 #include "jleGameEngine.h"
 #include "jleMaterial.h"
@@ -106,7 +106,7 @@ jle3DRenderer::~jle3DRenderer()
 void
 jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
                       const jleCamera &camera,
-                      jle3DGraph &graph,
+                      jleFramePacket &graph,
                       const jle3DSettings &settings,
                       jleSerializationContext& ctx)
 {
@@ -315,7 +315,7 @@ jle3DRenderer::renderSkybox(const jleCamera &camera, const jle3DSettings &settin
 void
 jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
                                    const jleCamera &camera,
-                                   const jle3DGraph &graph)
+                                   const jleFramePacket &graph)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshesPicking)
 
@@ -390,7 +390,7 @@ jle3DRenderer::renderDirectionalLight(const jleCamera &camera,
 }
 
 void
-jle3DRenderer::renderPointLights(const jleCamera &camera, const jle3DGraph &graph)
+jle3DRenderer::renderPointLights(const jleCamera &camera, const jleFramePacket &graph)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderPointLights)
 

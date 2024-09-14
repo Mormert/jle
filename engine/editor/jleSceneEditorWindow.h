@@ -21,8 +21,8 @@
 
 #include "editor/jleEditorImGuiWindowInterface.h"
 
-#include "jleGameEngine.h"
 #include "jleCamera.h"
+#include "jleGameEngine.h"
 
 #include <ImGui/ImGuizmo.h>
 
@@ -34,18 +34,30 @@ class jleSceneEditorWindow : public jleEditorWindowInterface
 public:
     explicit jleSceneEditorWindow(const std::string &window_name);
 
-    void renderUI(jleEngineModulesContext &ctx);
+    void renderUI(jleEditorModulesContext &ctx);
 
-    void render(jle3DGraph& graph, const jleEditorModulesContext& context);
+    void renderEditorGrid(jleFramePacket & graph);
 
-    jleCameraSimpleFPVController fpvCamController;
+    void render(jleFramePacket &graph, const jleEditorModulesContext &context);
+
+    jleCameraSimpleFPVController fpvCamController{};
     float cameraSpeed = 100.f;
     float orthoZoomValue = 10.f;
 
+    [[nodiscard]] glm::vec3 const
+    getCameraPosition()
+    {
+        return _renderCamera.getPosition();
+    }
+
 private:
+
     float _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;
     std::pair<int32_t, int32_t> _lastCursorPos;
     bool _wasFocused = false;
+
+    jleCamera _renderCamera{};
+    bool _perspectiveCamera = true;
 
     std::unique_ptr<jleFramebufferInterface> _pickingFramebuffer;
     std::unique_ptr<jleFramebufferMultisample> _msaa;

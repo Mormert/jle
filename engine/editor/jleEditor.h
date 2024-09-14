@@ -41,9 +41,6 @@ class jleResourceIndexer;
 struct jleWindowResizeEvent;
 class jleSerializationContext;
 
-class jleEditor;
-inline jleEditor *gEditor;
-
 class jleEditor : public jleGameEngine
 {
 public:
@@ -58,9 +55,6 @@ public:
     void update(jleEngineModulesContext &ctx) override;
 
     // std::shared_ptr<jleFramebufferInterface> editorScreenFramebuffer;
-
-    jleCamera &camera();
-    bool perspectiveCamera = true;
 
     jleEditorGizmos &gizmos();
 
@@ -98,11 +92,9 @@ private:
 
     void initImgui();
 
-    void renderEditorGizmos(jle3DGraph &renderGraph, jleGameRuntime &gameRuntime);
+    void renderEditorGizmos(jleFramePacket &renderGraph, jleGameRuntime &gameRuntime);
 
-    void renderEditorGridGizmo();
-
-    void renderEditorGizmosObject(jleObject *object, jle3DGraph &renderGraph);
+    void renderEditorGizmosObject(jleObject *object, jleFramePacket &renderGraph);
 
     void addImGuiWindow(std::shared_ptr<jleEditorWindowInterface> window);
 
@@ -122,8 +114,6 @@ private:
     std::unique_ptr<jleResourceIndexer> _resourceIndexer;
 
     std::shared_ptr<jleEditorTextEdit> _textEditWindow;
-
-    std::unique_ptr<jleCamera> _camera;
 
     std::unique_ptr<jleEditorGizmos> _gizmos;
 };

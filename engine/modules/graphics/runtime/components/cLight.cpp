@@ -19,7 +19,7 @@
 #include "editor/jleEditorGizmos.h"
 
 #include "jleGameEngine.h"
-#include "modules/graphics/jle3DGraph.h"
+#include "modules/graphics/jleFramePacket.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -42,11 +42,11 @@ cLight::editorUpdate(jleEngineModulesContext& ctx)
 }
 
 void
-cLight::editorGizmosRender(bool selected, jle3DGraph& renderGraph)
+cLight::editorGizmosRender(jleFramePacket & renderGraph, jleEditorGizmos& gizmos)
 {
 #if JLE_BUILD_EDITOR
-    auto mesh = gEditor->gizmos().lightLampMesh();
-    std::shared_ptr<jleMaterial> material = gEditor->gizmos().lampMaterial();
+    auto mesh = gizmos.lightLampMesh();
+    std::shared_ptr<jleMaterial> material = gizmos.lampMaterial();
     auto matrix = glm::translate(glm::mat4{1.0f}, _attachedToObject->getTransform().getWorldPosition());
     renderGraph.sendMesh(mesh, material, matrix, _attachedToObject->instanceID(), false);
 #endif // JLE_BUILD_EDITOR

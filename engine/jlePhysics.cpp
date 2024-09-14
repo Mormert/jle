@@ -64,7 +64,7 @@ jlePhysics::removeRigidbody(btRigidBody *body)
 }
 
 void
-jlePhysics::renderDebug(jle3DGraph& graph)
+jlePhysics::renderDebug(jleFramePacket & graph)
 {
     if (renderDebugEnabled) {
         JLE_SCOPE_PROFILE_CPU(renderPhysicsDebug)

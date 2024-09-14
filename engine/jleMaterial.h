@@ -27,8 +27,8 @@
 #include "jleShader.h"
 #include "jleTexture.h"
 #include "jleTextureRefOrRGBA.h"
-#include "modules/graphics/jle3DGraph.h"
 #include "modules/graphics/jle3DSettings.h"
+#include "modules/graphics/jleFramePacket.h"
 
 #include "editor/jleImGuiArchive.h"
 #include "serialization/jleBinaryArchive.h"
