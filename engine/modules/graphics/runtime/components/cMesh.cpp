@@ -29,7 +29,7 @@ cMesh::update(jleEngineModulesContext& ctx)
     if (_meshRef) {
         std::shared_ptr<jleMesh> mesh = _meshRef.get();
         std::shared_ptr<jleMaterial> material = _materialRef.get();
-        ctx.renderGraph.sendMesh(
+        ctx.currentFramePacket.sendMesh(
             mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), true);
     }
 }

@@ -21,8 +21,7 @@
 #include "jleProfiler.h"
 #include "modules/physics/components/cRigidbody.h"
 
-jlePhysics::
-jlePhysics()
+jlePhysics::jlePhysics()
 {
     _collisionConfiguration = std::make_unique<btDefaultCollisionConfiguration>();
 
@@ -64,11 +63,11 @@ jlePhysics::removeRigidbody(btRigidBody *body)
 }
 
 void
-jlePhysics::renderDebug(jleFramePacket & graph)
+jlePhysics::renderDebug(jleFramePacket &framePacket)
 {
     if (renderDebugEnabled) {
         JLE_SCOPE_PROFILE_CPU(renderPhysicsDebug)
-        _debugDraw->set3DGraph(&graph);
+        _debugDraw->setFramePacket(&framePacket);
         _dynamicsWorld->debugDrawWorld();
     }
 }

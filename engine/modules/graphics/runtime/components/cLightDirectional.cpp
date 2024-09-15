@@ -24,17 +24,16 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLightDirectional)
 
 void
-cLightDirectional::update(jleEngineModulesContext& ctx)
+cLightDirectional::update(jleEngineModulesContext &ctx)
 {
-    ctx.renderSettings.useDirectionalLight = true;
+    ctx.currentFramePacket.settings.useDirectionalLight = true;
     auto mat4 = getTransform().getWorldMatrix();
 
-    ctx.renderSettings.setDirectionalLight(mat4, _color);
+    ctx.currentFramePacket.settings.setDirectionalLight(mat4, _color);
 }
 
-
 void
-cLightDirectional::editorGizmosRender(jleFramePacket & renderGraph, jleEditorGizmos& gizmos)
+cLightDirectional::editorGizmosRender(jleFramePacket &renderGraph, jleEditorGizmos &gizmos)
 {
 #if JLE_BUILD_EDITOR
     auto mesh = gizmos.sunMesh();

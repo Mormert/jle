@@ -32,7 +32,7 @@ cLight::start(jleEngineModulesContext& ctx)
 void
 cLight::update(jleEngineModulesContext& ctx)
 {
-    ctx.renderGraph.sendLight(getTransform().getWorldPosition(), _color);
+    ctx.currentFramePacket.sendLight(getTransform().getWorldPosition(), _color);
 }
 
 void

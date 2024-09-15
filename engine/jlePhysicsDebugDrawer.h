@@ -52,9 +52,9 @@ public:
     void flushLines() override;
 
 private:
-    void set3DGraph(jleFramePacket *graph);
+    void setFramePacket(jleFramePacket *graph);
 
-    jleFramePacket *_graph;
+    jleFramePacket *_framePacketPtr;
     friend class jlePhysics;
 };
 

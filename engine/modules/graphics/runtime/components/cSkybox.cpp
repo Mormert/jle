@@ -25,11 +25,25 @@ void
 cSkybox::start(jleEngineModulesContext &ctx)
 {
     if (_skybox) {
-        ctx.renderSettings.skybox = _skybox;
+        ctx.currentFramePacket.settings.skybox = _skybox;
     }
 }
 
 void
 cSkybox::update(jleEngineModulesContext &ctx)
 {
+}
+
+template <class Archive>
+void
+cSkybox::serialize(Archive &ar)
+{
+    ar(CEREAL_NVP(_skybox));
+
+    if constexpr (std::is_base_of<jleSerializationArchive_EditorOnly, Archive>()) {
+        if (_skybox.get()) {
+            jleSerializationArchive_EditorOnly &archiveEditorOnly = ar;
+            archiveEditorOnly.editorCtx.engineModulesContext.currentFramePacket.settings.skybox = _skybox;
+        }
+    }
 }

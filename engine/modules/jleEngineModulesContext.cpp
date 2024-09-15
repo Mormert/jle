@@ -3,7 +3,6 @@
 jleEngineModulesContext::jleEngineModulesContext(jleGameRuntime &gameRuntime,
                                                  jle3DRenderer &renderer,
                                                  jleRenderThread &renderThread,
-                                                 jle3DSettings &renderSettings_,
                                                  jleFramePacket &renderGraph_,
                                                  jleEngineSettings &engineSettings,
                                                  jleInput &input,
@@ -11,7 +10,8 @@ jleEngineModulesContext::jleEngineModulesContext(jleGameRuntime &gameRuntime,
                                                  jleWindow &window,
                                                  jleResources &resources,
                                                  jleFrameInfo &info)
-    : gameRuntime(gameRuntime), rendererModule(renderer), renderThread(renderThread), renderSettings(renderSettings_), renderGraph(renderGraph_),
+    : gameRuntime(gameRuntime), rendererModule(renderer), renderThread(renderThread),
+      currentFramePacket(renderGraph_),
       settings(engineSettings), inputModule(input), luaEnvironment(luaEnvironment_), windowModule(window),
       resourcesModule(resources), frameInfo(info)
 {

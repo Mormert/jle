@@ -32,30 +32,28 @@ class jleShader;
 class jle3DRenderer
 {
 public:
-    jle3DRenderer(jleSerializationContext& ctx);
+    jle3DRenderer(jleSerializationContext &ctx);
 
     virtual ~jle3DRenderer();
 
     void render(jleFramebufferInterface &framebufferOut,
                 const jleCamera &camera,
-                jleFramePacket &graph,
-                const jle3DSettings &settings,
-                jleSerializationContext& ctx);
+                const jleFramePacket &framePacket);
 
-    void renderMeshesPicking(jleFramebufferInterface &framebufferOut, const jleCamera &camera, const jleFramePacket &graph);
+    void renderMeshesPicking(jleFramebufferInterface &framebufferOut,
+                             const jleCamera &camera,
+                             const jleFramePacket &framePacket);
 
 private:
     void renderMeshes(const jleCamera &camera,
                       const std::vector<jle3DQueuedMesh> &meshes,
                       const std::vector<jle3DRendererLight> &lights,
-                      const jle3DSettings &settings,
-                      jleSerializationContext& ctx);
+                      const jle3DSettings &settings);
 
     void renderSkinnedMeshes(const jleCamera &camera,
                              const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
                              const std::vector<jle3DRendererLight> &lights,
-                             const jle3DSettings &settings,
-                             jleSerializationContext& ctx);
+                             const jle3DSettings &settings);
 
     void sortTranslucentMeshes(const jleCamera &camera, std::vector<jle3DQueuedMesh> &translucentMeshes);
 
@@ -74,7 +72,7 @@ private:
                                 const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
                                 const jle3DSettings &settings);
 
-    void renderPointLights(const jleCamera &camera, const jleFramePacket &graph);
+    void renderPointLights(const jleCamera &camera, const jleFramePacket &framePacket);
 
     void bindShadowmapFramebuffers(const jle3DSettings &settings);
 

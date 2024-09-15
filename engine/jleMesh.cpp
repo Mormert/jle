@@ -58,7 +58,7 @@ jleMesh::makeMesh(const std::vector<glm::vec3> &positions,
                   const std::vector<unsigned int> &indices,
                   jleRenderThread *renderThread)
 {
-    if (indices.size() > 0) {
+    if (!indices.empty()) {
         _trianglesCount = indices.size();
     } else {
         _trianglesCount = positions.size();
@@ -461,7 +461,7 @@ void
 jleMesh::generateDynamicConvexShape()
 {
     _dynamicConvexShape =
-        std::make_unique<btConvexHullShape>((&(positions()[0].x)), positions().size(), sizeof(glm::vec3));
+        std::make_unique<btConvexHullShape>((&(positions()[0].x)), (int)positions().size(), sizeof(glm::vec3));
 
     // _dynamicConvexShape->optimizeConvexHull();
     // _dynamicConvexShape->initializePolyhedralFeatures();

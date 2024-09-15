@@ -51,6 +51,7 @@ class jleFramebufferInterface;
 class jleLuaEnvironment;
 class jleRenderThread;
 class jleGameRuntime;
+class jleCamera;
 
 class jleFrameInfo
 {
@@ -89,10 +90,6 @@ public:
     jleWindow &window();
 
     jleInput &input();
-
-    jleFramePacket &currentFramePacket();
-
-    jle3DSettings &renderSettings();
 
     jleRenderThread &renderThread();
 
@@ -139,7 +136,7 @@ protected:
 
     virtual void update(jleEngineModulesContext &ctx);
 
-    virtual void render(jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx);
+    virtual void render(jleCamera& camera, jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx);
 
     virtual void exiting();
 

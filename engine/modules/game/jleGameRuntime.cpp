@@ -80,12 +80,14 @@ jleGameRuntime::executeNextFrame(jleEngineModulesContext &ctx)
     auto gameHaltedTemp = _gameHalted;
     _gameHalted = false;
 
+    jleCamera camera = getGame().mainCamera;
+
     // Game thread
     wi::jobsystem::context jobsCtx;
     wi::jobsystem::Execute(jobsCtx, [&](wi::jobsystem::JobArgs args) { update(ctx); });
 
     // Render thread
-    JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS) { _engine.render(ctx, jobsCtx); }
+    JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS) { _engine.render(camera, ctx, jobsCtx); }
     _gameHalted = gameHaltedTemp;
 }
 

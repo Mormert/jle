@@ -34,7 +34,6 @@ struct jleEngineModulesContext {
     explicit jleEngineModulesContext(jleGameRuntime &gameRuntime,
                                      jle3DRenderer &renderer,
                                      jleRenderThread &renderThread,
-                                     jle3DSettings &renderSettings,
                                      jleFramePacket &renderGraph,
                                      jleEngineSettings &engineSettings,
                                      jleInput &input,
@@ -53,8 +52,7 @@ struct jleEngineModulesContext {
 
     // Rendering
     jleRenderThread &renderThread;
-    jle3DSettings &renderSettings;
-    jleFramePacket &renderGraph;
+    jleFramePacket &currentFramePacket;
 
     // Utilities
     jleFrameInfo &frameInfo;

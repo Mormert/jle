@@ -129,7 +129,7 @@ jleSceneEditorWindow::renderUI(jleEditorModulesContext &ctx)
     if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && canSelectObject) {
 
         ctx.engineModulesContext.rendererModule.renderMeshesPicking(
-            *_pickingFramebuffer, _renderCamera, ctx.engineModulesContext.renderGraph);
+            *_pickingFramebuffer, _renderCamera, ctx.engineModulesContext.currentFramePacket);
 
         _pickingFramebuffer->bind();
 
@@ -291,8 +291,8 @@ jleSceneEditorWindow::renderUI(jleEditorModulesContext &ctx)
                 glm::mat4 matrix1 = glm::scale(modelMatrix, glm::vec3{1.00514159265f});
                 glm::mat4 matrix2 = glm::scale(modelMatrix, glm::vec3{0.99514159265f});
                 auto material = ctx.editor.gizmos().selectedObjectMaterial();
-                ctx.editor.currentFramePacket().sendMesh(mesh, material, matrix1, obj->instanceID(), false);
-                ctx.editor.currentFramePacket().sendMesh(mesh, material, matrix2, obj->instanceID(), false);
+                ctx.engineModulesContext.currentFramePacket.sendMesh(mesh, material, matrix1, obj->instanceID(), false);
+                ctx.engineModulesContext.currentFramePacket.sendMesh(mesh, material, matrix2, obj->instanceID(), false);
             }
         }
     }
@@ -359,7 +359,7 @@ jleSceneEditorWindow::renderUI(jleEditorModulesContext &ctx)
 }
 
 void
-jleSceneEditorWindow::render(jleFramePacket &graph, const jleEditorModulesContext &ctx)
+jleSceneEditorWindow::render(jleFramePacket &framePacket, const jleEditorModulesContext &ctx)
 {
     if (_perspectiveCamera) {
         _renderCamera.setPerspectiveProjection(45.f, _framebuffer->width(), _framebuffer->height(), 10000.f, 0.1f);
@@ -372,18 +372,13 @@ jleSceneEditorWindow::render(jleFramePacket &graph, const jleEditorModulesContex
         _msaa->resize(_framebuffer->width(), _framebuffer->height());
     }
 
-    jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
-                                                 &ctx.engineModulesContext.luaEnvironment,
-                                                 &ctx.engineModulesContext.renderThread};
-
-    ctx.engineModulesContext.rendererModule.render(
-        *_msaa, _renderCamera, graph, ctx.engine.renderSettings(), serializationContext);
+    ctx.engineModulesContext.rendererModule.render(*_msaa, _renderCamera, framePacket);
 
     _msaa->blitToOther(*_framebuffer);
 }
 
 void
-jleSceneEditorWindow::renderEditorGrid(jleFramePacket &graph)
+jleSceneEditorWindow::renderEditorGrid(jleFramePacket &framePacket)
 {
     JLE_SCOPE_PROFILE_CPU(renderEditorGrid)
 
@@ -392,19 +387,19 @@ jleSceneEditorWindow::renderEditorGrid(jleFramePacket &graph)
     v2.position = glm::vec3{100.f, 0.f, 0.f};
     v1.position = glm::vec3{-100.f, 0.f, 0.f};
 
-    graph.sendLine(v1, v2);
+    framePacket.sendLine(v1, v2);
 
     v2.position = glm::vec3{0.f, 100.f, 0.f};
     v1.position = glm::vec3{0.f, -100.f, 0.f};
     v1.color = glm::vec3{0.f, 1.f, 0.f};
     v2.color = glm::vec3{0.f, 1.f, 0.f};
-    graph.sendLine(v1, v2);
+    framePacket.sendLine(v1, v2);
 
     v2.position = glm::vec3{0.f, 0.f, 100.f};
     v1.position = glm::vec3{0.f, 0.f, -100.f};
     v1.color = glm::vec3{0.f, 0.f, 1.f};
     v2.color = glm::vec3{0.f, 0.f, 1.f};
-    graph.sendLine(v1, v2);
+    framePacket.sendLine(v1, v2);
 
     v1.color = glm::vec3(1.0f, 0.3f, 0.3f);
     v2.color = glm::vec3(1.0f, 0.3f, 0.3f);
@@ -434,7 +429,7 @@ jleSceneEditorWindow::renderEditorGrid(jleFramePacket &graph)
     for (int i = -10; i <= 10; i++) {
         v1.position.x = 100.f * scale * i + pos.x;
         v2.position.x = 100.f * scale * i + pos.x;
-        graph.sendLine(v1, v2);
+        framePacket.sendLine(v1, v2);
     }
 
     v1.position = pos;
@@ -448,7 +443,7 @@ jleSceneEditorWindow::renderEditorGrid(jleFramePacket &graph)
     for (int i = -10; i <= 10; i++) {
         v1.position.z = 100.f * scale * i + pos.z;
         v2.position.z = 100.f * scale * i + pos.z;
-        graph.sendLine(v1, v2);
+        framePacket.sendLine(v1, v2);
     }
 }
 

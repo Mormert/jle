@@ -28,17 +28,7 @@ class cSkybox : public jleComponent
 public:
     template <class Archive>
     void
-    serialize(Archive &ar)
-    {
-        ar(CEREAL_NVP(_skybox));
-
-        if constexpr (std::is_base_of<jleSerializationArchive_EditorOnly, Archive>()) {
-            if (_skybox.get()) {
-                jleSerializationArchive_EditorOnly &archiveEditorOnly = ar;
-                archiveEditorOnly.editorCtx.engineModulesContext.renderSettings.skybox = _skybox;
-            }
-        }
-    }
+    serialize(Archive &ar);
 
     void start(jleEngineModulesContext &ctx) override;
 

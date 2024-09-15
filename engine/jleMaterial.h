@@ -59,15 +59,14 @@ public:
 
     virtual void useMaterial(const jleCamera &camera,
                              const std::vector<jle3DRendererLight> &lights,
-                             const jle3DSettings &settings,
-                             jleSerializationContext &serializationContext);
+                             const jle3DSettings &settings);
 
     template <class Archive>
     void serialize(Archive &ar);
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedOnlyResource)
 
-    void setShader(const jleResourceRef<jleShader>& shaderRef);
+    void setShader(const jleResourceRef<jleShader> &shaderRef);
 
     std::shared_ptr<jleShader> getShader();
 
@@ -93,30 +92,11 @@ public:
 
     void useMaterial(const jleCamera &camera,
                      const std::vector<jle3DRendererLight> &lights,
-                     const jle3DSettings &settings,
-                     jleSerializationContext &serializationContext) override;
+                     const jle3DSettings &settings) override;
 
     template <class Archive>
-    void serialize(Archive &ar)
-    {
-        try {
-            ar(cereal::base_class<jleMaterial>(this),
-               CEREAL_NVP(_albedo),
-               CEREAL_NVP(_normal),
-               CEREAL_NVP(_metallic),
-               CEREAL_NVP(_roughness),
-               CEREAL_NVP(_opacity),
-               CEREAL_NVP(_usePointShadows),
-               CEREAL_NVP(_useDirectionalShadows),
-               CEREAL_NVP(_useSkyboxEnvironmentMap),
-               CEREAL_NVP(_isTranslucent),
-               CEREAL_NVP(_singleChannelOpacity),
-               CEREAL_NVP(_blendModeSrc),
-               CEREAL_NVP(_blendModeDst));
-        } catch (std::exception &e) {
-            LOGE << "Failed loading material:" << e.what();
-        }
-    }
+    void
+    serialize(Archive &ar);
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleMaterial)
 
@@ -138,8 +118,7 @@ public:
     jleBlendMode _blendModeDst{};
 };
 
-//JLE_EXTERN_TEMPLATE_CEREAL_H(jleMaterialPBR)
-
+JLE_EXTERN_TEMPLATE_CEREAL_H(jleMaterialPBR)
 
 CEREAL_REGISTER_TYPE(jleMaterialPBR)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleMaterial, jleMaterialPBR)

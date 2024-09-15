@@ -50,11 +50,9 @@ public:
 
     void start(jleEngineModulesContext &context) override;
 
-    void render(jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx) override;
+    void render(jleCamera& camera, jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx) override;
 
     void update(jleEngineModulesContext &ctx) override;
-
-    // std::shared_ptr<jleFramebufferInterface> editorScreenFramebuffer;
 
     jleEditorGizmos &gizmos();
 
@@ -84,7 +82,7 @@ private:
 
     void exiting() override;
 
-    void renderGameView(jleGameRuntime &runtime, jleSerializationContext &ctx);
+    void renderGameView(const jleCamera& camera, const jleFramePacket& framePacketIn, jleFramebufferInterface& framebufferOut);
 
     void renderEditorSceneView(jleEngineModulesContext &ctx);
 

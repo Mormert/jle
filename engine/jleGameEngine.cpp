@@ -80,7 +80,8 @@ jleGameEngine::jleGameEngine()
     _luaEnvironment->loadInitialScripts(serializationContext);
 
     _internal = std::make_unique<jleEngineInternal>();
-    _internal->engineSettings = jleResourceRef<jleEngineSettings>("GR:/settings/enginesettings.es", serializationContext);
+    _internal->engineSettings =
+        jleResourceRef<jleEngineSettings>("GR:/settings/enginesettings.es", serializationContext);
 
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
     {
@@ -101,8 +102,6 @@ jleGameEngine::jleGameEngine()
         _soLoud->init();
     }
 
-
-
     _timerManager = std::make_unique<jleTimerManager>();
 
     enet_initialize();
@@ -112,7 +111,6 @@ jleGameEngine::jleGameEngine()
     _modulesContext = std::make_unique<jleEngineModulesContext>(*_gameRuntime,
                                                                 *_3dRenderer,
                                                                 *_renderThread,
-                                                                *_3dRendererSettings,
                                                                 *_currentFramePacket,
                                                                 *_internal->engineSettings.get(),
                                                                 *_input,
@@ -226,7 +224,7 @@ jleGameEngine::update(jleEngineModulesContext &ctx)
 }
 
 void
-jleGameEngine::render(jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx)
+jleGameEngine::render(jleCamera &camera, jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx)
 {
     JLE_SCOPE_PROFILE_CPU(jleGameEngine_render)
 
@@ -236,8 +234,7 @@ jleGameEngine::render(jleEngineModulesContext &ctx, wi::jobsystem::context &jobs
 
         // Render to game view
         static jleFramebufferMultisample msaa{
-            ctx.gameRuntime.mainGameScreenFramebuffer->width(), ctx.gameRuntime.mainGameScreenFramebuffer->height(),
-                                              4};
+            ctx.gameRuntime.mainGameScreenFramebuffer->width(), ctx.gameRuntime.mainGameScreenFramebuffer->height(), 4};
 
         if (ctx.gameRuntime.mainGameScreenFramebuffer->width() != msaa.width() ||
             ctx.gameRuntime.mainGameScreenFramebuffer->height() != msaa.height()) {
@@ -246,12 +243,7 @@ jleGameEngine::render(jleEngineModulesContext &ctx, wi::jobsystem::context &jobs
         }
 
         if (_previousFramePacket) {
-            jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
-            renderer().render(msaa,
-                              ctx.gameRuntime.getGame().mainCamera,
-                              *_previousFramePacket,
-                              renderSettings(),
-                              serializationContext);
+            renderer().render(msaa, camera, *_previousFramePacket);
         }
 
         // Render to the MSAA framebuffer, then blit the result over to the main framebuffer
@@ -312,14 +304,17 @@ jleGameEngine::mainLoop()
     wi::jobsystem::context jobsCtx;
     jleEngineModulesContext &modulesContext = *_modulesContext;
 
+    // Copy the last frame's camera before splitting to game & render threads
+    auto camera =
+        modulesContext.gameRuntime.isGameKilled() ? jleCamera{} : modulesContext.gameRuntime.getGame().mainCamera;
+
     // Game thread
     wi::jobsystem::Execute(jobsCtx, [&](wi::jobsystem::JobArgs args) { _gameRuntime->update(modulesContext); });
-    // update(deltaFrameTime());
 
     // Render thread
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
     {
-        render(modulesContext, jobsCtx);
+        render(camera, modulesContext, jobsCtx);
         _window->updateWindow();
         running = !_window->windowShouldClose();
     }
@@ -397,11 +392,6 @@ jleGameEngine::settings()
 {
     return *_internal->engineSettings.get();
 }
-jle3DSettings &
-jleGameEngine::renderSettings()
-{
-    return *_3dRendererSettings.get();
-}
 
 jleRenderThread &
 jleGameEngine::renderThread()
@@ -409,11 +399,6 @@ jleGameEngine::renderThread()
     return *_renderThread;
 }
 
-jleFramePacket &
-jleGameEngine::currentFramePacket()
-{
-    return *_currentFramePacket.get();
-}
 jleInput &
 jleGameEngine::input()
 {

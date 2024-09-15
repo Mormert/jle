@@ -16,6 +16,7 @@
 #pragma once
 
 #include "core/jleCommon.h"
+#include "jle3DSettings.h"
 
 #include <glm/glm.hpp>
 
@@ -90,8 +91,15 @@ public:
     inline void
     emptyQueues()
     {
-        *this = {};
+        _meshes.clear();
+        _translucentMeshes.clear();
+        _skinnedMeshes.clear();
+        _lineStrips.clear();
+        _lines.clear();
+        _lights.clear();
     }
+
+    jle3DSettings settings{};
 
 private:
     std::vector<jle3DQueuedMesh> _meshes;
@@ -100,4 +108,5 @@ private:
     std::vector<std::vector<jle3DLineVertex>> _lineStrips;
     std::vector<jle3DLineVertex> _lines;
     std::vector<jle3DRendererLight> _lights;
+
 };

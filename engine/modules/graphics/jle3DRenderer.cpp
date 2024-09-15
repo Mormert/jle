@@ -106,11 +106,13 @@ jle3DRenderer::~jle3DRenderer()
 void
 jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
                       const jleCamera &camera,
-                      jleFramePacket &graph,
-                      const jle3DSettings &settings,
-                      jleSerializationContext& ctx)
+                      const jleFramePacket &framePacketRef)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_render)
+
+
+    // TODO: Don't make this silly copy here, this is just a work around since the frame packet needs to be const ref
+    jleFramePacket framePacket = framePacketRef;
 
     framebufferOut.bind();
 
@@ -125,17 +127,17 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 
     // Sort translucency early on another thread, sync before rendering translucency
     wi::jobsystem::context sortCtx;
-    if (!graph._translucentMeshes.empty()) {
+    if (!framePacket._translucentMeshes.empty()) {
         wi::jobsystem::Execute(
-            sortCtx, [&](wi::jobsystem::JobArgs args) { sortTranslucentMeshes(camera, graph._translucentMeshes); });
+            sortCtx, [&](wi::jobsystem::JobArgs args) { sortTranslucentMeshes(camera, framePacket._translucentMeshes); });
     }
 
     // Directional light renders to the shadow mapping framebuffer
-    renderDirectionalLight(camera, graph._meshes, graph._skinnedMeshes, settings);
+    renderDirectionalLight(camera, framePacket._meshes, framePacket._skinnedMeshes, framePacket.settings);
 
     glCheckError("3D Render - Directional Lights");
 
-    renderPointLights(camera, graph);
+    renderPointLights(camera, framePacket);
 
     glCheckError("3D Render - Point Lights");
 
@@ -147,36 +149,36 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
     // glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
 
-    bindShadowmapFramebuffers(settings);
+    bindShadowmapFramebuffers(framePacket.settings);
 
     {
         JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes_Opaque)
-        renderMeshes(camera, graph._meshes, graph._lights, settings, ctx);
+        renderMeshes(camera, framePacket._meshes, framePacket._lights, framePacket.settings);
         glCheckError("3D Render - Opaque Meshes");
     }
 
     {
         JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderSkinnedMeshes_Opaque)
-        renderSkinnedMeshes(camera, graph._skinnedMeshes, graph._lights, settings, ctx);
+        renderSkinnedMeshes(camera, framePacket._skinnedMeshes, framePacket._lights, framePacket.settings);
         glCheckError("3D Render - Opaque Skinned Meshes");
     }
 
-    renderLineStrips(camera, graph._lineStrips);
+    renderLineStrips(camera, framePacket._lineStrips);
     glCheckError("3D Render - Strip Lines");
 
-    renderLines(camera, graph._lines);
+    renderLines(camera, framePacket._lines);
     glCheckError("3D Render - Lines");
 
-    renderSkybox(camera, settings);
+    renderSkybox(camera, framePacket.settings);
     glCheckError("3D Render - Skybox");
 
     {
         JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes_Translucent)
-        if (!graph._translucentMeshes.empty()) {
+        if (!framePacket._translucentMeshes.empty()) {
             wi::jobsystem::Wait(sortCtx);
         }
 
-        renderMeshes(camera, graph._translucentMeshes, graph._lights, settings, ctx);
+        renderMeshes(camera, framePacket._translucentMeshes, framePacket._lights, framePacket.settings);
         glCheckError("3D Render - Translucent Meshes");
     }
 
@@ -201,8 +203,7 @@ void
 jle3DRenderer::renderMeshes(const jleCamera &camera,
                             const std::vector<jle3DQueuedMesh> &meshes,
                             const std::vector<jle3DRendererLight> &lights,
-                            const jle3DSettings &settings,
-                            jleSerializationContext& ctx)
+                            const jle3DSettings &settings)
 {
     for (auto &&mesh : meshes) {
         JLE_SCOPE_PROFILE_GPU(MeshRender);
@@ -212,7 +213,7 @@ jle3DRenderer::renderMeshes(const jleCamera &camera,
             _shaders->missingMaterialShader->SetMat4("uProj", camera.getProjectionMatrix());
             _shaders->missingMaterialShader->SetMat4("uModel", mesh.transform);
         } else {
-            mesh.material->useMaterial(camera, lights, settings, ctx);
+            mesh.material->useMaterial(camera, lights, settings);
             mesh.material->getShader()->SetMat4("uModel", mesh.transform);
             mesh.material->getShader()->SetBool("uUseSkinning", false);
         }
@@ -234,8 +235,7 @@ void
 jle3DRenderer::renderSkinnedMeshes(const jleCamera &camera,
                                    const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
                                    const std::vector<jle3DRendererLight> &lights,
-                                   const jle3DSettings &settings,
-                                   jleSerializationContext& ctx)
+                                   const jle3DSettings &settings)
 {
     for (auto &&mesh : skinnedMeshes) {
         JLE_SCOPE_PROFILE_GPU(SkinnedMeshRender);
@@ -245,7 +245,7 @@ jle3DRenderer::renderSkinnedMeshes(const jleCamera &camera,
             _shaders->missingMaterialShader->SetMat4("uProj", camera.getProjectionMatrix());
             _shaders->missingMaterialShader->SetMat4("uModel", mesh.transform);
         } else {
-            mesh.material->useMaterial(camera, lights, settings, ctx);
+            mesh.material->useMaterial(camera, lights, settings);
             mesh.material->getShader()->SetMat4("uModel", mesh.transform);
             mesh.material->getShader()->SetBool("uUseSkinning", true);
 
@@ -315,7 +315,7 @@ jle3DRenderer::renderSkybox(const jleCamera &camera, const jle3DSettings &settin
 void
 jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
                                    const jleCamera &camera,
-                                   const jleFramePacket &graph)
+                                   const jleFramePacket &framePacket)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshesPicking)
 
@@ -351,8 +351,8 @@ jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
         }
     };
 
-    executeRender(graph._meshes);
-    executeRender(graph._translucentMeshes);
+    executeRender(framePacket._meshes);
+    executeRender(framePacket._translucentMeshes);
 
     framebufferOut.bindDefault();
 }
@@ -390,11 +390,11 @@ jle3DRenderer::renderDirectionalLight(const jleCamera &camera,
 }
 
 void
-jle3DRenderer::renderPointLights(const jleCamera &camera, const jleFramePacket &graph)
+jle3DRenderer::renderPointLights(const jleCamera &camera, const jleFramePacket &framePacket)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderPointLights)
 
-    if (graph._lights.empty()) {
+    if (framePacket._lights.empty()) {
         return;
     }
 
@@ -405,7 +405,7 @@ jle3DRenderer::renderPointLights(const jleCamera &camera, const jleFramePacket &
     float farP = 500.0f;
     glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, nearP, farP);
 
-    glm::vec3 lightPos = graph._lights[0].position;
+    glm::vec3 lightPos = framePacket._lights[0].position;
 
     std::vector<glm::mat4> shadowTransforms;
     shadowTransforms.push_back(shadowProj *
@@ -431,8 +431,8 @@ jle3DRenderer::renderPointLights(const jleCamera &camera, const jleFramePacket &
         glViewport(0, 0, (int)_pointsShadowMappingFramebuffer->width(), (int)_pointsShadowMappingFramebuffer->height());
 
         glClear(GL_DEPTH_BUFFER_BIT);
-        renderShadowMeshes(graph._meshes, *_shaders->shadowMappingPointShader.get());
-        renderShadowMeshesSkinned(graph._skinnedMeshes, *_shaders->shadowMappingPointShader.get());
+        renderShadowMeshes(framePacket._meshes, *_shaders->shadowMappingPointShader.get());
+        renderShadowMeshesSkinned(framePacket._skinnedMeshes, *_shaders->shadowMappingPointShader.get());
     }
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);

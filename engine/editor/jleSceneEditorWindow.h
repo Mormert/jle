@@ -38,7 +38,7 @@ public:
 
     void renderEditorGrid(jleFramePacket & graph);
 
-    void render(jleFramePacket &graph, const jleEditorModulesContext &context);
+    void render(jleFramePacket &framePacket, const jleEditorModulesContext &context);
 
     jleCameraSimpleFPVController fpvCamController{};
     float cameraSpeed = 100.f;

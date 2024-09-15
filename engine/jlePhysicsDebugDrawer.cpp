@@ -64,7 +64,7 @@ jlePhysicsDebugDrawer::drawLine(const btVector3 &from1, const btVector3 &to1, co
     auto from = glm::vec3(from1.x(), from1.y(), from1.z());
     auto to = glm::vec3(to1.x(), to1.y(), to1.z());
     auto color = glm::vec3(color1.x(), color1.y(), color1.z());
-    _graph->sendLine(jle3DLineVertex{from, color, glm::vec3{1.f, 0.f, 0.f}}, {to, color, glm::vec3{1.f, 0.f, 0.f}});
+    _framePacketPtr->sendLine(jle3DLineVertex{from, color, glm::vec3{1.f, 0.f, 0.f}}, {to, color, glm::vec3{1.f, 0.f, 0.f}});
 }
 
 void
@@ -81,7 +81,7 @@ jlePhysicsDebugDrawer::getDefaultColors() const
 jlePhysicsDebugDrawer::~jlePhysicsDebugDrawer() {}
 
 void
-jlePhysicsDebugDrawer::set3DGraph(jleFramePacket *graph)
+jlePhysicsDebugDrawer::setFramePacket(jleFramePacket *framePacket)
 {
-    _graph = graph;
+    _framePacketPtr = framePacket;
 }

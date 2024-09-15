@@ -211,21 +211,26 @@ jleEditor::start(jleEngineModulesContext &ctx)
 }
 
 void
-jleEditor::render(jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx)
+jleEditor::render(jleCamera& camera, jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx)
 {
     JLE_SCOPE_PROFILE_GPU(EditorRender);
 
-    // TODO : This needs to be restructured.
-    // Possibly fix with ECS/context passing struct
+    const jleFramePacket& framePacket = *_previousFramePacket;
+
+    if(!ctx.gameRuntime.isGameKilled() && _previousFramePacket)
+    {
+        jleFramebufferInterface& gameFramebuffer = *ctx.gameRuntime.mainGameScreenFramebuffer;
+        renderGameView(camera, framePacket, gameFramebuffer);
+    }
+
+    // Wait for game thread
     Wait(jobsCtx);
 
-    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
-    renderGameView(ctx.gameRuntime, serializationContext);
 
-    if(_previousFramePacket)
-    {
-        _editorWindows->sceneWindow->renderEditorGrid(*_previousFramePacket);
-        renderEditorGizmos(*_previousFramePacket, ctx.gameRuntime);
+    if (_previousFramePacket) {
+        jleFramePacket& framePacketModifiedByEditor = *_previousFramePacket;
+        _editorWindows->sceneWindow->renderEditorGrid(framePacketModifiedByEditor);
+        renderEditorGizmos(framePacketModifiedByEditor, ctx.gameRuntime);
     }
 
     renderEditorSceneView(ctx);
@@ -236,27 +241,22 @@ jleEditor::render(jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx)
 }
 
 void
-jleEditor::renderGameView(jleGameRuntime &runtime, jleSerializationContext &ctx)
+jleEditor::renderGameView(const jleCamera& camera,
+                          const jleFramePacket &framePacketIn,
+                          jleFramebufferInterface &framebufferOut)
 {
     JLE_SCOPE_PROFILE_CPU(RenderGameView);
 
     _renderThread->processRenderQueue();
 
-    if (!runtime.isGameHalted() && !runtime.isGameKilled()) {
-        // Render to game view
-        static jleFramebufferMultisample msaa{
-            runtime.mainGameScreenFramebuffer->width(), runtime.mainGameScreenFramebuffer->height(), 4};
+    static jleFramebufferMultisample msaa{framebufferOut.width(), framebufferOut.height(), 4};
 
-        if (runtime.mainGameScreenFramebuffer->width() != msaa.width() ||
-            runtime.mainGameScreenFramebuffer->height() != msaa.height()) {
-            msaa.resize(runtime.mainGameScreenFramebuffer->width(), runtime.mainGameScreenFramebuffer->height());
-        }
-
-        if (_previousFramePacket) {
-            renderer().render(msaa, runtime.getGame().mainCamera, *_previousFramePacket, renderSettings(), ctx);
-            msaa.blitToOther(*runtime.mainGameScreenFramebuffer);
-        }
+    if (framebufferOut.width() != msaa.width() || framebufferOut.height() != msaa.height()) {
+        msaa.resize(framebufferOut.width(), framebufferOut.height());
     }
+
+    renderer().render(msaa, camera, framePacketIn);
+    msaa.blitToOther(framebufferOut);
 
     glCheckError("Render MSAA Game View");
 }

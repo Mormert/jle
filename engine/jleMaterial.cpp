@@ -16,13 +16,12 @@
 #include "modules/graphics/core/jleIncludeGL.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterial)
-//JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterialPBR)
+JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterialPBR)
 
 void
 jleMaterial::useMaterial(const jleCamera &camera,
                          const std::vector<jle3DRendererLight> &lights,
-                         const jle3DSettings &settings,
-                         jleSerializationContext &serializationContext)
+                         const jle3DSettings &settings)
 {
     auto &shader = *_shaderRef.get();
 
@@ -66,14 +65,8 @@ jleMaterial::serialize(Archive &ar)
 void
 jleMaterialPBR::useMaterial(const jleCamera &camera,
                             const std::vector<jle3DRendererLight> &lights,
-                            const jle3DSettings &settings,
-                            jleSerializationContext &serializationContext)
+                            const jle3DSettings &settings)
 {
-    // Temporary solution, loading the default shader here, before I figure something better out
-    if (!_shaderRef) {
-        _shaderRef = jleResourceRef<jleShader>(jlePath{"ER:/shaders/defaultMesh.glsl"}, serializationContext);
-    }
-
     auto &shader = *_shaderRef.get();
 
     // Limit to 4 lights
@@ -176,4 +169,29 @@ jleMaterialPBR::isTranslucent()
 }
 
 jleMaterialPBR::jleMaterialPBR() {}
+template <class Archive>
+void
+jleMaterialPBR::serialize(Archive &ar)
+{
+    try {
+        ar(cereal::base_class<jleMaterial>(this),
+           CEREAL_NVP(_albedo),
+           CEREAL_NVP(_normal),
+           CEREAL_NVP(_metallic),
+           CEREAL_NVP(_roughness),
+           CEREAL_NVP(_opacity),
+           CEREAL_NVP(_usePointShadows),
+           CEREAL_NVP(_useDirectionalShadows),
+           CEREAL_NVP(_useSkyboxEnvironmentMap),
+           CEREAL_NVP(_isTranslucent),
+           CEREAL_NVP(_singleChannelOpacity),
+           CEREAL_NVP(_blendModeSrc),
+           CEREAL_NVP(_blendModeDst));
 
+        if (!_shaderRef) {
+            _shaderRef = jleResourceRef<jleShader>(jlePath{"ER:/shaders/defaultMesh.glsl"}, ar.ctx);
+        }
+    } catch (std::exception &e) {
+        LOGE << "Failed loading material:" << e.what();
+    }
+}
