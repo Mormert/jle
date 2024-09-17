@@ -64,6 +64,7 @@ git clone https://github.com/Mormert/jle.git --recurse-submodules
 ```
 
 ## Building with CMake
+In the command line, navigate to a game build directory, for example [_jle/gametemplate_](https://github.com/Mormert/jle/tree/master/gametemplate), and then run:
 ```shell
 mkdir build
 cd build
