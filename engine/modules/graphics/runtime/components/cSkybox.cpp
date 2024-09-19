@@ -16,6 +16,7 @@
 #include "cSkybox.h"
 #include "jleGameEngine.h"
 #include "modules/graphics/jle3DRenderer.h"
+#include "serialization/jleSerialization.h"
 
 #include "jleResource.h"
 
