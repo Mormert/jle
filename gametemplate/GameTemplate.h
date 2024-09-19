@@ -11,7 +11,7 @@ class GameTemplate final : public jleGame
 public:
     ~GameTemplate() override = default;
 
-    void start() override;
+    void start(jleEngineModulesContext& ctx) override;
 
     void update(jleEngineModulesContext& ctx) override;
 };
