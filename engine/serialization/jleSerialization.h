@@ -49,6 +49,8 @@ public:
     jleSerializationContext ctx;
 };
 
+class jleSerializationArchive_EditorOnly;
+
 #if JLE_BUILD_EDITOR
 class jleSerializationArchive_EditorOnly : public jleSerializationArchive
 {
