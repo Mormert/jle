@@ -18,10 +18,13 @@
 
 #include "jleBuildConfig.h"
 
-#include <cereal/cereal.hpp>
 #include "jlePath.h"
+#include "serialization/jleSerialization.h"
+
+#include <cereal/cereal.hpp>
 
 class jleResourceInterface;
+class jleResources;
 
 template <typename T>
 struct jleResourceRef {
@@ -30,10 +33,10 @@ struct jleResourceRef {
 
     jleResourceRef() = default;
 
-    explicit jleResourceRef(const jlePath &path, bool loadLater = false) : path{path}
+    explicit jleResourceRef(const jlePath &path, jleSerializationContext &ctx, bool loadLater = false) : path{path}
     {
         if (!loadLater) {
-            loadResource();
+            loadResource(ctx);
         }
     };
 
@@ -41,15 +44,15 @@ struct jleResourceRef {
     std::string save_minimal(Archive const &) const;
 
     template <class Archive>
-    void load_minimal( Archive const &, std::string const & value );
+    void load_minimal(Archive const &, std::string const &value);
 
-    void reloadWithNewPath(const jlePath& path);
+    void reloadWithNewPath(const jlePath &path, jleSerializationContext& ctx);
 
     // Load resource from file
-    void loadResource();
+    void loadResource(jleSerializationContext &ctx);
 
     // Save resource to file, if the resource implementation have a save function
-    void saveResource();
+    void saveResource(jleSerializationContext &ctx);
 
     template <class OTHER>
     jleResourceRef &
@@ -59,7 +62,11 @@ struct jleResourceRef {
         return *this;
     }
 
-    explicit operator bool() const { return ptr.get(); }
+    explicit
+    operator bool() const
+    {
+        return ptr.get();
+    }
 
     std::shared_ptr<T>
     get()
@@ -73,7 +80,11 @@ struct jleResourceRef {
         return *ptr;
     }
 
-    explicit operator const T &() const { return *ptr; }
+    explicit
+    operator const T &() const
+    {
+        return *ptr;
+    }
 
     T &
     operator*() const noexcept

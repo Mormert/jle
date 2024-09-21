@@ -16,7 +16,7 @@
 #ifndef JLE_SCENE
 #define JLE_SCENE
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include <memory>
 #include <vector>
@@ -40,13 +40,13 @@ public:
     jleScene();
 
     void
-    saveToFile() override
+    saveToFile(jleSerializationContext& ctx) override
     {
         if (path.isEmpty()) {
             path = jlePath{"GR:scenes/" + sceneName + getDotPrimaryFileExtension()};
         }
         std::ofstream save{path.getRealPath()};
-        cereal::JSONOutputArchive outputArchive(save);
+        jleJSONOutputArchive outputArchive(save, ctx);
         std::shared_ptr<jleSerializedOnlyResource> thiz = std::static_pointer_cast<jleSerializedOnlyResource>(shared_from_this());
         outputArchive(thiz);
     };
@@ -57,25 +57,22 @@ public:
     void serialize(Archive &archive);
 
     template <typename T>
-    std::shared_ptr<T> spawnObject();
+    std::shared_ptr<T> spawnObject(jleSerializationContext& ctx);
 
-    std::shared_ptr<jleObject> spawnObjectFromTemplate(const jlePath& path);
-
-    // Spawn a jleObject derived class, similar to spawnObject<>().
-    std::shared_ptr<jleObject> spawnObjectTypeByName(const std::string &objName);
+    std::shared_ptr<jleObject> spawnObjectFromTemplate(const jlePath& path, jleSerializationContext& ctx);
 
     // Spawn a generic jleObject, with specified name
-    std::shared_ptr<jleObject> spawnObjectWithName(const std::string &name);
+    std::shared_ptr<jleObject> spawnObjectWithName(const std::string &name, jleSerializationContext& ctx);
 
-    void spawnObject(const std::shared_ptr<jleObject> &object);
+    void spawnObject(const std::shared_ptr<jleObject> &object, jleSerializationContext& ctx);
 
-    void startObjects();
+    void startObjects(jleEngineModulesContext& ctx);
 
-    virtual void updateScene(float dt);
+    virtual void updateScene(jleEngineModulesContext& ctx);
 
-    virtual void updateSceneEditor(float dt);
+    virtual void updateSceneEditor(jleEngineModulesContext& ctx);
 
-    virtual void onSceneStart();
+    virtual void onSceneStart(jleEngineModulesContext& ctx);
 
     virtual void onSceneDestruction();
 
@@ -97,16 +94,16 @@ protected:
     std::vector<std::shared_ptr<jleObject>> _sceneObjects;
     std::vector<std::shared_ptr<jleObject>> _newSceneObjects;
 
-    virtual void setupObject(const std::shared_ptr<jleObject> &obj);
+    virtual void setupObject(const std::shared_ptr<jleObject> &obj, jleSerializationContext& ctx);
 
-    void processNewSceneObjects();
+    void processNewSceneObjects(jleEngineModulesContext& ctx);
 
 private:
-    void updateSceneObjects(float dt);
+    void updateSceneObjects(jleEngineModulesContext& ctx);
 
-    void updateSceneObjectsEditor(float dt);
+    void updateSceneObjectsEditor(jleEngineModulesContext& ctx);
 
-    void startObject(jleObject *o);
+    void startObject(jleObject *o, jleEngineModulesContext& ctx);
 
     static int _scenesCreatedCount;
 

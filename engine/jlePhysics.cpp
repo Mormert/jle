@@ -18,11 +18,10 @@
 
 #include "btBulletDynamicsCommon.h"
 
-#include "cRigidbody.h"
 #include "jleProfiler.h"
+#include "modules/physics/components/cRigidbody.h"
 
-jlePhysics::
-jlePhysics()
+jlePhysics::jlePhysics()
 {
     _collisionConfiguration = std::make_unique<btDefaultCollisionConfiguration>();
 
@@ -64,10 +63,11 @@ jlePhysics::removeRigidbody(btRigidBody *body)
 }
 
 void
-jlePhysics::renderDebug()
+jlePhysics::renderDebug(jleFramePacket &framePacket)
 {
     if (renderDebugEnabled) {
         JLE_SCOPE_PROFILE_CPU(renderPhysicsDebug)
+        _debugDraw->setFramePacket(&framePacket);
         _dynamicsWorld->debugDrawWorld();
     }
 }

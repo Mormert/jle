@@ -16,7 +16,7 @@
 #ifndef JLE_OBJECT
 #define JLE_OBJECT
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include "jlePath.h"
 #include "jleSerializedResource.h"
@@ -56,12 +56,12 @@ public:
     ~jleObject() override = default;
 
     template <typename T>
-    std::shared_ptr<T> addComponent();
+    std::shared_ptr<T> addComponent(jleEngineModulesContext& ctx);
 
     template <typename T>
-    void addComponent(const std::shared_ptr<T> &component);
+    void addComponent(const std::shared_ptr<T> &component, jleEngineModulesContext& ctx);
 
-    std::shared_ptr<jleComponent> addComponentByName(const std::string &component_name);
+    std::shared_ptr<jleComponent> addComponentByName(const std::string &component_name, jleEngineModulesContext& ctx);
 
     template <typename T>
     std::shared_ptr<T> getComponent();
@@ -71,16 +71,16 @@ public:
     std::shared_ptr<T> getComponentInChildren(jleObject *object = nullptr);
 
     template <typename T>
-    std::shared_ptr<T> spawnChildObject();
+    std::shared_ptr<T> spawnChildObject(jleSerializationContext& ctx);
 
-    std::shared_ptr<jleObject> spawnChildObjectFromTemplate(const jlePath& path);
+    std::shared_ptr<jleObject> spawnChildObjectFromTemplate(const jlePath& path, jleSerializationContext& ctx);
 
-    std::shared_ptr<jleObject> spawnChildObject(const std::string &objName);
+    std::shared_ptr<jleObject> spawnChildObject(const std::string &objName, jleSerializationContext& ctx);
 
-    void saveAsObjectTemplate();
+    void saveAsObjectTemplate(jleSerializationContext& serializationContext);
 
     // Called from components
-    void destroyComponent(jleComponent *component);
+    void destroyComponent(jleComponent *component, jleEngineModulesContext& ctx);
 
     void destroyComponentAtIndex(uint32_t index);
 
@@ -127,29 +127,29 @@ private:
 
     explicit jleObject(jleScene *scene);
 
-    void propagateDestroy();
+    void propagateDestroy(jleEngineModulesContext& ctx);
 
     void propagateOwnedByScene(jleScene *scene);
     void propagateOwnedBySceneClient(jleSceneClient *scene);
     void propagateOwnedBySceneServer(jleSceneServer *scene);
 
-    void replaceChildrenWithTemplate();
+    void replaceChildrenWithTemplate(jleSerializationContext& ctx);
 
-    void startComponents();
+    void startComponents(jleEngineModulesContext& ctx);
 
-    void updateComponents(float dt);
+    void updateComponents(jleEngineModulesContext& ctx);
 
-    void updateComponentsEditor(float dt);
+    void updateComponentsEditor(jleEngineModulesContext& ctx);
 
-    void updateComponentsServer(float dt);
+    void updateComponentsServer(jleEngineModulesContext& ctx);
 
-    void updateChildren(float dt);
+    void updateChildren(jleEngineModulesContext& ctx);
 
-    void updateChildrenEditor(float dt);
+    void updateChildrenEditor(jleEngineModulesContext& ctx);
 
-    void updateChildrenServer(float dt);
+    void updateChildrenServer(jleEngineModulesContext& ctx);
 
-    void addComponentStart(const std::shared_ptr<jleComponent>& c);
+    void addComponentStart(const std::shared_ptr<jleComponent>& c, jleEngineModulesContext& ctx);
 
     std::string _instanceName;
 

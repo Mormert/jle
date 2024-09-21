@@ -15,10 +15,10 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
+#include "core/jleCommandArguments.h"
 #include "editor/jleEditor.h"
-#include "jleCommandArguments.h"
 #include "jleDynamicLogAppender.h"
 #include "jleGameEngine.h"
 #include <plog/Appenders/ColorConsoleAppender.h>

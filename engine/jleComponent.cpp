@@ -21,9 +21,9 @@
 #include "jleSceneServer.h"
 
 void
-jleComponent::destroy()
+jleComponent::destroy(jleEngineModulesContext& ctx)
 {
-    _attachedToObject->destroyComponent(this);
+    _attachedToObject->destroyComponent(this, ctx);
 }
 
 jleTransform &
@@ -89,7 +89,7 @@ jleComponent::enableParallelUpdate(int batchSize)
 
 struct jleComponentNetSyncEvent : public jleServerToClientEvent {
     void
-    execute() override
+    execute(jleEngineModulesContext& ctx) override
     {
         auto &scene = getSceneClient();
         if (auto object = scene.getObjectFromNetId(netEntityId)) {
@@ -100,7 +100,9 @@ struct jleComponentNetSyncEvent : public jleServerToClientEvent {
             try {
                 std::stringstream stream{};
                 stream.write(&serializedBinaryData[0], serializedBinaryData.size());
-                cereal::BinaryInputArchive archive(stream);
+
+                jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+                jleBinaryInputArchive archive(stream, serializationContext);
                 component->netSyncIn(archive);
             } catch (std::exception &e) {
                 LOGE << "Failed parsing component net sync event: " << e.what();
@@ -123,13 +125,13 @@ struct jleComponentNetSyncEvent : public jleServerToClientEvent {
 JLE_REGISTER_NET_EVENT(jleComponentNetSyncEvent)
 
 void
-jleComponent::syncServerToClient()
+jleComponent::syncServerToClient(jleSerializationContext& ctx)
 {
     auto event = jleMakeNetEvent<jleComponentNetSyncEvent>();
 
     std::stringstream componentStream{};
     {
-        cereal::BinaryOutputArchive componentArchive(componentStream);
+        jleBinaryOutputArchive componentArchive(componentStream, ctx);
         netSyncOut(componentArchive);
     }
 

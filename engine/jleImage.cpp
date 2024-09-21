@@ -22,7 +22,13 @@
 #include <algorithm>
 
 bool
-jleImage::loadFromFile(const jlePath &path)
+jleImage::loadFromFile(jleSerializationContext &ctx, const jlePath &path)
+{
+    return loadImage(path);
+}
+
+bool
+jleImage::loadImage(const jlePath &path)
 {
     const auto &realPath = path.getRealPath();
     image_data = stbi_load(realPath.c_str(), &_width, &_height, &_nrChannels, 0);
@@ -35,7 +41,7 @@ jleImage::loadFromFile(const jlePath &path)
 
 jleImage::jleImage(const jlePath &path)
 {
-    if (!loadFromFile(path)) {
+    if (!loadImage(path)) {
         LOGE << "Failed loading image with path: " << path.getVirtualPath();
     }
 }

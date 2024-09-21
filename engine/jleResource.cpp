@@ -17,13 +17,14 @@
 #include "jleTypeReflectionUtils.h"
 
 std::shared_ptr<jleResourceInterface>
-jleResources::loadResourceFromFile(const jlePath &path)
+jleResources::loadResourceFromFile(const jlePath &path, jleSerializationContext& ctx)
 {
+    ctx.resources = this;
     const auto &typeLoaders = jleTypeReflectionUtils::registeredFileTypeLoadersRef();
     const auto fileEnding = path.getFileEnding();
     auto it = typeLoaders.find(fileEnding);
     if (it != typeLoaders.end()) {
-        return it->second(path);
+        return it->second(path, ctx);
     } else {
         LOGE << "Failed to load non-registered file type with extension " << fileEnding;
         return nullptr;
@@ -37,9 +38,11 @@ jleResources::reloadSerializedResource(const std::shared_ptr<jleSerializedResour
     try {
         std::ifstream i(path.getRealPath());
         std::shared_ptr<jleSerializedResource> f = std::const_pointer_cast<jleSerializedResource>(resource);
-        cereal::JSONInputArchive archive{i};
+
+        jleSerializationContext ctx = {this, nullptr, nullptr};
+        jleJSONInputArchive archive{i, ctx};
         archive(f);
-        if (!f->loadFromFile(path)) {
+        if (!f->loadFromFile(ctx, path)) {
             LOGE << "Failed reloading serialized resource file: " << resource->path.getVirtualPath();
         }
 
@@ -68,12 +71,14 @@ jleResources::loadSerializedResourceFromFile(const jlePath &path, bool forceRelo
 
     try {
         std::ifstream i(path.getRealPath());
-        cereal::JSONInputArchive iarchive{i};
+
+        jleSerializationContext ctx = {this, nullptr, nullptr};
+        jleJSONInputArchive iarchive{i, ctx};
         iarchive(ptr);
 
         ptr->path = path;
 
-        if (ptr->loadFromFile(path) == false) {
+        if (ptr->loadFromFile(ctx, path) == false) {
             LOGE << "Failed loading serialized resource's internals";
         }
 
@@ -151,19 +156,21 @@ jleResources::getResource(const jlePath &path)
 }
 
 void
-jleResources::storeResource(const std::shared_ptr<jleResourceInterface>& resource, const jlePath &path)
+jleResources::storeResource(const std::shared_ptr<jleResourceInterface> &resource, const jlePath &path)
 {
     const auto prefix = path.getPathVirtualDrive();
     _resources[prefix].insert(std::make_pair(path, std::make_pair(typeid(resource).hash_code(), resource)));
 }
 
 bool
-jleResources::loadSerializedResource(std::shared_ptr<jleResourceInterface> &resource, const jlePath &path)
+jleResources::loadSerializedResource(std::shared_ptr<jleResourceInterface> &resource,
+                                     const jlePath &path,
+                                     jleSerializationContext &ctx)
 {
     if (resource->getPrimaryFileAssociation() == path.getFileEnding()) {
         try {
             std::ifstream i(path.getRealPath());
-            cereal::JSONInputArchive iarchive{i};
+            jleJSONInputArchive iarchive{i, ctx};
             std::shared_ptr<jleSerializedResource> sr = std::static_pointer_cast<jleSerializedResource>(resource);
             iarchive(sr);
             resource = sr;

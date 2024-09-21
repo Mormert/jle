@@ -18,10 +18,10 @@
 jleImageFlipped::jleImageFlipped(const jlePath &path) : jleImage(path) {}
 
 bool
-jleImageFlipped::loadFromFile(const jlePath &path)
+jleImageFlipped::loadFromFile(jleSerializationContext& ctx, const jlePath &path)
 {
     jleImage::setFlipImage(true);
-    auto code = jleImage::loadFromFile(path);
+    auto code = jleImage::loadFromFile(ctx, path);
     jleImage::setFlipImage(false);
     return code;
 }

@@ -26,7 +26,7 @@ class jleEditorFrameGraphWindow : public jleEditorWindowInterface
 public:
     explicit jleEditorFrameGraphWindow(const std::string &window_name);
 
-    void update(jleGameEngine &ge) override;
+    void renderUI(jleEngineModulesContext &ctx);
 
 private:
 };

@@ -56,7 +56,7 @@ if (MINGW)
 endif ()
 
 # Defines build-time macros to 0 or 1 depending on configuration
-configure_file(${JLE_ENGINE_PATH}/jleBuildConfig.in.h buildConfig/jleBuildConfig.h)
+configure_file(${JLE_ENGINE_PATH}/core/jleBuildConfig.in.h buildConfig/jleBuildConfig.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/buildConfig)
 
 if (JLE_BUILD_EMSCRIPTEN)

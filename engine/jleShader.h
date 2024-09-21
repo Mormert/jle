@@ -16,7 +16,7 @@
 #ifndef JLE_SHADER_H
 #define JLE_SHADER_H
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include "jleResourceInterface.h"
 #include "jleTextureRules.h"
@@ -30,7 +30,7 @@ class jleShader : public jleResourceInterface, public std::enable_shared_from_th
 public:
     JLE_REGISTER_RESOURCE_TYPE(jleShader, "glsl")
 
-    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(jleSerializationContext& ctx, const jlePath &path) override;
 
     jleShader() = default;
 

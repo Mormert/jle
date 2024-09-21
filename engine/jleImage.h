@@ -32,7 +32,9 @@ public:
 
     explicit jleImage(const jlePath &path);
 
-    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(jleSerializationContext& ctx, const jlePath &path) override;
+
+    [[nodiscard]] bool loadImage(const jlePath &path);
 
     jleImage(const jleImage &i);
 

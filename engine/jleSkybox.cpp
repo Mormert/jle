@@ -16,13 +16,13 @@
 #include "jleSkybox.h"
 #include "jleImage.h"
 
-#include "jleIncludeGL.h"
 #include "jleResourceRef.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 
 #include <vector>
 
 bool
-jleSkybox::loadFromFile(const jlePath &path)
+jleSkybox::loadFromFile(jleSerializationContext& ctx, const jlePath &path)
 {
     constexpr float skyboxVertices[] = {// positions
                                         -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,

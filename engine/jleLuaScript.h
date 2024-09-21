@@ -27,17 +27,19 @@ class jleLuaScript : public jleResourceInterface
 public:
     JLE_REGISTER_RESOURCE_TYPE(jleLuaScript, "lua");
 
-    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(jleSerializationContext& ctx, const jlePath &path) override;
 
-    virtual void loadScript();
-
-    void saveToFile() override;
+    void saveToFile(jleSerializationContext& ctx) override;
 
 protected:
+
+    friend class jleLuaEnvironment;
+    void loadScriptIntoLuaEnv(jleLuaEnvironment& luaEnvironment);
+
     std::string _luaScriptName;
     std::string _sourceCode;
-    std::shared_ptr<jleLuaEnvironment> _luaEnvironment;
-    bool faultyState = true;
+
+    bool _failsLoading = true;
 };
 
 CEREAL_REGISTER_TYPE(jleLuaScript)

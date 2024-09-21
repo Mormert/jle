@@ -22,7 +22,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "jleIncludeGL.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 
 void
 jleSkinnedMesh::destroyOldBuffersSkinned()
@@ -144,7 +144,7 @@ jleSkinnedMesh::loadAssimpSkinnedMesh(aiMesh *assimpMesh,
 }
 
 bool
-jleSkinnedMesh::loadFromFile(const jlePath &path)
+jleSkinnedMesh::loadFromFile(jleSerializationContext& ctx, const jlePath &path)
 {
     bool ret = loadSkinnedAssimp(path);
     if (!ret) {
@@ -217,7 +217,7 @@ jleSkinnedMesh::loadSkinnedAssimp(const jlePath &path)
 }
 
 void
-jleSkinnedMesh::saveToFile()
+jleSkinnedMesh::saveToFile(jleSerializationContext& ctx)
 {
     aiScene scene;
     jleMesh::saveMeshToAssimpScene(scene);

@@ -38,23 +38,23 @@ jleScene()
 jleScene::~jleScene() = default;
 
 void
-jleScene::updateSceneObjects(float dt)
+jleScene::updateSceneObjects(jleEngineModulesContext& ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleScene_updateSceneObjects)
     for (int32_t i = _sceneObjects.size() - 1; i >= 0; i--) {
         if (_sceneObjects[i]->_pendingKill) {
-            _sceneObjects[i]->propagateDestroy();
+            _sceneObjects[i]->propagateDestroy(ctx);
             _sceneObjects.erase(_sceneObjects.begin() + i);
             continue;
         }
 
-        _sceneObjects[i]->updateComponents(dt);
-        _sceneObjects[i]->updateChildren(dt);
+        _sceneObjects[i]->updateComponents(ctx);
+        _sceneObjects[i]->updateChildren(ctx);
     }
 }
 
 void
-jleScene::updateSceneObjectsEditor(float dt)
+jleScene::updateSceneObjectsEditor(jleEngineModulesContext& ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleScene_updateSceneObejctsEditor)
     for (int32_t i = _sceneObjects.size() - 1; i >= 0; i--) {
@@ -63,20 +63,20 @@ jleScene::updateSceneObjectsEditor(float dt)
             continue;
         }
 
-        _sceneObjects[i]->updateComponentsEditor(dt);
-        _sceneObjects[i]->updateChildrenEditor(dt);
+        _sceneObjects[i]->updateComponentsEditor(ctx);
+        _sceneObjects[i]->updateChildrenEditor(ctx);
     }
 }
 
 void
-jleScene::processNewSceneObjects()
+jleScene::processNewSceneObjects(jleEngineModulesContext& ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleScene_processNewSceneObjects)
     if (!_newSceneObjects.empty()) {
         for (const auto &newObject : _newSceneObjects) {
             if (!newObject->_isStarted) {
-                if (!gEngine->isGameKilled()) {
-                    newObject->startComponents();
+                if (!ctx.gameRuntime.isGameKilled()) {
+                    newObject->startComponents(ctx);
                 }
                 newObject->_isStarted = true;
             }
@@ -107,48 +107,48 @@ jleScene::getPhysics()
 }
 
 void
-jleScene::setupObject(const std::shared_ptr<jleObject> &obj)
+jleScene::setupObject(const std::shared_ptr<jleObject> &obj, jleSerializationContext& ctx)
 {
     obj->_containedInScene = this;
     obj->_instanceName = std::string{obj->objectNameVirtual()} + "_" + std::to_string(obj->_instanceID);
 
-    obj->replaceChildrenWithTemplate();
+    obj->replaceChildrenWithTemplate(ctx);
     _newSceneObjects.push_back(obj);
 }
 
 void
-jleScene::startObjects()
+jleScene::startObjects(jleEngineModulesContext& ctx)
 {
     for (auto &&o : _sceneObjects) {
-        startObject(&*o);
+        startObject(&*o, ctx);
     }
 }
 
 void
-jleScene::startObject(jleObject *o)
+jleScene::startObject(jleObject *o, jleEngineModulesContext& ctx)
 {
     if (!o->_isStarted) {
-        o->startComponents();
+        o->startComponents(ctx);
         o->_isStarted = true;
         for (auto &&c : o->__childObjects) {
-            startObject(&*c);
+            startObject(&*c, ctx);
         }
     }
 }
 
 void
-jleScene::spawnObject(const std::shared_ptr<jleObject> &object)
+jleScene::spawnObject(const std::shared_ptr<jleObject> &object, jleSerializationContext& ctx)
 {
-    setupObject(object);
+    setupObject(object, ctx);
 }
 
 std::shared_ptr<jleObject>
-jleScene::spawnObjectFromTemplate(const jlePath &path)
+jleScene::spawnObjectFromTemplate(const jlePath &path, jleSerializationContext& ctx)
 {
-    if (const jleResourceRef<jleObject> templateObject{path}) {
+    if (const jleResourceRef<jleObject> templateObject{path, ctx}) {
         std::shared_ptr<jleObject> copyBasedOnTemplate = templateObject->duplicateTemplate();
         copyBasedOnTemplate->__templatePath = path;
-        spawnObject(copyBasedOnTemplate);
+        spawnObject(copyBasedOnTemplate, ctx);
 
         return copyBasedOnTemplate;
     }
@@ -158,31 +158,32 @@ jleScene::spawnObjectFromTemplate(const jlePath &path)
 }
 
 std::shared_ptr<jleObject>
-jleScene::spawnObjectWithName(const std::string &name)
+jleScene::spawnObjectWithName(const std::string &name, jleSerializationContext& ctx)
 {
-    auto obj = spawnObject<jleObject>();
+    auto obj = spawnObject<jleObject>(ctx);
     obj->_instanceName = name;
     return obj;
 }
 
 void
-jleScene::updateScene(float dt)
+jleScene::updateScene(jleEngineModulesContext& ctx)
 {
+    const auto dt = ctx.frameInfo.getDeltaTime();
     getPhysics().step(dt);
 
-    processNewSceneObjects();
-    updateSceneObjects(dt);
+    processNewSceneObjects(ctx);
+    updateSceneObjects(ctx);
 }
 
 void
-jleScene::updateSceneEditor(float dt)
+jleScene::updateSceneEditor(jleEngineModulesContext& ctx)
 {
-    processNewSceneObjects();
-    updateSceneObjectsEditor(dt);
+    processNewSceneObjects(ctx);
+    updateSceneObjectsEditor(ctx);
 }
 
 void
-jleScene::onSceneStart()
+jleScene::onSceneStart(jleEngineModulesContext& ctx)
 {
 }
 

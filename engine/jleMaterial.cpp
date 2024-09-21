@@ -13,11 +13,10 @@
  *                                                                                           *
  *********************************************************************************************/
 #include "jleMaterial.h"
-#include "jleIncludeGL.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterial)
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleMaterialPBR)
-
 
 void
 jleMaterial::useMaterial(const jleCamera &camera,
@@ -30,6 +29,12 @@ jleMaterial::useMaterial(const jleCamera &camera,
     shader.SetMat4("uView", camera.getViewMatrix());
     shader.SetMat4("uProj", camera.getProjectionMatrix());
     shader.SetVec3("uCameraPosition", camera.getPosition());
+}
+
+void
+jleMaterial::setShader(const jleResourceRef<jleShader> &shaderRef)
+{
+    _shaderRef = shaderRef;
 }
 
 std::shared_ptr<jleShader>
@@ -163,10 +168,7 @@ jleMaterialPBR::isTranslucent()
     return _isTranslucent;
 }
 
-jleMaterialPBR::jleMaterialPBR() {
-    _shaderRef = jleResourceRef<jleShader>("ER:/shaders/defaultMesh.glsl");
-}
-
+jleMaterialPBR::jleMaterialPBR() {}
 template <class Archive>
 void
 jleMaterialPBR::serialize(Archive &ar)
@@ -185,6 +187,10 @@ jleMaterialPBR::serialize(Archive &ar)
            CEREAL_NVP(_singleChannelOpacity),
            CEREAL_NVP(_blendModeSrc),
            CEREAL_NVP(_blendModeDst));
+
+        if (!_shaderRef) {
+            _shaderRef = jleResourceRef<jleShader>(jlePath{"ER:/shaders/defaultMesh.glsl"}, ar.ctx);
+        }
     } catch (std::exception &e) {
         LOGE << "Failed loading material:" << e.what();
     }

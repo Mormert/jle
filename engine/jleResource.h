@@ -16,7 +16,7 @@
 #ifndef JLE_RESOURCE
 #define JLE_RESOURCE
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include "jlePath.h"
 #include "jleResourceInterface.h"
@@ -34,15 +34,17 @@
 #include <unordered_map>
 #include <vector>
 
-#include <cereal/archives/json.hpp>
-#include <cereal/archives/binary.hpp>
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
 #include <cereal/cereal.hpp>
 #include <cereal/types/memory.hpp>
 #include <cereal/types/polymorphic.hpp>
 
+using hashCode = std::size_t;
+
 using jleResourceHolder =
     std::unordered_map<std::string,
-                       std::unordered_map<jlePath, std::pair<std::size_t, std::shared_ptr<jleResourceInterface>>>>;
+                       std::unordered_map<jlePath, std::pair<hashCode, std::shared_ptr<jleResourceInterface>>>>;
 
 template <typename T>
 struct jleResourceRef;
@@ -56,11 +58,13 @@ public:
     jleResources &operator=(const jleResources &) = delete;
     jleResources &operator=(jleResources &&) = delete;
 
-    static std::shared_ptr<jleResourceInterface> loadResourceFromFile(const jlePath &path);
+    std::shared_ptr<jleResourceInterface> loadResourceFromFile(const jlePath &path, jleSerializationContext& ctx);
 
     // Gets a shared_ptr to a resource from file, or a shared_ptr to an already loaded copy of that resource
     template <typename T>
-    std::shared_ptr<T> loadResourceFromFile(const jlePath &path, bool forceReload = false);
+    std::shared_ptr<T> loadResourceFromFileT(const jlePath &path,
+                                            jleSerializationContext& ctx,
+                                            bool forceReload = false);
 
     void reloadSerializedResource(const std::shared_ptr<jleSerializedResource> &resource);
 
@@ -73,10 +77,10 @@ public:
 
     std::shared_ptr<jleResourceInterface> getResource(const jlePath &path);
 
-    void storeResource(const std::shared_ptr<jleResourceInterface>& resource, const jlePath& path);
+    void storeResource(const std::shared_ptr<jleResourceInterface> &resource, const jlePath &path);
 
     template <typename T>
-    jleResourceRef<T> storeResource(const std::shared_ptr<T>& resource, const jlePath& path);
+    jleResourceRef<T> storeResource(const std::shared_ptr<T> &resource, const jlePath &path);
 
     // Check to see if a resource is loaded
     bool isResourceLoaded(const jlePath &path);
@@ -97,9 +101,11 @@ private:
     static inline int _periodicCleanCounter{0};
 
     template <typename T>
-    static bool checkFileEndingMatchResourceType(const jlePath& path);
+    static bool checkFileEndingMatchResourceType(const jlePath &path);
 
-    static bool loadSerializedResource(std::shared_ptr<jleResourceInterface>& resource, const jlePath& path);
+    static bool loadSerializedResource(std::shared_ptr<jleResourceInterface> &resource,
+                                       const jlePath &path,
+                                       jleSerializationContext &ctx);
 
     void periodicResourcesCleanUp();
 };

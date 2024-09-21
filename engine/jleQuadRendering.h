@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include "glm/ext/scalar_constants.hpp"
 #include "jleCamera.h"

@@ -19,18 +19,18 @@
 #include "jleProfiler.h"
 #include "jleSceneClient.h"
 
-#include <cereal/archives/binary.hpp>
+#include "serialization/jleBinaryArchive.h"
 #include <cereal/cereal.hpp>
 
 #include <enet.h>
 
 struct jleCreateObjectEvent : public jleServerToClientEvent {
     void
-    execute() override
+    execute(jleEngineModulesContext& ctx) override
     {
         auto &scene = getSceneClient();
         if (newObject) {
-            scene.spawnObjectFromServer(newObject, objectNetId, objectOwnerId);
+            scene.spawnObjectFromServer(ctx, newObject, objectNetId, objectOwnerId);
         }
     }
 
@@ -50,7 +50,7 @@ JLE_REGISTER_NET_EVENT(jleCreateObjectEvent)
 
 struct jleDestroyObjectEvent : public jleServerToClientEvent {
     void
-    execute() override
+    execute(jleEngineModulesContext& ctx) override
     {
         auto &scene = getSceneClient();
         if (auto object = scene.getObjectFromNetId(objectNetId)) {
@@ -72,11 +72,11 @@ JLE_REGISTER_NET_EVENT(jleDestroyObjectEvent)
 
 struct jleFullSceneSyncEvent : public jleServerToClientEvent {
     void
-    execute() override
+    execute(jleEngineModulesContext& ctx) override
     {
         auto &scene = getSceneClient();
         for (int i = 0; i < objects.size(); i++) {
-            scene.spawnObjectFromServer(objects[i], objectsNetId[i], objectsOwner[i]);
+            scene.spawnObjectFromServer(ctx, objects[i], objectsNetId[i], objectsOwner[i]);
         }
     }
 
@@ -95,13 +95,8 @@ struct jleFullSceneSyncEvent : public jleServerToClientEvent {
 JLE_REGISTER_NET_EVENT(jleFullSceneSyncEvent)
 
 int
-jleSceneServer::startServer(int port, int maxClients)
+jleSceneServer::startServer(jleEngineModulesContext& ctx, int port, int maxClients)
 {
-    if (!gEngine->settings().enableNetworking) {
-        LOGE << "[server] Trying to use networked features but networking disabled in settings";
-        return 1;
-    }
-
     ENetAddress address = {0};
 
     address.host = ENET_HOST_ANY;
@@ -124,7 +119,9 @@ jleSceneServer::startServer(int port, int maxClients)
         setupObjectForNetworking(object);
     }
 
-    spawnObjectWithName("server_dummy");
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+
+    spawnObjectWithName("server_dummy", serializationContext);
 
     return 0;
 }
@@ -149,18 +146,18 @@ jleSceneServer()
 }
 
 void
-jleSceneServer::updateScene(float dt)
+jleSceneServer::updateScene(jleEngineModulesContext& ctx)
 {
-    processNewSceneObjects();
-    updateServerSceneObjects(dt);
+    processNewSceneObjects(ctx);
+    updateServerSceneObjects(ctx);
 
-    processNetwork();
+    processNetwork(ctx);
 }
 
 void
-jleSceneServer::onSceneStart()
+jleSceneServer::onSceneStart(jleEngineModulesContext& ctx)
 {
-    startServer();
+    startServer(ctx);
 }
 
 void
@@ -170,7 +167,7 @@ jleSceneServer::onSceneDestruction()
 }
 
 void
-jleSceneServer::processNetwork()
+jleSceneServer::processNetwork(jleEngineModulesContext& ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleSceneServer_processNetwork)
 
@@ -196,7 +193,7 @@ jleSceneServer::processNetwork()
                 }
                 sendNetworkEventToUser(std::move(syncEvent), incomingPlayerID);
 
-                onClientConnect(incomingPlayerID);
+                onClientConnect(ctx, incomingPlayerID);
 
             } break;
             case ENET_EVENT_TYPE_DISCONNECT:
@@ -213,7 +210,7 @@ jleSceneServer::processNetwork()
                 const char *dataBuffer = reinterpret_cast<char *>(event.packet->data);
                 const auto dataLength = event.packet->dataLength;
 
-                jleExecuteClientEventsOnServer(dataBuffer, dataLength, this, incomingPlayerID);
+                jleExecuteClientEventsOnServer(ctx, dataBuffer, dataLength, this, incomingPlayerID);
 
                 // Clean up the packet now that we're done using it.
                 enet_packet_destroy(event.packet);
@@ -282,9 +279,9 @@ jleSceneServer::getObjectFromNetId(int32_t netId)
 }
 
 void
-jleSceneServer::setupObject(const std::shared_ptr<jleObject> &obj)
+jleSceneServer::setupObject(const std::shared_ptr<jleObject> &obj, jleSerializationContext& ctx)
 {
-    jleScene::setupObject(obj);
+    jleScene::setupObject(obj, ctx);
     setupObjectForNetworking(obj);
 }
 
@@ -318,12 +315,14 @@ jleSceneServer::sceneInspectorImGuiRender()
 }
 
 std::shared_ptr<jleObject>
-jleSceneServer::spawnObjectWithOwner(const std::string &objectName, int32_t ownerId)
+jleSceneServer::spawnObjectWithOwner(jleEngineModulesContext& ctx, const std::string &objectName, int32_t ownerId)
 {
     auto newSceneObject = std::make_shared<jleObject>();
     newSceneObject->_networkOwnerID = ownerId;
 
-    setupObject(newSceneObject);
+    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+
+    setupObject(newSceneObject, serializationContext);
     newSceneObject->_instanceName = objectName;
 
     if (ownerId > 0) {
@@ -335,19 +334,19 @@ jleSceneServer::spawnObjectWithOwner(const std::string &objectName, int32_t owne
 }
 
 void
-jleSceneServer::updateServerSceneObjects(float dt)
+jleSceneServer::updateServerSceneObjects(jleEngineModulesContext& ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleScene_updateSceneObjects)
     for (int32_t i = _sceneObjects.size() - 1; i >= 0; i--) {
         if (_sceneObjects[i]->_pendingKill) {
             objectDestructionNetworked(_sceneObjects[i]);
-            _sceneObjects[i]->propagateDestroy();
+            _sceneObjects[i]->propagateDestroy(ctx);
             _sceneObjects.erase(_sceneObjects.begin() + i);
             continue;
         }
 
-        _sceneObjects[i]->updateComponentsServer(dt);
-        _sceneObjects[i]->updateChildrenServer(dt);
+        _sceneObjects[i]->updateComponentsServer(ctx);
+        _sceneObjects[i]->updateChildrenServer(ctx);
     }
 }
 

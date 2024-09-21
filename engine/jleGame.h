@@ -15,20 +15,20 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include <memory>
 #include <vector>
 
+#include "editor/jleImGuiArchive.h"
 #include "jleCamera.h"
 #include "jleGameEngine.h"
 #include "jleProfiler.h"
 #include "jleResource.h"
 #include "jleScene.h"
-#include "editor/jleImGuiCerealArchive.h"
 
-#include <cereal/archives/json.hpp>
-#include <cereal/archives/binary.hpp>
+#include "serialization/jleJSONArchive.h"
+#include "serialization/jleBinaryArchive.h"
 
 
 #include <execution>
@@ -44,38 +44,38 @@ public:
     virtual ~jleGame() = default;
 
     virtual void
-    update(float dt)
+    update(jleEngineModulesContext& ctx)
     {
     }
 
     virtual void
-    start()
+    start(jleEngineModulesContext& ctx)
     {
     }
 
-    void updateActiveScenes(float dt);
+    void updateActiveScenes(jleEngineModulesContext& ctx);
 
     template <typename T>
     std::shared_ptr<T>
-    createScene()
+    createScene(jleEngineModulesContext& ctx)
     {
         static_assert(std::is_base_of<jleScene, T>::value, "T must derive from jleScene");
 
         std::shared_ptr<T> newScene = std::make_shared<T>();
         _activeScenes.push_back(newScene);
 
-        newScene->onSceneStart();
+        newScene->onSceneStart(ctx);
 
         return newScene;
     }
 
-    std::shared_ptr<jleScene> loadScene(const jlePath &scenePath);
+    std::shared_ptr<jleScene> loadScene(const jlePath &scenePath, jleEngineModulesContext& ctx);
 
     std::vector<std::shared_ptr<jleScene>> &activeScenesRef();
 
     jleCamera mainCamera{jleCameraProjection::Orthographic};
 
-    void parallelUpdates(float dt);
+    void parallelUpdates(jleEngineModulesContext& ctx);
 
     void addParallelComponent(const std::shared_ptr<jleComponent> &component);
 

@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include "jleSTL/jleStringView.h"
 #include <plog/Log.h>

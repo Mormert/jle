@@ -21,13 +21,13 @@
 
 // clang-format off
 #if JLE_BUILD_EDITOR
-template void jleLuaClass::serializeClass(cereal::jleImGuiCerealArchive &ar, sol::table &luaTable);
-template void jleLuaClass::serializeClass(cereal::jleImGuiCerealArchiveInternal &ar, sol::table &luaTable);
+template void jleLuaClass::serializeClass(jleImGuiArchive &ar, sol::table &luaTable);
+template void jleLuaClass::serializeClass(jleImGuiArchiveInternal &ar, sol::table &luaTable);
 #endif
-template void jleLuaClass::serializeClass(cereal::JSONOutputArchive &ar, sol::table &luaTable);
-template void jleLuaClass::serializeClass(cereal::JSONInputArchive &ar, sol::table &luaTable);
-template void jleLuaClass::serializeClass(cereal::BinaryOutputArchive &ar, sol::table &luaTable);
-template void jleLuaClass::serializeClass(cereal::BinaryInputArchive &ar, sol::table &luaTable);
+template void jleLuaClass::serializeClass(jleJSONOutputArchive &ar, sol::table &luaTable);
+template void jleLuaClass::serializeClass(jleJSONInputArchive &ar, sol::table &luaTable);
+template void jleLuaClass::serializeClass(jleBinaryOutputArchive &ar, sol::table &luaTable);
+template void jleLuaClass::serializeClass(jleBinaryInputArchive &ar, sol::table &luaTable);
 // clang-format on
 
 std::vector<jleLuaClass>
@@ -154,6 +154,8 @@ jleLuaClass::serializeClass(Archive &ar, sol::table &luaTable)
         return;
     }
 
+    jleSerializationContext &ctx = ar.ctx;
+
     for (const auto &attribute : _attributes) {
 
         const auto &type = attribute.first;
@@ -240,7 +242,7 @@ jleLuaClass::serializeClass(Archive &ar, sol::table &luaTable)
         } break;
         case LuaType::SerializableLuaClass: {
             const auto &luaClassName = type.luaClass;
-            const auto &luaEnv = gEngine->luaEnvironment();
+            const auto &luaEnv = ctx.luaEnvironment;
             auto &loadedClasses = luaEnv->loadedLuaClasses();
 
             auto x = luaTable[name];
@@ -266,7 +268,7 @@ jleLuaClass::serializeClass(Archive &ar, sol::table &luaTable)
         } break;
         case LuaType::DerivedFromLuaClass: {
             const auto &luaClassName = type.luaClass;
-            const auto &luaEnv = gEngine->luaEnvironment();
+            const auto &luaEnv = ctx.luaEnvironment;
             auto &loadedClasses = luaEnv->loadedLuaClasses();
 
             auto it = loadedClasses.find(luaClassName);

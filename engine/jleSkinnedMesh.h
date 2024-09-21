@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include "jleMesh.h"
 
@@ -31,7 +31,7 @@ class jleSkinnedMesh : public jleMesh
 public:
     JLE_REGISTER_RESOURCE_TYPE(jleSkinnedMesh, "smesh", "smesh.fbx")
 
-    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(jleSerializationContext& ctx, const jlePath &path) override;
 
     ~jleSkinnedMesh() override;
 
@@ -58,7 +58,7 @@ public:
                          const std::vector<glm::vec4> &boneWeights,
                          const std::unordered_map<std::string, jleSkinnedMeshBone> &boneMapping);
 
-    void saveToFile() override;
+    void saveToFile(jleSerializationContext& ctx) override;
 
     std::unordered_map<std::string, jleSkinnedMeshBone> &
     getBoneMapping();

@@ -15,16 +15,19 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include "jleLuaClass.h"
 #include "jlePath.h"
+#include "core/jleFileWatcher.h"
+
+#include <future>
 
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol2/sol.hpp>
 
 class jleLuaScript;
-class jleFileIndexer;
+class jleFileWatcher;
 
 class jleLuaEnvironment
 {
@@ -33,20 +36,20 @@ public:
 
     ~jleLuaEnvironment();
 
-    void loadScript(const jlePath& path);
+    void loadScript(const jlePath& path, jleSerializationContext& ctx);
 
     void executeScript(const char* script);
 
     [[nodiscard]] sol::state& getState();
 
-    void setupScriptLoader();
+    void loadInitialScripts(jleSerializationContext &ctx);
 
     std::unordered_map<jlePath, std::shared_ptr<jleLuaScript>>& loadedScripts();
 
     std::unordered_map<std::string, jleLuaClass>& loadedLuaClasses();
 
 #if JLE_BUILD_EDITOR
-    void loadNewlyAddedScripts();
+    void loadNewlyAddedScripts(jleSerializationContext& ctx);
 #endif
 
 private:
@@ -54,7 +57,8 @@ private:
 
     void setupLuaGLM(sol::state& lua);
 
-    std::unique_ptr<jleFileIndexer> _scriptFilesWatcher;
+    jleFileWatcher _scriptFilesWatcher;
+    std::future<jleFileIndexerResult> _fileWatchFuture;
 
     std::unordered_map<std::string, jleLuaClass> _loadedLuaClasses;
 

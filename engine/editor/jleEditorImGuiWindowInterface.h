@@ -36,8 +36,6 @@ public:
 
     virtual ~jleEditorWindowInterface() = default;
 
-    virtual void update(jleGameEngine &ge) = 0;
-
     virtual void openWindow() { isOpened = true; }
 
     virtual void closeWindow() { isOpened = false; }

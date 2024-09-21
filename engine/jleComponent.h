@@ -16,13 +16,13 @@
 #ifndef JLE_COMPONENT
 #define JLE_COMPONENT
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include "jleTypeReflectionUtils.h"
 
-#include "editor/jleImGuiCerealArchive.h"
-#include <cereal/archives/binary.hpp>
-#include <cereal/archives/json.hpp>
+#include "editor/jleImGuiArchive.h"
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
 #include <cereal/types/base_class.hpp>
 #include <cereal/types/memory.hpp>
 
@@ -36,6 +36,8 @@ class jleSceneClient;
 class jleSceneServer;
 class jleComponent;
 class jleTransform;
+class jleEditorModulesContext;
+class jleEditorGizmos;
 
 class jleComponent
 {
@@ -51,37 +53,37 @@ public:
     }
 
     virtual void
-    netSyncOut(cereal::BinaryOutputArchive &ar)
+    netSyncOut(jleBinaryOutputArchive &ar)
     {
     }
 
     virtual void
-    netSyncIn(cereal::BinaryInputArchive &ar)
+    netSyncIn(jleBinaryInputArchive &ar)
     {
     }
 
     virtual void
-    start()
+    start(jleEngineModulesContext& ctx)
     {
     }
 
     virtual void
-    serverStart()
+    serverStart(jleEngineModulesContext& ctx)
     {
     }
 
     virtual void
-    onDestroy()
+    onDestroy(jleEngineModulesContext& ctx)
     {
     }
 
     virtual void
-    update(float dt)
+    update(jleEngineModulesContext& ctx)
     {
     }
 
     virtual void
-    parallelUpdate(float dt)
+    parallelUpdate(jleEngineModulesContext& ctx)
     {
         // Danger zone, enabled by enableParallelUpdate() in component constructor.
         // Called on all components of this type concurrently before recursive scene graph update().
@@ -92,28 +94,28 @@ public:
     bool parallelUpdateEnabled();
 
     [[maybe_unused]] virtual void
-    editorUpdate(float dt)
+    editorUpdate(jleEngineModulesContext& ctx)
     {
     }
 
     [[maybe_unused]] virtual void
-    serverUpdate(float dt)
+    serverUpdate(jleEngineModulesContext& ctx)
     {
     }
 
     [[maybe_unused]] virtual void
-    editorGizmosRender(bool selected)
+    editorGizmosRender(jleFramePacket & renderGraph, jleEditorGizmos& gizmos)
     {
     }
 
     [[maybe_unused]] virtual void
-    editorInspectorImGuiRender()
+    editorInspectorImGuiRender(jleEditorModulesContext& ctx)
     {
     }
 
-    void syncServerToClient();
+    void syncServerToClient(jleSerializationContext& serializationContext);
 
-    void destroy();
+    void destroy(jleEngineModulesContext& ctx);
 
     bool isDestroyed();
 
@@ -167,8 +169,8 @@ private:
 };
 
 #define NET_SYNC(...)                                                                                                  \
-    void netSyncOut(cereal::BinaryOutputArchive &ar) override { ar(__VA_ARGS__); }                                     \
-    void netSyncIn(cereal::BinaryInputArchive &ar) override { ar(__VA_ARGS__); }
+    void netSyncOut(jleBinaryOutputArchive &ar) override { ar(__VA_ARGS__); }                                     \
+    void netSyncIn(jleBinaryInputArchive &ar) override { ar(__VA_ARGS__); }
 
 CEREAL_REGISTER_TYPE(jleComponent)
 

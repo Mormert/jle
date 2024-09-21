@@ -28,7 +28,7 @@ public:
 
     explicit jleImageFlipped(const jlePath &path);
 
-    [[nodiscard]] bool loadFromFile(const jlePath &path) override;
+    [[nodiscard]] bool loadFromFile(jleSerializationContext& ctx, const jlePath &path) override;
 };
 
 #endif // JLE_IMAGEFLIPPED_H

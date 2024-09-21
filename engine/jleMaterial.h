@@ -16,23 +16,23 @@
 #ifndef JLE_MATERIAL_H
 #define JLE_MATERIAL_H
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
-#include "jleCompileHelper.h"
+#include "core/jleCompileHelper.h"
 #include "jleResourceInterface.h"
 #include "jleTypeReflectionUtils.h"
 
-#include "jle3DGraph.h"
-#include "jle3DSettings.h"
 #include "jleCamera.h"
 #include "jleResourceRef.h"
 #include "jleShader.h"
 #include "jleTexture.h"
 #include "jleTextureRefOrRGBA.h"
+#include "modules/graphics/jle3DSettings.h"
+#include "modules/graphics/jleFramePacket.h"
 
-#include "editor/jleImGuiCerealArchive.h"
-#include <cereal/archives/json.hpp>
-#include <cereal/archives/binary.hpp>
+#include "editor/jleImGuiArchive.h"
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
 #include <cereal/cereal.hpp>
 
 enum class jleBlendMode : int32_t {
@@ -66,6 +66,8 @@ public:
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedOnlyResource)
 
+    void setShader(const jleResourceRef<jleShader> &shaderRef);
+
     std::shared_ptr<jleShader> getShader();
 
     virtual std::shared_ptr<jleTexture> getOpacityTexture();
@@ -93,7 +95,8 @@ public:
                      const jle3DSettings &settings) override;
 
     template <class Archive>
-    void serialize(Archive &ar);
+    void
+    serialize(Archive &ar);
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleMaterial)
 
@@ -116,7 +119,6 @@ public:
 };
 
 JLE_EXTERN_TEMPLATE_CEREAL_H(jleMaterialPBR)
-
 
 CEREAL_REGISTER_TYPE(jleMaterialPBR)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleMaterial, jleMaterialPBR)

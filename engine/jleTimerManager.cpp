@@ -14,7 +14,7 @@
  *********************************************************************************************/
 
 #include "jleTimerManager.h"
-#include "jleIncludeGL.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 
 #include "jleProfiler.h"
 

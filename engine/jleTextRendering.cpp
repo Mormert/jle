@@ -14,9 +14,8 @@
  *********************************************************************************************/
 
 #include "jleTextRendering.h"
-#include "jleFont.h"
-#include "jleFrameBufferInterface.h"
 #include "jleProfiler.h"
+#include "modules/graphics/core/jleFrameBufferInterface.h"
 
 jleTextRendering::jleTextRendering() {}
 

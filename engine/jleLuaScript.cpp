@@ -18,7 +18,7 @@
 #include "jleLuaEnvironment.h"
 
 bool
-jleLuaScript::loadFromFile(const jlePath &path)
+jleLuaScript::loadFromFile(jleSerializationContext& ctx, const jlePath &path)
 {
     std::ifstream load{path.getRealPath()};
     if (!load.good()) {
@@ -31,36 +31,33 @@ jleLuaScript::loadFromFile(const jlePath &path)
     _sourceCode = buffer.str();
     _luaScriptName = path.getFileNameNoEnding();
 
-    _luaEnvironment = gEngine->luaEnvironment();
-    loadScript();
-
     return true;
 }
 
 void
-jleLuaScript::loadScript()
+jleLuaScript::loadScriptIntoLuaEnv(jleLuaEnvironment& luaEnvironment)
 {
     try {
         const auto absoluteSrcCodePath = path.getRealPath();
-        _luaEnvironment->getState().script(_sourceCode, absoluteSrcCodePath);
-        faultyState = false;
+        luaEnvironment.getState().script(_sourceCode, absoluteSrcCodePath);
+        _failsLoading = false;
 
         const auto classes = jleLuaClass::getLuaClassesFromLuaSrc(path, _sourceCode);
 
         for (auto &c : classes) {
             const auto &className = c.getClassName();
-            _luaEnvironment->loadedLuaClasses()[className] = c;
+            luaEnvironment.loadedLuaClasses()[className] = c;
         }
 
     } catch (std::exception &e) {
         LOGE << "Loading script failed: " << e.what();
-        faultyState = true;
+        _failsLoading = true;
     }
-    _luaEnvironment->loadedScripts().insert(std::make_pair(path, std::static_pointer_cast<jleLuaScript>(shared_from_this())));
+    luaEnvironment.loadedScripts().insert(std::make_pair(path, std::static_pointer_cast<jleLuaScript>(shared_from_this())));
 }
 
 void
-jleLuaScript::saveToFile()
+jleLuaScript::saveToFile(jleSerializationContext& ctx)
 {
     std::ofstream save{path.getRealPath()};
     save << _sourceCode;

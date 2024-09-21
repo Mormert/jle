@@ -43,7 +43,7 @@ jleObject::serialize(Archive &archive)
 }
 template <typename T>
 inline std::shared_ptr<T>
-jleObject::addComponent()
+jleObject::addComponent(jleEngineModulesContext &ctx)
 {
     static_assert(std::is_base_of<jleComponent, T>::value, "T must derive from jleComponent");
 
@@ -59,13 +59,13 @@ jleObject::addComponent()
 
     _components.push_back(newComponent);
 
-    addComponentStart(newComponent);
+    addComponentStart(newComponent, ctx);
 
     return newComponent;
 };
 
 inline std::shared_ptr<jleComponent>
-jleObject::addComponentByName(const std::string &component_name)
+jleObject::addComponentByName(const std::string &component_name, jleEngineModulesContext &ctx)
 {
     auto newComponent = jleTypeReflectionUtils::instantiateComponentByString(component_name);
     if (!newComponent) {
@@ -83,14 +83,14 @@ jleObject::addComponentByName(const std::string &component_name)
 
     _components.push_back(newComponent);
 
-    addComponentStart(newComponent);
+    addComponentStart(newComponent, ctx);
 
     return newComponent;
 }
 
 template <typename T>
 void
-jleObject::addComponent(const std::shared_ptr<T> &component)
+jleObject::addComponent(const std::shared_ptr<T> &component, jleEngineModulesContext &ctx)
 {
     static_assert(std::is_base_of<jleComponent, T>::value, "T must derive from jleComponent");
 
@@ -106,7 +106,7 @@ jleObject::addComponent(const std::shared_ptr<T> &component)
 
     _components.push_back(component);
 
-    addComponentStart(component);
+    addComponentStart(component, ctx);
 }
 
 template <typename T>
@@ -149,28 +149,28 @@ jleObject::getComponentInChildren(jleObject *object)
 
 template <typename T>
 inline std::shared_ptr<T>
-jleObject::spawnChildObject()
+jleObject::spawnChildObject(jleSerializationContext& ctx)
 {
     // We still want the object to be spawned initially in the scene,
     // but to immediately be moved over to the object's ownership.
     // This is because the scene will run the start() methods on the new object.
-    std::shared_ptr<T> object = _containedInScene->spawnObject<T>();
+    std::shared_ptr<T> object = _containedInScene->spawnObject<T>(ctx);
     attachChildObject(object);
     return object;
 }
 
 inline std::shared_ptr<jleObject>
-jleObject::spawnChildObjectFromTemplate(const jlePath &path)
+jleObject::spawnChildObjectFromTemplate(const jlePath &path, jleSerializationContext &ctx)
 {
-    auto object = _containedInScene->spawnObjectFromTemplate(path);
+    auto object = _containedInScene->spawnObjectFromTemplate(path, ctx);
     attachChildObject(object);
     return object;
 }
 
 inline std::shared_ptr<jleObject>
-jleObject::spawnChildObject(const std::string &objName)
+jleObject::spawnChildObject(const std::string &objName, jleSerializationContext &ctx)
 {
-    auto object = _containedInScene->spawnObjectTypeByName(objName);
+    auto object = _containedInScene->spawnObject<jleObject>(ctx);
     attachChildObject(object);
     return object;
 }

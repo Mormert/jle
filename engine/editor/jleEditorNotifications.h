@@ -27,11 +27,11 @@
 
 class jleEditorNotifications : public jleEditorWindowInterface, public plog::IAppender {
 public:
-    explicit jleEditorNotifications(const std::string& windowName);
+    explicit jleEditorNotifications(const std::string& windowName, jleSerializationContext& ctx);
 
     ~jleEditorNotifications() override;
 
-    void update(jleGameEngine &ge) override;
+    void renderUI(jleEngineModulesContext &ctx);
 
     void addNotificationError(const std::wstring& message);
 

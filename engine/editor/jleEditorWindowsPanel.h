@@ -25,20 +25,22 @@
 class jleEditorWindowsPanel : public jleEditorWindowInterface
 {
 public:
-    explicit jleEditorWindowsPanel(const std::string &window_name);
+    explicit jleEditorWindowsPanel(const std::string &window_name,
+                                   jleSerializationContext& serializationContext,
+                                   jleEngineSettings &settings);
 
-    void update(jleGameEngine &ge) override;
+    void renderUI(jleEngineModulesContext &ctx);
 
     void addWindow(std::shared_ptr<jleEditorWindowInterface> window);
 
-    inline void menuButtonsupdate(jleGameEngine &ge);
+    inline void menuButtonsupdate(jleEngineModulesContext &ctx);
 
-    inline void dockspaceupdate(jleGameEngine &ge);
+    inline void dockspaceupdate(jleEngineModulesContext &ctx);
 
 private:
-    std::shared_ptr<jleTexture> _crossIcon;           // X
-    std::shared_ptr<jleTexture> _maximizeIcon;        // [ ]
-    std::shared_ptr<jleTexture> _minimizeIcon;        // -
+    std::shared_ptr<jleTexture> _crossIcon;    // X
+    std::shared_ptr<jleTexture> _maximizeIcon; // [ ]
+    std::shared_ptr<jleTexture> _minimizeIcon; // -
     std::shared_ptr<jleTexture> _jleIcon;
 
     std::vector<std::shared_ptr<jleEditorWindowInterface>> windows;
