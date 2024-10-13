@@ -115,7 +115,8 @@ private:
     bool running{false};
 
 #ifdef __EMSCRIPTEN__
-    static jleGameEngine *_emscriptenEnginePtr;
+    static inline jleGameEngine *_emscriptenEnginePtr{};
+
     static void
     mainLoopEmscripten()
     {
