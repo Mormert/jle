@@ -20,14 +20,14 @@
 #if JLE_BUILD_EDITOR
 
 #include "jleEditorImGuiWindowInterface.h"
-#include "jleTexture.h"
+#include "modules/graphics/jleTexture.h"
 
 class jleEditorGameControllerWidget : public jleEditorWindowInterface
 {
 public:
     explicit jleEditorGameControllerWidget(const std::string &window_name);
 
-    void update(jleGameEngine &ge) override;
+    void render(jleEngineModulesContext& ctx);
 };
 
 #endif // JLE_BUILD_EDITOR

@@ -13,6 +13,23 @@
 #                                                                                           #
 #############################################################################################
 
+set(JLE_CORE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/core")
+
+set(JLE_CORE_3RD_PARTY_DIRS
+        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty"
+        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules"
+        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/plog/include"
+        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/tracy/public/tracy"
+        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules_forks/jle_EASTL/include"
+        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules_forks/jle_EASTL/jle_EABase/include/Common"
+        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/glm"
+        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/lua")
+
+set(JLE_3RDPARTY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
+
+include_directories(${JLE_CORE_3RD_PARTY_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_subdirectory(3rdparty/zlib)
 
 set(ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
@@ -28,7 +45,7 @@ endif ()
 include_directories(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
 find_package(ZLIB REQUIRED)
 
-file(GLOB_RECURSE JLE_STL_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/jleSTL/**.h")
+file(GLOB_RECURSE JLE_STL_HEADERS "core/jleSTL/**.h")
 
 set(LZ4_SOURCES
         "3rdparty/git_submodules/lz4/lib/lz4.c"
@@ -47,77 +64,34 @@ add_library(engine STATIC
         "3rdparty/stb_image_write.cpp"
         "3rdparty/tiny_obj_loader.cpp"
         "3rdparty/WickedEngine/wiJobSystem.cpp"
-        "RmlUiImplementation/RmlUi_Backend_GLFW_GL3.cpp"
-        "RmlUiImplementation/RmlUi_Renderer_GL3.cpp"
-        "RmlUiImplementation/RmlUi_Platform_GLFW.cpp"
-        "RmlUiImplementation/shell/src/PlatformExtensions.cpp"
-        "RmlUiImplementation/shell/src/RendererExtensions.cpp"
-        "RmlUiImplementation/shell/src/Shell.cpp"
-        "RmlUiImplementation/shell/src/ShellFileInterface.cpp"
-        "jleNew.cpp"
-        "jleImage.cpp"
-        "jleImageFlipped.cpp"
-        "jleComponent.cpp"
-        "jleGame.cpp"
-        "jleObject.cpp"
-        "jleScene.cpp"
-        "jleNetworkEvent.cpp"
-        "jleNetworkEventOutQueue.cpp"
-        "jleSceneNetworked.cpp"
-        "jleSceneServer.cpp"
-        "jleSceneClient.cpp"
+        "modules/graphics/RmlUiImplementation/RmlUi_Backend_GLFW_GL3.cpp"
+        "modules/graphics/RmlUiImplementation/RmlUi_Renderer_GL3.cpp"
+        "modules/graphics/RmlUiImplementation/RmlUi_Platform_GLFW.cpp"
+        "modules/graphics/RmlUiImplementation/shell/src/PlatformExtensions.cpp"
+        "modules/graphics/RmlUiImplementation/shell/src/RendererExtensions.cpp"
+        "modules/graphics/RmlUiImplementation/shell/src/Shell.cpp"
+        "modules/graphics/RmlUiImplementation/shell/src/ShellFileInterface.cpp"
+        "modules/jleEngineModulesContext.cpp"
+        "modules/jleEditorModulesContext.cpp"
+        "modules/game/jleGameRuntime.cpp"
+        "modules/game/jleGame.cpp"
+        "modules/networking/jleNetworkEvent.cpp"
+        "modules/networking/jleNetworkEventOutQueue.cpp"
         "jleGameEngine.cpp"
-        "jleKeyboardInput.cpp"
-        "jleMouseInput.cpp"
-        "jleFrameBufferInterface.cpp"
-        "jleFramebufferMultisample.cpp"
-        "jleFramebufferShadowMap.cpp"
-        "jleFramebufferShadowCubeMap.cpp"
-        "jleFramebufferPicking.cpp"
-        "jleFullscreenRendering.cpp"
-        "jleDynamicLogAppender.cpp"
-        "jleShader.cpp"
-        "jleCommandArguments.cpp"
-        "jleTexture.cpp"
-        "jleWindow.cpp"
-        "jleTransform.cpp"
-        "cCamera.cpp"
-        "cAnimator.cpp"
-        "jleTimerManager.cpp"
-        "jlePath.cpp"
-        "jleProfiler.cpp"
-        "jleCamera.cpp"
-        "jle3DRenderer.cpp"
-        "jle3DGraph.cpp"
-        "cCameraFPV.cpp"
-        "jleLuaClass.cpp"
-        "jleMesh.cpp"
-        "cMesh.cpp"
-        "jleSkybox.cpp"
-        "cSkybox.cpp"
-        "cLight.cpp"
-        "cLightDirectional.cpp"
-        "jleFramebufferScreen.cpp"
-        "jleMaterial.cpp"
-        "jlePhysics.cpp"
-        "jlePhysicsDebugDrawer.cpp"
-        "cRigidbody.cpp"
-        "cLuaScript.cpp"
-        "jleLuaScript.cpp"
-        "jleFileIndexer.cpp"
-        "jleLuaEnvironment.cpp"
-        "jleGLError.cpp"
-        "jleInput.cpp"
-        "jleTextureRefOrRGBA.cpp"
-        "jleSkinnedMesh.cpp"
-        "jleAnimationBone.cpp"
-        "jleAnimation.cpp"
-        "cSkinnedMesh.cpp"
-        "cTransformNetSync.cpp"
-        "jleAnimationFinalMatrices.cpp"
-        "jleResource.cpp"
-        "jleResourceInterface.cpp"
-        "jleRenderThread.cpp")
+        "modules/physics/jlePhysics.cpp"
+        "modules/physics/jlePhysicsDebugDrawer.cpp"
+        "modules/physics/components/cRigidbody.cpp"
+        "modules/animation/components/cAnimator.cpp"
+        "modules/animation/jleAnimationBone.cpp"
+        "modules/animation/jleAnimation.cpp"
+        "modules/networking/components/cTransformNetSync.cpp"
+        "modules/animation/jleAnimationFinalMatrices.cpp"
+        )
+
+add_subdirectory(core)
+target_link_libraries(engine PUBLIC jleCore)
+
+target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 if (JLE_BUILD_EDITOR)
     target_sources(engine PRIVATE
@@ -169,54 +143,9 @@ if (JLE_BUILD_EDITOR)
     target_link_libraries(engine PUBLIC Tracy::TracyClient)
 endif ()
 
-# TODO: Move Assimp to be editor only
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-set(ASSIMP_NO_EXPORT OFF CACHE BOOL "" FORCE)
-set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
-set(ASSIMP_BUILD_ZLIB OFF CACHE BOOL "" FORCE)
-# Exclude 3MF since it uses zip_open which caused name conflict with libzip
-set(ASSIMP_BUILD_3MF_EXPORTER OFF CACHE BOOL "" FORCE)
-set(ASSIMP_BUILD_3MF_IMPORTER OFF CACHE BOOL "" FORCE)
-if (JLE_BUILD_EMSCRIPTEN)
-    set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
-endif ()
-add_subdirectory(3rdparty/git_submodules/assimp)
-target_link_libraries(engine PUBLIC assimp)
-target_include_directories(engine SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/assimp/include")
+
 
 target_link_libraries(engine PUBLIC zlib)
-
-add_subdirectory(3rdparty/lua)
-target_link_libraries(engine PUBLIC vanilla_lua)
-
-if (JLE_BUILD_EDITOR AND WIN32)
-    add_subdirectory(3rdparty/luasocket)
-    add_dependencies(engine socket_core)
-    add_dependencies(engine mime_core)
-endif ()
-
-if (NOT JLE_BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries else()
-
-    target_link_libraries(engine PUBLIC ${CMAKE_DL_LIBS})
-
-    # Compile glad.c only when building native
-    target_sources(engine PRIVATE "3rdparty/glad/glad.cpp")
-
-    # Remove GLFW tests, examples and docs from build
-    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-    set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-
-    add_subdirectory(3rdparty/git_submodules/glfw)
-    target_link_libraries(engine PUBLIC glfw)
-
-endif ()
-
-set(ENET_STATIC ON)
-add_subdirectory(3rdparty/git_submodules/enet)
-target_include_directories(engine PUBLIC 3rdparty/git_submodules/enet/include)
-target_link_libraries(engine PUBLIC enet_static)
 
 add_subdirectory(3rdparty/SoLoud)
 target_link_libraries(engine PUBLIC SoLoud)
@@ -262,22 +191,11 @@ add_subdirectory(3rdparty/git_submodules_forks/jle_RmlUi)
 if (WIN32)
     target_link_libraries(engine PRIVATE shlwapi imm32) # shlwapi and imm32 needed for "shell"
 endif ()
-target_include_directories(engine PUBLIC 3rdparty/git_submodules_forks/jle_RmlUi/Include RmlUiImplementation RmlUiImplementation/shell/include 3rdparty/lua)
+target_include_directories(engine PUBLIC 3rdparty/git_submodules_forks/jle_RmlUi/Include modules/graphics/RmlUiImplementation modules/graphics/RmlUiImplementation/shell/include)
 target_link_libraries(engine PUBLIC RmlCore RmlDebugger)
 
-add_subdirectory(3rdparty/git_submodules_forks/jle_EASTL)
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/jleSTL")
-target_link_libraries(engine PUBLIC EASTL)
-
-target_include_directories(engine SYSTEM PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty"
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/plog/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/tracy/public/tracy"
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules_forks/jle_EASTL/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules_forks/jle_EASTL/jle_EABase/include/Common"
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/glm")
-
-target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+add_subdirectory(modules)
+target_link_libraries(engine PUBLIC jleModules)
 
 if (JLE_BUILD_EMSCRIPTEN)
     # When building with Emscripten, it needs to find the pre-loaded assets
@@ -298,7 +216,7 @@ if (JLE_BUILD_UNITY)
     set_source_files_properties(
             "3rdparty/stb_image.cpp"
             "3rdparty/tiny_obj_loader.cpp"
-            "cSkybox.cpp"
+            "modules/graphics/runtime/components/cSkybox.cpp"
             "3rdparty/ImGui/imgui.cpp"
             "3rdparty/ImGui/imgui_draw.cpp"
             "3rdparty/ImGui/imgui_tables.cpp"

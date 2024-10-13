@@ -19,8 +19,8 @@
 
 #if JLE_BUILD_EDITOR
 
+#include "core/jleResourceRef.h"
 #include "jleEditorImGuiWindowInterface.h"
-#include "jleResourceRef.h"
 
 #include <assimp/scene.h>
 
@@ -30,22 +30,22 @@ class jleMaterialPBR;
 class jleObject;
 class aiNode;
 
-
 class jleEditor3DImportWindow : public jleEditorWindowInterface
 {
 public:
     explicit jleEditor3DImportWindow(const std::string &window_name);
 
-    void update(jleGameEngine &ge) override;
+    void renderUI(jleEditorModulesContext &ctx);
 
-    bool importModel(const jlePath &importPath, const jlePath& destinationPath);
+    bool importModel(const jlePath &importPath, const jlePath &destinationPath, jleEditorModulesContext& ctx);
 
 private:
     void processNode(const aiScene *scene,
                      aiNode *node,
                      std::shared_ptr<jleObject> &object,
                      std::vector<std::shared_ptr<jleMesh>> &createdMeshes,
-                     std::vector<jleResourceRef<jleMaterialPBR>> &createdMaterials);
+                     std::vector<jleResourceRef<jleMaterialPBR>> &createdMaterials,
+                     jleEngineModulesContext& ctx);
 
     bool _importWithSkinning{};
 };

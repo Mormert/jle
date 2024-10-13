@@ -21,19 +21,21 @@
 #if JLE_BUILD_EDITOR
 
 #include "jleEditorImGuiWindowInterface.h"
-#include <jleResourceRef.h>
+#include <core/jleResourceRef.h>
 
 #include <memory>
 #include <unordered_map>
+
+class jleSerializationContext;
 
 class jleEditorResourceEdit : public jleEditorWindowInterface
 {
 public:
     explicit jleEditorResourceEdit(const std::string &window_name);
 
-    void update(jleGameEngine &ge) override;
+    void renderUI(jleEditorModulesContext& ctx);
 
-    bool tryOpen(const jlePath &path);
+    bool tryOpen(const jlePath &path, jleResources& resources);
 
 private:
 

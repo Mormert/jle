@@ -16,19 +16,22 @@
 #ifndef JLE_EDITORGIZMOS_H
 #define JLE_EDITORGIZMOS_H
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #if JLE_BUILD_EDITOR
+
+#include "serialization/jleSerialization.h"
 
 #include <memory>
 
 class jleMesh;
 class jleMaterial;
+class jleResources;
 
 class jleEditorGizmos
 {
 public:
-    jleEditorGizmos();
+    jleEditorGizmos(jleSerializationContext& ctx);
     ~jleEditorGizmos();
 
     std::shared_ptr<jleMesh> lightLampMesh();

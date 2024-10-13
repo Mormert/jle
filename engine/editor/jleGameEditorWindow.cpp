@@ -14,23 +14,22 @@
  *********************************************************************************************/
 
 #include "jleGameEditorWindow.h"
-#include "jleInput.h"
-#include "jleWindow.h"
-#include "jleFrameBufferInterface.h"
-#include "jleMouseInput.h"
+#include "modules/graphics/core/jleFrameBufferInterface.h"
+#include "modules/input/hardware/jleMouseInput.h"
+#include "modules/input/jleInput.h"
+#include "modules/windowing/jleWindow.h"
 
-#include "jleIncludeGL.h"
+#include "modules/graphics/core/jleIncludeGL.h"
 
 #include <ImGui/imgui.h>
 
 
 jleGameEditorWindow::jleGameEditorWindow(const std::string &window_name) : jleEditorWindowInterface{window_name}
 {
-    gGameEditorWindow = this;
 }
 
 void
-jleGameEditorWindow::update(jleGameEngine &ge)
+jleGameEditorWindow::renderUI(jleEngineModulesContext &ctx, jleInput& input)
 {
     if (!isOpened) {
         return;
@@ -42,7 +41,7 @@ jleGameEditorWindow::update(jleGameEngine &ge)
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, flags);
 
-    if (ge.isGameKilled()) {
+    if (ctx.gameRuntime.isGameKilled()) {
         ImGuiStyle &style = ImGui::GetStyle();
 
         float size = ImGui::CalcTextSize("   Start Game   ").x + style.FramePadding.x * 2.0f;
@@ -55,7 +54,7 @@ jleGameEditorWindow::update(jleGameEngine &ge)
         ImGui::SetCursorPosY(ImGui::GetWindowHeight() / 2.f);
 
         if (ImGui::Button("   Start Game   ")) {
-            gEngine->startGame();
+            ctx.gameRuntime.startGame(ctx);
         }
 
         ImGui::End();
@@ -70,35 +69,34 @@ jleGameEditorWindow::update(jleGameEngine &ge)
     _windowPositionX = cursorScreenPos.x - viewport->Pos.x;
     _windowPositionY = cursorScreenPos.y - viewport->Pos.y;
 
-    const auto &internalInputMouse = gEngine->input().mouse;
-    const auto &engineFramebufferMain = gEngine->mainScreenFramebuffer;
-    internalInputMouse->setScreenBeginCoords(_windowPositionX, _windowPositionY);
-    internalInputMouse->setScreenSize(width(), height());
+    auto &internalInputMouse = input.mouse;
+    internalInputMouse.setScreenBeginCoords(_windowPositionX, _windowPositionY);
+    internalInputMouse.setScreenSize(width(), height());
 
     if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset == _lastGameWindowWidth &&
           ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset == _lastGameWindowHeight)) {
         _lastGameWindowWidth = ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset;
         _lastGameWindowHeight = ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset;
 
-        gEngine->gameWindowResizedEvent((int)_lastGameWindowWidth, (int)_lastGameWindowHeight);
+        ctx.gameRuntime.gameWindowResizedEvent((int)_lastGameWindowWidth, (int)_lastGameWindowHeight);
     }
 
     // Get the texture from the framebuffer
-    glBindTexture(GL_TEXTURE_2D, (unsigned int)ge.mainScreenFramebuffer->texture());
-    ImGui::Image((void *)(intptr_t)ge.mainScreenFramebuffer->texture(),
+    glBindTexture(GL_TEXTURE_2D, (unsigned int)ctx.gameRuntime.mainGameScreenFramebuffer->texture());
+    ImGui::Image((void *)(intptr_t)ctx.gameRuntime.mainGameScreenFramebuffer->texture(),
                  ImVec2(_lastGameWindowWidth, _lastGameWindowHeight),
                  ImVec2(0, 1),
                  ImVec2(1, 0));
 
     if (ImGui::IsWindowFocused() != _wasFocused) {
         _wasFocused = ImGui::IsWindowFocused();
-        ge.input().setInputEnabled(_wasFocused);
+        ctx.inputModule.setInputEnabled(_wasFocused);
     }
 
-    if (ImGui::IsWindowFocused() && ge.input().mouse->isFpsMode() && ImGui::IsKeyPressed(ImGuiKey_Tab)) {
-        ge.input().mouse->setFpsMode(false);
+    if (ImGui::IsWindowFocused() && ctx.inputModule.mouse.isFpsMode() && ImGui::IsKeyPressed(ImGuiKey_Tab)) {
+        ctx.inputModule.mouse.setFpsMode(false);
     } else if (ImGui::IsKeyPressed(ImGuiKey_Tab)) {
-        ge.input().mouse->setFpsMode(true);
+        ctx.inputModule.mouse.setFpsMode(true);
     }
 
     ImGui::End();

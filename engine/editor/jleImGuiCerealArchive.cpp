@@ -13,11 +13,14 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#include "jleImGuiCerealArchive.h"
-#include "jleLuaEnvironment.h"
+#include "core/jleResourceIndexer.h"
+#include "jleImGuiArchive.h"
+#include "modules/scripting/jleLuaEnvironment.h"
+
+#include <jleVectorSet.h>
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, jleTextureRefOrRGBA &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, jleTextureRefOrRGBA &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -44,7 +47,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, jleTextureRefOrRGB &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, jleTextureRefOrRGB &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -71,7 +74,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, jleTextureRefOrAlpha &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, jleTextureRefOrAlpha &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -98,7 +101,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 bool
-cereal::jleImGuiCerealArchive::draw_ui_reference(const char *name,
+jleImGuiArchive::draw_ui_reference(const char *name,
                                                  std::string &value,
                                                  std::vector<std::string> fileExtensions)
 {
@@ -117,7 +120,7 @@ cereal::jleImGuiCerealArchive::draw_ui_reference(const char *name,
 
     bool existsSomeFiles = false;
     for (auto &extension : fileExtensions) {
-        auto e = gEditor->fileIndexer().getIndexedFilesPtr(extension.c_str());
+        auto e = editorCtx.editor.resourceIndexer().getIndexedFilesPtr(extension.c_str());
         if (!e->empty()) {
             existsSomeFiles = true;
         }
@@ -195,9 +198,15 @@ cereal::jleImGuiCerealArchive::draw_ui_reference(const char *name,
 }
 
 bool
-cereal::jleImGuiCerealArchive::draw_ui_lua_reference(const char *name, std::string &className)
+jleImGuiArchive::draw_ui_lua_reference(const char *name, std::string &className)
 {
     ImGui::PushID(elementCount++);
+
+    if (!ctx.luaEnvironment) {
+        ImGui::Text("Serialization context doesn't have a Lua Environment reference!");
+        ImGui::PopID();
+        return false;
+    }
 
     std::vector<char> charData(className.begin(), className.end());
     charData.resize(1000);
@@ -208,7 +217,7 @@ cereal::jleImGuiCerealArchive::draw_ui_lua_reference(const char *name, std::stri
         className = std::string(charData.data());
     }
 
-    const auto &loadedClasses = gEngine->luaEnvironment()->loadedLuaClasses();
+    const auto &loadedClasses = ctx.luaEnvironment->loadedLuaClasses();
 
     static std::set<int> isOpenSet;
 
@@ -277,17 +286,23 @@ cereal::jleImGuiCerealArchive::draw_ui_lua_reference(const char *name, std::stri
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar,
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar,
                                        const char *name,
                                        jleLuaClassSerialization &value)
 {
     ImGui::PushID(elementCount++);
 
+    if (!ctx.luaEnvironment) {
+        ImGui::Text("Serialization context doesn't have a Lua Environment reference!");
+        ImGui::PopID();
+        return;
+    }
+
     std::vector<char> charData(value.luaClassName.begin(), value.luaClassName.end());
     charData.resize(1000);
 
     const auto &className = value.luaClassName;
-    const auto &loadedClasses = gEngine->luaEnvironment()->loadedLuaClasses();
+    const auto &loadedClasses = ctx.luaEnvironment->loadedLuaClasses();
 
     bool validClassName = false;
     auto it = loadedClasses.find(className);
@@ -326,7 +341,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar,
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, jlePath &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, jlePath &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -341,7 +356,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, uint32_t &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, uint32_t &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -350,7 +365,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, int32_t &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, int32_t &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -359,7 +374,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, uint64_t &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, uint64_t &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -368,7 +383,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, int64_t &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, int64_t &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -377,7 +392,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, float &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, float &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -386,7 +401,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, double &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, double &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -395,7 +410,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, bool &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, bool &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -404,7 +419,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, std::string &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, std::string &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -418,7 +433,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, glm::vec2 &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, glm::vec2 &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -427,7 +442,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, glm::vec3 &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, glm::vec3 &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -436,7 +451,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, glm::vec4 &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, glm::vec4 &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -445,7 +460,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, jleRGB &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, jleRGB &value)
 {
     ImGui::PushID(elementCount++);
     ImGui::ColorEdit3(name, &value[0]);
@@ -453,7 +468,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, jleRGBA &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, jleRGBA &value)
 {
     ImGui::PushID(elementCount++);
     ImGui::ColorEdit4(name, &value[0]);
@@ -461,7 +476,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, glm::quat &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, glm::quat &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -474,7 +489,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 void
-cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const char *name, jleTransform &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, jleTransform &value)
 {
     ImGui::PushID(elementCount++);
 
@@ -497,7 +512,7 @@ cereal::jleImGuiCerealArchive::draw_ui(cereal::jleImGuiCerealArchive &ar, const 
 }
 
 std::string
-cereal::jleImGuiCerealArchive::LeftLabelImGui(const char *const label, float factor)
+jleImGuiArchive::LeftLabelImGui(const char *const label, float factor)
 {
     float width = ImGui::CalcItemWidth();
 

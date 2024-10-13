@@ -21,28 +21,46 @@
 
 #include "editor/jleEditorImGuiWindowInterface.h"
 
+#include "core/jleCamera.h"
 #include "jleGameEngine.h"
-#include "jleCamera.h"
 
 #include <ImGui/ImGuizmo.h>
+
+class jleEditorModulesContext;
+class jleFramebufferMultisample;
 
 class jleSceneEditorWindow : public jleEditorWindowInterface
 {
 public:
-    jleSceneEditorWindow(const std::string &window_name, std::shared_ptr<jleFramebufferInterface> &framebuffer);
+    explicit jleSceneEditorWindow(const std::string &window_name);
 
-    void update(jleGameEngine &ge) override;
+    void renderUI(jleEditorModulesContext &ctx);
 
-    jleCameraSimpleFPVController fpvCamController;
+    void renderEditorGrid(jleFramePacket & graph);
+
+    void render(jleFramePacket &framePacket, const jleEditorModulesContext &context);
+
+    jleCameraSimpleFPVController fpvCamController{};
     float cameraSpeed = 100.f;
     float orthoZoomValue = 10.f;
 
+    [[nodiscard]] glm::vec3 const
+    getCameraPosition()
+    {
+        return _renderCamera.getPosition();
+    }
+
 private:
+
     float _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;
     std::pair<int32_t, int32_t> _lastCursorPos;
     bool _wasFocused = false;
 
+    jleCamera _renderCamera{};
+    bool _perspectiveCamera = true;
+
     std::unique_ptr<jleFramebufferInterface> _pickingFramebuffer;
+    std::unique_ptr<jleFramebufferMultisample> _msaa;
 
     std::shared_ptr<jleFramebufferInterface> _framebuffer;
 

@@ -14,20 +14,20 @@
  *********************************************************************************************/
 
 #include "jleEditorNotifications.h"
-#include "jleDynamicLogAppender.h"
+#include "core/jleDynamicLogAppender.h"
 #include <ImGui/imgui.h>
 
-jleEditorNotifications::jleEditorNotifications(const std::string &windowName) : jleEditorWindowInterface(windowName)
+jleEditorNotifications::jleEditorNotifications(const std::string &windowName, jleSerializationContext& ctx) : jleEditorWindowInterface(windowName)
 {
     dynamicAppender().addAppender(this);
 
-    _errorImage = jleResourceRef<jleTexture>(jlePath{"ED:icons/error.png"});
+    _errorImage = jleResourceRef<jleTexture>(jlePath{"ED:icons/error.png"}, ctx);
 }
 
 jleEditorNotifications::~jleEditorNotifications() { dynamicAppender().removeAppender(this); }
 
 void
-jleEditorNotifications::update(jleGameEngine &ge)
+jleEditorNotifications::renderUI(jleEngineModulesContext &ctx)
 {
     using namespace std::chrono;
     long long now = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();

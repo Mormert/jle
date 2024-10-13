@@ -1,0 +1,574 @@
+/*********************************************************************************************
+ *                                                                                           *
+ *               ,     .     ,                      .   ,--.                                 *
+ *               |     |     |                      |   |            o                       *
+ *               | ,-. |- -- |    ,-: ,-: ,-: ,-. ,-|   |-   ;-. ,-: . ;-. ,-.               *
+ *               | |-' |     |    | | | | | | |-' | |   |    | | | | | | | |-'               *
+ *              -' `-' `-'   `--' `-` `-| `-| `-' `-'   `--' ' ' `-| ' ' ' `-'               *
+ *                                                                                           *
+ *     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     *
+ *          Jet-Lagged Engine (jle) is licenced under GNU General Public License v3.0.       *
+ *     The licence can be found here: https://github.com/Mormert/jle/blob/master/LICENSE     *
+ *                  Copyright (c) 2020-2024 Johan Lind. All rights reserved.                 *
+ *                                                                                           *
+ *********************************************************************************************/
+
+#include "jle3DRenderer.h"
+#include "core/jleCamera.h"
+#include "core/jleProfiler.h"
+
+#include "jle3DSettings.h"
+#include "jleFramePacket.h"
+#include "jleMaterial.h"
+#include "jleMesh.h"
+#include "jleShader.h"
+#include "jleSkinnedMesh.h"
+#include "jleSkybox.h"
+#include "modules/animation/jleAnimationFinalMatrices.h"
+#include "modules/graphics/core/jleFrameBufferInterface.h"
+#include "modules/graphics/core/jleFramebufferShadowCubeMap.h"
+#include "modules/graphics/core/jleFramebufferShadowMap.h"
+#include "modules/graphics/core/jleFullscreenRendering.h"
+#include "modules/graphics/core/jleGLError.h"
+#include "modules/graphics/core/jleIncludeGL.h"
+
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtx/norm.hpp>
+
+#include <RmlUi/Core/Context.h>
+#include <RmlUi_Backend.h>
+
+#include <random>
+
+#include <WickedEngine/wiJobSystem.h>
+
+#define JLE_LINE_DRAW_BATCH_SIZE 32768
+
+struct jle3DRenderer::jle3DRendererShaders {
+    jle3DRendererShaders(jleSerializationContext &ctx)
+        : defaultMeshShader{jlePath{"ER:/shaders/defaultMesh.glsl"}, ctx},
+          missingMaterialShader{jlePath{"ER:/shaders/missingMaterialShader.glsl"}, ctx},
+          skyboxShader{jlePath{"ER:/shaders/skybox.glsl"}, ctx},
+          pickingShader{jlePath{"ER:/shaders/picking.glsl"}, ctx},
+          shadowMappingShader{jlePath{"ER:/shaders/shadowMapping.glsl"}, ctx},
+          shadowMappingPointShader{jlePath{"ER:/shaders/shadowMappingPoint.glsl"}, ctx},
+          debugDepthQuad{jlePath{"ER:/shaders/debugDepthQuad.glsl"}, ctx},
+          linesShader{jlePath{"ER:/shaders/lines.glsl"}, ctx}
+    {
+    }
+
+    jleResourceRef<jleShader> defaultMeshShader;
+    jleResourceRef<jleShader> missingMaterialShader;
+    jleResourceRef<jleShader> pickingShader;
+    jleResourceRef<jleShader> shadowMappingShader;
+    jleResourceRef<jleShader> shadowMappingPointShader;
+    jleResourceRef<jleShader> debugDepthQuad;
+    jleResourceRef<jleShader> linesShader;
+    jleResourceRef<jleShader> skyboxShader;
+};
+
+jle3DRenderer::jle3DRenderer(jleSerializationContext& ctx)
+{
+    _shaders = std::make_unique<jle3DRendererShaders>(ctx);
+
+    // Generate buffers for line drawing
+    glGenVertexArrays(1, &_lineVAO);
+    glGenBuffers(1, &_lineVBO);
+    glBindVertexArray(_lineVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
+    glBufferData(
+        GL_ARRAY_BUFFER, (GLuint)JLE_LINE_DRAW_BATCH_SIZE * sizeof(jle3DLineVertex), (void *)0, GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(jle3DLineVertex), (void *)0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(jle3DLineVertex), (void *)(1 * sizeof(glm::vec3)));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(jle3DLineVertex), (void *)(2 * sizeof(glm::vec3)));
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    // End gen buffers for line drawing
+
+    _shadowMappingFramebuffer = std::make_unique<jleFramebufferShadowMap>(2048, 2048);
+    _pointsShadowMappingFramebuffer = std::make_unique<jleFramebufferShadowCubeMap>(1024, 1024);
+}
+
+jle3DRenderer::~jle3DRenderer()
+{
+    glDeleteBuffers(1, &_lineVBO);
+    glDeleteVertexArrays(1, &_lineVAO);
+}
+
+void
+jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
+                      const jleCamera &camera,
+                      const jleFramePacket &framePacketRef)
+{
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_render)
+
+
+    // TODO: Don't make this silly copy here, this is just a work around since the frame packet needs to be const ref
+    jleFramePacket framePacket = framePacketRef;
+
+    framebufferOut.bind();
+
+    const auto backgroundColor = camera.getBackgroundColor();
+    glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    const int viewportWidth = framebufferOut.width();
+    const int viewportHeight = framebufferOut.height();
+
+    glEnable(GL_DEPTH_TEST);
+
+    // Sort translucency early on another thread, sync before rendering translucency
+    wi::jobsystem::context sortCtx;
+    if (!framePacket._translucentMeshes.empty()) {
+        wi::jobsystem::Execute(
+            sortCtx, [&](wi::jobsystem::JobArgs args) { sortTranslucentMeshes(camera, framePacket._translucentMeshes); });
+    }
+
+    // Directional light renders to the shadow mapping framebuffer
+    renderDirectionalLight(camera, framePacket._meshes, framePacket._skinnedMeshes, framePacket.settings);
+
+    glCheckError("3D Render - Directional Lights");
+
+    renderPointLights(camera, framePacket);
+
+    glCheckError("3D Render - Point Lights");
+
+    framebufferOut.bind();
+    glViewport(0, 0, viewportWidth, viewportHeight);
+
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    // glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+
+    bindShadowmapFramebuffers(framePacket.settings);
+
+    {
+        JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes_Opaque)
+        renderMeshes(camera, framePacket._meshes, framePacket._lights, framePacket.settings);
+        glCheckError("3D Render - Opaque Meshes");
+    }
+
+    {
+        JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderSkinnedMeshes_Opaque)
+        renderSkinnedMeshes(camera, framePacket._skinnedMeshes, framePacket._lights, framePacket.settings);
+        glCheckError("3D Render - Opaque Skinned Meshes");
+    }
+
+    renderLineStrips(camera, framePacket._lineStrips);
+    glCheckError("3D Render - Strip Lines");
+
+    renderLines(camera, framePacket._lines);
+    glCheckError("3D Render - Lines");
+
+    renderSkybox(camera, framePacket.settings);
+    glCheckError("3D Render - Skybox");
+
+    {
+        JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes_Translucent)
+        if (!framePacket._translucentMeshes.empty()) {
+            wi::jobsystem::Wait(sortCtx);
+        }
+
+        renderMeshes(camera, framePacket._translucentMeshes, framePacket._lights, framePacket.settings);
+        glCheckError("3D Render - Translucent Meshes");
+    }
+
+    // gEngine->context->Update();
+
+    /*
+     * Temporarily disables RmlUi rendering, causing some problems since it's a WIP
+        gEngine->context->SetDimensions(Rml::Vector2i(framebufferOut.width(), framebufferOut.height()));
+
+        // Disable depth testing here because the UI doesnt use depth
+        glDisable(GL_DEPTH_TEST);
+        Backend::BeginFrame();
+        gEngine->context->Render();
+        Backend::PresentFrame();
+
+     */
+
+    framebufferOut.bindDefault();
+}
+
+void
+jle3DRenderer::renderMeshes(const jleCamera &camera,
+                            const std::vector<jle3DQueuedMesh> &meshes,
+                            const std::vector<jle3DRendererLight> &lights,
+                            const jle3DSettings &settings)
+{
+    for (auto &&mesh : meshes) {
+        JLE_SCOPE_PROFILE_GPU(MeshRender);
+        if (!mesh.material || !mesh.material->getShader()) {
+            _shaders->missingMaterialShader->use();
+            _shaders->missingMaterialShader->SetMat4("uView", camera.getViewMatrix());
+            _shaders->missingMaterialShader->SetMat4("uProj", camera.getProjectionMatrix());
+            _shaders->missingMaterialShader->SetMat4("uModel", mesh.transform);
+        } else {
+            mesh.material->useMaterial(camera, lights, settings);
+            mesh.material->getShader()->SetMat4("uModel", mesh.transform);
+            mesh.material->getShader()->SetBool("uUseSkinning", false);
+        }
+
+        const auto vao = mesh.mesh->getVAO();
+        if (vao != 0) {
+            glBindVertexArray(vao);
+            if (mesh.mesh->usesIndexing()) {
+                glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+            } else {
+                glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+            }
+            glBindVertexArray(0);
+        }
+    }
+}
+
+void
+jle3DRenderer::renderSkinnedMeshes(const jleCamera &camera,
+                                   const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
+                                   const std::vector<jle3DRendererLight> &lights,
+                                   const jle3DSettings &settings)
+{
+    for (auto &&mesh : skinnedMeshes) {
+        JLE_SCOPE_PROFILE_GPU(SkinnedMeshRender);
+        if (!mesh.material || !mesh.material->getShader()) {
+            _shaders->missingMaterialShader->use();
+            _shaders->missingMaterialShader->SetMat4("uView", camera.getViewMatrix());
+            _shaders->missingMaterialShader->SetMat4("uProj", camera.getProjectionMatrix());
+            _shaders->missingMaterialShader->SetMat4("uModel", mesh.transform);
+        } else {
+            mesh.material->useMaterial(camera, lights, settings);
+            mesh.material->getShader()->SetMat4("uModel", mesh.transform);
+            mesh.material->getShader()->SetBool("uUseSkinning", true);
+
+            for (int i = 0; i < mesh.matrices->matrices.size(); ++i) {
+                mesh.material->getShader()->SetMat4("uAnimBonesMatrices[" + std::to_string(i) + "]",
+                                                    mesh.matrices->matrices[i]);
+            }
+        }
+
+        glBindVertexArray(mesh.skinnedMesh->getVAO());
+        if (mesh.skinnedMesh->usesIndexing()) {
+            glDrawElements(GL_TRIANGLES, mesh.skinnedMesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+        } else {
+            glDrawArrays(GL_TRIANGLES, 0, mesh.skinnedMesh->getTrianglesCount());
+        }
+        glBindVertexArray(0);
+    }
+}
+
+void
+jle3DRenderer::sortTranslucentMeshes(const jleCamera &camera, std::vector<jle3DQueuedMesh> &translucentMeshes)
+{
+    ZoneScoped;
+    glm::vec3 camPosition = camera.getPosition();
+
+    std::sort(translucentMeshes.begin(),
+              translucentMeshes.end(),
+              [&camPosition](const jle3DQueuedMesh &mesh1, const jle3DQueuedMesh &mesh2) {
+                  return glm::distance2(camPosition, glm::vec3(mesh1.transform[3])) >
+                         glm::distance2(camPosition, glm::vec3(mesh2.transform[3]));
+              });
+}
+
+void
+jle3DRenderer::renderSkybox(const jleCamera &camera, const jle3DSettings &settings)
+{
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderSkybox)
+
+    if (!settings.skybox) {
+        return;
+    }
+
+    if (camera.getProjectionType() == jleCameraProjection::Orthographic) {
+        return;
+    }
+
+    // Depth testing to draw the skybox behind everything.
+    // We also draw the skybox last, such that it can be early-depth-tested.
+    glDepthFunc(GL_LEQUAL);
+    _shaders->skyboxShader->use();
+
+    // Convert the view matrix to mat3 first to remove the translation
+    auto view = glm::mat4(glm::mat3(camera.getViewMatrix()));
+
+    _shaders->skyboxShader->SetMat4("view", view);
+    _shaders->skyboxShader->SetMat4("projection", camera.getProjectionMatrix());
+    // skybox cube
+    glBindVertexArray(settings.skybox->getVAO());
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, settings.skybox->getTextureID());
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+
+    glDepthFunc(GL_LESS);
+}
+
+void
+jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
+                                   const jleCamera &camera,
+                                   const jleFramePacket &framePacket)
+{
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshesPicking)
+
+    const int viewportWidth = framebufferOut.width();
+    const int viewportHeight = framebufferOut.height();
+
+    framebufferOut.bind();
+
+    glEnable(GL_DEPTH_TEST);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Change viewport dimensions to match framebuffer's dimensions
+    glViewport(0, 0, viewportWidth, viewportHeight);
+
+    _shaders->pickingShader->use();
+    _shaders->pickingShader->SetMat4("projView", camera.getProjectionViewMatrix());
+
+    const auto executeRender = [&](const std::vector<jle3DQueuedMesh> &meshes) {
+        for (auto &&mesh : meshes) {
+            int r = (mesh.instanceId & 0x000000FF) >> 0;
+            int g = (mesh.instanceId & 0x0000FF00) >> 8;
+            int b = (mesh.instanceId & 0x00FF0000) >> 16;
+            _shaders->pickingShader->SetVec4("PickingColor", glm::vec4{r / 255.0f, g / 255.0f, b / 255.0f, 1.f});
+            _shaders->pickingShader->SetMat4("model", mesh.transform);
+            glBindVertexArray(mesh.mesh->getVAO());
+            if (mesh.mesh->usesIndexing()) {
+                glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+            } else {
+                glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+            }
+            glBindVertexArray(0);
+        }
+    };
+
+    executeRender(framePacket._meshes);
+    executeRender(framePacket._translucentMeshes);
+
+    framebufferOut.bindDefault();
+}
+
+void
+jle3DRenderer::renderDirectionalLight(const jleCamera &camera,
+                                      const std::vector<jle3DQueuedMesh> &meshes,
+                                      const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
+                                      const jle3DSettings &settings)
+{
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderDirectionalLight)
+
+    if (!settings.useDirectionalLight) {
+        return;
+    }
+
+    _shadowMappingFramebuffer->bind();
+
+    glDisable(GL_CULL_FACE);
+
+    _shaders->shadowMappingShader->use();
+
+    _shaders->shadowMappingShader->SetMat4("lightSpaceMatrix",
+                                           settings.getLightSpaceMatrixAtPosition(camera.getPosition()));
+
+    glViewport(0, 0, (int)_shadowMappingFramebuffer->width(), (int)_shadowMappingFramebuffer->height());
+
+    glClear(GL_DEPTH_BUFFER_BIT);
+    renderShadowMeshes(meshes, *_shaders->shadowMappingShader.get());
+    renderShadowMeshesSkinned(skinnedMeshes, *_shaders->shadowMappingShader.get());
+
+    glEnable(GL_CULL_FACE);
+
+    _shadowMappingFramebuffer->bindDefault();
+}
+
+void
+jle3DRenderer::renderPointLights(const jleCamera &camera, const jleFramePacket &framePacket)
+{
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderPointLights)
+
+    if (framePacket._lights.empty()) {
+        return;
+    }
+
+    glCullFace(GL_BACK);
+
+    float aspect = (float)_pointsShadowMappingFramebuffer->width() / (float)_pointsShadowMappingFramebuffer->height();
+    float nearP = 0.0f;
+    float farP = 500.0f;
+    glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, nearP, farP);
+
+    glm::vec3 lightPos = framePacket._lights[0].position;
+
+    std::vector<glm::mat4> shadowTransforms;
+    shadowTransforms.push_back(shadowProj *
+                               glm::lookAt(lightPos, lightPos + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+    shadowTransforms.push_back(shadowProj *
+                               glm::lookAt(lightPos, lightPos + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+    shadowTransforms.push_back(shadowProj *
+                               glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
+    shadowTransforms.push_back(shadowProj *
+                               glm::lookAt(lightPos, lightPos + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+    shadowTransforms.push_back(shadowProj *
+                               glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+    shadowTransforms.push_back(shadowProj *
+                               glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+
+    _shaders->shadowMappingPointShader->use();
+    _shaders->shadowMappingPointShader->SetVec3("lightPos", lightPos);
+    _shaders->shadowMappingPointShader->SetFloat("farPlane", farP);
+
+    for (int i = 0; i < 6; i++) {
+        _shaders->shadowMappingPointShader->SetMat4("lightSpaceMatrix", shadowTransforms[i]);
+        _pointsShadowMappingFramebuffer->setRenderFace(i);
+        glViewport(0, 0, (int)_pointsShadowMappingFramebuffer->width(), (int)_pointsShadowMappingFramebuffer->height());
+
+        glClear(GL_DEPTH_BUFFER_BIT);
+        renderShadowMeshes(framePacket._meshes, *_shaders->shadowMappingPointShader.get());
+        renderShadowMeshesSkinned(framePacket._skinnedMeshes, *_shaders->shadowMappingPointShader.get());
+    }
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+}
+
+void
+jle3DRenderer::renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jleShader &shader)
+{
+    for (auto &&mesh : meshes) {
+        if (!mesh.castShadows) {
+            return;
+        }
+        shader.SetMat4("model", mesh.transform);
+        if (mesh.material) {
+            if (auto opacity = mesh.material->getOpacityTexture()) {
+                shader.SetBool("uUseOpacityTexture", true);
+                shader.SetTextureSlot("uOpacityTexture", jleTextureSlot::Opacity);
+                opacity->setActive(jleTextureSlot::Opacity);
+            } else {
+                shader.SetBool("uUseOpacityTexture", false);
+            }
+        } else {
+            shader.SetBool("uUseOpacityTexture", false);
+        }
+
+        shader.SetBool("uUseSkinning", false);
+
+        const auto vao = mesh.mesh->getVAO();
+        if (vao != 0) {
+            glBindVertexArray(vao);
+            if (mesh.mesh->usesIndexing()) {
+                glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+            } else {
+                glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+            }
+            glBindVertexArray(0);
+        }
+    }
+}
+
+void
+jle3DRenderer::renderShadowMeshesSkinned(const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes, jleShader &shader)
+{
+    for (auto &&mesh : skinnedMeshes) {
+        if (!mesh.castShadows) {
+            return;
+        }
+        shader.SetMat4("model", mesh.transform);
+        if (mesh.material) {
+            if (auto opacity = mesh.material->getOpacityTexture()) {
+                shader.SetBool("uUseOpacityTexture", true);
+                shader.SetTextureSlot("uOpacityTexture", jleTextureSlot::Opacity);
+                opacity->setActive(jleTextureSlot::Opacity);
+            } else {
+                shader.SetBool("uUseOpacityTexture", false);
+            }
+        } else {
+            shader.SetBool("uUseOpacityTexture", false);
+        }
+
+        shader.SetBool("uUseSkinning", true);
+
+        for (int i = 0; i < mesh.matrices->matrices.size(); ++i) {
+            mesh.material->getShader()->SetMat4("uAnimBonesMatrices[" + std::to_string(i) + "]",
+                                                mesh.matrices->matrices[i]);
+        }
+
+        glBindVertexArray(mesh.skinnedMesh->getVAO());
+        if (mesh.skinnedMesh->usesIndexing()) {
+            glDrawElements(GL_TRIANGLES, mesh.skinnedMesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+        } else {
+            glDrawArrays(GL_TRIANGLES, 0, mesh.skinnedMesh->getTrianglesCount());
+        }
+        glBindVertexArray(0);
+    }
+}
+
+void
+jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DLineVertex> &linesBatch)
+{
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderLines)
+
+    if (linesBatch.empty()) {
+        return;
+    }
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    _shaders->linesShader->use();
+    _shaders->linesShader->SetMat4("projView", camera.getProjectionViewMatrix());
+    _shaders->linesShader->SetVec3("cameraPos", camera.getPosition());
+
+    int linesRendered = 0;
+
+    do {
+        int batchSize = JLE_LINE_DRAW_BATCH_SIZE;
+        if (linesRendered + batchSize > linesBatch.size()) {
+            batchSize = linesBatch.size() - linesRendered;
+        }
+
+        glBindVertexArray(_lineVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
+
+        glBufferSubData(GL_ARRAY_BUFFER, 0, batchSize * sizeof(jle3DLineVertex), &linesBatch[linesRendered]);
+        glDrawArrays(GL_LINES, 0, batchSize);
+
+        linesRendered += JLE_LINE_DRAW_BATCH_SIZE;
+    } while (linesRendered < linesBatch.size());
+
+    glBindVertexArray(0);
+
+    glDisable(GL_BLEND);
+}
+
+void
+jle3DRenderer::renderLineStrips(const jleCamera &camera,
+                                const std::vector<std::vector<jle3DLineVertex>> &lineStripBatch)
+{
+    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderLineStrips)
+
+    // Not implemented
+}
+
+void
+jle3DRenderer::bindShadowmapFramebuffers(const jle3DSettings &settings)
+{
+    // Bind to shadow map texture
+    glActiveTexture(JLE_TEXTURE_DIR_SHADOW);
+    glBindTexture(GL_TEXTURE_2D, _shadowMappingFramebuffer->texture());
+
+    glActiveTexture(JLE_TEXTURE_POINT_SHADOW);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, _pointsShadowMappingFramebuffer->texture());
+
+    if (settings.skybox) {
+        glActiveTexture(JLE_TEXTURE_SKYBOX);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, settings.skybox->getTextureID());
+    }
+}

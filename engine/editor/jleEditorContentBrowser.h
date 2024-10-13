@@ -21,7 +21,7 @@
 
 #include "jleEditorImGuiWindowInterface.h"
 #include "jleEditorResourceEdit.h"
-#include "jleTexture.h"
+#include "modules/graphics/jleTexture.h"
 #include <filesystem>
 
 class jleEditorTextEdit;
@@ -30,10 +30,11 @@ class jleEditorContentBrowser : public jleEditorWindowInterface
 {
 public:
     explicit jleEditorContentBrowser(const std::string &window_name,
+                                     jleSerializationContext& serializationContext,
                                      const std::shared_ptr<jleEditorTextEdit> &editorTextEdit,
                                      const std::shared_ptr<jleEditorResourceEdit> &editorResourceEdit);
 
-    void update(jleGameEngine &ge) override;
+    void renderUI(jleEditorModulesContext& ctx);
 
 private:
     std::shared_ptr<jleTexture> _fileIcon;
@@ -60,17 +61,17 @@ private:
 
     void contentHierarchy(std::string directoryPath, const std::string &folderName);
 
-    void contentBrowser();
+    void contentBrowser(jleEditorModulesContext& ctx);
 
-    void selectedFilePopup(std::filesystem::path &file);
+    void selectedFilePopup(std::filesystem::path &file, jleEditorModulesContext &ctx);
 
-    void selectedFilePopupScene(std::filesystem::path &file);
+    void selectedFilePopupScene(std::filesystem::path &file, jleEditorModulesContext &ctx);
 
-    void selectedFilePopupObjectTemplate(std::filesystem::path &file);
+    void selectedFilePopupObjectTemplate(std::filesystem::path &file, jleEditorModulesContext& ctx);
 
     void openAsText(std::filesystem::path &file);
 
-    void openAsResource(std::filesystem::path &file);
+    void openAsResource(std::filesystem::path &file, jleResources& resources);
 
     std::shared_ptr<jleEditorTextEdit> _editorTextEdit;
 

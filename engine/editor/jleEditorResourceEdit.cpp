@@ -16,12 +16,12 @@
 #include "jleEditorResourceEdit.h"
 #include "jleGameEngine.h"
 
-#include "editor/jleImGuiCerealArchive.h"
+#include "editor/jleImGuiArchive.h"
 
 jleEditorResourceEdit::jleEditorResourceEdit(const std::string &window_name) : jleEditorWindowInterface(window_name) {}
 
 void
-jleEditorResourceEdit::update(jleGameEngine &ge)
+jleEditorResourceEdit::renderUI(jleEditorModulesContext &ctx)
 {
     std::vector<jlePath> toBeRemoved{};
 
@@ -32,48 +32,50 @@ jleEditorResourceEdit::update(jleGameEngine &ge)
         bool shouldBeOpened = true;
         ImGui::Begin(std::string{"Resource: " + path.getVirtualPath()}.c_str(), &shouldBeOpened, flags);
 
-        if(!shouldBeOpened)
-        {
+        if (!shouldBeOpened) {
             toBeRemoved.push_back(path);
         }
 
         ImGui::BeginChild("resource hierarchy view",
                           ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 
-        cereal::jleImGuiCerealArchiveInternal ar1;
-        ar1(resource);
+        {
+            jleImGuiArchiveInternal ar1{ctx};
+            ar1(resource);
+        }
 
         ImGui::EndChild();
 
         if (resource && ImGui::Button("Save Resource")) {
-            resource->saveToFile();
+            jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
+                                                         &ctx.engineModulesContext.luaEnvironment,
+                                                         &ctx.engineModulesContext.renderThread};
+            resource->saveToFile(serializationContext);
         }
 
         ImGui::SameLine();
 
         if (resource && ImGui::Button("Reload Resource")) {
-            gEngine->resources().reloadSerializedResource(resource);
+            ctx.engineModulesContext.resourcesModule.reloadSerializedResource(resource);
         }
 
         ImGui::End();
     }
 
-    for(auto &&path : toBeRemoved)
-    {
+    for (auto &&path : toBeRemoved) {
         _resources.erase(path);
     }
 }
 
-
 bool
-jleEditorResourceEdit::tryOpen(const jlePath &path)
+jleEditorResourceEdit::tryOpen(const jlePath &path, jleResources &resources)
 {
     if (_resources.find(path) != _resources.end()) {
         return false;
     }
 
     try {
-        auto resource = gEngine->resources().loadSerializedResourceFromFile(path);
+        auto resource = resources.loadSerializedResourceFromFile(path);
         _resources.insert(std::make_pair(path, resource));
     } catch (std::exception &e) {
         LOGV << "Failed to open resource with path: " << path.getVirtualPath() << ", error: " << e.what();

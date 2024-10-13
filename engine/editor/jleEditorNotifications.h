@@ -18,20 +18,20 @@
 #include "jleBuildConfig.h"
 
 #if JLE_BUILD_EDITOR
+#include "core/jleResourceRef.h"
 #include "jleEditorImGuiWindowInterface.h"
-#include "jleResourceRef.h"
-#include "jleTexture.h"
+#include "modules/graphics/jleTexture.h"
 
 #include <plog/Log.h>
 
 
 class jleEditorNotifications : public jleEditorWindowInterface, public plog::IAppender {
 public:
-    explicit jleEditorNotifications(const std::string& windowName);
+    explicit jleEditorNotifications(const std::string& windowName, jleSerializationContext& ctx);
 
     ~jleEditorNotifications() override;
 
-    void update(jleGameEngine &ge) override;
+    void renderUI(jleEngineModulesContext &ctx);
 
     void addNotificationError(const std::wstring& message);
 

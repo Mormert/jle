@@ -15,27 +15,28 @@
 
 #include "jleEditorWindowsPanel.h"
 
-#include "jleGameEditorWindow.h"
 #include "jleEngineSettings.h"
-#include "jleWindow.h"
+#include "jleGameEditorWindow.h"
+#include "modules/windowing/jleWindow.h"
 
+#include <GLFW/glfw3.h>
 #include <ImGui/imgui.h>
 #include <plog/Log.h>
 
 
-jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name)
+jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name, jleSerializationContext& serializationContext, jleEngineSettings& settings)
     : jleEditorWindowInterface{window_name}, _gameController{"Game Controller"}
 {
-    _crossIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/cross.png"});
-    _maximizeIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/maximize.png"});
-    _minimizeIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/minimize.png"});
-    _jleIcon = gEngine->resources().loadResourceFromFile<jleTexture>(gEngine->settings().windowSettings.iconPath);
+    _crossIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/cross.png"}, serializationContext);
+    _maximizeIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/maximize.png"}, serializationContext);
+    _minimizeIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/minimize.png"}, serializationContext);
+    _jleIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(settings.windowSettings.iconPath, serializationContext);
 }
 
 void
-jleEditorWindowsPanel::update(jleGameEngine &ge)
+jleEditorWindowsPanel::renderUI(jleEngineModulesContext& ctx)
 {
-    dockspaceupdate(ge);
+    dockspaceupdate(ctx);
 }
 
 void
@@ -45,7 +46,7 @@ jleEditorWindowsPanel::addWindow(std::shared_ptr<jleEditorWindowInterface> windo
 }
 
 void
-jleEditorWindowsPanel::dockspaceupdate(jleGameEngine &ge)
+jleEditorWindowsPanel::dockspaceupdate(jleEngineModulesContext& ctx)
 {
 
     static bool opt_fullscreen = true;
@@ -102,13 +103,13 @@ jleEditorWindowsPanel::dockspaceupdate(jleGameEngine &ge)
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
     }
 
-    menuButtonsupdate(ge);
+    menuButtonsupdate(ctx);
 
     ImGui::End();
 }
 
 void
-jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine &ge)
+jleEditorWindowsPanel::menuButtonsupdate(jleEngineModulesContext& ctx)
 {
     if (ImGui::BeginMenuBar()) {
 
@@ -136,7 +137,7 @@ jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine &ge)
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Game Controller")) {
-            _gameController.update(ge);
+            _gameController.render(ctx);
             ImGui::EndMenu();
         }
 
@@ -165,7 +166,7 @@ jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine &ge)
         const auto rolling120FramesAvgFps = (int)ImGui::GetIO().Framerate;
         ImGui::Text("Avg FPS: %4d  |  Run Time: %s",
                     rolling120FramesAvgFps,
-                    formatTime(static_cast<int>(ge.currentFrameTime() * 1000.f)).c_str());
+                    formatTime(static_cast<int>(ctx.frameInfo.getCurrentFrameTime() * 1000.f)).c_str());
 
         {
             ImGuiStyle &style = ImGui::GetStyle();
@@ -200,11 +201,11 @@ jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine &ge)
                 ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
 
                 if (ImGui::ImageButton((void *)(intptr_t)_minimizeIcon->id(), buttonSize)) {
-                    glfwIconifyWindow(gEngine->window().glfwWindow());
+                    glfwIconifyWindow(ctx.windowModule.glfwWindow());
                 }
 
                 if (ImGui::ImageButton((void *)(intptr_t)_maximizeIcon->id(), buttonSize)) {
-                    const auto window = gEngine->window().glfwWindow();
+                    const auto window = ctx.windowModule.glfwWindow();
                     if (glfwGetWindowAttrib(window, GLFW_MAXIMIZED)) {
                         glfwRestoreWindow(window);
                     } else {
@@ -217,7 +218,7 @@ jleEditorWindowsPanel::menuButtonsupdate(jleGameEngine &ge)
                     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, grayRedHoveredColor);
 
                     if (ImGui::ImageButton((void *)(intptr_t)_crossIcon->id(), buttonSize)) {
-                        glfwSetWindowShouldClose(gEngine->window().glfwWindow(), true);
+                        glfwSetWindowShouldClose(ctx.windowModule.glfwWindow(), true);
                     }
                     ImGui::PopStyleColor();
                 }

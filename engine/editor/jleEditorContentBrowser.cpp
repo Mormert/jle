@@ -14,16 +14,16 @@
  *********************************************************************************************/
 
 #include "jleEditorContentBrowser.h"
-#include <ImGui/imgui.h>
 #include "ImGui/imgui_stdlib.h"
+#include "core/jleResource.h"
 #include "jleEditor.h"
 #include "jleEditorSceneObjectsWindow.h"
 #include "jleEditorTextEdit.h"
-#include "jleResource.h"
+#include <ImGui/imgui.h>
 
 #include <plog/Log.h>
 
-#include "jleGame.h"
+#include "modules/game/jleGame.h"
 
 #include <fstream>
 #include <string.h>
@@ -31,29 +31,41 @@
 #include <utility>
 
 jleEditorContentBrowser::jleEditorContentBrowser(const std::string &window_name,
+                                                 jleSerializationContext &serializationContext,
                                                  const std::shared_ptr<jleEditorTextEdit> &editorTextEdit,
                                                  const std::shared_ptr<jleEditorResourceEdit> &editorResourceEdit)
     : jleEditorWindowInterface(window_name)
 {
-    _directoryIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/directory.png"});
-    _fileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/files.png"});
-    _backDirectoryIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/back_directory.png"});
+    _directoryIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(
+        jlePath{"ED:/icons/directory.png"}, serializationContext);
+    _fileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/files.png"},
+                                                                                  serializationContext);
+    _backDirectoryIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(
+        jlePath{"ED:/icons/back_directory.png"}, serializationContext);
 
-    _sceneFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/scene.png"});
+    _sceneFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/scene.png"},
+                                                                                       serializationContext);
 
-    _imageFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/image.png"});
+    _imageFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/image.png"},
+                                                                                       serializationContext);
 
-    _jsonFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/json.png"});
+    _jsonFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/json.png"},
+                                                                                      serializationContext);
 
-    _luaFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/script.png"});
+    _luaFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/script.png"},
+                                                                                     serializationContext);
 
-    _shaderFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/shader.png"});
+    _shaderFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/shader.png"},
+                                                                                        serializationContext);
 
-    _materialFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/material.png"});
+    _materialFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(
+        jlePath{"ED:/icons/material.png"}, serializationContext);
 
-    _objTemplateFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/obj_template.png"});
+    _objTemplateFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(
+        jlePath{"ED:/icons/obj_template.png"}, serializationContext);
 
-    _obj3dFileIcon = gEngine->resources().loadResourceFromFile<jleTexture>(jlePath{"ED:/icons/object.png"});
+    _obj3dFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/object.png"},
+                                                                                       serializationContext);
 
     _selectedDirectory = GAME_RESOURCES_DIRECTORY;
 
@@ -161,7 +173,7 @@ jleEditorContentBrowser::contentHierarchy(std::string directoryPath, const std::
 }
 
 void
-jleEditorContentBrowser::update(jleGameEngine &ge)
+jleEditorContentBrowser::renderUI(jleEditorModulesContext &ctx)
 {
     if (!isOpened) {
         return;
@@ -170,12 +182,13 @@ jleEditorContentBrowser::update(jleGameEngine &ge)
     // contentHierarchy(JLE_ENGINE_PATH + "/EditorResources", "Editor");
     contentHierarchy(GAME_RESOURCES_DIRECTORY, "Game Resources");
 
-    contentBrowser();
+    contentBrowser(ctx);
 }
 
 void
-jleEditorContentBrowser::contentBrowser()
+jleEditorContentBrowser::contentBrowser(jleEditorModulesContext &editorCtx)
 {
+    auto &ctx = editorCtx.engineModulesContext;
     ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_MenuBar);
 
     static float iconScaleSliderValue = 1.f;
@@ -233,7 +246,10 @@ jleEditorContentBrowser::contentBrowser()
                 auto createdResource = newResourceFunction();
                 jlePath path = jlePath{_selectedDirectory.string() + "/" + std::string{newFileName}, false};
                 createdResource->path = path;
-                createdResource->saveToFile();
+
+                jleSerializationContext serializationContext{
+                    &ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+                createdResource->saveToFile(serializationContext);
                 openedNewResource = false;
             }
 
@@ -344,8 +360,10 @@ jleEditorContentBrowser::contentBrowser()
                         if (it != _referencedTextures.end()) {
                             iconTexture = it->second;
                         } else {
-                            iconTexture = gEngine->resources().loadResourceFromFile<jleTexture>(
-                                jlePath{dir_entry.path().string(), false});
+                            jleSerializationContext serializationContext{
+                                &ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+                            iconTexture = ctx.resourcesModule.loadResourceFromFileT<jleTexture>(
+                                jlePath{dir_entry.path().string(), false}, serializationContext);
                             _referencedTextures.insert(std::make_pair(path, iconTexture));
                         }
                     } else if (dir_entry.path().extension() == ".json") {
@@ -393,7 +411,7 @@ jleEditorContentBrowser::contentBrowser()
 
         if (!_fileSelected.empty() && ImGui::BeginPopup("selected_file_popup")) {
 
-            selectedFilePopup(_fileSelected);
+            selectedFilePopup(_fileSelected, editorCtx);
             ImGui::EndPopup();
         }
 
@@ -412,7 +430,7 @@ jleEditorContentBrowser::contentBrowser()
 }
 
 void
-jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file)
+jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file, jleEditorModulesContext &ctx)
 {
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
@@ -428,16 +446,16 @@ jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file)
     }
 
     if (fileExtension == ".scn") {
-        selectedFilePopupScene(file);
+        selectedFilePopupScene(file, ctx);
     }
 
     if (fileExtension == ".jobj") {
-        selectedFilePopupObjectTemplate(file);
+        selectedFilePopupObjectTemplate(file, ctx);
     }
 
     openAsText(file);
 
-    openAsResource(file);
+    openAsResource(file, ctx.engineModulesContext.resourcesModule);
 
     { // Delete File
         static bool opened = false;
@@ -525,13 +543,13 @@ jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file)
 }
 
 void
-jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file)
+jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file, jleEditorModulesContext &ctx)
 {
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
 
-    if (!gEngine->isGameKilled()) {
+    if (!ctx.engineModulesContext.gameRuntime.isGameKilled()) {
         if (ImGui::Button("Load Scene (Game)", size)) {
 
             std::string sceneName = file.filename().string();
@@ -540,8 +558,8 @@ jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file)
                 sceneName.resize(dot);
             }
 
-            auto &game = ((jleGameEngine *)gEngine)->gameRef();
-            game.loadScene(jlePath{file.string(), false});
+            auto &game = ctx.engineModulesContext.gameRuntime.getGame();
+            game.loadScene(jlePath{file.string(), false}, ctx.engineModulesContext);
         }
     } else {
         if (ImGui::Button("Load Scene (Editor)", size)) {
@@ -551,13 +569,13 @@ jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file)
                 sceneName.resize(dot);
             }
 
-            gEditor->loadScene(jlePath{file.string(), false}, false);
+            ctx.editor.loadScene(jlePath{file.string(), false}, ctx.engineModulesContext, false);
         }
     }
 }
 
 void
-jleEditorContentBrowser::selectedFilePopupObjectTemplate(std::filesystem::path &file)
+jleEditorContentBrowser::selectedFilePopupObjectTemplate(std::filesystem::path &file, jleEditorModulesContext &ctx)
 {
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
@@ -570,9 +588,12 @@ jleEditorContentBrowser::selectedFilePopupObjectTemplate(std::filesystem::path &
             objectName.resize(dot);
         }
 
-        if (auto &&scene = gEditor->editorSceneObjects().GetSelectedScene().lock()) {
+        if (auto &&scene = ctx.editor.getEditorSceneObjectsWindow().GetSelectedScene().lock()) {
             try {
-                scene->spawnObjectFromTemplate(jlePath{file.string(), false});
+                jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
+                                                             &ctx.engineModulesContext.luaEnvironment,
+                                                             &ctx.engineModulesContext.renderThread};
+                scene->spawnObjectFromTemplate(jlePath{file.string(), false}, serializationContext);
             } catch (std::exception &e) {
                 LOGE << "Failed to load object template: " << e.what();
             }
@@ -592,12 +613,12 @@ jleEditorContentBrowser::openAsText(std::filesystem::path &file)
 }
 
 void
-jleEditorContentBrowser::openAsResource(std::filesystem::path &file)
+jleEditorContentBrowser::openAsResource(std::filesystem::path &file, jleResources &resources)
 {
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
 
     if (ImGui::Button("Open As Resource", size)) {
-        _editorResourceEdit->tryOpen(jlePath{file.string(), false});
+        _editorResourceEdit->tryOpen(jlePath{file.string(), false}, resources);
     }
 }

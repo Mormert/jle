@@ -16,17 +16,17 @@
 #ifndef JLE_EDITORSAVESTATE
 #define JLE_EDITORSAVESTATE
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
-#include "jleSerializedResource.h"
-#include "jleTypeReflectionUtils.h"
-#include "jleCompileHelper.h"
+#include "core/jleCompileHelper.h"
+#include "core/jleSerializedResource.h"
+#include "core/jleTypeReflectionUtils.h"
 #include "glm/glm.hpp"
 
+#include "editor/jleImGuiArchive.h"
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
 #include <cereal/cereal.hpp>
-#include <cereal/archives/json.hpp>
-#include <cereal/archives/binary.hpp>
-#include "editor/jleImGuiCerealArchive.h"
 
 struct jleEditorSaveState : public jleSerializedOnlyResource {
     template <class Archive>

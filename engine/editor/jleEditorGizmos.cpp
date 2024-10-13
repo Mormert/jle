@@ -14,21 +14,21 @@
  *********************************************************************************************/
 
 #include "jleEditorGizmos.h"
-#include "jleMaterial.h"
-#include "jleMesh.h"
-#include "jleResourceRef.h"
+#include "core/jleResourceRef.h"
+#include "modules/graphics/jleMaterial.h"
+#include "modules/graphics/jleMesh.h"
 
 struct jleEditorGizmos::jleEditorGizmosMeshMaterialHolder {
 
-    jleEditorGizmosMeshMaterialHolder()
+    jleEditorGizmosMeshMaterialHolder(jleSerializationContext& ctx)
     {
-        lightLampMeshRef = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_lamp.fbx"}};
-        sunMeshRef = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_sun.fbx"}};
-        cameraMeshRef = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/camera/camera.fbx"}};
-        lampMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/lamp.mat"}};
-        sunMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/sun.mat"}};
-        cameraMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/camera/camera.mat"}};
-        selectedObjectMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/selectedObject.mat"}};
+        lightLampMeshRef = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_lamp.fbx"}, ctx};
+        sunMeshRef = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_sun.fbx"}, ctx};
+        cameraMeshRef = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/camera/camera.fbx"}, ctx};
+        lampMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/lamp.mat"}, ctx};
+        sunMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/sun.mat"}, ctx};
+        cameraMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/camera/camera.mat"}, ctx};
+        selectedObjectMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/selectedObject.mat"}, ctx};
     }
 
     jleResourceRef<jleMesh> lightLampMeshRef;
@@ -42,7 +42,7 @@ struct jleEditorGizmos::jleEditorGizmosMeshMaterialHolder {
     jleResourceRef<jleMaterial> selectedObjectMaterialRef;
 };
 
-jleEditorGizmos::jleEditorGizmos() { _meshMaterialHolder = std::make_unique<jleEditorGizmosMeshMaterialHolder>(); }
+jleEditorGizmos::jleEditorGizmos(jleSerializationContext& ctx) { _meshMaterialHolder = std::make_unique<jleEditorGizmosMeshMaterialHolder>(ctx); }
 
 std::shared_ptr<jleMesh>
 jleEditorGizmos::lightLampMesh()

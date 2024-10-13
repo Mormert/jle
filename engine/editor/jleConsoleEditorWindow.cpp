@@ -14,9 +14,9 @@
  *********************************************************************************************/
 
 #include "jleConsoleEditorWindow.h"
-#include "jleDynamicLogAppender.h"
+#include "core/jleDynamicLogAppender.h"
 #include "jleGameEngine.h"
-#include "jleLuaEnvironment.h"
+#include "modules/scripting/jleLuaEnvironment.h"
 
 #include <ImGui/imgui.h>
 #include <plog/Formatters/FuncMessageFormatter.h>
@@ -140,7 +140,7 @@ void jleConsoleEditorWindow::addLog(const char *fmt, ...) {
     Items.push_back(strdup(buf));
 }
 
-void jleConsoleEditorWindow::execCommand(const char *command_line) {
+void jleConsoleEditorWindow::execCommand(const char *command_line, jleLuaEnvironment& luaEnvironment) {
     addLog("# %s\n", command_line);
 
     // Insert into history. First find match and delete it so it can be pushed
@@ -154,13 +154,13 @@ void jleConsoleEditorWindow::execCommand(const char *command_line) {
         }
     History.push_back(strdup(command_line));
 
-    gEngine->luaEnvironment()->executeScript(command_line);
+    luaEnvironment.executeScript(command_line);
 
     // On command input, we scroll to bottom even if AutoScroll==false
     ScrollToBottom = true;
 }
 
-void jleConsoleEditorWindow::update(jleGameEngine &ge) {
+void jleConsoleEditorWindow::renderUI(jleEngineModulesContext &ctx, jleLuaEnvironment& luaEnvironment) {
     if (!isOpened) {
         return;
     }
@@ -270,7 +270,7 @@ void jleConsoleEditorWindow::update(jleGameEngine &ge) {
         char *s = InputBuf;
         strtrim(s);
         if (s[0])
-            execCommand(s);
+            execCommand(s, luaEnvironment);
         // strcpy(s, "");
         std::fill(s, s + InputBufSize, 0);
         reclaim_focus = true;

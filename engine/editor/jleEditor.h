@@ -20,11 +20,12 @@
 #if JLE_BUILD_EDITOR
 
 #include "jleGameEngine.h"
+#include "modules/jleEditorModulesContext.h"
 
-#include <vector>
 #include <string>
+#include <vector>
 
-class jleFileIndexer;
+class jleFileWatcher;
 class jleEditorWindowInterface;
 class jleFramebufferInterface;
 class jleSceneEditorWindow;
@@ -36,10 +37,9 @@ class jleEditorGizmos;
 class jleEditorSaveState;
 class jlePath;
 class jleObject;
+class jleResourceIndexer;
 struct jleWindowResizeEvent;
-
-class jleEditor;
-inline jleEditor *gEditor;
+class jleSerializationContext;
 
 class jleEditor : public jleGameEngine
 {
@@ -48,60 +48,58 @@ public:
 
     ~jleEditor() override;
 
-    void start() override;
+    void start(jleEngineModulesContext &context) override;
 
-    void render(wi::jobsystem::context& ctx) override;
+    void render(jleCamera& camera, jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx) override;
 
-    void update(float dt) override;
+    void update(jleEngineModulesContext &ctx) override;
 
-    std::shared_ptr<jleFramebufferInterface> editorScreenFramebuffer;
+    jleEditorGizmos &gizmos();
 
-    jleCamera& camera();
-    bool perspectiveCamera = true;
+    jleEditorSaveState &saveState();
 
-    jleEditorGizmos& gizmos();
-
-    jleEditorSaveState& saveState();
-
-    void updateEditorLoadedScenes(float dt);
+    void updateEditorLoadedScenes(jleEngineModulesContext &ctx);
 
     std::vector<std::shared_ptr<jleScene>> &getEditorScenes();
 
     jleEditorTextEdit &editorTextEdit();
 
-    jleEditorSceneObjectsWindow &editorSceneObjects();
+    jleEditorSceneObjectsWindow &getEditorSceneObjectsWindow();
 
-    jleFileIndexer& fileIndexer();
+    jleResourceIndexer &resourceIndexer();
 
-    bool
-    checkSceneIsActiveEditor(const std::string &sceneName);
+    bool checkSceneIsActiveEditor(const std::string &sceneName);
 
-    std::shared_ptr<jleScene>
-    loadScene(const jlePath &scenePath, bool startObjects = true);
+    std::shared_ptr<jleScene> loadScene(const jlePath &scenePath,
+                                        jleEngineModulesContext &ctx,
+                                        bool startObjects = true);
 
 private:
     struct jleEditorInternal;
     std::unique_ptr<jleEditorInternal> _internal;
 
+    std::unique_ptr<jleEditorModulesContext> _editorContext;
+
     void exiting() override;
 
-    void renderGameView();
+    void renderGameView(const jleCamera& camera, const jleFramePacket& framePacketIn, jleFramebufferInterface& framebufferOut);
 
-    void renderEditorSceneView();
+    void renderEditorSceneView(jleEngineModulesContext &ctx);
 
     void renderEditorUI();
 
     void initImgui();
 
-    void renderEditorGizmos();
+    void renderEditorGizmos(jleFramePacket &renderGraph, jleGameRuntime &gameRuntime);
 
-    void renderEditorGridGizmo();
-
-    void renderEditorGizmosObject(jleObject *object);
+    void renderEditorGizmosObject(jleObject *object, jleFramePacket &renderGraph);
 
     void addImGuiWindow(std::shared_ptr<jleEditorWindowInterface> window);
 
-    void mainEditorWindowResized(const jleWindowResizeEvent& resizeEvent);
+    void mainEditorWindowResized(const jleWindowResizeEvent &resizeEvent);
+
+    class jleEditorWindows;
+    std::unique_ptr<jleEditorWindows> _editorWindows{};
 
     std::vector<std::shared_ptr<jleEditorWindowInterface>> _imGuiWindows;
 
@@ -111,11 +109,9 @@ private:
 
     std::shared_ptr<jleEditorSceneObjectsWindow> _editorSceneObjects;
 
-    std::unique_ptr<jleFileIndexer> _fileIndexer;
+    std::unique_ptr<jleResourceIndexer> _resourceIndexer;
 
     std::shared_ptr<jleEditorTextEdit> _textEditWindow;
-
-    std::unique_ptr<jleCamera> _camera;
 
     std::unique_ptr<jleEditorGizmos> _gizmos;
 };

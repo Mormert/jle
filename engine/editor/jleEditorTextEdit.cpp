@@ -22,7 +22,7 @@ jleEditorTextEdit::jleEditorTextEdit(const std::string &window_name) : jleEditor
 }
 
 void
-jleEditorTextEdit::update(jleGameEngine &ge)
+jleEditorTextEdit::renderUI()
 {
     std::vector<jlePath> toBeClosed;
 

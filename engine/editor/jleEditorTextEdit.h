@@ -16,14 +16,14 @@
 #ifndef JLEEDITORTEXTEDIT_H
 #define JLEEDITORTEXTEDIT_H
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #if JLE_BUILD_EDITOR
 
 
 #include "3rdparty/ImGuiColorTextEdit/TextEditor.h"
 #include "jleEditorImGuiWindowInterface.h"
-#include <jleResourceRef.h>
+#include <core/jleResourceRef.h>
 
 #include <unordered_map>
 #include <memory>
@@ -33,7 +33,7 @@ class jleEditorTextEdit : public jleEditorWindowInterface
 public:
     explicit jleEditorTextEdit(const std::string &window_name);
 
-    void update(jleGameEngine &ge) override;
+    void renderUI();
 
     void open(const jlePath &path);
 

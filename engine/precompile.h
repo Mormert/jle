@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #include <typeinfo>
 #include <functional>
@@ -47,8 +47,8 @@
 #include "jleStringView.h"
 
 #include <cereal/cereal.hpp>
-#include <cereal/archives/json.hpp>
-#include <cereal/archives/binary.hpp>
+#include "serialization/jleJSONArchive.h"
+#include "serialization/jleBinaryArchive.h"
 #include "cereal/details/helpers.hpp"
 #include "cereal/types/memory.hpp"
 #include "cereal/types/polymorphic.hpp"

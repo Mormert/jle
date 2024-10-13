@@ -14,40 +14,39 @@
  *********************************************************************************************/
 
 #include "jleSceneEditorWindow.h"
-#include "cMesh.h"
-#include "cRigidbody.h"
-#include "jle3DGraph.h"
-#include "jle3DRenderer.h"
-#include "jle3DSettings.h"
 #include "jleEditor.h"
 #include "jleEditorGizmos.h"
 #include "jleEditorSceneObjectsWindow.h"
-#include "jleFramebufferPicking.h"
-#include "jleGame.h"
-#include "jleIncludeGL.h"
-#include "jleInput.h"
-#include "jlePhysics.h"
-#include "jleTexture.h"
-#include "jleWindow.h"
+#include "modules/game/jleGame.h"
+#include "modules/graphics/core/jleFramebufferMultisample.h"
+#include "modules/graphics/core/jleFramebufferPicking.h"
+#include "modules/graphics/core/jleIncludeGL.h"
+#include "modules/graphics/jle3DRenderer.h"
+#include "modules/graphics/jle3DSettings.h"
+#include "modules/graphics/jleFramePacket.h"
+#include "modules/graphics/jleTexture.h"
+#include "modules/graphics/runtime/components/cMesh.h"
+#include "modules/input/jleInput.h"
+#include "modules/physics/components/cRigidbody.h"
+#include "modules/physics/jlePhysics.h"
+#include "modules/windowing/jleWindow.h"
+#include <modules/graphics/core/jleFramebufferScreen.h>
 
 #include <ImGui/imgui.h>
 #include <btBulletDynamicsCommon.h>
 #include <glm/common.hpp>
 
-jleSceneEditorWindow::
-jleSceneEditorWindow(const std::string &window_name, std::shared_ptr<jleFramebufferInterface> &framebuffer)
-    : jleEditorWindowInterface(window_name)
+jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name) : jleEditorWindowInterface(window_name)
 {
-    _framebuffer = framebuffer;
+    constexpr int initialX = 1024, initialY = 1024;
+    _framebuffer = std::make_shared<jleFramebufferScreen>(initialX, initialY);
 
     _pickingFramebuffer = std::make_unique<jleFramebufferPicking>(_framebuffer->width(), _framebuffer->height());
-
-    auto pos = gEditor->camera().getPosition();
-    fpvCamController.position = pos;
+    _msaa = std::make_unique<jleFramebufferMultisample>(_framebuffer->width(), _framebuffer->height(), 4);
 }
 
 void
-jleSceneEditorWindow::update(jleGameEngine &ge)
+jleSceneEditorWindow::renderUI(jleEditorModulesContext &ctx)
 {
     if (!isOpened) {
         return;
@@ -74,7 +73,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     const int32_t windowPositionY = int32_t(cursorScreenPos.y) - viewport->Pos.y;
 
     const auto previousFrameCursorPos = _lastCursorPos;
-    _lastCursorPos = gEngine->window().cursor();
+    _lastCursorPos = ctx.engineModulesContext.windowModule.cursor();
     const int32_t mouseX = _lastCursorPos.first;
     const int32_t mouseY = _lastCursorPos.second;
     const int32_t mouseDeltaX = mouseX - previousFrameCursorPos.first;
@@ -90,8 +89,8 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         return int(ratio * float(mouseY - windowPositionY));
     };
 
-    const auto mouseCoordinateX = getPixelatedMousePosX() + static_cast<int>(gEditor->camera().getPosition().x);
-    const auto mouseCoordinateY = getPixelatedMousePosY() + static_cast<int>(gEditor->camera().getPosition().y);
+    const auto mouseCoordinateX = getPixelatedMousePosX() + static_cast<int>(_renderCamera.getPosition().x);
+    const auto mouseCoordinateY = getPixelatedMousePosY() + static_cast<int>(_renderCamera.getPosition().y);
 
     if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset == _lastGameWindowWidth &&
           ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset == _lastGameWindowHeight)) {
@@ -105,7 +104,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         _framebuffer->resize(_lastGameWindowWidth, _lastGameWindowHeight);
     }
 
-    const auto &selectedObject = gEditor->editorSceneObjects().GetSelectedObject();
+    const auto &selectedObject = ctx.editor.getEditorSceneObjectsWindow().GetSelectedObject();
 
     glBindTexture(GL_TEXTURE_2D, (unsigned int)_framebuffer->texture());
 
@@ -129,7 +128,8 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     // Note here that the ImGui::Image is the item that is being clicked on!
     if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && canSelectObject) {
 
-        gEngine->renderer().renderMeshesPicking(*_pickingFramebuffer, gEditor->camera(), gEngine->renderGraph());
+        ctx.engineModulesContext.rendererModule.renderMeshesPicking(
+            *_pickingFramebuffer, _renderCamera, ctx.engineModulesContext.currentFramePacket);
 
         _pickingFramebuffer->bind();
 
@@ -150,19 +150,19 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
             LOGI << "Picked object with id: " << pickedID;
 
             std::vector<std::shared_ptr<jleScene>> scenes;
-            if (!gEngine->isGameKilled()) {
-                auto &game = ((jleGameEngine *)gEngine)->gameRef();
+            if (!ctx.engineModulesContext.gameRuntime.isGameKilled()) {
+                auto &game = ctx.engineModulesContext.gameRuntime.getGame();
                 scenes = game.activeScenesRef();
             }
 
-            scenes.insert(scenes.end(), gEditor->getEditorScenes().begin(), gEditor->getEditorScenes().end());
+            scenes.insert(scenes.end(), ctx.editor.getEditorScenes().begin(), ctx.editor.getEditorScenes().end());
 
             for (auto &scene : scenes) {
                 for (auto &object : scene->sceneObjects()) {
                     std::shared_ptr<jleObject> o{};
                     object->tryFindChildWithInstanceId(pickedID, o);
                     if (o) {
-                        gEditor->editorSceneObjects().SetSelectedObject(o);
+                        ctx.editor.getEditorSceneObjectsWindow().SetSelectedObject(o);
                     }
                 }
             }
@@ -181,14 +181,14 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     auto x = ImGui::GetCursorPosX();
     ImGui::SetCursorPosX(x + 8 * globalImguiScale);
 
-    if (gEditor->perspectiveCamera) {
+    if (_perspectiveCamera) {
         if (ImGui::Button("Orthographic")) {
-            gEditor->perspectiveCamera = false;
+            _perspectiveCamera = false;
             ImGuizmo::SetOrthographic(false);
         }
     } else {
         if (ImGui::Button("Perspective")) {
-            gEditor->perspectiveCamera = true;
+            _perspectiveCamera = true;
             ImGuizmo::SetOrthographic(true);
         }
     }
@@ -205,15 +205,15 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
 
     ImGui::SameLine();
 
-    if (!gEngine->isGameKilled()) {
-        if (auto &&scene = gEditor->editorSceneObjects().GetSelectedScene().lock()) {
+    if (!ctx.engineModulesContext.gameRuntime.isGameKilled()) {
+        if (auto &&scene = ctx.editor.getEditorSceneObjectsWindow().GetSelectedScene().lock()) {
             ImGui::Checkbox("Physics Debug", &scene->getPhysics().renderDebugEnabled);
         }
     }
 
     ImGui::SameLine();
 
-    if (gEditor->camera().getProjectionType() == jleCameraProjection::Perspective) {
+    if (_renderCamera.getProjectionType() == jleCameraProjection::Perspective) {
         ImGui::Text("[%d, %d] (%f)", _framebuffer->width(), _framebuffer->height(), cameraSpeed);
     } else {
         ImGui::Text("[%d, %d - Ortho Zoom: %f] (%f)",
@@ -223,12 +223,11 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
                     cameraSpeed);
     }
 
-    const float *viewMatrix = &gEditor->camera().getViewMatrix()[0][0];
-    const float *projectionMatrix = &gEditor->camera().getProjectionMatrix()[0][0];
+    const float *viewMatrix = &_renderCamera.getViewMatrix()[0][0];
+    const float *projectionMatrix = &_renderCamera.getProjectionMatrix()[0][0];
     static const auto identityMatrix = glm::mat4{1.f};
     const static float *identityMatrixPtr = &identityMatrix[0][0];
     // ImGuizmo::DrawGrid(viewMatrix, projectionMatrix, identityMatrixPtr, 25.f);
-
 
     // The following commented code is for a camera controller "cube" in the top left corner.
     // It contains a bug, however, and is not really usable at the moment.
@@ -238,7 +237,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
     static glm::mat4 lastFrameMatrix{1.f};
 
     if (!isManipulating) {
-        manipulatingMatrix = gEditor->camera().getViewMatrix();
+        manipulatingMatrix = _renderCamera.getViewMatrix();
     }
 
     ImGuizmo::ViewManipulate(
@@ -248,7 +247,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         ImVec2(128 * globalImguiScale, 128 * globalImguiScale),
         0x10101010);
 
-    if (manipulatingMatrix != gEditor->camera().getViewMatrix()) {
+    if (manipulatingMatrix != _renderCamera.getViewMatrix()) {
         // The view manipulate function modified the view matrix
         isManipulating = true;
     }
@@ -261,7 +260,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
 
     if (isManipulating) {
         auto pos = glm::vec3(manipulatingMatrix[3]);
-        gEditor->camera().setViewMatrix(manipulatingMatrix, pos);
+        _renderCamera.setViewMatrix(manipulatingMatrix, pos);
         lastFrameMatrix = manipulatingMatrix;
     }*/
 
@@ -275,7 +274,7 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         EditTransform((float *)viewMatrix, (float *)projectionMatrix, (float *)&worldMatrixBefore[0][0], true);
         glm::mat4 transformMatrix = obj->getTransform().getWorldMatrix();
         if (transformMatrix != worldMatrixBefore) {
-            if (!gEngine->isGameKilled()) {
+            if (!ctx.engineModulesContext.gameRuntime.isGameKilled()) {
                 if (auto rb = obj->getComponent<cRigidbody>()) {
                     rb->setWorldMatrixAndScaleRigidbody(worldMatrixBefore);
                 } else {
@@ -291,9 +290,9 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
                 glm::mat4 modelMatrix = obj->getTransform().getWorldMatrix();
                 glm::mat4 matrix1 = glm::scale(modelMatrix, glm::vec3{1.00514159265f});
                 glm::mat4 matrix2 = glm::scale(modelMatrix, glm::vec3{0.99514159265f});
-                auto material = gEditor->gizmos().selectedObjectMaterial();
-                gEditor->renderGraph().sendMesh(mesh, material, matrix1, obj->instanceID(), false);
-                gEditor->renderGraph().sendMesh(mesh, material, matrix2, obj->instanceID(), false);
+                auto material = ctx.editor.gizmos().selectedObjectMaterial();
+                ctx.engineModulesContext.currentFramePacket.sendMesh(mesh, material, matrix1, obj->instanceID(), false);
+                ctx.engineModulesContext.currentFramePacket.sendMesh(mesh, material, matrix2, obj->instanceID(), false);
             }
         }
     }
@@ -302,10 +301,10 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
 
     // If window is hovered and Gizmo is not being moved/used
     if (ImGui::IsWindowHovered() && !ImGuizmo::IsUsing()) {
-        auto t = ge.deltaFrameTime();
+        auto t = ctx.engineModulesContext.frameInfo.getDeltaTime();
         auto dragDelta = ImGui::GetMouseDragDelta(1);
 
-        if (gEditor->camera().getProjectionType() == jleCameraProjection::Perspective ||
+        if (_renderCamera.getProjectionType() == jleCameraProjection::Perspective ||
             ImGui::IsKeyDown(ImGuiKey_LeftShift)) {
             if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
                 fpvCamController.applyPerspectiveMouseMovementDelta(glm::vec2{mouseDeltaX, mouseDeltaY}, 300.f);
@@ -316,14 +315,14 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
         }
 
         if (ImGui::IsKeyDown(ImGuiKey_W)) {
-            if (gEditor->camera().getProjectionType() == jleCameraProjection::Orthographic) {
+            if (_renderCamera.getProjectionType() == jleCameraProjection::Orthographic) {
                 fpvCamController.moveUp(cameraSpeed * t);
             } else {
                 fpvCamController.moveForward(cameraSpeed * t);
             }
         }
         if (ImGui::IsKeyDown(ImGuiKey_S)) {
-            if (gEditor->camera().getProjectionType() == jleCameraProjection::Orthographic) {
+            if (_renderCamera.getProjectionType() == jleCameraProjection::Orthographic) {
                 fpvCamController.moveDown(cameraSpeed * t);
             } else {
                 fpvCamController.moveBackward(cameraSpeed * t);
@@ -342,22 +341,112 @@ jleSceneEditorWindow::update(jleGameEngine &ge)
             fpvCamController.moveDown(cameraSpeed * t);
         }
 
-        if(dragDelta.x != 0 || dragDelta.y != 0){
-            gEditor->camera().setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
+        if (dragDelta.x != 0 || dragDelta.y != 0) {
+            _renderCamera.setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
         }
 
-        auto currentScroll = gEngine->input().mouse->scrollY();
+        auto currentScroll = ctx.engineModulesContext.inputModule.mouse.scrollY();
         if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentScroll != 0.f) {
-            orthoZoomValue -= currentScroll * 1.f * ge.deltaFrameTime();
+            orthoZoomValue -= currentScroll * 1.f * ctx.engineModulesContext.frameInfo.getDeltaTime();
             orthoZoomValue = glm::clamp(orthoZoomValue, 0.01f, 2.f);
         } else if (currentScroll != 0.f) {
-            cameraSpeed += currentScroll * 200.f * ge.deltaFrameTime();
+            cameraSpeed += currentScroll * 200.f * ctx.engineModulesContext.frameInfo.getDeltaTime();
             cameraSpeed = glm::clamp(cameraSpeed, 0.2f, 500.f);
         }
     }
 
     ImGui::End();
 }
+
+void
+jleSceneEditorWindow::render(jleFramePacket &framePacket, const jleEditorModulesContext &ctx)
+{
+    if (_perspectiveCamera) {
+        _renderCamera.setPerspectiveProjection(45.f, _framebuffer->width(), _framebuffer->height(), 10000.f, 0.1f);
+    } else {
+        _renderCamera.setOrthographicProjection(
+            _framebuffer->width() * orthoZoomValue, _framebuffer->height() * orthoZoomValue, 10000.f, -10000.f);
+    }
+
+    if (_framebuffer->width() != _msaa->width() || _framebuffer->height() != _msaa->height()) {
+        _msaa->resize(_framebuffer->width(), _framebuffer->height());
+    }
+
+    ctx.engineModulesContext.rendererModule.render(*_msaa, _renderCamera, framePacket);
+
+    _msaa->blitToOther(*_framebuffer);
+}
+
+void
+jleSceneEditorWindow::renderEditorGrid(jleFramePacket &framePacket)
+{
+    JLE_SCOPE_PROFILE_CPU(renderEditorGrid)
+
+    jle3DLineVertex v1{glm::vec3{0.f}, glm::vec3{1.f, 0.f, 0.f}, {1.0f, 0.44f, 1.2f}};
+    jle3DLineVertex v2 = v1;
+    v2.position = glm::vec3{100.f, 0.f, 0.f};
+    v1.position = glm::vec3{-100.f, 0.f, 0.f};
+
+    framePacket.sendLine(v1, v2);
+
+    v2.position = glm::vec3{0.f, 100.f, 0.f};
+    v1.position = glm::vec3{0.f, -100.f, 0.f};
+    v1.color = glm::vec3{0.f, 1.f, 0.f};
+    v2.color = glm::vec3{0.f, 1.f, 0.f};
+    framePacket.sendLine(v1, v2);
+
+    v2.position = glm::vec3{0.f, 0.f, 100.f};
+    v1.position = glm::vec3{0.f, 0.f, -100.f};
+    v1.color = glm::vec3{0.f, 0.f, 1.f};
+    v2.color = glm::vec3{0.f, 0.f, 1.f};
+    framePacket.sendLine(v1, v2);
+
+    v1.color = glm::vec3(1.0f, 0.3f, 0.3f);
+    v2.color = glm::vec3(1.0f, 0.3f, 0.3f);
+    auto pos = _renderCamera.getPosition();
+
+    float scale = 1.f;
+    if (abs(pos.y) < 50.f) {
+        scale = 0.5f;
+    }
+
+    if (abs(pos.y) < 10.f) {
+        scale = 0.1f;
+    }
+
+    pos.y = 0;
+    pos.x = glm::round(pos.x / (100.f * scale)) * (100.f * scale);
+    pos.z = glm::round(pos.z / (100.f * scale)) * (100.f * scale);
+
+    v1.position = pos;
+    v1.position.z = -1000 * scale + pos.z;
+    v2.position = pos;
+    v2.position.z = 1000 * scale + pos.z;
+
+    v1.color = glm::vec3{0.3f, 0.3f, 0.7f};
+    v2.color = glm::vec3{0.3f, 0.3f, 0.7f};
+
+    for (int i = -10; i <= 10; i++) {
+        v1.position.x = 100.f * scale * i + pos.x;
+        v2.position.x = 100.f * scale * i + pos.x;
+        framePacket.sendLine(v1, v2);
+    }
+
+    v1.position = pos;
+    v1.position.x = -1000 * scale + pos.x;
+    v2.position = pos;
+    v2.position.x = 1000 * scale + pos.x;
+
+    v1.color = glm::vec3{0.7f, 0.3f, 0.3f};
+    v2.color = glm::vec3{0.7f, 0.3f, 0.3f};
+
+    for (int i = -10; i <= 10; i++) {
+        v1.position.z = 100.f * scale * i + pos.z;
+        v2.position.z = 100.f * scale * i + pos.z;
+        framePacket.sendLine(v1, v2);
+    }
+}
+
 void
 jleSceneEditorWindow::EditTransform(float *cameraView,
                                     float *cameraProjection,

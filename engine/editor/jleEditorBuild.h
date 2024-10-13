@@ -15,13 +15,13 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
 #if JLE_BUILD_EDITOR
 
 #include "jleEditorImGuiWindowInterface.h"
 
-#include "jlePath.h"
+#include "core/jlePath.h"
 
 #include "jleString.h"
 #include "jleVectorSet.h"
@@ -30,12 +30,14 @@
 
 #include <atomic>
 
+class jleResourceIndexer;
+
 class jleEditorBuild : public jleEditorWindowInterface, public libzippp::ZipProgressListener
 {
 public:
     explicit jleEditorBuild(const std::string &window_name);
 
-    void update(jleGameEngine &ge) override;
+    void renderUI(jleEngineModulesContext &ctx, jleResourceIndexer& resourceIndexer);
 
     void progression(double p) override;
 

@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Johan Lind
 
-#include "jleGame.h"
+#include "modules/game/jleGame.h"
 
 #pragma once
 
@@ -11,7 +11,7 @@ class GameTemplate final : public jleGame
 public:
     ~GameTemplate() override = default;
 
-    void start() override;
+    void start(jleEngineModulesContext& ctx) override;
 
-    void update(float dt) override;
+    void update(jleEngineModulesContext& ctx) override;
 };

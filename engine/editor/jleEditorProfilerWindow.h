@@ -19,15 +19,15 @@
 
 #if JLE_BUILD_EDITOR
 
+#include "core/jleProfiler.h"
 #include "jleEditorImGuiWindowInterface.h"
-#include "jleProfiler.h"
 
 class jleEditorProfilerWindow : public jleEditorWindowInterface
 {
 public:
     explicit jleEditorProfilerWindow(const std::string &window_name);
 
-    void update(jleGameEngine &ge) override;
+    void renderUI(jleEngineModulesContext &ctx);
 
 private:
     void drawProfilerRecursive(uint32_t index);
