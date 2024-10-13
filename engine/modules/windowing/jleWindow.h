@@ -22,6 +22,8 @@
 #include <map>
 #include <memory>
 
+struct GLFWwindow;
+
 #ifdef __APPLE__
 void customizeTitleBarMacOS(GLFWwindow *window);
 #endif
@@ -42,8 +44,6 @@ struct jleWindowResizeEvent {
     float contentScaleX;
     float contentScaleY;
 };
-
-struct GLFWwindow;
 
 class jleWindow
 {
