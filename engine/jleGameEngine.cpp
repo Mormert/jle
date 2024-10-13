@@ -14,14 +14,11 @@
  *********************************************************************************************/
 
 #include "jleGameEngine.h"
+#include "core/jleResourceRef.h"
+#include "core/jleTimerManager.h"
 #include "jleEngineSettings.h"
 #include "jleExplicitInclude.h"
-#include "jleGame.h"
-#include "jleLuaEnvironment.h"
-#include "jlePhysics.h"
-#include "jleRenderThread.h"
-#include "jleResourceRef.h"
-#include "jleTimerManager.h"
+#include "modules/game/jleGame.h"
 #include "modules/game/jleGameRuntime.h"
 #include "modules/graphics/core/jleFramebufferMultisample.h"
 #include "modules/graphics/core/jleFramebufferScreen.h"
@@ -29,8 +26,11 @@
 #include "modules/graphics/jle3DRenderer.h"
 #include "modules/graphics/jle3DSettings.h"
 #include "modules/graphics/jleFramePacket.h"
+#include "modules/graphics/jleRenderThread.h"
 #include "modules/input/hardware/jleMouseInput.h"
 #include "modules/input/jleInput.h"
+#include "modules/physics/jlePhysics.h"
+#include "modules/scripting/jleLuaEnvironment.h"
 #include "modules/windowing/jleWindow.h"
 
 #include <enet.h>

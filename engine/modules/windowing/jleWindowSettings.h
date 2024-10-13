@@ -18,7 +18,7 @@
 #include "core/jleCommon.h"
 
 #include "core/jleCompileHelper.h"
-#include "jlePath.h"
+#include "core/jlePath.h"
 
 #include "editor/jleImGuiArchive.h"
 #include "serialization/jleBinaryArchive.h"

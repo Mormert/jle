@@ -14,10 +14,10 @@
  *********************************************************************************************/
 
 #include "jleGameRuntime.h"
+#include "core/jleTimerManager.h"
 #include "jleEngineSettings.h"
 #include "jleGame.h"
-#include "jleRenderThread.h"
-#include "jleTimerManager.h"
+#include "modules/graphics/jleRenderThread.h"
 #include "modules/input/jleInput.h"
 #include <modules/graphics/core/jleFramebufferScreen.h>
 

@@ -17,10 +17,10 @@
 
 #include "jleBuildConfig.h"
 
-#include "jleComponent.h"
-#include "jleResourceRef.h"
-#include "jleSkybox.h"
+#include "core/jleComponent.h"
+#include "core/jleResourceRef.h"
 #include "modules/graphics/jle3DSettings.h"
+#include "modules/graphics/jleSkybox.h"
 
 class cSkybox : public jleComponent
 {

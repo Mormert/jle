@@ -18,9 +18,9 @@
 #include "jleBuildConfig.h"
 
 #if JLE_BUILD_EDITOR
+#include "core/jleResourceRef.h"
 #include "jleEditorImGuiWindowInterface.h"
-#include "jleResourceRef.h"
-#include "jleTexture.h"
+#include "modules/graphics/jleTexture.h"
 
 #include <plog/Log.h>
 

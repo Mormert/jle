@@ -18,7 +18,6 @@
 #include "core/jleCommon.h"
 
 #include "jleWindowSettings.h"
-#include "modules/graphics/core/jleIncludeGL.h"
 
 #include <map>
 #include <memory>
@@ -43,6 +42,8 @@ struct jleWindowResizeEvent {
     float contentScaleX;
     float contentScaleY;
 };
+
+struct GLFWwindow;
 
 class jleWindow
 {

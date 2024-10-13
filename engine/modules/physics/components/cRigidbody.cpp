@@ -16,8 +16,8 @@
 #include "cRigidbody.h"
 
 #include "jleGameEngine.h"
-#include "jlePhysics.h"
 #include "modules/graphics/runtime/components/cMesh.h"
+#include "modules/physics/jlePhysics.h"
 
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>

@@ -18,7 +18,7 @@
 #include "modules/graphics/jle3DRenderer.h"
 #include "serialization/jleSerialization.h"
 
-#include "jleResource.h"
+#include "core/jleResource.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cSkybox)
 

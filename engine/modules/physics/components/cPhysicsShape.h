@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "jleComponent.h"
+#include "core/jleComponent.h"
 
 class cPhysicsShape : public jleComponent
 {

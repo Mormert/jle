@@ -15,7 +15,7 @@
 
 #include "core/jleResourceIndexer.h"
 #include "jleImGuiArchive.h"
-#include "jleLuaEnvironment.h"
+#include "modules/scripting/jleLuaEnvironment.h"
 
 #include <jleVectorSet.h>
 

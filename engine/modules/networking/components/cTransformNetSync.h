@@ -17,7 +17,7 @@
 
 #include "core/jleCommon.h"
 
-#include "jleComponent.h"
+#include "core/jleComponent.h"
 
 class cTransformNetSync: public jleComponent
 {

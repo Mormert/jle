@@ -21,7 +21,7 @@
 #if JLE_BUILD_EDITOR
 
 #include "jleEditorImGuiWindowInterface.h"
-#include <jleResourceRef.h>
+#include <core/jleResourceRef.h>
 
 #include <memory>
 #include <unordered_map>

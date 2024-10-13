@@ -17,8 +17,8 @@
 
 #include "core/jleCommon.h"
 
-#include "jleComponent.h"
-#include "jleResourceRef.h"
+#include "core/jleComponent.h"
+#include "core/jleResourceRef.h"
 #include "modules/animation/jleAnimation.h"
 
 #include "modules/animation/jleAnimationFinalMatrices.h"

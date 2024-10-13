@@ -23,7 +23,7 @@
 
 #include "3rdparty/ImGuiColorTextEdit/TextEditor.h"
 #include "jleEditorImGuiWindowInterface.h"
-#include <jleResourceRef.h>
+#include <core/jleResourceRef.h>
 
 #include <unordered_map>
 #include <memory>

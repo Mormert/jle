@@ -14,14 +14,13 @@
  *********************************************************************************************/
 
 #include "jle3DRenderer.h"
+#include "core/jleCamera.h"
+#include "core/jleProfiler.h"
+
 #include "jle3DSettings.h"
-#include "jleCamera.h"
 #include "jleFramePacket.h"
-#include "jleGLError.h"
-#include "jleGameEngine.h"
 #include "jleMaterial.h"
 #include "jleMesh.h"
-#include "jleProfiler.h"
 #include "jleShader.h"
 #include "jleSkinnedMesh.h"
 #include "jleSkybox.h"
@@ -30,6 +29,7 @@
 #include "modules/graphics/core/jleFramebufferShadowCubeMap.h"
 #include "modules/graphics/core/jleFramebufferShadowMap.h"
 #include "modules/graphics/core/jleFullscreenRendering.h"
+#include "modules/graphics/core/jleGLError.h"
 #include "modules/graphics/core/jleIncludeGL.h"
 
 #include <glm/ext/matrix_clip_space.hpp>

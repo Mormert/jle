@@ -19,9 +19,9 @@
 #include "core/jleCommon.h"
 
 #include "core/jleCompileHelper.h"
+#include "core/jleSerializedResource.h"
+#include "core/jleTypeReflectionUtils.h"
 #include "glm/glm.hpp"
-#include "jleSerializedResource.h"
-#include "jleTypeReflectionUtils.h"
 
 #include "editor/jleImGuiArchive.h"
 #include "serialization/jleBinaryArchive.h"

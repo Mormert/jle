@@ -19,6 +19,7 @@
 #include "jleGameEditorWindow.h"
 #include "modules/windowing/jleWindow.h"
 
+#include <GLFW/glfw3.h>
 #include <ImGui/imgui.h>
 #include <plog/Log.h>
 

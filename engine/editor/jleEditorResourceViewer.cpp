@@ -14,9 +14,9 @@
  *********************************************************************************************/
 
 #include "jleEditorResourceViewer.h"
-#include <ImGui/imgui.h>
+#include "core/jleResource.h"
 #include "jleGameEngine.h"
-#include "jleResource.h"
+#include <ImGui/imgui.h>
 
 void jleEditorResourceViewer::renderUI(jleEngineModulesContext &ctx) {
     if (!isOpened) {

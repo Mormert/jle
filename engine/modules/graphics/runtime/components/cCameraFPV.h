@@ -18,7 +18,7 @@
 #include "core/jleCommon.h"
 
 #include "cCamera.h"
-#include "jleCamera.h"
+#include "core/jleCamera.h"
 
 class cCameraFPV : public jleComponent
 {

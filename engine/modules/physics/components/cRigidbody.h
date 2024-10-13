@@ -17,13 +17,13 @@
 
 #include "core/jleCommon.h"
 
-#include "jleComponent.h"
-#include "jleMaterial.h"
-#include "jleMesh.h"
-#include "jleTransform.h"
+#include "core/jleComponent.h"
+#include "core/jleTransform.h"
+#include "modules/graphics/jleMaterial.h"
+#include "modules/graphics/jleMesh.h"
 
+#include "core/jleResourceRef.h"
 #include "editor/jleImGuiArchive.h"
-#include "jleResourceRef.h"
 
 #include <BulletDynamics/Dynamics/btRigidBody.h>
 #include <LinearMath/btMotionState.h>

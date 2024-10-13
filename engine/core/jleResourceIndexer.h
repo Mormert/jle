@@ -17,7 +17,9 @@
 
 #include "jleFileWatcher.h"
 
-#include <jleString.h>
+#include "jleSTL/jleString.h"
+
+//#include <jleString.h>
 #include <jleVectorMap.h>
 #include <jleVectorSet.h>
 

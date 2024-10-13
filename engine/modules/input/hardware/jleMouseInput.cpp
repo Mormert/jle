@@ -14,7 +14,7 @@
  *********************************************************************************************/
 
 #include "jleMouseInput.h"
-#include "jleProfiler.h"
+
 #include "modules/windowing/jleWindow.h"
 
 jleMouseInput::jleMouseInput(jleWindow &window) : _window{window} {}

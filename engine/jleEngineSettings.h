@@ -18,9 +18,9 @@
 
 #include "core/jleCommon.h"
 
-#include "jleResourceRef.h"
-#include "jleSerializedResource.h"
-#include "jleTypeReflectionUtils.h"
+#include "core/jleResourceRef.h"
+#include "core/jleSerializedResource.h"
+#include "core/jleTypeReflectionUtils.h"
 #include "modules/windowing/jleWindowSettings.h"
 
 class jleEngineSettings : public jleSerializedOnlyResource

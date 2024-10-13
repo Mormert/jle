@@ -21,7 +21,7 @@
 
 #include "editor/jleEditorImGuiWindowInterface.h"
 
-#include "jleCamera.h"
+#include "core/jleCamera.h"
 #include "jleGameEngine.h"
 
 #include <ImGui/ImGuizmo.h>

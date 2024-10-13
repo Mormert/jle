@@ -14,8 +14,8 @@
  *********************************************************************************************/
 
 #include "cMesh.h"
+#include "core/jleResource.h"
 #include "jleGameEngine.h"
-#include "jleResource.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cMesh)
 

@@ -18,7 +18,7 @@
 #include "core/jleCommon.h"
 
 #include "jleAnimationBone.h"
-#include "jleSkinnedMesh.h"
+#include "modules/graphics/jleSkinnedMesh.h"
 
 #include <string>
 

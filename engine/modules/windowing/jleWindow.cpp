@@ -14,7 +14,9 @@
  *********************************************************************************************/
 
 #include "jleWindow.h"
-#include "jleProfiler.h"
+#include "core/jleProfiler.h"
+
+#include "modules/graphics/core/jleIncludeGL.h"
 
 #if JLE_BUILD_RUNTIME_CONFIGURABLE
 #include "core/jleCommandArguments.h"

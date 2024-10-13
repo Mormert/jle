@@ -17,10 +17,10 @@
 
 #include "jleBuildConfig.h"
 
-#include "jleComponent.h"
+#include "core/jleComponent.h"
 
-#include "jleSkinnedMesh.h"
-#include "jleMaterial.h"
+#include "modules/graphics/jleMaterial.h"
+#include "modules/graphics/jleSkinnedMesh.h"
 
 class cAnimator;
 

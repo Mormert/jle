@@ -16,8 +16,8 @@
 #include "jleEditorBuild.h"
 
 #include "core/jleResourceIndexer.h"
+#include "core/jleScopeProfileLog.h"
 #include "jleEditor.h"
-#include "jleScopeProfileLog.h"
 
 #include "3rdparty/WickedEngine/wiJobSystem.h"
 

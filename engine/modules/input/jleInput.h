@@ -15,10 +15,8 @@
 
 #pragma once
 
-#include "core/jleCommon.h"
-
-#include "modules/input/hardware/jleKeyboardInput.h"
-#include "modules/input/hardware/jleMouseInput.h"
+#include "hardware/jleKeyboardInput.h"
+#include "hardware/jleMouseInput.h"
 #include <memory>
 
 class jleWindow;

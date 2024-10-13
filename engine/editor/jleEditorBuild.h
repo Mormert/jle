@@ -21,7 +21,7 @@
 
 #include "jleEditorImGuiWindowInterface.h"
 
-#include "jlePath.h"
+#include "core/jlePath.h"
 
 #include "jleString.h"
 #include "jleVectorSet.h"

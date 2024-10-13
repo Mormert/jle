@@ -14,7 +14,7 @@
  *********************************************************************************************/
 
 #include "jleEditorNotifications.h"
-#include "jleDynamicLogAppender.h"
+#include "core/jleDynamicLogAppender.h"
 #include <ImGui/imgui.h>
 
 jleEditorNotifications::jleEditorNotifications(const std::string &windowName, jleSerializationContext& ctx) : jleEditorWindowInterface(windowName)

@@ -21,17 +21,17 @@
 // make sure that they are registered and can be seen in the editor. It needs to
 // be included from something that is compiled and used in the engine.
 
-#include "modules/graphics/runtime/components/cLight.h"
-#include "modules/graphics/runtime/components/cLightDirectional.h"
-#include "modules/graphics/runtime/components/cSkybox.h"
+#include "core/jleSceneClient.h"
+#include "core/jleSceneServer.h"
+#include "core/jleTransform.h"
 #include "modules/animation/components/cAnimator.h"
 #include "modules/graphics/runtime/components/cCamera.h"
 #include "modules/graphics/runtime/components/cCameraFPV.h"
+#include "modules/graphics/runtime/components/cLight.h"
+#include "modules/graphics/runtime/components/cLightDirectional.h"
 #include "modules/graphics/runtime/components/cMesh.h"
 #include "modules/graphics/runtime/components/cSkinnedMesh.h"
+#include "modules/graphics/runtime/components/cSkybox.h"
 #include "modules/networking/components/cTransformNetSync.h"
 #include "modules/physics/components/cRigidbody.h"
 #include "modules/scripting/components/cLuaScript.h"
-#include "jleSceneClient.h"
-#include "jleSceneServer.h"
-#include "jleTransform.h"

@@ -15,8 +15,8 @@
 
 #include "cAnimator.h"
 
-#include "jleProfiler.h"
-#include "jleResourceRef.h"
+#include "core/jleProfiler.h"
+#include "core/jleResourceRef.h"
 #include "modules/graphics/jleFramePacket.h"
 #include "modules/graphics/runtime/components/cSkinnedMesh.h"
 
@@ -25,7 +25,7 @@
 #include <execution>
 #include <glm/gtc/quaternion.hpp>
 
-#include "jleGame.h"
+#include "modules/game/jleGame.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cAnimatorAnimation)
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cAnimator)

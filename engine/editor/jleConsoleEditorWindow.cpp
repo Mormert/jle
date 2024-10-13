@@ -14,9 +14,9 @@
  *********************************************************************************************/
 
 #include "jleConsoleEditorWindow.h"
-#include "jleDynamicLogAppender.h"
+#include "core/jleDynamicLogAppender.h"
 #include "jleGameEngine.h"
-#include "jleLuaEnvironment.h"
+#include "modules/scripting/jleLuaEnvironment.h"
 
 #include <ImGui/imgui.h>
 #include <plog/Formatters/FuncMessageFormatter.h>

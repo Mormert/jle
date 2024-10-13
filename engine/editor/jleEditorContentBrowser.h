@@ -21,7 +21,7 @@
 
 #include "jleEditorImGuiWindowInterface.h"
 #include "jleEditorResourceEdit.h"
-#include "jleTexture.h"
+#include "modules/graphics/jleTexture.h"
 #include <filesystem>
 
 class jleEditorTextEdit;

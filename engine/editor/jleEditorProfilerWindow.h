@@ -19,8 +19,8 @@
 
 #if JLE_BUILD_EDITOR
 
+#include "core/jleProfiler.h"
 #include "jleEditorImGuiWindowInterface.h"
-#include "jleProfiler.h"
 
 class jleEditorProfilerWindow : public jleEditorWindowInterface
 {

@@ -17,8 +17,8 @@
 
 #include "core/jleCommon.h"
 
+#include "core/jleCamera.h"
 #include "jle3DSettings.h"
-#include "jleCamera.h"
 #include "jleFramePacket.h"
 #include "modules/graphics/core/jleFrameBufferInterface.h"
 

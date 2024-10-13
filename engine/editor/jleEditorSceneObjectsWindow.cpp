@@ -16,10 +16,10 @@
 #include "jleEditorSceneObjectsWindow.h"
 
 #include "ImGui/imgui_stdlib.h"
+#include "core/jleTypeReflectionUtils.h"
 #include "jleEditor.h"
-#include "jleGame.h"
 #include "jleImGuiArchive.h"
-#include "jleTypeReflectionUtils.h"
+#include "modules/game/jleGame.h"
 #include <ImGui/imgui.h>
 
 #include <filesystem>

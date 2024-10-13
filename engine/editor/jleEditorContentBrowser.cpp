@@ -15,15 +15,15 @@
 
 #include "jleEditorContentBrowser.h"
 #include "ImGui/imgui_stdlib.h"
+#include "core/jleResource.h"
 #include "jleEditor.h"
 #include "jleEditorSceneObjectsWindow.h"
 #include "jleEditorTextEdit.h"
-#include "jleResource.h"
 #include <ImGui/imgui.h>
 
 #include <plog/Log.h>
 
-#include "jleGame.h"
+#include "modules/game/jleGame.h"
 
 #include <fstream>
 #include <string.h>

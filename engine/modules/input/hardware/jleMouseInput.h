@@ -15,10 +15,6 @@
 
 #pragma once
 
-#include "jleBuildConfig.h"
-
-#include <memory>
-
 class jleWindow;
 
 enum class jleButton : int
@@ -61,7 +57,6 @@ public:
 
     void setEnabled(bool value);
     [[nodiscard]] bool isEnabled();
-
 
     void setFpsMode(bool fpsMode);
 

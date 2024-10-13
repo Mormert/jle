@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Johan Lind
 
-#include "jleGame.h"
+#include "modules/game/jleGame.h"
 
 #pragma once
 

@@ -17,8 +17,8 @@
 
 #include "core/jleCommon.h"
 
-#include "jleComponent.h"
-#include "jleTransform.h"
+#include "core/jleComponent.h"
+#include "core/jleTransform.h"
 #include "modules/graphics/core/jleFrameBufferInterface.h"
 
 class cCamera : public jleComponent

@@ -14,9 +14,9 @@
  *********************************************************************************************/
 
 #include "cCamera.h"
-#include "jleGame.h"
+#include "core/jleObject.h"
 #include "jleGameEngine.h"
-#include "jleObject.h"
+#include "modules/game/jleGame.h"
 #include "modules/graphics/core/jleIncludeGL.h"
 #include "modules/windowing/jleWindow.h"
 

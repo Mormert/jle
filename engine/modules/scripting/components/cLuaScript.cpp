@@ -15,7 +15,7 @@
 
 #include "cLuaScript.h"
 #include "jleGameEngine.h"
-#include "jleLuaEnvironment.h"
+#include "modules/scripting/jleLuaEnvironment.h"
 
 #if JLE_BUILD_IMGUI
 #include <ImGui/imgui.h>

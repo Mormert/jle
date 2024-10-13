@@ -14,11 +14,11 @@
  *********************************************************************************************/
 
 #include "jleEditor3DImportWindow.h"
+#include "core/jlePath.h"
 #include "jleEditor.h"
-#include "jleMaterial.h"
-#include "jleMesh.h"
-#include "jlePath.h"
-#include "jleSkinnedMesh.h"
+#include "modules/graphics/jleMaterial.h"
+#include "modules/graphics/jleMesh.h"
+#include "modules/graphics/jleSkinnedMesh.h"
 #include "modules/graphics/runtime/components/cMesh.h"
 #include "modules/graphics/runtime/components/cSkinnedMesh.h"
 

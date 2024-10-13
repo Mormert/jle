@@ -17,8 +17,8 @@
 
 #include "jleBuildConfig.h"
 
-#include "jleShader.h"
-#include "jleResourceRef.h"
+#include "core/jleResourceRef.h"
+#include "modules/graphics/jleShader.h"
 
 class jleResources;
 

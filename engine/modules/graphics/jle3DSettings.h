@@ -17,7 +17,7 @@
 
 #include "jleBuildConfig.h"
 
-#include "jleResourceRef.h"
+#include "core/jleResourceRef.h"
 #include "jleSkybox.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/matrix_decompose.hpp>

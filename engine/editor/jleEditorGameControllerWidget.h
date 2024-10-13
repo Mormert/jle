@@ -20,7 +20,7 @@
 #if JLE_BUILD_EDITOR
 
 #include "jleEditorImGuiWindowInterface.h"
-#include "jleTexture.h"
+#include "modules/graphics/jleTexture.h"
 
 class jleEditorGameControllerWidget : public jleEditorWindowInterface
 {

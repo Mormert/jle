@@ -17,13 +17,13 @@
 
 #include "jleBuildConfig.h"
 
-#include "jleComponent.h"
-#include "jleLuaClassSerialization.h"
-#include "jleLuaScript.h"
-#include "jleResourceRef.h"
+#include "core/jleComponent.h"
+#include "core/jleResourceRef.h"
+#include "modules/scripting/jleLuaClassSerialization.h"
+#include "modules/scripting/jleLuaScript.h"
 
 #include "jleGameEngine.h"
-#include "jleLuaEnvironment.h"
+#include "modules/scripting/jleLuaEnvironment.h"
 
 class cLuaScript : public jleComponent
 {

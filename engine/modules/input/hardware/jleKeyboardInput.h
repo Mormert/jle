@@ -15,8 +15,6 @@
 
 #pragma once
 
-#include "core/jleCommon.h"
-
 class jleWindow;
 
 enum class jleKey : int {

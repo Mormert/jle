@@ -19,8 +19,8 @@
 
 #if JLE_BUILD_EDITOR
 
+#include "core/jleResourceRef.h"
 #include "jleEditorImGuiWindowInterface.h"
-#include "jleResourceRef.h"
 
 #include <assimp/scene.h>
 

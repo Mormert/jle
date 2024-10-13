@@ -29,15 +29,15 @@
 
 #include "serialization/jleSerialization.h"
 
+#include "core/jleComponent.h"
 #include "core/jleFileWatcher.h"
-#include "jleComponent.h"
+#include "core/jleRGB.h"
+#include "core/jleResourceRef.h"
+#include "core/jleTransform.h"
 #include "jleEditor.h"
-#include "jleExternalSerialization.h"
-#include "jleLuaClassSerialization.h"
-#include "jleRGB.h"
-#include "jleResourceRef.h"
-#include "jleTextureRefOrRGBA.h"
-#include "jleTransform.h"
+#include "modules/graphics/jleTextureRefOrRGBA.h"
+#include "modules/scripting/jleLuaClassSerialization.h"
+#include "serialization/jleExternalSerialization.h"
 
 #include "jleImGuiExtensions.h"
 #include <ImGui/ImGuizmo.h>
@@ -59,7 +59,7 @@
 
 #include <filesystem>
 #include <iostream>
-#include <jleSTL/jleFixedVector.h>
+#include <jleFixedVector.h>
 #include <vector>
 
 // A tooltip utility for showing tooltips in the editor
