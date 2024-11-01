@@ -14,7 +14,7 @@
  *********************************************************************************************/
 
 #include "core/jleObject.h"
-#include "core/jleResource.h"
+#include "core/jleResourceHolder.h"
 #include "jleGameEngine.h"
 #include <fstream>
 #include <plog/Log.h>

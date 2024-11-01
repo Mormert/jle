@@ -16,7 +16,7 @@
 #include "jleResourceRef.h"
 
 #include "jleGameEngine.h"
-#include "jleResource.h"
+#include "jleResourceHolder.h"
 
 template <typename T>
 void

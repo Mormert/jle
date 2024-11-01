@@ -36,6 +36,12 @@ cLight::update(jleEngineModulesContext& ctx)
 }
 
 void
+cLight::ecsUpdate(jleFramePacket &packet)
+{
+    packet.sendLight(getTransform().getWorldPosition(), _color);
+}
+
+void
 cLight::editorUpdate(jleEngineModulesContext& ctx)
 {
     update(ctx);
@@ -57,3 +63,4 @@ cLight::registerLua(sol::state &lua)
 {
     lua.new_usertype<cLight>("cLight", sol::base_classes, sol::bases<jleComponent>(), "color", &cLight::_color);
 }
+

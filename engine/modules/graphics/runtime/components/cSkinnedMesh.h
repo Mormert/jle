@@ -38,6 +38,8 @@ public:
 
     void update(jleEngineModulesContext& ctx) override;
 
+    void ecsUpdate(jleFramePacket& packet);
+
     std::shared_ptr<jleSkinnedMesh> getMesh();
     std::shared_ptr<jleMaterial> getMaterial();
 

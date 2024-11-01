@@ -24,7 +24,7 @@
 #include <cereal/cereal.hpp>
 
 class jleResourceInterface;
-class jleResources;
+class jleResourceHolder;
 
 template <typename T>
 struct jleResourceRef {

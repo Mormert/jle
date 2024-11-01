@@ -33,6 +33,15 @@ cLightDirectional::update(jleEngineModulesContext &ctx)
 }
 
 void
+cLightDirectional::ecsUpdate(jleFramePacket &packet)
+{
+    packet.settings.useDirectionalLight = true;
+    auto mat4 = getTransform().getWorldMatrix();
+
+    packet.settings.setDirectionalLight(mat4, _color);
+}
+
+void
 cLightDirectional::editorGizmosRender(jleFramePacket &renderGraph, jleEditorGizmos &gizmos)
 {
 #if JLE_BUILD_EDITOR

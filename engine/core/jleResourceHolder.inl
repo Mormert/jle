@@ -13,13 +13,13 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#include "jleResource.h"
+#include "jleResourceHolder.h"
 
 #include "jleResourceRef.h"
 
 template <typename T>
 bool
-jleResources::checkFileEndingMatchResourceType(const jlePath &path)
+jleResourceHolder::checkFileEndingMatchResourceType(const jlePath &path)
 {
     static_assert(std::is_base_of<jleResourceInterface, T>::value, "T must derive from jleResourceInterface");
     const auto fileEnding = path.getFileEnding();
@@ -34,7 +34,7 @@ jleResources::checkFileEndingMatchResourceType(const jlePath &path)
 
 template <typename T>
 std::shared_ptr<T>
-jleResources::loadResourceFromFileT(const jlePath &path, jleSerializationContext& ctx, bool forceReload)
+jleResourceHolder::loadResourceFromFileT(const jlePath &path, jleSerializationContext& ctx, bool forceReload)
 {
     static_assert(std::is_base_of<jleResourceInterface, T>::value, "T must derive from jleResourceInterface");
 
@@ -102,7 +102,7 @@ jleResources::loadResourceFromFileT(const jlePath &path, jleSerializationContext
 
 template <typename T>
 std::shared_ptr<T>
-jleResources::getResource(const jlePath &path)
+jleResourceHolder::getResource(const jlePath &path)
 {
     const auto prefix = path.getPathVirtualDrive();
     return std::static_pointer_cast<T>(_resources[prefix].at(path));
@@ -110,7 +110,7 @@ jleResources::getResource(const jlePath &path)
 
 template <typename T>
 jleResourceRef<T>
-jleResources::storeResource(const std::shared_ptr<T> &resource, const jlePath &path)
+jleResourceHolder::storeResource(const std::shared_ptr<T> &resource, const jlePath &path)
 {
     const auto prefix = path.getPathVirtualDrive();
     const auto hashCode = typeid(T).hash_code();

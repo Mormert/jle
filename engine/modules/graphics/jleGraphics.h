@@ -29,12 +29,12 @@ class jleFramebufferShadowCubeMap;
 class jleFramebufferShadowMap;
 class jleShader;
 
-class jle3DRenderer
+class jleGraphics
 {
 public:
-    jle3DRenderer(jleSerializationContext &ctx);
+    jleGraphics(jleSerializationContext &ctx);
 
-    virtual ~jle3DRenderer();
+    virtual ~jleGraphics();
 
     void render(jleFramebufferInterface &framebufferOut,
                 const jleCamera &camera,

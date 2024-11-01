@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 3.20)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 # Set the path to the engine folder here! NOTE: It must be an absolute path!
 # This is one way of doing it, if the game is next to the engine folder:

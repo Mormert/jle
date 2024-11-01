@@ -15,10 +15,10 @@
 
 #include "cSkybox.h"
 #include "jleGameEngine.h"
-#include "modules/graphics/jle3DRenderer.h"
+#include "modules/graphics/jleGraphics.h"
 #include "serialization/jleSerialization.h"
 
-#include "core/jleResource.h"
+#include "core/jleResourceHolder.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cSkybox)
 

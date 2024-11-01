@@ -13,11 +13,11 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#include "jleResource.h"
+#include "jleResourceHolder.h"
 #include "jleTypeReflectionUtils.h"
 
 std::shared_ptr<jleResourceInterface>
-jleResources::loadResourceFromFile(const jlePath &path, jleSerializationContext& ctx)
+jleResourceHolder::loadResourceFromFile(const jlePath &path, jleSerializationContext& ctx)
 {
     ctx.resources = this;
     const auto &typeLoaders = jleTypeReflectionUtils::registeredFileTypeLoadersRef();
@@ -32,7 +32,7 @@ jleResources::loadResourceFromFile(const jlePath &path, jleSerializationContext&
 }
 
 void
-jleResources::reloadSerializedResource(const std::shared_ptr<jleSerializedResource> &resource)
+jleResourceHolder::reloadSerializedResource(const std::shared_ptr<jleSerializedResource> &resource)
 {
     jlePath path = resource->path;
     try {
@@ -56,7 +56,7 @@ jleResources::reloadSerializedResource(const std::shared_ptr<jleSerializedResour
 }
 
 std::shared_ptr<jleSerializedResource>
-jleResources::loadSerializedResourceFromFile(const jlePath &path, bool forceReload)
+jleResourceHolder::loadSerializedResourceFromFile(const jlePath &path, bool forceReload)
 {
     const auto prefix = path.getPathVirtualDrive();
 
@@ -93,7 +93,7 @@ jleResources::loadSerializedResourceFromFile(const jlePath &path, bool forceRelo
 }
 
 bool
-jleResources::isResourceLoaded(const jlePath &path)
+jleResourceHolder::isResourceLoaded(const jlePath &path)
 {
     const auto prefix = path.getPathVirtualDrive();
     auto it = _resources[prefix].find(path);
@@ -104,27 +104,27 @@ jleResources::isResourceLoaded(const jlePath &path)
 }
 
 void
-jleResources::unloadAllResources(const std::string &drive)
+jleResourceHolder::unloadAllResources(const std::string &drive)
 {
     LOG_VERBOSE << "Unloading in-memory file resources on drive " << drive << ' ' << _resources[drive].size();
     _resources[drive].clear();
 }
 
 void
-jleResources::unloadResource(const jlePath &path)
+jleResourceHolder::unloadResource(const jlePath &path)
 {
     _resources[path.getPathVirtualDrive()].erase(path);
 }
 
 const std::unordered_map<std::string,
                          std::unordered_map<jlePath, std::pair<std::size_t, std::shared_ptr<jleResourceInterface>>>> &
-jleResources::resourcesMap()
+jleResourceHolder::resourcesMap()
 {
     return _resources;
 }
 
 void
-jleResources::periodicResourcesCleanUp()
+jleResourceHolder::periodicResourcesCleanUp()
 {
     // Clean every 10th time that this method is called
     if (++_periodicCleanCounter % 10 == 0) {
@@ -149,21 +149,21 @@ jleResources::periodicResourcesCleanUp()
 }
 
 std::shared_ptr<jleResourceInterface>
-jleResources::getResource(const jlePath &path)
+jleResourceHolder::getResource(const jlePath &path)
 {
     const auto prefix = path.getPathVirtualDrive();
     return _resources[prefix].at(path).second;
 }
 
 void
-jleResources::storeResource(const std::shared_ptr<jleResourceInterface> &resource, const jlePath &path)
+jleResourceHolder::storeResource(const std::shared_ptr<jleResourceInterface> &resource, const jlePath &path)
 {
     const auto prefix = path.getPathVirtualDrive();
     _resources[prefix].insert(std::make_pair(path, std::make_pair(typeid(resource).hash_code(), resource)));
 }
 
 bool
-jleResources::loadSerializedResource(std::shared_ptr<jleResourceInterface> &resource,
+jleResourceHolder::loadSerializedResource(std::shared_ptr<jleResourceInterface> &resource,
                                      const jlePath &path,
                                      jleSerializationContext &ctx)
 {

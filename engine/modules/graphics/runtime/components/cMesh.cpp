@@ -14,17 +14,18 @@
  *********************************************************************************************/
 
 #include "cMesh.h"
-#include "core/jleResource.h"
+#include "core/jleResourceHolder.h"
 #include "jleGameEngine.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cMesh)
 
 void
-cMesh::start(jleEngineModulesContext& ctx)
-{}
+cMesh::start(jleEngineModulesContext &ctx)
+{
+}
 
 void
-cMesh::update(jleEngineModulesContext& ctx)
+cMesh::update(jleEngineModulesContext &ctx)
 {
     if (_meshRef) {
         std::shared_ptr<jleMesh> mesh = _meshRef.get();
@@ -35,7 +36,17 @@ cMesh::update(jleEngineModulesContext& ctx)
 }
 
 void
-cMesh::editorUpdate(jleEngineModulesContext& ctx)
+cMesh::ecsUpdate(jleFramePacket &packet)
+{
+    if (_meshRef) {
+        std::shared_ptr<jleMesh> mesh = _meshRef.get();
+        std::shared_ptr<jleMaterial> material = _materialRef.get();
+        packet.sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), true);
+    }
+}
+
+void
+cMesh::editorUpdate(jleEngineModulesContext &ctx)
 {
     update(ctx);
 }
@@ -63,4 +74,3 @@ cMesh::getMaterialRef()
 {
     return _materialRef;
 }
-

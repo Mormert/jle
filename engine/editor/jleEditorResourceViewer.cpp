@@ -14,7 +14,7 @@
  *********************************************************************************************/
 
 #include "jleEditorResourceViewer.h"
-#include "core/jleResource.h"
+#include "core/jleResourceHolder.h"
 #include "jleGameEngine.h"
 #include <ImGui/imgui.h>
 
@@ -70,7 +70,7 @@ jleEditorResourceViewer::jleEditorResourceViewer(const std::string &window_name)
     : jleEditorWindowInterface{window_name} {}
 
 void
-jleEditorResourceViewer::update(jleResources &resourcesModule)
+jleEditorResourceViewer::update(jleResourceHolder &resourcesModule)
 {
     if (!isOpened) {
         return;

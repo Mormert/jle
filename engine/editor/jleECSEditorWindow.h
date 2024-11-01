@@ -13,36 +13,32 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#ifndef JLE_EDITORRESOURCEEDIT_H
-#define JLE_EDITORRESOURCEEDIT_H
-
 #include "jleBuildConfig.h"
 
 #if JLE_BUILD_EDITOR
 
+#include "jlECS/jlECS.h"
 #include "jleEditorImGuiWindowInterface.h"
-#include <core/jleResourceRef.h>
+#include <modules/jleEditorModulesContext.h>
+#include <optional>
 
-#include <memory>
-#include <unordered_map>
+namespace jlECS
+{
+class ECS;
+}
 
-class jleSerializationContext;
-
-class jleEditorResourceEdit : public jleEditorWindowInterface
+class jleECSEditorWindow : public jleEditorWindowInterface
 {
 public:
-    explicit jleEditorResourceEdit(const std::string &window_name);
+    explicit jleECSEditorWindow(const std::string &window_name);
 
-    void renderUI(jleEditorModulesContext& ctx);
+    void renderUI(jleEditorModulesContext &ctx);
 
-    bool tryOpen(const jlePath &path, jleResourceHolder & resources);
+    void update(jleResourceHolder &resourcesModule);
 
 private:
-
-    std::unordered_map<jlePath, std::shared_ptr<jleSerializedResource>> _resources;
-
+    std::optional<jlECS::ObjectRef> _selectedObject;
+    jlECS::ECS *_ecs;
 };
 
 #endif // JLE_BUILD_EDITOR
-
-#endif // JLE_EDITORRESOURCEEDIT_H

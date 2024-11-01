@@ -19,20 +19,20 @@
 #include "modules/jleEditorModulesContext.h"
 #endif
 
-class jleResources;
+class jleResourceHolder;
 class jleLuaEnvironment;
 class jleRenderThread;
 
 struct jleSerializationContext {
     jleSerializationContext() = default;
 
-    jleSerializationContext(jleResources *r, jleLuaEnvironment *l, jleRenderThread *rt)
+    jleSerializationContext(jleResourceHolder *r, jleLuaEnvironment *l, jleRenderThread *rt)
         : resources(r), luaEnvironment(l), renderThread(rt)
     {
     }
 
     // Optional, need to be null checked
-    jleResources *resources{nullptr};
+    jleResourceHolder *resources{nullptr};
 
     // Optional, need to be null checked
     jleLuaEnvironment *luaEnvironment{nullptr};

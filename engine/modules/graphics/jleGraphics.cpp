@@ -13,7 +13,7 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#include "jle3DRenderer.h"
+#include "jleGraphics.h"
 #include "core/jleCamera.h"
 #include "core/jleProfiler.h"
 
@@ -46,7 +46,7 @@
 
 #define JLE_LINE_DRAW_BATCH_SIZE 32768
 
-struct jle3DRenderer::jle3DRendererShaders {
+struct jleGraphics::jle3DRendererShaders {
     jle3DRendererShaders(jleSerializationContext &ctx)
         : defaultMeshShader{jlePath{"ER:/shaders/defaultMesh.glsl"}, ctx},
           missingMaterialShader{jlePath{"ER:/shaders/missingMaterialShader.glsl"}, ctx},
@@ -69,7 +69,7 @@ struct jle3DRenderer::jle3DRendererShaders {
     jleResourceRef<jleShader> skyboxShader;
 };
 
-jle3DRenderer::jle3DRenderer(jleSerializationContext& ctx)
+jleGraphics::jleGraphics(jleSerializationContext& ctx)
 {
     _shaders = std::make_unique<jle3DRendererShaders>(ctx);
 
@@ -97,14 +97,14 @@ jle3DRenderer::jle3DRenderer(jleSerializationContext& ctx)
     _pointsShadowMappingFramebuffer = std::make_unique<jleFramebufferShadowCubeMap>(1024, 1024);
 }
 
-jle3DRenderer::~jle3DRenderer()
+jleGraphics::~jleGraphics()
 {
     glDeleteBuffers(1, &_lineVBO);
     glDeleteVertexArrays(1, &_lineVAO);
 }
 
 void
-jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
+jleGraphics::render(jleFramebufferInterface &framebufferOut,
                       const jleCamera &camera,
                       const jleFramePacket &framePacketRef)
 {
@@ -200,7 +200,7 @@ jle3DRenderer::render(jleFramebufferInterface &framebufferOut,
 }
 
 void
-jle3DRenderer::renderMeshes(const jleCamera &camera,
+jleGraphics::renderMeshes(const jleCamera &camera,
                             const std::vector<jle3DQueuedMesh> &meshes,
                             const std::vector<jle3DRendererLight> &lights,
                             const jle3DSettings &settings)
@@ -232,7 +232,7 @@ jle3DRenderer::renderMeshes(const jleCamera &camera,
 }
 
 void
-jle3DRenderer::renderSkinnedMeshes(const jleCamera &camera,
+jleGraphics::renderSkinnedMeshes(const jleCamera &camera,
                                    const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
                                    const std::vector<jle3DRendererLight> &lights,
                                    const jle3DSettings &settings)
@@ -266,7 +266,7 @@ jle3DRenderer::renderSkinnedMeshes(const jleCamera &camera,
 }
 
 void
-jle3DRenderer::sortTranslucentMeshes(const jleCamera &camera, std::vector<jle3DQueuedMesh> &translucentMeshes)
+jleGraphics::sortTranslucentMeshes(const jleCamera &camera, std::vector<jle3DQueuedMesh> &translucentMeshes)
 {
     ZoneScoped;
     glm::vec3 camPosition = camera.getPosition();
@@ -280,7 +280,7 @@ jle3DRenderer::sortTranslucentMeshes(const jleCamera &camera, std::vector<jle3DQ
 }
 
 void
-jle3DRenderer::renderSkybox(const jleCamera &camera, const jle3DSettings &settings)
+jleGraphics::renderSkybox(const jleCamera &camera, const jle3DSettings &settings)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderSkybox)
 
@@ -313,7 +313,7 @@ jle3DRenderer::renderSkybox(const jleCamera &camera, const jle3DSettings &settin
 }
 
 void
-jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
+jleGraphics::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
                                    const jleCamera &camera,
                                    const jleFramePacket &framePacket)
 {
@@ -358,7 +358,7 @@ jle3DRenderer::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
 }
 
 void
-jle3DRenderer::renderDirectionalLight(const jleCamera &camera,
+jleGraphics::renderDirectionalLight(const jleCamera &camera,
                                       const std::vector<jle3DQueuedMesh> &meshes,
                                       const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
                                       const jle3DSettings &settings)
@@ -390,7 +390,7 @@ jle3DRenderer::renderDirectionalLight(const jleCamera &camera,
 }
 
 void
-jle3DRenderer::renderPointLights(const jleCamera &camera, const jleFramePacket &framePacket)
+jleGraphics::renderPointLights(const jleCamera &camera, const jleFramePacket &framePacket)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderPointLights)
 
@@ -439,7 +439,7 @@ jle3DRenderer::renderPointLights(const jleCamera &camera, const jleFramePacket &
 }
 
 void
-jle3DRenderer::renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jleShader &shader)
+jleGraphics::renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jleShader &shader)
 {
     for (auto &&mesh : meshes) {
         if (!mesh.castShadows) {
@@ -474,7 +474,7 @@ jle3DRenderer::renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jl
 }
 
 void
-jle3DRenderer::renderShadowMeshesSkinned(const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes, jleShader &shader)
+jleGraphics::renderShadowMeshesSkinned(const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes, jleShader &shader)
 {
     for (auto &&mesh : skinnedMeshes) {
         if (!mesh.castShadows) {
@@ -511,7 +511,7 @@ jle3DRenderer::renderShadowMeshesSkinned(const std::vector<jle3DQueuedSkinnedMes
 }
 
 void
-jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DLineVertex> &linesBatch)
+jleGraphics::renderLines(const jleCamera &camera, const std::vector<jle3DLineVertex> &linesBatch)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderLines)
 
@@ -549,7 +549,7 @@ jle3DRenderer::renderLines(const jleCamera &camera, const std::vector<jle3DLineV
 }
 
 void
-jle3DRenderer::renderLineStrips(const jleCamera &camera,
+jleGraphics::renderLineStrips(const jleCamera &camera,
                                 const std::vector<std::vector<jle3DLineVertex>> &lineStripBatch)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderLineStrips)
@@ -558,7 +558,7 @@ jle3DRenderer::renderLineStrips(const jleCamera &camera,
 }
 
 void
-jle3DRenderer::bindShadowmapFramebuffers(const jle3DSettings &settings)
+jleGraphics::bindShadowmapFramebuffers(const jle3DSettings &settings)
 {
     // Bind to shadow map texture
     glActiveTexture(JLE_TEXTURE_DIR_SHADOW);

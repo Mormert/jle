@@ -15,7 +15,7 @@
 
 #include "jleEditorGameControllerWidget.h"
 
-#include "core/jleResource.h"
+#include "core/jleResourceHolder.h"
 
 #include <ImGui/imgui.h>
 

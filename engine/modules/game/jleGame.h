@@ -22,42 +22,42 @@
 
 #include "core/jleCamera.h"
 #include "core/jleProfiler.h"
-#include "core/jleResource.h"
+#include "core/jleResourceHolder.h"
 #include "core/jleScene.h"
 #include "editor/jleImGuiArchive.h"
 #include "jleGameEngine.h"
 
-#include "serialization/jleJSONArchive.h"
 #include "serialization/jleBinaryArchive.h"
-
+#include "serialization/jleJSONArchive.h"
 
 #include <execution>
 #include <fstream>
 #include <iostream>
+#include <modules/graphics/jleGraphicsModule.h>
 #include <typeinfo>
+
+namespace jlECS
+{
+class ECS;
+}
 
 class jleGame
 {
 public:
     jleGame();
 
-    virtual ~jleGame() = default;
+    virtual ~jleGame();
+
+    virtual void update(jleEngineModulesContext &ctx);
 
     virtual void
-    update(jleEngineModulesContext& ctx)
-    {
-    }
+    start(jleEngineModulesContext &ctx);
 
-    virtual void
-    start(jleEngineModulesContext& ctx)
-    {
-    }
-
-    void updateActiveScenes(jleEngineModulesContext& ctx);
+    void updateActiveScenes(jleEngineModulesContext &ctx);
 
     template <typename T>
     std::shared_ptr<T>
-    createScene(jleEngineModulesContext& ctx)
+    createScene(jleEngineModulesContext &ctx)
     {
         static_assert(std::is_base_of<jleScene, T>::value, "T must derive from jleScene");
 
@@ -69,20 +69,30 @@ public:
         return newScene;
     }
 
-    std::shared_ptr<jleScene> loadScene(const jlePath &scenePath, jleEngineModulesContext& ctx);
+    std::shared_ptr<jleScene> loadScene(const jlePath &scenePath, jleEngineModulesContext &ctx);
 
     std::vector<std::shared_ptr<jleScene>> &activeScenesRef();
 
     jleCamera mainCamera{jleCameraProjection::Orthographic};
 
-    void parallelUpdates(jleEngineModulesContext& ctx);
+    void parallelUpdates(jleEngineModulesContext &ctx);
 
     void addParallelComponent(const std::shared_ptr<jleComponent> &component);
 
     void removeParallelComponent(const std::shared_ptr<jleComponent> &component);
 
+    jlECS::ECS &
+    getECS()
+    {
+        return *_ecs;
+    }
+
 protected:
     std::vector<std::shared_ptr<jleScene>> _activeScenes;
+
+    jleGraphicsModule _graphicsModule;
+
+    std::unique_ptr<jlECS::ECS> _ecs;
 
     std::unordered_map<uint64_t, std::vector<std::shared_ptr<jleComponent>>> _parallelComponents;
 };

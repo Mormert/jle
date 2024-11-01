@@ -14,7 +14,7 @@
  *********************************************************************************************/
 
 #include "jleResourceIndexer.h"
-#include "jleResource.h"
+#include "jleResourceHolder.h"
 
 #include "editor/jleEditorTextEdit.h"
 

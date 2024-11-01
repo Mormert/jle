@@ -68,7 +68,7 @@ jleEditorResourceEdit::renderUI(jleEditorModulesContext &ctx)
 }
 
 bool
-jleEditorResourceEdit::tryOpen(const jlePath &path, jleResources &resources)
+jleEditorResourceEdit::tryOpen(const jlePath &path, jleResourceHolder &resources)
 {
     if (_resources.find(path) != _resources.end()) {
         return false;

@@ -15,47 +15,34 @@
 
 #pragma once
 
-#include <memory>
-#include <vector>
-
-class jleWindow;
-class jleResourceHolder;
-class jleInput;
-class jleLuaEnvironment;
-class jleGraphics;
-struct jle3DSettings;
 class jleFramePacket;
-class jleFrameInfo;
-class jleGameRuntime;
-class jleEngineSettings;
-class jleRenderThread;
+class jleCamera;
 
-struct jleEngineModulesContext {
-    explicit jleEngineModulesContext(jleGameRuntime &gameRuntime,
-                                     jleGraphics &renderer,
-                                     jleRenderThread &renderThread,
-                                     jleFramePacket &renderGraph,
-                                     jleEngineSettings &engineSettings,
-                                     jleInput &input,
-                                     jleLuaEnvironment &luaEnvironment,
-                                     jleWindow &window,
-                                     jleResourceHolder &resources,
-                                     jleFrameInfo &info);
+namespace jlECS
+{
+class ECS;
+}
 
-    // Modules
-    jleGameRuntime &gameRuntime;
-    jleGraphics &rendererModule;
-    jleWindow &windowModule;
-    jleResourceHolder &resourcesModule;
-    jleInput &inputModule;
-    jleLuaEnvironment &luaEnvironment;
+class jleGraphicsModule
+{
+public:
+    void initializeECS(jlECS::ECS &ecs);
 
-    // Rendering
-    jleRenderThread &renderThread;
-    jleFramePacket &currentFramePacket;
+    struct UpdateContext {
+        struct In {
+            int screenX;
+            int screenY;
+        } in;
 
-    // Utilities
-    jleFrameInfo &frameInfo;
+        struct InOut {
+            jlECS::ECS &ecs;
+        } inOut;
 
-    jleEngineSettings &settings;
+        struct Out {
+            jleFramePacket &framePacket;
+            jleCamera &camera;
+        } out;
+    };
+
+    void update(jleGraphicsModule::UpdateContext &ctx);
 };

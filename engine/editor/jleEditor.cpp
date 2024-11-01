@@ -26,6 +26,7 @@
 #include "editor/jleEditorSaveState.h"
 #include "editor/jleEditorSceneObjectsWindow.h"
 #include "editor/jleEditorWindowsPanel.h"
+#include "editor/jleECSEditorWindow.h"
 
 #include "core/jlePath.h"
 #include "core/jlePathDefines.h"
@@ -41,7 +42,7 @@
 #include "modules/graphics/core/jleFramebufferMultisample.h"
 #include "modules/graphics/core/jleFramebufferScreen.h"
 #include "modules/graphics/core/jleGLError.h"
-#include "modules/graphics/jle3DRenderer.h"
+#include "modules/graphics/jleGraphics.h"
 #include "modules/graphics/jleQuadRendering.h"
 #include "modules/graphics/jleRenderThread.h"
 #include "modules/physics/jlePhysics.h"
@@ -116,6 +117,9 @@ public:
         notifications = std::make_shared<jleEditorNotifications>("Notifications", serializationContext);
 
         frameGraph = std::make_shared<jleEditorFrameGraphWindow>("Frame Graph");
+
+        ecsWindow = std::make_shared<jleECSEditorWindow>("ECS Window");
+        menu->addWindow(ecsWindow);
     }
 
     std::shared_ptr<jleEditorWindowsPanel> menu;
@@ -133,6 +137,7 @@ public:
     std::shared_ptr<jleEditor3DImportWindow> import3DWindow;
     std::shared_ptr<jleEditorNotifications> notifications;
     std::shared_ptr<jleEditorFrameGraphWindow> frameGraph;
+    std::shared_ptr<jleECSEditorWindow> ecsWindow;
 
     void
     renderUI(jleEditorModulesContext &context) const
@@ -152,6 +157,7 @@ public:
         import3DWindow->renderUI(context);
         notifications->renderUI(context.engineModulesContext);
         frameGraph->renderUI(context.engineModulesContext);
+        ecsWindow->renderUI(context);
     }
 };
 

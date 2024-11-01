@@ -26,7 +26,7 @@
 
 class jleMesh;
 class jleMaterial;
-class jleResources;
+class jleResourceHolder;
 
 class jleEditorGizmos
 {

@@ -15,7 +15,7 @@
 
 #include "jleEditorContentBrowser.h"
 #include "ImGui/imgui_stdlib.h"
-#include "core/jleResource.h"
+#include "core/jleResourceHolder.h"
 #include "jleEditor.h"
 #include "jleEditorSceneObjectsWindow.h"
 #include "jleEditorTextEdit.h"
@@ -613,7 +613,7 @@ jleEditorContentBrowser::openAsText(std::filesystem::path &file)
 }
 
 void
-jleEditorContentBrowser::openAsResource(std::filesystem::path &file, jleResources &resources)
+jleEditorContentBrowser::openAsResource(std::filesystem::path &file, jleResourceHolder &resources)
 {
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};

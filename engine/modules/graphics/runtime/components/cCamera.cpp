@@ -43,7 +43,7 @@ cCamera::start(jleEngineModulesContext &ctx)
 }
 
 void
-cCamera::onFramebufferSizeChanged(jleEngineModulesContext &ctx, unsigned int width, unsigned int height)
+cCamera::onFramebufferSizeChanged(unsigned int width, unsigned int height)
 {
     glm::ivec2 dimensions{width, height};
     if (framebufferUseFixedAxis) {
@@ -73,7 +73,7 @@ cCamera::update(jleEngineModulesContext &ctx)
     auto height = ctx.gameRuntime.mainGameScreenFramebuffer->height();
 
     if (width != previousFrameScreenX || height != previousFrameScreenY) {
-        onFramebufferSizeChanged(ctx, width, height);
+        onFramebufferSizeChanged(width, height);
         previousFrameScreenX = width;
         previousFrameScreenY = height;
     }
@@ -89,6 +89,28 @@ cCamera::update(jleEngineModulesContext &ctx)
 
     auto &&transformation = _attachedToObject->getTransform().getWorldMatrix();
     game.mainCamera.setViewMatrix(glm::inverse(transformation), c.position);
+}
+
+void
+cCamera::ecsUpdate(jleCamera &camera, int width, int height)
+{
+    if (width != previousFrameScreenX || height != previousFrameScreenY) {
+        onFramebufferSizeChanged(width, height);
+        previousFrameScreenX = width;
+        previousFrameScreenY = height;
+    }
+
+    if (perspective && width > 0 && height > 0) {
+        camera.setPerspectiveProjection(perspectiveFov, width, height, farPlane, nearPlane);
+    } else {
+        camera.setOrthographicProjection(width, height, farPlane, nearPlane);
+    }
+
+    jleCameraSimpleFPVController c;
+    c.position = getTransform().getWorldPosition();
+
+    auto &&transformation = _attachedToObject->getTransform().getWorldMatrix();
+    camera.setViewMatrix(glm::inverse(transformation), c.position);
 }
 
 cCamera::~cCamera() { sInstanceCounter--; }
@@ -109,12 +131,12 @@ cCamera::editorInspectorImGuiRender(jleEditorModulesContext &ctx)
 }
 
 void
-cCamera::editorGizmosRender(jleFramePacket & renderGraph, jleEditorGizmos& gizmos)
+cCamera::editorGizmosRender(jleFramePacket &packet, jleEditorGizmos &gizmos)
 {
 #if JLE_BUILD_EDITOR
     auto mesh = gizmos.cameraMesh();
     auto material = gizmos.cameraMaterial();
-    renderGraph.sendMesh(
-        mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
+    packet.sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 #endif // JLE_BUILD_EDITOR
 }
+

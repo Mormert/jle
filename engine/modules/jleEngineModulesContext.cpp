@@ -1,14 +1,14 @@
 #include "jleEngineModulesContext.h"
 
 jleEngineModulesContext::jleEngineModulesContext(jleGameRuntime &gameRuntime,
-                                                 jle3DRenderer &renderer,
+                                                 jleGraphics &renderer,
                                                  jleRenderThread &renderThread,
                                                  jleFramePacket &renderGraph_,
                                                  jleEngineSettings &engineSettings,
                                                  jleInput &input,
                                                  jleLuaEnvironment &luaEnvironment_,
                                                  jleWindow &window,
-                                                 jleResources &resources,
+                                                 jleResourceHolder &resources,
                                                  jleFrameInfo &info)
     : gameRuntime(gameRuntime), rendererModule(renderer), renderThread(renderThread),
       currentFramePacket(renderGraph_),

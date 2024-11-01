@@ -15,47 +15,18 @@
 
 #pragma once
 
-#include <memory>
-#include <vector>
+class jleJSONInputArchive;
+class jleJSONOutputArchive;
 
-class jleWindow;
-class jleResourceHolder;
-class jleInput;
-class jleLuaEnvironment;
-class jleGraphics;
-struct jle3DSettings;
-class jleFramePacket;
-class jleFrameInfo;
-class jleGameRuntime;
-class jleEngineSettings;
-class jleRenderThread;
+class jleBinaryInputArchive;
+class jleBinaryOutputArchive;
 
-struct jleEngineModulesContext {
-    explicit jleEngineModulesContext(jleGameRuntime &gameRuntime,
-                                     jleGraphics &renderer,
-                                     jleRenderThread &renderThread,
-                                     jleFramePacket &renderGraph,
-                                     jleEngineSettings &engineSettings,
-                                     jleInput &input,
-                                     jleLuaEnvironment &luaEnvironment,
-                                     jleWindow &window,
-                                     jleResourceHolder &resources,
-                                     jleFrameInfo &info);
+namespace jlECS
+{
+class ECS;
+void save(ECS &ecs, jleJSONOutputArchive &archive);
+void load(ECS &ecs, jleJSONInputArchive &archive);
 
-    // Modules
-    jleGameRuntime &gameRuntime;
-    jleGraphics &rendererModule;
-    jleWindow &windowModule;
-    jleResourceHolder &resourcesModule;
-    jleInput &inputModule;
-    jleLuaEnvironment &luaEnvironment;
-
-    // Rendering
-    jleRenderThread &renderThread;
-    jleFramePacket &currentFramePacket;
-
-    // Utilities
-    jleFrameInfo &frameInfo;
-
-    jleEngineSettings &settings;
-};
+void save(ECS &ecs, jleBinaryOutputArchive &archive);
+void load(ECS &ecs, jleBinaryInputArchive &archive);
+} // namespace jlECS

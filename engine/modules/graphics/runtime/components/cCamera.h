@@ -46,11 +46,13 @@ public:
 
     void update(jleEngineModulesContext &ctx) override;
 
+    void ecsUpdate(jleCamera& camera, int width, int height);
+
     void editorInspectorImGuiRender(jleEditorModulesContext &ctx) override;
 
-    void onFramebufferSizeChanged(jleEngineModulesContext& ctx, unsigned int width, unsigned int height);
+    void onFramebufferSizeChanged(unsigned int width, unsigned int height);
 
-    void editorGizmosRender(jleFramePacket & renderGraph, jleEditorGizmos& gizmos) override;
+    void editorGizmosRender(jleFramePacket &packet, jleEditorGizmos &gizmos) override;
 
     bool perspective{true};
     float perspectiveFov{90.f};
@@ -63,7 +65,6 @@ public:
     jleFramebufferInterface::FIXED_AXIS framebufferFixedAxis{jleFramebufferInterface::FIXED_AXIS::width};
 
 protected:
-
     int previousFrameScreenX{};
     int previousFrameScreenY{};
 

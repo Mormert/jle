@@ -42,29 +42,25 @@
 
 using hashCode = std::size_t;
 
-using jleResourceHolder =
-    std::unordered_map<std::string,
-                       std::unordered_map<jlePath, std::pair<hashCode, std::shared_ptr<jleResourceInterface>>>>;
-
 template <typename T>
 struct jleResourceRef;
 
-class jleResources
+class jleResourceHolder
 {
 public:
-    jleResources() = default;
-    jleResources(const jleResources &) = delete;
-    jleResources(jleResources &&) = delete;
-    jleResources &operator=(const jleResources &) = delete;
-    jleResources &operator=(jleResources &&) = delete;
+    jleResourceHolder() = default;
+    jleResourceHolder(const jleResourceHolder &) = delete;
+    jleResourceHolder(jleResourceHolder &&) = delete;
+    jleResourceHolder &operator=(const jleResourceHolder &) = delete;
+    jleResourceHolder &operator=(jleResourceHolder &&) = delete;
 
-    std::shared_ptr<jleResourceInterface> loadResourceFromFile(const jlePath &path, jleSerializationContext& ctx);
+    std::shared_ptr<jleResourceInterface> loadResourceFromFile(const jlePath &path, jleSerializationContext &ctx);
 
     // Gets a shared_ptr to a resource from file, or a shared_ptr to an already loaded copy of that resource
     template <typename T>
     std::shared_ptr<T> loadResourceFromFileT(const jlePath &path,
-                                            jleSerializationContext& ctx,
-                                            bool forceReload = false);
+                                             jleSerializationContext &ctx,
+                                             bool forceReload = false);
 
     void reloadSerializedResource(const std::shared_ptr<jleSerializedResource> &resource);
 
@@ -91,12 +87,14 @@ public:
 
     void unloadResource(const jlePath &path);
 
-    const jleResourceHolder &resourcesMap();
+    using jleResourceMap = std::unordered_map<std::string, std::unordered_map<jlePath, std::pair<hashCode, std::shared_ptr<jleResourceInterface>>>>;
+
+    const jleResourceMap &resourcesMap();
 
 private:
     // Maps a drive like "GR:" to a resource map that contains paths such as
     // "GR:Folder/MyFile.txt" and points to the resource in memory.
-    jleResourceHolder _resources{};
+    jleResourceMap _resources{};
 
     int _periodicCleanCounter{0};
 
@@ -110,6 +108,6 @@ private:
     void periodicResourcesCleanUp();
 };
 
-#include "jleResource.inl"
+#include "jleResourceHolder.inl"
 
 #endif // JLE_RESOURCE

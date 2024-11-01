@@ -20,7 +20,7 @@
 #include "core/jleResourceRef.h"
 #include "modules/graphics/jleShader.h"
 
-class jleResources;
+class jleResourceHolder;
 
 class jleFramebufferInterface;
 

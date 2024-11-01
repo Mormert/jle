@@ -28,7 +28,7 @@ public:
 
     void renderUI(jleEngineModulesContext &ctx);
 
-    void update(jleResources& resourcesModule);
+    void update(jleResourceHolder & resourcesModule);
 };
 
 #endif // JLE_BUILD_EDITOR

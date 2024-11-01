@@ -19,7 +19,7 @@
 #include "core/jleCommon.h"
 
 #include "core/jlePath.h"
-#include "core/jleResource.h"
+#include "core/jleResourceHolder.h"
 
 #include <cassert>
 #include <functional>

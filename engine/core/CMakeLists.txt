@@ -1,5 +1,5 @@
 add_library(jleCore STATIC
-        "jleResource.cpp"
+        "jleResourceHolder.cpp"
         "jleFileWatcher.cpp"
         "jleResourceInterface.cpp"
         "jleTimerManager.cpp"
@@ -20,6 +20,9 @@ add_library(jleCore STATIC
         "jleObject.cpp"
         "jleScene.cpp"
 )
+
+add_subdirectory(jlECS)
+target_link_libraries(jleCore PUBLIC jlECS)
 
 add_subdirectory(${JLE_3RDPARTY_DIRECTORY}/git_submodules_forks/jle_EASTL "${CMAKE_CURRENT_BINARY_DIR}/eastl")
 target_include_directories(jleCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/jleSTL")

@@ -71,7 +71,7 @@ private:
 
     void openAsText(std::filesystem::path &file);
 
-    void openAsResource(std::filesystem::path &file, jleResources& resources);
+    void openAsResource(std::filesystem::path &file, jleResourceHolder & resources);
 
     std::shared_ptr<jleEditorTextEdit> _editorTextEdit;
 

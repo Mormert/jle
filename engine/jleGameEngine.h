@@ -38,12 +38,12 @@ struct context;
 }
 
 class jleGame;
-class jleResources;
+class jleResourceHolder;
 class jleEngineSettings;
 class jleInput;
 class jleWindow;
 class jleTimerManager;
-class jle3DRenderer;
+class jleGraphics;
 class jle3DSettings;
 class jleFramePacket;
 class jleFullscreenRendering;
@@ -85,7 +85,7 @@ public:
 
     SoLoud::Soloud &soLoud();
 
-    jleResources &resources();
+    jleResourceHolder &resources();
 
     jleWindow &window();
 
@@ -144,7 +144,7 @@ protected:
     friend class jleGameRuntime;
     std::unique_ptr<jleGameRuntime> _gameRuntime;
 
-    std::unique_ptr<jleResources> _resources;
+    std::unique_ptr<jleResourceHolder> _resources;
     // std::unique_ptr<jleFontData> _fontData;
     std::unique_ptr<jleTimerManager> _timerManager;
     std::shared_ptr<jleWindow> _window;
@@ -152,7 +152,7 @@ protected:
     std::unique_ptr<SoLoud::Soloud> _soLoud;
 
     friend class jleSceneEditorWindow;
-    std::unique_ptr<jle3DRenderer> _3dRenderer;
+    std::unique_ptr<jleGraphics> _3dRenderer;
     std::unique_ptr<jleFramePacket> _currentFramePacket;
     std::unique_ptr<jleFramePacket> _previousFramePacket;
     std::unique_ptr<jle3DSettings> _3dRendererSettings;
@@ -161,7 +161,7 @@ protected:
     struct jleEngineInternal;
     std::unique_ptr<jleEngineInternal> _internal;
 
-    jle3DRenderer &renderer();
+    jleGraphics &renderer();
 
     void refreshDeltaTimes();
     jleFrameInfo _frameInfo{};

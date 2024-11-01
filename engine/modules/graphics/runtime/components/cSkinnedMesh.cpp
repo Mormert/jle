@@ -56,6 +56,27 @@ cSkinnedMesh::update(jleEngineModulesContext& ctx)
     }
 }
 
+void
+cSkinnedMesh::ecsUpdate(jleFramePacket &packet)
+{
+    std::shared_ptr<jleAnimationFinalMatrices> animationMatrices;
+    if (_animator) {
+        animationMatrices = _animator->animationMatrices();
+    } else {
+        static std::shared_ptr<jleAnimationFinalMatrices> identityMatrices =
+            std::make_shared<jleAnimationFinalMatrices>();
+        animationMatrices = identityMatrices;
+    }
+
+    if (_skinnedMeshRef) {
+        std::shared_ptr<jleSkinnedMesh> mesh = _skinnedMeshRef.get();
+        std::shared_ptr<jleMaterial> material = _materialRef.get();
+        packet.sendSkinnedMesh(
+            mesh, material, animationMatrices, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), true);
+    }
+}
+
+
 std::shared_ptr<jleSkinnedMesh>
 cSkinnedMesh::getMesh()
 {
@@ -111,6 +132,8 @@ cSkinnedMesh::editorInspectorImGuiRender(jleEditorModulesContext& ctx)
     }
 #endif
 }
+
+
 
 template <class Archive>
 void

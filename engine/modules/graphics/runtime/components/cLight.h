@@ -37,6 +37,8 @@ public:
 
     void update(jleEngineModulesContext& ctx) override;
 
+    void ecsUpdate(jleFramePacket& packet);
+
     void editorUpdate(jleEngineModulesContext& ctx) override;
 
     void editorGizmosRender(jleFramePacket & renderGraph, jleEditorGizmos& gizmos) override;

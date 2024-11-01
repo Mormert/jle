@@ -118,6 +118,7 @@ if (JLE_BUILD_EDITOR)
             "editor/jleEditor3DImportWindow.cpp"
             "editor/jleEditorFrameGraphWindow.cpp"
             "editor/jleEditorBuild.cpp"
+            "editor/jleECSEditorWindow.cpp"
             "3rdparty/ImGuiColorTextEdit/TextEditor.cpp"
             "3rdparty/ImGui/imgui.cpp"
             "3rdparty/ImGui/imgui_spectrum.cpp"

@@ -60,7 +60,7 @@ struct jle3DQueuedSkinnedMesh {
 class jleFramePacket
 {
 private:
-    friend class jle3DRenderer;
+    friend class jleGraphics;
 
 public:
     void sendMesh(std::shared_ptr<jleMesh> &mesh,

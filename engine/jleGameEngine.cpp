@@ -23,9 +23,9 @@
 #include "modules/graphics/core/jleFramebufferMultisample.h"
 #include "modules/graphics/core/jleFramebufferScreen.h"
 #include "modules/graphics/core/jleFullscreenRendering.h"
-#include "modules/graphics/jle3DRenderer.h"
 #include "modules/graphics/jle3DSettings.h"
 #include "modules/graphics/jleFramePacket.h"
+#include "modules/graphics/jleGraphics.h"
 #include "modules/graphics/jleRenderThread.h"
 #include "modules/input/hardware/jleMouseInput.h"
 #include "modules/input/jleInput.h"
@@ -63,7 +63,7 @@ jleGameEngine::jleGameEngine()
     LOGI << "Initializing job system, available hardware threads: " << std::thread::hardware_concurrency();
     wi::jobsystem::Initialize();
 
-    _resources = std::make_unique<jleResources>();
+    _resources = std::make_unique<jleResourceHolder>();
 
     _renderThread = std::make_unique<jleRenderThread>();
 
@@ -93,7 +93,7 @@ jleGameEngine::jleGameEngine()
 
         _input = std::make_unique<jleInput>(*_window);
 
-        _3dRenderer = std::make_unique<jle3DRenderer>(serializationContext);
+        _3dRenderer = std::make_unique<jleGraphics>(serializationContext);
         _currentFramePacket = std::make_unique<jleFramePacket>();
         _3dRendererSettings = std::make_unique<jle3DSettings>();
         _soLoud = std::make_unique<SoLoud::Soloud>();
@@ -361,7 +361,7 @@ jleGameEngine::refreshDeltaTimes()
     _frameInfo._lastFrame = _frameInfo._currentFrame;
     _frameInfo._fps = static_cast<int>(1.0 / _frameInfo._deltaTime);
 }
-jle3DRenderer &
+jleGraphics &
 jleGameEngine::renderer()
 {
     return *_3dRenderer.get();
@@ -409,7 +409,7 @@ jleGameEngine::window()
 {
     return *_window;
 }
-jleResources &
+jleResourceHolder &
 jleGameEngine::resources()
 {
     return *_resources;

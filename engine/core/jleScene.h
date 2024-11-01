@@ -22,7 +22,7 @@
 #include <vector>
 
 #include "core/jlePath.h"
-#include "core/jleResource.h"
+#include "core/jleResourceHolder.h"
 #include "core/jleSerializedResource.h"
 #include "jleTypeReflectionUtils.h"
 

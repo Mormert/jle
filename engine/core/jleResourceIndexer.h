@@ -26,7 +26,7 @@
 #include <future>
 
 class jleEditorTextEdit;
-class jleResources;
+class jleResourceHolder;
 class jleSerializationContext;
 
 class jleResourceIndexer
