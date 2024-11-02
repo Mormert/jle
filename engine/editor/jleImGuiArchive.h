@@ -59,7 +59,6 @@
 
 #include <filesystem>
 #include <iostream>
-#include <jleFixedVector.h>
 #include <vector>
 
 // A tooltip utility for showing tooltips in the editor
