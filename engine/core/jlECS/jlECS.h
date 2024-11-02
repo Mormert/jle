@@ -19,8 +19,8 @@
 
 #include <cassert>
 #include <memory>
-#include <string>
 #include <vector>
+#include <algorithm>
 
 #if JLE_BUILD_EDITOR || !defined(NDEBUG)
 #define JLECS_USE_DEBUG 1
