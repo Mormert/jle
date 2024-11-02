@@ -23,10 +23,8 @@
 #include "core/jleTypeReflectionUtils.h"
 #include "glm/glm.hpp"
 
-#include "editor/jleImGuiArchive.h"
-#include "serialization/jleBinaryArchive.h"
-#include "serialization/jleJSONArchive.h"
-#include <cereal/cereal.hpp>
+#include "serialization/jleExternalSerialization.h"
+#include <cereal/types/vector.hpp>
 
 struct jleEditorSaveState : public jleSerializedOnlyResource {
     template <class Archive>

@@ -19,6 +19,10 @@
 #include <fstream>
 #include <plog/Log.h>
 
+#include "editor/jleImGuiArchive.h"
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
+
 template <class Archive>
 void
 jleScene::serialize(Archive &archive)

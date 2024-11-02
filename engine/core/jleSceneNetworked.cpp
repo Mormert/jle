@@ -18,6 +18,11 @@
 #include <enet.h>
 #include <zlib/zlib.h>
 
+#if JLE_BUILD_IMGUI
+#include <ImGui/imgui.h>
+#endif
+
+
 #undef min
 #undef max
 
