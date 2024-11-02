@@ -20,9 +20,9 @@
 #include <cassert>
 #include <climits>
 
+#include <algorithm>
 #include <memory>
 #include <vector>
-#include <algorithm>
 
 #if JLE_BUILD_EDITOR || !defined(NDEBUG)
 #define JLECS_USE_DEBUG 1
@@ -46,7 +46,6 @@ class ComponentNum
 public:
     static inline uint16_t num = 0;
 };
-
 
 class ComponentContainer;
 class ECS;
@@ -84,6 +83,7 @@ public:
         return "ComponentDebugBase";
     }
 
+    // Editor inspector serialization
     virtual void serializeComponent(jleImGuiArchive &ar){};
 
     void removeFromOwningObject();
@@ -108,11 +108,13 @@ public:
         return getCleanTypeName(typeid(T).name());
     }
 
+#if JLE_BUILD_IMGUI
     void
     serializeComponent(jleImGuiArchive &ar) override
     {
         componentPtr->serialize(ar);
     };
+#endif
 };
 
 #endif
