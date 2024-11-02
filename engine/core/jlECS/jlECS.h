@@ -568,7 +568,11 @@ public:
     {
         ComponentNum<T>::num = componentContainers.size();
         componentContainers.emplace_back(ComponentContainer::create<T>());
-        registeredComponentTypeNames.emplace_back(ComponentNum<T>::num, getCleanTypeName(typeid(T).name()));
+
+        RegisteredComponentType registeredComponentType{};
+        registeredComponentType.componentType = ComponentNum<T>::num;
+        registeredComponentType.componentTypeName = getCleanTypeName(typeid(T).name());
+        registeredComponentTypeNames.push_back(registeredComponentType);
 
         registeredComponentTypesCount += 1;
     }
