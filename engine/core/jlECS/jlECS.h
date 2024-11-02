@@ -18,6 +18,8 @@
 #include "jleBuildConfig.h"
 
 #include <cassert>
+#include <climits>
+
 #include <memory>
 #include <vector>
 #include <algorithm>
@@ -1018,7 +1020,7 @@ public:
     MultiRange<Components...>
     iterateMulti()
     {
-        int minSize = std::numeric_limits<int>::max();
+        int minSize = INT_MAX;
         int minComponentType = -1;
 
         // Finds the component type with the least amount of components, which will be the component
