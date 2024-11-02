@@ -14,12 +14,17 @@
  *********************************************************************************************/
 
 #include "jleLuaClass.h"
-#include "jleLuaEnvironment.h"
 #include "jleGameEngine.h"
+#include "jleLuaEnvironment.h"
+
+#include "editor/jleImGuiArchive.h"
+
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
+#include <cereal/cereal.hpp>
 
 #include <sstream>
 
-// clang-format off
 #if JLE_BUILD_EDITOR
 template void jleLuaClass::serializeClass(jleImGuiArchive &ar, sol::table &luaTable);
 template void jleLuaClass::serializeClass(jleImGuiArchiveInternal &ar, sol::table &luaTable);
@@ -28,7 +33,6 @@ template void jleLuaClass::serializeClass(jleJSONOutputArchive &ar, sol::table &
 template void jleLuaClass::serializeClass(jleJSONInputArchive &ar, sol::table &luaTable);
 template void jleLuaClass::serializeClass(jleBinaryOutputArchive &ar, sol::table &luaTable);
 template void jleLuaClass::serializeClass(jleBinaryInputArchive &ar, sol::table &luaTable);
-// clang-format on
 
 std::vector<jleLuaClass>
 jleLuaClass::getLuaClassesFromLuaSrc(const jlePath &srcPath, const std::string &luaSrc)

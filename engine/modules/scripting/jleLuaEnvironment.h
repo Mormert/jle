@@ -25,6 +25,8 @@
 
 class jleLuaScript;
 class jleFileWatcher;
+struct jleSerializationContext;
+
 namespace sol
 {
 class state;

@@ -18,30 +18,19 @@
 #include "core/jleCommon.h"
 #include "core/jlePath.h"
 
-#include "editor/jleImGuiArchive.h"
-
-#include <cereal/cereal.hpp>
-#include "serialization/jleBinaryArchive.h"
-#include "serialization/jleJSONArchive.h"
-#include <cereal/types/vector.hpp>
-#include <cereal/types/string.hpp>
-
 #include <sol2/sol.hpp>
 
 #include <string>
 #include <vector>
 
-namespace cereal
-{
 #if JLE_BUILD_EDITOR
-class jleImGuiCerealArchive;
-class jleImGuiCerealArchiveInternal;
+class jleImGuiArchive;
+class jleImGuiArchiveInternal;
 #endif
 class jleJSONOutputArchive;
 class jleJSONInputArchive;
 class jleBinaryOutputArchive;
 class jleBinaryInputArchive;
-} // namespace cereal
 
 class jleLuaClass
 {
@@ -61,7 +50,6 @@ public:
     jlePath getScriptPathWhereClassIsDefined() const;
 
 private:
-
     enum class LuaType : uint8_t {
         Number,  // Double
         Integer, // Int64
@@ -86,7 +74,6 @@ private:
     jlePath _srcCodePath{};
 };
 
-// clang-format off
 #if JLE_BUILD_EDITOR
 extern template void jleLuaClass::serializeClass(jleImGuiArchive &ar, sol::table &luaTable);
 extern template void jleLuaClass::serializeClass(jleImGuiArchiveInternal &ar, sol::table &luaTable);
@@ -95,4 +82,3 @@ extern template void jleLuaClass::serializeClass(jleJSONOutputArchive &ar, sol::
 extern template void jleLuaClass::serializeClass(jleJSONInputArchive &ar, sol::table &luaTable);
 extern template void jleLuaClass::serializeClass(jleBinaryOutputArchive &ar, sol::table &luaTable);
 extern template void jleLuaClass::serializeClass(jleBinaryInputArchive &ar, sol::table &luaTable);
-// clang-format on
