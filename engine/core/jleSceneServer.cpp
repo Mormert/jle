@@ -19,7 +19,10 @@
 #include "jleSceneClient.h"
 #include "modules/networking/jleNetworkEvent.h"
 
+#include "editor/jleImGuiArchive.h"
 #include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
+
 #include <cereal/cereal.hpp>
 
 #include <enet.h>

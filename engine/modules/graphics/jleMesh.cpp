@@ -460,8 +460,13 @@ jleMesh::generateStaticConcaveShape()
 void
 jleMesh::generateDynamicConvexShape()
 {
+    // TODO Find proper solution to separating physics stuff into its own module here
+    // GCC compiles about that btConvexHullShape is undefined etc (because this is in the graphics module, and
+    // bullet is not contained in graphics...)
+#if !defined(__linux__) && (!defined(__GNUC__) || defined(_MSC_VER))
     _dynamicConvexShape =
         std::make_unique<btConvexHullShape>((&(positions()[0].x)), (int)positions().size(), sizeof(glm::vec3));
+#endif
 
     // _dynamicConvexShape->optimizeConvexHull();
     // _dynamicConvexShape->initializePolyhedralFeatures();

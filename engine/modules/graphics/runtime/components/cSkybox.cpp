@@ -16,7 +16,10 @@
 #include "cSkybox.h"
 #include "jleGameEngine.h"
 #include "modules/graphics/jleGraphics.h"
-#include "serialization/jleSerialization.h"
+
+#include "editor/jleImGuiArchive.h"
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
 
 #include "core/jleResourceHolder.h"
 

@@ -19,6 +19,7 @@
 #include "jleBuildConfig.h"
 #include "jleAssert.h"
 
+#include <Tracy.hpp>
 #include <plog/Log.h>
 
 #endif //JLE_COMMON_H

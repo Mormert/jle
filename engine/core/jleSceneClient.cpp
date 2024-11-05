@@ -17,6 +17,10 @@
 #include "jleProfiler.h"
 #include "modules/networking/jleNetworkEvent.h"
 
+#include "editor/jleImGuiArchive.h"
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
+
 #include <enet.h>
 
 void

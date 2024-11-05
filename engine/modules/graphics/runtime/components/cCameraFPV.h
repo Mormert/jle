@@ -24,17 +24,12 @@ class cCameraFPV : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cCameraFPV)
 public:
-
     template <class Archive>
-    void
-    serialize(Archive &ar)
-    {
-        ar(CEREAL_NVP(_moveSpeed), CEREAL_NVP(_mouseSensitivity));
-    }
+    void serialize(Archive &ar);
 
     ~cCameraFPV() override;
 
-    void update(jleEngineModulesContext& ctx) override;
+    void update(jleEngineModulesContext &ctx) override;
 
 protected:
     float _moveSpeed{100.f};

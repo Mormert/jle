@@ -19,42 +19,6 @@
 #include <fstream>
 #include <plog/Log.h>
 
-#include "editor/jleImGuiArchive.h"
-#include "serialization/jleBinaryArchive.h"
-#include "serialization/jleJSONArchive.h"
-
-template <class Archive>
-void
-jleScene::serialize(Archive &archive)
-{
-    jleSerializationContext &ctx = archive.ctx;
-
-    archive(CEREAL_NVP(sceneName), CEREAL_NVP(_sceneObjects));
-
-    for (auto &&object : _sceneObjects) {
-        // Replace object with template object, if it is based on one
-        if (object->__templatePath.has_value()) {
-            auto path = object->__templatePath;
-            try {
-
-                auto original = ctx.resources->loadResourceFromFileT<jleObject>(object->__templatePath.value(), ctx);
-
-                auto copy = original->duplicateTemplate();
-                object = copy;
-
-                object->__templatePath = path;
-
-            } catch (std::exception &e) {
-                LOGE << "Failed to load object template: " << e.what();
-            }
-        }
-
-        object->replaceChildrenWithTemplate(ctx);
-
-        object->propagateOwnedByScene(this);
-    }
-}
-
 template <typename T>
 inline std::shared_ptr<T>
 jleScene::spawnObject(jleSerializationContext& ctx)

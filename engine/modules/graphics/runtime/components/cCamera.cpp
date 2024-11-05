@@ -20,6 +20,10 @@
 #include "modules/graphics/core/jleIncludeGL.h"
 #include "modules/windowing/jleWindow.h"
 
+#include "editor/jleImGuiArchive.h"
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
+
 #if JLE_BUILD_EDITOR
 #include "editor/jleEditor.h"
 #include "editor/jleEditorGizmos.h"
@@ -140,3 +144,17 @@ cCamera::editorGizmosRender(jleFramePacket &packet, jleEditorGizmos &gizmos)
 #endif // JLE_BUILD_EDITOR
 }
 
+template <class Archive>
+void
+cCamera::serialize(Archive &ar)
+{
+    ar(CEREAL_NVP(perspective),
+       CEREAL_NVP(farPlane),
+       CEREAL_NVP(nearPlane),
+       CEREAL_NVP(perspectiveFov),
+       CEREAL_NVP(framebufferSizeX),
+       CEREAL_NVP(framebufferSizeY),
+        // CEREAL_NVP(_framebufferFixedAxis),
+       CEREAL_NVP(framebufferUseFixedAxis),
+       CEREAL_NVP(matchFramebufferToWindowSize));
+}

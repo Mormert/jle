@@ -19,13 +19,6 @@
 #include "jleBuildConfig.h"
 
 #if JLE_BUILD_EDITOR
-// The following macro only works on arithmetic types: float, int, double, etc, and std::string
-#define JLE_TOOLTIP_ARITHMETIC(TYPE, TIP, NAME) jleToolTip<TYPE>(NAME){TIP};
-#else
-#define JLE_TOOLTIP_ARITHMETIC(TYPE, TIP, NAME) TYPE NAME;
-#endif
-
-#if JLE_BUILD_EDITOR
 
 #include "serialization/jleSerialization.h"
 
@@ -60,46 +53,6 @@
 #include <filesystem>
 #include <iostream>
 #include <vector>
-
-// A tooltip utility for showing tooltips in the editor
-// Works on arithmetic types: float, int, double, etc, and std::string
-template <typename T>
-struct jleToolTip {
-    explicit jleToolTip<T>(const std::string_view tip) : tip_view{tip} {}
-
-    jleToolTip<T>(T i) { item = i; }
-    operator T() { return item; }
-
-    jleToolTip<T>(const jleToolTip<T> &other) : item{other.item}, tip_view{other.tip_view} {}
-
-    jleToolTip<T> &
-    operator=(const jleToolTip<T> &other)
-    {
-        if (this != &other) {
-            item = other.item;
-            tip_view = other.tip_view;
-        }
-        return *this;
-    }
-
-    T item{};
-
-    template <class Archive>
-    T
-    save_minimal(Archive const &) const
-    {
-        return item;
-    }
-
-    template <class Archive>
-    void
-    load_minimal(Archive const &, T const &value)
-    {
-        item = value;
-    }
-
-    std::string_view tip_view;
-};
 
 class jleImGuiArchiveInternal : public jleSerializationArchive_EditorOnly,
                                 public cereal::OutputArchive<jleImGuiArchiveInternal>
@@ -264,36 +217,6 @@ private:
             ar(value);
             ImGui::TreePop();
         }
-
-        ImGui::PopID();
-    }
-
-    template <class T>
-    void
-    draw_ui(jleImGuiArchive &ar, const char *name, jleToolTip<T> &value)
-    {
-        ImGui::PushID(elementCount++);
-
-        draw_ui(ar, name, value.item);
-
-        ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(180, 220, 180, 255));
-        ImGui::Text("   %s", value.tip_view.data());
-        ImGui::PopStyleColor();
-
-        ImGui::PopID();
-    }
-
-    template <class T>
-    void
-    draw_ui(jleImGuiArchive &ar, std::string name, jleToolTip<T> &value)
-    {
-        ImGui::PushID(elementCount++);
-
-        draw_ui(ar, name, value.item);
-
-        ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(180, 220, 180, 255));
-        ImGui::Text("   %s", value.tip_view.data());
-        ImGui::PopStyleColor();
 
         ImGui::PopID();
     }

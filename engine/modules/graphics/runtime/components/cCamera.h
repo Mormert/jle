@@ -26,19 +26,7 @@ class cCamera : public jleComponent
     JLE_REGISTER_COMPONENT_TYPE(cCamera)
 public:
     template <class Archive>
-    void
-    serialize(Archive &ar)
-    {
-        ar(CEREAL_NVP(perspective),
-           CEREAL_NVP(farPlane),
-           CEREAL_NVP(nearPlane),
-           CEREAL_NVP(perspectiveFov),
-           CEREAL_NVP(framebufferSizeX),
-           CEREAL_NVP(framebufferSizeY),
-           // CEREAL_NVP(_framebufferFixedAxis),
-           CEREAL_NVP(framebufferUseFixedAxis),
-           CEREAL_NVP(matchFramebufferToWindowSize));
-    }
+    void serialize(Archive &ar);
 
     ~cCamera() override;
 
@@ -46,7 +34,7 @@ public:
 
     void update(jleEngineModulesContext &ctx) override;
 
-    void ecsUpdate(jleCamera& camera, int width, int height);
+    void ecsUpdate(jleCamera &camera, int width, int height);
 
     void editorInspectorImGuiRender(jleEditorModulesContext &ctx) override;
 

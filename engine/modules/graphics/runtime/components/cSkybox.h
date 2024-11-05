@@ -27,8 +27,7 @@ class cSkybox : public jleComponent
     JLE_REGISTER_COMPONENT_TYPE(cSkybox)
 public:
     template <class Archive>
-    void
-    serialize(Archive &ar);
+    void serialize(Archive &ar);
 
     void start(jleEngineModulesContext &ctx) override;
 

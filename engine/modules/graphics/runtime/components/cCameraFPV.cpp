@@ -18,6 +18,10 @@
 #include "jleGameEngine.h"
 #include "modules/input/jleInput.h"
 
+#include "editor/jleImGuiArchive.h"
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
+
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cCameraFPV)
 
 cCameraFPV::~cCameraFPV() {}
@@ -123,4 +127,11 @@ cCameraFPV::update(jleEngineModulesContext& ctx)
     rotateViewByMouseInput(viewMatrix);
 
     getTransform().setWorldMatrix(glm::inverse(viewMatrix));
+}
+
+template <class Archive>
+void
+cCameraFPV::serialize(Archive &ar)
+{
+    ar(CEREAL_NVP(_moveSpeed), CEREAL_NVP(_mouseSensitivity));
 }

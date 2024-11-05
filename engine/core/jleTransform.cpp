@@ -23,6 +23,10 @@
 #include <glm/detail/type_quat.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
+#include "editor/jleImGuiArchive.h"
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
+
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleTransform)
 
 /*struct jleTransformPropagateEvent : public jleServerToClientEvent {

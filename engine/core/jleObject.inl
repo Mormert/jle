@@ -19,28 +19,7 @@
 
 #include <cereal/types/optional.hpp>
 
-template <class Archive>
-void
-jleObject::serialize(Archive &archive)
-{
-    try {
-        archive(CEREAL_NVP(__templatePath));
-    } catch (std::exception &e) {
-    }
 
-    archive(CEREAL_NVP(_instanceName), CEREAL_NVP(_transform), CEREAL_NVP(__childObjects), CEREAL_NVP(_components));
-
-    for (auto &&child : __childObjects) {
-        child->_parentObject = this;
-    }
-
-    getTransform().propagateMatrixFromObjectSerialization();
-
-    for (auto &&component : _components) {
-        component->_attachedToObject = this;
-        component->_containedInScene = _containedInScene;
-    }
-}
 template <typename T>
 inline std::shared_ptr<T>
 jleObject::addComponent(jleEngineModulesContext &ctx)

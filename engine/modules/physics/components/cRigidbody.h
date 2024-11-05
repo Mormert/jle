@@ -75,7 +75,7 @@ protected:
 
     std::unique_ptr<btRigidBody> createRigidbody(bool isDynamic, btCollisionShape *shape);
 
-    JLE_TOOLTIP_ARITHMETIC(float, "Setting mass to 0 makes this rigidbody static.", _mass);
+    float _mass; // Setting mass to 0 makes this rigidbody static.
     glm::vec3 _size{1.f};
 
     std::unique_ptr<btRigidBody> _body{nullptr};

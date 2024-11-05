@@ -178,10 +178,12 @@ void Initialize(uint32_t maxThreadCount)
         //BOOL priority_result = SetThreadPriority(handle, THREAD_PRIORITY_HIGHEST);
         //assert(priority_result != 0);
 
+#ifdef _MSC_VER
         // Name the thread:
         std::wstring wthreadname = L"jle_job_" + std::to_wstring(threadID);
         HRESULT hr = SetThreadDescription(handle, wthreadname.c_str());
         assert(SUCCEEDED(hr));
+#endif
 #elif defined(__linux__)
 #define handle_error_en(en, msg) \
                do { errno = en; perror(msg); } while (0)

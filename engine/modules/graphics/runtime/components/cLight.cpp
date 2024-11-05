@@ -23,6 +23,10 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "editor/jleImGuiArchive.h"
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
+
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLight)
 
 void
@@ -64,3 +68,9 @@ cLight::registerLua(sol::state &lua)
     lua.new_usertype<cLight>("cLight", sol::base_classes, sol::bases<jleComponent>(), "color", &cLight::_color);
 }
 
+template <class Archive>
+void
+cLight::serialize(Archive &ar)
+{
+    ar(CEREAL_NVP(_color));
+}

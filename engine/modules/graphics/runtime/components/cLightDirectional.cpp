@@ -21,6 +21,10 @@
 #include "modules/graphics/jle3DSettings.h"
 #include "modules/graphics/jleFramePacket.h"
 
+#include "editor/jleImGuiArchive.h"
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
+
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLightDirectional)
 
 void
@@ -55,4 +59,11 @@ void
 cLightDirectional::registerLua(sol::state &lua)
 {
     lua.new_usertype<cLightDirectional>("cLightDirectional", sol::base_classes, sol::bases<cLight>());
+}
+
+template <class Archive>
+void
+cLightDirectional::serialize(Archive &ar)
+{
+    ar(cereal::base_class<cLight>(this));
 }

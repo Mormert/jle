@@ -25,32 +25,26 @@ class cLight : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cLight)
 public:
-
     template <class Archive>
-    void
-    serialize(Archive &ar)
-    {
-        ar(CEREAL_NVP(_color));
-    }
+    void serialize(Archive &ar);
 
-    void start(jleEngineModulesContext& ctx) override;
+    void start(jleEngineModulesContext &ctx) override;
 
-    void update(jleEngineModulesContext& ctx) override;
+    void update(jleEngineModulesContext &ctx) override;
 
-    void ecsUpdate(jleFramePacket& packet);
+    void ecsUpdate(jleFramePacket &packet);
 
-    void editorUpdate(jleEngineModulesContext& ctx) override;
+    void editorUpdate(jleEngineModulesContext &ctx) override;
 
-    void editorGizmosRender(jleFramePacket & renderGraph, jleEditorGizmos& gizmos) override;
+    void editorGizmosRender(jleFramePacket &renderGraph, jleEditorGizmos &gizmos) override;
 
-    void registerLua(sol::state& lua) override;
+    void registerLua(sol::state &lua) override;
 
 protected:
     glm::vec3 _color{1.f};
 };
 
 JLE_EXTERN_TEMPLATE_CEREAL_H(cLight)
-
 
 CEREAL_REGISTER_TYPE(cLight)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cLight)

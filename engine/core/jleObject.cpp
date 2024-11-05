@@ -24,6 +24,10 @@
 #include "modules/networking/jleNetworkEvent.h"
 #include "modules/scripting/components/cLuaScript.h"
 
+#include "editor/jleImGuiArchive.h"
+#include "serialization/jleBinaryArchive.h"
+#include "serialization/jleJSONArchive.h"
+
 #include <fstream>
 #include <optional>
 
@@ -105,6 +109,29 @@ jleObject()
     : _transform{this}
 {
     _instanceID = _instanceIdCounter++;
+}
+
+template <class Archive>
+void
+jleObject::serialize(Archive &archive)
+{
+    try {
+        archive(CEREAL_NVP(__templatePath));
+    } catch (std::exception &e) {
+    }
+
+    archive(CEREAL_NVP(_instanceName), CEREAL_NVP(_transform), CEREAL_NVP(__childObjects), CEREAL_NVP(_components));
+
+    for (auto &&child : __childObjects) {
+        child->_parentObject = this;
+    }
+
+    getTransform().propagateMatrixFromObjectSerialization();
+
+    for (auto &&component : _components) {
+        component->_attachedToObject = this;
+        component->_containedInScene = _containedInScene;
+    }
 }
 
 void

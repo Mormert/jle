@@ -13,6 +13,16 @@
 #                                                                                           #
 #############################################################################################
 
+option(JLE_ALLOW_MINGW "Allow using MinGW on Windows" OFF)
+
+if (WIN32)
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT JLE_ALLOW_MINGW)
+        message(FATAL_ERROR "MinGW is not supported on Windows by default. Please use MSVC or enable ALLOW_MINGW to proceed with MinGW.")
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND JLE_ALLOW_MINGW)
+        message(WARNING "Using MinGW on Windows. This is not officially supported; use at your own risk.")
+    endif()
+endif()
+
 set(JLE_CORE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/core")
 
 set(JLE_CORE_3RD_PARTY_DIRS
@@ -60,8 +70,6 @@ set_source_files_properties(${LZ4_SOURCES} PROPERTIES LANGUAGE CXX)
 add_library(engine STATIC
         ${JLE_STL_HEADERS}
         ${LZ4_SOURCES}
-        "3rdparty/stb_image.cpp"
-        "3rdparty/stb_image_write.cpp"
         "3rdparty/tiny_obj_loader.cpp"
         "3rdparty/WickedEngine/wiJobSystem.cpp"
         "modules/graphics/RmlUiImplementation/RmlUi_Backend_GLFW_GL3.cpp"
@@ -150,14 +158,6 @@ target_link_libraries(engine PUBLIC zlib)
 
 add_subdirectory(3rdparty/SoLoud)
 target_link_libraries(engine PUBLIC SoLoud)
-
-set(BUILD_CPU_DEMOS OFF CACHE BOOL "" FORCE)
-set(BUILD_BULLET2_DEMOS OFF CACHE BOOL "" FORCE)
-set(BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
-set(BUILD_EXTRAS OFF CACHE BOOL "" FORCE)
-add_subdirectory(3rdparty/git_submodules_forks/jle_bullet3)
-target_link_libraries(engine PUBLIC BulletDynamics BulletCollision Bullet3Common BulletInverseDynamics BulletSoftBody LinearMath)
-target_include_directories(engine SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules_forks/jle_bullet3/src")
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(BUILD_TOOLS OFF CACHE BOOL "" FORCE)
