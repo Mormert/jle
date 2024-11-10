@@ -18,7 +18,7 @@
 #include "core/jleCommon.h"
 
 #include "jleSceneNetworked.h"
-#include "modules/networking/jleNetworkEventOutQueue.h"
+#include "jleNetworkEventOutQueue.h"
 
 constexpr int serverOwnedId = 0;
 
@@ -77,6 +77,12 @@ private:
     void destroyAllClientOwnedObjects(int32_t clientId);
 
     void setNetIdObject(const std::shared_ptr<jleObject> &object, int32_t netId);
+
+    void onObjectDestroyComponent(jleObject& object, int componentIndex) override;
+
+    void onAttachChildObject(jleObject& parent, jleObject& child) override;
+
+    void onComponentStart(jleObject& object, const std::shared_ptr<jleComponent> &component) override;
 
     ENetHost *_server = nullptr;
 

@@ -14,10 +14,10 @@
  *********************************************************************************************/
 
 #include "jleSceneServer.h"
+#include "core/jleProfiler.h"
 #include "jleEngineSettings.h"
-#include "jleProfiler.h"
 #include "jleSceneClient.h"
-#include "modules/networking/jleNetworkEvent.h"
+#include "jleNetworkEvent.h"
 
 #include "editor/jleImGuiArchive.h"
 #include "serialization/jleBinaryArchive.h"
@@ -26,6 +26,8 @@
 #include <cereal/cereal.hpp>
 
 #include <enet.h>
+
+////////////////////////////////////////////////////////////////////////////////////
 
 struct jleCreateObjectEvent : public jleServerToClientEvent {
     void
@@ -96,6 +98,79 @@ struct jleFullSceneSyncEvent : public jleServerToClientEvent {
 };
 
 JLE_REGISTER_NET_EVENT(jleFullSceneSyncEvent)
+
+struct jleDestroyComponentEvent : public jleServerToClientEvent {
+    void
+    execute(jleEngineModulesContext& ctx) override
+    {
+        auto &scene = getSceneClient();
+        if (auto object = scene.getObjectFromNetId(objectNetId)) {
+            object->destroyComponentAtIndex(componentIndex);
+        }
+    }
+
+    template <class Archive>
+    void
+    serialize(Archive &archive)
+    {
+        archive(CEREAL_NVP(objectNetId), CEREAL_NVP(componentIndex));
+    }
+
+    int32_t objectNetId{};
+    int8_t componentIndex{};
+};
+
+JLE_REGISTER_NET_EVENT(jleDestroyComponentEvent)
+
+struct jleAttachChildEvent : public jleServerToClientEvent {
+    void
+    execute(jleEngineModulesContext& ctx) override
+    {
+        auto &scene = getSceneClient();
+        if (auto parent = scene.getObjectFromNetId(objectNetIdParent)) {
+            if (auto child = scene.getObjectFromNetId(objectNetIdChild)) {
+                parent->attachChildObject(child);
+            }
+        }
+    }
+
+    template <class Archive>
+    void
+    serialize(Archive &archive)
+    {
+        archive(CEREAL_NVP(objectNetIdParent), CEREAL_NVP(objectNetIdChild));
+    }
+
+    int32_t objectNetIdParent{};
+    int32_t objectNetIdChild{};
+};
+
+JLE_REGISTER_NET_EVENT(jleAttachChildEvent)
+
+struct jleAddComponentEvent : public jleServerToClientEvent {
+    void
+    execute(jleEngineModulesContext& ctx) override
+    {
+        auto &scene = getSceneClient();
+        if (auto object = scene.getObjectFromNetId(objectNetId)) {
+            object->addComponent(component, ctx);
+        }
+    }
+
+    template <class Archive>
+    void
+    serialize(Archive &archive)
+    {
+        archive(CEREAL_NVP(objectNetId), CEREAL_NVP(component));
+    }
+
+    int32_t objectNetId{};
+    std::shared_ptr<jleComponent> component;
+};
+
+JLE_REGISTER_NET_EVENT(jleAddComponentEvent)
+
+////////////////////////////////////////////////////////////////////////////////////
 
 int
 jleSceneServer::startServer(jleEngineModulesContext& ctx, int port, int maxClients)
@@ -296,7 +371,7 @@ jleSceneServer::setupObjectForNetworking(const std::shared_ptr<jleObject> &obj)
     if (obj->_networkOwnerID == -1) {
         obj->_networkOwnerID = serverOwnedId;
     }
-    obj->propagateOwnedBySceneServer(this);
+    obj->propagateOwnedByScene(this, jleObjectNetworkType::SERVER);
 
     setNetIdObject(obj, entityId);
 
@@ -387,6 +462,33 @@ void
 jleSceneServer::setNetIdObject(const std::shared_ptr<jleObject> &object, int32_t netId)
 {
     _networkedObjects.insert(std::make_pair(netId, object));
+}
+
+void
+jleSceneServer::onObjectDestroyComponent(jleObject &object, int componentIndex)
+{
+    auto event = jleMakeNetEvent<jleDestroyComponentEvent>();
+    event->objectNetId = object.netID();
+    event->componentIndex = static_cast<int8_t>(componentIndex);
+    sendNetworkEventBroadcast(std::move(event));
+}
+
+void
+jleSceneServer::onAttachChildObject(jleObject& parent, jleObject& child)
+{
+    auto event = jleMakeNetEvent<jleAttachChildEvent>();
+    event->objectNetIdParent = parent.netID();
+    event->objectNetIdChild = child.netID();
+    sendNetworkEventBroadcast(std::move(event));
+}
+
+void
+jleSceneServer::onComponentStart(jleObject &object, const std::shared_ptr<jleComponent> &component)
+{
+    auto event = jleMakeNetEvent<jleAddComponentEvent>();
+    event->component = component;
+    event->objectNetId = object.netID();
+    sendNetworkEventBroadcast(std::move(event));
 }
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleSceneServer)

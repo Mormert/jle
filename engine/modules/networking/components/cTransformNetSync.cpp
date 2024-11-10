@@ -14,6 +14,7 @@
  *********************************************************************************************/
 
 #include "cTransformNetSync.h"
+#include "../jleNetworkingComponent.h"
 
 void
 cTransformNetSync::netSyncOut(jleBinaryOutputArchive &ar)
@@ -34,5 +35,5 @@ void
 cTransformNetSync::serverUpdate(jleEngineModulesContext &ctx)
 {
     jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
-    syncServerToClient(serializationContext);
+    syncComponentServerToClient(*this, serializationContext);
 }

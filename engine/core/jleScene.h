@@ -107,6 +107,11 @@ private:
 
     static int _scenesCreatedCount;
 
+    // Networking
+    virtual void onObjectDestroyComponent(jleObject& object, int componentIndex) {}
+    virtual void onAttachChildObject(jleObject& parent, jleObject& child) {}
+    virtual void onComponentStart(jleObject& object, const std::shared_ptr<jleComponent> &component) {}
+
     std::unique_ptr<jlePhysics> _physics;
 };
 

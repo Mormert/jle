@@ -55,7 +55,7 @@ jleScene::serialize(Archive &archive)
 
         object->replaceChildrenWithTemplate(ctx);
 
-        object->propagateOwnedByScene(this);
+        object->propagateOwnedByScene(this, jleObjectNetworkType::SERVER);
     }
 }
 

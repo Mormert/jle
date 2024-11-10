@@ -17,7 +17,7 @@
 
 #include "core/jlECS/jlECS.h"
 #include "modules/graphics/core/jleFrameBufferInterface.h"
-#include <glm/ext/matrix_transform.hpp>
+#include "modules/physics/jlePhysics.h"
 
 #include <3rdparty/WickedEngine/wiJobSystem.h>
 
@@ -63,7 +63,7 @@ jleGame::loadScene(const jlePath &scenePath, jleEngineModulesContext &ctx)
 }
 
 jleGame::jleGame() {
-    _ecs = std::make_unique<jlECS::ECS>();
+    _gameState._ecs = std::make_unique<jlECS::ECS>();
 }
 
 jleGame::~jleGame() = default;
@@ -119,13 +119,15 @@ jleGame::update(jleEngineModulesContext &ctx)
     jleGraphicsModule::UpdateContext graphicsUpdateContext{
         .in = {.screenX = static_cast<int>(ctx.gameRuntime.mainGameScreenFramebuffer->width()),
                .screenY = static_cast<int>(ctx.gameRuntime.mainGameScreenFramebuffer->height())},
-        .inOut = {.ecs = *_ecs},
+        .inOut = {.ecs = *_gameState._ecs},
         .out = {.framePacket = ctx.currentFramePacket, .camera = mainCamera}};
 
    // _graphicsModule.update(graphicsUpdateContext);
 }
+
 void
 jleGame::start(jleEngineModulesContext &ctx)
 {
-    _graphicsModule.initializeECS(*_ecs);
+    _graphicsModule.initializeECS(*_gameState._ecs);
+    _physicsModule.initializeECS(*_gameState._ecs);
 }

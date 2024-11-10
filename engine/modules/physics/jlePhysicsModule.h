@@ -15,23 +15,30 @@
 
 #pragma once
 
-#include "jleBuildConfig.h"
+namespace jlECS
+{
+class ECS;
+}
 
-// This header file is used to enforce inclusion of object and components, to
-// make sure that they are registered and can be seen in the editor. It needs to
-// be included from something that is compiled and used in the engine.
+class jlePhysics;
 
-#include "core/jleTransform.h"
-#include "modules/animation/components/cAnimator.h"
-#include "modules/graphics/runtime/components/cCamera.h"
-#include "modules/graphics/runtime/components/cCameraFPV.h"
-#include "modules/graphics/runtime/components/cLight.h"
-#include "modules/graphics/runtime/components/cLightDirectional.h"
-#include "modules/graphics/runtime/components/cMesh.h"
-#include "modules/graphics/runtime/components/cSkinnedMesh.h"
-#include "modules/graphics/runtime/components/cSkybox.h"
-#include "modules/networking/components/cTransformNetSync.h"
-#include "modules/networking/jleSceneClient.h"
-#include "modules/networking/jleSceneServer.h"
-#include "modules/physics/components/cRigidbody.h"
-#include "modules/scripting/components/cLuaScript.h"
+class jlePhysicsModule
+{
+public:
+    void initializeECS(jlECS::ECS &ecs);
+
+    struct UpdateContext {
+        struct In {
+        } in;
+
+        struct InOut {
+            jlECS::ECS &ecs;
+            jlePhysics& physics;
+        } inOut;
+
+        struct Out {
+        } out;
+    };
+
+    void update(UpdateContext &ctx);
+};

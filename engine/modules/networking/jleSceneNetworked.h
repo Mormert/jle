@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "jleScene.h"
+#include "core/jleScene.h"
 
 typedef struct _ENetHost ENetHost;
 typedef struct _ENetPeer ENetPeer;

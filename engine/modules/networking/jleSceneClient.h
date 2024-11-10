@@ -18,7 +18,7 @@
 #include "core/jleCommon.h"
 
 #include "jleSceneNetworked.h"
-#include "modules/networking/jleNetworkEventOutQueue.h"
+#include "jleNetworkEventOutQueue.h"
 
 class jleSceneClient : public jleSceneNetworked
 {

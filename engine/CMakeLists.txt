@@ -63,6 +63,8 @@ set(LZ4_SOURCES
         "3rdparty/git_submodules/lz4/lib/lz4file.c"
         "3rdparty/git_submodules/lz4/lib/lz4frame.c"
         "3rdparty/git_submodules/lz4/lib/xxhash.c"
+        modules/physics/jlePhysicsModule.cpp
+        modules/physics/jlePhysicsModule.h
 )
 
 set_source_files_properties(${LZ4_SOURCES} PROPERTIES LANGUAGE CXX)
@@ -72,6 +74,7 @@ add_library(engine STATIC
         ${LZ4_SOURCES}
         "3rdparty/tiny_obj_loader.cpp"
         "3rdparty/WickedEngine/wiJobSystem.cpp"
+        "jleGameEngine.cpp"
         "modules/graphics/RmlUiImplementation/RmlUi_Backend_GLFW_GL3.cpp"
         "modules/graphics/RmlUiImplementation/RmlUi_Renderer_GL3.cpp"
         "modules/graphics/RmlUiImplementation/RmlUi_Platform_GLFW.cpp"
@@ -85,7 +88,10 @@ add_library(engine STATIC
         "modules/game/jleGame.cpp"
         "modules/networking/jleNetworkEvent.cpp"
         "modules/networking/jleNetworkEventOutQueue.cpp"
-        "jleGameEngine.cpp"
+        "modules/networking/jleNetworkingComponent.cpp"
+        "modules/networking/jleSceneNetworked.cpp"
+        "modules/networking/jleSceneServer.cpp"
+        "modules/networking/jleSceneClient.cpp"
         "modules/physics/jlePhysics.cpp"
         "modules/physics/jlePhysicsDebugDrawer.cpp"
         "modules/physics/components/cRigidbody.cpp"

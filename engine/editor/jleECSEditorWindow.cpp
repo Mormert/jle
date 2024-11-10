@@ -30,6 +30,11 @@ jleECSEditorWindow::renderUI(jleEditorModulesContext &ctx)
         return;
     }
 
+    if(ctx.engineModulesContext.gameRuntime.isGameKilled())
+    {
+        return;
+    }
+
     ImGuiWindowFlags flags =
         ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 

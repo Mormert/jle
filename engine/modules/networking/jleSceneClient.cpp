@@ -14,8 +14,9 @@
  *********************************************************************************************/
 
 #include "jleSceneClient.h"
-#include "jleProfiler.h"
-#include "modules/networking/jleNetworkEvent.h"
+#include "jleNetworkEvent.h"
+
+#include "core/jleProfiler.h"
 
 #include "editor/jleImGuiArchive.h"
 #include "serialization/jleBinaryArchive.h"
@@ -188,7 +189,7 @@ jleSceneClient::setupObject(const std::shared_ptr<jleObject> &obj, jleSerializat
 void
 jleSceneClient::setupObjectForNetworking(const std::shared_ptr<jleObject> &obj)
 {
-    obj->propagateOwnedBySceneClient(this);
+    obj->propagateOwnedByScene(this, jleObjectNetworkType::CLIENT);
 }
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleSceneClient)

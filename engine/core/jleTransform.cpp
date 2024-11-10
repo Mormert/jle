@@ -16,10 +16,6 @@
 #include "jleTransform.h"
 #include "core/jleObject.h"
 
-#include "core/jleSceneClient.h"
-#include "core/jleSceneServer.h"
-//#include "modules/networking/jleNetworkEvent.h"
-
 #include <glm/detail/type_quat.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
@@ -167,15 +163,6 @@ jleTransform::propagateMatrix()
     for (auto &&child : children) {
         child->getTransform().propagateMatrixChildren();
     }
-
-    /*
-    if (_owner && _owner->networkObjectType() == jleObjectNetworkType::SERVER) {
-        auto event = jleMakeNetEvent<jleTransformPropagateEvent>();
-        event->localMatrix = getLocalMatrix();
-        event->netId = _owner->netID();
-        _owner->_containedInSceneServer->sendNetworkEventBroadcast(std::move(event));
-    }
-    */
 }
 
 void

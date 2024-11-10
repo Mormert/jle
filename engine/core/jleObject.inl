@@ -54,12 +54,6 @@ jleObject::addComponentByName(const std::string &component_name, jleEngineModule
     newComponent->_attachedToObject = this;
     newComponent->_containedInScene = _containedInScene;
 
-    if (networkObjectType() == jleObjectNetworkType::SERVER) {
-        newComponent->_containedInSceneServer = _containedInSceneServer;
-    } else if (networkObjectType() == jleObjectNetworkType::CLIENT) {
-        newComponent->_containedInSceneClient = _containedInSceneClient;
-    }
-
     _components.push_back(newComponent);
 
     addComponentStart(newComponent, ctx);
@@ -76,12 +70,6 @@ jleObject::addComponent(const std::shared_ptr<T> &component, jleEngineModulesCon
     const auto &c = std::static_pointer_cast<jleComponent>(component);
     c->_attachedToObject = this;
     c->_containedInScene = _containedInScene;
-
-    if (networkObjectType() == jleObjectNetworkType::SERVER) {
-        c->_containedInSceneServer = _containedInSceneServer;
-    } else if (networkObjectType() == jleObjectNetworkType::CLIENT) {
-        c->_containedInSceneClient = _containedInSceneClient;
-    }
 
     _components.push_back(component);
 

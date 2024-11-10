@@ -44,5 +44,5 @@ public:
         } out;
     };
 
-    void update(jleGraphicsModule::UpdateContext &ctx);
+    void update(UpdateContext &ctx);
 };

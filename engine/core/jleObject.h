@@ -31,8 +31,6 @@
 #include <vector>
 
 class jleScene;
-class jleSceneClient;
-class jleSceneServer;
 
 enum class jleObjectNetworkType : uint8_t { REGULAR, CLIENT, SERVER };
 
@@ -129,9 +127,7 @@ private:
 
     void propagateDestroy(jleEngineModulesContext& ctx);
 
-    void propagateOwnedByScene(jleScene *scene);
-    void propagateOwnedBySceneClient(jleSceneClient *scene);
-    void propagateOwnedBySceneServer(jleSceneServer *scene);
+    void propagateOwnedByScene(jleScene *scene, jleObjectNetworkType type);
 
     void replaceChildrenWithTemplate(jleSerializationContext& ctx);
 
@@ -162,6 +158,8 @@ private:
     int32_t _netId{-1};
     int32_t _networkOwnerID{-1};
 
+    jleObjectNetworkType _networkType = jleObjectNetworkType::REGULAR;
+
 protected:
     friend class jleGame;
     friend class jleLuaEnvironment;
@@ -174,9 +172,6 @@ protected:
     jleObject *_parentObject = nullptr;
 
     jleScene *_containedInScene = nullptr;
-
-    jleSceneClient *_containedInSceneClient = nullptr; // is unset if not in a "client scene"
-    jleSceneServer *_containedInSceneServer = nullptr; // is unset if not in a "server scene"
 
     static inline uint32_t _instanceIdCounter{0};
 };

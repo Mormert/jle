@@ -26,10 +26,12 @@
 #include "core/jleScene.h"
 #include "jleGameEngine.h"
 
+#include <modules/graphics/jleGraphicsModule.h>
+#include <modules/physics/jlePhysicsModule.h>
+
 #include <execution>
 #include <fstream>
 #include <iostream>
-#include <modules/graphics/jleGraphicsModule.h>
 #include <typeinfo>
 
 namespace jlECS
@@ -80,15 +82,21 @@ public:
     jlECS::ECS &
     getECS()
     {
-        return *_ecs;
+        return *_gameState._ecs;
     }
 
 protected:
     std::vector<std::shared_ptr<jleScene>> _activeScenes;
 
     jleGraphicsModule _graphicsModule;
+    jlePhysicsModule _physicsModule;
 
-    std::unique_ptr<jlECS::ECS> _ecs;
+    struct GameState
+    {
+        std::unique_ptr<jlECS::ECS> _ecs;
+        std::unique_ptr<jlePhysics> _physics;
+    } _gameState;
+
 
     std::unordered_map<uint64_t, std::vector<std::shared_ptr<jleComponent>>> _parallelComponents;
 };

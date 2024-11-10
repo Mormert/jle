@@ -32,8 +32,6 @@
 #include <string_view>
 
 class jleScene;
-class jleSceneClient;
-class jleSceneServer;
 class jleComponent;
 class jleTransform;
 class jleEditorModulesContext;
@@ -113,8 +111,6 @@ public:
     {
     }
 
-    void syncServerToClient(jleSerializationContext& serializationContext);
-
     void destroy(jleEngineModulesContext& ctx);
 
     bool isDestroyed();
@@ -128,8 +124,6 @@ public:
     std::shared_ptr<jleObject> getObjectSharedPtr();
 
     jleScene *scene();
-    jleSceneServer *sceneServer();
-    jleSceneClient *sceneClient();
 
 protected:
     friend class jleObject;
@@ -153,8 +147,6 @@ protected:
 
     // The scene in which this component's object lives
     jleScene *_containedInScene{};
-    jleSceneClient *_containedInSceneClient{};
-    jleSceneServer *_containedInSceneServer{};
 
     bool _isDestroyed{false};
 
