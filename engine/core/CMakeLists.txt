@@ -27,10 +27,7 @@ add_subdirectory(${JLE_3RDPARTY_DIRECTORY}/git_submodules_forks/jle_EASTL "${CMA
 target_include_directories(jleCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/jleSTL")
 target_link_libraries(jleCore PUBLIC EASTL)
 
-set(ENET_STATIC ON)
-add_subdirectory(${JLE_3RDPARTY_DIRECTORY}/git_submodules/enet "${CMAKE_CURRENT_BINARY_DIR}/enet")
-target_include_directories(jleCore PUBLIC 3rdparty/git_submodules/enet/include)
-target_link_libraries(jleCore PUBLIC enet_static)
+
 
 
 # Todo: move to its own physics module

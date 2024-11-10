@@ -33,7 +33,6 @@
 #include "modules/scripting/jleLuaEnvironment.h"
 #include "modules/windowing/jleWindow.h"
 
-#include <enet.h>
 #include <plog/Log.h>
 #include <soloud.h>
 
@@ -47,6 +46,7 @@
 #include <Tracy.hpp>
 
 #include <3rdparty/WickedEngine/wiJobSystem.h>
+#include <modules/networking/jleNetworkingModule.h>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -104,7 +104,7 @@ jleGameEngine::jleGameEngine()
 
     _timerManager = std::make_unique<jleTimerManager>();
 
-    enet_initialize();
+    jleNetworkingModule::initialize();
 
     _gameRuntime = std::make_unique<jleGameRuntime>(*this);
 
@@ -131,7 +131,7 @@ jleGameEngine::~jleGameEngine()
         _soLoud->deinit();
     }
 
-    enet_deinitialize();
+    jleNetworkingModule::deinitialize();
 
     _gameRuntime.reset();
     _resources.reset();

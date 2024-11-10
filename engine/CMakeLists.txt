@@ -84,16 +84,9 @@ add_library(engine STATIC
         "modules/jleEditorModulesContext.cpp"
         "modules/game/jleGameRuntime.cpp"
         "modules/game/jleGame.cpp"
-        "modules/networking/jleNetworkEvent.cpp"
-        "modules/networking/jleNetworkEventOutQueue.cpp"
-        "modules/networking/jleNetworkingComponent.cpp"
-        "modules/networking/jleSceneNetworked.cpp"
-        "modules/networking/jleSceneServer.cpp"
-        "modules/networking/jleSceneClient.cpp"
         "modules/animation/components/cAnimator.cpp"
         "modules/animation/jleAnimationBone.cpp"
         "modules/animation/jleAnimation.cpp"
-        "modules/networking/components/cTransformNetSync.cpp"
         "modules/animation/jleAnimationFinalMatrices.cpp"
         )
 
