@@ -63,8 +63,6 @@ set(LZ4_SOURCES
         "3rdparty/git_submodules/lz4/lib/lz4file.c"
         "3rdparty/git_submodules/lz4/lib/lz4frame.c"
         "3rdparty/git_submodules/lz4/lib/xxhash.c"
-        modules/physics/jlePhysicsModule.cpp
-        modules/physics/jlePhysicsModule.h
 )
 
 set_source_files_properties(${LZ4_SOURCES} PROPERTIES LANGUAGE CXX)
@@ -92,9 +90,6 @@ add_library(engine STATIC
         "modules/networking/jleSceneNetworked.cpp"
         "modules/networking/jleSceneServer.cpp"
         "modules/networking/jleSceneClient.cpp"
-        "modules/physics/jlePhysics.cpp"
-        "modules/physics/jlePhysicsDebugDrawer.cpp"
-        "modules/physics/components/cRigidbody.cpp"
         "modules/animation/components/cAnimator.cpp"
         "modules/animation/jleAnimationBone.cpp"
         "modules/animation/jleAnimation.cpp"

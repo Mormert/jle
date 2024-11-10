@@ -17,14 +17,15 @@
 
 #include "core/jleCommon.h"
 
-#include "BulletCollision/CollisionShapes/btTriangleMesh.h"
 #include "core/jleResourceInterface.h"
 #include "core/jleTypeReflectionUtils.h"
 
 #include <glm/glm.hpp>
 
-#include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
-#include <BulletCollision/CollisionShapes/btConvexHullShape.h>
+// TODO: Remove dependency here
+#include <modules/physics/3rdparty/jle_bullet3/src/BulletCollision/CollisionShapes/btTriangleMesh.h>
+#include <modules/physics/3rdparty/jle_bullet3/src/BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
+#include <modules/physics/3rdparty/jle_bullet3/src/BulletCollision/CollisionShapes/btConvexHullShape.h>
 
 #include <vector>
 
