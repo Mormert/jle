@@ -17,7 +17,7 @@
 #include "jleObject.h"
 
 void
-jleComponent::destroy(jleEngineModulesContext& ctx)
+jleComponent::destroy(jleEngineUpdateContext & ctx)
 {
     _attachedToObject->destroyComponent(this, ctx);
 }

@@ -19,7 +19,7 @@
 
 #include "core/jlECS/jlECS.h"
 #include "jleEditorImGuiWindowInterface.h"
-#include <modules/jleEditorModulesContext.h>
+#include <modules/jleEditorUpdateContext.h>
 #include <optional>
 
 namespace jlECS
@@ -32,7 +32,7 @@ class jleECSEditorWindow : public jleEditorWindowInterface
 public:
     explicit jleECSEditorWindow(const std::string &window_name);
 
-    void renderUI(jleEditorModulesContext &ctx);
+    void renderUI(jleEditorUpdateContext &ctx);
 
     void update(jleResourceHolder &resourcesModule);
 

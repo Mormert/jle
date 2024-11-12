@@ -29,7 +29,8 @@
 bool
 jleMesh::loadFromFile(jleSerializationContext &ctx, const jlePath &path)
 {
-    bool ret = loadAssimp(path, ctx.renderThread);
+    jleAssert(ctx.get<jleRenderThread>());
+    bool ret = loadAssimp(path, ctx.get<jleRenderThread>());
     if (ret) {
         return true;
     } else {

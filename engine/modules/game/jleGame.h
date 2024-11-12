@@ -46,16 +46,16 @@ public:
 
     virtual ~jleGame();
 
-    virtual void update(jleEngineModulesContext &ctx);
+    virtual void update(jleEngineUpdateContext &ctx);
 
     virtual void
-    start(jleEngineModulesContext &ctx);
+    start(jleEngineUpdateContext &ctx);
 
-    void updateActiveScenes(jleEngineModulesContext &ctx);
+    void updateActiveScenes(jleEngineUpdateContext &ctx);
 
     template <typename T>
     std::shared_ptr<T>
-    createScene(jleEngineModulesContext &ctx)
+    createScene(jleEngineUpdateContext &ctx)
     {
         static_assert(std::is_base_of<jleScene, T>::value, "T must derive from jleScene");
 
@@ -67,13 +67,13 @@ public:
         return newScene;
     }
 
-    std::shared_ptr<jleScene> loadScene(const jlePath &scenePath, jleEngineModulesContext &ctx);
+    std::shared_ptr<jleScene> loadScene(const jlePath &scenePath, jleEngineUpdateContext &ctx);
 
     std::vector<std::shared_ptr<jleScene>> &activeScenesRef();
 
     jleCamera mainCamera{jleCameraProjection::Orthographic};
 
-    void parallelUpdates(jleEngineModulesContext &ctx);
+    void parallelUpdates(jleEngineUpdateContext &ctx);
 
     void addParallelComponent(const std::shared_ptr<jleComponent> &component);
 

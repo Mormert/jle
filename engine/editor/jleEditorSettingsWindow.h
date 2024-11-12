@@ -22,14 +22,14 @@
 #include "editor/jleEditorImGuiWindowInterface.h"
 #include <memory>
 
-class jleEditorModulesContext;
+class jleEditorUpdateContext;
 
 class jleEditorSettingsWindow : public jleEditorWindowInterface
 {
 public:
     explicit jleEditorSettingsWindow(const std::string &window_name);
 
-    void renderUI(jleEditorModulesContext& ctx);
+    void renderUI(jleEditorUpdateContext & ctx);
 };
 
 #endif // JLE_BUILD_EDITOR

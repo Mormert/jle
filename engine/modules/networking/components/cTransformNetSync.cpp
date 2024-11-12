@@ -32,8 +32,7 @@ cTransformNetSync::netSyncIn(jleBinaryInputArchive &ar)
 }
 
 void
-cTransformNetSync::serverUpdate(jleEngineModulesContext &ctx)
+cTransformNetSync::serverUpdate(jleEngineUpdateContext &ctx)
 {
-    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
-    syncComponentServerToClient(*this, serializationContext);
+    syncComponentServerToClient(*this, ctx.serializationContext);
 }

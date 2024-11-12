@@ -46,7 +46,7 @@ jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name) : jle
 }
 
 void
-jleSceneEditorWindow::renderUI(jleEditorModulesContext &ctx)
+jleSceneEditorWindow::renderUI(jleEditorUpdateContext &ctx)
 {
     if (!isOpened) {
         return;
@@ -73,7 +73,7 @@ jleSceneEditorWindow::renderUI(jleEditorModulesContext &ctx)
     const int32_t windowPositionY = int32_t(cursorScreenPos.y) - viewport->Pos.y;
 
     const auto previousFrameCursorPos = _lastCursorPos;
-    _lastCursorPos = ctx.engineModulesContext.windowModule.cursor();
+    _lastCursorPos = ctx.engineUpdateContext.windowModule.cursor();
     const int32_t mouseX = _lastCursorPos.first;
     const int32_t mouseY = _lastCursorPos.second;
     const int32_t mouseDeltaX = mouseX - previousFrameCursorPos.first;
@@ -128,8 +128,8 @@ jleSceneEditorWindow::renderUI(jleEditorModulesContext &ctx)
     // Note here that the ImGui::Image is the item that is being clicked on!
     if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && canSelectObject) {
 
-        ctx.engineModulesContext.rendererModule.renderMeshesPicking(
-            *_pickingFramebuffer, _renderCamera, ctx.engineModulesContext.currentFramePacket);
+        ctx.engineUpdateContext.rendererModule.renderMeshesPicking(
+            *_pickingFramebuffer, _renderCamera, ctx.engineUpdateContext.currentFramePacket);
 
         _pickingFramebuffer->bind();
 
@@ -150,8 +150,8 @@ jleSceneEditorWindow::renderUI(jleEditorModulesContext &ctx)
             LOGI << "Picked object with id: " << pickedID;
 
             std::vector<std::shared_ptr<jleScene>> scenes;
-            if (!ctx.engineModulesContext.gameRuntime.isGameKilled()) {
-                auto &game = ctx.engineModulesContext.gameRuntime.getGame();
+            if (!ctx.engineUpdateContext.gameRuntime.isGameKilled()) {
+                auto &game = ctx.engineUpdateContext.gameRuntime.getGame();
                 scenes = game.activeScenesRef();
             }
 
@@ -205,7 +205,7 @@ jleSceneEditorWindow::renderUI(jleEditorModulesContext &ctx)
 
     ImGui::SameLine();
 
-    if (!ctx.engineModulesContext.gameRuntime.isGameKilled()) {
+    if (!ctx.engineUpdateContext.gameRuntime.isGameKilled()) {
         if (auto &&scene = ctx.editor.getEditorSceneObjectsWindow().GetSelectedScene().lock()) {
             ImGui::Checkbox("Physics Debug", &scene->getPhysics().renderDebugEnabled);
         }
@@ -274,7 +274,7 @@ jleSceneEditorWindow::renderUI(jleEditorModulesContext &ctx)
         EditTransform((float *)viewMatrix, (float *)projectionMatrix, (float *)&worldMatrixBefore[0][0], true);
         glm::mat4 transformMatrix = obj->getTransform().getWorldMatrix();
         if (transformMatrix != worldMatrixBefore) {
-            if (!ctx.engineModulesContext.gameRuntime.isGameKilled()) {
+            if (!ctx.engineUpdateContext.gameRuntime.isGameKilled()) {
                 if (auto rb = obj->getComponent<cRigidbody>()) {
                     rb->setWorldMatrixAndScaleRigidbody(worldMatrixBefore);
                 } else {
@@ -291,8 +291,8 @@ jleSceneEditorWindow::renderUI(jleEditorModulesContext &ctx)
                 glm::mat4 matrix1 = glm::scale(modelMatrix, glm::vec3{1.00514159265f});
                 glm::mat4 matrix2 = glm::scale(modelMatrix, glm::vec3{0.99514159265f});
                 auto material = ctx.editor.gizmos().selectedObjectMaterial();
-                ctx.engineModulesContext.currentFramePacket.sendMesh(mesh, material, matrix1, obj->instanceID(), false);
-                ctx.engineModulesContext.currentFramePacket.sendMesh(mesh, material, matrix2, obj->instanceID(), false);
+                ctx.engineUpdateContext.currentFramePacket.sendMesh(mesh, material, matrix1, obj->instanceID(), false);
+                ctx.engineUpdateContext.currentFramePacket.sendMesh(mesh, material, matrix2, obj->instanceID(), false);
             }
         }
     }
@@ -301,7 +301,7 @@ jleSceneEditorWindow::renderUI(jleEditorModulesContext &ctx)
 
     // If window is hovered and Gizmo is not being moved/used
     if (ImGui::IsWindowHovered() && !ImGuizmo::IsUsing()) {
-        auto t = ctx.engineModulesContext.frameInfo.getDeltaTime();
+        auto t = ctx.engineUpdateContext.frameInfo.getDeltaTime();
         auto dragDelta = ImGui::GetMouseDragDelta(1);
 
         if (_renderCamera.getProjectionType() == jleCameraProjection::Perspective ||
@@ -345,12 +345,12 @@ jleSceneEditorWindow::renderUI(jleEditorModulesContext &ctx)
             _renderCamera.setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
         }
 
-        auto currentScroll = ctx.engineModulesContext.inputModule.mouse.scrollY();
+        auto currentScroll = ctx.engineUpdateContext.inputModule.mouse.scrollY();
         if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentScroll != 0.f) {
-            orthoZoomValue -= currentScroll * 1.f * ctx.engineModulesContext.frameInfo.getDeltaTime();
+            orthoZoomValue -= currentScroll * 1.f * ctx.engineUpdateContext.frameInfo.getDeltaTime();
             orthoZoomValue = glm::clamp(orthoZoomValue, 0.01f, 2.f);
         } else if (currentScroll != 0.f) {
-            cameraSpeed += currentScroll * 200.f * ctx.engineModulesContext.frameInfo.getDeltaTime();
+            cameraSpeed += currentScroll * 200.f * ctx.engineUpdateContext.frameInfo.getDeltaTime();
             cameraSpeed = glm::clamp(cameraSpeed, 0.2f, 500.f);
         }
     }
@@ -359,7 +359,7 @@ jleSceneEditorWindow::renderUI(jleEditorModulesContext &ctx)
 }
 
 void
-jleSceneEditorWindow::render(jleFramePacket &framePacket, const jleEditorModulesContext &ctx)
+jleSceneEditorWindow::render(jleFramePacket &framePacket, const jleEditorUpdateContext &ctx)
 {
     if (_perspectiveCamera) {
         _renderCamera.setPerspectiveProjection(45.f, _framebuffer->width(), _framebuffer->height(), 10000.f, 0.1f);
@@ -372,7 +372,7 @@ jleSceneEditorWindow::render(jleFramePacket &framePacket, const jleEditorModules
         _msaa->resize(_framebuffer->width(), _framebuffer->height());
     }
 
-    ctx.engineModulesContext.rendererModule.render(*_msaa, _renderCamera, framePacket);
+    ctx.engineUpdateContext.rendererModule.render(*_msaa, _renderCamera, framePacket);
 
     _msaa->blitToOther(*_framebuffer);
 }

@@ -27,14 +27,14 @@
 #include <unordered_map>
 
 class jleSerializationContext;
-struct jleEditorModulesContext;
+struct jleEditorUpdateContext;
 
 class jleEditorResourceEdit : public jleEditorWindowInterface
 {
 public:
     explicit jleEditorResourceEdit(const std::string &window_name);
 
-    void renderUI(jleEditorModulesContext& ctx);
+    void renderUI(jleEditorUpdateContext & ctx);
 
     bool tryOpen(const jlePath &path, jleResourceHolder & resources);
 

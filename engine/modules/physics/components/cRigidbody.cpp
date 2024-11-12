@@ -38,18 +38,18 @@ cRigidbody::cRigidbody(const cRigidbody &other) : jleComponent(other)
 }
 
 void
-cRigidbody::editorUpdate(jleEngineModulesContext& ctx)
+cRigidbody::editorUpdate(jleEngineUpdateContext & ctx)
 {
 }
 
 void
-cRigidbody::start(jleEngineModulesContext& ctx)
+cRigidbody::start(jleEngineUpdateContext & ctx)
 {
     setupRigidbody();
 }
 
 void
-cRigidbody::update(jleEngineModulesContext& ctx)
+cRigidbody::update(jleEngineUpdateContext & ctx)
 {
 }
 
@@ -140,7 +140,7 @@ cRigidbody::isDynamic()
 }
 
 void
-cRigidbody::onDestroy(jleEngineModulesContext& ctx)
+cRigidbody::onDestroy(jleEngineUpdateContext & ctx)
 {
     scene()->getPhysics().removeRigidbody(_body.get());
 }

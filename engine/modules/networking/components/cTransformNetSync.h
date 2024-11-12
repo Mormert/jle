@@ -27,7 +27,7 @@ public:
 
     void netSyncIn(jleBinaryInputArchive &ar) override;
 
-    void serverUpdate(jleEngineModulesContext& ctx) override;
+    void serverUpdate(jleEngineUpdateContext & ctx) override;
 
 protected:
     glm::vec3 _color{1.f};

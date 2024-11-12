@@ -62,7 +62,7 @@ jleObject::serialize(Archive &archive)
 }
 
 void
-jleObject::destroyComponent(jleComponent *component, jleEngineModulesContext& ctx)
+jleObject::destroyComponent(jleComponent *component, jleEngineUpdateContext & ctx)
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
         if (_components[i].get() == component) {
@@ -183,7 +183,7 @@ jleObject(jleScene *scene)
 }
 
 void
-jleObject::startComponents(jleEngineModulesContext& ctx)
+jleObject::startComponents(jleEngineUpdateContext & ctx)
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
         if (!_components[i]->_isStarted) {
@@ -201,7 +201,7 @@ jleObject::startComponents(jleEngineModulesContext& ctx)
 }
 
 void
-jleObject::updateComponents(jleEngineModulesContext& ctx)
+jleObject::updateComponents(jleEngineUpdateContext & ctx)
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
         _components[i]->update(ctx);
@@ -209,7 +209,7 @@ jleObject::updateComponents(jleEngineModulesContext& ctx)
 }
 
 void
-jleObject::updateComponentsEditor(jleEngineModulesContext& ctx)
+jleObject::updateComponentsEditor(jleEngineUpdateContext & ctx)
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
         _components[i]->editorUpdate(ctx);
@@ -217,7 +217,7 @@ jleObject::updateComponentsEditor(jleEngineModulesContext& ctx)
 }
 
 void
-jleObject::updateComponentsServer(jleEngineModulesContext& ctx)
+jleObject::updateComponentsServer(jleEngineUpdateContext & ctx)
 {
     for (int i = _components.size() - 1; i >= 0; i--) {
         _components[i]->serverUpdate(ctx);
@@ -225,7 +225,7 @@ jleObject::updateComponentsServer(jleEngineModulesContext& ctx)
 }
 
 void
-jleObject::updateChildren(jleEngineModulesContext& ctx)
+jleObject::updateChildren(jleEngineUpdateContext & ctx)
 {
     for (int32_t i = __childObjects.size() - 1; i >= 0; i--) {
         if (__childObjects[i]->_pendingKill) {
@@ -242,7 +242,7 @@ jleObject::updateChildren(jleEngineModulesContext& ctx)
 }
 
 void
-jleObject::updateChildrenEditor(jleEngineModulesContext& ctx)
+jleObject::updateChildrenEditor(jleEngineUpdateContext & ctx)
 {
     for (int32_t i = __childObjects.size() - 1; i >= 0; i--) {
         if (__childObjects[i]->_pendingKill) {
@@ -258,7 +258,7 @@ jleObject::updateChildrenEditor(jleEngineModulesContext& ctx)
 }
 
 void
-jleObject::updateChildrenServer(jleEngineModulesContext& ctx)
+jleObject::updateChildrenServer(jleEngineUpdateContext & ctx)
 {
     for (int32_t i = __childObjects.size() - 1; i >= 0; i--) {
         if (__childObjects[i]->_pendingKill) {
@@ -436,7 +436,7 @@ jleObject::replaceChildrenWithTemplate(jleSerializationContext& ctx)
 }
 
 void
-jleObject::propagateDestroy(jleEngineModulesContext& ctx)
+jleObject::propagateDestroy(jleEngineUpdateContext & ctx)
 {
     for (auto &&c : _components) {
         c->onDestroy(ctx);
@@ -451,7 +451,7 @@ jleObject::propagateDestroy(jleEngineModulesContext& ctx)
 }
 
 void
-jleObject::addComponentStart(const std::shared_ptr<jleComponent> &c, jleEngineModulesContext& ctx)
+jleObject::addComponentStart(const std::shared_ptr<jleComponent> &c, jleEngineUpdateContext & ctx)
 {
     if (!ctx.gameRuntime.isGameKilled()) {
 

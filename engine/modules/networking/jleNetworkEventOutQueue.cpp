@@ -23,7 +23,7 @@ jleNetworkEventOutQueue::resetQueue()
 {
     _eventOutputStream = std::ostringstream{std::ios::binary};
 
-    jleSerializationContext ctx{nullptr, nullptr, nullptr};
+    jleSerializationContext ctx{nullptr, {}};
     _eventOutputArchive = std::make_unique<jleBinaryOutputArchive>(_eventOutputStream, ctx);
     _queuedEvents = 0;
 }

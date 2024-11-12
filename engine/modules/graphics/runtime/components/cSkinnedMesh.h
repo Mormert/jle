@@ -32,11 +32,11 @@ public:
     template <class Archive>
     void serialize(Archive &ar);
 
-    void editorUpdate(jleEngineModulesContext& ctx) override;
+    void editorUpdate(jleEngineUpdateContext & ctx) override;
 
-    void start(jleEngineModulesContext& ctx) override;
+    void start(jleEngineUpdateContext & ctx) override;
 
-    void update(jleEngineModulesContext& ctx) override;
+    void update(jleEngineUpdateContext & ctx) override;
 
     void ecsUpdate(jleFramePacket& packet);
 
@@ -46,7 +46,7 @@ public:
     jleResourceRef<jleSkinnedMesh>& getMeshRef();
     jleResourceRef<jleMaterial>& getMaterialRef();
 
-    void editorInspectorImGuiRender(jleEditorModulesContext& ctx) override;
+    void editorInspectorImGuiRender(jleEditorUpdateContext & ctx) override;
 
 protected:
 

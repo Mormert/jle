@@ -22,7 +22,7 @@ class jleGame;
 class jleGameEngine;
 class jleTimerManager;
 class jleFramebufferInterface;
-struct jleEngineModulesContext;
+struct jleEngineUpdateContext;
 
 class jleGameRuntime
 {
@@ -33,9 +33,9 @@ public:
 
     jleGame &getGame();
 
-    void startGame(jleEngineModulesContext &ctx);
+    void startGame(jleEngineUpdateContext &ctx);
 
-    void restartGame(jleEngineModulesContext &ctx);
+    void restartGame(jleEngineUpdateContext &ctx);
 
     void killGame();
 
@@ -43,7 +43,7 @@ public:
 
     void unhaltGame();
 
-    void executeNextFrame(jleEngineModulesContext &ctx);
+    void executeNextFrame(jleEngineUpdateContext &ctx);
 
     [[nodiscard]] bool isGameKilled() const;
 
@@ -53,12 +53,12 @@ public:
 
     void removeGameWindowResizeCallback(unsigned int callbackId);
 
-    void resizeMainFramebuffer(jleEngineModulesContext &ctx, unsigned int width, unsigned int height);
+    void resizeMainFramebuffer(jleEngineUpdateContext &ctx, unsigned int width, unsigned int height);
 
     std::unique_ptr<jleFramebufferInterface> mainGameScreenFramebuffer;
 
 private:
-    void update(jleEngineModulesContext &ctx);
+    void update(jleEngineUpdateContext &ctx);
 
     friend class jleGameEditorWindow;
     void gameWindowResizedEvent(unsigned int w, unsigned int h);

@@ -66,13 +66,13 @@ public:
 
     void spawnObject(const std::shared_ptr<jleObject> &object, jleSerializationContext& ctx);
 
-    void startObjects(jleEngineModulesContext& ctx);
+    void startObjects(jleEngineUpdateContext & ctx);
 
-    virtual void updateScene(jleEngineModulesContext& ctx);
+    virtual void updateScene(jleEngineUpdateContext & ctx);
 
-    virtual void updateSceneEditor(jleEngineModulesContext& ctx);
+    virtual void updateSceneEditor(jleEngineUpdateContext & ctx);
 
-    virtual void onSceneStart(jleEngineModulesContext& ctx);
+    virtual void onSceneStart(jleEngineUpdateContext & ctx);
 
     virtual void onSceneDestruction();
 
@@ -96,14 +96,14 @@ protected:
 
     virtual void setupObject(const std::shared_ptr<jleObject> &obj, jleSerializationContext& ctx);
 
-    void processNewSceneObjects(jleEngineModulesContext& ctx);
+    void processNewSceneObjects(jleEngineUpdateContext & ctx);
 
 private:
-    void updateSceneObjects(jleEngineModulesContext& ctx);
+    void updateSceneObjects(jleEngineUpdateContext & ctx);
 
-    void updateSceneObjectsEditor(jleEngineModulesContext& ctx);
+    void updateSceneObjectsEditor(jleEngineUpdateContext & ctx);
 
-    void startObject(jleObject *o, jleEngineModulesContext& ctx);
+    void startObject(jleObject *o, jleEngineUpdateContext & ctx);
 
     static int _scenesCreatedCount;
 

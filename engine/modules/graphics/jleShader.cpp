@@ -56,9 +56,9 @@ jleShader::loadFromFile(jleSerializationContext &ctx, const jlePath &path)
         frag = "#version 330 core\n" + frag;
     }
 
-    jleAssert(ctx.renderThread);
-    if (ctx.renderThread) {
-        ctx.renderThread->runOnRenderThread([this, vert, frag, path]() {
+    jleAssert(ctx.get<jleRenderThread>());
+    if (auto renderThread = ctx.get<jleRenderThread>()) {
+        renderThread->runOnRenderThread([this, vert, frag, path]() {
             unsigned int vertex, fragment;
 
             vertex = glCreateShader(GL_VERTEX_SHADER);

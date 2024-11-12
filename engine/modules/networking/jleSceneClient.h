@@ -31,15 +31,15 @@ public:
 
     void disconnectFromServer();
 
-    void onSceneStart(jleEngineModulesContext& ctx) override;
+    void onSceneStart(jleEngineUpdateContext & ctx) override;
 
     void onSceneDestruction() override;
 
-    void updateScene(jleEngineModulesContext &ctx) override;
+    void updateScene(jleEngineUpdateContext &ctx) override;
 
     void sceneInspectorImGuiRender() override;
 
-    void spawnObjectFromServer(jleEngineModulesContext &ctx,
+    void spawnObjectFromServer(jleEngineUpdateContext &ctx,
                                const std::shared_ptr<jleObject> &object,
                                int32_t netId,
                                int32_t owner = 0);
@@ -59,7 +59,7 @@ protected:
     void setupObject(const std::shared_ptr<jleObject> &obj, jleSerializationContext& ctx) override;
 
 private:
-    void processNetwork(jleEngineModulesContext& ctx) override;
+    void processNetwork(jleEngineUpdateContext & ctx) override;
 
     void setupObjectForNetworking(const std::shared_ptr<jleObject> &obj);
 

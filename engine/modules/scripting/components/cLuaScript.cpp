@@ -28,7 +28,7 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLuaScript)
 
 void
-cLuaScript::start(jleEngineModulesContext& ctx)
+cLuaScript::start(jleEngineUpdateContext & ctx)
 {
     if (!_isInitialized) {
         initializeLuaComponent(ctx.luaEnvironment);
@@ -50,7 +50,7 @@ cLuaScript::start(jleEngineModulesContext& ctx)
 }
 
 void
-cLuaScript::update(jleEngineModulesContext& ctx)
+cLuaScript::update(jleEngineUpdateContext & ctx)
 {
     const auto luaClass = ctx.luaEnvironment.getState()[_luaClass.luaClassName];
 
@@ -63,7 +63,7 @@ cLuaScript::update(jleEngineModulesContext& ctx)
 }
 
 void
-cLuaScript::onDestroy(jleEngineModulesContext& ctx)
+cLuaScript::onDestroy(jleEngineUpdateContext & ctx)
 {
     const auto luaClass = ctx.luaEnvironment.getState()[_luaClass.luaClassName];
 
@@ -143,16 +143,17 @@ cLuaScript::serialize(Archive &ar)
 {
     try {
         jleSerializationContext &ctx = ar.ctx;
-        assert(ctx.luaEnvironment);
+        jleAssert(ctx.get<jleLuaEnvironment>());
+        auto &luaEnv = *ctx.get<jleLuaEnvironment>();
 
         ar(CEREAL_NVP(_luaClass));
 
         if (!_isInitialized) {
-            initializeLuaComponent(*ctx.luaEnvironment);
+            initializeLuaComponent(luaEnv);
         }
 
-        auto it = ctx.luaEnvironment->loadedLuaClasses().find(_luaClass.luaClassName);
-        if (it != ctx.luaEnvironment->loadedLuaClasses().end()) {
+        auto it = luaEnv.loadedLuaClasses().find(_luaClass.luaClassName);
+        if (it != luaEnv.loadedLuaClasses().end()) {
             it->second.serializeClass(ar, _self);
         }
     } catch (std::exception &e) {

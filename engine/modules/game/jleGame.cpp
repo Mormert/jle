@@ -17,12 +17,13 @@
 
 #include "core/jlECS/jlECS.h"
 #include "modules/graphics/core/jleFrameBufferInterface.h"
+#include <modules/graphics/jleRenderThread.h>
 #include "modules/physics/jlePhysics.h"
 
 #include <3rdparty/WickedEngine/wiJobSystem.h>
 
 void
-jleGame::updateActiveScenes(jleEngineModulesContext &ctx)
+jleGame::updateActiveScenes(jleEngineUpdateContext &ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleGame_updateActiveScenes)
     for (int i = _activeScenes.size() - 1; i >= 0; i--) {
@@ -42,12 +43,12 @@ jleGame::activeScenesRef()
 }
 
 std::shared_ptr<jleScene>
-jleGame::loadScene(const jlePath &scenePath, jleEngineModulesContext &ctx)
+jleGame::loadScene(const jlePath &scenePath, jleEngineUpdateContext &ctx)
 {
-    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
+    // jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
 
     std::shared_ptr<jleScene> scene =
-        ctx.resourcesModule.loadResourceFromFileT<jleScene>(scenePath, serializationContext, true);
+        ctx.resourcesModule.loadResourceFromFileT<jleScene>(scenePath, ctx.serializationContext, true);
     if (scene) {
         auto it = std::find(_activeScenes.begin(), _activeScenes.end(), scene);
         if (it == _activeScenes.end()) {
@@ -62,14 +63,12 @@ jleGame::loadScene(const jlePath &scenePath, jleEngineModulesContext &ctx)
     return scene;
 }
 
-jleGame::jleGame() {
-    _gameState._ecs = std::make_unique<jlECS::ECS>();
-}
+jleGame::jleGame() { _gameState._ecs = std::make_unique<jlECS::ECS>(); }
 
 jleGame::~jleGame() = default;
 
 void
-jleGame::parallelUpdates(jleEngineModulesContext &ctx)
+jleGame::parallelUpdates(jleEngineUpdateContext &ctx)
 {
     ZoneScoped;
     wi::jobsystem::context parallelUpdatesCtx;
@@ -114,7 +113,7 @@ jleGame::removeParallelComponent(const std::shared_ptr<jleComponent> &component)
 }
 
 void
-jleGame::update(jleEngineModulesContext &ctx)
+jleGame::update(jleEngineUpdateContext &ctx)
 {
     jleGraphicsModule::UpdateContext graphicsUpdateContext{
         .in = {.screenX = static_cast<int>(ctx.gameRuntime.mainGameScreenFramebuffer->width()),
@@ -122,11 +121,11 @@ jleGame::update(jleEngineModulesContext &ctx)
         .inOut = {.ecs = *_gameState._ecs},
         .out = {.framePacket = ctx.currentFramePacket, .camera = mainCamera}};
 
-   // _graphicsModule.update(graphicsUpdateContext);
+    // _graphicsModule.update(graphicsUpdateContext);
 }
 
 void
-jleGame::start(jleEngineModulesContext &ctx)
+jleGame::start(jleEngineUpdateContext &ctx)
 {
     _graphicsModule.initializeECS(*_gameState._ecs);
     _physicsModule.initializeECS(*_gameState._ecs);

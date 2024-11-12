@@ -31,7 +31,7 @@
 class jleScene;
 class jleComponent;
 class jleTransform;
-class jleEditorModulesContext;
+class jleEditorUpdateContext;
 class jleEditorGizmos;
 
 class jleComponent
@@ -58,27 +58,27 @@ public:
     }
 
     virtual void
-    start(jleEngineModulesContext& ctx)
+    start(jleEngineUpdateContext & ctx)
     {
     }
 
     virtual void
-    serverStart(jleEngineModulesContext& ctx)
+    serverStart(jleEngineUpdateContext & ctx)
     {
     }
 
     virtual void
-    onDestroy(jleEngineModulesContext& ctx)
+    onDestroy(jleEngineUpdateContext & ctx)
     {
     }
 
     virtual void
-    update(jleEngineModulesContext& ctx)
+    update(jleEngineUpdateContext & ctx)
     {
     }
 
     virtual void
-    parallelUpdate(jleEngineModulesContext& ctx)
+    parallelUpdate(jleEngineUpdateContext & ctx)
     {
         // Danger zone, enabled by enableParallelUpdate() in component constructor.
         // Called on all components of this type concurrently before recursive scene graph update().
@@ -89,12 +89,12 @@ public:
     bool parallelUpdateEnabled();
 
     [[maybe_unused]] virtual void
-    editorUpdate(jleEngineModulesContext& ctx)
+    editorUpdate(jleEngineUpdateContext & ctx)
     {
     }
 
     [[maybe_unused]] virtual void
-    serverUpdate(jleEngineModulesContext& ctx)
+    serverUpdate(jleEngineUpdateContext & ctx)
     {
     }
 
@@ -104,11 +104,11 @@ public:
     }
 
     [[maybe_unused]] virtual void
-    editorInspectorImGuiRender(jleEditorModulesContext& ctx)
+    editorInspectorImGuiRender(jleEditorUpdateContext & ctx)
     {
     }
 
-    void destroy(jleEngineModulesContext& ctx);
+    void destroy(jleEngineUpdateContext & ctx);
 
     bool isDestroyed();
 

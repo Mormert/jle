@@ -20,14 +20,7 @@
 #include <functional>
 #include <moodycamel/concurrentqueue.h>
 
-class jleRenderThread;
-
-struct jleRenderingSerializationContext : private jleSerializationContextInterface
-{
-    jleRenderThread* renderThread;
-};
-
-class jleRenderThread : private jleSerializationContextInterface
+class jleRenderThread : public jleSerializableInterface
 {
 public:
     // Called from any game thread to execute render code on the render thread

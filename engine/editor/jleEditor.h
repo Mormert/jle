@@ -20,7 +20,7 @@
 #if JLE_BUILD_EDITOR
 
 #include "jleGameEngine.h"
-#include "modules/jleEditorModulesContext.h"
+#include "modules/jleEditorUpdateContext.h"
 
 #include <string>
 #include <vector>
@@ -48,17 +48,17 @@ public:
 
     ~jleEditor() override;
 
-    void start(jleEngineModulesContext &context) override;
+    void start(jleEngineUpdateContext &context) override;
 
-    void render(jleCamera& camera, jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx) override;
+    void render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem::context &jobsCtx) override;
 
-    void update(jleEngineModulesContext &ctx) override;
+    void update(jleEngineUpdateContext &ctx) override;
 
     jleEditorGizmos &gizmos();
 
     jleEditorSaveState &saveState();
 
-    void updateEditorLoadedScenes(jleEngineModulesContext &ctx);
+    void updateEditorLoadedScenes(jleEngineUpdateContext &ctx);
 
     std::vector<std::shared_ptr<jleScene>> &getEditorScenes();
 
@@ -71,20 +71,20 @@ public:
     bool checkSceneIsActiveEditor(const std::string &sceneName);
 
     std::shared_ptr<jleScene> loadScene(const jlePath &scenePath,
-                                        jleEngineModulesContext &ctx,
+                                        jleEngineUpdateContext &ctx,
                                         bool startObjects = true);
 
 private:
     struct jleEditorInternal;
     std::unique_ptr<jleEditorInternal> _internal;
 
-    std::unique_ptr<jleEditorModulesContext> _editorContext;
+    std::unique_ptr<jleEditorUpdateContext> _editorContext;
 
     void exiting() override;
 
     void renderGameView(const jleCamera& camera, const jleFramePacket& framePacketIn, jleFramebufferInterface& framebufferOut);
 
-    void renderEditorSceneView(jleEngineModulesContext &ctx);
+    void renderEditorSceneView(jleEngineUpdateContext &ctx);
 
     void renderEditorUI();
 

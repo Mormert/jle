@@ -27,7 +27,7 @@ class jleEditorGameControllerWidget : public jleEditorWindowInterface
 public:
     explicit jleEditorGameControllerWidget(const std::string &window_name);
 
-    void render(jleEngineModulesContext& ctx);
+    void render(jleEngineUpdateContext & ctx);
 };
 
 #endif // JLE_BUILD_EDITOR

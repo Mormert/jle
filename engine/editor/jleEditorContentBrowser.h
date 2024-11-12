@@ -34,7 +34,7 @@ public:
                                      const std::shared_ptr<jleEditorTextEdit> &editorTextEdit,
                                      const std::shared_ptr<jleEditorResourceEdit> &editorResourceEdit);
 
-    void renderUI(jleEditorModulesContext& ctx);
+    void renderUI(jleEditorUpdateContext & ctx);
 
 private:
     std::shared_ptr<jleTexture> _fileIcon;
@@ -61,13 +61,13 @@ private:
 
     void contentHierarchy(std::string directoryPath, const std::string &folderName);
 
-    void contentBrowser(jleEditorModulesContext& ctx);
+    void contentBrowser(jleEditorUpdateContext & ctx);
 
-    void selectedFilePopup(std::filesystem::path &file, jleEditorModulesContext &ctx);
+    void selectedFilePopup(std::filesystem::path &file, jleEditorUpdateContext &ctx);
 
-    void selectedFilePopupScene(std::filesystem::path &file, jleEditorModulesContext &ctx);
+    void selectedFilePopupScene(std::filesystem::path &file, jleEditorUpdateContext &ctx);
 
-    void selectedFilePopupObjectTemplate(std::filesystem::path &file, jleEditorModulesContext& ctx);
+    void selectedFilePopupObjectTemplate(std::filesystem::path &file, jleEditorUpdateContext & ctx);
 
     void openAsText(std::filesystem::path &file);
 

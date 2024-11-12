@@ -27,7 +27,7 @@ JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleTransform)
 
 /*struct jleTransformPropagateEvent : public jleServerToClientEvent {
     void
-    execute(jleEngineModulesContext& ctx) override
+    execute(jleEngineUpdateContext& ctx) override
     {
         auto &scene = getSceneClient();
         if (auto object = scene.getObjectFromNetId(netId)) {

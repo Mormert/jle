@@ -19,34 +19,22 @@
 #include <vector>
 
 class jleResourceHolder;
-class jleLuaEnvironment;
-class jleRenderThread;
 
-class jleSerializationContextInterface
+// Classes that should be accessible in a jleSerializationArchive should derive from this interface
+class jleSerializableInterface
 {
+public:
+    virtual ~jleSerializableInterface() = default;
 };
 
 struct jleSerializationContext {
-    jleSerializationContext() = default;
-
-    jleSerializationContext(jleResourceHolder *r, jleLuaEnvironment *l, jleRenderThread *rt)
-        : resources(r), luaEnvironment(l), renderThread(rt)
-    {
-    }
-
-    jleSerializationContext(jleResourceHolder *r, std::vector<jleSerializationContextInterface *> interfaces)
-        : resources(r), serializationInterfaces(std::move(interfaces))
-    {
-    }
-
-    // Optional, need to be null checked
     jleResourceHolder *resources{nullptr};
-
-    std::vector<jleSerializationContextInterface *> serializationInterfaces;
+    const std::vector<jleSerializableInterface *> serializationInterfaces = {};
 
     template <typename T>
     T* get()
     {
+        static_assert(std::is_base_of<jleSerializableInterface, T>());
         for (auto *interface : serializationInterfaces) {
             if (T *interfaceCast = dynamic_cast<T *>(interface)) {
                 return interfaceCast;
@@ -54,12 +42,6 @@ struct jleSerializationContext {
         }
         return nullptr;
     }
-
-    // Optional, need to be null checked
-    jleLuaEnvironment *luaEnvironment{nullptr};
-
-    // Optional, need to be null checked
-    jleRenderThread *renderThread{nullptr};
 };
 
 class jleSerializationArchive

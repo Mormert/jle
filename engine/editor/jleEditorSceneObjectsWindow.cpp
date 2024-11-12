@@ -37,7 +37,7 @@ jleEditorSceneObjectsWindow::GetSelectedObject()
 }
 
 void
-jleEditorSceneObjectsWindow::renderUI(jleEditorModulesContext &ctx)
+jleEditorSceneObjectsWindow::renderUI(jleEditorUpdateContext &ctx)
 {
     if (!isOpened) {
         return;
@@ -47,9 +47,9 @@ jleEditorSceneObjectsWindow::renderUI(jleEditorModulesContext &ctx)
     if (ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_MenuBar)) {
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("Create Scene")) {
-                if (!ctx.engineModulesContext.gameRuntime.isGameKilled()) {
+                if (!ctx.engineUpdateContext.gameRuntime.isGameKilled()) {
                     if (ImGui::MenuItem("jleScene")) {
-                        ctx.engineModulesContext.gameRuntime.getGame().createScene<jleScene>(ctx.engineModulesContext);
+                        ctx.engineUpdateContext.gameRuntime.getGame().createScene<jleScene>(ctx.engineUpdateContext);
                     }
                 } else {
                     if (ImGui::MenuItem("jleScene")) {
@@ -57,7 +57,7 @@ jleEditorSceneObjectsWindow::renderUI(jleEditorModulesContext &ctx)
                         std::shared_ptr<jleScene> newScene = std::make_shared<jleScene>();
                         ctx.editor.getEditorScenes().push_back(newScene);
 
-                        newScene->onSceneStart(ctx.engineModulesContext);
+                        newScene->onSceneStart(ctx.engineUpdateContext);
                     }
                 }
 
@@ -68,10 +68,7 @@ jleEditorSceneObjectsWindow::renderUI(jleEditorModulesContext &ctx)
                 if (ImGui::BeginMenu("Create Object")) {
                     for (auto &&objectType : jleTypeReflectionUtils::registeredObjectsRef()) {
                         if (ImGui::MenuItem(objectType.first.c_str())) {
-                            jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
-                                                                         &ctx.engineModulesContext.luaEnvironment,
-                                                                         &ctx.engineModulesContext.renderThread};
-                            selectedScene.lock()->spawnObject<jleObject>(serializationContext);
+                            selectedScene.lock()->spawnObject<jleObject>(ctx.engineUpdateContext.serializationContext);
                         }
                     }
                     ImGui::EndMenu();
@@ -137,18 +134,15 @@ jleEditorSceneObjectsWindow::renderUI(jleEditorModulesContext &ctx)
                 { // Save Scene
                     if (canSaveScene) {
                         if (ImGui::Button("Save Scene", ImVec2(138 * globalImguiScale, 0))) {
-                            jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
-                                                                         &ctx.engineModulesContext.luaEnvironment,
-                                                                         &ctx.engineModulesContext.renderThread};
-                            scene->saveToFile(serializationContext);
+                            scene->saveToFile(ctx.engineUpdateContext.serializationContext);
                         }
                     }
                 }
             }
         };
 
-        if (!ctx.engineModulesContext.gameRuntime.isGameKilled()) {
-            for (auto scene : ctx.engineModulesContext.gameRuntime.getGame().activeScenesRef()) {
+        if (!ctx.engineUpdateContext.gameRuntime.isGameKilled()) {
+            for (auto scene : ctx.engineUpdateContext.gameRuntime.getGame().activeScenesRef()) {
                 sceneUi(scene, " (game)", false);
             }
         } else {
@@ -170,7 +164,7 @@ jleEditorSceneObjectsWindow::renderUI(jleEditorModulesContext &ctx)
             auto &sceneObjectsRef = selectedSceneSafePtr->sceneObjects();
             for (int32_t i = sceneObjectsRef.size() - 1; i >= 0; i--) {
                 if (sceneObjectsRef[i]) {
-                    objectTreeRecursive(sceneObjectsRef[i], ctx.engineModulesContext);
+                    objectTreeRecursive(sceneObjectsRef[i], ctx.engineUpdateContext);
                 }
             }
         }
@@ -248,7 +242,7 @@ jleEditorSceneObjectsWindow::renderUI(jleEditorModulesContext &ctx)
                             ar(componentBeingAdded);
 
                             if (ImGui::Button("Add Component")) {
-                                selectedObjectSafePtr->addComponent(componentBeingAdded, ctx.engineModulesContext);
+                                selectedObjectSafePtr->addComponent(componentBeingAdded, ctx.engineUpdateContext);
                                 componentBeingAdded.reset();
                             }
                             ImGui::SameLine();
@@ -263,7 +257,7 @@ jleEditorSceneObjectsWindow::renderUI(jleEditorModulesContext &ctx)
                             if (ImGui::BeginMenu("Remove Component")) {
                                 for (int i = components.size() - 1; i >= 0; i--) {
                                     if (ImGui::MenuItem(components[i]->componentName().data())) {
-                                        components[i]->destroy(ctx.engineModulesContext);
+                                        components[i]->destroy(ctx.engineUpdateContext);
                                     }
                                 }
                                 ImGui::EndMenu();
@@ -303,7 +297,7 @@ jleEditorSceneObjectsWindow::SetSelectedObject(std::shared_ptr<jleObject> object
 }
 
 void
-jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> object, jleEngineModulesContext &ctx)
+jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> object, jleEngineUpdateContext &ctx)
 {
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
 
@@ -331,11 +325,7 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
         if (ImGui::BeginMenu("Create Object")) {
             for (auto &&objectType : jleTypeReflectionUtils::registeredObjectsRef()) {
                 if (ImGui::MenuItem(objectType.first.c_str())) {
-
-                    jleSerializationContext serializationContext{
-                        &ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
-
-                    object->spawnChildObject(objectType.first, serializationContext);
+                    object->spawnChildObject(objectType.first, ctx.serializationContext);
                 }
             }
             ImGui::EndMenu();
@@ -346,8 +336,7 @@ jleEditorSceneObjectsWindow::objectTreeRecursive(std::shared_ptr<jleObject> obje
         }
 
         if (ImGui::Button("Save Template", ImVec2(138 * globalImguiScale, 0))) {
-            jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
-            object->saveAsObjectTemplate(serializationContext);
+            object->saveAsObjectTemplate(ctx.serializationContext);
         }
 
         if (ImGui::Button("Duplicate", ImVec2(138 * globalImguiScale, 0))) {

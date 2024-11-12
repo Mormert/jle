@@ -27,10 +27,10 @@
 #include "core/jleRGB.h"
 #include "core/jleResourceRef.h"
 #include "core/jleTransform.h"
+#include "core/serialization/jleExternalSerialization.h"
 #include "jleEditor.h"
 #include "modules/graphics/jleTextureRefOrRGBA.h"
 #include "modules/scripting/jleLuaClassSerialization.h"
-#include "core/serialization/jleExternalSerialization.h"
 
 #include "jleImGuiExtensions.h"
 #include <ImGui/ImGuizmo.h>
@@ -58,11 +58,8 @@ class jleImGuiArchiveInternal : public jleSerializationArchive_EditorOnly,
                                 public cereal::OutputArchive<jleImGuiArchiveInternal>
 {
 public:
-    explicit jleImGuiArchiveInternal(jleEditorModulesContext &context)
-        : jleSerializationArchive_EditorOnly(jleSerializationContext{&context.engineModulesContext.resourcesModule,
-                                                                     &context.engineModulesContext.luaEnvironment,
-                                                                     &context.engineModulesContext.renderThread},
-                                             context),
+    explicit jleImGuiArchiveInternal(jleEditorUpdateContext &context)
+        : jleSerializationArchive_EditorOnly(context.engineUpdateContext.serializationContext, context),
           OutputArchive<jleImGuiArchiveInternal>(this)
     {
     }
@@ -75,11 +72,8 @@ public:
 class jleImGuiArchive : public jleSerializationArchive_EditorOnly, public cereal::InputArchive<jleImGuiArchive>
 {
 public:
-    explicit jleImGuiArchive(jleEditorModulesContext &context)
-        : jleSerializationArchive_EditorOnly(jleSerializationContext{&context.engineModulesContext.resourcesModule,
-                                                                     &context.engineModulesContext.luaEnvironment,
-                                                                     &context.engineModulesContext.renderThread},
-                                             context),
+    explicit jleImGuiArchive(jleEditorUpdateContext &context)
+        : jleSerializationArchive_EditorOnly(context.engineUpdateContext.serializationContext, context),
           InputArchive<jleImGuiArchive>(this)
     {
     }

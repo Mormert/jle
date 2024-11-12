@@ -3,8 +3,8 @@
 ---@class jleResources
 jleResources = {}
 
----@class jleEngineModulesContext
-jleEngineModulesContext = {}
+---@class jleEngineUpdateContext
+jleEngineUpdateContext = {}
 
 ---@class jleSerializationContext
 jleSerializationContext = {}

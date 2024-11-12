@@ -20,7 +20,7 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cSkinnedMesh)
 
 void
-cSkinnedMesh::editorUpdate(jleEngineModulesContext& ctx)
+cSkinnedMesh::editorUpdate(jleEngineUpdateContext & ctx)
 {
     if (_animator && _animator->isDestroyed()) {
         _animator.reset();
@@ -31,13 +31,13 @@ cSkinnedMesh::editorUpdate(jleEngineModulesContext& ctx)
 }
 
 void
-cSkinnedMesh::start(jleEngineModulesContext& ctx)
+cSkinnedMesh::start(jleEngineUpdateContext & ctx)
 {
     findAnimator(object());
 }
 
 void
-cSkinnedMesh::update(jleEngineModulesContext& ctx)
+cSkinnedMesh::update(jleEngineUpdateContext & ctx)
 {
     std::shared_ptr<jleAnimationFinalMatrices> animationMatrices;
     if (_animator) {
@@ -116,7 +116,7 @@ cSkinnedMesh::findAnimator(jleObject *object)
 }
 
 void
-cSkinnedMesh::editorInspectorImGuiRender(jleEditorModulesContext& ctx)
+cSkinnedMesh::editorInspectorImGuiRender(jleEditorUpdateContext & ctx)
 {
 #if JLE_BUILD_IMGUI
     if (!_animator) {

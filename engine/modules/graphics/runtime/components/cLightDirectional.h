@@ -28,7 +28,7 @@ public:
 
     void registerLua(sol::state &lua) override;
 
-    void update(jleEngineModulesContext &ctx) override;
+    void update(jleEngineUpdateContext &ctx) override;
 
     void ecsUpdate(jleFramePacket &packet);
 

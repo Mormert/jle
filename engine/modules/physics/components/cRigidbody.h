@@ -46,13 +46,13 @@ public:
         ar(CEREAL_NVP(_mass));
     }
 
-    void editorUpdate(jleEngineModulesContext& ctx) override;
+    void editorUpdate(jleEngineUpdateContext & ctx) override;
 
-    void start(jleEngineModulesContext& ctx) override;
+    void start(jleEngineUpdateContext & ctx) override;
 
-    void update(jleEngineModulesContext& ctx) override;
+    void update(jleEngineUpdateContext & ctx) override;
 
-    void onDestroy(jleEngineModulesContext& ctx) override;
+    void onDestroy(jleEngineUpdateContext & ctx) override;
 
     btRigidBody &getBody();
 

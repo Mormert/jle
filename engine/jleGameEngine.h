@@ -17,7 +17,7 @@
 
 #include "core/jleCommon.h"
 #include "modules/game/jleGameRuntime.h"
-#include "modules/jleEngineModulesContext.h"
+#include "modules/jleEngineUpdateContext.h"
 
 #include <functional>
 #include <memory>
@@ -83,36 +83,14 @@ public:
 
     void run();
 
-    SoLoud::Soloud &soLoud();
-
-    jleResourceHolder &resources();
-
-    jleWindow &window();
-
-    jleInput &input();
-
-    jleRenderThread &renderThread();
-
-    [[nodiscard]] jleEngineSettings &settings();
-
-    [[nodiscard]] int fps() const;
-
-    [[nodiscard]] float deltaFrameTime() const;
-
-    [[nodiscard]] float currentFrameTime() const;
-
-    [[nodiscard]] float lastFrameTime() const;
-
-    std::shared_ptr<jleLuaEnvironment> &luaEnvironment();
-
     static inline Rml::Context *rmlContext_notUsed{};
 
 private:
-    std::unique_ptr<jleEngineModulesContext> _modulesContext;
+    jleEngineUpdateContext createUpdateContext();
 
     void mainLoop();
 
-    bool running{false};
+    bool _running{false};
 
 #ifdef __EMSCRIPTEN__
     static inline jleGameEngine *_emscriptenEnginePtr{};
@@ -129,23 +107,21 @@ private:
     std::unique_ptr<jleFullscreenRendering> _fullscreen_renderer;
 
 protected:
-    virtual void start(jleEngineModulesContext &context);
+    virtual void start(jleEngineUpdateContext &context);
 
     void startRmlUi();
 
     void killRmlUi();
 
-    virtual void update(jleEngineModulesContext &ctx);
+    virtual void update(jleEngineUpdateContext &ctx);
 
-    virtual void render(jleCamera& camera, jleEngineModulesContext &ctx, wi::jobsystem::context &jobsCtx);
+    virtual void render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem::context &jobsCtx);
 
     virtual void exiting();
 
     friend class jleGameRuntime;
     std::unique_ptr<jleGameRuntime> _gameRuntime;
-
     std::unique_ptr<jleResourceHolder> _resources;
-    // std::unique_ptr<jleFontData> _fontData;
     std::unique_ptr<jleTimerManager> _timerManager;
     std::shared_ptr<jleWindow> _window;
     std::unique_ptr<jleInput> _input;
@@ -160,6 +136,8 @@ protected:
 
     struct jleEngineInternal;
     std::unique_ptr<jleEngineInternal> _internal;
+
+    jleSerializationContext _serializationContext;
 
     jleGraphics &renderer();
 

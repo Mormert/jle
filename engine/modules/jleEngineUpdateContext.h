@@ -18,6 +18,8 @@
 #include <memory>
 #include <vector>
 
+#include "core/serialization/jleSerialization.h"
+
 class jleWindow;
 class jleResourceHolder;
 class jleInput;
@@ -30,8 +32,8 @@ class jleGameRuntime;
 class jleEngineSettings;
 class jleRenderThread;
 
-struct jleEngineModulesContext {
-    explicit jleEngineModulesContext(jleGameRuntime &gameRuntime,
+struct jleEngineUpdateContext {
+    explicit jleEngineUpdateContext(jleGameRuntime &gameRuntime,
                                      jleGraphics &renderer,
                                      jleRenderThread &renderThread,
                                      jleFramePacket &renderGraph,
@@ -40,7 +42,8 @@ struct jleEngineModulesContext {
                                      jleLuaEnvironment &luaEnvironment,
                                      jleWindow &window,
                                      jleResourceHolder &resources,
-                                     jleFrameInfo &info);
+                                     jleFrameInfo &info,
+                                     jleSerializationContext& serializationContext);
 
     // Modules
     jleGameRuntime &gameRuntime;
@@ -56,6 +59,8 @@ struct jleEngineModulesContext {
 
     // Utilities
     jleFrameInfo &frameInfo;
+
+    jleSerializationContext serializationContext;
 
     jleEngineSettings &settings;
 };

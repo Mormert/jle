@@ -23,11 +23,11 @@
 
 #include <sstream>
 
-struct jleEngineModulesContext;
+struct jleEngineUpdateContext;
 
 struct jleNetworkEvent {
     virtual ~jleNetworkEvent() = default;
-    virtual void execute(jleEngineModulesContext &ctx) = 0;
+    virtual void execute(jleEngineUpdateContext &ctx) = 0;
 };
 
 class jleScene;
@@ -36,7 +36,7 @@ class jleSceneClient;
 
 struct jleClientToServerEvent : public jleNetworkEvent {
 protected:
-    friend void jleExecuteClientEventsOnServer(jleEngineModulesContext &ctx,
+    friend void jleExecuteClientEventsOnServer(jleEngineUpdateContext &ctx,
                                                const char *networkBuffer,
                                                size_t networkBufferLength,
                                                jleSceneServer *scene,
@@ -53,7 +53,7 @@ private:
 
 struct jleServerToClientEvent : public jleNetworkEvent {
 protected:
-    friend void jleExecuteServerEventsOnClient(jleEngineModulesContext &ctx,
+    friend void jleExecuteServerEventsOnClient(jleEngineUpdateContext &ctx,
                                                const char *networkBuffer,
                                                size_t networkBufferLength,
                                                jleSceneClient *scene);
@@ -76,13 +76,13 @@ jleMakeNetEvent()
     return std::make_unique<Event>();
 }
 
-void jleExecuteClientEventsOnServer(jleEngineModulesContext &ctx,
+void jleExecuteClientEventsOnServer(jleEngineUpdateContext &ctx,
                                     const char *networkBuffer,
                                     size_t networkBufferLength,
                                     jleSceneServer *scene,
                                     int clientId);
 
-void jleExecuteServerEventsOnClient(jleEngineModulesContext &ctx,
+void jleExecuteServerEventsOnClient(jleEngineUpdateContext &ctx,
                                     const char *networkBuffer,
                                     size_t networkBufferLength,
                                     jleSceneClient *scene);

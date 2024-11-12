@@ -20,12 +20,12 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cMesh)
 
 void
-cMesh::start(jleEngineModulesContext &ctx)
+cMesh::start(jleEngineUpdateContext &ctx)
 {
 }
 
 void
-cMesh::update(jleEngineModulesContext &ctx)
+cMesh::update(jleEngineUpdateContext &ctx)
 {
     if (_meshRef) {
         std::shared_ptr<jleMesh> mesh = _meshRef.get();
@@ -46,7 +46,7 @@ cMesh::ecsUpdate(jleFramePacket &packet)
 }
 
 void
-cMesh::editorUpdate(jleEngineModulesContext &ctx)
+cMesh::editorUpdate(jleEngineUpdateContext &ctx)
 {
     update(ctx);
 }

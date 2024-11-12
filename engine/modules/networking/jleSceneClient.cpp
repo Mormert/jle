@@ -65,14 +65,14 @@ jleSceneClient::disconnectFromServer()
 jleSceneClient::~jleSceneClient() { disconnectFromServer(); }
 
 void
-jleSceneClient::updateScene(jleEngineModulesContext &ctx)
+jleSceneClient::updateScene(jleEngineUpdateContext &ctx)
 {
     jleScene::updateScene(ctx);
     processNetwork(ctx);
 }
 
 void
-jleSceneClient::onSceneStart(jleEngineModulesContext& ctx)
+jleSceneClient::onSceneStart(jleEngineUpdateContext & ctx)
 {
     connectToServer(_portToConnectTo, _ipAddressToConnectTo.c_str());
 }
@@ -83,7 +83,7 @@ jleSceneClient::onSceneDestruction()
     disconnectFromServer();
 }
 void
-jleSceneClient::processNetwork(jleEngineModulesContext& ctx)
+jleSceneClient::processNetwork(jleEngineUpdateContext & ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleSceneClientProcessNetwork)
 
@@ -158,7 +158,7 @@ jleSceneClient::setNetIdObject(const std::shared_ptr<jleObject> &object, int32_t
 }
 
 void
-jleSceneClient::spawnObjectFromServer(jleEngineModulesContext &ctx,
+jleSceneClient::spawnObjectFromServer(jleEngineUpdateContext &ctx,
                                       const std::shared_ptr<jleObject> &object,
                                       int32_t netId,
                                       int32_t owner)

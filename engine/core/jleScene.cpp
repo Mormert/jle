@@ -71,7 +71,7 @@ jleScene()
 jleScene::~jleScene() = default;
 
 void
-jleScene::updateSceneObjects(jleEngineModulesContext& ctx)
+jleScene::updateSceneObjects(jleEngineUpdateContext & ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleScene_updateSceneObjects)
     for (int32_t i = _sceneObjects.size() - 1; i >= 0; i--) {
@@ -87,7 +87,7 @@ jleScene::updateSceneObjects(jleEngineModulesContext& ctx)
 }
 
 void
-jleScene::updateSceneObjectsEditor(jleEngineModulesContext& ctx)
+jleScene::updateSceneObjectsEditor(jleEngineUpdateContext & ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleScene_updateSceneObejctsEditor)
     for (int32_t i = _sceneObjects.size() - 1; i >= 0; i--) {
@@ -102,7 +102,7 @@ jleScene::updateSceneObjectsEditor(jleEngineModulesContext& ctx)
 }
 
 void
-jleScene::processNewSceneObjects(jleEngineModulesContext& ctx)
+jleScene::processNewSceneObjects(jleEngineUpdateContext & ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleScene_processNewSceneObjects)
     if (!_newSceneObjects.empty()) {
@@ -150,7 +150,7 @@ jleScene::setupObject(const std::shared_ptr<jleObject> &obj, jleSerializationCon
 }
 
 void
-jleScene::startObjects(jleEngineModulesContext& ctx)
+jleScene::startObjects(jleEngineUpdateContext & ctx)
 {
     for (auto &&o : _sceneObjects) {
         startObject(&*o, ctx);
@@ -158,7 +158,7 @@ jleScene::startObjects(jleEngineModulesContext& ctx)
 }
 
 void
-jleScene::startObject(jleObject *o, jleEngineModulesContext& ctx)
+jleScene::startObject(jleObject *o, jleEngineUpdateContext & ctx)
 {
     if (!o->_isStarted) {
         o->startComponents(ctx);
@@ -199,7 +199,7 @@ jleScene::spawnObjectWithName(const std::string &name, jleSerializationContext& 
 }
 
 void
-jleScene::updateScene(jleEngineModulesContext& ctx)
+jleScene::updateScene(jleEngineUpdateContext & ctx)
 {
     const auto dt = ctx.frameInfo.getDeltaTime();
     getPhysics().step(dt);
@@ -209,14 +209,14 @@ jleScene::updateScene(jleEngineModulesContext& ctx)
 }
 
 void
-jleScene::updateSceneEditor(jleEngineModulesContext& ctx)
+jleScene::updateSceneEditor(jleEngineUpdateContext & ctx)
 {
     processNewSceneObjects(ctx);
     updateSceneObjectsEditor(ctx);
 }
 
 void
-jleScene::onSceneStart(jleEngineModulesContext& ctx)
+jleScene::onSceneStart(jleEngineUpdateContext & ctx)
 {
 }
 

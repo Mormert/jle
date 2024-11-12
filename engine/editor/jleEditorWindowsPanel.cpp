@@ -34,7 +34,7 @@ jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name, jle
 }
 
 void
-jleEditorWindowsPanel::renderUI(jleEngineModulesContext& ctx)
+jleEditorWindowsPanel::renderUI(jleEngineUpdateContext & ctx)
 {
     dockspaceupdate(ctx);
 }
@@ -46,7 +46,7 @@ jleEditorWindowsPanel::addWindow(std::shared_ptr<jleEditorWindowInterface> windo
 }
 
 void
-jleEditorWindowsPanel::dockspaceupdate(jleEngineModulesContext& ctx)
+jleEditorWindowsPanel::dockspaceupdate(jleEngineUpdateContext & ctx)
 {
 
     static bool opt_fullscreen = true;
@@ -109,7 +109,7 @@ jleEditorWindowsPanel::dockspaceupdate(jleEngineModulesContext& ctx)
 }
 
 void
-jleEditorWindowsPanel::menuButtonsupdate(jleEngineModulesContext& ctx)
+jleEditorWindowsPanel::menuButtonsupdate(jleEngineUpdateContext & ctx)
 {
     if (ImGui::BeginMenuBar()) {
 

@@ -29,13 +29,13 @@ public:
                                    jleSerializationContext& serializationContext,
                                    jleEngineSettings &settings);
 
-    void renderUI(jleEngineModulesContext &ctx);
+    void renderUI(jleEngineUpdateContext &ctx);
 
     void addWindow(std::shared_ptr<jleEditorWindowInterface> window);
 
-    inline void menuButtonsupdate(jleEngineModulesContext &ctx);
+    inline void menuButtonsupdate(jleEngineUpdateContext &ctx);
 
-    inline void dockspaceupdate(jleEngineModulesContext &ctx);
+    inline void dockspaceupdate(jleEngineUpdateContext &ctx);
 
 private:
     std::shared_ptr<jleTexture> _crossIcon;    // X

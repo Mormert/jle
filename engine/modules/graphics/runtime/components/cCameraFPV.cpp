@@ -27,7 +27,7 @@ JLE_EXTERN_TEMPLATE_CEREAL_CPP(cCameraFPV)
 cCameraFPV::~cCameraFPV() {}
 
 void
-cCameraFPV::update(jleEngineModulesContext& ctx)
+cCameraFPV::update(jleEngineUpdateContext & ctx)
 {
     const auto dt = ctx.frameInfo.getDeltaTime();
 

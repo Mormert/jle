@@ -39,7 +39,7 @@ jleResourceHolder::reloadSerializedResource(const std::shared_ptr<jleSerializedR
         std::ifstream i(path.getRealPath());
         std::shared_ptr<jleSerializedResource> f = std::const_pointer_cast<jleSerializedResource>(resource);
 
-        jleSerializationContext ctx = {this, nullptr, nullptr};
+        jleSerializationContext ctx = {.resources = this, .serializationInterfaces = {}};
         jleJSONInputArchive archive{i, ctx};
         archive(f);
         if (!f->loadFromFile(ctx, path)) {
@@ -72,7 +72,7 @@ jleResourceHolder::loadSerializedResourceFromFile(const jlePath &path, bool forc
     try {
         std::ifstream i(path.getRealPath());
 
-        jleSerializationContext ctx = {this, nullptr, nullptr};
+        jleSerializationContext ctx = {.resources = this, .serializationInterfaces = {}};
         jleJSONInputArchive iarchive{i, ctx};
         iarchive(ptr);
 

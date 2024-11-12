@@ -13,10 +13,11 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#include "jleEditorModulesContext.h"
-jleEditorModulesContext::jleEditorModulesContext(jleEngineModulesContext &engineModules,
-                                                 jleGameEngine &engine,
+#include "jleEditorUpdateContext.h"
+
+jleEditorUpdateContext::jleEditorUpdateContext(jleEngineUpdateContext &engineModules,
                                                  jleEditor &editor)
-    : engineModulesContext(engineModules), engine(engine), editor(editor)
+    : engineUpdateContext(engineModules),
+      editor(editor)
 {
 }

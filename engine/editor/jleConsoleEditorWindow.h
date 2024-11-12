@@ -48,7 +48,7 @@ public:
 
     void execCommand(const char *command_line, jleLuaEnvironment &luaEnvironment);
 
-    void renderUI(jleEngineModulesContext &ctx, jleLuaEnvironment &luaEnvironment);
+    void renderUI(jleEngineUpdateContext &ctx, jleLuaEnvironment &luaEnvironment);
 
     static int textEditCallbackStub(ImGuiInputTextCallbackData *data);
 

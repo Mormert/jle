@@ -26,7 +26,7 @@
 
 #include <ImGui/ImGuizmo.h>
 
-class jleEditorModulesContext;
+class jleEditorUpdateContext;
 class jleFramebufferMultisample;
 
 class jleSceneEditorWindow : public jleEditorWindowInterface
@@ -34,11 +34,11 @@ class jleSceneEditorWindow : public jleEditorWindowInterface
 public:
     explicit jleSceneEditorWindow(const std::string &window_name);
 
-    void renderUI(jleEditorModulesContext &ctx);
+    void renderUI(jleEditorUpdateContext &ctx);
 
-    void renderEditorGrid(jleFramePacket & graph);
+    void renderEditorGrid(jleFramePacket &graph);
 
-    void render(jleFramePacket &framePacket, const jleEditorModulesContext &context);
+    void render(jleFramePacket &framePacket, const jleEditorUpdateContext &context);
 
     jleCameraSimpleFPVController fpvCamController{};
     float cameraSpeed = 100.f;
@@ -51,7 +51,6 @@ public:
     }
 
 private:
-
     float _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;
     std::pair<int32_t, int32_t> _lastCursorPos;
     bool _wasFocused = false;

@@ -26,7 +26,7 @@ jleEditorGameControllerWidget::jleEditorGameControllerWidget(
     : jleEditorWindowInterface{window_name} {
 }
 
-void jleEditorGameControllerWidget::render(jleEngineModulesContext& ctx) {
+void jleEditorGameControllerWidget::render(jleEngineUpdateContext & ctx) {
 
     const ImVec2 iconSize{ImGui::GetWindowHeight() - 3,
                           ImGui::GetWindowHeight() - 3};

@@ -30,11 +30,11 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLight)
 
 void
-cLight::start(jleEngineModulesContext& ctx)
+cLight::start(jleEngineUpdateContext & ctx)
 {
 }
 void
-cLight::update(jleEngineModulesContext& ctx)
+cLight::update(jleEngineUpdateContext & ctx)
 {
     ctx.currentFramePacket.sendLight(getTransform().getWorldPosition(), _color);
 }
@@ -46,7 +46,7 @@ cLight::ecsUpdate(jleFramePacket &packet)
 }
 
 void
-cLight::editorUpdate(jleEngineModulesContext& ctx)
+cLight::editorUpdate(jleEngineUpdateContext & ctx)
 {
     update(ctx);
 }

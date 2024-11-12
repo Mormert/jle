@@ -1,6 +1,6 @@
-#include "jleEngineModulesContext.h"
+#include "jleEngineUpdateContext.h"
 
-jleEngineModulesContext::jleEngineModulesContext(jleGameRuntime &gameRuntime,
+jleEngineUpdateContext::jleEngineUpdateContext(jleGameRuntime &gameRuntime,
                                                  jleGraphics &renderer,
                                                  jleRenderThread &renderThread,
                                                  jleFramePacket &renderGraph_,
@@ -9,10 +9,11 @@ jleEngineModulesContext::jleEngineModulesContext(jleGameRuntime &gameRuntime,
                                                  jleLuaEnvironment &luaEnvironment_,
                                                  jleWindow &window,
                                                  jleResourceHolder &resources,
-                                                 jleFrameInfo &info)
+                                                 jleFrameInfo &info,
+                                                 jleSerializationContext& serializationContext)
     : gameRuntime(gameRuntime), rendererModule(renderer), renderThread(renderThread),
       currentFramePacket(renderGraph_),
       settings(engineSettings), inputModule(input), luaEnvironment(luaEnvironment_), windowModule(window),
-      resourcesModule(resources), frameInfo(info)
+      resourcesModule(resources), frameInfo(info), serializationContext(serializationContext)
 {
 }

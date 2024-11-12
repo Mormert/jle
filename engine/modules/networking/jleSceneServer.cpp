@@ -31,7 +31,7 @@
 
 struct jleCreateObjectEvent : public jleServerToClientEvent {
     void
-    execute(jleEngineModulesContext& ctx) override
+    execute(jleEngineUpdateContext & ctx) override
     {
         auto &scene = getSceneClient();
         if (newObject) {
@@ -55,7 +55,7 @@ JLE_REGISTER_NET_EVENT(jleCreateObjectEvent)
 
 struct jleDestroyObjectEvent : public jleServerToClientEvent {
     void
-    execute(jleEngineModulesContext& ctx) override
+    execute(jleEngineUpdateContext & ctx) override
     {
         auto &scene = getSceneClient();
         if (auto object = scene.getObjectFromNetId(objectNetId)) {
@@ -77,7 +77,7 @@ JLE_REGISTER_NET_EVENT(jleDestroyObjectEvent)
 
 struct jleFullSceneSyncEvent : public jleServerToClientEvent {
     void
-    execute(jleEngineModulesContext& ctx) override
+    execute(jleEngineUpdateContext & ctx) override
     {
         auto &scene = getSceneClient();
         for (int i = 0; i < objects.size(); i++) {
@@ -101,7 +101,7 @@ JLE_REGISTER_NET_EVENT(jleFullSceneSyncEvent)
 
 struct jleDestroyComponentEvent : public jleServerToClientEvent {
     void
-    execute(jleEngineModulesContext& ctx) override
+    execute(jleEngineUpdateContext & ctx) override
     {
         auto &scene = getSceneClient();
         if (auto object = scene.getObjectFromNetId(objectNetId)) {
@@ -124,7 +124,7 @@ JLE_REGISTER_NET_EVENT(jleDestroyComponentEvent)
 
 struct jleAttachChildEvent : public jleServerToClientEvent {
     void
-    execute(jleEngineModulesContext& ctx) override
+    execute(jleEngineUpdateContext & ctx) override
     {
         auto &scene = getSceneClient();
         if (auto parent = scene.getObjectFromNetId(objectNetIdParent)) {
@@ -149,7 +149,7 @@ JLE_REGISTER_NET_EVENT(jleAttachChildEvent)
 
 struct jleAddComponentEvent : public jleServerToClientEvent {
     void
-    execute(jleEngineModulesContext& ctx) override
+    execute(jleEngineUpdateContext & ctx) override
     {
         auto &scene = getSceneClient();
         if (auto object = scene.getObjectFromNetId(objectNetId)) {
@@ -173,7 +173,7 @@ JLE_REGISTER_NET_EVENT(jleAddComponentEvent)
 ////////////////////////////////////////////////////////////////////////////////////
 
 int
-jleSceneServer::startServer(jleEngineModulesContext& ctx, int port, int maxClients)
+jleSceneServer::startServer(jleEngineUpdateContext & ctx, int port, int maxClients)
 {
     ENetAddress address = {0};
 
@@ -197,9 +197,7 @@ jleSceneServer::startServer(jleEngineModulesContext& ctx, int port, int maxClien
         setupObjectForNetworking(object);
     }
 
-    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
-
-    spawnObjectWithName("server_dummy", serializationContext);
+    spawnObjectWithName("server_dummy", ctx.serializationContext);
 
     return 0;
 }
@@ -224,7 +222,7 @@ jleSceneServer()
 }
 
 void
-jleSceneServer::updateScene(jleEngineModulesContext& ctx)
+jleSceneServer::updateScene(jleEngineUpdateContext & ctx)
 {
     processNewSceneObjects(ctx);
     updateServerSceneObjects(ctx);
@@ -233,7 +231,7 @@ jleSceneServer::updateScene(jleEngineModulesContext& ctx)
 }
 
 void
-jleSceneServer::onSceneStart(jleEngineModulesContext& ctx)
+jleSceneServer::onSceneStart(jleEngineUpdateContext & ctx)
 {
     startServer(ctx);
 }
@@ -245,7 +243,7 @@ jleSceneServer::onSceneDestruction()
 }
 
 void
-jleSceneServer::processNetwork(jleEngineModulesContext& ctx)
+jleSceneServer::processNetwork(jleEngineUpdateContext & ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleSceneServer_processNetwork)
 
@@ -393,14 +391,12 @@ jleSceneServer::sceneInspectorImGuiRender()
 }
 
 std::shared_ptr<jleObject>
-jleSceneServer::spawnObjectWithOwner(jleEngineModulesContext& ctx, const std::string &objectName, int32_t ownerId)
+jleSceneServer::spawnObjectWithOwner(jleEngineUpdateContext & ctx, const std::string &objectName, int32_t ownerId)
 {
     auto newSceneObject = std::make_shared<jleObject>();
     newSceneObject->_networkOwnerID = ownerId;
 
-    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
-
-    setupObject(newSceneObject, serializationContext);
+    setupObject(newSceneObject, ctx.serializationContext);
     newSceneObject->_instanceName = objectName;
 
     if (ownerId > 0) {
@@ -412,7 +408,7 @@ jleSceneServer::spawnObjectWithOwner(jleEngineModulesContext& ctx, const std::st
 }
 
 void
-jleSceneServer::updateServerSceneObjects(jleEngineModulesContext& ctx)
+jleSceneServer::updateServerSceneObjects(jleEngineUpdateContext & ctx)
 {
     JLE_SCOPE_PROFILE_CPU(jleScene_updateSceneObjects)
     for (int32_t i = _sceneObjects.size() - 1; i >= 0; i--) {

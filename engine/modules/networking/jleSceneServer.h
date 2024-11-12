@@ -29,19 +29,19 @@ public:
 
     ~jleSceneServer() override;
 
-    int startServer(jleEngineModulesContext& ctx, int port = 314, int maxClients = 4);
+    int startServer(jleEngineUpdateContext & ctx, int port = 314, int maxClients = 4);
 
     int stopServer();
 
-    void onSceneStart(jleEngineModulesContext& ctx) override;
+    void onSceneStart(jleEngineUpdateContext & ctx) override;
 
     void onSceneDestruction() override;
 
-    void updateScene(jleEngineModulesContext& ctx) override;
+    void updateScene(jleEngineUpdateContext & ctx) override;
 
     void sceneInspectorImGuiRender() override;
 
-    std::shared_ptr<jleObject> spawnObjectWithOwner(jleEngineModulesContext& ctx, const std::string &objectName, int32_t ownerId);
+    std::shared_ptr<jleObject> spawnObjectWithOwner(jleEngineUpdateContext & ctx, const std::string &objectName, int32_t ownerId);
 
     void sendNetworkEventBroadcast(std::unique_ptr<jleServerToClientEvent> event);
 
@@ -56,7 +56,7 @@ protected:
     void setupObject(const std::shared_ptr<jleObject> &obj, jleSerializationContext& ctx) override;
 
     virtual void
-    onClientConnect(jleEngineModulesContext& ctx, int32_t clientId)
+    onClientConnect(jleEngineUpdateContext & ctx, int32_t clientId)
     {
     }
 
@@ -66,11 +66,11 @@ protected:
     }
 
 private:
-    void updateServerSceneObjects(jleEngineModulesContext& ctx);
+    void updateServerSceneObjects(jleEngineUpdateContext & ctx);
 
     void setupObjectForNetworking(const std::shared_ptr<jleObject> &obj);
 
-    void processNetwork(jleEngineModulesContext& ctx) override;
+    void processNetwork(jleEngineUpdateContext & ctx) override;
 
     void objectDestructionNetworked(const std::shared_ptr<jleObject> &object);
 

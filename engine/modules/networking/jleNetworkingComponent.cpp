@@ -21,7 +21,7 @@
 
 struct jleComponentNetSyncEvent : public jleServerToClientEvent {
     void
-    execute(jleEngineModulesContext& ctx) override
+    execute(jleEngineUpdateContext & ctx) override
     {
         auto &scene = getSceneClient();
         if (auto object = scene.getObjectFromNetId(netEntityId)) {
@@ -33,8 +33,7 @@ struct jleComponentNetSyncEvent : public jleServerToClientEvent {
                 std::stringstream stream{};
                 stream.write(&serializedBinaryData[0], serializedBinaryData.size());
 
-                jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
-                jleBinaryInputArchive archive(stream, serializationContext);
+                jleBinaryInputArchive archive(stream, ctx.serializationContext);
                 component->netSyncIn(archive);
             } catch (std::exception &e) {
                 LOGE << "Failed parsing component net sync event: " << e.what();

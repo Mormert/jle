@@ -54,12 +54,12 @@ public:
     ~jleObject() override = default;
 
     template <typename T>
-    std::shared_ptr<T> addComponent(jleEngineModulesContext& ctx);
+    std::shared_ptr<T> addComponent(jleEngineUpdateContext & ctx);
 
     template <typename T>
-    void addComponent(const std::shared_ptr<T> &component, jleEngineModulesContext& ctx);
+    void addComponent(const std::shared_ptr<T> &component, jleEngineUpdateContext & ctx);
 
-    std::shared_ptr<jleComponent> addComponentByName(const std::string &component_name, jleEngineModulesContext& ctx);
+    std::shared_ptr<jleComponent> addComponentByName(const std::string &component_name, jleEngineUpdateContext & ctx);
 
     template <typename T>
     std::shared_ptr<T> getComponent();
@@ -78,7 +78,7 @@ public:
     void saveAsObjectTemplate(jleSerializationContext& serializationContext);
 
     // Called from components
-    void destroyComponent(jleComponent *component, jleEngineModulesContext& ctx);
+    void destroyComponent(jleComponent *component, jleEngineUpdateContext & ctx);
 
     void destroyComponentAtIndex(uint32_t index);
 
@@ -125,27 +125,27 @@ private:
 
     explicit jleObject(jleScene *scene);
 
-    void propagateDestroy(jleEngineModulesContext& ctx);
+    void propagateDestroy(jleEngineUpdateContext & ctx);
 
     void propagateOwnedByScene(jleScene *scene, jleObjectNetworkType type);
 
     void replaceChildrenWithTemplate(jleSerializationContext& ctx);
 
-    void startComponents(jleEngineModulesContext& ctx);
+    void startComponents(jleEngineUpdateContext & ctx);
 
-    void updateComponents(jleEngineModulesContext& ctx);
+    void updateComponents(jleEngineUpdateContext & ctx);
 
-    void updateComponentsEditor(jleEngineModulesContext& ctx);
+    void updateComponentsEditor(jleEngineUpdateContext & ctx);
 
-    void updateComponentsServer(jleEngineModulesContext& ctx);
+    void updateComponentsServer(jleEngineUpdateContext & ctx);
 
-    void updateChildren(jleEngineModulesContext& ctx);
+    void updateChildren(jleEngineUpdateContext & ctx);
 
-    void updateChildrenEditor(jleEngineModulesContext& ctx);
+    void updateChildrenEditor(jleEngineUpdateContext & ctx);
 
-    void updateChildrenServer(jleEngineModulesContext& ctx);
+    void updateChildrenServer(jleEngineUpdateContext & ctx);
 
-    void addComponentStart(const std::shared_ptr<jleComponent>& c, jleEngineModulesContext& ctx);
+    void addComponentStart(const std::shared_ptr<jleComponent>& c, jleEngineUpdateContext & ctx);
 
     std::string _instanceName;
 

@@ -36,7 +36,11 @@ jleServerToClientEvent::getSceneClient()
 }
 
 void
-jleExecuteClientEventsOnServer(jleEngineModulesContext& ctx, const char *networkBuffer, size_t networkBufferLength, jleSceneServer *scene, int clientId)
+jleExecuteClientEventsOnServer(jleEngineUpdateContext &ctx,
+                               const char *networkBuffer,
+                               size_t networkBufferLength,
+                               jleSceneServer *scene,
+                               int clientId)
 {
     int32_t amountOfEvents;
     ::memcpy(&amountOfEvents, &networkBuffer[0], sizeof(int32_t));
@@ -44,8 +48,7 @@ jleExecuteClientEventsOnServer(jleEngineModulesContext& ctx, const char *network
     std::stringstream stream{};
     stream.write(&networkBuffer[sizeof(int32_t)], networkBufferLength - sizeof(int32_t));
 
-    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
-    jleBinaryInputArchive archive(stream, serializationContext);
+    jleBinaryInputArchive archive(stream, ctx.serializationContext);
 
     for (int i = 0; i < amountOfEvents; i++) {
         std::unique_ptr<jleClientToServerEvent> e{nullptr};
@@ -63,7 +66,10 @@ jleExecuteClientEventsOnServer(jleEngineModulesContext& ctx, const char *network
 }
 
 void
-jleExecuteServerEventsOnClient(jleEngineModulesContext& ctx, const char *networkBuffer, size_t networkBufferLength, jleSceneClient *scene)
+jleExecuteServerEventsOnClient(jleEngineUpdateContext &ctx,
+                               const char *networkBuffer,
+                               size_t networkBufferLength,
+                               jleSceneClient *scene)
 {
     int32_t amountOfEvents;
     ::memcpy(&amountOfEvents, &networkBuffer[0], sizeof(int32_t));
@@ -71,8 +77,7 @@ jleExecuteServerEventsOnClient(jleEngineModulesContext& ctx, const char *network
     std::stringstream stream{};
     stream.write(&networkBuffer[sizeof(int32_t)], networkBufferLength - sizeof(int32_t));
 
-    jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
-    jleBinaryInputArchive archive(stream, serializationContext);
+    jleBinaryInputArchive archive(stream, ctx.serializationContext);
 
     for (int i = 0; i < amountOfEvents; i++) {
         std::unique_ptr<jleServerToClientEvent> e{nullptr};

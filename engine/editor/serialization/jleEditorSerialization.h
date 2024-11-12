@@ -18,18 +18,18 @@
 #include "core/jleCommon.h"
 #include "core/serialization/jleSerialization.h"
 
-class jleEditorModulesContext;
+class jleEditorUpdateContext;
 class jleSerializationArchive_EditorOnly;
 
 #if JLE_BUILD_EDITOR
 class jleSerializationArchive_EditorOnly : public jleSerializationArchive
 {
 public:
-    jleSerializationArchive_EditorOnly(jleSerializationContext context, jleEditorModulesContext &editorContext)
+    jleSerializationArchive_EditorOnly(jleSerializationContext context, jleEditorUpdateContext &editorContext)
         : jleSerializationArchive(context), editorCtx{editorContext}
     {
     }
 
-    jleEditorModulesContext &editorCtx;
+    jleEditorUpdateContext &editorCtx;
 };
 #endif

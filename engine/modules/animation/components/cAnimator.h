@@ -60,24 +60,24 @@ public:
     template <class Archive>
     void serialize(Archive &ar);
 
-    void start(jleEngineModulesContext &ctx) override;
+    void start(jleEngineUpdateContext &ctx) override;
 
-    void update(jleEngineModulesContext &ctx) override;
+    void update(jleEngineUpdateContext &ctx) override;
 
-    void parallelUpdate(jleEngineModulesContext &ctx) override;
+    void parallelUpdate(jleEngineUpdateContext &ctx) override;
 
-    void editorUpdate(jleEngineModulesContext &ctx) override;
+    void editorUpdate(jleEngineUpdateContext &ctx) override;
 
     void registerLua(sol::state &lua) override;
 
-    void calculateBoneTransform(jleEngineModulesContext &ctx,
+    void calculateBoneTransform(jleEngineUpdateContext &ctx,
                                 const jleAnimationNode &node,
                                 const glm::mat4 &parentTransform,
                                 cAnimatorAnimation &animation);
 
     const std::shared_ptr<jleAnimationFinalMatrices> &animationMatrices();
 
-    void editorInspectorImGuiRender(jleEditorModulesContext& ctx) override;
+    void editorInspectorImGuiRender(jleEditorUpdateContext & ctx) override;
 
     void setAnimation(const jlePath &path, jleSerializationContext& ctx);
 

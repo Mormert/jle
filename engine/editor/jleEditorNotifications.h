@@ -31,7 +31,7 @@ public:
 
     ~jleEditorNotifications() override;
 
-    void renderUI(jleEngineModulesContext &ctx);
+    void renderUI(jleEngineUpdateContext &ctx);
 
     void addNotificationError(const std::wstring& message);
 

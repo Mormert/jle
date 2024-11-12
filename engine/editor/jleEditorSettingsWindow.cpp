@@ -24,7 +24,7 @@ jleEditorSettingsWindow::jleEditorSettingsWindow(const std::string &window_name)
 }
 
 void
-jleEditorSettingsWindow::renderUI(jleEditorModulesContext &ctx)
+jleEditorSettingsWindow::renderUI(jleEditorUpdateContext &ctx)
 {
     if (!isOpened) {
         return;
@@ -39,15 +39,13 @@ jleEditorSettingsWindow::renderUI(jleEditorModulesContext &ctx)
 
     {
         jleImGuiArchive archive{ctx};
-        archive(ctx.engine.settings());
+        archive(ctx.engineUpdateContext.settings);
     }
 
     ImGui::EndChild();
 
     if (ImGui::Button("Save Settings")) {
-        jleSerializationContext serializationContext{
-            &ctx.engineModulesContext.resourcesModule, &ctx.engineModulesContext.luaEnvironment, nullptr};
-        ctx.engine.settings().saveToFile(serializationContext);
+        ctx.engineUpdateContext.settings.saveToFile(ctx.engineUpdateContext.serializationContext);
     }
 
     ImGui::SameLine();

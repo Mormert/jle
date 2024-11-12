@@ -37,7 +37,7 @@
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cCamera)
 
 void
-cCamera::start(jleEngineModulesContext &ctx)
+cCamera::start(jleEngineUpdateContext &ctx)
 {
     sInstanceCounter++;
 
@@ -69,7 +69,7 @@ cCamera::onFramebufferSizeChanged(unsigned int width, unsigned int height)
 }
 
 void
-cCamera::update(jleEngineModulesContext &ctx)
+cCamera::update(jleEngineUpdateContext &ctx)
 {
     auto &game = ctx.gameRuntime.getGame();
 
@@ -120,13 +120,13 @@ cCamera::ecsUpdate(jleCamera &camera, int width, int height)
 cCamera::~cCamera() { sInstanceCounter--; }
 
 void
-cCamera::editorInspectorImGuiRender(jleEditorModulesContext &ctx)
+cCamera::editorInspectorImGuiRender(jleEditorUpdateContext &ctx)
 {
 #if JLE_BUILD_IMGUI
     ImGui::Text("Camera Preview");
 
     // Get the texture from the framebuffer
-    auto &fb = ctx.engineModulesContext.gameRuntime.mainGameScreenFramebuffer;
+    auto &fb = ctx.engineUpdateContext.gameRuntime.mainGameScreenFramebuffer;
     glBindTexture(GL_TEXTURE_2D, (unsigned int)fb->texture());
     ImGui::Image(
         (void *)(intptr_t)fb->texture(), ImVec2(fb->width() / 4.f, fb->height() / 4.f), ImVec2(0, 1), ImVec2(1, 0));

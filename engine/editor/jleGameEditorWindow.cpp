@@ -29,7 +29,7 @@ jleGameEditorWindow::jleGameEditorWindow(const std::string &window_name) : jleEd
 }
 
 void
-jleGameEditorWindow::renderUI(jleEngineModulesContext &ctx, jleInput& input)
+jleGameEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleInput& input)
 {
     if (!isOpened) {
         return;

@@ -33,14 +33,7 @@ namespace sol
 class state;
 }
 
-class jleLuaEnvironment;
-
-struct jleLuaSerializationContext : private jleSerializationContextInterface
-{
-    jleLuaEnvironment* luaEnvironment;
-};
-
-class jleLuaEnvironment
+class jleLuaEnvironment : public jleSerializableInterface
 {
 public:
     jleLuaEnvironment();

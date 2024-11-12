@@ -54,9 +54,9 @@ jleTexture::loadFromFile(jleSerializationContext &ctx, const jlePath &path)
         return false;
     }
 
-    jleAssert(ctx.renderThread);
-    if (ctx.renderThread) {
-        ctx.renderThread->runOnRenderThread([this, path]() {
+    jleAssert(ctx.get<jleRenderThread>());
+    if (auto renderThread = ctx.get<jleRenderThread>()) {
+        renderThread->runOnRenderThread([this, path]() {
             glGenTextures(1, &_id);
 
             glBindTexture(GL_TEXTURE_2D, _id);

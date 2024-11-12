@@ -26,7 +26,7 @@
 jleEditorBuild::jleEditorBuild(const std::string &window_name) : jleEditorWindowInterface(window_name) {}
 void
 
-jleEditorBuild::renderUI(jleEngineModulesContext &ctx, jleResourceIndexer& resourceIndexer)
+jleEditorBuild::renderUI(jleEngineUpdateContext &ctx, jleResourceIndexer& resourceIndexer)
 {
     if (!isOpened) {
         return;

@@ -15,17 +15,15 @@
 
 #pragma once
 
-#include "jleEngineModulesContext.h"
+#include "jleEngineUpdateContext.h"
 
-class jleGameEngine;
 class jleEditor;
 
-class jleEditorModulesContext
+class jleEditorUpdateContext
 {
 public:
-    explicit jleEditorModulesContext(jleEngineModulesContext& engineModules, jleGameEngine& engine, jleEditor& editor);
+    explicit jleEditorUpdateContext(jleEngineUpdateContext &engineModules, jleEditor &editor);
 
-    jleEngineModulesContext& engineModulesContext;
-    jleGameEngine& engine;
-    jleEditor& editor;
+    jleEngineUpdateContext &engineUpdateContext;
+    jleEditor &editor;
 };

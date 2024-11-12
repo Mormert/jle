@@ -22,7 +22,7 @@
 
 template <typename T>
 inline std::shared_ptr<T>
-jleObject::addComponent(jleEngineModulesContext &ctx)
+jleObject::addComponent(jleEngineUpdateContext &ctx)
 {
     static_assert(std::is_base_of<jleComponent, T>::value, "T must derive from jleComponent");
 
@@ -44,7 +44,7 @@ jleObject::addComponent(jleEngineModulesContext &ctx)
 };
 
 inline std::shared_ptr<jleComponent>
-jleObject::addComponentByName(const std::string &component_name, jleEngineModulesContext &ctx)
+jleObject::addComponentByName(const std::string &component_name, jleEngineUpdateContext &ctx)
 {
     auto newComponent = jleTypeReflectionUtils::instantiateComponentByString(component_name);
     if (!newComponent) {
@@ -63,7 +63,7 @@ jleObject::addComponentByName(const std::string &component_name, jleEngineModule
 
 template <typename T>
 void
-jleObject::addComponent(const std::shared_ptr<T> &component, jleEngineModulesContext &ctx)
+jleObject::addComponent(const std::shared_ptr<T> &component, jleEngineUpdateContext &ctx)
 {
     static_assert(std::is_base_of<jleComponent, T>::value, "T must derive from jleComponent");
 

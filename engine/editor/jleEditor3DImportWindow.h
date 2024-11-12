@@ -29,16 +29,16 @@ class jleMesh;
 class jleMaterialPBR;
 class jleObject;
 class aiNode;
-struct jleEditorModulesContext;
+struct jleEditorUpdateContext;
 
 class jleEditor3DImportWindow : public jleEditorWindowInterface
 {
 public:
     explicit jleEditor3DImportWindow(const std::string &window_name);
 
-    void renderUI(jleEditorModulesContext &ctx);
+    void renderUI(jleEditorUpdateContext &ctx);
 
-    bool importModel(const jlePath &importPath, const jlePath &destinationPath, jleEditorModulesContext& ctx);
+    bool importModel(const jlePath &importPath, const jlePath &destinationPath, jleEditorUpdateContext & ctx);
 
 private:
     void processNode(const aiScene *scene,
@@ -46,7 +46,7 @@ private:
                      std::shared_ptr<jleObject> &object,
                      std::vector<std::shared_ptr<jleMesh>> &createdMeshes,
                      std::vector<jleResourceRef<jleMaterialPBR>> &createdMaterials,
-                     jleEngineModulesContext& ctx);
+                     jleEngineUpdateContext & ctx);
 
     bool _importWithSkinning{};
 };

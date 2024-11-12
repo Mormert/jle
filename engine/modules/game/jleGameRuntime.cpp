@@ -32,8 +32,9 @@ jleGameRuntime::jleGameRuntime(jleGameEngine &engine) : _engine(engine)
     mainGameScreenFramebuffer = std::make_unique<jleFramebufferScreen>(initialScreenX, initialScreenY);
 
     addGameWindowResizeCallback([this](auto &&PH1, auto &&PH2) {
+        auto updateContext = _engine.createUpdateContext();
         _engine._gameRuntime->resizeMainFramebuffer(
-            *_engine._modulesContext, std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
+            updateContext, std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
     });
 }
 
@@ -44,7 +45,7 @@ jleGameRuntime::timerManager()
 }
 
 void
-jleGameRuntime::restartGame(jleEngineModulesContext &ctx)
+jleGameRuntime::restartGame(jleEngineUpdateContext &ctx)
 {
     _game.reset();
 
@@ -74,7 +75,7 @@ jleGameRuntime::unhaltGame()
 }
 
 void
-jleGameRuntime::executeNextFrame(jleEngineModulesContext &ctx)
+jleGameRuntime::executeNextFrame(jleEngineUpdateContext &ctx)
 {
     LOG_VERBOSE << "Next frame dt: " << ctx.frameInfo.getDeltaTime();
     auto gameHaltedTemp = _gameHalted;
@@ -107,7 +108,7 @@ jleGameRuntime::isGameHalted() const
 }
 
 void
-jleGameRuntime::resizeMainFramebuffer(jleEngineModulesContext &ctx, unsigned int width, unsigned int height)
+jleGameRuntime::resizeMainFramebuffer(jleEngineUpdateContext &ctx, unsigned int width, unsigned int height)
 {
     ctx.renderThread.runOnRenderThread([this, width, height]() { mainGameScreenFramebuffer->resize(width, height); });
 
@@ -116,7 +117,7 @@ jleGameRuntime::resizeMainFramebuffer(jleEngineModulesContext &ctx, unsigned int
 }
 
 void
-jleGameRuntime::update(jleEngineModulesContext &ctx)
+jleGameRuntime::update(jleEngineUpdateContext &ctx)
 {
     if (!_gameHalted && _game) {
         _timerManager->process();
@@ -149,7 +150,7 @@ jleGameRuntime::getGame()
 }
 
 void
-jleGameRuntime::startGame(jleEngineModulesContext &ctx)
+jleGameRuntime::startGame(jleEngineUpdateContext &ctx)
 {
     _game = _gameCreator();
     _game->start(ctx);

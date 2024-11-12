@@ -202,7 +202,7 @@ jleImGuiArchive::draw_ui_lua_reference(const char *name, std::string &className)
 {
     ImGui::PushID(elementCount++);
 
-    if (!ctx.luaEnvironment) {
+    if (!ctx.get<jleLuaEnvironment>()) {
         ImGui::Text("Serialization context doesn't have a Lua Environment reference!");
         ImGui::PopID();
         return false;
@@ -217,7 +217,7 @@ jleImGuiArchive::draw_ui_lua_reference(const char *name, std::string &className)
         className = std::string(charData.data());
     }
 
-    const auto &loadedClasses = ctx.luaEnvironment->loadedLuaClasses();
+    const auto &loadedClasses = ctx.get<jleLuaEnvironment>()->loadedLuaClasses();
 
     static std::set<int> isOpenSet;
 
@@ -292,7 +292,7 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar,
 {
     ImGui::PushID(elementCount++);
 
-    if (!ctx.luaEnvironment) {
+    if (!ctx.get<jleLuaEnvironment>()) {
         ImGui::Text("Serialization context doesn't have a Lua Environment reference!");
         ImGui::PopID();
         return;
@@ -302,7 +302,7 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar,
     charData.resize(1000);
 
     const auto &className = value.luaClassName;
-    const auto &loadedClasses = ctx.luaEnvironment->loadedLuaClasses();
+    const auto &loadedClasses = ctx.get<jleLuaEnvironment>()->loadedLuaClasses();
 
     bool validClassName = false;
     auto it = loadedClasses.find(className);

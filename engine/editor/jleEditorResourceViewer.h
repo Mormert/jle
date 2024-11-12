@@ -26,7 +26,7 @@ class jleEditorResourceViewer : public jleEditorWindowInterface
 public:
     explicit jleEditorResourceViewer(const std::string &window_name);
 
-    void renderUI(jleEngineModulesContext &ctx);
+    void renderUI(jleEngineUpdateContext &ctx);
 
     void update(jleResourceHolder & resourcesModule);
 };

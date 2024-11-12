@@ -18,7 +18,7 @@
 #include "jleGameEngine.h"
 #include <ImGui/imgui.h>
 
-void jleEditorResourceViewer::renderUI(jleEngineModulesContext &ctx) {
+void jleEditorResourceViewer::renderUI(jleEngineUpdateContext &ctx) {
     if (!isOpened) {
         return;
     }

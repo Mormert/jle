@@ -63,7 +63,7 @@ cAnimator::cAnimator()
 }
 
 void
-cAnimator::start(jleEngineModulesContext &ctx)
+cAnimator::start(jleEngineUpdateContext &ctx)
 {
     for (auto &animation : _animations) {
         animation.currentAnimationLocal = *animation.currentAnimation.get();
@@ -71,7 +71,7 @@ cAnimator::start(jleEngineModulesContext &ctx)
 }
 
 void
-cAnimator::update(jleEngineModulesContext &ctx)
+cAnimator::update(jleEngineUpdateContext &ctx)
 {
     /* std::for_each(std::execution::par, _animations.begin(), _animations.end(), [&](cAnimatorAnimation &animation) {
          if (animation.currentAnimation) {
@@ -94,7 +94,7 @@ cAnimator::update(jleEngineModulesContext &ctx)
 }
 
 void
-cAnimator::parallelUpdate(jleEngineModulesContext &ctx)
+cAnimator::parallelUpdate(jleEngineUpdateContext &ctx)
 {
     const auto dt = ctx.frameInfo.getDeltaTime();
 
@@ -121,7 +121,7 @@ cAnimator::parallelUpdate(jleEngineModulesContext &ctx)
 }
 
 void
-cAnimator::editorUpdate(jleEngineModulesContext &ctx)
+cAnimator::editorUpdate(jleEngineUpdateContext &ctx)
 {
 #if JLE_BUILD_EDITOR
     if (_editorPreviewAnimation) {
@@ -138,7 +138,7 @@ cAnimator::registerLua(sol::state &lua)
 }
 
 void
-cAnimator::calculateBoneTransform(jleEngineModulesContext &ctx,
+cAnimator::calculateBoneTransform(jleEngineUpdateContext &ctx,
                                   const jleAnimationNode &node,
                                   const glm::mat4 &parentTransform,
                                   cAnimatorAnimation &animation)
@@ -203,7 +203,7 @@ cAnimator::animationMatrices()
 }
 
 void
-cAnimator::editorInspectorImGuiRender(jleEditorModulesContext& ctx)
+cAnimator::editorInspectorImGuiRender(jleEditorUpdateContext & ctx)
 {
 #if JLE_BUILD_IMGUI
     int p = 0;

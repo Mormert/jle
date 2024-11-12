@@ -24,13 +24,13 @@
 jleECSEditorWindow::jleECSEditorWindow(const std::string &window_name) : jleEditorWindowInterface(window_name) {}
 
 void
-jleECSEditorWindow::renderUI(jleEditorModulesContext &ctx)
+jleECSEditorWindow::renderUI(jleEditorUpdateContext &ctx)
 {
     if (!isOpened) {
         return;
     }
 
-    if(ctx.engineModulesContext.gameRuntime.isGameKilled())
+    if(ctx.engineUpdateContext.gameRuntime.isGameKilled())
     {
         return;
     }
@@ -43,7 +43,7 @@ jleECSEditorWindow::renderUI(jleEditorModulesContext &ctx)
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
 
-    auto &ecs = ctx.engineModulesContext.gameRuntime.getGame().getECS();
+    auto &ecs = ctx.engineUpdateContext.gameRuntime.getGame().getECS();
 
     if (_ecs != &ecs) {
         _selectedObject.reset();
@@ -53,17 +53,10 @@ jleECSEditorWindow::renderUI(jleEditorModulesContext &ctx)
     ImGui::BeginGroup();
 
     if (ImGui::Button("Save")) {
-
         auto start = std::chrono::high_resolution_clock::now();
 
-
         std::ofstream i("save.ecs");
-
-        jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
-                                                     &ctx.engineModulesContext.luaEnvironment,
-                                                     &ctx.engineModulesContext.renderThread};
-        jleJSONOutputArchive ar{i, serializationContext};
-
+        jleJSONOutputArchive ar{i, ctx.engineUpdateContext.serializationContext};
 
         jlECS::save(ecs, ar);
 
@@ -73,17 +66,11 @@ jleECSEditorWindow::renderUI(jleEditorModulesContext &ctx)
     }
 
     if (ImGui::Button("SaveBinary")) {
-
         auto start = std::chrono::high_resolution_clock::now();
 
         std::ofstream i("saveB.ecs", std::ios::binary);
 
-
-        jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
-                                                     &ctx.engineModulesContext.luaEnvironment,
-                                                     &ctx.engineModulesContext.renderThread};
-        jleBinaryOutputArchive ar{i, serializationContext};
-
+        jleBinaryOutputArchive ar{i, ctx.engineUpdateContext.serializationContext};
 
         jlECS::save(ecs, ar);
 
@@ -101,12 +88,7 @@ jleECSEditorWindow::renderUI(jleEditorModulesContext &ctx)
 
         std::ifstream i("save.ecs");
 
-        jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
-                                                     &ctx.engineModulesContext.luaEnvironment,
-                                                     &ctx.engineModulesContext.renderThread};
-        jleJSONInputArchive ar{i, serializationContext};
-
-
+        jleJSONInputArchive ar{i, ctx.engineUpdateContext.serializationContext};
 
         jlECS::load(ecs, ar);
 
@@ -116,7 +98,6 @@ jleECSEditorWindow::renderUI(jleEditorModulesContext &ctx)
     }
 
     if (ImGui::Button("LoadBinary")) {
-
         _selectedObject.reset();
         ecs.reset();
 
@@ -124,11 +105,7 @@ jleECSEditorWindow::renderUI(jleEditorModulesContext &ctx)
 
         std::ifstream i("saveB.ecs", std::ios::binary);
 
-        jleSerializationContext serializationContext{&ctx.engineModulesContext.resourcesModule,
-                                                     &ctx.engineModulesContext.luaEnvironment,
-                                                     &ctx.engineModulesContext.renderThread};
-        jleBinaryInputArchive ar{i, serializationContext};
-
+        jleBinaryInputArchive ar{i, ctx.engineUpdateContext.serializationContext};
 
         jlECS::load(ecs, ar);
 
