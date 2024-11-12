@@ -23,8 +23,8 @@
 #include "core/jleTypeReflectionUtils.h"
 #include "modules/windowing/jleWindowSettings.h"
 
-#include "serialization/jleBinaryArchive.h"
-#include "serialization/jleJSONArchive.h"
+#include "core/serialization/jleBinaryArchive.h"
+#include "core/serialization/jleJSONArchive.h"
 
 #include <cereal/types/vector.hpp>
 

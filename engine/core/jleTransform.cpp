@@ -14,7 +14,7 @@
  *********************************************************************************************/
 
 #include "jleTransform.h"
-#include "core/jleObject.h"
+#include "jleObject.h"
 
 #include <glm/detail/type_quat.hpp>
 #include <glm/gtx/matrix_decompose.hpp>

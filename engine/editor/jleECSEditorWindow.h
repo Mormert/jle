@@ -17,7 +17,7 @@
 
 #if JLE_BUILD_EDITOR
 
-#include "jlECS/jlECS.h"
+#include "core/jlECS/jlECS.h"
 #include "jleEditorImGuiWindowInterface.h"
 #include <modules/jleEditorModulesContext.h>
 #include <optional>

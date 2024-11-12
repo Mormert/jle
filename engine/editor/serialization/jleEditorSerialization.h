@@ -15,40 +15,10 @@
 
 #pragma once
 
-#if JLE_BUILD_EDITOR
-#include "modules/jleEditorModulesContext.h"
-#endif
+#include "core/jleCommon.h"
+#include "core/serialization/jleSerialization.h"
 
-class jleResourceHolder;
-class jleLuaEnvironment;
-class jleRenderThread;
-
-struct jleSerializationContext {
-    jleSerializationContext() = default;
-
-    jleSerializationContext(jleResourceHolder *r, jleLuaEnvironment *l, jleRenderThread *rt)
-        : resources(r), luaEnvironment(l), renderThread(rt)
-    {
-    }
-
-    // Optional, need to be null checked
-    jleResourceHolder *resources{nullptr};
-
-    // Optional, need to be null checked
-    jleLuaEnvironment *luaEnvironment{nullptr};
-
-    // Optional, need to be null checked
-    jleRenderThread *renderThread{nullptr};
-};
-
-class jleSerializationArchive
-{
-public:
-    explicit jleSerializationArchive(jleSerializationContext &context) : ctx{context} {}
-
-    jleSerializationContext ctx;
-};
-
+class jleEditorModulesContext;
 class jleSerializationArchive_EditorOnly;
 
 #if JLE_BUILD_EDITOR

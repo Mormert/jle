@@ -16,7 +16,7 @@
 #ifndef JLE_FILECHANGENOTIFIER_H
 #define JLE_FILECHANGENOTIFIER_H
 
-#include "core/jleCommon.h"
+#include "jleCommon.h"
 
 #include "jlePath.h"
 

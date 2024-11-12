@@ -15,10 +15,11 @@
 
 #include "jlECSSaveLoad.h"
 
-#include "jlECS.h"
+#include "jlECS/jlECS.h"
 #include "serialization/jleBinaryArchive.h"
 #include "serialization/jleJSONArchive.h"
 
+#include <cereal/cereal.hpp>
 #include <cereal/types/vector.hpp>
 
 namespace

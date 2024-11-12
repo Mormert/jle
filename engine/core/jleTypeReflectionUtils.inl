@@ -13,7 +13,7 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#include "core/jleResourceHolder.h"
+#include "jleResourceHolder.h"
 #include "jleGameEngine.h"
 #include "jleTypeReflectionUtils.h"
 

@@ -17,9 +17,7 @@
 #define JLE_ASSERT_H
 
 #ifndef NDEBUG
-
 #include <plog/Log.h>
-
 #ifdef _WIN32
 #include <intrin.h>
 #define JLE_DEBUG_BREAK __debugbreak()

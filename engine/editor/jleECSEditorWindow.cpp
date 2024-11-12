@@ -19,7 +19,7 @@
 
 #include "modules/game/jleGame.h"
 
-#include "jlECS/jlECSSaveLoad.h"
+#include "core/jlECSSaveLoad.h"
 
 jleECSEditorWindow::jleECSEditorWindow(const std::string &window_name) : jleEditorWindowInterface(window_name) {}
 

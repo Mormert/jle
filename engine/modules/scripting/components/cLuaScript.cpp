@@ -18,8 +18,8 @@
 #include "modules/scripting/jleLuaEnvironment.h"
 
 #include "editor/jleImGuiArchive.h"
-#include "serialization/jleBinaryArchive.h"
-#include "serialization/jleJSONArchive.h"
+#include "core/serialization/jleBinaryArchive.h"
+#include "core/serialization/jleJSONArchive.h"
 
 #if JLE_BUILD_IMGUI
 #include <ImGui/imgui.h>

@@ -23,7 +23,7 @@
 #include "runtime/components/cSkinnedMesh.h"
 #include "runtime/components/cSkybox.h"
 
-#include "jlECS/jlECS.h"
+#include "core/jlECS/jlECS.h"
 
 void
 jleGraphicsModule::initializeECS(jlECS::ECS &ecs)

@@ -15,43 +15,58 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include <utility>
+#include <vector>
 
-#include "jleCompileHelper.h"
-#include "jlePath.h"
+class jleResourceHolder;
+class jleLuaEnvironment;
+class jleRenderThread;
 
-#include "serialization/jleJSONArchive.h"
-#include "serialization/jleBinaryArchive.h"
-#include <cereal/cereal.hpp>
-#include <cereal/types/polymorphic.hpp>
-#include <fstream>
-#include <plog/Log.h>
-#include <string>
-
-class jleResourceInterface : public std::enable_shared_from_this<jleResourceInterface>
+class jleSerializationContextInterface
 {
-public:
-    jleResourceInterface() = default;
-
-    virtual ~jleResourceInterface() = default;
-
-    // Should implement logic for loading data from file into derived class
-    [[nodiscard]] virtual bool
-    loadFromFile(jleSerializationContext& ctx, const jlePath &path) = 0;
-
-    // Optionally implement logic for saving data to file
-    [[maybe_unused]] virtual void saveToFile(jleSerializationContext& ctx){};
-
-    bool hasFileExtension(const std::string &fileExtensionTest);
-
-    // Automatically implemented when using JLE_REGISTER_RESOURCE_TYPE
-    virtual const std::vector<std::string> &getFileAssociations() = 0;
-
-    std::string getPrimaryFileAssociation();
-
-    std::string getDotPrimaryFileExtension();
-
-    jlePath path;
 };
 
-CEREAL_REGISTER_TYPE(jleResourceInterface)
+struct jleSerializationContext {
+    jleSerializationContext() = default;
+
+    jleSerializationContext(jleResourceHolder *r, jleLuaEnvironment *l, jleRenderThread *rt)
+        : resources(r), luaEnvironment(l), renderThread(rt)
+    {
+    }
+
+    jleSerializationContext(jleResourceHolder *r, std::vector<jleSerializationContextInterface *> interfaces)
+        : resources(r), serializationInterfaces(std::move(interfaces))
+    {
+    }
+
+    // Optional, need to be null checked
+    jleResourceHolder *resources{nullptr};
+
+    std::vector<jleSerializationContextInterface *> serializationInterfaces;
+
+    template <typename T>
+    T* get()
+    {
+        for (auto *interface : serializationInterfaces) {
+            if (T *interfaceCast = dynamic_cast<T *>(interface)) {
+                return interfaceCast;
+            }
+        }
+        return nullptr;
+    }
+
+    // Optional, need to be null checked
+    jleLuaEnvironment *luaEnvironment{nullptr};
+
+    // Optional, need to be null checked
+    jleRenderThread *renderThread{nullptr};
+};
+
+class jleSerializationArchive
+{
+public:
+    explicit jleSerializationArchive(jleSerializationContext &context) : ctx{context} {}
+
+    jleSerializationContext ctx;
+};
+

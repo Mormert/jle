@@ -16,8 +16,6 @@
 # This cmake file is intended to be included in the game CMakeLists.txt
 # See the template project's CMakeLists.txt.
 
-target_include_directories(${JLE_GAME_BUILD} SYSTEM PUBLIC)
-
 option(JLE_BUILD_RUNTIME_CONFIGURABLE "Enable runtime configurations passed from command line" OFF)
 option(JLE_BUILD_EDITOR "Build the game in the editor" ON)
 option(JLE_BUILD_HEADLESS "Build the game without graphics (for servers)" OFF)
@@ -66,7 +64,7 @@ endif ()
 
 
 add_subdirectory("${JLE_ENGINE_PATH}" "${CMAKE_CURRENT_BINARY_DIR}/${JLE_GAME_BUILD}")
-target_link_libraries(${JLE_GAME_BUILD} LINK_PUBLIC engine)
+target_link_libraries(${JLE_GAME_BUILD} PRIVATE engine)
 
 if (JLE_BUILD_EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")

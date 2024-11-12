@@ -16,7 +16,7 @@
 #pragma once
 
 #include <plog/Log.h>
-#include "serialization/jleBinaryArchive.h"
+#include "core/serialization/jleBinaryArchive.h"
 
 #include <memory>
 #include <sstream>

@@ -21,8 +21,8 @@
 #include "modules/windowing/jleWindow.h"
 
 #include "editor/jleImGuiArchive.h"
-#include "serialization/jleBinaryArchive.h"
-#include "serialization/jleJSONArchive.h"
+#include "core/serialization/jleBinaryArchive.h"
+#include "core/serialization/jleJSONArchive.h"
 
 #if JLE_BUILD_EDITOR
 #include "editor/jleEditor.h"

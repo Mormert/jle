@@ -15,9 +15,10 @@
 
 #pragma once
 
-#include "core/jleCommon.h"
-#include "core/jleFileWatcher.h"
-#include "core/jlePath.h"
+#include <core/jleCommon.h>
+#include <core/jleFileWatcher.h>
+#include <core/jlePath.h>
+#include <core/serialization/jleSerialization.h>
 
 #include "jleLuaClass.h"
 
@@ -31,6 +32,13 @@ namespace sol
 {
 class state;
 }
+
+class jleLuaEnvironment;
+
+struct jleLuaSerializationContext : private jleSerializationContextInterface
+{
+    jleLuaEnvironment* luaEnvironment;
+};
 
 class jleLuaEnvironment
 {

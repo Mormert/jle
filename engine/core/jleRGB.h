@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "core/jleCommon.h"
+#include "jleCommon.h"
 
 #include "serialization/jleExternalSerialization.h"
 

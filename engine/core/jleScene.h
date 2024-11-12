@@ -16,14 +16,14 @@
 #ifndef JLE_SCENE
 #define JLE_SCENE
 
-#include "core/jleCommon.h"
+#include "jleCommon.h"
 
 #include <memory>
 #include <vector>
 
-#include "core/jlePath.h"
-#include "core/jleResourceHolder.h"
-#include "core/jleSerializedResource.h"
+#include "jlePath.h"
+#include "jleResourceHolder.h"
+#include "jleSerializedResource.h"
 #include "jleTypeReflectionUtils.h"
 
 #include <cereal/types/memory.hpp>

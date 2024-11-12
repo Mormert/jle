@@ -15,10 +15,19 @@
 
 #pragma once
 
+#include <core/serialization/jleSerialization.h>
+
 #include <functional>
 #include <moodycamel/concurrentqueue.h>
 
-class jleRenderThread
+class jleRenderThread;
+
+struct jleRenderingSerializationContext : private jleSerializationContextInterface
+{
+    jleRenderThread* renderThread;
+};
+
+class jleRenderThread : private jleSerializationContextInterface
 {
 public:
     // Called from any game thread to execute render code on the render thread

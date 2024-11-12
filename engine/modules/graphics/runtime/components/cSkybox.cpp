@@ -18,8 +18,8 @@
 #include "modules/graphics/jleGraphics.h"
 
 #include "editor/jleImGuiArchive.h"
-#include "serialization/jleBinaryArchive.h"
-#include "serialization/jleJSONArchive.h"
+#include "core/serialization/jleBinaryArchive.h"
+#include "core/serialization/jleJSONArchive.h"
 
 #include "core/jleResourceHolder.h"
 

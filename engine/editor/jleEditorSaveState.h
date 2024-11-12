@@ -23,7 +23,7 @@
 #include "core/jleTypeReflectionUtils.h"
 #include "glm/glm.hpp"
 
-#include "serialization/jleExternalSerialization.h"
+#include "core/serialization/jleExternalSerialization.h"
 #include <cereal/types/vector.hpp>
 
 struct jleEditorSaveState : public jleSerializedOnlyResource {

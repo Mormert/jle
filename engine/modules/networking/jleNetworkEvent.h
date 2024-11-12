@@ -19,8 +19,8 @@
 
 #include "jleNetworkEventRegistrator.h"
 
-#include "serialization/jleBinaryArchive.h"
-#include <plog/Log.h>
+#include "core/serialization/jleBinaryArchive.h"
+
 #include <sstream>
 
 struct jleEngineModulesContext;

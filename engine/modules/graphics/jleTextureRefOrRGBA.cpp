@@ -15,7 +15,7 @@
 
 #include "jleTextureRefOrRGBA.h"
 #include "editor/jleImGuiArchive.h"
-#include "serialization/jleExternalSerialization.h"
+#include "core/serialization/jleExternalSerialization.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleTextureRefOrRGBA)
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleTextureRefOrRGB)

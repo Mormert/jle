@@ -16,7 +16,7 @@
 #include "jleEditorSaveState.h"
 
 #include "editor/jleImGuiArchive.h"
-#include "serialization/jleBinaryArchive.h"
-#include "serialization/jleJSONArchive.h"
+#include "core/serialization/jleBinaryArchive.h"
+#include "core/serialization/jleJSONArchive.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleEditorSaveState)

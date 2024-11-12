@@ -13,7 +13,7 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#include "core/jleComponent.h"
+#include "jleComponent.h"
 #include "jleObject.h"
 #include "jleScene.h"
 

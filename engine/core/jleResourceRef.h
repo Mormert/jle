@@ -18,7 +18,7 @@
 
 #include "jleBuildConfig.h"
 
-#include "core/jlePath.h"
+#include "jlePath.h"
 #include "serialization/jleSerialization.h"
 
 #include <cereal/cereal.hpp>

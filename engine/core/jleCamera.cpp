@@ -12,9 +12,11 @@
  *                  Copyright (c) 2020-2024 Johan Lind. All rights reserved.                 *
  *                                                                                           *
  *********************************************************************************************/
+
 #include "jleCamera.h"
-#include "glm/ext/matrix_clip_space.hpp"
-#include "glm/ext/matrix_transform.hpp"
+
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <plog/Log.h>
 

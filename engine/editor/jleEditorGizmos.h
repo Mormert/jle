@@ -20,13 +20,12 @@
 
 #if JLE_BUILD_EDITOR
 
-#include "serialization/jleSerialization.h"
-
 #include <memory>
 
 class jleMesh;
 class jleMaterial;
 class jleResourceHolder;
+struct jleSerializationContext;
 
 class jleEditorGizmos
 {

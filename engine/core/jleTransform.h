@@ -16,9 +16,9 @@
 #ifndef JLE_TRANSFORM
 #define JLE_TRANSFORM
 
-#include "core/jleCommon.h"
+#include "jleCommon.h"
 
-#include "core/jleCompileHelper.h"
+#include "jleCompileHelper.h"
 #include "serialization/jleExternalSerialization.h"
 #include <glm/glm.hpp>
 

@@ -75,6 +75,8 @@ namespace glm{
 
 // Lua / Sol2
 
+// TODO move to scripting module
+
 #include <sol2/sol.hpp>
 
 namespace sol

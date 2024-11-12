@@ -25,19 +25,9 @@ endif()
 
 set(JLE_CORE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/core")
 
-set(JLE_CORE_3RD_PARTY_DIRS
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty"
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules"
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/plog/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/tracy/public/tracy"
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules_forks/jle_EASTL/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules_forks/jle_EASTL/jle_EABase/include/Common"
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/git_submodules/glm"
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/lua")
-
 set(JLE_3RDPARTY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
 
-include_directories(${JLE_CORE_3RD_PARTY_DIRS})
+# TODO : remove this here...
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(3rdparty/zlib)
@@ -90,8 +80,7 @@ add_library(engine STATIC
         "modules/animation/jleAnimationFinalMatrices.cpp"
         )
 
-add_subdirectory(core)
-target_link_libraries(engine PUBLIC jleCore)
+
 
 target_include_directories(engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -146,7 +135,8 @@ if (JLE_BUILD_EDITOR)
     target_link_libraries(engine PUBLIC Tracy::TracyClient)
 endif ()
 
-
+add_subdirectory(core)
+target_link_libraries(engine PUBLIC jleCore)
 
 target_link_libraries(engine PUBLIC zlib)
 
@@ -190,7 +180,6 @@ target_include_directories(engine PUBLIC 3rdparty/git_submodules_forks/jle_RmlUi
 target_link_libraries(engine PUBLIC RmlCore RmlDebugger)
 
 add_subdirectory(modules)
-target_link_libraries(engine PUBLIC jleModules)
 
 if (JLE_BUILD_EMSCRIPTEN)
     # When building with Emscripten, it needs to find the pre-loaded assets

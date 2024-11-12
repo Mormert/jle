@@ -15,9 +15,9 @@
 
 #pragma once
 
-#include "core/jleCommon.h"
+#include "jleCommon.h"
 
-#include "core/jleResourceInterface.h"
+#include "jleResourceInterface.h"
 
 #define SAVE_SHARED_THIS_SERIALIZED_JSON(PARENT_TYPE)                                                                  \
     void saveToFile(jleSerializationContext &ctx) override                                                             \

@@ -20,7 +20,7 @@
 
 #if JLE_BUILD_EDITOR
 
-#include "serialization/jleSerialization.h"
+#include "serialization/jleEditorSerialization.h"
 
 #include "core/jleComponent.h"
 #include "core/jleFileWatcher.h"
@@ -30,7 +30,7 @@
 #include "jleEditor.h"
 #include "modules/graphics/jleTextureRefOrRGBA.h"
 #include "modules/scripting/jleLuaClassSerialization.h"
-#include "serialization/jleExternalSerialization.h"
+#include "core/serialization/jleExternalSerialization.h"
 
 #include "jleImGuiExtensions.h"
 #include <ImGui/ImGuizmo.h>

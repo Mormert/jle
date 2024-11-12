@@ -14,7 +14,7 @@
  *********************************************************************************************/
 
 #include "jleScene.h"
-#include "core/jleObject.h"
+#include "jleObject.h"
 #include "jleProfiler.h"
 #include "modules/physics/jlePhysics.h"
 

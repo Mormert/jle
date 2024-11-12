@@ -29,6 +29,7 @@ class jleMesh;
 class jleMaterialPBR;
 class jleObject;
 class aiNode;
+struct jleEditorModulesContext;
 
 class jleEditor3DImportWindow : public jleEditorWindowInterface
 {

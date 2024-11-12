@@ -27,6 +27,7 @@
 #include <unordered_map>
 
 class jleSerializationContext;
+struct jleEditorModulesContext;
 
 class jleEditorResourceEdit : public jleEditorWindowInterface
 {

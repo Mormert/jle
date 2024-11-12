@@ -16,10 +16,10 @@
 #ifndef JLE_TYPE_REFLECTION_UTILS
 #define JLE_TYPE_REFLECTION_UTILS
 
-#include "core/jleCommon.h"
+#include "jleCommon.h"
 
-#include "core/jlePath.h"
-#include "core/jleResourceHolder.h"
+#include "jlePath.h"
+#include "jleResourceHolder.h"
 
 #include <cassert>
 #include <functional>

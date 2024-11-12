@@ -47,8 +47,8 @@
 #include "jleStringView.h"
 
 #include <cereal/cereal.hpp>
-#include "serialization/jleJSONArchive.h"
-#include "serialization/jleBinaryArchive.h"
+#include "core/serialization/jleJSONArchive.h"
+#include "core/serialization/jleBinaryArchive.h"
 #include "cereal/details/helpers.hpp"
 #include "cereal/types/memory.hpp"
 #include "cereal/types/polymorphic.hpp"
