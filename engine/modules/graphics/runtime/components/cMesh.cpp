@@ -14,10 +14,15 @@
  *********************************************************************************************/
 
 #include "cMesh.h"
-#include "core/jleResourceHolder.h"
-#include "jleGameEngine.h"
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cMesh)
+
+template <class Archive>
+void
+cMesh::serialize(Archive &ar)
+{
+    ar(CEREAL_NVP(_meshRef), CEREAL_NVP(_materialRef));
+}
 
 void
 cMesh::start(jleEngineUpdateContext &ctx)
@@ -74,3 +79,4 @@ cMesh::getMaterialRef()
 {
     return _materialRef;
 }
+

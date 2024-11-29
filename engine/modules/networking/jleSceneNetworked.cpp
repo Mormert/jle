@@ -19,7 +19,7 @@
 #include <zlib/zlib.h>
 
 #if JLE_BUILD_IMGUI
-#include <ImGui/imgui.h>
+//#include <ImGui/imgui.h>
 #endif
 
 
@@ -31,6 +31,7 @@ jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneTy
                                                       const std::string &sceneName,
                                                       ENetHost *host)
 {
+    /*
 #if JLE_BUILD_IMGUI
 
     ImGui::Begin(std::string{sceneType + " for scene: " + sceneName}.c_str());
@@ -58,46 +59,6 @@ jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneTy
     ImGui::Text("Outgoing Bandwidth: %d", host->outgoingBandwidth);
     ImGui::Text("Allocated peers max: %zu", host->peerCount);
     ImGui::Text("Total data sent: %f MB", host->totalSentData / 1000000.f);
-
-    /* if (ImGui::TreeNode("World Entities")) {
-         int64_t entityIds[1024];
-         size_t entitiesAmount;
-         librg_world_fetch_all(world, entityIds, &entitiesAmount);
-         for (int i = 0; i < entitiesAmount; i++) {
-             auto entityId = entityIds[i];
-             auto owner = librg_entity_owner_get(world, entityId);
-             auto object = getObjectPointerFromNetEntity(world, entityId);
-             if (!object) {
-                 continue;
-             }
-             if (owner == mySceneNetID) {
-                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 1.0f, 0.3f, 1.0f));
-             } else {
-                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-             }
-             ImGui::Text("Entity ID: %lld, owner : %lld, obj name: %s",
-                         entityId,
-                         object->netOwnerID(),
-                         object->instanceName().c_str());
-             ImGui::PopStyleColor();
-         }
-         ImGui::TreePop();
-     }
-
-     if (ImGui::TreeNode(std::string{sceneType + " Owned Objects"}.c_str())) {
-         int64_t entityIds[1024];
-         size_t entitiesAmount;
-         librg_world_fetch_owner(world, mySceneNetID, entityIds, &entitiesAmount);
-         for (int i = 0; i < entitiesAmount; i++) {
-             auto entityId = entityIds[i];
-             auto object = getObjectPointerFromNetEntity(world, entityId);
-             if (!object) {
-                 continue;
-             }
-             ImGui::Text("Entity ID: %lld, obj name: %s", entityId, object->instanceName().c_str());
-         }
-         ImGui::TreePop();
-     }*/
 
     {
         ENetPeer *currentPeer;
@@ -136,21 +97,6 @@ jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneTy
 
                         ImGui::TreePop();
                     }
-
-                    /*  if (ImGui::TreeNode("Their Owned Objects")) {
-                          int64_t entityIds[4096];
-                          size_t entitiesAmount;
-                          librg_world_fetch_all(world, entityIds, &entitiesAmount);
-                          for (int i = 0; i < entitiesAmount; i++) {
-                              auto entityId = entityIds[i];
-                              auto object = getObjectPointerFromNetEntity(world, entityId);
-                              if (object->netOwnerID() == theirNetSceneID) {
-                                  ImGui::Text("Entity ID: %lld, obj name: %s", entityId,
-                      object->instanceName().c_str());
-                              }
-                          }
-                          ImGui::TreePop();
-                      }*/
                 }
 
                 ImGui::TreePop();
@@ -160,6 +106,7 @@ jleSceneNetworked::networkSceneDisplayInspectorWindow(const std::string &sceneTy
 
     ImGui::End();
 #endif
+    */
 }
 
 class jleNetworkCompression

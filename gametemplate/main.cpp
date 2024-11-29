@@ -1,6 +1,6 @@
 #include "GameTemplate.h"
 
-#include "modules/game/jleKickStarter.h"
+#include <runtime/jleKickStarter.h>
 
 int
 main(int argc, char *argv[])

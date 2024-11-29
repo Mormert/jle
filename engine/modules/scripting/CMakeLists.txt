@@ -5,12 +5,13 @@ add_library(jleScripting STATIC
         components/cLuaScript.cpp
 )
 
-add_subdirectory(${JLE_3RDPARTY_DIRECTORY}/lua "${CMAKE_CURRENT_BINARY_DIR}/lua")
-target_link_libraries(jleScripting PUBLIC vanilla_lua jleInput)
-target_link_libraries(engine PUBLIC vanilla_lua)
+target_include_directories(jleScripting PRIVATE SYSTEM 3rdparty)
+
+add_subdirectory(../../core/3rdparty/lua/lua ${CMAKE_CURRENT_BINARY_DIR}/lua)
+target_link_libraries(jleScripting PRIVATE vanilla_lua jleInput jleCore)
 
 if (JLE_BUILD_EDITOR AND WIN32)
-    add_subdirectory(${JLE_3RDPARTY_DIRECTORY}/luasocket "${CMAKE_CURRENT_BINARY_DIR}/luasocket")
+    add_subdirectory(3rdparty/luasocket)
     add_dependencies(jleScripting socket_core)
     add_dependencies(jleScripting mime_core)
 endif ()

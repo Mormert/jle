@@ -18,43 +18,35 @@
 #include "core/jleCommon.h"
 
 #include "core/jleComponent.h"
-#include "core/jleTransform.h"
+
 #include "modules/graphics/jleMaterial.h"
 #include "modules/graphics/jleMesh.h"
-
-#include "core/jleResourceRef.h"
 
 class cMesh : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cMesh)
 public:
-
     template <class Archive>
     void
-    serialize(Archive &ar)
-    {
-        ar(CEREAL_NVP(_meshRef), CEREAL_NVP(_materialRef));
-    }
+    serialize(Archive &ar);
 
-    void editorUpdate(jleEngineUpdateContext & ctx) override;
+    void editorUpdate(jleEngineUpdateContext &ctx) override;
 
-    void start(jleEngineUpdateContext & ctx) override;
+    void start(jleEngineUpdateContext &ctx) override;
 
-    void update(jleEngineUpdateContext & ctx) override;
+    void update(jleEngineUpdateContext &ctx) override;
 
-    void ecsUpdate(jleFramePacket& packet);
+    void ecsUpdate(jleFramePacket &packet);
 
     std::shared_ptr<jleMesh> getMesh();
     std::shared_ptr<jleMaterial> getMaterial();
 
-    jleResourceRef<jleMesh>& getMeshRef();
-    jleResourceRef<jleMaterial>& getMaterialRef();
+    jleResourceRef<jleMesh> &getMeshRef();
+    jleResourceRef<jleMaterial> &getMaterialRef();
 
 protected:
-
     jleResourceRef<jleMesh> _meshRef;
     jleResourceRef<jleMaterial> _materialRef;
-
 };
 
 JLE_EXTERN_TEMPLATE_CEREAL_H(cMesh)

@@ -23,7 +23,7 @@
 #include "modules/graphics/jleMesh.h"
 
 #include "core/jleResourceRef.h"
-#include "editor/jleImGuiArchive.h"
+
 
 #include <BulletDynamics/Dynamics/btRigidBody.h>
 #include <LinearMath/btMotionState.h>
@@ -34,7 +34,9 @@ class cRigidbody : public jleComponent, public btMotionState
 {
     JLE_REGISTER_COMPONENT_TYPE(cRigidbody)
 public:
-    cRigidbody() = default;
+    cRigidbody();
+
+    ~cRigidbody();
 
     // Called when cloned/duplicated
     cRigidbody(const cRigidbody &other);

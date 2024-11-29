@@ -45,7 +45,7 @@
 #undef min
 #include <Tracy.hpp>
 
-#include <3rdparty/WickedEngine/wiJobSystem.h>
+#include <WickedEngine/wiJobSystem.h>
 #include <modules/networking/jleNetworkingModule.h>
 
 #ifdef __EMSCRIPTEN__

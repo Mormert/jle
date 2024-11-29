@@ -19,7 +19,7 @@
 #include "jleSceneClient.h"
 #include "jleNetworkEvent.h"
 
-#include "editor/jleImGuiArchive.h"
+
 #include "core/serialization/jleBinaryArchive.h"
 #include "core/serialization/jleJSONArchive.h"
 

@@ -17,13 +17,9 @@
 #include "jleGameEngine.h"
 #include "modules/scripting/jleLuaEnvironment.h"
 
-#include "editor/jleImGuiArchive.h"
+
 #include "core/serialization/jleBinaryArchive.h"
 #include "core/serialization/jleJSONArchive.h"
-
-#if JLE_BUILD_IMGUI
-#include <ImGui/imgui.h>
-#endif
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLuaScript)
 

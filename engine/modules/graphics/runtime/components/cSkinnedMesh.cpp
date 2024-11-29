@@ -118,7 +118,7 @@ cSkinnedMesh::findAnimator(jleObject *object)
 void
 cSkinnedMesh::editorInspectorImGuiRender(jleEditorUpdateContext & ctx)
 {
-#if JLE_BUILD_IMGUI
+/*#if JLE_BUILD_IMGUI
     if (!_animator) {
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.2f, 1.0f));
         ImGui::Text(
@@ -131,6 +131,7 @@ cSkinnedMesh::editorInspectorImGuiRender(jleEditorUpdateContext & ctx)
         ImGui::PopStyleColor();
     }
 #endif
+ */
 }
 
 

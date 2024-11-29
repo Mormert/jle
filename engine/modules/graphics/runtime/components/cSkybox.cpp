@@ -17,7 +17,7 @@
 #include "jleGameEngine.h"
 #include "modules/graphics/jleGraphics.h"
 
-#include "editor/jleImGuiArchive.h"
+
 #include "core/serialization/jleBinaryArchive.h"
 #include "core/serialization/jleJSONArchive.h"
 
@@ -44,7 +44,7 @@ cSkybox::serialize(Archive &ar)
 {
     ar(CEREAL_NVP(_skybox));
 
-#if JLE_BUILD_EDITOR
+/*#if JLE_BUILD_EDITOR
     if constexpr (std::is_base_of<jleSerializationArchive_EditorOnly, Archive>()) {
         if (_skybox.get()) {
             jleSerializationArchive_EditorOnly &archiveEditorOnly = ar;
@@ -52,4 +52,5 @@ cSkybox::serialize(Archive &ar)
         }
     }
 #endif
+ */
 }

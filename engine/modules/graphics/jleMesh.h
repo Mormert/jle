@@ -22,20 +22,23 @@
 
 #include <glm/glm.hpp>
 
-// TODO: Remove dependency here
-#include <modules/physics/3rdparty/jle_bullet3/src/BulletCollision/CollisionShapes/btTriangleMesh.h>
-#include <modules/physics/3rdparty/jle_bullet3/src/BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
-#include <modules/physics/3rdparty/jle_bullet3/src/BulletCollision/CollisionShapes/btConvexHullShape.h>
 
 #include <vector>
 
 struct aiMesh;
 struct aiScene;
+class jleRenderThread;
+
+class btBvhTriangleMeshShape;
+__declspec(align(16))class btConvexHullShape;
+class btTriangleMesh;
 
 class jleMesh : public jleResourceInterface
 {
 public:
     JLE_REGISTER_RESOURCE_TYPE(jleMesh, "mesh", "obj", "fbx")
+
+    jleMesh();
 
     ~jleMesh() override;
 
@@ -110,7 +113,7 @@ protected:
     std::vector<unsigned int> _indices{};
 
 private:
-    btTriangleMesh _staticConcaveShapeMeshInterface;
+    std::unique_ptr<btTriangleMesh> _staticConcaveShapeMeshInterface;
     std::unique_ptr<btBvhTriangleMeshShape> _staticConcaveShape{nullptr};
 
     std::unique_ptr<btConvexHullShape> _dynamicConvexShape{nullptr};

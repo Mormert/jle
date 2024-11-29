@@ -14,13 +14,14 @@
  *********************************************************************************************/
 
 #include "jleTexture.h"
-#include "core/jleImage.h"
-#include "jleGameEngine.h"
 #include "modules/graphics/core/jleIncludeGL.h"
 #include "modules/graphics/jleRenderThread.h"
+#include <core/jleImage.h>
+#include <core/serialization/jleSerialization.h>
+
 
 #include <plog/Log.h>
-#include <stb_image.h>
+#include <stb/stb_image.h>
 
 #include <iostream>
 

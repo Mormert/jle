@@ -15,12 +15,12 @@
 
 #include "jleGame.h"
 
-#include "core/jlECS/jlECS.h"
-#include "modules/graphics/core/jleFrameBufferInterface.h"
+#include <jlECS/jlECS.h>
+#include <modules/graphics/core/jleFrameBufferInterface.h>
 #include <modules/graphics/jleRenderThread.h>
-#include "modules/physics/jlePhysics.h"
+#include <modules/physics/jlePhysics.h>
 
-#include <3rdparty/WickedEngine/wiJobSystem.h>
+#include <WickedEngine/wiJobSystem.h>
 
 void
 jleGame::updateActiveScenes(jleEngineUpdateContext &ctx)
@@ -45,8 +45,6 @@ jleGame::activeScenesRef()
 std::shared_ptr<jleScene>
 jleGame::loadScene(const jlePath &scenePath, jleEngineUpdateContext &ctx)
 {
-    // jleSerializationContext serializationContext{&ctx.resourcesModule, &ctx.luaEnvironment, &ctx.renderThread};
-
     std::shared_ptr<jleScene> scene =
         ctx.resourcesModule.loadResourceFromFileT<jleScene>(scenePath, ctx.serializationContext, true);
     if (scene) {

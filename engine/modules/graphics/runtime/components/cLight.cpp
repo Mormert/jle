@@ -15,15 +15,15 @@
 
 #include "cLight.h"
 
-#include "editor/jleEditor.h"
-#include "editor/jleEditorGizmos.h"
+//#include "editor/jleEditor.h"
+//#include "editor/jleEditorGizmos.h"
 
 #include "jleGameEngine.h"
 #include "modules/graphics/jleFramePacket.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "editor/jleImGuiArchive.h"
+
 #include "core/serialization/jleBinaryArchive.h"
 #include "core/serialization/jleJSONArchive.h"
 
@@ -54,12 +54,13 @@ cLight::editorUpdate(jleEngineUpdateContext & ctx)
 void
 cLight::editorGizmosRender(jleFramePacket & renderGraph, jleEditorGizmos& gizmos)
 {
-#if JLE_BUILD_EDITOR
+/*#if JLE_BUILD_EDITOR
     auto mesh = gizmos.lightLampMesh();
     std::shared_ptr<jleMaterial> material = gizmos.lampMaterial();
     auto matrix = glm::translate(glm::mat4{1.0f}, _attachedToObject->getTransform().getWorldPosition());
     renderGraph.sendMesh(mesh, material, matrix, _attachedToObject->instanceID(), false);
 #endif // JLE_BUILD_EDITOR
+ */
 }
 
 void

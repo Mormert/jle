@@ -1,42 +1,37 @@
 add_library(jleCore STATIC
-        "../3rdparty/stb_image.cpp"
-        "../3rdparty/stb_image_write.cpp"
-        "jlECSSaveLoad.cpp"
-        "jleResourceHolder.cpp"
-        "jleFileWatcher.cpp"
-        "jleResourceInterface.cpp"
-        "jleTimerManager.cpp"
-        "jlePath.cpp"
-        "jleProfiler.cpp"
-        "jleTransform.cpp"
-        "jleCommandArguments.cpp"
-        "jleDynamicLogAppender.cpp"
-        "jleCamera.cpp"
-        "jleNew.cpp"
-        "jleImage.cpp"
-        "jleImageFlipped.cpp"
-        "jleResourceIndexer.cpp"
-        "jleComponent.cpp"
-        "jleObject.cpp"
-        "jleScene.cpp"
+        "src/jlECSSaveLoad.cpp"
+        "src/jleResourceHolder.cpp"
+        "src/jleFileWatcher.cpp"
+        "src/jleResourceInterface.cpp"
+        "src/jleTimerManager.cpp"
+        "src/jlePath.cpp"
+        "src/jleProfiler.cpp"
+        "src/jleTransform.cpp"
+        "src/jleCommandArguments.cpp"
+        "src/jleDynamicLogAppender.cpp"
+        "src/jleCamera.cpp"
+        "src/jleNew.cpp"
+        "src/jleImage.cpp"
+        "src/jleImageFlipped.cpp"
+        "src/jleComponent.cpp"
+        "src/jleObject.cpp"
+        "src/jleScene.cpp"
 )
+
+add_subdirectory(3rdparty)
+target_link_libraries(jleCore PUBLIC jleCore_3rdparty)
 
 add_subdirectory(jlECS)
 target_link_libraries(jleCore PUBLIC jlECS)
 
-add_subdirectory(${JLE_3RDPARTY_DIRECTORY}/git_submodules_forks/jle_EASTL "${CMAKE_CURRENT_BINARY_DIR}/eastl")
-target_include_directories(jleCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/jleSTL")
-target_link_libraries(jleCore PUBLIC EASTL)
+target_include_directories(jleCore PUBLIC SYSTEM
+        "${CMAKE_CURRENT_SOURCE_DIR}/public"
+)
 
-set(JLE_CORE_3RD_PARTYS
-        "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/git_submodules"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/git_submodules/plog/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/git_submodules/tracy/public/tracy"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/git_submodules_forks/jle_EASTL/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/git_submodules_forks/jle_EASTL/jle_EABase/include/Common"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/git_submodules/glm"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/lua")
+target_include_directories(jleCore PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/public/core"
+)
 
-target_include_directories(jleCore PUBLIC ${JLE_CORE_3RD_PARTYS})
+target_include_directories(jleCore PUBLIC SYSTEM
+        "${CMAKE_CURRENT_SOURCE_DIR}/jleSTL"
+)

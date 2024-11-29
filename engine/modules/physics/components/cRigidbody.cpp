@@ -15,17 +15,20 @@
 
 #include "cRigidbody.h"
 
-#include "jleGameEngine.h"
 #include "modules/graphics/runtime/components/cMesh.h"
 #include "modules/physics/jlePhysics.h"
 
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
 #include <BulletCollision/CollisionShapes/btScaledBvhTriangleMeshShape.h>
+#include <BulletCollision/CollisionShapes/btConvexHullShape.h>
 
 #include <glm/ext/matrix_transform.hpp>
 
 JLE_EXTERN_TEMPLATE_CEREAL_CPP(cRigidbody)
+
+cRigidbody::cRigidbody() = default;
+cRigidbody::~cRigidbody() = default;
 
 cRigidbody::cRigidbody(const cRigidbody &other) : jleComponent(other)
 {
@@ -38,18 +41,18 @@ cRigidbody::cRigidbody(const cRigidbody &other) : jleComponent(other)
 }
 
 void
-cRigidbody::editorUpdate(jleEngineUpdateContext & ctx)
+cRigidbody::editorUpdate(jleEngineUpdateContext &ctx)
 {
 }
 
 void
-cRigidbody::start(jleEngineUpdateContext & ctx)
+cRigidbody::start(jleEngineUpdateContext &ctx)
 {
     setupRigidbody();
 }
 
 void
-cRigidbody::update(jleEngineUpdateContext & ctx)
+cRigidbody::update(jleEngineUpdateContext &ctx)
 {
 }
 
@@ -112,7 +115,7 @@ cRigidbody::setupRigidbody()
     bool isDynamic = (_mass != 0.f);
 
     if (isDynamic) {
-        const auto &dynamicConvexShape = object()->getComponent<cMesh>()->getMesh()->getDynamicConvexShape();
+        btConvexHullShape *dynamicConvexShape = object()->getComponent<cMesh>()->getMesh()->getDynamicConvexShape();
         _body = createRigidbody(isDynamic, dynamicConvexShape);
     } else {
         const auto &staticConcaveShape = object()->getComponent<cMesh>()->getMesh()->getStaticConcaveShape();
@@ -140,7 +143,7 @@ cRigidbody::isDynamic()
 }
 
 void
-cRigidbody::onDestroy(jleEngineUpdateContext & ctx)
+cRigidbody::onDestroy(jleEngineUpdateContext &ctx)
 {
     scene()->getPhysics().removeRigidbody(_body.get());
 }

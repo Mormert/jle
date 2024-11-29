@@ -29,10 +29,6 @@
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol2/sol.hpp>
 
-#if JLE_BUILD_IMGUI
-#include "ImGui/sol_ImGui.h"
-#endif
-
 jleLuaEnvironment::jleLuaEnvironment() : _scriptFilesWatcher({})
 {
     std::vector<std::string> directories;
@@ -44,7 +40,7 @@ jleLuaEnvironment::jleLuaEnvironment() : _scriptFilesWatcher({})
     setupLua(*_luaState);
 }
 
-jleLuaEnvironment::~jleLuaEnvironment() {}
+jleLuaEnvironment::~jleLuaEnvironment() = default;
 
 void
 jleLuaEnvironment::setupLua(sol::state &lua)
@@ -61,13 +57,6 @@ jleLuaEnvironment::setupLua(sol::state &lua)
                        sol::lib::os);
 
     setupLuaGLM(lua);
-
-    JLE_EXEC_IF(JLE_BUILD_IMGUI)
-    {
-#if JLE_BUILD_IMGUI
-        sol_ImGui::Init(lua);
-#endif
-    }
 
     lua["JLE_ENGINE_RESOURCES_PATH"] = JLE_ENGINE_RESOURCES_PATH;
     lua["JLE_EDITOR_RESOURCES_PATH"] = JLE_EDITOR_RESOURCES_PATH;

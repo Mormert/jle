@@ -23,8 +23,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include <assimp/Importer.hpp>
-#include <assimp/anim.h>
+struct aiNodeAnim;
 
 struct jleAnimationKeyPosition
 {

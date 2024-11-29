@@ -15,9 +15,9 @@
 
 #pragma once
 
-#include <core/jleCommon.h>
-#include <core/jleFileWatcher.h>
-#include <core/jlePath.h>
+#include "core/jleCommon.h"
+#include "core/jleFileWatcher.h"
+#include "core/jlePath.h"
 #include <core/serialization/jleSerialization.h>
 
 #include "jleLuaClass.h"
@@ -56,8 +56,8 @@ public:
     void loadNewlyAddedScripts(jleSerializationContext &ctx);
 #endif
 
-private:
-    void setupLua(sol::state &lua);
+protected:
+    virtual void setupLua(sol::state &lua);
 
     void setupLuaGLM(sol::state &lua);
 

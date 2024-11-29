@@ -17,7 +17,7 @@
 #include "jleGameEngine.h"
 #include "jleLuaEnvironment.h"
 
-#include "editor/jleImGuiArchive.h"
+
 #include "core/serialization/jleBinaryArchive.h"
 #include "core/serialization/jleJSONArchive.h"
 
@@ -28,8 +28,8 @@
 #include <sstream>
 
 #if JLE_BUILD_EDITOR
-template void jleLuaClass::serializeClass(jleImGuiArchive &ar, sol::table &luaTable);
-template void jleLuaClass::serializeClass(jleImGuiArchiveInternal &ar, sol::table &luaTable);
+//template void jleLuaClass::serializeClass(jleImGuiArchive &ar, sol::table &luaTable);
+//template void jleLuaClass::serializeClass(jleImGuiArchiveInternal &ar, sol::table &luaTable);
 #endif
 template void jleLuaClass::serializeClass(jleJSONOutputArchive &ar, sol::table &luaTable);
 template void jleLuaClass::serializeClass(jleJSONInputArchive &ar, sol::table &luaTable);

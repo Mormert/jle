@@ -14,17 +14,24 @@
  *********************************************************************************************/
 
 #include "jleMesh.h"
-#include "modules/graphics/jleRenderThread.h"
 
-#include "tiny_obj_loader.h"
+#include <core/serialization/jleSerialization.h>
+
+#include "core/jleIncludeGL.h"
+#include "jleRenderThread.h"
+
 #include <plog/Log.h>
+#include <tinyobjloader/tiny_obj_loader.h>
 
 #include <assimp/Exporter.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-#include "modules/graphics/core/jleIncludeGL.h"
+// TODO: Remove dependency here
+#include <modules/physics/3rdparty/jle_bullet3/src/BulletCollision/CollisionShapes/btTriangleMesh.h>
+#include <modules/physics/3rdparty/jle_bullet3/src/BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
+#include <modules/physics/3rdparty/jle_bullet3/src/BulletCollision/CollisionShapes/btConvexHullShape.h>
 
 bool
 jleMesh::loadFromFile(jleSerializationContext &ctx, const jlePath &path)
@@ -143,6 +150,8 @@ jleMesh::makeMesh(const std::vector<glm::vec3> &positions,
         });
     }
 }
+
+jleMesh::jleMesh() = default;
 
 jleMesh::~jleMesh() { destroyOldBuffers(); }
 
@@ -422,7 +431,7 @@ jleMesh::saveMeshToAssimpScene(aiScene &scene)
 void
 jleMesh::generateStaticConcaveShape()
 {
-    _staticConcaveShapeMeshInterface = btTriangleMesh{};
+    _staticConcaveShapeMeshInterface = std::make_unique<btTriangleMesh>();
 
     if (usesIndexing()) {
         for (int i = 0; i < _indices.size() / 3; i++) {
@@ -439,7 +448,7 @@ jleMesh::generateStaticConcaveShape()
             // else we won't add it. For very small triangles, precision errors will cause the normal to have length 0.
             btVector3 normal = (v1 - v0).cross(v2 - v0);
             if (!normal.fuzzyZero()) {
-                _staticConcaveShapeMeshInterface.addTriangle(v0, v1, v2);
+                _staticConcaveShapeMeshInterface->addTriangle(v0, v1, v2);
             }
         }
     } else {
@@ -450,12 +459,12 @@ jleMesh::generateStaticConcaveShape()
 
             btVector3 normal = (v1 - v0).cross(v2 - v0);
             if (!normal.fuzzyZero()) {
-                _staticConcaveShapeMeshInterface.addTriangle(v0, v1, v2);
+                _staticConcaveShapeMeshInterface->addTriangle(v0, v1, v2);
             }
         }
     }
 
-    _staticConcaveShape = std::make_unique<btBvhTriangleMeshShape>(&_staticConcaveShapeMeshInterface, true, true);
+    _staticConcaveShape = std::make_unique<btBvhTriangleMeshShape>(_staticConcaveShapeMeshInterface.get(), true, true);
 }
 
 void

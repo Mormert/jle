@@ -20,21 +20,15 @@
 #include "modules/graphics/core/jleIncludeGL.h"
 #include "modules/windowing/jleWindow.h"
 
-#include "editor/jleImGuiArchive.h"
-#include "core/serialization/jleBinaryArchive.h"
-#include "core/serialization/jleJSONArchive.h"
-
 #if JLE_BUILD_EDITOR
-#include "editor/jleEditor.h"
-#include "editor/jleEditorGizmos.h"
+//#include "editor/jleEditor.h"
+//#include "editor/jleEditorGizmos.h"
 #include "modules/graphics/jleFramePacket.h"
 #endif
 
 #if JLE_BUILD_IMGUI
-#include <ImGui/imgui.h>
+//#include <ImGui/imgui.h>
 #endif
-
-JLE_EXTERN_TEMPLATE_CEREAL_CPP(cCamera)
 
 void
 cCamera::start(jleEngineUpdateContext &ctx)
@@ -122,7 +116,7 @@ cCamera::~cCamera() { sInstanceCounter--; }
 void
 cCamera::editorInspectorImGuiRender(jleEditorUpdateContext &ctx)
 {
-#if JLE_BUILD_IMGUI
+/*#if JLE_BUILD_IMGUI
     ImGui::Text("Camera Preview");
 
     // Get the texture from the framebuffer
@@ -132,29 +126,17 @@ cCamera::editorInspectorImGuiRender(jleEditorUpdateContext &ctx)
         (void *)(intptr_t)fb->texture(), ImVec2(fb->width() / 4.f, fb->height() / 4.f), ImVec2(0, 1), ImVec2(1, 0));
 
 #endif
+ */
 }
 
 void
 cCamera::editorGizmosRender(jleFramePacket &packet, jleEditorGizmos &gizmos)
 {
-#if JLE_BUILD_EDITOR
+/*#if JLE_BUILD_EDITOR
     auto mesh = gizmos.cameraMesh();
     auto material = gizmos.cameraMaterial();
     packet.sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 #endif // JLE_BUILD_EDITOR
+ */
 }
 
-template <class Archive>
-void
-cCamera::serialize(Archive &ar)
-{
-    ar(CEREAL_NVP(perspective),
-       CEREAL_NVP(farPlane),
-       CEREAL_NVP(nearPlane),
-       CEREAL_NVP(perspectiveFov),
-       CEREAL_NVP(framebufferSizeX),
-       CEREAL_NVP(framebufferSizeY),
-        // CEREAL_NVP(_framebufferFixedAxis),
-       CEREAL_NVP(framebufferUseFixedAxis),
-       CEREAL_NVP(matchFramebufferToWindowSize));
-}

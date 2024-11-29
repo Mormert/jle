@@ -24,10 +24,6 @@
 
 struct GLFWwindow;
 
-#ifdef __APPLE__
-void customizeTitleBarMacOS(GLFWwindow *window);
-#endif
-
 struct jleWindowResizeEvent {
     // Main framebuffer dimensions
     int framebufferWidth;
@@ -100,7 +96,7 @@ public:
 
     GLFWwindow *glfwWindow();
 
-    static GLFWwindow *initGlfwWindow(int width, int height, const char *title);
+    virtual GLFWwindow *initGlfwWindow(int width, int height, const char *title);
 
 private:
     GLFWwindow *_glfwWindow;

@@ -27,7 +27,7 @@
 #define GL_GLEXT_PROTOTYPES
 #define EGL_EGLEXT_PROTOTYPES
 #else
-#include <glad/glad.h>
+#include "../3rdparty/glad/glad.h"
 #include <GLFW/glfw3.h>
 
 #endif // __EMSCRIPTEN__

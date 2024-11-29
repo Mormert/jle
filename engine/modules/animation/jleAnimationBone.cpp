@@ -15,6 +15,10 @@
 
 #include "jleAnimationBone.h"
 #include <plog/Log.h>
+
+#include <assimp/Importer.hpp>
+#include <assimp/anim.h>
+
 jleAnimationBone::jleAnimationBone(const std::string &name, int id, const aiNodeAnim *channel)
     : _name(name) , _id(id), _localTransform(1.f)
 {

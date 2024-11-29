@@ -17,8 +17,8 @@
 
 #include "jleBuildConfig.h"
 
-#include "core/jleComponent.h"
-#include "core/jleResourceRef.h"
+#include <core/jleComponent.h>
+#include <core/jleResourceRef.h>
 #include "modules/scripting/jleLuaClassSerialization.h"
 #include "modules/scripting/jleLuaScript.h"
 

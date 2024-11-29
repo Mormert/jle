@@ -15,13 +15,13 @@
 
 #include "cLightDirectional.h"
 
-#include "editor/jleEditor.h"
-#include "editor/jleEditorGizmos.h"
+//#include "editor/jleEditor.h"
+//#include "editor/jleEditorGizmos.h"
 
 #include "modules/graphics/jle3DSettings.h"
 #include "modules/graphics/jleFramePacket.h"
 
-#include "editor/jleImGuiArchive.h"
+
 #include "core/serialization/jleBinaryArchive.h"
 #include "core/serialization/jleJSONArchive.h"
 
@@ -48,11 +48,12 @@ cLightDirectional::ecsUpdate(jleFramePacket &packet)
 void
 cLightDirectional::editorGizmosRender(jleFramePacket &renderGraph, jleEditorGizmos &gizmos)
 {
-#if JLE_BUILD_EDITOR
+/*#if JLE_BUILD_EDITOR
     auto mesh = gizmos.sunMesh();
     std::shared_ptr<jleMaterial> material = gizmos.sunMaterial();
     renderGraph.sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 #endif // JLE_BUILD_EDITOR
+ */
 }
 
 void

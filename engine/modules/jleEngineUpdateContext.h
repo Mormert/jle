@@ -18,7 +18,7 @@
 #include <memory>
 #include <vector>
 
-#include "core/serialization/jleSerialization.h"
+#include <core/serialization/jleSerialization.h>
 
 class jleWindow;
 class jleResourceHolder;

@@ -24,8 +24,8 @@
 #include <vector>
 
 #if JLE_BUILD_EDITOR
-class jleImGuiArchive;
-class jleImGuiArchiveInternal;
+//class jleImGuiArchive;
+//class jleImGuiArchiveInternal;
 #endif
 class jleJSONOutputArchive;
 class jleJSONInputArchive;
@@ -75,8 +75,8 @@ private:
 };
 
 #if JLE_BUILD_EDITOR
-extern template void jleLuaClass::serializeClass(jleImGuiArchive &ar, sol::table &luaTable);
-extern template void jleLuaClass::serializeClass(jleImGuiArchiveInternal &ar, sol::table &luaTable);
+//extern template void jleLuaClass::serializeClass(jleImGuiArchive &ar, sol::table &luaTable);
+//extern template void jleLuaClass::serializeClass(jleImGuiArchiveInternal &ar, sol::table &luaTable);
 #endif
 extern template void jleLuaClass::serializeClass(jleJSONOutputArchive &ar, sol::table &luaTable);
 extern template void jleLuaClass::serializeClass(jleJSONInputArchive &ar, sol::table &luaTable);

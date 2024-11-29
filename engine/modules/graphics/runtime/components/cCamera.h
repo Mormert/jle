@@ -26,7 +26,17 @@ class cCamera : public jleComponent
     JLE_REGISTER_COMPONENT_TYPE(cCamera)
 public:
     template <class Archive>
-    void serialize(Archive &ar);
+    void serialize(Archive &ar)
+    {
+        ar(CEREAL_NVP(perspective),
+           CEREAL_NVP(farPlane),
+           CEREAL_NVP(nearPlane),
+           CEREAL_NVP(perspectiveFov),
+           CEREAL_NVP(framebufferSizeX),
+           CEREAL_NVP(framebufferSizeY),
+           CEREAL_NVP(framebufferUseFixedAxis),
+           CEREAL_NVP(matchFramebufferToWindowSize));
+    }
 
     ~cCamera() override;
 
