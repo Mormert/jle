@@ -13,7 +13,7 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#include "core/jleResourceIndexer.h"
+#include "jleResourceIndexer.h"
 #include "jleImGuiArchive.h"
 #include "modules/scripting/jleLuaEnvironment.h"
 

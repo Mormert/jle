@@ -291,6 +291,8 @@ class ECS;
 template <class T>
 class ComponentRef;
 
+class ComponentDebugBase;
+
 class ObjectRef
 {
 public:
@@ -331,19 +333,15 @@ public:
         return !(*this == other);
     }
 
-#if JLECS_USE_DEBUG
+    static inline void (*gObjectRefDestructFunction)(ObjectRef* objectRef);
 
     ~ObjectRef();
 
+    // Can only be called from editor code
+    // TODO: move this outside ObjectRef and into editor code
     std::vector<ComponentDebugBase *> *componentsDebug();
-
     std::vector<std::unique_ptr<ComponentDebugBase>> componentsDebug2();
-
-    void clearComponentsDebug();
-
     std::vector<ComponentDebugBase *> componentsDebug_;
-
-#endif
 
 private:
     uint16_t _objectIndex;
@@ -803,7 +801,7 @@ public:
     iterate()
     {
         int componentType = ComponentNum<T>::num;
-        return ComponentRange<T>(componentContainers[componentType]);
+        return ComponentRange<T>(*componentContainers[componentType]);
     }
 
     template <std::size_t Index, typename... Types>
@@ -987,7 +985,7 @@ ComponentRef<T>::get() const
     int componentType = ComponentNumV<T>;
 
     auto objectArray = &objectRef.ecs->objectArray;
-    auto container = &objectRef.ecs->componentContainers[componentType];
+    auto container = objectRef.ecs->componentContainers[componentType].get();
 
     auto *c = &objectArray->componentIndices[objectRef._objectIndex * objectRef.ecs->registeredComponentTypesCount];
     uint16_t componentIndex = c[componentType];

@@ -27,6 +27,7 @@ JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleScene)
 
 int jleScene::_scenesCreatedCount{0};
 
+/*
 template <class Archive>
 void
 jleScene::serialize(Archive &archive)
@@ -57,7 +58,7 @@ jleScene::serialize(Archive &archive)
 
         object->propagateOwnedByScene(this, jleObjectNetworkType::SERVER);
     }
-}
+}*/
 
 jleScene::
 jleScene()

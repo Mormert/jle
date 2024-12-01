@@ -15,14 +15,7 @@
 
 #include "cMesh.h"
 
-JLE_EXTERN_TEMPLATE_CEREAL_CPP(cMesh)
-
-template <class Archive>
-void
-cMesh::serialize(Archive &ar)
-{
-    ar(CEREAL_NVP(_meshRef), CEREAL_NVP(_materialRef));
-}
+//JLE_EXTERN_TEMPLATE_CEREAL_CPP(cMesh)
 
 void
 cMesh::start(jleEngineUpdateContext &ctx)

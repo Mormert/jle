@@ -13,11 +13,11 @@
  *                                                                                           *
  *********************************************************************************************/
 
+#pragma once
+
 #include "jleBuildConfig.h"
 
-#if JLE_BUILD_EDITOR
-
-#include "core/jlECS/jlECS.h"
+#include <jlECS/jlECS.h>
 #include "jleEditorImGuiWindowInterface.h"
 #include <modules/jleEditorUpdateContext.h>
 #include <optional>
@@ -40,5 +40,3 @@ private:
     std::optional<jlECS::ObjectRef> _selectedObject;
     jlECS::ECS *_ecs;
 };
-
-#endif // JLE_BUILD_EDITOR

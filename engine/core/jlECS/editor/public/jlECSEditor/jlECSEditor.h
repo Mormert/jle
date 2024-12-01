@@ -20,33 +20,33 @@
 namespace jlECS
 {
 
+class ComponentDebugBase
+{
+public:
+    virtual ~ComponentDebugBase() = default;
+
+    virtual const char *
+    getName()
+    {
+        return "ComponentDebugBase";
+    }
+
+    // Editor inspector serialization
+    virtual void serializeComponent(jleImGuiArchive &ar){};
+
+    void removeFromOwningObject(ObjectRef* objectRef);
+
+    ECS *ecs{};
+    ComponentContainer *container{};
+
+    int objectIndex{};
+    int componentIndex{};
+    int componentType{};
+};
+
 class ComponentContainerEditor : public ComponentContainer
 {
 public:
-    class ComponentDebugBase
-    {
-    public:
-        virtual ~ComponentDebugBase() = default;
-
-        virtual const char *
-        getName()
-        {
-            return "ComponentDebugBase";
-        }
-
-        // Editor inspector serialization
-        virtual void serializeComponent(jleImGuiArchive &ar){};
-
-        void removeFromOwningObject();
-
-        ECS *ecs{};
-        ComponentContainer *container{};
-
-        int objectIndex{};
-        int componentIndex{};
-        int componentType{};
-    };
-
     template <class T>
     class ComponentDebug : public ComponentDebugBase
     {
@@ -153,7 +153,7 @@ public:
     std::unique_ptr<ComponentContainer> createContainer() override
     {
 
-
+        ObjectRef::gObjectRefDestructFunction = ObjectRefDestruct;
         ECS::createContainer();
     }
 
@@ -184,6 +184,9 @@ public:
         container.debug = debug.get();
         container.debugSmart = std::move(debug);
     }
+
+private:
+    static void ObjectRefDestruct(ObjectRef* objectRef);
 };
 }
 

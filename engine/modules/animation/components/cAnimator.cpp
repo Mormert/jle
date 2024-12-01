@@ -20,8 +20,6 @@
 #include "modules/graphics/jleFramePacket.h"
 #include "modules/graphics/runtime/components/cSkinnedMesh.h"
 
-#include "editor/jleEditor.h"
-
 #include <execution>
 #include <glm/gtc/quaternion.hpp>
 
@@ -205,6 +203,7 @@ cAnimator::animationMatrices()
 void
 cAnimator::editorInspectorImGuiRender(jleEditorUpdateContext & ctx)
 {
+    /*
 #if JLE_BUILD_IMGUI
     int p = 0;
     ImGui::Separator();
@@ -227,6 +226,7 @@ cAnimator::editorInspectorImGuiRender(jleEditorUpdateContext & ctx)
     ImGui::Checkbox("Preview Animation", &_editorPreviewAnimation);
 
 #endif
+     */
 }
 
 void

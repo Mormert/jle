@@ -98,7 +98,7 @@ public:
 
     virtual GLFWwindow *initGlfwWindow(int width, int height, const char *title);
 
-private:
+protected:
     GLFWwindow *_glfwWindow;
 
     WindowSettings windowSettings;

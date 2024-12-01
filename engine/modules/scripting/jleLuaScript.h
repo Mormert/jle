@@ -19,6 +19,8 @@
 #include "core/jleResourceInterface.h"
 #include "core/jleTypeReflectionUtils.h"
 
+class jleLuaEnvironment;
+
 class jleLuaScript : public jleResourceInterface
 {
 public:

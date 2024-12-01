@@ -26,7 +26,9 @@ class cLight : public jleComponent
     JLE_REGISTER_COMPONENT_TYPE(cLight)
 public:
     template <class Archive>
-    void serialize(Archive &ar);
+    void serialize(Archive &ar){
+        ar(CEREAL_NVP(_color));
+    }
 
     void start(jleEngineUpdateContext &ctx) override;
 
@@ -43,8 +45,6 @@ public:
 protected:
     glm::vec3 _color{1.f};
 };
-
-JLE_EXTERN_TEMPLATE_CEREAL_H(cLight)
 
 CEREAL_REGISTER_TYPE(cLight)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cLight)

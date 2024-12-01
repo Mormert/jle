@@ -26,7 +26,7 @@
 #include <fstream>
 #include <optional>
 
-JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleObject)
+//JLE_EXTERN_TEMPLATE_CEREAL_CPP(jleObject)
 
 
 
@@ -37,28 +37,6 @@ jleObject()
     _instanceID = _instanceIdCounter++;
 }
 
-template <class Archive>
-void
-jleObject::serialize(Archive &archive)
-{
-    try {
-        archive(CEREAL_NVP(__templatePath));
-    } catch (std::exception &e) {
-    }
-
-    archive(CEREAL_NVP(_instanceName), CEREAL_NVP(_transform), CEREAL_NVP(__childObjects), CEREAL_NVP(_components));
-
-    for (auto &&child : __childObjects) {
-        child->_parentObject = this;
-    }
-
-    getTransform().propagateMatrixFromObjectSerialization();
-
-    for (auto &&component : _components) {
-        component->_attachedToObject = this;
-        component->_containedInScene = _containedInScene;
-    }
-}
 
 void
 jleObject::destroyComponent(jleComponent *component, jleEngineUpdateContext & ctx)
@@ -476,4 +454,13 @@ jleObjectNetworkType
 jleObject::networkObjectType()
 {
     return _networkType;
+}
+
+void
+jleObject::setComponentsAttachedToThisObject()
+{
+    for (auto &&component : _components) {
+        component->_attachedToObject = this;
+        component->_containedInScene = _containedInScene;
+    }
 }

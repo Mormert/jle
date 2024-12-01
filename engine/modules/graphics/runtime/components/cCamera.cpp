@@ -26,10 +26,6 @@
 #include "modules/graphics/jleFramePacket.h"
 #endif
 
-#if JLE_BUILD_IMGUI
-//#include <ImGui/imgui.h>
-#endif
-
 void
 cCamera::start(jleEngineUpdateContext &ctx)
 {

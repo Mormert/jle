@@ -28,7 +28,9 @@ class cMesh : public jleComponent
 public:
     template <class Archive>
     void
-    serialize(Archive &ar);
+    serialize(Archive &ar){
+        ar(CEREAL_NVP(_meshRef), CEREAL_NVP(_materialRef));
+    }
 
     void editorUpdate(jleEngineUpdateContext &ctx) override;
 
@@ -49,7 +51,7 @@ protected:
     jleResourceRef<jleMaterial> _materialRef;
 };
 
-JLE_EXTERN_TEMPLATE_CEREAL_H(cMesh)
+//JLE_EXTERN_TEMPLATE_CEREAL_H(cMesh)
 
 CEREAL_REGISTER_TYPE(cMesh)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cMesh)

@@ -15,11 +15,12 @@
 
 #include "jleEditorBuild.h"
 
-#include "core/jleResourceIndexer.h"
 #include "core/jleScopeProfileLog.h"
+
+#include "jleResourceIndexer.h"
 #include "jleEditor.h"
 
-#include "3rdparty/WickedEngine/wiJobSystem.h"
+#include <WickedEngine/wiJobSystem.h>
 
 #include <fstream>
 

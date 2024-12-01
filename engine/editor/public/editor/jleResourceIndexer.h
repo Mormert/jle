@@ -15,9 +15,9 @@
 
 #pragma once
 
-#include "jleFileWatcher.h"
+#include "core/jleFileWatcher.h"
 
-#include "jleSTL/jleString.h"
+#include "core/jleSTL/jleString.h"
 
 //#include <jleString.h>
 #include <jleVectorMap.h>

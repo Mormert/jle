@@ -69,7 +69,5 @@ protected:
     inline static uint32_t sInstanceCounter = 0;
 };
 
-JLE_EXTERN_TEMPLATE_CEREAL_H(cCamera)
-
 CEREAL_REGISTER_TYPE(cCamera)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cCamera)

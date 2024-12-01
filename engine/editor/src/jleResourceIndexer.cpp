@@ -14,9 +14,9 @@
  *********************************************************************************************/
 
 #include "jleResourceIndexer.h"
-#include "jleResourceHolder.h"
+#include "core/jleResourceHolder.h"
 
-//#include "editor/jleEditorTextEdit.h"
+#include "jleEditorTextEdit.h"
 
 #include <Tracy.hpp>
 
@@ -97,10 +97,8 @@ jleResourceIndexer::update(jleSerializationContext &ctx)
 void
 jleResourceIndexer::update(jleSerializationContext &ctx, jleEditorTextEdit &textEdit)
 {
-#if JLE_BUILD_EDITOR
     CallbacksContext callbacksContext{[&](const jlePath &path) { textEdit.reloadIfOpened(path); }};
     internalUpdate(ctx, callbacksContext);
-#endif
 }
 
 void

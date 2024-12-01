@@ -24,7 +24,9 @@ class cLightDirectional : public cLight
     JLE_REGISTER_COMPONENT_TYPE(cLightDirectional)
 public:
     template <class Archive>
-    void serialize(Archive &ar);
+    void serialize(Archive &ar){
+        ar(cereal::base_class<cLight>(this));
+    }
 
     void registerLua(sol::state &lua) override;
 
@@ -35,7 +37,6 @@ public:
     void editorGizmosRender(jleFramePacket &renderGraph, jleEditorGizmos &gizmos) override;
 };
 
-JLE_EXTERN_TEMPLATE_CEREAL_H(cLightDirectional)
 
 CEREAL_REGISTER_TYPE(cLightDirectional)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(cLight, cLightDirectional)

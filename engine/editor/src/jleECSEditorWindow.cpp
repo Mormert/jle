@@ -14,8 +14,14 @@
  *********************************************************************************************/
 
 #include "jleECSEditorWindow.h"
+#include "jleImGuiExtensions.h"
+#include "jleImGuiArchive.h"
+
 #include <modules/graphics/runtime/components/cLight.h>
 #include <modules/graphics/runtime/components/cMesh.h>
+
+// fix this include path:
+#include "core/jlECS/editor/public/jlECSEditor/jlECSEditor.h"
 
 #include "modules/game/jleGame.h"
 
@@ -175,8 +181,7 @@ jleECSEditorWindow::renderUI(jleEditorUpdateContext &ctx)
 
                 std::string removeString = "Remove " + std::string{comp->getName()};
                 if (ImGui::Button(removeString.c_str())) {
-                    comp->removeFromOwningObject();
-                    _selectedObject.value().clearComponentsDebug();
+                    comp->removeFromOwningObject(&_selectedObject.value());
                     ImGui::EndGroupPanel();
                     ImGui::PopID();
                     break;

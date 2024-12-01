@@ -51,8 +51,8 @@ reconstructComponentIndicesVector(jlECS::ECS &ecs)
 
     auto &containers = ecs.getComponentContainers();
     for (int i = 0; i < containers.size(); i++) {
-        auto &container = containers[i];
-        const auto &objectIndices = container.getObjectIndicesRef();
+        auto *container = containers[i].get();
+        const auto &objectIndices = container->getObjectIndicesRef();
 
         for (int componentIndex = 0; componentIndex < objectIndices.size(); componentIndex++) {
             int objectIndex = objectIndices[componentIndex];
@@ -77,19 +77,19 @@ jlECS::save(jlECS::ECS &ecs, jleJSONOutputArchive &archive)
     archive.setNextName("components");
     archive.startNode();
     for (auto &container : componentContainers) {
-        std::string componentTypeName = container.getComponentTypeName();
-        archive.setNextName(container.getComponentTypeName());
+        std::string componentTypeName = container->getComponentTypeName();
+        archive.setNextName(container->getComponentTypeName());
         {
             archive.startNode();
 
-            int componentCount = container.componentCount();
+            int componentCount = container->componentCount();
             archive(CEREAL_NVP(componentCount));
 
-            const auto &objectIndices = container.getObjectIndicesRef();
+            const auto &objectIndices = container->getObjectIndicesRef();
             archive(CEREAL_NVP(objectIndices));
 
             for (int componentIndex = 0; componentIndex < componentCount; componentIndex++) {
-                container.serializeOutput(archive, componentIndex);
+                container->serializeOutput(archive, componentIndex);
             }
             archive.finishNode();
         }
@@ -109,20 +109,20 @@ jlECS::load(jlECS::ECS &ecs, jleJSONInputArchive &archive)
     archive.setNextName("components");
     archive.startNode();
     for (auto &container : componentContainers) {
-        std::string componentTypeName = container.getComponentTypeName();
-        archive.setNextName(container.getComponentTypeName());
+        std::string componentTypeName = container->getComponentTypeName();
+        archive.setNextName(container->getComponentTypeName());
 
         archive.startNode();
         {
             int componentCount = 0;
             archive(CEREAL_NVP(componentCount));
-            container.allocateComponents(componentCount);
+            container->allocateComponents(componentCount);
 
-            auto &objectIndices = container.getObjectIndicesRef();
+            auto &objectIndices = container->getObjectIndicesRef();
             archive(objectIndices);
 
             for (int componentIndex = 0; componentIndex < componentCount; componentIndex++) {
-                container.serializeInput(archive, componentIndex);
+                container->serializeInput(archive, componentIndex);
             }
         }
         archive.finishNode();
@@ -142,14 +142,14 @@ jlECS::save(jlECS::ECS &ecs, jleBinaryOutputArchive &archive)
     auto &componentContainers = ecs.getComponentContainers();
 
     for (auto &container : componentContainers) {
-        int componentCount = container.componentCount();
+        int componentCount = container->componentCount();
         archive(componentCount);
 
-        const auto &objectIndices = container.getObjectIndicesRef();
+        const auto &objectIndices = container->getObjectIndicesRef();
         archive(objectIndices);
 
         for (int componentIndex = 0; componentIndex < componentCount; componentIndex++) {
-            container.serializeOutput(archive, componentIndex);
+            container->serializeOutput(archive, componentIndex);
         }
     }
 }
@@ -166,13 +166,13 @@ jlECS::load(jlECS::ECS &ecs, jleBinaryInputArchive &archive)
     for (auto &container : componentContainers) {
         int componentCount = 0;
         archive(componentCount);
-        container.allocateComponents(componentCount);
+        container->allocateComponents(componentCount);
 
-        auto &objectIndices = container.getObjectIndicesRef();
+        auto &objectIndices = container->getObjectIndicesRef();
         archive(objectIndices);
 
         for (int componentIndex = 0; componentIndex < componentCount; componentIndex++) {
-            container.serializeInput(archive, componentIndex);
+            container->serializeInput(archive, componentIndex);
         }
     }
 

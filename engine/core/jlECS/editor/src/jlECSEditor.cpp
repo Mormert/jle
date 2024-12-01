@@ -13,33 +13,57 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#include "jlECS.h"
+#include "jlECSEditor.h"
 
 namespace jlECS
 {
 
-ObjectRef::ObjectRef(uint16_t objectIndex, uint16_t objectRecycleCounter, ECS *ecs)
-    : _objectIndex{objectIndex}, _objectRecycleCounter{objectRecycleCounter}, ecs{ecs}
+void
+ComponentDebugBase::removeFromOwningObject(ObjectRef* objectRef)
 {
+    ecs->removeComponent(objectIndex, componentType);
+    ObjectRef::gObjectRefDestructFunction(objectRef);
 }
 
-uint16_t
-ObjectRef::componentCount()
+
+std::vector<ComponentDebugBase *> *
+ObjectRef::componentsDebug()
 {
-    uint16_t count = 0;
+    gObjectRefDestructFunction(this);
     auto *c = &ecs->objectArray.componentIndices[_objectIndex * ecs->registeredComponentTypesCount];
     for (int componentType = 0; componentType < ecs->registeredComponentTypesCount; componentType++) {
         if (c[componentType] != 65535) {
-            count++;
+            auto* container = ecs->componentContainers[componentType].get();
+            auto* editorContainer  = reinterpret_cast<ComponentContainerEditor*>(container);
+            componentsDebug_.push_back(editorContainer->getComponentDebug(c[componentType], objectIndex(), ecs));
         }
     }
-    return count;
+    return &componentsDebug_;
 }
 
-ObjectRef::~ObjectRef() {
-    if(gObjectRefDestructFunction)
-        gObjectRefDestructFunction(this);
+std::vector<std::unique_ptr<ComponentDebugBase>>
+ObjectRef::componentsDebug2()
+{
+    std::vector<std::unique_ptr<ComponentDebugBase>> ret;
+    auto *c = &ecs->objectArray.componentIndices[_objectIndex * ecs->registeredComponentTypesCount];
+    for (int componentType = 0; componentType < ecs->registeredComponentTypesCount; componentType++) {
+        if (c[componentType] != 65535) {
+            auto* container = ecs->componentContainers[componentType].get();
+            auto* editorContainer  = reinterpret_cast<ComponentContainerEditor*>(container);
+            ret.push_back(std::unique_ptr<ComponentDebugBase>(editorContainer->getComponentDebug(c[componentType], objectIndex(), ecs)));
+        }
+    }
+
+    return ret;
 }
 
+void
+ECSEditor::ObjectRefDestruct(ObjectRef *objectRef)
+{
+    for (auto *ptr : objectRef->componentsDebug_) {
+        delete ptr;
+    }
+    objectRef->componentsDebug_.clear();
+}
 
-} // namespace jlECS
+}

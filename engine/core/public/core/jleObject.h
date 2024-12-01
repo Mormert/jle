@@ -46,7 +46,22 @@ public:
     std::shared_ptr<jleObject> duplicateTemplate(bool childChain = false);
 
     template <class Archive>
-    void serialize(Archive &archive);
+    void serialize(Archive &archive){
+        try {
+            archive(CEREAL_NVP(__templatePath));
+        } catch (std::exception &e) {
+        }
+
+        archive(CEREAL_NVP(_instanceName), CEREAL_NVP(_transform), CEREAL_NVP(__childObjects), CEREAL_NVP(_components));
+
+        for (auto &&child : __childObjects) {
+            child->_parentObject = this;
+        }
+
+        getTransform().propagateMatrixFromObjectSerialization();
+
+        setComponentsAttachedToThisObject();
+    }
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedOnlyResource)
 
@@ -132,6 +147,8 @@ private:
 
     void replaceChildrenWithTemplate(jleSerializationContext& ctx);
 
+    void setComponentsAttachedToThisObject();
+
     void startComponents(jleEngineUpdateContext & ctx);
 
     void updateComponents(jleEngineUpdateContext & ctx);
@@ -177,7 +194,7 @@ protected:
     static inline uint32_t _instanceIdCounter{0};
 };
 
-JLE_EXTERN_TEMPLATE_CEREAL_H(jleObject)
+//JLE_EXTERN_TEMPLATE_CEREAL_H(jleObject)
 
 CEREAL_REGISTER_TYPE(jleObject)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedOnlyResource, jleObject)

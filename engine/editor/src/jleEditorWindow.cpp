@@ -206,8 +206,9 @@ initEditorWindowWin32(jleWindow &window)
 GLFWwindow *
 jleEditorWindow::initGlfwWindow(int width, int height, const char *title)
 {
+    GLFWwindow* glfwWindow;
 #ifdef WIN32
-    GLFWwindow* glfwWindow = initEditorWindowWin32(*this);
+    glfwWindow = initEditorWindowWin32(*this);
 #else
     glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
     const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -216,4 +217,5 @@ jleEditorWindow::initGlfwWindow(int width, int height, const char *title)
     customizeTitleBarMacOS(_glfwWindow);
 #endif
 #endif
+    return glfwWindow;
 }

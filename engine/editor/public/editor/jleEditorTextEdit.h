@@ -17,13 +17,11 @@
 #define JLEEDITORTEXTEDIT_H
 
 #include "core/jleCommon.h"
-
-#if JLE_BUILD_EDITOR
-
-
-#include "3rdparty/ImGuiColorTextEdit/TextEditor.h"
-#include "jleEditorImGuiWindowInterface.h"
 #include <core/jleResourceRef.h>
+
+#include <ImGuiColorTextEdit/TextEditor.h>
+
+#include "jleEditorImGuiWindowInterface.h"
 
 #include <unordered_map>
 #include <memory>
@@ -44,7 +42,5 @@ private:
 
     ImFont* font;
 };
-
-#endif // JLE_BUILD_EDITOR
 
 #endif // JLEEDITORTEXTEDIT_H

@@ -30,7 +30,7 @@ struct aiScene;
 class jleRenderThread;
 
 class btBvhTriangleMeshShape;
-__declspec(align(16))class btConvexHullShape;
+class btConvexHullShape;
 class btTriangleMesh;
 
 class jleMesh : public jleResourceInterface

@@ -7,7 +7,7 @@
 #include "TextEditor.h"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "3rdparty/ImGui/imgui.h"
+#include "ImGui/imgui.h"
 
 // TODO
 // - multiline comments vs single-line: latter is blocking start of a ML

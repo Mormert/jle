@@ -94,14 +94,10 @@ private:
 
     void renderEditorGizmosObject(jleObject *object, jleFramePacket &renderGraph);
 
-    void addImGuiWindow(std::shared_ptr<jleEditorWindowInterface> window);
-
     void mainEditorWindowResized(const jleWindowResizeEvent &resizeEvent);
 
     class jleEditorWindows;
     std::unique_ptr<jleEditorWindows> _editorWindows{};
-
-    std::vector<std::shared_ptr<jleEditorWindowInterface>> _imGuiWindows;
 
     std::vector<std::shared_ptr<jleScene>> _editorScenes;
 

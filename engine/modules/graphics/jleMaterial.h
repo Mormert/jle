@@ -62,7 +62,9 @@ public:
                              const jle3DSettings &settings);
 
     template <class Archive>
-    void serialize(Archive &ar);
+    void serialize(Archive &ar){
+        ar(CEREAL_NVP(_shaderRef));
+    }
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedOnlyResource)
 
@@ -78,7 +80,7 @@ protected:
     jleResourceRef<jleShader> _shaderRef;
 };
 
-JLE_EXTERN_TEMPLATE_CEREAL_H(jleMaterial)
+//JLE_EXTERN_TEMPLATE_CEREAL_H(jleMaterial)
 
 CEREAL_REGISTER_TYPE(jleMaterial)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleSerializedOnlyResource, jleMaterial)
@@ -96,7 +98,29 @@ public:
 
     template <class Archive>
     void
-    serialize(Archive &ar);
+    serialize(Archive &ar){
+        try {
+            ar(cereal::base_class<jleMaterial>(this),
+               CEREAL_NVP(_albedo),
+               CEREAL_NVP(_normal),
+               CEREAL_NVP(_metallic),
+               CEREAL_NVP(_roughness),
+               CEREAL_NVP(_opacity),
+               CEREAL_NVP(_usePointShadows),
+               CEREAL_NVP(_useDirectionalShadows),
+               CEREAL_NVP(_useSkyboxEnvironmentMap),
+               CEREAL_NVP(_isTranslucent),
+               CEREAL_NVP(_singleChannelOpacity),
+               CEREAL_NVP(_blendModeSrc),
+               CEREAL_NVP(_blendModeDst));
+
+            if (!_shaderRef) {
+                _shaderRef = jleResourceRef<jleShader>(jlePath{"ER:/shaders/defaultMesh.glsl"}, ar.ctx);
+            }
+        } catch (std::exception &e) {
+            LOGE << "Failed loading material:" << e.what();
+        }
+    }
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleMaterial)
 
@@ -118,7 +142,7 @@ public:
     jleBlendMode _blendModeDst{};
 };
 
-JLE_EXTERN_TEMPLATE_CEREAL_H(jleMaterialPBR)
+//JLE_EXTERN_TEMPLATE_CEREAL_H(jleMaterialPBR)
 
 CEREAL_REGISTER_TYPE(jleMaterialPBR)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(jleMaterial, jleMaterialPBR)

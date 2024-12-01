@@ -45,7 +45,7 @@
 // [SECTION] Obsolete API
 
 #pragma once
-#include "3rdparty/ImGui/imgui.h"
+#include "ImGui/imgui.h"
 
 //-----------------------------------------------------------------------------
 // [SECTION] Macros and Defines

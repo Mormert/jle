@@ -55,7 +55,9 @@ public:
     ~jleScene() override;
 
     template <class Archive>
-    void serialize(Archive &archive);
+    void serialize(Archive &archive){
+        archive(CEREAL_NVP(sceneName), CEREAL_NVP(_sceneObjects));
+    }
 
     template <typename T>
     std::shared_ptr<T> spawnObject(jleSerializationContext& ctx);

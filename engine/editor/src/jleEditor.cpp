@@ -14,30 +14,31 @@
  *********************************************************************************************/
 
 #include "jleEditor.h"
-#include "editor/jleConsoleEditorWindow.h"
-#include "editor/jleEditorBuild.h"
-#include "editor/jleEditorContentBrowser.h"
-#include "editor/jleEditorFrameGraphWindow.h"
-#include "editor/jleEditorGizmos.h"
-#include "editor/jleEditorImGuiWindowInterface.h"
-#include "editor/jleEditorNotifications.h"
-#include "editor/jleEditorProfilerWindow.h"
-#include "editor/jleEditorResourceViewer.h"
-#include "editor/jleEditorSaveState.h"
-#include "editor/jleEditorSceneObjectsWindow.h"
-#include "editor/jleEditorWindowsPanel.h"
-#include "editor/jleECSEditorWindow.h"
 
 #include "core/jlePath.h"
 #include "core/jlePathDefines.h"
-#include "core/jleResourceIndexer.h"
 #include "core/jleResourceRef.h"
+
+#include "jleConsoleEditorWindow.h"
+#include "jleEditorBuild.h"
+#include "jleEditorContentBrowser.h"
+#include "jleEditorFrameGraphWindow.h"
+#include "jleEditorGizmos.h"
+#include "jleEditorNotifications.h"
+#include "jleEditorProfilerWindow.h"
+#include "jleEditorResourceViewer.h"
+#include "jleEditorSaveState.h"
+#include "jleEditorSceneObjectsWindow.h"
+#include "jleEditorWindowsPanel.h"
+#include "jleECSEditorWindow.h"
+#include "jleResourceIndexer.h"
 #include "jleEditor3DImportWindow.h"
 #include "jleEditorResourceEdit.h"
 #include "jleEditorSettingsWindow.h"
 #include "jleEditorTextEdit.h"
 #include "jleGameEditorWindow.h"
 #include "jleSceneEditorWindow.h"
+
 #include "modules/game/jleGame.h"
 #include "modules/graphics/core/jleFramebufferMultisample.h"
 #include "modules/graphics/core/jleFramebufferScreen.h"
@@ -354,12 +355,6 @@ jleEditor::initImgui()
 
     io.Fonts->Clear();
     ImGui::Spectrum::LoadFont();
-}
-
-void
-jleEditor::addImGuiWindow(std::shared_ptr<jleEditorWindowInterface> window)
-{
-    _imGuiWindows.push_back(window);
 }
 
 void

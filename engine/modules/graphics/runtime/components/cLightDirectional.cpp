@@ -25,8 +25,6 @@
 #include "core/serialization/jleBinaryArchive.h"
 #include "core/serialization/jleJSONArchive.h"
 
-JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLightDirectional)
-
 void
 cLightDirectional::update(jleEngineUpdateContext &ctx)
 {
@@ -60,11 +58,4 @@ void
 cLightDirectional::registerLua(sol::state &lua)
 {
     lua.new_usertype<cLightDirectional>("cLightDirectional", sol::base_classes, sol::bases<cLight>());
-}
-
-template <class Archive>
-void
-cLightDirectional::serialize(Archive &ar)
-{
-    ar(cereal::base_class<cLight>(this));
 }
