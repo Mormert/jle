@@ -18,8 +18,22 @@ include(${JLE_ENGINE_PATH}/cmake/game1.cmake)
 
 project(${JLE_GAME_BUILD})
 
-add_executable(${JLE_GAME_BUILD}
-        "GameTemplate.cpp"
-        "main.cpp")
+add_library(${JLE_GAME_BUILD} SHARED
+        "GameTemplate.cpp")
+
+target_include_directories(${JLE_GAME_BUILD} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 include(${JLE_ENGINE_PATH}/cmake/game2.cmake)
+
+add_executable(${JLE_GAME_BUILD}_game
+        "runtime/main_game.cpp")
+
+add_executable(${JLE_GAME_BUILD}_editor
+        "runtime/main_editor.cpp")
+
+target_link_libraries(${JLE_GAME_BUILD}_game PRIVATE ${JLE_GAME_BUILD})
+target_include_directories(${JLE_GAME_BUILD}_editor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_libraries(${JLE_GAME_BUILD}_editor PRIVATE ${JLE_GAME_BUILD})
+target_link_libraries(${JLE_GAME_BUILD}_editor PRIVATE jleEditor)
+target_include_directories(${JLE_GAME_BUILD}_editor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
