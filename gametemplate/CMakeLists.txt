@@ -25,15 +25,15 @@ target_include_directories(${JLE_GAME_BUILD} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 include(${JLE_ENGINE_PATH}/cmake/game2.cmake)
 
-add_executable(${JLE_GAME_BUILD}_game
-        "runtime/main_game.cpp")
-
-add_executable(${JLE_GAME_BUILD}_editor
-        "runtime/main_editor.cpp")
-
+add_executable(${JLE_GAME_BUILD}_game "runtime/main_game.cpp")
 target_link_libraries(${JLE_GAME_BUILD}_game PRIVATE ${JLE_GAME_BUILD})
-target_include_directories(${JLE_GAME_BUILD}_editor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(${JLE_GAME_BUILD}_editor PRIVATE ${JLE_GAME_BUILD})
-target_link_libraries(${JLE_GAME_BUILD}_editor PRIVATE jleEditor)
-target_include_directories(${JLE_GAME_BUILD}_editor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+if (NOT JLE_BUILD_EMSCRIPTEN)
+    add_executable(${JLE_GAME_BUILD}_editor "runtime/main_editor.cpp")
+
+    target_include_directories(${JLE_GAME_BUILD}_editor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+    target_link_libraries(${JLE_GAME_BUILD}_editor PRIVATE ${JLE_GAME_BUILD})
+    target_link_libraries(${JLE_GAME_BUILD}_editor PRIVATE jleEditor)
+    target_include_directories(${JLE_GAME_BUILD}_editor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+endif ()
