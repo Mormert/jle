@@ -47,13 +47,8 @@ if(APPLE)
 endif ()
 
 target_include_directories(jleEditor SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty)
-
 target_include_directories(jleEditor PUBLIC SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/public")
-
 target_include_directories(jleEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/public/editor")
-
-add_subdirectory(../core/editor ${CMAKE_CURRENT_BINARY_DIR}/coreEditor)
-target_link_libraries(jleCore_Editor PRIVATE jleEditor)
 
 add_subdirectory(../core/jlECS/editor ${CMAKE_CURRENT_BINARY_DIR}/jlECSEditor)
 # Todo: fix this by not having jlECS be its own submodule, that is just annoying at this point
