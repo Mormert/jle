@@ -16,9 +16,9 @@
 #include "jleEditorWindow.h"
 
 #include <GLFW/glfw3.h>
-#include <ImGui/ImGui.h>
 
 #ifdef WIN32
+#include <ImGui/ImGui.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 #include <windef.h>
