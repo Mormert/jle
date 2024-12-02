@@ -56,7 +56,7 @@ struct jleGameEngine::jleEngineInternal {
     jleResourceRef<jleEngineSettings> engineSettings;
 };
 
-jleGameEngine::jleGameEngine()
+jleGameEngine::jleGameEngine(std::unique_ptr<jleWindow> window)
 {
     LOGI << "Project built on: " << __DATE__ ", at " << __TIME__;
 
@@ -87,7 +87,7 @@ jleGameEngine::jleGameEngine()
 
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
     {
-        _window = std::make_unique<jleWindow>();
+        _window = std::move(window);
 
         PLOG_INFO << "Initializing the window";
         _window->settings(_internal->engineSettings.get()->windowSettings);

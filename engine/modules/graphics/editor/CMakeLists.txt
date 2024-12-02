@@ -1,2 +1,2 @@
-add_library(jleGraphics_Editor STATIC
+target_sources(jleEditor PRIVATE
     "jleGraphicsModuleEditor.cpp")

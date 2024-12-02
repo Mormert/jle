@@ -159,7 +159,7 @@ public:
     }
 };
 
-jleEditor::jleEditor() {}
+jleEditor::jleEditor(std::unique_ptr<jleWindow> window) : jleGameEngine(std::move(window)) {}
 
 void
 jleEditor::start(jleEngineUpdateContext &ctx)

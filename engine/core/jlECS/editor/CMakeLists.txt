@@ -1,6 +1,5 @@
-add_library(jlECS_Editor STATIC
+target_sources(jleEditor PRIVATE
         "src/jlECSEditor.cpp")
 
-target_include_directories(jlECS_Editor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/public/jlECSEditor")
-
-target_include_directories(jlECS_Editor SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")
+target_include_directories(jleEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/public/jlECSEditor")
+target_include_directories(jleEditor SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/public")

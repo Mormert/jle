@@ -44,7 +44,7 @@ class jleSerializationContext;
 class jleEditor : public jleGameEngine
 {
 public:
-    jleEditor();
+    jleEditor(std::unique_ptr<jleWindow> window);
 
     ~jleEditor() override;
 

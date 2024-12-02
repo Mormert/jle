@@ -77,7 +77,7 @@ class jleGameEngine
 public:
     virtual ~jleGameEngine();
 
-    explicit jleGameEngine();
+    explicit jleGameEngine(std::unique_ptr<jleWindow> window);
 
     template <class T>void setGame(){_gameRuntime->_gameCreator = []() { return std::make_unique<T>(); };}
 

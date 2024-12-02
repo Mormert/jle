@@ -17,8 +17,6 @@
 
 #include "jleBuildConfig.h"
 
-#if JLE_BUILD_EDITOR
-
 #include <ImGui/imgui.h>
 
 namespace ImGui
@@ -26,5 +24,3 @@ namespace ImGui
     void BeginGroupPanel(const char* name, const ImVec2& size = ImVec2(0.0f, 0.0f));
     void EndGroupPanel();
 }
-
-#endif // JLE_BUILD_EDITOR

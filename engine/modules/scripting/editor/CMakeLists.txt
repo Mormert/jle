@@ -1,2 +1,2 @@
-add_library(jleScripting_Editor STATIC
+target_sources(jleEditor PRIVATE
     "jleScriptingEditor.cpp")

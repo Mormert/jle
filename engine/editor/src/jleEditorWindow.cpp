@@ -214,7 +214,7 @@ jleEditorWindow::initGlfwWindow(int width, int height, const char *title)
     const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     glfwWindow = jleWindow::initGlfwWindow(mode->width, mode->height, title);
 #ifdef __APPLE__
-    customizeTitleBarMacOS(_glfwWindow);
+    customizeTitleBarMacOS(glfwWindow);
 #endif
 #endif
     return glfwWindow;

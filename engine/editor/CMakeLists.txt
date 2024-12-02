@@ -46,17 +46,10 @@ if(APPLE)
     target_sources(jleEditor PRIVATE "src/jleMacOSWindow.mm")
 endif ()
 
-target_include_directories(jleEditor SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty)
+target_include_directories(jleEditor PUBLIC SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty)
 target_include_directories(jleEditor PUBLIC SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/public")
 target_include_directories(jleEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/public/editor")
 
 add_subdirectory(../core/jlECS/editor ${CMAKE_CURRENT_BINARY_DIR}/jlECSEditor)
-# Todo: fix this by not having jlECS be its own submodule, that is just annoying at this point
-target_link_libraries(jlECS_Editor PRIVATE jleEditor)
-target_link_libraries(jleEditor PRIVATE jlECS_Editor)
-
 add_subdirectory(../modules/graphics/editor ${CMAKE_CURRENT_BINARY_DIR}/graphicsEditor)
-target_link_libraries(jleGraphics_Editor PRIVATE jleEditor)
-
 add_subdirectory(../modules/scripting/editor ${CMAKE_CURRENT_BINARY_DIR}/scriptingEditor)
-target_link_libraries(jleScripting_Editor PRIVATE jleEditor)
