@@ -15,6 +15,11 @@
 
 option(JLE_ALLOW_MINGW "Allow using MinGW on Windows" OFF)
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
+
+
 if (WIN32)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT JLE_ALLOW_MINGW)
         message(FATAL_ERROR "MinGW is not supported on Windows by default. Please use MSVC or enable ALLOW_MINGW to proceed with MinGW.")
