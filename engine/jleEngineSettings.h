@@ -34,7 +34,6 @@ public:
     JLE_REGISTER_RESOURCE_TYPE(jleEngineSettings, "es")
 
     WindowSettings windowSettings;
-    std::vector<jlePath> initialScenesToLoad;
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedOnlyResource)
 
@@ -45,7 +44,7 @@ public:
     serialize(Archive &ar)
     {
         try {
-            ar(CEREAL_NVP(windowSettings), CEREAL_NVP(initialScenesToLoad));
+            ar(CEREAL_NVP(windowSettings));
         } catch (std::exception &e) {
         }
     }

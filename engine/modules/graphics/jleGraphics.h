@@ -37,7 +37,6 @@ public:
     virtual ~jleGraphics();
 
     void render(jleFramebufferInterface &framebufferOut,
-                const jleCamera &camera,
                 const jleFramePacket &framePacket);
 
     void renderMeshesPicking(jleFramebufferInterface &framebufferOut,

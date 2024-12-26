@@ -15,8 +15,6 @@
 
 #pragma once
 
-#include "core/jleComponent.h"
-
 class cPhysicsShape : public jleComponent
 {
     JLE_REGISTER_COMPONENT_TYPE(cPhysicsShape)

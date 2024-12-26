@@ -17,13 +17,13 @@
 
 #include "core/jleCommon.h"
 
-#include "core/jleComponent.h"
-#include "core/jleTransform.h"
-#include "modules/graphics/core/jleFrameBufferInterface.h"
+#include <cereal/cereal.hpp>
 
-class cCamera : public jleComponent
+class cTransform;
+class jleCamera;
+
+class cCamera
 {
-    JLE_REGISTER_COMPONENT_TYPE(cCamera)
 public:
     template <class Archive>
     void serialize(Archive &ar)
@@ -33,24 +33,22 @@ public:
            CEREAL_NVP(nearPlane),
            CEREAL_NVP(perspectiveFov),
            CEREAL_NVP(framebufferSizeX),
-           CEREAL_NVP(framebufferSizeY),
-           CEREAL_NVP(framebufferUseFixedAxis),
-           CEREAL_NVP(matchFramebufferToWindowSize));
+           CEREAL_NVP(framebufferSizeY));
     }
 
-    ~cCamera() override;
+    struct UpdateContext{
+        struct In{
+            const cTransform& transform;
+            uint32_t width;
+            uint32_t height;
+        } in;
 
-    void start(jleEngineUpdateContext &ctx) override;
+        struct Out{
+            jleCamera& camera;
+        } out;
+    };
 
-    void update(jleEngineUpdateContext &ctx) override;
-
-    void ecsUpdate(jleCamera &camera, int width, int height);
-
-    void editorInspectorImGuiRender(jleEditorUpdateContext &ctx) override;
-
-    void onFramebufferSizeChanged(unsigned int width, unsigned int height);
-
-    void editorGizmosRender(jleFramePacket &packet, jleEditorGizmos &gizmos) override;
+    void update(UpdateContext& ctx) const;
 
     bool perspective{true};
     float perspectiveFov{90.f};
@@ -58,16 +56,4 @@ public:
     float nearPlane{0.1f};
     int framebufferSizeX{1024};
     int framebufferSizeY{1024};
-    bool framebufferUseFixedAxis{false};
-    bool matchFramebufferToWindowSize{false};
-    jleFramebufferInterface::FIXED_AXIS framebufferFixedAxis{jleFramebufferInterface::FIXED_AXIS::width};
-
-protected:
-    int previousFrameScreenX{};
-    int previousFrameScreenY{};
-
-    inline static uint32_t sInstanceCounter = 0;
 };
-
-CEREAL_REGISTER_TYPE(cCamera)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cCamera)

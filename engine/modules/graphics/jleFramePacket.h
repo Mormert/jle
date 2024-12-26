@@ -16,6 +16,7 @@
 #pragma once
 
 #include "core/jleCommon.h"
+#include "core/jleCamera.h"
 #include "jle3DSettings.h"
 
 #include <glm/glm.hpp>
@@ -100,6 +101,8 @@ public:
     }
 
     jle3DSettings settings{};
+
+    jleCamera camera{};
 
 private:
     std::vector<jle3DQueuedMesh> _meshes;

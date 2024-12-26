@@ -3,11 +3,13 @@
 #include "GameTemplate.h"
 
 void
-GameTemplate::start(jleEngineUpdateContext& ctx)
+GameTemplate::start(GameStartContext& ctx)
 {
+    jleGame::start(ctx);
 }
 
 void
 GameTemplate::update(jleEngineUpdateContext& ctx)
 {
+    jleGame::update(ctx);
 }

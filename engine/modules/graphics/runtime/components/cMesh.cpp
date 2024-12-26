@@ -14,39 +14,16 @@
  *********************************************************************************************/
 
 #include "cMesh.h"
-
-//JLE_EXTERN_TEMPLATE_CEREAL_CPP(cMesh)
-
-void
-cMesh::start(jleEngineUpdateContext &ctx)
-{
-}
+#include <modules/core/components/cTransform.h>
 
 void
-cMesh::update(jleEngineUpdateContext &ctx)
+cMesh::ecsUpdate(jleFramePacket &packet, const cTransform& transform, int instanceId)
 {
     if (_meshRef) {
         std::shared_ptr<jleMesh> mesh = _meshRef.get();
         std::shared_ptr<jleMaterial> material = _materialRef.get();
-        ctx.currentFramePacket.sendMesh(
-            mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), true);
+        packet.sendMesh(mesh, material, transform.getWorldMatrix(), instanceId, true);
     }
-}
-
-void
-cMesh::ecsUpdate(jleFramePacket &packet)
-{
-    if (_meshRef) {
-        std::shared_ptr<jleMesh> mesh = _meshRef.get();
-        std::shared_ptr<jleMaterial> material = _materialRef.get();
-        packet.sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), true);
-    }
-}
-
-void
-cMesh::editorUpdate(jleEngineUpdateContext &ctx)
-{
-    update(ctx);
 }
 
 std::shared_ptr<jleMesh>

@@ -26,7 +26,6 @@
 #include "core/jleFileWatcher.h"
 #include "core/jleRGB.h"
 #include "core/jleResourceRef.h"
-#include "core/jleTransform.h"
 #include "core/serialization/jleExternalSerialization.h"
 #include "jleEditor.h"
 #include "modules/graphics/jleTextureRefOrRGBA.h"
@@ -118,7 +117,6 @@ private:
     void draw_ui(jleImGuiArchive &ar, const char *name, jleRGB &value);
     void draw_ui(jleImGuiArchive &ar, const char *name, jleRGBA &value);
     void draw_ui(jleImGuiArchive &ar, const char *name, glm::quat &value);
-    void draw_ui(jleImGuiArchive &ar, const char *name, jleTransform &value);
     // clang-format on
 
     template <class T>
@@ -341,29 +339,13 @@ CEREAL_LOAD_FUNCTION_NAME(jleImGuiArchive &ar, T &t)
 template <class T>
 inline void
 CEREAL_SAVE_FUNCTION_NAME(
-    jleImGuiArchiveInternal &ar,
+jleImGuiArchiveInternal &ar,
     cereal::NameValuePair<cereal::memory_detail::PtrWrapper<const std::shared_ptr<const T> &>> const &t)
 {
     std::shared_ptr<T> f = std::const_pointer_cast<T>(t.value.ptr);
 
-    if (auto component = std::dynamic_pointer_cast<jleComponent>(f)) {
-        jleImGuiArchive nonPolymorphicArchive{ar.editorCtx};
-        nonPolymorphicArchive.elementCount += 1;
-
-        ImGui::PushID(nonPolymorphicArchive.elementCount);
-
-        if (ImGui::TreeNodeEx(std::string{ar.nextPolymorhphicTypeName + " (ptr)"}.c_str(),
-                              ImGuiTreeNodeFlags_DefaultOpen)) {
-            nonPolymorphicArchive(*f);
-            component->editorInspectorImGuiRender(ar.editorCtx);
-            ImGui::TreePop();
-        }
-
-        ImGui::PopID();
-    } else {
-        jleImGuiArchive nonPolymorphicArchive{ar.editorCtx};
-        nonPolymorphicArchive.draw(nonPolymorphicArchive, ar.nextPolymorhphicTypeName + " (ptr)", *f.get());
-    }
+    jleImGuiArchive nonPolymorphicArchive{ar.editorCtx};
+    nonPolymorphicArchive.draw(nonPolymorphicArchive, ar.nextPolymorhphicTypeName + " (ptr)", *f.get());
 }
 
 template <class T>

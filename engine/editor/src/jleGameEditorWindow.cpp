@@ -22,7 +22,7 @@
 #include "modules/graphics/core/jleIncludeGL.h"
 
 #include <ImGui/imgui.h>
-
+#include "jlECS/jlECS.h"
 
 jleGameEditorWindow::jleGameEditorWindow(const std::string &window_name) : jleEditorWindowInterface{window_name}
 {
@@ -44,7 +44,8 @@ jleGameEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleInput& input)
     if (ctx.gameRuntime.isGameKilled()) {
         ImGuiStyle &style = ImGui::GetStyle();
 
-        float size = ImGui::CalcTextSize("   Start Game   ").x + style.FramePadding.x * 2.0f;
+        const char* startGameString = "   Start Game   ";
+        float size = ImGui::CalcTextSize(startGameString).x + style.FramePadding.x * 2.0f;
         float avail = ImGui::GetContentRegionAvail().x;
 
         float off = (avail - size) * 0.5f;
@@ -53,8 +54,8 @@ jleGameEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleInput& input)
 
         ImGui::SetCursorPosY(ImGui::GetWindowHeight() / 2.f);
 
-        if (ImGui::Button("   Start Game   ")) {
-            ctx.gameRuntime.startGame(ctx);
+        if (ImGui::Button(startGameString)) {
+            ctx.gameRuntime.startGame();
         }
 
         ImGui::End();

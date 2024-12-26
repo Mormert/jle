@@ -16,10 +16,11 @@
 #include "jleGameEngine.h"
 #include "core/jleResourceRef.h"
 #include "core/jleTimerManager.h"
+#include "jlECS/jlECS.h"
 #include "jleEngineSettings.h"
 #include "jleExplicitInclude.h"
-#include "modules/game/jleGame.h"
-#include "modules/game/jleGameRuntime.h"
+#include "game/jleGame.h"
+#include "game/jleGameRuntime.h"
 #include "modules/graphics/core/jleFramebufferMultisample.h"
 #include "modules/graphics/core/jleFramebufferScreen.h"
 #include "modules/graphics/core/jleFullscreenRendering.h"
@@ -56,7 +57,7 @@ struct jleGameEngine::jleEngineInternal {
     jleResourceRef<jleEngineSettings> engineSettings;
 };
 
-jleGameEngine::jleGameEngine(std::unique_ptr<jleWindow> window)
+jleGameEngine::jleGameEngine(EngineConstructConfig& config)
 {
     LOGI << "Project built on: " << __DATE__ ", at " << __TIME__;
 
@@ -87,7 +88,7 @@ jleGameEngine::jleGameEngine(std::unique_ptr<jleWindow> window)
 
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
     {
-        _window = std::move(window);
+        _window = std::move(config.window);
 
         PLOG_INFO << "Initializing the window";
         _window->settings(_internal->engineSettings.get()->windowSettings);
@@ -108,7 +109,7 @@ jleGameEngine::jleGameEngine(std::unique_ptr<jleWindow> window)
 
     jleNetworkingModule::initialize();
 
-    _gameRuntime = std::make_unique<jleGameRuntime>(*this);
+    _gameRuntime = std::make_unique<jleGameRuntime>(config.gameConfig, *this);
 }
 
 jleGameEngine::~jleGameEngine()
@@ -203,7 +204,7 @@ jleGameEngine::start(jleEngineUpdateContext &ctx)
     }
     LOG_INFO << "Starting the game engine";
 
-    _gameRuntime->startGame(ctx);
+    _gameRuntime->startGame();
 }
 
 void
@@ -232,7 +233,7 @@ jleGameEngine::render(jleCamera &camera, jleEngineUpdateContext &ctx, wi::jobsys
         }
 
         if (_previousFramePacket) {
-            renderer().render(msaa, camera, *_previousFramePacket);
+            renderer().render(msaa, *_previousFramePacket);
         }
 
         // Render to the MSAA framebuffer, then blit the result over to the main framebuffer
@@ -290,8 +291,22 @@ jleGameEngine::mainLoop()
     auto updateContext = createUpdateContext();
 
     // Copy the last frame's camera before splitting to game & render threads
-    auto camera =
-        updateContext.gameRuntime.isGameKilled() ? jleCamera{} : updateContext.gameRuntime.getGame().mainCamera;
+    // TODO consider if we even need this ?
+    // Especially now that the framepacket contains a camera... ??
+    jleCamera camera = jleCamera{};
+    if(!_gameRuntime->isGameKilled()){
+        auto& ecs = *_gameRuntime->getGame().getGameState().ecs;
+        for(auto [cameraComponent, transformComponent] : ecs.iterateMulti<cCamera, cTransform>()){
+            cCamera::UpdateContext cameraUpdateCtx{
+                .in ={ .transform = *transformComponent,
+                       .width = _gameRuntime->mainGameScreenFramebuffer->width(),
+                       .height = _gameRuntime->mainGameScreenFramebuffer->height()},
+                .out = {.camera = camera}
+            };
+            cameraComponent->update(cameraUpdateCtx);
+            break;
+        }
+    }
 
     // Game thread
     wi::jobsystem::Execute(jobsCtx, [&](wi::jobsystem::JobArgs args) { _gameRuntime->update(updateContext); });
@@ -352,12 +367,19 @@ jleGameEngine::renderer()
     return *_3dRenderer.get();
 }
 
+jleSerializationContext
+jleGameEngine::createSerializationContext()
+{
+    return jleSerializationContext {
+        .resources = _resources.get(),
+        .serializationInterfaces = {_renderThread.get(), _luaEnvironment.get()}
+    };
+}
+
 jleEngineUpdateContext
 jleGameEngine::createUpdateContext()
 {
-    jleSerializationContext serializationContext{
-        .resources = _resources.get(),
-        .serializationInterfaces = {_renderThread.get(), _luaEnvironment.get()}};
+    jleSerializationContext serializationContext = createSerializationContext();
 
     return jleEngineUpdateContext(*_gameRuntime,
                                   *_3dRenderer,
@@ -371,3 +393,4 @@ jleGameEngine::createUpdateContext()
                                   _frameInfo,
                                   serializationContext);
 }
+

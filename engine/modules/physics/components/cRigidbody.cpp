@@ -17,6 +17,7 @@
 
 #include "modules/graphics/runtime/components/cMesh.h"
 #include "modules/physics/jlePhysics.h"
+#include "modules/core/components/cTransform.h"
 
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
@@ -25,62 +26,25 @@
 
 #include <glm/ext/matrix_transform.hpp>
 
-JLE_EXTERN_TEMPLATE_CEREAL_CPP(cRigidbody)
-
 cRigidbody::cRigidbody() = default;
 cRigidbody::~cRigidbody() = default;
 
-cRigidbody::cRigidbody(const cRigidbody &other) : jleComponent(other)
+cRigidbody &
+cRigidbody::operator=(cRigidbody &&) noexcept = default;
+
+cRigidbody::cRigidbody(const cRigidbody &other)
 {
     _mass = other._mass;
 
+    // TODO: add mechanism to the ECS to handle callbacks for copying/cloning components
     // Explicitly run setup when component cloning
-    if (other._body) {
-        setupRigidbody();
-    }
-}
-
-void
-cRigidbody::editorUpdate(jleEngineUpdateContext &ctx)
-{
-}
-
-void
-cRigidbody::start(jleEngineUpdateContext &ctx)
-{
-    setupRigidbody();
-}
-
-void
-cRigidbody::update(jleEngineUpdateContext &ctx)
-{
-}
-
-void
-cRigidbody::getWorldTransform(btTransform &centerOfMassWorldTrans) const
-{
-    centerOfMassWorldTrans.setFromOpenGLMatrix(
-        (btScalar *)&const_cast<cRigidbody *>(this)->object()->getTransform().getWorldMatrix()[0]);
-
-    const_cast<cRigidbody *>(this)->_size.x =
-        glm::length(glm::vec3(const_cast<cRigidbody *>(this)->getTransform().getWorldMatrix()[0])); // Basis vector X
-    const_cast<cRigidbody *>(this)->_size.y =
-        glm::length(glm::vec3(const_cast<cRigidbody *>(this)->getTransform().getWorldMatrix()[1])); // Basis vector Y
-    const_cast<cRigidbody *>(this)->_size.z =
-        glm::length(glm::vec3(const_cast<cRigidbody *>(this)->getTransform().getWorldMatrix()[2])); // Basis vector Z
-}
-
-void
-cRigidbody::setWorldTransform(const btTransform &centerOfMassWorldTrans)
-{
-    glm::mat4 matrix;
-    centerOfMassWorldTrans.getOpenGLMatrix((btScalar *)&matrix);
-    matrix = glm::scale(matrix, _size);
-    object()->getTransform().setWorldMatrix(matrix);
+   // if (other._body) {
+   //     setupRigidbody();
+   // }
 }
 
 std::unique_ptr<btRigidBody>
-cRigidbody::createRigidbody(bool isDynamic, btCollisionShape *shape)
+cRigidbody::createRigidbody(bool isDynamic, const cTransform& transform, btCollisionShape *shape)
 {
     jleAssert((!shape || shape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
 
@@ -88,17 +52,18 @@ cRigidbody::createRigidbody(bool isDynamic, btCollisionShape *shape)
     if (isDynamic) {
         shape->calculateLocalInertia(_mass, localInertia);
     } else {
-        _size.x = glm::length(glm::vec3(getTransform().getWorldMatrix()[0])); // Basis vector X
-        _size.y = glm::length(glm::vec3(getTransform().getWorldMatrix()[1])); // Basis vector Y
-        _size.z = glm::length(glm::vec3(getTransform().getWorldMatrix()[2])); // Basis vector Z
+        _size.x = glm::length(glm::vec3(transform.getWorldMatrix()[0])); // Basis vector X
+        _size.y = glm::length(glm::vec3(transform.getWorldMatrix()[1])); // Basis vector Y
+        _size.z = glm::length(glm::vec3(transform.getWorldMatrix()[2])); // Basis vector Z
 
         auto v = btVector3{_size.x, _size.y, _size.z};
-        _optionalLocalShape =
-            std::make_unique<btScaledBvhTriangleMeshShape>(reinterpret_cast<btBvhTriangleMeshShape *>(shape), v);
+        _optionalLocalShape = std::make_unique<btScaledBvhTriangleMeshShape>(reinterpret_cast<btBvhTriangleMeshShape *>(shape), v);
         shape = _optionalLocalShape.get();
     }
 
-    btRigidBody::btRigidBodyConstructionInfo cInfo(_mass, this, shape, localInertia);
+    btRigidBody::btRigidBodyConstructionInfo cInfo{
+        _mass, nullptr, shape, localInertia
+    };
 
     auto body = std::make_unique<btRigidBody>(cInfo);
 
@@ -109,43 +74,31 @@ cRigidbody::createRigidbody(bool isDynamic, btCollisionShape *shape)
 }
 
 void
-cRigidbody::setupRigidbody()
+cRigidbody::setupRigidbody(jlePhysics* physics, cTransform& transform, cMesh& mesh)
 {
     // Rigidbody is dynamic if and only if mass is non-zero, otherwise static
     bool isDynamic = (_mass != 0.f);
 
     if (isDynamic) {
-        btConvexHullShape *dynamicConvexShape = object()->getComponent<cMesh>()->getMesh()->getDynamicConvexShape();
-        _body = createRigidbody(isDynamic, dynamicConvexShape);
+        btConvexHullShape *dynamicConvexShape = mesh.getMesh()->getDynamicConvexShape();
+        _body = createRigidbody(isDynamic, transform, dynamicConvexShape);
     } else {
-        const auto &staticConcaveShape = object()->getComponent<cMesh>()->getMesh()->getStaticConcaveShape();
-        _body = createRigidbody(isDynamic, staticConcaveShape);
+        const auto &staticConcaveShape = mesh.getMesh()->getStaticConcaveShape();
+        _body = createRigidbody(isDynamic, transform, staticConcaveShape);
     }
 
-    scene()->getPhysics().addRigidbody(_body.get());
+    physics->addRigidbody(_body.get());
 
-    setWorldMatrixAndScaleRigidbody(getTransform().getWorldMatrix());
+    setWorldMatrixAndScaleRigidbody(physics, transform, mesh);
 
     _body->activate();
 }
 
-void
-cRigidbody::setupNewRigidbodyAndDeleteOld()
-{
-    scene()->getPhysics().removeRigidbody(_body.get());
-    setupRigidbody();
-}
 
 bool
 cRigidbody::isDynamic()
 {
     return _mass != 0.f;
-}
-
-void
-cRigidbody::onDestroy(jleEngineUpdateContext &ctx)
-{
-    scene()->getPhysics().removeRigidbody(_body.get());
 }
 
 btRigidBody &
@@ -155,12 +108,17 @@ cRigidbody::getBody()
 }
 
 void
-cRigidbody::setWorldMatrixAndScaleRigidbody(const glm::mat4 &worldMatrix)
+cRigidbody::setWorldMatrixAndScaleRigidbody(jlePhysics* physics, cTransform& transform, cMesh& mesh)
 {
-    if (isDynamic()) {
-        getTransform().setWorldMatrix(worldMatrix);
+    const auto& worldMatrix = transform.getWorldMatrix();
 
-        setupNewRigidbodyAndDeleteOld();
+    if (isDynamic()) {
+        assert(false); // todo fix this
+        // Remove old rigidbody
+        physics->removeRigidbody(_body.get());
+        // Setup new rigidbody
+        setupRigidbody(physics, transform, mesh);
+
         glm::vec3 size;
 
         size.x = glm::length(glm::vec3(worldMatrix[0])); // Basis vector X
@@ -175,14 +133,14 @@ cRigidbody::setWorldMatrixAndScaleRigidbody(const glm::mat4 &worldMatrix)
         size.y = glm::length(glm::vec3(worldMatrix[1])); // Basis vector Y
         size.z = glm::length(glm::vec3(worldMatrix[2])); // Basis vector Z
 
-        getTransform().setWorldMatrix(worldMatrix);
+        transform.setWorldMatrix(worldMatrix);
 
         const glm::mat4 scaledMatrix = glm::scale(worldMatrix, glm::vec3(1.f / size.x, 1.f / size.y, 1.f / size.z));
 
-        btTransform transform;
-        transform.setFromOpenGLMatrix((btScalar *)&scaledMatrix);
+        btTransform bulletTransform;
+        bulletTransform.setFromOpenGLMatrix((btScalar *)&scaledMatrix);
 
-        getBody().setWorldTransform(transform);
+        getBody().setWorldTransform(bulletTransform);
         getBody().getCollisionShape()->setLocalScaling({size.x, size.y, size.z});
     }
 }

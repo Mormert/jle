@@ -4,15 +4,23 @@
 
 #include <editor/jleEditor.h>
 #include <editor/jleEditorWindow.h>
+#include <game/loader/editor/jleGameModulesLoaderEditor.h>
 #include <runtime/jleKickStarter.h>
-
-#include "GameTemplate.h"
 
 int
 main(int argc, char *argv[])
 {
     auto kickstarter = jleKickStarter{};
-    auto window = std::make_unique<jleEditorWindow>();
-    kickstarter.kickStart<jleGame>(std::make_unique<jleEditor>(std::move(window)), argc, argv);
+
+    jleGameEngine::EngineConstructConfig config{
+        .window = std::make_unique<jleEditorWindow>(),
+        .gameConfig = {
+            .gameCreator = std::make_unique<jleGame>,
+            .modulesCreator = jleModuleLoading::createDefaultModules_Editor,
+            .ecsCreator = std::make_unique<jlECS::Debug::ECS_Debug> }
+    };
+
+    auto editor = std::make_unique<jleEditor>(config);
+    kickstarter.kickStart(std::move(editor), argc, argv);
     return 0;
 }

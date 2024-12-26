@@ -15,30 +15,23 @@
 
 #pragma once
 
-#include "jleBuildConfig.h"
-
-#include "core/jleComponent.h"
+#include <core/jleCommon.h>
 
 #include "modules/graphics/jleMaterial.h"
 #include "modules/graphics/jleSkinnedMesh.h"
 
 class cAnimator;
+class cTransform;
 
-class cSkinnedMesh : public jleComponent
+class cSkinnedMesh
 {
-    JLE_REGISTER_COMPONENT_TYPE(cSkinnedMesh)
 public:
-
     template <class Archive>
-    void serialize(Archive &ar);
+    void serialize(Archive &ar){
+        ar(CEREAL_NVP(_skinnedMeshRef), CEREAL_NVP(_materialRef));
+    }
 
-    void editorUpdate(jleEngineUpdateContext & ctx) override;
-
-    void start(jleEngineUpdateContext & ctx) override;
-
-    void update(jleEngineUpdateContext & ctx) override;
-
-    void ecsUpdate(jleFramePacket& packet);
+    void ecsUpdate(jleFramePacket &packet, const cTransform& transform, const cAnimator* optionalAnimator, int objectIndex);
 
     std::shared_ptr<jleSkinnedMesh> getMesh();
     std::shared_ptr<jleMaterial> getMaterial();
@@ -46,20 +39,9 @@ public:
     jleResourceRef<jleSkinnedMesh>& getMeshRef();
     jleResourceRef<jleMaterial>& getMaterialRef();
 
-    void editorInspectorImGuiRender(jleEditorUpdateContext & ctx) override;
+   // void editorInspectorImGuiRender(jleEditorUpdateContext &ctx);
 
 protected:
-
     jleResourceRef<jleSkinnedMesh> _skinnedMeshRef;
     jleResourceRef<jleMaterial> _materialRef;
-
-    std::shared_ptr<cAnimator> _animator;
-
-    void findAnimator(jleObject* object);
-
 };
-
-JLE_EXTERN_TEMPLATE_CEREAL_H(cSkinnedMesh)
-
-CEREAL_REGISTER_TYPE(cSkinnedMesh)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cSkinnedMesh)

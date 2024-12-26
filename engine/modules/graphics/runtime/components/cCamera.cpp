@@ -14,105 +14,31 @@
  *********************************************************************************************/
 
 #include "cCamera.h"
-#include "core/jleObject.h"
-#include "jleGameEngine.h"
-#include "modules/game/jleGame.h"
-#include "modules/graphics/core/jleIncludeGL.h"
-#include "modules/windowing/jleWindow.h"
 
-#if JLE_BUILD_EDITOR
-//#include "editor/jleEditor.h"
-//#include "editor/jleEditorGizmos.h"
-#include "modules/graphics/jleFramePacket.h"
-#endif
+#include "core/jleCamera.h"
+#include "modules/core/components/cTransform.h"
 
 void
-cCamera::start(jleEngineUpdateContext &ctx)
+cCamera::update(UpdateContext& ctx) const
 {
-    sInstanceCounter++;
-
-    if (sInstanceCounter > 1) {
-        LOG_ERROR << "More than one camera detected!";
-    }
-}
-
-void
-cCamera::onFramebufferSizeChanged(unsigned int width, unsigned int height)
-{
-    glm::ivec2 dimensions{width, height};
-    if (framebufferUseFixedAxis) {
-        if (framebufferFixedAxis == jleFramebufferInterface::FIXED_AXIS::width) {
-            const auto aspect = static_cast<float>(height) / static_cast<float>(width);
-            dimensions = jleFramebufferInterface::fixedAxisDimensions(framebufferFixedAxis, aspect, framebufferSizeX);
-        } else if (framebufferFixedAxis == jleFramebufferInterface::FIXED_AXIS::height) {
-            const auto aspect = static_cast<float>(width) / static_cast<float>(height);
-
-            dimensions = jleFramebufferInterface::fixedAxisDimensions(framebufferFixedAxis, aspect, framebufferSizeY);
-        }
-    } else {
-        dimensions = {width, height};
-    }
-
-    if (matchFramebufferToWindowSize) {
-        dimensions = {width, height};
-    }
-}
-
-void
-cCamera::update(jleEngineUpdateContext &ctx)
-{
-    auto &game = ctx.gameRuntime.getGame();
-
-    auto width = ctx.gameRuntime.mainGameScreenFramebuffer->width();
-    auto height = ctx.gameRuntime.mainGameScreenFramebuffer->height();
-
-    if (width != previousFrameScreenX || height != previousFrameScreenY) {
-        onFramebufferSizeChanged(width, height);
-        previousFrameScreenX = width;
-        previousFrameScreenY = height;
-    }
+    const auto width = ctx.in.width;
+    const auto height = ctx.in.height;
 
     if (perspective && width > 0 && height > 0) {
-        game.mainCamera.setPerspectiveProjection(perspectiveFov, width, height, farPlane, nearPlane);
+        ctx.out.camera.setPerspectiveProjection(perspectiveFov, width, height, farPlane, nearPlane);
     } else {
-        game.mainCamera.setOrthographicProjection(width, height, farPlane, nearPlane);
+        ctx.out.camera.setOrthographicProjection(width, height, farPlane, nearPlane);
     }
 
-    jleCameraSimpleFPVController c;
-    c.position = getTransform().getWorldPosition();
-
-    auto &&transformation = _attachedToObject->getTransform().getWorldMatrix();
-    game.mainCamera.setViewMatrix(glm::inverse(transformation), c.position);
+    auto &&transformation = ctx.in.transform.getWorldMatrix();
+    ctx.out.camera.setViewMatrix(glm::inverse(transformation), ctx.in.transform.getPosition());
 }
 
-void
-cCamera::ecsUpdate(jleCamera &camera, int width, int height)
-{
-    if (width != previousFrameScreenX || height != previousFrameScreenY) {
-        onFramebufferSizeChanged(width, height);
-        previousFrameScreenX = width;
-        previousFrameScreenY = height;
-    }
-
-    if (perspective && width > 0 && height > 0) {
-        camera.setPerspectiveProjection(perspectiveFov, width, height, farPlane, nearPlane);
-    } else {
-        camera.setOrthographicProjection(width, height, farPlane, nearPlane);
-    }
-
-    jleCameraSimpleFPVController c;
-    c.position = getTransform().getWorldPosition();
-
-    auto &&transformation = _attachedToObject->getTransform().getWorldMatrix();
-    camera.setViewMatrix(glm::inverse(transformation), c.position);
-}
-
-cCamera::~cCamera() { sInstanceCounter--; }
-
+/*
 void
 cCamera::editorInspectorImGuiRender(jleEditorUpdateContext &ctx)
 {
-/*#if JLE_BUILD_IMGUI
+#if JLE_BUILD_IMGUI
     ImGui::Text("Camera Preview");
 
     // Get the texture from the framebuffer
@@ -122,17 +48,18 @@ cCamera::editorInspectorImGuiRender(jleEditorUpdateContext &ctx)
         (void *)(intptr_t)fb->texture(), ImVec2(fb->width() / 4.f, fb->height() / 4.f), ImVec2(0, 1), ImVec2(1, 0));
 
 #endif
- */
-}
 
+} */
+
+/*
 void
 cCamera::editorGizmosRender(jleFramePacket &packet, jleEditorGizmos &gizmos)
 {
-/*#if JLE_BUILD_EDITOR
+#if JLE_BUILD_EDITOR
     auto mesh = gizmos.cameraMesh();
     auto material = gizmos.cameraMaterial();
     packet.sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 #endif // JLE_BUILD_EDITOR
- */
-}
+
+}*/
 

@@ -105,7 +105,6 @@ jleGraphics::~jleGraphics()
 
 void
 jleGraphics::render(jleFramebufferInterface &framebufferOut,
-                      const jleCamera &camera,
                       const jleFramePacket &framePacketRef)
 {
     JLE_SCOPE_PROFILE_CPU(jle3DRenderer_render)
@@ -116,7 +115,7 @@ jleGraphics::render(jleFramebufferInterface &framebufferOut,
 
     framebufferOut.bind();
 
-    const auto backgroundColor = camera.getBackgroundColor();
+    const auto backgroundColor = framePacket.camera.getBackgroundColor();
     glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -129,15 +128,15 @@ jleGraphics::render(jleFramebufferInterface &framebufferOut,
     wi::jobsystem::context sortCtx;
     if (!framePacket._translucentMeshes.empty()) {
         wi::jobsystem::Execute(
-            sortCtx, [&](wi::jobsystem::JobArgs args) { sortTranslucentMeshes(camera, framePacket._translucentMeshes); });
+            sortCtx, [&](wi::jobsystem::JobArgs args) { sortTranslucentMeshes(framePacket.camera, framePacket._translucentMeshes); });
     }
 
     // Directional light renders to the shadow mapping framebuffer
-    renderDirectionalLight(camera, framePacket._meshes, framePacket._skinnedMeshes, framePacket.settings);
+    renderDirectionalLight(framePacket.camera, framePacket._meshes, framePacket._skinnedMeshes, framePacket.settings);
 
     glCheckError("3D Render - Directional Lights");
 
-    renderPointLights(camera, framePacket);
+    renderPointLights(framePacket.camera, framePacket);
 
     glCheckError("3D Render - Point Lights");
 
@@ -153,23 +152,23 @@ jleGraphics::render(jleFramebufferInterface &framebufferOut,
 
     {
         JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes_Opaque)
-        renderMeshes(camera, framePacket._meshes, framePacket._lights, framePacket.settings);
+        renderMeshes(framePacket.camera, framePacket._meshes, framePacket._lights, framePacket.settings);
         glCheckError("3D Render - Opaque Meshes");
     }
 
     {
         JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderSkinnedMeshes_Opaque)
-        renderSkinnedMeshes(camera, framePacket._skinnedMeshes, framePacket._lights, framePacket.settings);
+        renderSkinnedMeshes(framePacket.camera, framePacket._skinnedMeshes, framePacket._lights, framePacket.settings);
         glCheckError("3D Render - Opaque Skinned Meshes");
     }
 
-    renderLineStrips(camera, framePacket._lineStrips);
+    renderLineStrips(framePacket.camera, framePacket._lineStrips);
     glCheckError("3D Render - Strip Lines");
 
-    renderLines(camera, framePacket._lines);
+    renderLines(framePacket.camera, framePacket._lines);
     glCheckError("3D Render - Lines");
 
-    renderSkybox(camera, framePacket.settings);
+    renderSkybox(framePacket.camera, framePacket.settings);
     glCheckError("3D Render - Skybox");
 
     {
@@ -178,7 +177,7 @@ jleGraphics::render(jleFramebufferInterface &framebufferOut,
             wi::jobsystem::Wait(sortCtx);
         }
 
-        renderMeshes(camera, framePacket._translucentMeshes, framePacket._lights, framePacket.settings);
+        renderMeshes(framePacket.camera, framePacket._translucentMeshes, framePacket._lights, framePacket.settings);
         glCheckError("3D Render - Translucent Meshes");
     }
 

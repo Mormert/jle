@@ -46,8 +46,7 @@ jleFramebufferInterface::blitToOther(jleFramebufferInterface &framebuffer, bool 
         flag = GL_COLOR_BUFFER_BIT;
     }
 
-    glBlitFramebuffer(
-        0, 0, (int)width(), (int)height(), 0, 0, (int)framebuffer.width(), (int)framebuffer.height(), flag, GL_LINEAR);
+    glBlitFramebuffer(0, 0, (int)width(), (int)height(), 0, 0, (int)framebuffer.width(), (int)framebuffer.height(), flag, GL_LINEAR);
 }
 
 void
@@ -82,20 +81,6 @@ jleFramebufferInterface::texture() const
     // Note: the framebuffer doesn't have to keep a texture!
     jleAssert(_texture > 0);
     return _texture;
-}
-
-glm::ivec2
-jleFramebufferInterface::fixedAxisDimensions(jleFramebufferInterface::FIXED_AXIS fixedAxis,
-                                             float aspect,
-                                             unsigned int fixedAxisPixels)
-{
-    if (fixedAxis == FIXED_AXIS::height) {
-        auto w = static_cast<unsigned int>((float)fixedAxisPixels * aspect);
-        return {w, fixedAxisPixels};
-    } else {
-        auto h = static_cast<unsigned int>((float)fixedAxisPixels * aspect);
-        return {fixedAxisPixels, h};
-    }
 }
 
 jleFramebufferInterface::jleFramebufferInterface(unsigned int width, unsigned int height)

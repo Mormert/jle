@@ -15,26 +15,31 @@
 
 #pragma once
 
-#include "jleBuildConfig.h"
-
-#if JLE_BUILD_EDITOR
-
+#include <core/jleCommon.h>
+#include <core/jleCamera.h>
+#include <jlECS/jlECS.h>
 #include "editor/jleEditorImGuiWindowInterface.h"
 
-#include "core/jleCamera.h"
-#include "jleGameEngine.h"
 
 #include <ImGui/ImGuizmo.h>
 
 class jleEditorUpdateContext;
 class jleFramebufferMultisample;
+class jlePhysics;
 
 class jleSceneEditorWindow : public jleEditorWindowInterface
 {
 public:
     explicit jleSceneEditorWindow(const std::string &window_name);
 
-    void renderUI(jleEditorUpdateContext &ctx);
+    struct RenderUIInput{
+        jleEditorUpdateContext &editorUpdate;
+        jlECS::ECS& ecs;
+        std::shared_ptr<std::vector<jlECS::ObjectRef>> selectedObjects;
+        jlePhysics& physics;
+    };
+
+    void renderUI(const RenderUIInput& input);
 
     void renderEditorGrid(jleFramePacket &graph);
 
@@ -44,12 +49,7 @@ public:
     float cameraSpeed = 100.f;
     float orthoZoomValue = 10.f;
 
-    [[nodiscard]] glm::vec3 const
-    getCameraPosition()
-    {
-        return _renderCamera.getPosition();
-    }
-
+    [[nodiscard]] glm::vec3 getCameraPosition() { return _renderCamera.getPosition(); }
 private:
     float _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;
     std::pair<int32_t, int32_t> _lastCursorPos;
@@ -66,5 +66,3 @@ private:
     ImGuizmo::OPERATION _currentGizmoOperation{ImGuizmo::TRANSLATE};
     void EditTransform(float *cameraView, float *cameraProjection, float *matrix, bool editTransformDecomposition);
 };
-
-#endif // JLE_BUILD_EDITOR

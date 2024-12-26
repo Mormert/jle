@@ -44,7 +44,7 @@ class jleSerializationContext;
 class jleEditor : public jleGameEngine
 {
 public:
-    jleEditor(std::unique_ptr<jleWindow> window);
+    jleEditor(EngineConstructConfig& config);
 
     ~jleEditor() override;
 
@@ -60,33 +60,31 @@ public:
 
     void updateEditorLoadedScenes(jleEngineUpdateContext &ctx);
 
-    std::vector<std::shared_ptr<jleScene>> &getEditorScenes();
+    //std::vector<std::shared_ptr<jleScene>> &getEditorScenes();
 
-    jleEditorTextEdit &editorTextEdit();
+    //jleEditorTextEdit &editorTextEdit();
 
-    jleEditorSceneObjectsWindow &getEditorSceneObjectsWindow();
+    //jleEditorSceneObjectsWindow &getEditorSceneObjectsWindow();
 
-    jleResourceIndexer &resourceIndexer();
+    //jleResourceIndexer &resourceIndexer();
 
     bool checkSceneIsActiveEditor(const std::string &sceneName);
 
-    std::shared_ptr<jleScene> loadScene(const jlePath &scenePath,
-                                        jleEngineUpdateContext &ctx,
-                                        bool startObjects = true);
+    //std::shared_ptr<jleScene> loadScene(const jlePath &scenePath,
+    //                                    jleEngineUpdateContext &ctx,
+    //                                    bool startObjects = true);
 
 private:
     struct jleEditorInternal;
     std::unique_ptr<jleEditorInternal> _internal;
 
-    std::unique_ptr<jleEditorUpdateContext> _editorContext;
-
     void exiting() override;
 
-    void renderGameView(const jleCamera& camera, const jleFramePacket& framePacketIn, jleFramebufferInterface& framebufferOut);
+    void renderGameView(const jleFramePacket& framePacketIn, jleFramebufferInterface& framebufferOut);
 
-    void renderEditorSceneView(jleEngineUpdateContext &ctx);
+    void renderEditorSceneView(jleEditorUpdateContext &ctx);
 
-    void renderEditorUI();
+    void renderEditorUI(jleEditorUpdateContext& ctx);
 
     void initImgui();
 

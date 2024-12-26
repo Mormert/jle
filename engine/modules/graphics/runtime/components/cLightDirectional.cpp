@@ -15,47 +15,34 @@
 
 #include "cLightDirectional.h"
 
-//#include "editor/jleEditor.h"
-//#include "editor/jleEditorGizmos.h"
-
-#include "modules/graphics/jle3DSettings.h"
 #include "modules/graphics/jleFramePacket.h"
+#include <modules/core/components/cTransform.h>
 
-
-#include "core/serialization/jleBinaryArchive.h"
-#include "core/serialization/jleJSONArchive.h"
 
 void
-cLightDirectional::update(jleEngineUpdateContext &ctx)
-{
-    ctx.currentFramePacket.settings.useDirectionalLight = true;
-    auto mat4 = getTransform().getWorldMatrix();
-
-    ctx.currentFramePacket.settings.setDirectionalLight(mat4, _color);
-}
-
-void
-cLightDirectional::ecsUpdate(jleFramePacket &packet)
+cLightDirectional::ecsUpdate(jleFramePacket &packet, const cTransform& transform)
 {
     packet.settings.useDirectionalLight = true;
-    auto mat4 = getTransform().getWorldMatrix();
+    auto mat4 = transform.getWorldMatrix();
 
     packet.settings.setDirectionalLight(mat4, _color);
 }
 
+/*
 void
 cLightDirectional::editorGizmosRender(jleFramePacket &renderGraph, jleEditorGizmos &gizmos)
 {
-/*#if JLE_BUILD_EDITOR
+#if JLE_BUILD_EDITOR
     auto mesh = gizmos.sunMesh();
     std::shared_ptr<jleMaterial> material = gizmos.sunMaterial();
     renderGraph.sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
 #endif // JLE_BUILD_EDITOR
- */
 }
+ */
 
 void
 cLightDirectional::registerLua(sol::state &lua)
 {
-    lua.new_usertype<cLightDirectional>("cLightDirectional", sol::base_classes, sol::bases<cLight>());
+    // ?
+   // lua.new_usertype<cLightDirectional>("cLightDirectional", sol::base_classes, sol::bases<cLight>());
 }

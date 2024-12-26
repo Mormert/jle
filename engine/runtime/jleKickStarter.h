@@ -29,12 +29,8 @@
 class jleKickStarter
 {
 public:
-    template <typename T>
-    void
-    kickStart(std::unique_ptr<jleGameEngine> engine, int argc, char *argv[])
+    void kickStart(std::unique_ptr<jleGameEngine> engine, int argc, char *argv[])
     {
-        static_assert(std::is_base_of<jleGame, T>::value, "T must derive from jleGame");
-
 #if JLE_BUILD_RUNTIME_CONFIGURABLE
         auto& commandArguments = jleCommandArguments::getInstance();
         commandArguments.parse(argc, argv);
@@ -45,7 +41,6 @@ public:
         plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender; // Log to command window
         plog::init<0>(plog::verbose, &fileAppender).addAppender(&consoleAppender).addAppender(&dynamicAppender());
 
-        engine->setGame<T>();
         engine->run();
         engine.reset();
     }

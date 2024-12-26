@@ -23,7 +23,7 @@
 
 #include <plog/Log.h>
 
-#include "modules/game/jleGame.h"
+#include "game/jleGame.h"
 
 #include <fstream>
 #include <string.h>
@@ -555,7 +555,10 @@ jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file, jle
             }
 
             auto &game = ctx.engineUpdateContext.gameRuntime.getGame();
-            game.loadScene(jlePath{file.string(), false}, ctx.engineUpdateContext);
+
+            // Todo: handle this:
+            assert(false);
+            //game.loadScene(jlePath{file.string(), false}, ctx.engineUpdateContext);
         }
     } else {
         if (ImGui::Button("Load Scene (Editor)", size)) {
@@ -565,7 +568,9 @@ jleEditorContentBrowser::selectedFilePopupScene(std::filesystem::path &file, jle
                 sceneName.resize(dot);
             }
 
-            ctx.editor.loadScene(jlePath{file.string(), false}, ctx.engineUpdateContext, false);
+            // TOdo handle this:
+            assert(false);
+            //ctx.editor.loadScene(jlePath{file.string(), false}, ctx.engineUpdateContext, false);
         }
     }
 }
@@ -584,13 +589,13 @@ jleEditorContentBrowser::selectedFilePopupObjectTemplate(std::filesystem::path &
             objectName.resize(dot);
         }
 
-        if (auto &&scene = ctx.editor.getEditorSceneObjectsWindow().GetSelectedScene().lock()) {
-            try {
-                scene->spawnObjectFromTemplate(jlePath{file.string(), false}, ctx.engineUpdateContext.serializationContext);
-            } catch (std::exception &e) {
-                LOGE << "Failed to load object template: " << e.what();
-            }
-        }
+        //if (auto &&scene = ctx.editor.getEditorSceneObjectsWindow().GetSelectedScene().lock()) {
+        //    try {
+        //        scene->spawnObjectFromTemplate(jlePath{file.string(), false}, ctx.engineUpdateContext.serializationContext);
+        //    } catch (std::exception &e) {
+        //        LOGE << "Failed to load object template: " << e.what();
+        //    }
+        //}
     }
 }
 

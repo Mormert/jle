@@ -17,7 +17,7 @@
 #include "jleEditor.h"
 #include "jleEditorGizmos.h"
 #include "jleEditorSceneObjectsWindow.h"
-#include "modules/game/jleGame.h"
+#include "game/jleGame.h"
 #include "modules/graphics/core/jleFramebufferMultisample.h"
 #include "modules/graphics/core/jleFramebufferPicking.h"
 #include "modules/graphics/core/jleIncludeGL.h"
@@ -30,6 +30,7 @@
 #include "modules/physics/components/cRigidbody.h"
 #include "modules/physics/jlePhysics.h"
 #include "modules/windowing/jleWindow.h"
+#include "modules/core/components/cTransform.h"
 #include <modules/graphics/core/jleFramebufferScreen.h>
 
 #include <ImGui/imgui.h>
@@ -46,11 +47,15 @@ jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name) : jle
 }
 
 void
-jleSceneEditorWindow::renderUI(jleEditorUpdateContext &ctx)
+jleSceneEditorWindow::renderUI(const RenderUIInput& input)
 {
     if (!isOpened) {
         return;
     }
+
+    auto& editorUpdate = input.editorUpdate;
+    auto& selectedObjects = *input.selectedObjects;
+    auto& ecs = input.ecs;
 
     ImGuiWindowFlags flags =
         ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
@@ -73,7 +78,7 @@ jleSceneEditorWindow::renderUI(jleEditorUpdateContext &ctx)
     const int32_t windowPositionY = int32_t(cursorScreenPos.y) - viewport->Pos.y;
 
     const auto previousFrameCursorPos = _lastCursorPos;
-    _lastCursorPos = ctx.engineUpdateContext.windowModule.cursor();
+    _lastCursorPos = editorUpdate.engineUpdateContext.windowModule.cursor();
     const int32_t mouseX = _lastCursorPos.first;
     const int32_t mouseY = _lastCursorPos.second;
     const int32_t mouseDeltaX = mouseX - previousFrameCursorPos.first;
@@ -97,14 +102,14 @@ jleSceneEditorWindow::renderUI(jleEditorUpdateContext &ctx)
         _lastGameWindowWidth = ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset;
         _lastGameWindowHeight = ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset;
 
-        const auto aspect = static_cast<float>(_lastGameWindowHeight) / static_cast<float>(_lastGameWindowWidth);
-        auto dims = jleFramebufferInterface::fixedAxisDimensions(
-            jleFramebufferInterface::FIXED_AXIS::width, aspect, static_cast<unsigned int>(ImGui::GetWindowHeight()));
-
         _framebuffer->resize(_lastGameWindowWidth, _lastGameWindowHeight);
     }
 
-    const auto &selectedObject = ctx.editor.getEditorSceneObjectsWindow().GetSelectedObject();
+    // For now, only supports selecting one object
+    std::optional<jlECS::ObjectRef> selectedObjectRef = {};
+    if(!selectedObjects.empty()){
+        selectedObjectRef = selectedObjects[0];
+    }
 
     glBindTexture(GL_TEXTURE_2D, (unsigned int)_framebuffer->texture());
 
@@ -120,7 +125,7 @@ jleSceneEditorWindow::renderUI(jleEditorUpdateContext &ctx)
         // The mouse is not over any gizmo
         canSelectObject = true;
     }
-    if (!selectedObject.lock()) {
+    if (!selectedObjectRef) {
         // No object is currently selected
         canSelectObject = true;
     }
@@ -128,8 +133,8 @@ jleSceneEditorWindow::renderUI(jleEditorUpdateContext &ctx)
     // Note here that the ImGui::Image is the item that is being clicked on!
     if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && canSelectObject) {
 
-        ctx.engineUpdateContext.rendererModule.renderMeshesPicking(
-            *_pickingFramebuffer, _renderCamera, ctx.engineUpdateContext.currentFramePacket);
+        input.editorUpdate.engineUpdateContext.rendererModule.renderMeshesPicking(
+            *_pickingFramebuffer, _renderCamera, input.editorUpdate.engineUpdateContext.currentFramePacket);
 
         _pickingFramebuffer->bind();
 
@@ -149,23 +154,26 @@ jleSceneEditorWindow::renderUI(jleEditorUpdateContext &ctx)
         if (pickedID != 0x00ffffff) { // If we did not hit the white background
             LOGI << "Picked object with id: " << pickedID;
 
-            std::vector<std::shared_ptr<jleScene>> scenes;
-            if (!ctx.engineUpdateContext.gameRuntime.isGameKilled()) {
-                auto &game = ctx.engineUpdateContext.gameRuntime.getGame();
-                scenes = game.activeScenesRef();
-            }
+            // TODO: handle picked id
+            assert(false);
 
-            scenes.insert(scenes.end(), ctx.editor.getEditorScenes().begin(), ctx.editor.getEditorScenes().end());
+            //std::vector<std::shared_ptr<jleScene>> scenes;
+            //if (!ctx.engineUpdateContext.gameRuntime.isGameKilled()) {
+            //    auto &game = ctx.engineUpdateContext.gameRuntime.getGame();
+            //    scenes = game.activeScenesRef();
+            //}
 
-            for (auto &scene : scenes) {
-                for (auto &object : scene->sceneObjects()) {
-                    std::shared_ptr<jleObject> o{};
-                    object->tryFindChildWithInstanceId(pickedID, o);
-                    if (o) {
-                        ctx.editor.getEditorSceneObjectsWindow().SetSelectedObject(o);
-                    }
-                }
-            }
+            //scenes.insert(scenes.end(), ctx.editor.getEditorScenes().begin(), ctx.editor.getEditorScenes().end());
+
+            //for (auto &scene : scenes) {
+            //    for (auto &object : scene->sceneObjects()) {
+            //        std::shared_ptr<jleObject> o{};
+            //        object->tryFindChildWithInstanceId(pickedID, o);
+            //        if (o) {
+            //            ctx.editor.getEditorSceneObjectsWindow().SetSelectedObject(o);
+            //        }
+            //    }
+            //}
         } else {
             LOGI << "Picking object fell out into the universe";
         }
@@ -205,10 +213,11 @@ jleSceneEditorWindow::renderUI(jleEditorUpdateContext &ctx)
 
     ImGui::SameLine();
 
-    if (!ctx.engineUpdateContext.gameRuntime.isGameKilled()) {
-        if (auto &&scene = ctx.editor.getEditorSceneObjectsWindow().GetSelectedScene().lock()) {
-            ImGui::Checkbox("Physics Debug", &scene->getPhysics().renderDebugEnabled);
-        }
+    if (!input.editorUpdate.engineUpdateContext.gameRuntime.isGameKilled()) {
+        // TODO: fix this getPhysics().renderDebugEnabled
+        bool physicsEnabled = false;
+        ImGui::Checkbox("Physics Debug", &physicsEnabled);
+        assert(!physicsEnabled);
     }
 
     ImGui::SameLine();
@@ -269,30 +278,37 @@ jleSceneEditorWindow::renderUI(jleEditorUpdateContext &ctx)
 
     ImGui::BeginGroup();
 
-    if (auto obj = selectedObject.lock()) {
-        glm::mat4 worldMatrixBefore = obj->getTransform().getWorldMatrix();
-        EditTransform((float *)viewMatrix, (float *)projectionMatrix, (float *)&worldMatrixBefore[0][0], true);
-        glm::mat4 transformMatrix = obj->getTransform().getWorldMatrix();
-        if (transformMatrix != worldMatrixBefore) {
-            if (!ctx.engineUpdateContext.gameRuntime.isGameKilled()) {
-                if (auto rb = obj->getComponent<cRigidbody>()) {
-                    rb->setWorldMatrixAndScaleRigidbody(worldMatrixBefore);
+    if (selectedObjectRef.has_value() && selectedObjectRef->isValid()) {
+        auto* transform = selectedObjectRef->getComponentPtr<cTransform>();
+        auto* meshComponent = selectedObjectRef->getComponentPtr<cMesh>();
+
+        if(transform){
+            glm::mat4 worldMatrixBefore = transform->getWorldMatrix();
+            EditTransform((float *)viewMatrix, (float *)projectionMatrix, (float *)&worldMatrixBefore[0][0], true);
+            glm::mat4 transformMatrix = transform->getWorldMatrix();
+            if (transformMatrix != worldMatrixBefore) {
+                if (!input.editorUpdate.engineUpdateContext.gameRuntime.isGameKilled()) {
+                    if (auto *rb = selectedObjectRef->getComponentPtr<cRigidbody>()) {
+                        if(meshComponent){
+                            rb->setWorldMatrixAndScaleRigidbody(&input.physics, *transform, *meshComponent);
+                        }
+                    } else {
+                        transform->setWorldMatrix(worldMatrixBefore);
+                    }
                 } else {
-                    obj->getTransform().setWorldMatrix(worldMatrixBefore);
+                    transform->setWorldMatrix(worldMatrixBefore);
                 }
-            } else {
-                obj->getTransform().setWorldMatrix(worldMatrixBefore);
             }
         }
 
-        if (auto meshComponent = obj->getComponent<cMesh>()) {
+        if (meshComponent && transform) {
             if (auto mesh = meshComponent->getMesh()) {
-                glm::mat4 modelMatrix = obj->getTransform().getWorldMatrix();
+                glm::mat4 modelMatrix = transform->getWorldMatrix();
                 glm::mat4 matrix1 = glm::scale(modelMatrix, glm::vec3{1.00514159265f});
                 glm::mat4 matrix2 = glm::scale(modelMatrix, glm::vec3{0.99514159265f});
-                auto material = ctx.editor.gizmos().selectedObjectMaterial();
-                ctx.engineUpdateContext.currentFramePacket.sendMesh(mesh, material, matrix1, obj->instanceID(), false);
-                ctx.engineUpdateContext.currentFramePacket.sendMesh(mesh, material, matrix2, obj->instanceID(), false);
+                auto material = input.editorUpdate.gizmos.selectedObjectMaterial();
+                input.editorUpdate.engineUpdateContext.currentFramePacket.sendMesh(mesh, material, matrix1, selectedObjectRef->objectIndex(), false);
+                input.editorUpdate.engineUpdateContext.currentFramePacket.sendMesh(mesh, material, matrix2, selectedObjectRef->objectIndex(), false);
             }
         }
     }
@@ -301,7 +317,7 @@ jleSceneEditorWindow::renderUI(jleEditorUpdateContext &ctx)
 
     // If window is hovered and Gizmo is not being moved/used
     if (ImGui::IsWindowHovered() && !ImGuizmo::IsUsing()) {
-        auto t = ctx.engineUpdateContext.frameInfo.getDeltaTime();
+        auto t = input.editorUpdate.engineUpdateContext.frameInfo.getDeltaTime();
         auto dragDelta = ImGui::GetMouseDragDelta(1);
 
         if (_renderCamera.getProjectionType() == jleCameraProjection::Perspective ||
@@ -345,12 +361,12 @@ jleSceneEditorWindow::renderUI(jleEditorUpdateContext &ctx)
             _renderCamera.setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
         }
 
-        auto currentScroll = ctx.engineUpdateContext.inputModule.mouse.scrollY();
+        auto currentScroll = input.editorUpdate.engineUpdateContext.inputModule.mouse.scrollY();
         if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentScroll != 0.f) {
-            orthoZoomValue -= currentScroll * 1.f * ctx.engineUpdateContext.frameInfo.getDeltaTime();
+            orthoZoomValue -= currentScroll * 1.f * input.editorUpdate.engineUpdateContext.frameInfo.getDeltaTime();
             orthoZoomValue = glm::clamp(orthoZoomValue, 0.01f, 2.f);
         } else if (currentScroll != 0.f) {
-            cameraSpeed += currentScroll * 200.f * ctx.engineUpdateContext.frameInfo.getDeltaTime();
+            cameraSpeed += currentScroll * 200.f * input.editorUpdate.engineUpdateContext.frameInfo.getDeltaTime();
             cameraSpeed = glm::clamp(cameraSpeed, 0.2f, 500.f);
         }
     }
@@ -372,7 +388,8 @@ jleSceneEditorWindow::render(jleFramePacket &framePacket, const jleEditorUpdateC
         _msaa->resize(_framebuffer->width(), _framebuffer->height());
     }
 
-    ctx.engineUpdateContext.rendererModule.render(*_msaa, _renderCamera, framePacket);
+    framePacket.camera = _renderCamera;
+    ctx.engineUpdateContext.rendererModule.render(*_msaa, framePacket);
 
     _msaa->blitToOther(*_framebuffer);
 }

@@ -15,87 +15,31 @@
 
 #include "cAnimator.h"
 
-#include "core/jleProfiler.h"
 #include "core/jleResourceRef.h"
-#include "modules/graphics/jleFramePacket.h"
-#include "modules/graphics/runtime/components/cSkinnedMesh.h"
 
-#include <execution>
+#include <modules/core/components/cTransform.h>
+
+#include <sol2/sol.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-#include "modules/game/jleGame.h"
-
-JLE_EXTERN_TEMPLATE_CEREAL_CPP(cAnimatorAnimation)
-JLE_EXTERN_TEMPLATE_CEREAL_CPP(cAnimator)
-
-template <class Archive>
-void
-cAnimatorAnimation::serialize(Archive &ar)
-{
-    try {
-        ar(CEREAL_NVP(currentAnimation), CEREAL_NVP(animationSpeed));
-    } catch (std::exception &e) {
-        LOGE << "Failed loading cAnimator: " << e.what();
-    }
-}
-
-template <class Archive>
-void
-cAnimator::serialize(Archive &ar)
-{
-    try {
-        ar(CEREAL_NVP(_animations),
-           CEREAL_NVP(_enableRootMotion),
-           CEREAL_NVP(_rootMotionBone),
-           CEREAL_NVP(_blendFactor));
-    } catch (std::exception &e) {
-        LOGE << "Failed loading cAnimator: " << e.what();
-    }
-}
 
 cAnimator::cAnimator()
 {
     _animationMatrices = std::make_shared<jleAnimationFinalMatrices>();
-
-    enableParallelUpdate(4);
 }
 
 void
-cAnimator::start(jleEngineUpdateContext &ctx)
+cAnimator::start()
 {
     for (auto &animation : _animations) {
         animation.currentAnimationLocal = *animation.currentAnimation.get();
     }
 }
 
-void
-cAnimator::update(jleEngineUpdateContext &ctx)
-{
-    /* std::for_each(std::execution::par, _animations.begin(), _animations.end(), [&](cAnimatorAnimation &animation) {
-         if (animation.currentAnimation) {
-             animation.deltaTime = dt * animation.animationSpeed;
-             animation.currentTime += animation.currentAnimation->getTicksPerSec() * animation.deltaTime;
-             if (animation.currentTime / animation.currentAnimation->getDuration() > 1.f) {
-                 animation.animationLoopedThisFrame = true;
-             } else {
-                 animation.animationLoopedThisFrame = false;
-             }
-             animation.currentTime = fmod(animation.currentTime, animation.currentAnimation->getDuration());
-
-             calculateBoneTransform(animation.currentAnimation->getRootNode(), glm::identity<glm::mat4>(), animation);
-         }
-     });
-
-     blendAnimations();
-
-     applyRootMotion(); */
-}
 
 void
-cAnimator::parallelUpdate(jleEngineUpdateContext &ctx)
+cAnimator::animate(float dt)
 {
-    const auto dt = ctx.frameInfo.getDeltaTime();
-
     for (auto &animation : _animations) {
         ZoneScopedN("AnimBlendIteration");
         // if (animation.currentAnimationLocal) {
@@ -108,36 +52,25 @@ cAnimator::parallelUpdate(jleEngineUpdateContext &ctx)
         }
         animation.currentTime = fmod(animation.currentTime, animation.currentAnimationLocal.getDuration());
 
-        calculateBoneTransform(
-            ctx, animation.currentAnimationLocal.getRootNode(), glm::identity<glm::mat4>(), animation);
+        calculateBoneTransform(animation.currentAnimationLocal.getRootNode(), glm::identity<glm::mat4>(), animation);
         // }
     }
 
     blendAnimations();
 
-    applyRootMotion();
-}
-
-void
-cAnimator::editorUpdate(jleEngineUpdateContext &ctx)
-{
-#if JLE_BUILD_EDITOR
-    if (_editorPreviewAnimation) {
-        update(ctx);
-    }
-#endif
+    // TODO add back root motion support
+    //applyRootMotion();
 }
 
 void
 cAnimator::registerLua(sol::state &lua)
 {
-    lua.new_usertype<cAnimator>(
-        "cAnimator", sol::base_classes, sol::bases<jleComponent>(), "setAnimation", &cAnimator::setAnimation);
+    // ??
+    //lua.new_usertype<cAnimator>("cAnimator", sol::constructors<>, "setAnimation", &cAnimator::setAnimation);
 }
 
 void
-cAnimator::calculateBoneTransform(jleEngineUpdateContext &ctx,
-                                  const jleAnimationNode &node,
+cAnimator::calculateBoneTransform(const jleAnimationNode &node,
                                   const glm::mat4 &parentTransform,
                                   cAnimatorAnimation &animation)
 {
@@ -156,21 +89,19 @@ cAnimator::calculateBoneTransform(jleEngineUpdateContext &ctx,
         bone->update(animation.currentTime);
         nodeTransform = bone->getLocalTransform();
 
-        if (!ctx.gameRuntime.isGameKilled()) {
-            if (bone->getName() == _rootMotionBone && _enableRootMotion) {
-                auto newPos = glm::vec3(bone->getLocalTransform()[3]);
+        if (bone->getName() == _rootMotionBone && _enableRootMotion) {
+            auto newPos = glm::vec3(bone->getLocalTransform()[3]);
 
-                auto rootMotionDiff = animation.lastFrameRootPosition - newPos;
-                animation.lastFrameRootPosition = newPos;
+            auto rootMotionDiff = animation.lastFrameRootPosition - newPos;
+            animation.lastFrameRootPosition = newPos;
 
-                if (!animation.animationLoopedThisFrame) {
-                    animation.thisFrameRootMotionTranslation = rootMotionDiff;
-                } else {
-                    animation.thisFrameRootMotionTranslation = newPos;
-                }
-            } else if (!_enableRootMotion) {
-                animation.thisFrameRootMotionTranslation = glm::vec3{0.f};
+            if (!animation.animationLoopedThisFrame) {
+                animation.thisFrameRootMotionTranslation = rootMotionDiff;
+            } else {
+                animation.thisFrameRootMotionTranslation = newPos;
             }
+        } else if (!_enableRootMotion) {
+            animation.thisFrameRootMotionTranslation = glm::vec3{0.f};
         }
     }
 
@@ -190,12 +121,12 @@ cAnimator::calculateBoneTransform(jleEngineUpdateContext &ctx,
     }
 
     for (int i = 0; i < node.childNodes.size(); ++i) {
-        calculateBoneTransform(ctx, node.childNodes[i], globalTransformation, animation);
+        calculateBoneTransform(node.childNodes[i], globalTransformation, animation);
     }
 }
 
 const std::shared_ptr<jleAnimationFinalMatrices> &
-cAnimator::animationMatrices()
+cAnimator::animationMatrices() const
 {
     return _animationMatrices;
 }
@@ -252,18 +183,18 @@ cAnimator::blendAnimations()
 }
 
 void
-cAnimator::applyRootMotion()
+cAnimator::applyRootMotion(cTransform& transform)
 {
     ZoneScoped;
-    glm::mat4 matrix = glm::mat4(glm::vec4(getTransform().getRight(), 0.0f),
-                                 glm::vec4(getTransform().getUp(), 0.0f),
-                                 glm::vec4(getTransform().getForward(), 0.0f),
+    glm::mat4 matrix = glm::mat4(glm::vec4(transform.getRight(), 0.0f),
+                                 glm::vec4(transform.getUp(), 0.0f),
+                                 glm::vec4(transform.getForward(), 0.0f),
                                  glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
     auto quat = glm::quat(matrix);
 
     glm::vec3 scale;
-    auto modelMatrix = getTransform().getWorldMatrix();
+    auto modelMatrix = transform.getWorldMatrix();
     scale.x = glm::length(glm::vec3(modelMatrix[0]));
     scale.y = glm::length(glm::vec3(modelMatrix[1]));
     scale.z = glm::length(glm::vec3(modelMatrix[2]));
@@ -277,7 +208,7 @@ cAnimator::applyRootMotion()
             // gEngine->renderGraph().sendLine(getTransform().getWorldPosition(),
             //                                getTransform().getWorldPosition() + rotatedVec);
 
-            getTransform().addLocalTranslation(rotatedVec * scale);
+            transform.translate(rotatedVec * scale);
         } else {
             animation.totalRootMotionTranslation = glm::vec3{0.f};
         }
@@ -288,9 +219,10 @@ cAnimator::applyRootMotion()
         addedRootMotionForChildren += animation.totalRootMotionTranslation;
     }
 
-    for (auto &child : object()->childObjects()) {
-        child->getTransform().setLocalPosition(addedRootMotionForChildren);
-    }
+    // Todo: implement adding root motion for children
+    //for (auto &child : object()->childObjects()) {
+    //    child->getTransform().setLocalPosition(addedRootMotionForChildren);
+    //}
 }
 
 void

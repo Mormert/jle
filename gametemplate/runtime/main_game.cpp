@@ -2,6 +2,7 @@
  *               Copyright (c) 2023-2024 Johan Lind. All rights reserved.                    *
  *********************************************************************************************/
 
+#include <game/loader/jleGameModulesLoader.h>
 #include <jleGameEngine.h>
 #include <modules/windowing/jleWindow.h>
 #include <runtime/jleKickStarter.h>
@@ -12,7 +13,16 @@ int
 main(int argc, char *argv[])
 {
     auto kickstarter = jleKickStarter{};
-    auto window = std::make_unique<jleWindow>();
-    kickstarter.kickStart<jleGame>(std::make_unique<jleGameEngine>(std::move(window)), argc, argv);
+
+    jleGameEngine::EngineConstructConfig config{
+        .window = std::make_unique<jleWindow>(),
+        .gameConfig = {
+            .gameCreator = std::make_unique<jleGame>,
+            .modulesCreator = jleModuleLoading::createDefaultModules,
+            .ecsCreator = std::make_unique<jlECS::ECS> }
+    };
+
+    auto engine = std::make_unique<jleGameEngine>(config);
+    kickstarter.kickStart(std::move(engine), argc, argv);
     return 0;
 }

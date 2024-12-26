@@ -118,9 +118,9 @@ public:
     static void
     removeComponentT(ComponentContainer *thiz, int componentIndex)
     {
-        ComponentContainer::removeComponentT<T>(thiz, componentIndex);
+        //ComponentContainer::removeComponentT_<T>(thiz, componentIndex);
 
-        reinterpret_cast<ComponentContainerEditor*>(thiz)->debug->count = thiz->componentCount();
+        //reinterpret_cast<ComponentContainerEditor*>(thiz)->debug->count = thiz->componentCount();
     }
 
     template <class T>
@@ -138,29 +138,27 @@ public:
     }
 
 private:
-    friend class ECSEditor;
-    ComponentDebugBase *(*getComponentDebugF)(ComponentContainer *, int, int, ECS *ecs);
+    friend class ECS_Debug;
+    ComponentDebugBase *(*getComponentDebugF)(ComponentContainer *, int, int, ECS *ecs){};
 
     std::unique_ptr<ComponentContainerDebugBase> debugSmart;
-    ComponentContainerDebugBase *debug;
+    ComponentContainerDebugBase *debug{};
 };
 
-
-
-class ECSEditor : public ECS
+// An extended ECS with debugging facilities.
+// It's also very useful for the editor.
+class ECS_Debug : public ECS
 {
 public:
     std::unique_ptr<ComponentContainer> createContainer() override
     {
-
         ObjectRef::gObjectRefDestructFunction = ObjectRefDestruct;
-        ECS::createContainer();
+        return std::make_unique<ComponentContainerEditor>();
     }
 
     template <class T>
     void initializeContainerEditorT(ComponentContainerEditor& container)
     {
-
         ECS::initializeContainerT<T>(container);
 
         constexpr int32_t allocateBytes = 10000000;
@@ -168,8 +166,15 @@ public:
         container.addComponentF = ComponentContainerEditor::addComponentT<T>;
         container.allocateComponentsF = ComponentContainerEditor::allocateComponentsT<T>;
         container.getComponentF = ComponentContainer::getComponentT<T>;
-        container.removeComponentF = ComponentContainerEditor::removeComponentT<T>;
+        //container.removeComponentF = ComponentContainerEditor::removeComponentT<T>;
         container.componentTypeName = getCleanTypeName(typeid(T).name());
+
+        // Verify that this work
+        auto oldRemoveComponentF = container.removeComponentF;
+        container.removeComponentF = [=](ComponentContainer *cc, int ci){
+            oldRemoveComponentF(cc, ci);
+            reinterpret_cast<ComponentContainerEditor*>(cc)->debug->count = cc->componentCount();
+        };
 
         container.serializeInputF_JSON = ComponentContainer::serializeInputT_JSON<T>;
         container.serializeOutputF_JSON = ComponentContainer::serializeOutputT_JSON<T>;

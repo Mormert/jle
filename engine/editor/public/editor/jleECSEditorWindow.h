@@ -32,11 +32,18 @@ class jleECSEditorWindow : public jleEditorWindowInterface
 public:
     explicit jleECSEditorWindow(const std::string &window_name);
 
-    void renderUI(jleEditorUpdateContext &ctx);
+    struct RenderUIInput{
+        jleEditorUpdateContext &editorUpdate;
+        jlECS::ECS& ecs;
+    };
 
-    void update(jleResourceHolder &resourcesModule);
+    struct RenderUIOutput{
+        std::shared_ptr<std::vector<jlECS::ObjectRef>> selectedObjects = {};
+    };
+
+    RenderUIOutput renderUI(const RenderUIInput& input);
 
 private:
-    std::optional<jlECS::ObjectRef> _selectedObject;
+    std::shared_ptr<std::vector<jlECS::ObjectRef>> _selectedObjects;
     jlECS::ECS *_ecs;
 };

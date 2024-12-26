@@ -18,12 +18,15 @@
 #include "jleEngineUpdateContext.h"
 
 class jleEditor;
+class jleResourceIndexer;
+class jleEditorGizmos;
+struct jleGameState;
 
 class jleEditorUpdateContext
 {
 public:
-    explicit jleEditorUpdateContext(jleEngineUpdateContext &engineModules, jleEditor &editor);
-
     jleEngineUpdateContext &engineUpdateContext;
-    jleEditor &editor;
+    jleResourceIndexer &resourceIndexer;
+    jleEditorGizmos &gizmos;
+    jleGameState &gameState;
 };

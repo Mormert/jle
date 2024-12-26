@@ -19,7 +19,6 @@ add_library(jleGraphics STATIC
         "jleSkinnedMesh.cpp"
         "jleRenderThread.cpp"
         "runtime/components/cCamera.cpp"
-        "runtime/components/cCameraFPV.cpp"
         "runtime/components/cMesh.cpp"
         "runtime/components/cSkinnedMesh.cpp"
         "runtime/components/cSkybox.cpp"

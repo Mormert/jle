@@ -17,7 +17,6 @@
 
 #include "jleBuildConfig.h"
 
-#include <core/jleComponent.h>
 #include <core/jleResourceRef.h>
 #include "modules/scripting/jleLuaClassSerialization.h"
 #include "modules/scripting/jleLuaScript.h"
@@ -25,9 +24,8 @@
 #include "jleGameEngine.h"
 #include "modules/scripting/jleLuaEnvironment.h"
 
-class cLuaScript : public jleComponent
+class cLuaScript
 {
-    JLE_REGISTER_COMPONENT_TYPE(cLuaScript)
 public:
     cLuaScript() = default;
 
@@ -36,13 +34,32 @@ public:
 
     template <class Archive>
     void
-    serialize(Archive &ar);
+    serialize(Archive &ar){
+        try {
+            jleSerializationContext &ctx = ar.ctx;
+            jleAssert(ctx.get<jleLuaEnvironment>());
+            auto &luaEnv = *ctx.get<jleLuaEnvironment>();
 
-    void start(jleEngineUpdateContext &ctx) override;
+            ar(CEREAL_NVP(_luaClass));
 
-    void update(jleEngineUpdateContext &ctx) override;
+            if (!_isInitialized) {
+                initializeLuaComponent(luaEnv);
+            }
 
-    void onDestroy(jleEngineUpdateContext &ctx) override;
+            auto it = luaEnv.loadedLuaClasses().find(_luaClass.luaClassName);
+            if (it != luaEnv.loadedLuaClasses().end()) {
+                it->second.serializeClass(ar, _self);
+            }
+        } catch (std::exception &e) {
+            LOGE << "Failed to serialize cLuaScript";
+        }
+    }
+
+    void start(jleLuaEnvironment& environment);
+
+    void update(jleLuaEnvironment& environment, float dt);
+
+    void onDestroy(jleLuaEnvironment& environment);
 
     sol::table &getSelf();
 
@@ -56,8 +73,3 @@ private:
 
     sol::table _self;
 };
-
-JLE_EXTERN_TEMPLATE_CEREAL_H(cLuaScript)
-
-CEREAL_REGISTER_TYPE(cLuaScript)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cLuaScript)

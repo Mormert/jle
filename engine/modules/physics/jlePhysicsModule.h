@@ -15,20 +15,24 @@
 
 #pragma once
 
+#include "jlePhysics.h"
+
 namespace jlECS
 {
 class ECS;
+struct CreateCallbackData;
 }
 
-class jlePhysics;
+class cRigidbody;
 
 class jlePhysicsModule
 {
 public:
-    void initializeECS(jlECS::ECS &ecs);
+    virtual void initializeECS(jlECS::ECS &ecs);
 
     struct UpdateContext {
         struct In {
+            float dt = 1.f / 60.f;
         } in;
 
         struct InOut {
@@ -41,4 +45,10 @@ public:
     };
 
     void update(UpdateContext &ctx);
+
+private:
+    void onRigidbodyCreated(jlECS::CreateCallbackData &createCallbackData);
+    void onRigidbodyDestroyed(cRigidbody* rb);
+
+    jlePhysics* _physics;
 };

@@ -17,27 +17,20 @@
 
 #include "jleBuildConfig.h"
 
-#include "core/jleComponent.h"
 #include "core/jleResourceRef.h"
 #include "modules/graphics/jle3DSettings.h"
 #include "modules/graphics/jleSkybox.h"
 
-class cSkybox : public jleComponent
+class cSkybox
 {
-    JLE_REGISTER_COMPONENT_TYPE(cSkybox)
 public:
     template <class Archive>
-    void serialize(Archive &ar);
+    void serialize(Archive &ar){
+        ar(CEREAL_NVP(_skybox));
+    }
 
-    void start(jleEngineUpdateContext &ctx) override;
-
-    void update(jleEngineUpdateContext &ctx) override;
+    [[nodiscard]] inline jleResourceRef<jleSkybox> getSkyboxRef() const { return _skybox; }
 
 protected:
     jleResourceRef<jleSkybox> _skybox;
 };
-
-JLE_EXTERN_TEMPLATE_CEREAL_H(cSkybox)
-
-CEREAL_REGISTER_TYPE(cSkybox)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cSkybox)

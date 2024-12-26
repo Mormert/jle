@@ -20,25 +20,26 @@
 #include <modules/graphics/runtime/components/cLight.h>
 #include <modules/graphics/runtime/components/cMesh.h>
 
-// fix this include path:
-#include "core/jlECS/editor/public/jlECSEditor/jlECSEditor.h"
+#include "jlECS/jlECS.h"
 
-#include "modules/game/jleGame.h"
+#include "game/jleGame.h"
 
 #include "core/jlECSSaveLoad.h"
 
-jleECSEditorWindow::jleECSEditorWindow(const std::string &window_name) : jleEditorWindowInterface(window_name) {}
+jleECSEditorWindow::jleECSEditorWindow(const std::string &window_name) : jleEditorWindowInterface(window_name) {
+    _selectedObjects = std::make_shared<std::vector<jlECS::ObjectRef>>();
+}
 
-void
-jleECSEditorWindow::renderUI(jleEditorUpdateContext &ctx)
+jleECSEditorWindow::RenderUIOutput
+jleECSEditorWindow::renderUI(const RenderUIInput& input)
 {
     if (!isOpened) {
-        return;
+        return {};
     }
 
-    if(ctx.engineUpdateContext.gameRuntime.isGameKilled())
+    if(input.editorUpdate.engineUpdateContext.gameRuntime.isGameKilled())
     {
-        return;
+        return {};
     }
 
     ImGuiWindowFlags flags =
@@ -49,10 +50,11 @@ jleECSEditorWindow::renderUI(jleEditorUpdateContext &ctx)
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
 
-    auto &ecs = ctx.engineUpdateContext.gameRuntime.getGame().getECS();
+    auto& serializationContext = input.editorUpdate.engineUpdateContext.serializationContext;
+    auto& ecs = input.ecs;
 
     if (_ecs != &ecs) {
-        _selectedObject.reset();
+        _selectedObjects->clear();
         _ecs = &ecs;
     }
 
@@ -62,7 +64,7 @@ jleECSEditorWindow::renderUI(jleEditorUpdateContext &ctx)
         auto start = std::chrono::high_resolution_clock::now();
 
         std::ofstream i("save.ecs");
-        jleJSONOutputArchive ar{i, ctx.engineUpdateContext.serializationContext};
+        jleJSONOutputArchive ar{i, input.editorUpdate.engineUpdateContext.serializationContext};
 
         jlECS::save(ecs, ar);
 
@@ -76,7 +78,7 @@ jleECSEditorWindow::renderUI(jleEditorUpdateContext &ctx)
 
         std::ofstream i("saveB.ecs", std::ios::binary);
 
-        jleBinaryOutputArchive ar{i, ctx.engineUpdateContext.serializationContext};
+        jleBinaryOutputArchive ar{i, serializationContext};
 
         jlECS::save(ecs, ar);
 
@@ -87,14 +89,14 @@ jleECSEditorWindow::renderUI(jleEditorUpdateContext &ctx)
 
     if (ImGui::Button("Load")) {
 
-        _selectedObject.reset();
+        _selectedObjects->clear();
         ecs.reset();
 
         auto start = std::chrono::high_resolution_clock::now();
 
         std::ifstream i("save.ecs");
 
-        jleJSONInputArchive ar{i, ctx.engineUpdateContext.serializationContext};
+        jleJSONInputArchive ar{i, serializationContext};
 
         jlECS::load(ecs, ar);
 
@@ -104,14 +106,14 @@ jleECSEditorWindow::renderUI(jleEditorUpdateContext &ctx)
     }
 
     if (ImGui::Button("LoadBinary")) {
-        _selectedObject.reset();
+        _selectedObjects->clear();
         ecs.reset();
 
         auto start = std::chrono::high_resolution_clock::now();
 
         std::ifstream i("saveB.ecs", std::ios::binary);
 
-        jleBinaryInputArchive ar{i, ctx.engineUpdateContext.serializationContext};
+        jleBinaryInputArchive ar{i, serializationContext};
 
         jlECS::load(ecs, ar);
 
@@ -124,6 +126,11 @@ jleECSEditorWindow::renderUI(jleEditorUpdateContext &ctx)
     ImGui::BeginChild("objects pane", ImVec2(280 * globalImguiScale, 0), true);
 
     auto *objectsDebug = ecs.getAllObjectsDebug();
+
+    std::optional<jlECS::ObjectRef> selectedObject = {};
+    if(_selectedObjects->size() > 0){
+        selectedObject = _selectedObjects->at(0);
+    }
 
     int i = 0;
     for (jlECS::ObjectRef &object : *objectsDebug) {
@@ -140,8 +147,9 @@ jleECSEditorWindow::renderUI(jleEditorUpdateContext &ctx)
         }
         str += ">";
 
-        if (ImGui::Selectable(str.c_str(), _selectedObject.has_value() && _selectedObject.value() == object)) {
-            _selectedObject = object;
+        if (ImGui::Selectable(str.c_str(), selectedObject.has_value() && selectedObject.value() == object)) {
+            selectedObject = object;
+            _selectedObjects->push_back(object);
         }
 
         ++i;
@@ -160,28 +168,28 @@ jleECSEditorWindow::renderUI(jleEditorUpdateContext &ctx)
     ImGui::Text("Selected Object");
     ImGui::BeginChild("selected object pane", ImVec2(280 * globalImguiScale, 0), true);
 
-    if (_selectedObject.has_value()) {
-        if (_selectedObject.value().isValid()) {
+    if (selectedObject.has_value()) {
+        if (selectedObject.value().isValid()) {
 
             if (ImGui::Button("Destroy Object")) {
-                ecs.destroyObject(_selectedObject.value());
+                ecs.destroyObject(selectedObject.value());
             }
 
             ImGui::Text("Components");
 
-            auto components = _selectedObject.value().componentsDebug2();
+            auto components = selectedObject.value().componentsDebug2();
             for (auto &comp : components) {
                 ImGui::PushID(i);
                 ImGui::BeginGroupPanel(comp->getName());
 
-                jleImGuiArchive ar{ctx};
-                comp->serializeComponent(ar);
+                jleImGuiArchive ar{input.editorUpdate};
+                comp->imGuiSerialize(ar);
 
                 int compIdx = comp->componentIndex;
 
                 std::string removeString = "Remove " + std::string{comp->getName()};
                 if (ImGui::Button(removeString.c_str())) {
-                    comp->removeFromOwningObject(&_selectedObject.value());
+                    comp->removeFromOwningObject(&selectedObject.value());
                     ImGui::EndGroupPanel();
                     ImGui::PopID();
                     break;
@@ -195,9 +203,9 @@ jleECSEditorWindow::renderUI(jleEditorUpdateContext &ctx)
                 const auto &registeredComponentTypes = ecs.getRegisteredComponents();
 
                 for (auto registeredComponentType : registeredComponentTypes) {
-                    if (!ecs.getComponent(_selectedObject->objectIndex(), registeredComponentType.componentType) &&
+                    if (!ecs.getComponent(selectedObject->objectIndex(), registeredComponentType.componentType) &&
                         ImGui::MenuItem(registeredComponentType.componentTypeName)) {
-                        ecs.addComponent(_selectedObject->objectIndex(), registeredComponentType.componentType);
+                        ecs.addComponent(selectedObject->objectIndex(), registeredComponentType.componentType);
                     }
                 }
                 ImGui::EndMenu();
@@ -209,9 +217,6 @@ jleECSEditorWindow::renderUI(jleEditorUpdateContext &ctx)
     ImGui::EndGroup();
 
     ImGui::End();
-}
 
-void
-jleECSEditorWindow::update(jleResourceHolder &resourcesModule)
-{
+    return {_selectedObjects};
 }

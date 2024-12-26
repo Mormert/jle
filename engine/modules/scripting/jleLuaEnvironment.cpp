@@ -124,61 +124,62 @@ jleLuaEnvironment::setupLua(sol::state &lua)
     lua.new_usertype<jleInput>(
         "jleInput", "keyboard", sol::readonly(&jleInput::keyboard), "mouse", sol::readonly(&jleInput::mouse));
 
-    lua.new_usertype<jleTransform>("jleTransform",
-                                   "getLocalPosition",
-                                   &jleTransform::getLocalPosition,
-                                   "getWorldPosition",
-                                   &jleTransform::getWorldPosition,
-                                   "setLocalPosition",
-                                   &jleTransform::setLocalPosition,
-                                   "setWorldPosition",
-                                   &jleTransform::setWorldPosition,
-                                   "getWorldMatrix",
-                                   &jleTransform::getWorldMatrix,
-                                   "getLocalMatrix",
-                                   &jleTransform::getLocalMatrix,
-                                   "getForward",
-                                   &jleTransform::getForward,
-                                   "setWorldMatrix",
-                                   &jleTransform::setWorldMatrix);
-
-    sol::usertype<jleObject> jleObjectType = lua.new_usertype<jleObject>(
-        "jleObject",
-        "name",
-        &jleObject::_instanceName,
-        "transform",
-        &jleObject::getTransform,
-        "duplicate",
-        [](jleObject &object) { return object.duplicate().get(); },
-        "destroy",
-        &jleObject::destroyObject,
-        "pendingKill",
-        sol::readonly(&jleObject::_pendingKill),
-        "isStarted",
-        sol::readonly(&jleObject::_isStarted),
-        "instanceID",
-        sol::readonly(&jleObject::_instanceID),
-        "scene",
-        sol::readonly(&jleObject::_containedInScene));
-
-    for (auto &c : jleTypeReflectionUtils::registeredComponentsRef()) {
-        auto instance = c.second();
-        instance->registerLuaComponentFunctions(jleObjectType);
-        instance->registerLua(lua);
-    }
-
-    lua.new_usertype<jleComponent>(
-        "jleComponent", "destroy", &jleComponent::destroy, "isDestroyed", &jleComponent::isDestroyed);
-
-    lua.new_usertype<jleScene>("jleScene",
-                               "name",
-                               &jleScene::sceneName,
-                               "spawnObject",
-                               &jleScene::spawnObjectWithName,
-                               "destroy",
-                               &jleScene::destroyScene,
-                               "objects",
-                               &jleScene::sceneObjects);
+    //lua.new_usertype<jleTransform>("jleTransform",
+    //                               "getLocalPosition",
+    //                               &jleTransform::getLocalPosition,
+    //                               "getWorldPosition",
+    //                               &jleTransform::getWorldPosition,
+    //                               "setLocalPosition",
+    //                               &jleTransform::setLocalPosition,
+    //                               "setWorldPosition",
+    //                               &jleTransform::setWorldPosition,
+    //                               "getWorldMatrix",
+    //                               &jleTransform::getWorldMatrix,
+    //                               "getLocalMatrix",
+    //                               &jleTransform::getLocalMatrix,
+    //                               "getForward",
+    //                               &jleTransform::getForward,
+    //                               "setWorldMatrix",
+    //                               &jleTransform::setWorldMatrix);
+//
+    //sol::usertype<jleObject> jleObjectType = lua.new_usertype<jleObject>(
+    //    "jleObject",
+    //    "name",
+    //    &jleObject::_instanceName,
+    //    "transform",
+    //    &jleObject::getTransform,
+    //    "duplicate",
+    //    [](jleObject &object) { return object.duplicate().get(); },
+    //    "destroy",
+    //    &jleObject::destroyObject,
+    //    "pendingKill",
+    //    sol::readonly(&jleObject::_pendingKill),
+    //    "isStarted",
+    //    sol::readonly(&jleObject::_isStarted),
+    //    "instanceID",
+    //    sol::readonly(&jleObject::_instanceID),
+    //    "scene",
+    //    sol::readonly(&jleObject::_containedInScene));
+//
+    //for (auto &c : jleTypeReflectionUtils::registeredComponentsRef()) {
+    //    auto instance = c.second();
+    //    instance->registerLuaComponentFunctions(jleObjectType);
+    //    instance->registerLua(lua);
+    //}
+//
+    //lua.new_usertype<jleComponent>(
+    //    "jleComponent", "destroy", &jleComponent::destroy, "isDestroyed", &jleComponent::isDestroyed);
+//
+    //lua.new_usertype<jleScene>("jleScene",
+    //                           "name",
+    //                           &jleScene::sceneName,
+    //                           "spawnObject",
+    //                           &jleScene::spawnObjectWithName,
+    //                           "destroy",
+    //                           &jleScene::destroyScene,
+    //                           "objects",
+    //                           &jleScene::sceneObjects);
+    //
 
     lua.set_function("LOGE", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::error)) {

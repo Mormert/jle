@@ -16,9 +16,6 @@
 #pragma once
 
 #include "core/jleCommon.h"
-
-#include "core/jleComponent.h"
-#include "core/jleTransform.h"
 #include "modules/graphics/jleMaterial.h"
 #include "modules/graphics/jleMesh.h"
 
@@ -29,10 +26,12 @@
 #include <LinearMath/btMotionState.h>
 
 class btRigidBody;
+class cMesh;
+class cTransform;
+class jlePhysics;
 
-class cRigidbody : public jleComponent, public btMotionState
+class cRigidbody
 {
-    JLE_REGISTER_COMPONENT_TYPE(cRigidbody)
 public:
     cRigidbody();
 
@@ -41,6 +40,8 @@ public:
     // Called when cloned/duplicated
     cRigidbody(const cRigidbody &other);
 
+    cRigidbody& operator=(cRigidbody&&) noexcept;
+
     template <class Archive>
     void
     serialize(Archive &ar)
@@ -48,43 +49,23 @@ public:
         ar(CEREAL_NVP(_mass));
     }
 
-    void editorUpdate(jleEngineUpdateContext & ctx) override;
-
-    void start(jleEngineUpdateContext & ctx) override;
-
-    void update(jleEngineUpdateContext & ctx) override;
-
-    void onDestroy(jleEngineUpdateContext & ctx) override;
-
     btRigidBody &getBody();
 
-    void setWorldMatrixAndScaleRigidbody(const glm::mat4& worldMatrix);
-
-    void setupRigidbody();
-
-    void setupNewRigidbodyAndDeleteOld();
+    void setWorldMatrixAndScaleRigidbody(jlePhysics* physics, cTransform& transform, cMesh& mesh);
 
     bool isDynamic();
 
 protected:
     friend class jlePhysics;
+    friend class jlePhysicsModule;
 
-    // Sync object transform to bullet's physics transform
-    void getWorldTransform(btTransform &centerOfMassWorldTrans) const override;
+    void setupRigidbody(jlePhysics* physics, cTransform& transform, cMesh& mesh);
 
-    // Called from bullet on transform update
-    void setWorldTransform(const btTransform &centerOfMassWorldTrans) override;
+    std::unique_ptr<btRigidBody> createRigidbody(bool isDynamic, const cTransform& transform, btCollisionShape *shape);
 
-    std::unique_ptr<btRigidBody> createRigidbody(bool isDynamic, btCollisionShape *shape);
-
-    float _mass; // Setting mass to 0 makes this rigidbody static.
+    float _mass{0.f}; // Setting mass to 0 makes this rigidbody static.
     glm::vec3 _size{1.f};
 
     std::unique_ptr<btRigidBody> _body{nullptr};
     std::unique_ptr<btCollisionShape> _optionalLocalShape{nullptr};
 };
-
-JLE_EXTERN_TEMPLATE_CEREAL_H(cRigidbody)
-
-CEREAL_REGISTER_TYPE(cRigidbody)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cRigidbody)

@@ -14,65 +14,25 @@
  *********************************************************************************************/
 
 #include "cSkinnedMesh.h"
+#include "modules/core/components/cTransform.h"
 #include "modules/animation/components/cAnimator.h"
 #include "modules/animation/jleAnimationFinalMatrices.h"
 
-JLE_EXTERN_TEMPLATE_CEREAL_CPP(cSkinnedMesh)
-
 void
-cSkinnedMesh::editorUpdate(jleEngineUpdateContext & ctx)
-{
-    if (_animator && _animator->isDestroyed()) {
-        _animator.reset();
-    }
-
-    findAnimator(object());
-    update(ctx);
-}
-
-void
-cSkinnedMesh::start(jleEngineUpdateContext & ctx)
-{
-    findAnimator(object());
-}
-
-void
-cSkinnedMesh::update(jleEngineUpdateContext & ctx)
+cSkinnedMesh::ecsUpdate(jleFramePacket &packet, const cTransform& transform, const cAnimator* optionalAnimator, int objectIndex)
 {
     std::shared_ptr<jleAnimationFinalMatrices> animationMatrices;
-    if (_animator) {
-        animationMatrices = _animator->animationMatrices();
+    if (optionalAnimator) {
+        animationMatrices = optionalAnimator->animationMatrices();
     } else {
-        static std::shared_ptr<jleAnimationFinalMatrices> identityMatrices =
-            std::make_shared<jleAnimationFinalMatrices>();
+        static std::shared_ptr<jleAnimationFinalMatrices> identityMatrices = std::make_shared<jleAnimationFinalMatrices>();
         animationMatrices = identityMatrices;
     }
 
     if (_skinnedMeshRef) {
         std::shared_ptr<jleSkinnedMesh> mesh = _skinnedMeshRef.get();
         std::shared_ptr<jleMaterial> material = _materialRef.get();
-        ctx.currentFramePacket.sendSkinnedMesh(
-            mesh, material, animationMatrices, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), true);
-    }
-}
-
-void
-cSkinnedMesh::ecsUpdate(jleFramePacket &packet)
-{
-    std::shared_ptr<jleAnimationFinalMatrices> animationMatrices;
-    if (_animator) {
-        animationMatrices = _animator->animationMatrices();
-    } else {
-        static std::shared_ptr<jleAnimationFinalMatrices> identityMatrices =
-            std::make_shared<jleAnimationFinalMatrices>();
-        animationMatrices = identityMatrices;
-    }
-
-    if (_skinnedMeshRef) {
-        std::shared_ptr<jleSkinnedMesh> mesh = _skinnedMeshRef.get();
-        std::shared_ptr<jleMaterial> material = _materialRef.get();
-        packet.sendSkinnedMesh(
-            mesh, material, animationMatrices, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), true);
+        packet.sendSkinnedMesh(mesh, material, animationMatrices, transform.getWorldMatrix(), objectIndex, true);
     }
 }
 
@@ -101,24 +61,11 @@ cSkinnedMesh::getMaterialRef()
     return _materialRef;
 }
 
-void
-cSkinnedMesh::findAnimator(jleObject *object)
-{
-    if (auto animator = object->getComponent<cAnimator>()) {
-        _animator = animator;
-        return;
-    } else {
-        if (auto parent = object->parent()) {
-            findAnimator(parent);
-            return;
-        }
-    }
-}
-
+/*
 void
 cSkinnedMesh::editorInspectorImGuiRender(jleEditorUpdateContext & ctx)
 {
-/*#if JLE_BUILD_IMGUI
+#if JLE_BUILD_IMGUI
     if (!_animator) {
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.2f, 1.0f));
         ImGui::Text(
@@ -131,14 +78,6 @@ cSkinnedMesh::editorInspectorImGuiRender(jleEditorUpdateContext & ctx)
         ImGui::PopStyleColor();
     }
 #endif
- */
+
 }
-
-
-
-template <class Archive>
-void
-cSkinnedMesh::serialize(Archive &ar)
-{
-    ar(CEREAL_NVP(_skinnedMeshRef), CEREAL_NVP(_materialRef));
-}
+*/

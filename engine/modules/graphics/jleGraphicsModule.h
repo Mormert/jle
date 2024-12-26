@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 class jleFramePacket;
 class jleCamera;
 
@@ -26,12 +28,12 @@ class ECS;
 class jleGraphicsModule
 {
 public:
-    void initializeECS(jlECS::ECS &ecs);
+    virtual void initializeECS(jlECS::ECS &ecs);
 
     struct UpdateContext {
         struct In {
-            int screenX;
-            int screenY;
+            uint32_t screenX;
+            uint32_t screenY;
         } in;
 
         struct InOut {
@@ -40,7 +42,6 @@ public:
 
         struct Out {
             jleFramePacket &framePacket;
-            jleCamera &camera;
         } out;
     };
 

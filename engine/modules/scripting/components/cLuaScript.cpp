@@ -17,25 +17,14 @@
 #include "jleGameEngine.h"
 #include "modules/scripting/jleLuaEnvironment.h"
 
-
-#include "core/serialization/jleBinaryArchive.h"
-#include "core/serialization/jleJSONArchive.h"
-
-JLE_EXTERN_TEMPLATE_CEREAL_CPP(cLuaScript)
-
 void
-cLuaScript::start(jleEngineUpdateContext & ctx)
+cLuaScript::start(jleLuaEnvironment& environment)
 {
     if (!_isInitialized) {
-        initializeLuaComponent(ctx.luaEnvironment);
+        initializeLuaComponent(environment);
     }
 
-    jleObject *obj = object();
-    jleTransform *trans = &obj->getTransform();
-    _self["object"] = obj;
-    _self["transform"] = trans;
-
-    const auto luaClass = ctx.luaEnvironment.getState()[_luaClass.luaClassName];
+    const auto luaClass = environment.getState()[_luaClass.luaClassName];
 
     try {
         sol::protected_function startFunc = luaClass["start"];
@@ -46,22 +35,22 @@ cLuaScript::start(jleEngineUpdateContext & ctx)
 }
 
 void
-cLuaScript::update(jleEngineUpdateContext & ctx)
+cLuaScript::update(jleLuaEnvironment& environment, float dt)
 {
-    const auto luaClass = ctx.luaEnvironment.getState()[_luaClass.luaClassName];
+    const auto luaClass = environment.getState()[_luaClass.luaClassName];
 
     try {
         sol::protected_function updateFunc = luaClass["update"];
-        updateFunc(_self, ctx.frameInfo.getDeltaTime());
+        updateFunc(_self, dt);
     } catch (std::exception &e) {
         LOGE << "Error running lua update: " << e.what();
     }
 }
 
 void
-cLuaScript::onDestroy(jleEngineUpdateContext & ctx)
+cLuaScript::onDestroy(jleLuaEnvironment& environment)
 {
-    const auto luaClass = ctx.luaEnvironment.getState()[_luaClass.luaClassName];
+    const auto luaClass = environment.getState()[_luaClass.luaClassName];
 
     try {
         sol::protected_function destroyFunc = luaClass["destroy"];
@@ -81,8 +70,6 @@ void
 cLuaScript::initializeLuaComponent(jleLuaEnvironment& luaEnvironment)
 {
     const auto luaClass = luaEnvironment.getState()[_luaClass.luaClassName];
-
-    _luaEnvironment = &luaEnvironment;
 
     luaEnvironment.loadedLuaClasses()[_luaClass.luaClassName];
 
@@ -127,32 +114,12 @@ deep_copy(sol::state &lua, const sol::table &src, sol::table &dest)
 
 cLuaScript::cLuaScript(const cLuaScript &other)
 {
+
     _luaClass = other._luaClass;
-    _luaEnvironment = other._luaEnvironment;
-    initializeLuaComponent(*_luaEnvironment);
-    deep_copy(_luaEnvironment->getState(), other._self, _self);
+    // TODO implement proper ECS copying here
+    // let it crash for now
+    assert(false);
+    //initializeLuaComponent(nullptr);
+    //deep_copy(_luaEnvironment->getState(), other._self, _self);
 }
 
-template <class Archive>
-void
-cLuaScript::serialize(Archive &ar)
-{
-    try {
-        jleSerializationContext &ctx = ar.ctx;
-        jleAssert(ctx.get<jleLuaEnvironment>());
-        auto &luaEnv = *ctx.get<jleLuaEnvironment>();
-
-        ar(CEREAL_NVP(_luaClass));
-
-        if (!_isInitialized) {
-            initializeLuaComponent(luaEnv);
-        }
-
-        auto it = luaEnv.loadedLuaClasses().find(_luaClass.luaClassName);
-        if (it != luaEnv.loadedLuaClasses().end()) {
-            it->second.serializeClass(ar, _self);
-        }
-    } catch (std::exception &e) {
-        LOGE << "Failed to serialize cLuaScript";
-    }
-}

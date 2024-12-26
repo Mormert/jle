@@ -16,6 +16,8 @@
 #include "jleNetworkEvent.h"
 #include "jleSceneClient.h"
 #include "jleSceneServer.h"
+#include "modules/jleEngineUpdateContext.h"
+
 
 jleSceneServer &
 jleClientToServerEvent::getSceneServer()

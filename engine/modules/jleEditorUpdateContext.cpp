@@ -14,10 +14,3 @@
  *********************************************************************************************/
 
 #include "jleEditorUpdateContext.h"
-
-jleEditorUpdateContext::jleEditorUpdateContext(jleEngineUpdateContext &engineModules,
-                                                 jleEditor &editor)
-    : engineUpdateContext(engineModules),
-      editor(editor)
-{
-}

@@ -58,7 +58,7 @@ ObjectRef::componentsDebug2()
 }
 
 void
-ECSEditor::ObjectRefDestruct(ObjectRef *objectRef)
+ECS_Debug::ObjectRefDestruct(ObjectRef *objectRef)
 {
     for (auto *ptr : objectRef->componentsDebug_) {
         delete ptr;

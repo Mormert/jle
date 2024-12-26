@@ -23,12 +23,7 @@
 #include <algorithm>
 #include <memory>
 #include <vector>
-
-#if JLE_BUILD_EDITOR || !defined(NDEBUG)
-#define JLECS_USE_DEBUG 1
-#else
-#define JLECS_USE_DEBUG 0
-#endif
+#include <functional>
 
 class jleImGuiArchive;
 class jleJSONInputArchive;
@@ -49,6 +44,10 @@ public:
 
 class ComponentContainer;
 class ECS;
+namespace Debug{
+class ECS_Debug;
+class Initializer;
+}
 
 constexpr const char *
 getCleanTypeName(const char *name)
@@ -72,6 +71,8 @@ getCleanTypeName(const char *name)
 
 template <class T>
 inline const auto &ComponentNumV = ComponentNum<T>::num;
+
+struct CreateCallbackData;
 
 class ComponentContainer
 {
@@ -125,9 +126,9 @@ public:
     }
 
     inline uint16_t
-    addComponent()
+    addComponent(uint16_t objectIndex)
     {
-        return addComponentF(this);
+        return addComponentF(this, objectIndex);
     }
 
     void
@@ -141,11 +142,6 @@ public:
     {
         removeComponentF(this, componentIndex);
     }
-
-protected:
-    friend class ECS;
-    friend class ECSEditor;
-    friend class ComponentContainerEditor;
 
     template <class T>
     inline T &
@@ -161,16 +157,42 @@ protected:
         return reinterpret_cast<T *>(&data[index * sizeof(T)]);
     }
 
+protected:
+    friend class ECS;
+    friend class Debug::ECS_Debug;
+    friend class Debug::Initializer;
+    friend class ComponentContainerEditor;
+
     template <class T>
     static uint16_t
-    addComponentT(ComponentContainer *thiz)
+    addComponentT(ComponentContainer *thiz, int objectIndex)
     {
         thiz->data.resize(thiz->data.size() + sizeof(T));
         auto &newComponent = thiz->get<T>(thiz->_componentCount);
         thiz->_componentCount++;
 
         new (&newComponent) T();
+
         return thiz->_componentCount - 1;
+    }
+
+    static void callAddComponentConstruct(ComponentContainer *thiz, uint16_t objectIndex, uint16_t componentIndex, void* component);
+
+    template <class T>
+    static uint16_t
+    addComponentT_ConstructCallback(ComponentContainer *thiz, int objectIndex)
+    {
+        thiz->data.resize(thiz->data.size() + sizeof(T));
+        auto &newComponent = thiz->get<T>(thiz->_componentCount);
+        thiz->_componentCount++;
+
+        new (&newComponent) T();
+
+        uint16_t componentIndex = thiz->_componentCount - 1;
+
+        callAddComponentConstruct(thiz, objectIndex, componentIndex, &newComponent);
+
+        return componentIndex;
     }
 
     template <class T>
@@ -229,27 +251,56 @@ protected:
 
     template <class T>
     static void
-    removeComponentT(ComponentContainer *thiz, int componentIndex)
+    removeComponentT_Immediate(ComponentContainer *thiz, int componentIndex)
     {
         auto &last = thiz->get<T>(thiz->_componentCount - 1);
+        T &toRemove = thiz->get<T>(componentIndex);
 
-        thiz->get<T>(componentIndex) = std::move(last);
+        toRemove = std::move(last);
         last.~T();
 
         thiz->data.resize(thiz->data.size() - sizeof(T));
-
         thiz->_componentCount--;
     }
 
-    uint16_t (*addComponentF)(ComponentContainer *);
-    void *(*getComponentF)(ComponentContainer *, int);
-    void (*removeComponentF)(ComponentContainer *, int);
-    void (*allocateComponentsF)(ComponentContainer *, int);
+    template <class T>
+    static void
+    removeComponentT_ImmediateDestructCallback(ComponentContainer *thiz, int componentIndex)
+    {
+        auto &last = thiz->get<T>(thiz->_componentCount - 1);
+        T &toRemove = thiz->get<T>(componentIndex);
 
-    void (*serializeInputF_JSON)(ComponentContainer *, jleJSONInputArchive &, int);
-    void (*serializeOutputF_JSON)(ComponentContainer *, jleJSONOutputArchive &, int);
-    void (*serializeInputF_Binary)(ComponentContainer *, jleBinaryInputArchive &, int);
-    void (*serializeOutputF_Binary)(ComponentContainer *, jleBinaryOutputArchive &, int);
+        assert(thiz->onDestroyCallback);
+        thiz->onDestroyCallback(reinterpret_cast<void*>(&toRemove));
+
+        toRemove = std::move(last);
+        last.~T();
+
+        thiz->data.resize(thiz->data.size() - sizeof(T));
+        thiz->_componentCount--;
+    }
+
+    template <class T>
+    static void
+    removeComponentT_Postponed(ComponentContainer *thiz, int componentIndex)
+    {
+        thiz->postponedDestructIndicesVecPtr->push_back(componentIndex);
+    }
+
+    uint16_t (*addComponentF)(ComponentContainer *, int /*objectIndex*/);
+    void *(*getComponentF)(ComponentContainer *, int /*componentIndex*/);
+    void (*removeComponentF)(ComponentContainer *, int /*componentIndex*/);
+    void (*allocateComponentsF)(ComponentContainer *, int /*componentCount*/);
+
+    void (*serializeInputF_JSON)(ComponentContainer *, jleJSONInputArchive &, int /*componentIndex*/);
+    void (*serializeOutputF_JSON)(ComponentContainer *, jleJSONOutputArchive &, int /*componentIndex*/);
+    void (*serializeInputF_Binary)(ComponentContainer *, jleBinaryInputArchive &, int /*componentIndex*/);
+    void (*serializeOutputF_Binary)(ComponentContainer *, jleBinaryOutputArchive &, int /*componentIndex*/);
+
+    std::function<void(CreateCallbackData&)> onCreateCallback = nullptr;
+    std::function<void(void* /*component*/)> onDestroyCallback = nullptr;
+
+    std::vector<uint16_t>* postponedDestructIndicesVecPtr = nullptr;
 
     // The raw component data
     std::vector<std::byte> data;
@@ -260,10 +311,7 @@ protected:
     uint16_t _componentCount = 0;
     const char *componentTypeName{};
 
-#if JLECS_USE_DEBUG
-
-
-#endif
+    ECS* ecs;
 
     friend class ECS;
 };
@@ -291,7 +339,9 @@ class ECS;
 template <class T>
 class ComponentRef;
 
+namespace Debug{
 class ComponentDebugBase;
+}
 
 class ObjectRef
 {
@@ -339,9 +389,9 @@ public:
 
     // Can only be called from editor code
     // TODO: move this outside ObjectRef and into editor code
-    std::vector<ComponentDebugBase *> *componentsDebug();
-    std::vector<std::unique_ptr<ComponentDebugBase>> componentsDebug2();
-    std::vector<ComponentDebugBase *> componentsDebug_;
+    std::vector<Debug::ComponentDebugBase *> *componentsDebug();
+    std::vector<std::unique_ptr<Debug::ComponentDebugBase>> componentsDebug2();
+    std::vector<Debug::ComponentDebugBase *> componentsDebug_;
 
 private:
     uint16_t _objectIndex;
@@ -381,6 +431,53 @@ struct RegisteredComponentType {
     int componentType;
     const char *componentTypeName;
 };
+
+struct CreateCallbackData{
+    ObjectRef objectRef;
+    uint16_t componentIndex;
+    void* componentPtr;
+};
+
+struct ComponentRegistrationConfig
+{
+    enum class ExecutionTiming {
+        IMMEDIATE,
+        DEFERRED,
+    };
+
+    ExecutionTiming destructTime = ExecutionTiming::IMMEDIATE;
+
+    // Will be used if it's set
+    // Is called when adding a component
+    std::function<void(CreateCallbackData&)> onCreateCallback = nullptr;
+
+    // Will be used if destructTime == IMMEDIATE and if it's set
+    // Is called when removing a component
+    std::function<void(void* /*component*/)> onDestroyCallback = nullptr;
+
+    // Will be used if destructTime == DEFERRED, instead of destroying and calling the
+    // destructors and cleaning up for the component immediately on component removal, it's index is
+    // pushed into this vector*, and can be cleaned up later in the frame.
+    std::vector<uint16_t>* postponedDestructIndicesVecPtr = nullptr;
+
+    void (*serializeInputF_JSON)(ComponentContainer *, jleJSONInputArchive&, int /*componentIndex*/)        = nullptr;
+    void (*serializeOutputF_JSON)(ComponentContainer *, jleJSONOutputArchive&, int /*componentIndex*/)      = nullptr;
+    void (*serializeInputF_Binary)(ComponentContainer *, jleBinaryInputArchive&, int /*componentIndex*/)    = nullptr;
+    void (*serializeOutputF_Binary)(ComponentContainer *, jleBinaryOutputArchive&, int /*componentIndex*/)  = nullptr;
+    void (*serializeImGuiF)(ComponentContainer *, jleImGuiArchive&, int /*componentIndex*/)                 = nullptr;
+
+};
+
+namespace Debug
+{
+class ComponentContainerEditor;
+class Initializer{
+public:
+    template <class T>
+    static void initializeContainerDebugT(ComponentContainerEditor& container, const ComponentRegistrationConfig& config);
+};
+
+}
 
 class ECS
 {
@@ -431,38 +528,69 @@ public:
     }
 
     template <class T>
-    void initializeContainerT(ComponentContainer& container)
+    static void initializeContainerT(ECS* ecs, ComponentContainer& container, const ComponentRegistrationConfig& config)
     {
         constexpr int32_t allocateBytes = 10000000;
         container.data.reserve(allocateBytes);
+        container.ecs = ecs;
+
+        if(config.onCreateCallback){
+            container.addComponentF = ComponentContainer::addComponentT_ConstructCallback<T>;
+            container.onCreateCallback = config.onCreateCallback;
+        }else{
+            container.addComponentF = ComponentContainer::addComponentT<T>;
+        }
+
         container.addComponentF = ComponentContainer::addComponentT<T>;
         container.allocateComponentsF = ComponentContainer::allocateComponentsT<T>;
         container.getComponentF = ComponentContainer::getComponentT<T>;
-        container.removeComponentF = ComponentContainer::removeComponentT<T>;
+
+        if(config.destructTime == ComponentRegistrationConfig::ExecutionTiming::IMMEDIATE){
+            if(config.onDestroyCallback){
+                container.removeComponentF = ComponentContainer::removeComponentT_ImmediateDestructCallback<T>;
+                container.onDestroyCallback = config.onDestroyCallback;
+            }else{
+                container.removeComponentF = ComponentContainer::removeComponentT_Immediate<T>;
+            }
+        }else if(config.destructTime == ComponentRegistrationConfig::ExecutionTiming::DEFERRED){
+            assert(config.postponedDestructIndicesVecPtr);
+            container.removeComponentF = ComponentContainer::removeComponentT_Postponed<T>;
+            container.postponedDestructIndicesVecPtr = config.postponedDestructIndicesVecPtr;
+        }
+
         container.componentTypeName = getCleanTypeName(typeid(T).name());
 
-        container.serializeInputF_JSON = ComponentContainer::serializeInputT_JSON<T>;
-        container.serializeOutputF_JSON = ComponentContainer::serializeOutputT_JSON<T>;
+        container.serializeInputF_JSON = config.serializeInputF_JSON;
+        container.serializeOutputF_JSON = config.serializeOutputF_JSON;
 
-        container.serializeInputF_Binary = ComponentContainer::serializeInputT_Binary<T>;
-        container.serializeOutputF_Binary = ComponentContainer::serializeOutputT_Binary<T>;
+        container.serializeInputF_Binary = config.serializeInputF_Binary;
+        container.serializeOutputF_Binary = config.serializeOutputF_Binary;
     }
 
     template <class T>
     std::unique_ptr<ComponentContainer>
-    createContainerT(int32_t allocateBytes = 10000000)
+    createContainerT(const ComponentRegistrationConfig& config)
     {
         auto container = createContainer();
+        initializeContainerT<T>(this, *container, config);
+        if (isDebug()) {
+            auto* debugContainer = reinterpret_cast<Debug::ComponentContainerEditor*>(container.get());
+            Debug::Initializer::initializeContainerDebugT<T>(*debugContainer, config);
+        }
 
         return container;
     }
 
     template <class T>
     void
-    registerComponentType()
+    registerComponentType(const ComponentRegistrationConfig& config)
     {
+        assert(ComponentNum<T>::num == 0);
+
         ComponentNum<T>::num = componentContainers.size();
-        componentContainers.emplace_back(createContainerT<T>());
+        auto container = createContainerT<T>(config);
+
+        componentContainers.emplace_back(std::move(container));
 
         RegisteredComponentType registeredComponentType{};
         registeredComponentType.componentType = ComponentNum<T>::num;
@@ -470,6 +598,14 @@ public:
         registeredComponentTypeNames.push_back(registeredComponentType);
 
         registeredComponentTypesCount += 1;
+    }
+
+    template <class T>
+    void
+    registerComponentType()
+    {
+        ComponentRegistrationConfig config{};
+        registerComponentType<T>(config);
     }
 
     int
@@ -653,7 +789,7 @@ public:
         assert(!getComponent(objectIndex, componentType));
 
         auto &container = componentContainers[componentType];
-        uint16_t componentIndex = container->addComponent();
+        uint16_t componentIndex = container->addComponent(objectIndex);
         container->objectIndices.push_back(objectIndex);
 
         auto *c = &objectArray.componentIndices[objectIndex * registeredComponentTypesCount];
@@ -820,11 +956,15 @@ public:
     template <std::size_t Index, typename... Types>
     using TypeAtIndex_t = typename TypeAtIndex<Index, Types...>::type;
 
-    template <typename... Components>
+    template <bool IncludeObjectIndex, typename... Components>
     class MultiIterator
     {
     public:
-        using value_type = std::tuple<Components *...>;
+        // Using a conditional type to decide what the iterator returns.
+        using value_type = std::conditional_t<
+            IncludeObjectIndex,
+            std::tuple<uint16_t, Components*...>,
+            std::tuple<Components*...>>;
 
         explicit MultiIterator(ECS *ecs, size_t index, int iteratingComponentType)
             : ecs(ecs), index(index), iteratingComponentType(iteratingComponentType)
@@ -835,7 +975,13 @@ public:
         value_type
         operator*() const
         {
-            return componentsTuple;
+            if constexpr (IncludeObjectIndex) {
+                // Return a tuple including the object index
+                return std::tuple_cat(std::make_tuple(currentObjectIndex), componentsTuple);
+            } else {
+                // Return a tuple with components only
+                return componentsTuple;
+            }
         }
 
         MultiIterator &
@@ -861,6 +1007,7 @@ public:
     private:
         ECS *ecs;
         size_t index;
+        uint16_t currentObjectIndex{0};
         int iteratingComponentType;
 
         std::tuple<Components *...> componentsTuple{};
@@ -869,8 +1016,8 @@ public:
         findNextComponentCombination()
         {
             while (index < ecs->componentContainers[iteratingComponentType]->componentCount()) {
-                uint16_t objectIndex = ecs->componentContainers[iteratingComponentType]->objectIndices[index];
-                componentsTuple = std::forward_as_tuple(ecs->getComponent<Components>(objectIndex)...);
+                currentObjectIndex = ecs->componentContainers[iteratingComponentType]->objectIndices[index];
+                componentsTuple = std::forward_as_tuple(ecs->getComponent<Components>(currentObjectIndex)...);
 
                 // Check if the tuple contains no null pointers
                 if (std::apply([](Components *...c) { return (... && (c != nullptr)); }, componentsTuple)) {
@@ -882,7 +1029,7 @@ public:
         }
     };
 
-    template <typename... Components>
+    template <bool IncludeObjectIndex, typename... Components>
     class MultiRange
     {
     public:
@@ -891,16 +1038,16 @@ public:
         {
         }
 
-        MultiIterator<Components...>
+        MultiIterator<IncludeObjectIndex, Components...>
         begin()
         {
-            return MultiIterator<Components...>(ecs, 0, iteratingOverComponentType);
+            return MultiIterator<IncludeObjectIndex, Components...>(ecs, 0, iteratingOverComponentType);
         }
 
-        MultiIterator<Components...>
+        MultiIterator<IncludeObjectIndex, Components...>
         end()
         {
-            return MultiIterator<Components...>(
+            return MultiIterator<IncludeObjectIndex, Components...>(
                 ecs, ecs->componentContainers[iteratingOverComponentType]->componentCount(), iteratingOverComponentType);
         }
 
@@ -910,30 +1057,47 @@ public:
     };
 
     template <typename... Components>
-    MultiRange<Components...>
+    MultiRange<false, Components...>
     iterateMulti()
+    {
+        auto minComponentType = findMinimumComponentTypeFor<Components...>();
+        return MultiRange<false, Components...>(this, minComponentType);
+    }
+
+    template <typename... Components>
+    MultiRange<true, Components...> iterateMulti_IncludeObjectIndex()
+    {
+        auto minComponentType = findMinimumComponentTypeFor<Components...>();
+        return MultiRange<true, Components...>(this, minComponentType);
+    }
+
+    // Finds the component type with the least amount of components, which will be the component
+    // type that the iterator will iterate over. It minimizes the amount of required getComponent<>s.
+    template <typename... Components>
+    int findMinimumComponentTypeFor()
     {
         int minSize = INT_MAX;
         int minComponentType = -1;
 
-        // Finds the component type with the least amount of components, which will be the component
-        // type that the iterator will iterate over. It minimizes the amount of required getComponent<>s.
         (
-            [&] {
-                using ComponentType = Components;
-                int componentType = ComponentNum<ComponentType>::num;
-                int size = componentContainers[componentType]->componentCount();
-                if (size < minSize) {
-                    minSize = size;
-                    minComponentType = componentType;
-                }
-            }(),
-            ...);
+        [&] {
+            using ComponentType = Components;
+            int componentType = jlECS::ComponentNum<ComponentType>::num;
+            int size = componentContainers[componentType]->componentCount();
+            if (size < minSize) {
+                minSize = size;
+                minComponentType = componentType;
+            }
+        }(),
+        ...
+        );
 
-        return MultiRange<Components...>(this, minComponentType);
+        return minComponentType;
     }
 
 protected:
+    virtual bool isDebug() { return false; }
+
     std::vector<std::unique_ptr<ComponentContainer>> componentContainers;
     std::vector<RegisteredComponentType> registeredComponentTypeNames;
 
@@ -1031,6 +1195,214 @@ T *
 ObjectRef::getComponentPtr()
 {
     return ecs->getComponent<T>(_objectIndex);
+}
+
+namespace Debug {
+
+class ComponentDebugBase
+{
+public:
+    virtual ~ComponentDebugBase() = default;
+
+    virtual const char *
+    getName()
+    {
+        return "ComponentDebugBase";
+    }
+
+    // Editor inspector serialization
+    virtual void imGuiSerialize(jleImGuiArchive &ar){};
+
+    void removeFromOwningObject(ObjectRef* objectRef);
+
+    ECS *ecs{};
+    ComponentContainer *container{};
+
+    int objectIndex{};
+    int componentIndex{};
+    int componentType{};
+};
+
+class ComponentContainerEditor : public ComponentContainer
+{
+public:
+    template <class T>
+    class ComponentDebug : public ComponentDebugBase
+    {
+    public:
+        T *componentPtr;
+
+        const char *
+        getName() override
+        {
+            return getCleanTypeName(typeid(T).name());
+        }
+
+        void
+        imGuiSerialize(jleImGuiArchive &ar) override
+        {
+            auto editorContainer = reinterpret_cast<ComponentContainerEditor*>(container);
+            if(editorContainer->serializeImGuiF){
+                editorContainer->serializeImGuiF(container, ar, componentIndex);
+            }
+        };
+    };
+
+    class ComponentContainerDebugBase
+    {
+    public:
+        virtual ~ComponentContainerDebugBase() = default;
+
+        explicit ComponentContainerDebugBase(const char *typeName, ComponentContainer *cc)
+            : cc(cc), componentTypeName{typeName} {};
+
+        ComponentContainer *cc;
+
+        const char *componentTypeName{};
+        int count{0};
+    };
+
+    template <class T>
+    class ComponentContainerDebug : public ComponentContainerDebugBase
+    {
+    public:
+        explicit ComponentContainerDebug(const char *typeName, ComponentContainer *cc)
+            : ComponentContainerDebugBase(typeName, cc){};
+
+        T *debugArrayPointer{nullptr};
+    };
+
+    inline ComponentDebugBase *
+    getComponentDebug(int componentIndex, int objectIndex, ECS *ecs)
+    {
+        return getComponentDebugF(this, componentIndex, objectIndex, ecs);
+    }
+
+    template <class T>
+    static uint16_t
+    addComponentT_Debug(ComponentContainer *thiz, int objectIndex)
+    {
+        const auto ret = ComponentContainer::addComponentT<T>(thiz, objectIndex);
+        reinterpret_cast<ComponentContainerEditor*>(thiz)->debug->count = thiz->componentCount();
+        return ret;
+    }
+
+    template <class T>
+    static void
+    allocateComponentsT_Debug(ComponentContainer *thiz, int count)
+    {
+        ComponentContainer::allocateComponentsT<T>(thiz, count);
+        reinterpret_cast<ComponentContainerEditor*>(thiz)->debug->count = thiz->componentCount();
+    }
+
+    template <class T>
+    static void
+    removeComponentT_Debug(ComponentContainer *thiz, int componentIndex)
+    {
+        ComponentContainer::removeComponentT_Immediate<T>(thiz, componentIndex);
+        reinterpret_cast<ComponentContainerEditor*>(thiz)->debug->count = thiz->componentCount();
+    }
+
+    template <class T>
+    static ComponentDebugBase *
+    getComponentDebugT(ComponentContainer *thiz, int componentIndex, int objectIndex, ECS *ecs)
+    {
+        auto debug = new ComponentDebug<T>();
+        debug->componentPtr = thiz->getPtr<T>(componentIndex);
+        debug->ecs = ecs;
+        debug->container = thiz;
+        debug->objectIndex = objectIndex;
+        debug->componentIndex = componentIndex;
+        debug->componentType = ComponentNum<T>::num;
+        return debug;
+    }
+
+private:
+    friend class Debug::ECS_Debug;
+    friend class Debug::Initializer;
+    ComponentDebugBase *(*getComponentDebugF)(ComponentContainer *, int, int, ECS *ecs){};
+    void (*serializeImGuiF)(ComponentContainer *, jleImGuiArchive&, int /*componentIndex*/) = nullptr;
+
+    std::unique_ptr<ComponentContainerDebugBase> debugSmart;
+    ComponentContainerDebugBase *debug{};
+};
+
+class ECS_Debug : public ECS
+{
+public:
+    std::unique_ptr<ComponentContainer> createContainer() override
+    {
+        ObjectRef::gObjectRefDestructFunction = ObjectRefDestruct;
+        return std::make_unique<ComponentContainerEditor>();
+    }
+
+protected:
+    bool isDebug() override{ return true; }
+    static void ObjectRefDestruct(ObjectRef* objectRef);
+};
+
+template <class T>
+void
+Initializer::initializeContainerDebugT(ComponentContainerEditor& container, const ComponentRegistrationConfig& config)
+{
+    container.addComponentF = (uint16_t (*)(ComponentContainer*, int))ComponentContainerEditor::addComponentT_Debug<T>;
+    container.allocateComponentsF = (void (*)(ComponentContainer*, int))ComponentContainerEditor::allocateComponentsT_Debug<T>;
+    container.removeComponentF = ComponentContainerEditor::removeComponentT_Debug<T>;
+
+    container.getComponentDebugF = ComponentContainerEditor::getComponentDebugT<T>;
+    auto debug = std::make_unique<ComponentContainerEditor::ComponentContainerDebug<T>>(getCleanTypeName(typeid(T).name()), &container);
+    debug->count = 0;
+    debug->debugArrayPointer = reinterpret_cast<T *>(container.data.data());
+    container.debug = debug.get();
+    container.debugSmart = std::move(debug);
+
+    container.serializeImGuiF = config.serializeImGuiF;
+}
+
+} // namespace Debug
+
+namespace Serialization{
+
+template <class T>
+static void
+serializeInputT_JSON(ComponentContainer *thiz, jleJSONInputArchive &archive, int componentIndex)
+{
+    T &ref = *thiz->getPtr<T>(componentIndex);
+    archive(ref);
+}
+
+template <class T>
+static void
+serializeOutputT_JSON(ComponentContainer *thiz, jleJSONOutputArchive &archive, int componentIndex)
+{
+    T &ref = *thiz->getPtr<T>(componentIndex);
+    archive(ref);
+}
+
+template <class T>
+static void
+serializeInputT_Binary(ComponentContainer *thiz, jleBinaryInputArchive &archive, int componentIndex)
+{
+    T &ref = *thiz->getPtr<T>(componentIndex);
+    archive(ref);
+}
+
+template <class T>
+static void
+serializeOutputT_Binary(ComponentContainer *thiz, jleBinaryOutputArchive &archive, int componentIndex)
+{
+    T &ref = *thiz->getPtr<T>(componentIndex);
+    archive(ref);
+}
+
+template <class T>
+static void
+serialize_ImGui(ComponentContainer *thiz, jleImGuiArchive &archive, int componentIndex)
+{
+    T &ref = *thiz->getPtr<T>(componentIndex);
+    archive(ref);
+}
+
 }
 
 } // namespace jlECS

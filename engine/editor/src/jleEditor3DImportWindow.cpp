@@ -256,10 +256,12 @@ jleEditor3DImportWindow::importModel(const jlePath &importPath,
 
     auto rootNode = scene->mRootNode;
 
-    auto objectsScene = editorCtx.editor.getEditorScenes()[0];
+    // TODO convert to ecs
+    assert(false);
+    //jleScene* objectsScene = nullptr;
 
-    auto parentObject = objectsScene->spawnObject<jleObject>(ctx.serializationContext);
-    processNode(scene, rootNode, parentObject, createdMeshes, createdMaterials, ctx);
+    //auto parentObject = objectsScene->spawnObject<jleObject>(ctx.serializationContext);
+    //processNode(scene, rootNode, parentObject, createdMeshes, createdMaterials, ctx);
 
     return true;
 }
@@ -272,51 +274,58 @@ jleEditor3DImportWindow::processNode(const aiScene *scene,
                                      std::vector<jleResourceRef<jleMaterialPBR>> &createdMaterials,
                                      jleEngineUpdateContext &ctx)
 {
-    object->setInstanceName(node->mName.C_Str());
 
-    const auto convertMatrix = [](const aiMatrix4x4 &from, glm::mat4 &to) {
-        to[0][0] = (float)from.a1;
-        to[1][0] = (float)from.a2;
-        to[2][0] = (float)from.a3;
-        to[3][0] = (float)from.a4;
-        to[0][1] = (float)from.b1;
-        to[1][1] = (float)from.b2;
-        to[2][1] = (float)from.b3;
-        to[3][1] = (float)from.b4;
-        to[0][2] = (float)from.c1;
-        to[1][2] = (float)from.c2;
-        to[2][2] = (float)from.c3;
-        to[3][2] = (float)from.c4;
-        to[0][3] = (float)from.d1;
-        to[1][3] = (float)from.d2;
-        to[2][3] = (float)from.d3;
-        to[3][3] = (float)from.d4;
-    };
 
-    glm::mat4 localTransform;
-    convertMatrix(node->mTransformation, localTransform);
+    // Todo implement this:
+    assert(false);
 
-    object->getTransform().setLocalMatrix(localTransform);
-
-    if (_importWithSkinning) {
-        auto mesh = object->addComponent<cSkinnedMesh>(ctx);
-        if (node->mNumMeshes >= 1) {
-            mesh->getMeshRef() =
-                jleResourceRef<jleSkinnedMesh>(createdMeshes[node->mMeshes[0]]->path, ctx.serializationContext);
-            mesh->getMaterialRef().reloadWithNewPath(
-                createdMaterials[scene->mMeshes[node->mMeshes[0]]->mMaterialIndex].path, ctx.serializationContext);
-        }
-    } else {
-        auto mesh = object->addComponent<cMesh>(ctx);
-        if (node->mNumMeshes >= 1) {
-            mesh->getMeshRef() = jleResourceRef<jleMesh>(createdMeshes[node->mMeshes[0]]->path, ctx.serializationContext);
-            mesh->getMaterialRef().reloadWithNewPath(
-                createdMaterials[scene->mMeshes[node->mMeshes[0]]->mMaterialIndex].path, ctx.serializationContext);
-        }
-    }
-
-    for (int i = 0; i < node->mNumChildren; ++i) {
-        auto child = object->spawnChildObject<jleObject>(ctx.serializationContext);
-        processNode(scene, node->mChildren[i], child, createdMeshes, createdMaterials, ctx);
-    }
+    //object->setInstanceName(node->mName.C_Str());
+//
+    //const auto convertMatrix = [](const aiMatrix4x4 &from, glm::mat4 &to) {
+    //    to[0][0] = (float)from.a1;
+    //    to[1][0] = (float)from.a2;
+    //    to[2][0] = (float)from.a3;
+    //    to[3][0] = (float)from.a4;
+    //    to[0][1] = (float)from.b1;
+    //    to[1][1] = (float)from.b2;
+    //    to[2][1] = (float)from.b3;
+    //    to[3][1] = (float)from.b4;
+    //    to[0][2] = (float)from.c1;
+    //    to[1][2] = (float)from.c2;
+    //    to[2][2] = (float)from.c3;
+    //    to[3][2] = (float)from.c4;
+    //    to[0][3] = (float)from.d1;
+    //    to[1][3] = (float)from.d2;
+    //    to[2][3] = (float)from.d3;
+    //    to[3][3] = (float)from.d4;
+    //};
+//
+    //glm::mat4 localTransform;
+    //convertMatrix(node->mTransformation, localTransform);
+//
+    //object->getTransform().setLocalMatrix(localTransform);
+//
+    //if (_importWithSkinning) {
+    //    auto mesh = object->addComponent<cSkinnedMesh>(ctx);
+    //    if (node->mNumMeshes >= 1) {
+    //        mesh->getMeshRef() =
+    //            jleResourceRef<jleSkinnedMesh>(createdMeshes[node->mMeshes[0]]->path, ctx.serializationContext);
+    //        mesh->getMaterialRef().reloadWithNewPath(
+    //            createdMaterials[scene->mMeshes[node->mMeshes[0]]->mMaterialIndex].path, ctx.serializationContext);
+    //    }
+    //} else {
+    //    assert(false);
+    //    // TODO fix:
+    //    //auto mesh = object->addComponent<cMesh>(ctx);
+    //    //if (node->mNumMeshes >= 1) {
+    //    //    mesh->getMeshRef() = jleResourceRef<jleMesh>(createdMeshes[node->mMeshes[0]]->path, ctx.serializationContext);
+    //    //    mesh->getMaterialRef().reloadWithNewPath(
+    //    //        createdMaterials[scene->mMeshes[node->mMeshes[0]]->mMaterialIndex].path, ctx.serializationContext);
+    //    //}
+    //}
+//
+    //for (int i = 0; i < node->mNumChildren; ++i) {
+    //    auto child = object->spawnChildObject<jleObject>(ctx.serializationContext);
+    //    processNode(scene, node->mChildren[i], child, createdMeshes, createdMaterials, ctx);
+    //}
 }

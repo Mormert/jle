@@ -16,7 +16,6 @@
 #include "jleGraphicsModule.h"
 
 #include "runtime/components/cCamera.h"
-#include "runtime/components/cCameraFPV.h"
 #include "runtime/components/cLight.h"
 #include "runtime/components/cLightDirectional.h"
 #include "runtime/components/cMesh.h"
@@ -29,7 +28,6 @@ void
 jleGraphicsModule::initializeECS(jlECS::ECS &ecs)
 {
     ecs.registerComponentType<cCamera>();
-    ecs.registerComponentType<cCameraFPV>();
     ecs.registerComponentType<cLight>();
     ecs.registerComponentType<cLightDirectional>();
     ecs.registerComponentType<cMesh>();
@@ -40,31 +38,45 @@ jleGraphicsModule::initializeECS(jlECS::ECS &ecs)
 void
 jleGraphicsModule::update(jleGraphicsModule::UpdateContext &ctx)
 {
-    for (auto &camera : ctx.inOut.ecs.iterate<cCamera>()) {
-        camera.ecsUpdate(ctx.out.camera, ctx.in.screenX, ctx.in.screenY);
+    for (auto [camera, transform] : ctx.inOut.ecs.iterateMulti<cCamera, cTransform>()) {
+        cCamera::UpdateContext cameraUpdateCtx = {
+            .in = {.transform = *transform,
+                   .width = ctx.in.screenX,
+                   .height = ctx.in.screenY},
+            .out = {
+                .camera = ctx.out.framePacket.camera
+            }
+        };
+        camera->update(cameraUpdateCtx);
+
+        // Break here, so we only get one camera
+        break;
     }
 
-    // for (auto &cameraFPV : ecs.iterate<cCameraFPV>()) {
-    //     cameraFPV.ecsUpdate(ctx);
-    // }
-
-    for (auto &light : ctx.inOut.ecs.iterate<cLight>()) {
-        light.ecsUpdate(ctx.out.framePacket);
+    for (auto [light, transform] : ctx.inOut.ecs.iterateMulti<cLight, cTransform>()) {
+        light->ecsUpdate(ctx.out.framePacket, *transform);
     }
 
-    for (auto &lightDirectional : ctx.inOut.ecs.iterate<cLightDirectional>()) {
-        lightDirectional.ecsUpdate(ctx.out.framePacket);
+    for (auto [lightDirectional, transform] : ctx.inOut.ecs.iterateMulti<cLightDirectional, cTransform>()) {
+        lightDirectional->ecsUpdate(ctx.out.framePacket, *transform);
     }
 
-    for (auto &mesh : ctx.inOut.ecs.iterate<cMesh>()) {
-        mesh.ecsUpdate(ctx.out.framePacket);
+    for (auto [objectIndex, mesh, transform] : ctx.inOut.ecs.iterateMulti_IncludeObjectIndex<cMesh, cTransform>()) {
+        mesh->ecsUpdate(ctx.out.framePacket, *transform, objectIndex);
     }
 
-    for (auto &skinnedMesh : ctx.inOut.ecs.iterate<cSkinnedMesh>()) {
-        skinnedMesh.ecsUpdate(ctx.out.framePacket);
+    for (auto [objectIndex, skinnedMesh, transform] :
+         ctx.inOut.ecs.iterateMulti_IncludeObjectIndex<cSkinnedMesh, cTransform>()) {
+
+        auto object = ctx.inOut.ecs.getObject(objectIndex);
+        auto optionalAnimator = object.getComponentPtr<cAnimator>();
+
+        skinnedMesh->ecsUpdate(ctx.out.framePacket, *transform, optionalAnimator, objectIndex);
     }
 
     for (auto &skybox : ctx.inOut.ecs.iterate<cSkybox>()) {
-        // skybox.update(ctx);
+        ctx.out.framePacket.settings.skybox = skybox.getSkyboxRef();
+        // Break here so we only get one skybox
+        break;
     }
 }

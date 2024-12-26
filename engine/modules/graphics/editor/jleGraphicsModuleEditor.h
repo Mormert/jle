@@ -15,13 +15,15 @@
 
 #pragma once
 
+#include <modules/graphics/jleGraphicsModule.h>
+
 namespace jlECS
 {
-class ECSEditor;
+class ECS_Debug;
 }
 
-class jleGraphicsModuleEditor
+class jleGraphicsModuleEditor : public jleGraphicsModule
 {
 public:
-    void initializeECS(jlECS::ECSEditor &ecs);
+    void initializeECS(jlECS::ECS &ecs) override;
 };

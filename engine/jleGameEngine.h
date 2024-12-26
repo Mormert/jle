@@ -16,7 +16,7 @@
 #pragma once
 
 #include "core/jleCommon.h"
-#include "modules/game/jleGameRuntime.h"
+#include "game/jleGameRuntime.h"
 #include "modules/jleEngineUpdateContext.h"
 
 #include <functional>
@@ -77,15 +77,19 @@ class jleGameEngine
 public:
     virtual ~jleGameEngine();
 
-    explicit jleGameEngine(std::unique_ptr<jleWindow> window);
+    struct EngineConstructConfig{
+        std::unique_ptr<jleWindow> window;
+        const jleGameConstructConfig& gameConfig;
+    };
 
-    template <class T>void setGame(){_gameRuntime->_gameCreator = []() { return std::make_unique<T>(); };}
+    jleGameEngine(EngineConstructConfig& config);
 
     void run();
 
     static inline Rml::Context *rmlContext_notUsed{};
 
-private:
+protected:
+    jleSerializationContext createSerializationContext();
     jleEngineUpdateContext createUpdateContext();
 
     void mainLoop();
@@ -136,8 +140,6 @@ protected:
 
     struct jleEngineInternal;
     std::unique_ptr<jleEngineInternal> _internal;
-
-    jleSerializationContext _serializationContext;
 
     jleGraphics &renderer();
 

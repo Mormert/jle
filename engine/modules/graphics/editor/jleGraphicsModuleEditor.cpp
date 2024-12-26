@@ -15,21 +15,23 @@
 
 #include "jleGraphicsModuleEditor.h"
 
-#include <core/jleCommon.h>
+#include <editor/serialization/jleEditorECSRegistration.h>
 
-//#include <editor/serialization/jleEditorSerialization.h>
-//#include <editor/jleImGuiArchive.h>
+#include "modules/graphics/runtime/components/cCamera.h"
+#include "modules/graphics/runtime/components/cLight.h"
+#include "modules/graphics/runtime/components/cLightDirectional.h"
+#include "modules/graphics/runtime/components/cMesh.h"
+#include "modules/graphics/runtime/components/cSkinnedMesh.h"
+#include "modules/graphics/runtime/components/cSkybox.h"
 
-//#include "modules/graphics/runtime/components/cCamera.h"
-//#include "modules/graphics/runtime/components/cCameraFPV.h"
-//#include "modules/graphics/runtime/components/cLight.h"
-//#include "modules/graphics/runtime/components/cLightDirectional.h"
-//#include "modules/graphics/runtime/components/cMesh.h"
-//#include "modules/graphics/runtime/components/cSkinnedMesh.h"
-//#include "modules/graphics/runtime/components/cSkybox.h"
 
 void
-jleGraphicsModuleEditor::initializeECS(jlECS::ECSEditor &ecs)
+jleGraphicsModuleEditor::initializeECS(jlECS::ECS &ecs)
 {
-
+    registerEditorECSComponent<cCamera>(ecs);
+    registerEditorECSComponent<cLight>(ecs);
+    registerEditorECSComponent<cLightDirectional>(ecs);
+    registerEditorECSComponent<cMesh>(ecs);
+    registerEditorECSComponent<cSkinnedMesh>(ecs);
+    registerEditorECSComponent<cSkybox>(ecs);
 }

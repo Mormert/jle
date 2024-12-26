@@ -19,6 +19,7 @@
 
 #include <ImGui/imgui.h>
 
+#include "jlECS/jlECS.h"
 #include <plog/Log.h>
 
 jleEditorGameControllerWidget::jleEditorGameControllerWidget(
@@ -34,13 +35,13 @@ void jleEditorGameControllerWidget::render(jleEngineUpdateContext & ctx) {
     if (ctx.gameRuntime.isGameKilled()) {
         if (ImGui::Button(("Start Game"))) {
             LOG_VERBOSE << "Starting the game.";
-            ctx.gameRuntime.startGame(ctx);
+            ctx.gameRuntime.startGame();
         }
     }
     else {
         if (ImGui::Button(("Restart Game"))) {
             LOG_VERBOSE << "Restarting the game.";
-            ctx.gameRuntime.restartGame(ctx);
+            ctx.gameRuntime.restartGame();
         }
         if (ImGui::Button(("Kill Game"))) {
             LOG_VERBOSE << "Killing the game.";

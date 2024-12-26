@@ -19,23 +19,34 @@
 #include <memory>
 
 class jleGame;
+class jleGameModules;
 class jleGameEngine;
 class jleTimerManager;
 class jleFramebufferInterface;
 struct jleEngineUpdateContext;
 
+namespace jlECS{
+class ECS;
+}
+
+struct jleGameConstructConfig{
+    std::function<std::unique_ptr<jleGame>()> gameCreator = {};
+    std::function<std::unique_ptr<jleGameModules>()> modulesCreator = {};
+    std::function<std::unique_ptr<jlECS::ECS>()> ecsCreator = {};
+};
+
 class jleGameRuntime
 {
 public:
-    explicit jleGameRuntime(jleGameEngine &engine);
+    jleGameRuntime(const jleGameConstructConfig &config, jleGameEngine& engine);
 
     jleTimerManager &timerManager();
 
     jleGame &getGame();
 
-    void startGame(jleEngineUpdateContext &ctx);
+    void startGame();
 
-    void restartGame(jleEngineUpdateContext &ctx);
+    void restartGame();
 
     void killGame();
 
@@ -67,11 +78,11 @@ private:
     jleGameEngine &_engine;
     friend class jleGameEngine;
 
-    std::unique_ptr<jleTimerManager> _timerManager;
+    std::unique_ptr<jleTimerManager> _timerManager{};
 
-    std::unique_ptr<jleGame> _game;
+    std::unique_ptr<jleGame> _game{};
 
-    std::function<std::unique_ptr<jleGame>()> _gameCreator;
+    jleGameConstructConfig _gameConstructConfig{};
 
     bool _gameHalted = false;
 };

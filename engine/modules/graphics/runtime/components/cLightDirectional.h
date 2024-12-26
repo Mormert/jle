@@ -15,28 +15,36 @@
 
 #pragma once
 
-#include "jleBuildConfig.h"
+#include "core/jleCommon.h"
 
-#include "cLight.h"
+#include "core/serialization/jleExternalSerialization.h"
 
-class cLightDirectional : public cLight
+#include <glm/vec3.hpp>
+
+
+class jleFramePacket;
+class cTransform;
+
+namespace sol
 {
-    JLE_REGISTER_COMPONENT_TYPE(cLightDirectional)
+class state;
+}
+
+class cLightDirectional
+{
 public:
     template <class Archive>
     void serialize(Archive &ar){
-        ar(cereal::base_class<cLight>(this));
+        ar(CEREAL_NVP(_color));
     }
 
-    void registerLua(sol::state &lua) override;
+    void ecsUpdate(jleFramePacket &packet, const cTransform& transform);
 
-    void update(jleEngineUpdateContext &ctx) override;
+    static void registerLua(sol::state &lua);
 
-    void ecsUpdate(jleFramePacket &packet);
+    //void editorGizmosRender(jleFramePacket &renderGraph, jleEditorGizmos &gizmos) override;
 
-    void editorGizmosRender(jleFramePacket &renderGraph, jleEditorGizmos &gizmos) override;
+protected:
+    glm::vec3 _color{1.f};
 };
 
-
-CEREAL_REGISTER_TYPE(cLightDirectional)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(cLight, cLightDirectional)

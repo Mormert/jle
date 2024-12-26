@@ -102,8 +102,8 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, jleTextureRefOrA
 
 bool
 jleImGuiArchive::draw_ui_reference(const char *name,
-                                                 std::string &value,
-                                                 std::vector<std::string> fileExtensions)
+                                   std::string &value,
+                                   std::vector<std::string> fileExtensions)
 {
     ImGui::PushID(elementCount++);
 
@@ -120,7 +120,7 @@ jleImGuiArchive::draw_ui_reference(const char *name,
 
     bool existsSomeFiles = false;
     for (auto &extension : fileExtensions) {
-        auto e = editorCtx.editor.resourceIndexer().getIndexedFilesPtr(extension.c_str());
+        auto e = editorCtx.resourceIndexer.getIndexedFilesPtr(extension.c_str());
         if (!e->empty()) {
             existsSomeFiles = true;
         }
@@ -485,29 +485,6 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, glm::quat &value
     if (ImGui::DragFloat3(LeftLabelImGui(name).c_str(), &euler[0])) {
         value = glm::quat(euler);
     }
-    ImGui::PopID();
-}
-
-void
-jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, jleTransform &value)
-{
-    ImGui::PushID(elementCount++);
-
-    glm::mat4 cpyMat = value.getLocalMatrix();
-    auto *cpyMatPtr = &cpyMat[0][0];
-
-    float matrixTranslation[3], matrixRotation[3], matrixScale[3];
-    ImGui::Text("%s", name);
-    ImGuizmo::DecomposeMatrixToComponents((float *)cpyMatPtr, matrixTranslation, matrixRotation, matrixScale);
-    ImGui::DragFloat3("Translation", matrixTranslation);
-    ImGui::DragFloat3("Rotation", matrixRotation);
-    ImGui::DragFloat3("Scaling", matrixScale);
-    ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, cpyMatPtr);
-
-    if (cpyMat != value.getLocalMatrix()) {
-        value.setLocalMatrix(cpyMat);
-    }
-
     ImGui::PopID();
 }
 

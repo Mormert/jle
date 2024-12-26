@@ -13,26 +13,27 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#include "cTransformNetSync.h"
-#include "../jleNetworkingComponent.h"
-
-void
-cTransformNetSync::netSyncOut(jleBinaryOutputArchive &ar)
-{
-    auto &m = object()->getTransform().getLocalMatrix();
-    ar(m);
-}
-
-void
-cTransformNetSync::netSyncIn(jleBinaryInputArchive &ar)
-{
-    glm::mat4 m;
-    ar(m);
-    object()->getTransform().setLocalMatrix(m);
-}
-
-void
-cTransformNetSync::serverUpdate(jleEngineUpdateContext &ctx)
-{
-    syncComponentServerToClient(*this, ctx.serializationContext);
-}
+//#include "cTransformNetSync.h"
+//#include "../jleNetworkingComponent.h"
+//
+//void
+//cTransformNetSync::netSyncOut(jleBinaryOutputArchive &ar)
+//{
+//    auto &m = object()->getTransform().getLocalMatrix();
+//    ar(m);
+//}
+//
+//void
+//cTransformNetSync::netSyncIn(jleBinaryInputArchive &ar)
+//{
+//    glm::mat4 m;
+//    ar(m);
+//    object()->getTransform().setLocalMatrix(m);
+//}
+//
+//void
+//cTransformNetSync::serverUpdate(jleEngineUpdateContext &ctx)
+//{
+//    syncComponentServerToClient(*this, ctx.serializationContext);
+//}
+//

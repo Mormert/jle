@@ -13,16 +13,16 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#include "jleComponent.h"
-#include "jleObject.h"
-
-template <typename T>
-void
-jleComponent::registerLuaComponentFunctions_Impl(sol::usertype<jleObject> &luaObjType)
-{
-    std::string addComp = "addComponent_" + std::string{componentName()};
-    luaObjType.set_function(addComp.c_str(), [](jleObject &o, jleEngineUpdateContext & ctx) { return o.addComponent<T>(ctx); });
-
-    std::string getComp = "getComponent_" + std::string{componentName()};
-    luaObjType.set_function(getComp.c_str(), [](jleObject &o) { return o.getComponent<T>(); });
-}
+//#include "jleComponent.h"
+//#include "jleObject.h"
+//
+//template <typename T>
+//void
+//jleComponent::registerLuaComponentFunctions_Impl(sol::usertype<jleObject> &luaObjType)
+//{
+//    std::string addComp = "addComponent_" + std::string{componentName()};
+//    luaObjType.set_function(addComp.c_str(), [](jleObject &o, jleEngineUpdateContext & ctx) { return o.addComponent<T>(ctx); });
+//
+//    std::string getComp = "getComponent_" + std::string{componentName()};
+//    luaObjType.set_function(getComp.c_str(), [](jleObject &o) { return o.getComponent<T>(); });
+//}

@@ -13,36 +13,37 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#pragma once
-
-#include "jleBuildConfig.h"
-
-#if JLE_BUILD_EDITOR
-
-#include "jleEditorImGuiWindowInterface.h"
-
-class jleObject;
-class jleScene;
-class jleEditorUpdateContext;
-
-class jleEditorSceneObjectsWindow : public jleEditorWindowInterface
-{
-public:
-    explicit jleEditorSceneObjectsWindow(const std::string &window_name);
-
-    void renderUI(jleEditorUpdateContext &ctx);
-
-    std::weak_ptr<jleObject> &GetSelectedObject();
-
-    void SetSelectedObject(std::shared_ptr<jleObject> object);
-
-    std::weak_ptr<jleScene> &GetSelectedScene();
-
-private:
-    std::weak_ptr<jleObject> selectedObject;
-    std::weak_ptr<jleScene> selectedScene;
-
-    void objectTreeRecursive(std::shared_ptr<jleObject> object, jleEngineUpdateContext &ctx);
-};
-
-#endif // JLE_BUILD_EDITOR
+//#pragma once
+//
+//#include "jleBuildConfig.h"
+//
+//#if JLE_BUILD_EDITOR
+//
+//#include "jleEditorImGuiWindowInterface.h"
+//
+//class jleObject;
+//class jleScene;
+//class jleEditorUpdateContext;
+//
+//class jleEditorSceneObjectsWindow : public jleEditorWindowInterface
+//{
+//public:
+//    explicit jleEditorSceneObjectsWindow(const std::string &window_name);
+//
+//    void renderUI(jleEditorUpdateContext &ctx);
+//
+//    std::weak_ptr<jleObject> &GetSelectedObject();
+//
+//    void SetSelectedObject(std::shared_ptr<jleObject> object);
+//
+//    std::weak_ptr<jleScene> &GetSelectedScene();
+//
+//private:
+//    std::weak_ptr<jleObject> selectedObject;
+//    std::weak_ptr<jleScene> selectedScene;
+//
+//    void objectTreeRecursive(std::shared_ptr<jleObject> object, jleEngineUpdateContext &ctx);
+//};
+//
+//#endif // JLE_BUILD_EDITOR
+//

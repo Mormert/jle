@@ -36,11 +36,11 @@ endif ()
 
 add_library(engine STATIC
         "jleGameEngine.cpp"
-
         "modules/jleEngineUpdateContext.cpp"
         "modules/jleEditorUpdateContext.cpp"
-        "modules/game/jleGameRuntime.cpp"
-        "modules/game/jleGame.cpp"
+        "game/jleGameRuntime.cpp"
+        "game/jleGame.cpp"
+        "game/loader/jleGameModulesLoader.cpp"
         )
 
 

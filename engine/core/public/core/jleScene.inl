@@ -13,26 +13,27 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#include "jleObject.h"
-#include "jleResourceHolder.h"
-#include "jleGameEngine.h"
-#include <fstream>
-#include <plog/Log.h>
-
-template <typename T>
-inline std::shared_ptr<T>
-jleScene::spawnObject(jleSerializationContext& ctx)
-{
-    static_assert(std::is_base_of<jleObject, T>::value, "T must derive from jleObject");
-
-    std::shared_ptr<T> newSceneObject = std::make_shared<T>();
-    setupObject(newSceneObject, ctx);
-
-    return newSceneObject;
-}
-
-inline std::vector<std::shared_ptr<jleObject>> &
-jleScene::sceneObjects()
-{
-    return _sceneObjects;
-}
+//#include "jleObject.h"
+//#include "jleResourceHolder.h"
+//#include "jleGameEngine.h"
+//#include <fstream>
+//#include <plog/Log.h>
+//
+//template <typename T>
+//inline std::shared_ptr<T>
+//jleScene::spawnObject(jleSerializationContext& ctx)
+//{
+//    static_assert(std::is_base_of<jleObject, T>::value, "T must derive from jleObject");
+//
+//    std::shared_ptr<T> newSceneObject = std::make_shared<T>();
+//    setupObject(newSceneObject, ctx);
+//
+//    return newSceneObject;
+//}
+//
+//inline std::vector<std::shared_ptr<jleObject>> &
+//jleScene::sceneObjects()
+//{
+//    return _sceneObjects;
+//}
+//

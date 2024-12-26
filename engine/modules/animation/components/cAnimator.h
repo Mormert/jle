@@ -17,13 +17,21 @@
 
 #include "core/jleCommon.h"
 
-#include "core/jleComponent.h"
 #include "core/jleResourceRef.h"
 #include "modules/animation/jleAnimation.h"
 
 #include "modules/animation/jleAnimationFinalMatrices.h"
 
 #include <glm/glm.hpp>
+
+struct jleEngineUpdateContext;
+struct jleEditorUpdateContext;
+class cTransform;
+
+namespace sol
+{
+class state;
+}
 
 struct cAnimatorAnimation {
     jleResourceRef<jleAnimation> currentAnimation{};
@@ -46,45 +54,44 @@ struct cAnimatorAnimation {
     glm::vec3 totalRootMotionTranslation;
 
     template <class Archive>
-    void serialize(Archive &ar);
+    void serialize(Archive &ar){
+        ar(CEREAL_NVP(currentAnimation), CEREAL_NVP(animationSpeed));
+    }
 };
 
-JLE_EXTERN_TEMPLATE_CEREAL_H(cAnimatorAnimation)
-
-class cAnimator : public jleComponent, public std::enable_shared_from_this<cAnimator>
+class cAnimator
 {
-    JLE_REGISTER_COMPONENT_TYPE(cAnimator)
 public:
     explicit cAnimator();
 
     template <class Archive>
-    void serialize(Archive &ar);
+    void serialize(Archive &ar){
+        ar(CEREAL_NVP(_animations),
+           CEREAL_NVP(_enableRootMotion),
+           CEREAL_NVP(_rootMotionBone),
+           CEREAL_NVP(_blendFactor));
+    }
 
-    void start(jleEngineUpdateContext &ctx) override;
+    void start();
 
-    void update(jleEngineUpdateContext &ctx) override;
+    void animate(float dt);
 
-    void parallelUpdate(jleEngineUpdateContext &ctx) override;
+    static void registerLua(sol::state &lua);
 
-    void editorUpdate(jleEngineUpdateContext &ctx) override;
-
-    void registerLua(sol::state &lua) override;
-
-    void calculateBoneTransform(jleEngineUpdateContext &ctx,
-                                const jleAnimationNode &node,
+    void calculateBoneTransform(const jleAnimationNode &node,
                                 const glm::mat4 &parentTransform,
                                 cAnimatorAnimation &animation);
 
-    const std::shared_ptr<jleAnimationFinalMatrices> &animationMatrices();
+    const std::shared_ptr<jleAnimationFinalMatrices> &animationMatrices() const;
 
-    void editorInspectorImGuiRender(jleEditorUpdateContext & ctx) override;
+    void editorInspectorImGuiRender(jleEditorUpdateContext & ctx);
 
     void setAnimation(const jlePath &path, jleSerializationContext& ctx);
 
 private:
     void blendAnimations();
 
-    void applyRootMotion();
+    void applyRootMotion(cTransform& transform);
 
     std::vector<cAnimatorAnimation> _animations;
 
@@ -99,8 +106,3 @@ private:
     bool _editorPreviewAnimation{false};
 #endif
 };
-
-JLE_EXTERN_TEMPLATE_CEREAL_H(cAnimator)
-
-CEREAL_REGISTER_TYPE(cAnimator)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cAnimator)

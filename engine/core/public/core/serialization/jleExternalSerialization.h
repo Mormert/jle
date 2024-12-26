@@ -112,6 +112,7 @@ save(Archive &archive, const sol::table &luaTable)
             archive(cereal::make_nvp(key, number));
             break;
         }
+        default:;
         }
     }
 }

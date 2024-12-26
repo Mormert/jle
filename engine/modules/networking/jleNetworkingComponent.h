@@ -13,10 +13,11 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#pragma once
-
-
-class jleComponent;
-struct jleSerializationContext;
-
-void syncComponentServerToClient(jleComponent& component, jleSerializationContext& ctx);
+//#pragma once
+//
+//
+//class jleComponent;
+//struct jleSerializationContext;
+//
+//void syncComponentServerToClient(jleComponent& component, jleSerializationContext& ctx);
+//

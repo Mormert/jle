@@ -14,17 +14,26 @@
  *********************************************************************************************/
 
 #include "jleGameRuntime.h"
+
 #include "core/jleTimerManager.h"
 #include "jleEngineSettings.h"
 #include "jleGame.h"
-#include "modules/graphics/jleRenderThread.h"
-#include "modules/input/jleInput.h"
+#include "jleGameEngine.h"
+#include "jlECS/jlECS.h"
+
+#include <modules/graphics/jleRenderThread.h>
+#include <modules/input/jleInput.h>
 #include <modules/graphics/core/jleFramebufferScreen.h>
 
 #include <WickedEngine/wiJobSystem.h>
 
-jleGameRuntime::jleGameRuntime(jleGameEngine &engine) : _engine(engine)
+jleGameRuntime::jleGameRuntime(const jleGameConstructConfig &config, jleGameEngine& engine) : _engine(engine)
 {
+    _gameConstructConfig = config;
+    if(!_gameConstructConfig.ecsCreator){
+        _gameConstructConfig.ecsCreator = [](){ return std::make_unique<jlECS::ECS>(); };
+    }
+
     _timerManager = std::make_unique<jleTimerManager>();
 
     constexpr int initialScreenX = 1024;
@@ -45,12 +54,12 @@ jleGameRuntime::timerManager()
 }
 
 void
-jleGameRuntime::restartGame(jleEngineUpdateContext &ctx)
+jleGameRuntime::restartGame()
 {
     _game.reset();
 
     _timerManager->clearTimers();
-    startGame(ctx);
+    startGame();
 }
 
 void
@@ -81,14 +90,17 @@ jleGameRuntime::executeNextFrame(jleEngineUpdateContext &ctx)
     auto gameHaltedTemp = _gameHalted;
     _gameHalted = false;
 
-    jleCamera camera = getGame().mainCamera;
+    //
+   // jleCamera camera = getGame();
 
     // Game thread
     wi::jobsystem::context jobsCtx;
     wi::jobsystem::Execute(jobsCtx, [&](wi::jobsystem::JobArgs args) { update(ctx); });
 
     // Render thread
-    JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS) { _engine.render(camera, ctx, jobsCtx); }
+    assert(false);
+    // todo: fix that we feed the camera from the ecs cCamera here ..
+    //JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS) { _engine.render(camera, ctx, jobsCtx); }
     _gameHalted = gameHaltedTemp;
 }
 
@@ -128,15 +140,6 @@ jleGameRuntime::update(jleEngineUpdateContext &ctx)
         }
 
         {
-            JLE_SCOPE_PROFILE_CPU(jleGameEngine_parallelUpdates);
-            _game->parallelUpdates(ctx);
-        }
-
-        {
-            JLE_SCOPE_PROFILE_CPU(jleGameEngine_updateActiveScenes)
-            _game->updateActiveScenes(ctx);
-        }
-        {
             JLE_SCOPE_PROFILE_CPU(RmlUi)
             // rmlContext_notUsed->Update();
         }
@@ -150,14 +153,16 @@ jleGameRuntime::getGame()
 }
 
 void
-jleGameRuntime::startGame(jleEngineUpdateContext &ctx)
+jleGameRuntime::startGame()
 {
-    _game = _gameCreator();
-    _game->start(ctx);
+    jleGame::GameStartContext startContext{
+        .ecs = _gameConstructConfig.ecsCreator()
+    };
 
-    for (auto &scenePath : ctx.settings.initialScenesToLoad) {
-        _game->loadScene(scenePath, ctx);
-    }
+    _game = _gameConstructConfig.gameCreator();
+    std::unique_ptr<jleGameModules> modules = _gameConstructConfig.modulesCreator();
+    _game->injectModules(std::move(modules));
+    _game->start(startContext);
 }
 
 void

@@ -17,14 +17,13 @@
 
 #include "core/jleCommon.h"
 
-#include "core/jleComponent.h"
-
 #include "modules/graphics/jleMaterial.h"
 #include "modules/graphics/jleMesh.h"
 
-class cMesh : public jleComponent
+class cTransform;
+
+class cMesh
 {
-    JLE_REGISTER_COMPONENT_TYPE(cMesh)
 public:
     template <class Archive>
     void
@@ -32,13 +31,7 @@ public:
         ar(CEREAL_NVP(_meshRef), CEREAL_NVP(_materialRef));
     }
 
-    void editorUpdate(jleEngineUpdateContext &ctx) override;
-
-    void start(jleEngineUpdateContext &ctx) override;
-
-    void update(jleEngineUpdateContext &ctx) override;
-
-    void ecsUpdate(jleFramePacket &packet);
+    void ecsUpdate(jleFramePacket &packet, const cTransform& transform, int instanceId);
 
     std::shared_ptr<jleMesh> getMesh();
     std::shared_ptr<jleMaterial> getMaterial();
@@ -53,5 +46,5 @@ protected:
 
 //JLE_EXTERN_TEMPLATE_CEREAL_H(cMesh)
 
-CEREAL_REGISTER_TYPE(cMesh)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cMesh)
+//CEREAL_REGISTER_TYPE(cMesh)
+//CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cMesh)

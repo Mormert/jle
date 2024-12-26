@@ -32,12 +32,6 @@ public:
 
     virtual void resize(unsigned int width, unsigned int height) = 0;
 
-    // Specifies which axis to be fixed, and the other scales depending on window aspect ratio
-    enum class FIXED_AXIS { width, height };
-
-    static glm::ivec2 fixedAxisDimensions(jleFramebufferInterface::FIXED_AXIS fixedAxis,
-                                          float aspect,
-                                          unsigned int fixedAxisPixels);
     void bind();
 
     static void bindDefault();

@@ -17,34 +17,35 @@
 
 #include "core/jleCommon.h"
 
-#include "core/jleComponent.h"
+#include "core/serialization/jleExternalSerialization.h"
 
 #include <glm/vec3.hpp>
 
-class cLight : public jleComponent
+class cTransform;
+class jleFramePacket;
+
+namespace sol
 {
-    JLE_REGISTER_COMPONENT_TYPE(cLight)
+class state;
+}
+
+class cLight
+{
 public:
     template <class Archive>
     void serialize(Archive &ar){
         ar(CEREAL_NVP(_color));
     }
 
-    void start(jleEngineUpdateContext &ctx) override;
+    void ecsUpdate(jleFramePacket &packet, const cTransform& transform);
 
-    void update(jleEngineUpdateContext &ctx) override;
+    //void editorGizmosRender(jleFramePacket &renderGraph, jleEditorGizmos &gizmos);
 
-    void ecsUpdate(jleFramePacket &packet);
-
-    void editorUpdate(jleEngineUpdateContext &ctx) override;
-
-    void editorGizmosRender(jleFramePacket &renderGraph, jleEditorGizmos &gizmos) override;
-
-    void registerLua(sol::state &lua) override;
+    static void registerLua(sol::state &lua);
 
 protected:
     glm::vec3 _color{1.f};
 };
 
-CEREAL_REGISTER_TYPE(cLight)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cLight)
+//CEREAL_REGISTER_TYPE(cLight)
+//CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cLight)
