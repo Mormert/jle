@@ -26,6 +26,7 @@
 class jleEditorUpdateContext;
 class jleFramebufferMultisample;
 class jlePhysics;
+class jleUndoRedoManager;
 
 class jleSceneEditorWindow : public jleEditorWindowInterface
 {
@@ -37,6 +38,7 @@ public:
         jlECS::ECS& ecs;
         std::shared_ptr<std::vector<jlECS::ObjectRef>> selectedObjects;
         jlePhysics& physics;
+        jleUndoRedoManager& undoRedo;
     };
 
     void renderUI(const RenderUIInput& input);

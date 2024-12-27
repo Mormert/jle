@@ -38,6 +38,7 @@
 #include "jleEditorTextEdit.h"
 #include "jleGameEditorWindow.h"
 #include "jleSceneEditorWindow.h"
+#include "jleUndoRedo.h"
 #include "jlECS/jlECS.h"
 
 #include "game/jleGame.h"
@@ -145,8 +146,10 @@ public:
     std::shared_ptr<jleEditorFrameGraphWindow> frameGraph;
     std::shared_ptr<jleECSEditorWindow> ecsWindow;
 
+    jleUndoRedoManager _undoRedo{};
+
     void
-    renderUI(jleEditorUpdateContext &context) const
+    renderUI(jleEditorUpdateContext &context)
     {
         jlECS::ECS* ecs = context.engineUpdateContext.gameRuntime.isGameKilled() ? nullptr : context.gameState.ecs.get();
         assert(dynamic_cast<jlECS::Debug::ECS_Debug*>(ecs));
@@ -157,13 +160,15 @@ public:
 
         const auto ecsWindowOutput = ecsWindow->renderUI({
             .editorUpdate = context,
-            .ecs = *ecs
+            .ecs = *ecs,
+            .undoRedo = _undoRedo
         });
 
         sceneWindow->renderUI({.editorUpdate = context,
                                .ecs = *ecs,
                                .selectedObjects = ecsWindowOutput.selectedObjects,
-                               .physics = *context.gameState.physics
+                               .physics = *context.gameState.physics,
+                               .undoRedo = _undoRedo
         });
 
         gameWindow->renderUI(context.engineUpdateContext, context.engineUpdateContext.inputModule);

@@ -35,6 +35,7 @@ public:
 class jleUndoRedoManager {
 public:
     void enqueueAndExecute(const jleUndoRedoCommandBase::CommandContext& ctx, std::unique_ptr<jleUndoRedoCommandBase> command);
+    void enqueue(std::unique_ptr<jleUndoRedoCommandBase> command);
 
     void undo(const jleUndoRedoCommandBase::CommandContext& ctx);
     void redo(const jleUndoRedoCommandBase::CommandContext& ctx);

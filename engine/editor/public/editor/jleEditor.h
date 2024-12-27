@@ -17,8 +17,6 @@
 
 #include "jleBuildConfig.h"
 
-#if JLE_BUILD_EDITOR
-
 #include "jleGameEngine.h"
 #include "modules/jleEditorUpdateContext.h"
 
@@ -109,5 +107,3 @@ private:
 
     std::unique_ptr<jleEditorGizmos> _gizmos;
 };
-
-#endif // JLE_BUILD_EDITOR

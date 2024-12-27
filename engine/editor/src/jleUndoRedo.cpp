@@ -28,6 +28,17 @@ void jleUndoRedoManager::enqueueAndExecute(const jleUndoRedoCommandBase::Command
     _currentCommandIndex++;
 }
 
+void
+jleUndoRedoManager::enqueue(std::unique_ptr<jleUndoRedoCommandBase> command)
+{
+    if (_currentCommandIndex < static_cast<int>(_commands.size())) {
+        _commands.erase(_commands.begin() + _currentCommandIndex, _commands.end());
+    }
+
+    _commands.emplace_back(std::move(command));
+    _currentCommandIndex++;
+}
+
 void jleUndoRedoManager::undo(const jleUndoRedoCommandBase::CommandContext& ctx) {
     if (_currentCommandIndex == 0) {
         return;

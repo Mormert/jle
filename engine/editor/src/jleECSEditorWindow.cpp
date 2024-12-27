@@ -197,6 +197,51 @@ private:
     jlECS::ObjectRef _object;
 };
 
+class ChangeValuesOnComponentCommand : public jleUndoRedoCommandBase{
+public:
+    ChangeValuesOnComponentCommand(const jlECS::ObjectRef& object, int componentType, std::string binaryDataBefore, std::string binaryDataAfter)
+                                    : _object(object), _componentType(componentType),
+                                    _serializedBinaryDataBefore(binaryDataBefore), _serializedBinaryDataAfter(binaryDataAfter) {}
+
+    void execute(const CommandContext& ctx) override{
+        auto components = _object.componentsDebug2();
+
+        for(auto& component : components)
+        {
+            if(component->componentType == _componentType){
+                std::istringstream iss(_serializedBinaryDataAfter);
+                {
+                    jleBinaryInputArchive ar{iss, ctx.serializationContext};
+                    component->binarySerializeIn(ar);
+                }
+                break;
+            }
+        }
+    }
+
+    void undo(const CommandContext& ctx) override{
+        auto components = _object.componentsDebug2();
+
+        for(auto& component : components)
+        {
+            if(component->componentType == _componentType){
+                std::istringstream iss(_serializedBinaryDataBefore);
+                {
+                    jleBinaryInputArchive ar{iss, ctx.serializationContext};
+                    component->binarySerializeIn(ar);
+                }
+                break;
+            }
+        }
+    }
+
+private:
+    int _componentType{};
+    std::string _serializedBinaryDataBefore;
+    std::string _serializedBinaryDataAfter;
+    jlECS::ObjectRef _object;
+};
+
 }
 
 jleECSEditorWindow::jleECSEditorWindow(const std::string &window_name)
@@ -222,12 +267,12 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
    ImGuiIO& io = ImGui::GetIO();
    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z, false))
    {
-       _undoRedo.undo(undoRedoCommandCtx);
+       input.undoRedo.undo(undoRedoCommandCtx);
    }
    if ((io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y, false)) ||
        (io.KeyCtrl && io.KeyShift && ImGui::IsKeyPressed(ImGuiKey_Z, false)))
    {
-       _undoRedo.redo(undoRedoCommandCtx);
+       input.undoRedo.redo(undoRedoCommandCtx);
    }
 
    ImGuiWindowFlags flags =
@@ -435,7 +480,7 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
                        if (ImGui::MenuItem(label.c_str()))
                        {
                            auto command = std::make_unique<AddComponentCommand>(&ecs, missingList, registeredComponentType.componentType);
-                           _undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
+                           input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
                        }
                    }
                    ImGui::EndMenu();
@@ -448,7 +493,7 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
                if (ImGui::MenuItem(destroyLabel.c_str()))
                {
                    auto command = std::make_unique<RemoveObjectsCommand>(&ecs, finalSelection);
-                   _undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
+                   input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
 
                    _selectedObjects->erase(
                        std::remove_if(_selectedObjects->begin(),
@@ -467,7 +512,7 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
    }
 
    if (ImGui::Button("Add Object")) {
-       _undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::make_unique<AddObjectCommand>(&ecs));
+       input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::make_unique<AddObjectCommand>(&ecs));
    }
 
    ImGui::EndChild();
@@ -488,7 +533,7 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
            if (selectedObject.isValid()) {
                if (ImGui::Button("Destroy Object")) {
                    auto command = std::make_unique<RemoveObjectsCommand>(&ecs, std::vector<jlECS::ObjectRef>{selectedObject});
-                   _undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
+                   input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
                    _selectedObjects->clear();
                }
 
@@ -501,13 +546,34 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
                    ImGui::PushID(compCounter);
                    ImGui::BeginGroupPanel(comp->getName());
 
-                   jleImGuiArchive ar{input.editorUpdate};
-                   comp->imGuiSerialize(ar);
+                   std::ostringstream ossBefore{};
+                   {
+                       jleBinaryOutputArchive ar{ossBefore, input.editorUpdate.engineUpdateContext.serializationContext};
+                       comp->binarySerializeOut(ar);
+                   }
+                   std::string serializedBinaryDataBefore = ossBefore.str();
+
+                   jleImGuiArchive imGuiArchive{input.editorUpdate};
+                   comp->imGuiSerialize(imGuiArchive);
+
+                   std::ostringstream ossAfter{};
+                   {
+                       jleBinaryOutputArchive ar{ossAfter, input.editorUpdate.engineUpdateContext.serializationContext};
+                       comp->binarySerializeOut(ar);
+                   }
+                   std::string serializedBinaryDataAfter = ossAfter.str();
+
+                   // Check if the component was changed, then add the entire component's binary data (before and after) to the undo-redo system
+                   if(serializedBinaryDataBefore != serializedBinaryDataAfter){
+                        auto command = std::make_unique<ChangeValuesOnComponentCommand>(selectedObject, comp->componentType,
+                                                                                       serializedBinaryDataBefore, serializedBinaryDataAfter);
+                        input.undoRedo.enqueue(std::move(command));
+                   }
 
                    std::string removeString = "Remove " + std::string{comp->getName()};
                    if (ImGui::Button(removeString.c_str())) {
                        auto command = std::make_unique<RemoveComponentCommand>(&ecs, selectedObject, comp->componentType);
-                       _undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
+                       input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
 
                        ImGui::EndGroupPanel();
                        ImGui::PopID();
@@ -528,7 +594,7 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
                        {
                            std::vector<jlECS::ObjectRef> selectedObjects {selectedObject};
                            auto command = std::make_unique<AddComponentCommand>(&ecs, selectedObjects, registeredComponentType.componentType);
-                           _undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
+                           input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
                        }
                    }
                    ImGui::EndMenu();
@@ -539,7 +605,7 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
        {
            if (ImGui::Button("Destroy All Selected")) {
                auto command = std::make_unique<RemoveObjectsCommand>(&ecs, *_selectedObjects);
-               _undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
+               input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
                _selectedObjects->clear();
            }
 
@@ -589,7 +655,7 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
        }
        if (ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter)) {
            auto command = std::make_unique<RemoveObjectsCommand>(&ecs, *_selectedObjects);
-           _undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
+           input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
            _selectedObjects->clear();
            ImGui::CloseCurrentPopup();
        }
@@ -618,7 +684,7 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
 
        if (ImGui::Button("Yes, delete")) {
            auto command = std::make_unique<RemoveObjectsCommand>(&ecs, *_selectedObjects);
-           _undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
+           input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
            _selectedObjects->clear();
            ImGui::CloseCurrentPopup();
        }

@@ -36,6 +36,53 @@
 #include <ImGui/imgui.h>
 #include <btBulletDynamicsCommon.h>
 #include <glm/common.hpp>
+#include <utility>
+
+namespace{
+
+class MoveTransformsCommand : public jleUndoRedoCommandBase{
+public:
+    MoveTransformsCommand(std::vector<jlECS::ObjectRef> objects, std::vector<glm::mat4> initialTransforms, glm::mat4 delta, jlePhysics* physics)
+        :_objects(std::move(objects)), _initialTransforms(std::move(initialTransforms)), _delta(delta), _physics(physics) {}
+
+    void execute(const CommandContext& ctx) override{
+        for(auto& object : _objects){
+            assert(object.isValid());
+            auto transform = object.getComponentPtr<cTransform>();
+            assert(transform);
+
+            glm::mat4 oldWorld = transform->getWorldMatrix();
+            glm::mat4 newWorld = _delta * oldWorld;
+            transform->setWorldMatrix(newWorld);
+
+            if (auto* rb = object.getComponentPtr<cRigidbody>())
+            {
+                if (auto* meshComp = object.getComponentPtr<cMesh>()) {
+                    rb->setWorldMatrixAndScaleRigidbody(_physics, *transform, *meshComp);
+                }
+            }
+        }
+    }
+
+    void undo(const CommandContext& ctx) override{
+        assert(_objects.size() == _initialTransforms.size());
+
+        int i = 0;
+        for(auto& object : _objects){
+            auto transform = object.getComponentPtr<cTransform>();
+            transform->setWorldMatrix(_initialTransforms[i]);
+            i++;
+        }
+    }
+
+private:
+    std::vector<jlECS::ObjectRef> _objects;
+    std::vector<glm::mat4> _initialTransforms;
+    glm::mat4 _delta;
+    jlePhysics* _physics;
+};
+
+}
 
 jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name) : jleEditorWindowInterface(window_name)
 {
@@ -251,122 +298,80 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
 
     ImGui::BeginGroup();
     {
-        if (selectedObjects.size() > 1)
+        std::vector<std::pair<cTransform*, int>> transforms;
+        transforms.reserve(selectedObjects.size());
+        for (auto& objRef : selectedObjects)
         {
-            std::vector<std::pair<cTransform*, int>> transforms;
-            transforms.reserve(selectedObjects.size());
-            for (auto& objRef : selectedObjects)
-            {
-                if (objRef.isValid()) {
-                    auto* t = objRef.getComponentPtr<cTransform>();
-                    if (t) {
-                        transforms.push_back(std::make_pair(t, objRef.objectIndex()));
-                    }
-                }
-            }
-
-            if (!transforms.empty())
-            {
-                glm::vec3 avgPos(0.f);
-                for (auto [transform, objectIndex] : transforms) {
-                    avgPos += transform->getPosition();
-                }
-                avgPos /= (float)transforms.size();
-
-                glm::quat  baseRot   = transforms.front().first->getRotation();
-                glm::vec3  baseScale = transforms.front().first->getScale();
-
-                glm::mat4 centerMatrix = glm::translate(glm::mat4(1.f), avgPos)
-                                         * glm::mat4_cast(baseRot)
-                                         * glm::scale(glm::mat4(1.f), baseScale);
-
-                if (!ImGuizmo::IsUsing() && !_multiGizmoIsActive) {
-                    _multiGizmoCurrentMatrix = centerMatrix;
-                }
-
-                // If user starts dragging the gizmo this frame
-                if (!_multiGizmoIsActive && ImGuizmo::IsOver() && ImGuizmo::IsUsing()) {
-                    _multiGizmoIsActive = true;
-                    _multiGizmoInitialMatrix = _multiGizmoCurrentMatrix;
-                }
-
-                EditTransform((float*)viewMatrix,
-                              (float*)projectionMatrix,
-                              (float*)&_multiGizmoCurrentMatrix[0][0],
-                              true);
-
-                if (_multiGizmoIsActive && !ImGuizmo::IsUsing())
-                {
-                    _multiGizmoIsActive = false;
-
-                    glm::mat4 delta = _multiGizmoCurrentMatrix * glm::inverse(_multiGizmoInitialMatrix);
-
-                    for (auto [transform, objectIndex] : transforms)
-                    {
-                        glm::mat4 oldWorld = transform->getWorldMatrix();
-                        glm::mat4 newWorld = delta * oldWorld;
-                        transform->setWorldMatrix(newWorld);
-
-                        auto objectRef = ecs.getObject(objectIndex);
-                        if (auto* rb = objectRef.getComponentPtr<cRigidbody>())
-                        {
-                            if (auto* meshComp = objectRef.getComponentPtr<cMesh>()) {
-                                rb->setWorldMatrixAndScaleRigidbody(&input.physics, *transform, *meshComp);
-                            }
-                        }
-                    }
+            if (objRef.isValid()) {
+                auto* t = objRef.getComponentPtr<cTransform>();
+                if (t) {
+                    transforms.push_back(std::make_pair(t, objRef.objectIndex()));
                 }
             }
         }
-        else if (selectedObjects.size() == 1)
+
+        if (!transforms.empty())
         {
-            auto& selObj = selectedObjects.front();
-            if (selObj.isValid()) {
-                auto* transform = selObj.getComponentPtr<cTransform>();
-                auto* meshComponent = selObj.getComponentPtr<cMesh>();
-                if(transform)
-                {
-                    glm::mat4 worldMatrixBefore = transform->getWorldMatrix();
-                    EditTransform((float *)viewMatrix,
-                                  (float *)projectionMatrix,
-                                  (float *)&worldMatrixBefore[0][0],
-                                  true);
-
-                    // If user changed it
-                    glm::mat4 transformMatrix = transform->getWorldMatrix();
-                    if (transformMatrix != worldMatrixBefore) {
-                        if (!editorUpdate.engineUpdateContext.gameRuntime.isGameKilled()) {
-                            if (auto *rb = selObj.getComponentPtr<cRigidbody>()) {
-                                if(meshComponent){
-                                    rb->setWorldMatrixAndScaleRigidbody(
-                                        &input.physics,
-                                        *transform,
-                                        *meshComponent);
-                                }
-                            } else {
-                                transform->setWorldMatrix(worldMatrixBefore);
-                            }
-                        } else {
-                            transform->setWorldMatrix(worldMatrixBefore);
-                        }
-                    }
-
-                    // Draw highlight
-                    if (meshComponent) {
-                        if (auto mesh = meshComponent->getMesh()) {
-                            glm::mat4 modelMatrix = transform->getWorldMatrix();
-                            glm::mat4 matrix1 = glm::scale(modelMatrix, glm::vec3{1.00514159265f});
-                            glm::mat4 matrix2 = glm::scale(modelMatrix, glm::vec3{0.99514159265f});
-                            auto material = editorUpdate.gizmos.selectedObjectMaterial();
-
-                            editorUpdate.engineUpdateContext.currentFramePacket.sendMesh(
-                                mesh, material, matrix1, selObj.objectIndex(), false);
-                            editorUpdate.engineUpdateContext.currentFramePacket.sendMesh(
-                                mesh, material, matrix2, selObj.objectIndex(), false);
-                        }
-                    }
-                }
+            glm::vec3 avgPos(0.f);
+            for (auto [transform, objectIndex] : transforms) {
+                avgPos += transform->getPosition();
             }
+            avgPos /= (float)transforms.size();
+
+            glm::quat  baseRot   = transforms.front().first->getRotation();
+            glm::vec3  baseScale = transforms.front().first->getScale();
+
+            glm::mat4 centerMatrix = glm::translate(glm::mat4(1.f), avgPos)
+                                     * glm::mat4_cast(baseRot)
+                                     * glm::scale(glm::mat4(1.f), baseScale);
+
+            if (!ImGuizmo::IsUsing() && !_multiGizmoIsActive) {
+                _multiGizmoCurrentMatrix = centerMatrix;
+            }
+
+            // If user starts dragging the gizmo this frame
+            if (!_multiGizmoIsActive && ImGuizmo::IsOver() && ImGuizmo::IsUsing()) {
+                _multiGizmoIsActive = true;
+                _multiGizmoInitialMatrix = _multiGizmoCurrentMatrix;
+            }
+
+            EditTransform((float*)viewMatrix,
+                          (float*)projectionMatrix,
+                          (float*)&_multiGizmoCurrentMatrix[0][0],
+                          true);
+
+            if (_multiGizmoIsActive && !ImGuizmo::IsUsing())
+            {
+                _multiGizmoIsActive = false;
+
+                glm::mat4 delta = _multiGizmoCurrentMatrix * glm::inverse(_multiGizmoInitialMatrix);
+
+                std::vector<glm::mat4> initialTransforms;
+                for (auto [transform, objectIndex] : transforms){
+                    initialTransforms.push_back(transform->getWorldMatrix());
+                }
+
+                jleUndoRedoCommandBase::CommandContext undoRedoCommandCtx = {input.editorUpdate.engineUpdateContext.serializationContext};
+
+                auto command = std::make_unique<MoveTransformsCommand>(selectedObjects, initialTransforms, delta, &input.physics);
+                input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
+            }
+
+            //// Draw highlight
+            //if (meshComponent) {
+            //    if (auto mesh = meshComponent->getMesh()) {
+            //        glm::mat4 modelMatrix = transform->getWorldMatrix();
+            //        glm::mat4 matrix1 = glm::scale(modelMatrix, glm::vec3{1.00514159265f});
+            //        glm::mat4 matrix2 = glm::scale(modelMatrix, glm::vec3{0.99514159265f});
+            //        auto material = editorUpdate.gizmos.selectedObjectMaterial();
+            //
+            //        editorUpdate.engineUpdateContext.currentFramePacket.sendMesh(
+            //            mesh, material, matrix1, selObj.objectIndex(), false);
+            //        editorUpdate.engineUpdateContext.currentFramePacket.sendMesh(
+            //            mesh, material, matrix2, selObj.objectIndex(), false);
+            //    }
+            //}
+
         }
     }
     ImGui::EndGroup();
@@ -476,7 +481,7 @@ jleSceneEditorWindow::EditTransform(float *cameraView,
                 _currentGizmoOperation = ImGuizmo::TRANSLATE;
             if (ImGui::IsKeyPressed(ImGuiKey_R) && !ImGuizmo::IsUsing())
                 _currentGizmoOperation = ImGuizmo::ROTATE;
-            if (ImGui::IsKeyPressed(ImGuiKey_Z) && !ImGuizmo::IsUsing())
+            if (ImGui::IsKeyPressed(ImGuiKey_K) && !ImGuizmo::IsUsing())
                 _currentGizmoOperation = ImGuizmo::SCALE;
             if (ImGui::IsKeyPressed(ImGuiKey_U) && !ImGuizmo::IsUsing())
                 _currentGizmoOperation = ImGuizmo::UNIVERSAL;

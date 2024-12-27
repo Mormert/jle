@@ -19,7 +19,6 @@
 
 #include <jlECS/jlECS.h>
 #include "jleEditorImGuiWindowInterface.h"
-#include "jleUndoRedo.h"
 #include <modules/jleEditorUpdateContext.h>
 #include <optional>
 
@@ -27,6 +26,9 @@ namespace jlECS
 {
 class ECS;
 }
+
+class jleUndoRedoManager;
+
 
 class jleECSEditorWindow : public jleEditorWindowInterface
 {
@@ -36,6 +38,7 @@ public:
     struct RenderUIInput{
         jleEditorUpdateContext &editorUpdate;
         jlECS::ECS& ecs;
+        jleUndoRedoManager& undoRedo;
     };
 
     struct RenderUIOutput{
@@ -49,6 +52,4 @@ private:
     std::vector<std::string> _deletionConfirmationList;
     int _lastSelectedIndex;
     jlECS::ECS *_ecs;
-
-    jleUndoRedoManager _undoRedo{};
 };
