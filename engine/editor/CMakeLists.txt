@@ -27,6 +27,7 @@ add_library(jleEditor STATIC
         "src/jleECSEditorWindow.cpp"
         "src/jleEditorWindow.cpp"
         "src/jleLuaEnvironmentEditor.cpp"
+        "src/jleUndoRedo.cpp"
 
         "3rdparty/ImGuiColorTextEdit/TextEditor.cpp"
         "3rdparty/ImGui/imgui.cpp"

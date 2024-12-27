@@ -19,6 +19,7 @@
 
 #include <jlECS/jlECS.h>
 #include "jleEditorImGuiWindowInterface.h"
+#include "jleUndoRedo.h"
 #include <modules/jleEditorUpdateContext.h>
 #include <optional>
 
@@ -45,5 +46,9 @@ public:
 
 private:
     std::shared_ptr<std::vector<jlECS::ObjectRef>> _selectedObjects;
+    std::vector<std::string> _deletionConfirmationList;
+    int _lastSelectedIndex;
     jlECS::ECS *_ecs;
+
+    jleUndoRedoManager _undoRedo{};
 };

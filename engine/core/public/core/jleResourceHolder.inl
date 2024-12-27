@@ -46,7 +46,7 @@ jleResourceHolder::loadResourceFromFileT(const jlePath &path, jleSerializationCo
         for (const auto &ending : possibleFileEndingsForThisType) {
             possibleEndings += '.' + ending + " ";
         }
-        LOGE << "Resource " << path.getVirtualPath() << " of type '" << typeid(T).name()
+        LOGE << "Resource '" << path.getVirtualPath() << "' of type '" << typeid(T).name()
              << "' can't be loaded with provided path extension: '" << path.getFileEnding()
              << "'. Possible endings are: {" << possibleEndings << '}';
 

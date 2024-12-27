@@ -53,7 +53,6 @@ public:
 private:
     float _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;
     std::pair<int32_t, int32_t> _lastCursorPos;
-    bool _wasFocused = false;
 
     jleCamera _renderCamera{};
     bool _perspectiveCamera = true;
@@ -63,6 +62,18 @@ private:
 
     std::shared_ptr<jleFramebufferInterface> _framebuffer;
 
+    bool _multiGizmoIsActive = false;
+    glm::mat4 _multiGizmoInitialMatrix{1.f};
+    glm::mat4 _multiGizmoCurrentMatrix{1.f};
+
     ImGuizmo::OPERATION _currentGizmoOperation{ImGuizmo::TRANSLATE};
+    ImGuizmo::MODE _currentGizmoMode{ImGuizmo::LOCAL};
+    bool _useSnap = false;
+    float _snap[3] = {1.f, 1.f, 1.f};
+    float _bounds[6] = {-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f};
+    float _boundsSnap[3] = {0.1f, 0.1f, 0.1f};
+    bool _boundSizing = false;
+    bool _boundSizingSnap = false;
+
     void EditTransform(float *cameraView, float *cameraProjection, float *matrix, bool editTransformDecomposition);
 };

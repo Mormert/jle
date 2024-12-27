@@ -52,7 +52,7 @@ class Initializer;
 constexpr const char *
 getCleanTypeName(const char *name)
 {
-    constexpr auto startsWith = [](const char *str, const char *prefix) {
+    constexpr auto startsWith = [](const char *str, const char *prefix) constexpr -> bool {
         for (std::size_t i = 0; prefix[i] != '\0'; ++i) {
             if (str[i] != prefix[i]) {
                 return false;
@@ -61,13 +61,23 @@ getCleanTypeName(const char *name)
         return true;
     };
 
-    if (startsWith(name, "class ")) {
-        return name + 6;
-    } else if (startsWith(name, "struct ")) {
-        return name + 7;
+    const char *result = name;
+
+    // Skip all leading digits
+    while (std::isdigit(*result)) {
+        ++result;
     }
-    return name;
+
+    if (startsWith(result, "class ")) {
+        return result + 6;
+    }
+    else if (startsWith(result, "struct ")) {
+        return result + 7;
+    }
+
+    return result;
 }
+
 
 template <class T>
 inline const auto &ComponentNumV = ComponentNum<T>::num;
@@ -215,38 +225,6 @@ protected:
     getComponentT(ComponentContainer *thiz, int componentIndex)
     {
         return thiz->getPtr<T>(componentIndex);
-    }
-
-    template <class T>
-    static void
-    serializeInputT_JSON(ComponentContainer *thiz, jleJSONInputArchive &archive, int componentIndex)
-    {
-        T &ref = *thiz->getPtr<T>(componentIndex);
-        archive(ref);
-    }
-
-    template <class T>
-    static void
-    serializeOutputT_JSON(ComponentContainer *thiz, jleJSONOutputArchive &archive, int componentIndex)
-    {
-        T &ref = *thiz->getPtr<T>(componentIndex);
-        archive(ref);
-    }
-
-    template <class T>
-    static void
-    serializeInputT_Binary(ComponentContainer *thiz, jleBinaryInputArchive &archive, int componentIndex)
-    {
-        T &ref = *thiz->getPtr<T>(componentIndex);
-        archive(ref);
-    }
-
-    template <class T>
-    static void
-    serializeOutputT_Binary(ComponentContainer *thiz, jleBinaryOutputArchive &archive, int componentIndex)
-    {
-        T &ref = *thiz->getPtr<T>(componentIndex);
-        archive(ref);
     }
 
     template <class T>
@@ -651,8 +629,7 @@ public:
             ++objectArray.aliveObjectsCount;
             objectArray.objectRecycleCounter.push_back(0);
 
-            auto *c =
-                &objectArray.componentIndices[objectArray.componentIndices.size() - registeredComponentTypesCount];
+            auto *c = &objectArray.componentIndices[objectArray.componentIndices.size() - registeredComponentTypesCount];
 
             for (int i = 0; i < registeredComponentTypesCount; i++) {
                 c[i] = 65535;
@@ -671,6 +648,28 @@ public:
 
             return getObject(objectIndex);
         }
+    }
+
+    // Used to re-instantiate an object that has been deleted, and keep the recycle counter intact to make
+    // sure all ObjectRefs are still valid. Used primarily for the editor undo-redo system. Use with caution!
+    void instantiateFromObjectRef(const ObjectRef& objectRef){
+        int objectIndex = objectRef.objectIndex();
+        assert(objectIndex >= 0 && objectIndex < objectArray.aliveObjects.size());
+
+        assert(!objectArray.aliveObjects[objectIndex]);
+
+        auto it = std::find(objectArray.freeIndices.begin(), objectArray.freeIndices.end(), objectIndex);
+        if (it != objectArray.freeIndices.end()) {
+            objectArray.freeIndices.erase(it);
+        } else {
+            assert(false); // ObjectRef refers to an object not properly marked as free.
+        }
+
+        objectArray.aliveObjects[objectIndex] = true;
+        ++objectArray.aliveObjectsCount;
+        objectArray.objectRecycleCounter[objectRef._objectIndex] = objectRef._objectRecycleCounter;
+
+        assert(objectRef.isValid());
     }
 
     void
@@ -1213,6 +1212,9 @@ public:
     // Editor inspector serialization
     virtual void imGuiSerialize(jleImGuiArchive &ar){};
 
+    virtual void binarySerializeOut(jleBinaryOutputArchive& ar){};
+    virtual void binarySerializeIn(jleBinaryInputArchive& ar){};
+
     void removeFromOwningObject(ObjectRef* objectRef);
 
     ECS *ecs{};
@@ -1246,6 +1248,25 @@ public:
                 editorContainer->serializeImGuiF(container, ar, componentIndex);
             }
         };
+
+        void
+        binarySerializeOut(jleBinaryOutputArchive &ar) override
+        {
+            auto editorContainer = reinterpret_cast<ComponentContainerEditor*>(container);
+            if(editorContainer->serializeOutputF_Binary){
+                editorContainer->serializeOutputF_Binary(container, ar, componentIndex);
+            }
+        };
+
+        void
+        binarySerializeIn(jleBinaryInputArchive &ar) override
+        {
+            auto editorContainer = reinterpret_cast<ComponentContainerEditor*>(container);
+            if(editorContainer->serializeInputF_Binary){
+                editorContainer->serializeInputF_Binary(container, ar, componentIndex);
+            }
+        };
+
     };
 
     class ComponentContainerDebugBase

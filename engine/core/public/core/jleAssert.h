@@ -22,7 +22,7 @@
 #include <intrin.h>
 #define JLE_DEBUG_BREAK __debugbreak()
 #else
-#include <signal.h>
+#include <csignal>
 #define JLE_DEBUG_BREAK raise(SIGTRAP)
 #endif
 

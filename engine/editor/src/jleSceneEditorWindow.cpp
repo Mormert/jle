@@ -74,8 +74,8 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
 
     const auto &cursorScreenPos = ImGui::GetCursorScreenPos();
     const auto viewport = ImGui::GetMainViewport();
-    const int32_t windowPositionX = int32_t(cursorScreenPos.x) - viewport->Pos.x;
-    const int32_t windowPositionY = int32_t(cursorScreenPos.y) - viewport->Pos.y;
+    const int32_t windowPositionX = int32_t(cursorScreenPos.x) - (int32_t)viewport->Pos.x;
+    const int32_t windowPositionY = int32_t(cursorScreenPos.y) - (int32_t)viewport->Pos.y;
 
     const auto previousFrameCursorPos = _lastCursorPos;
     _lastCursorPos = editorUpdate.engineUpdateContext.windowModule.cursor();
@@ -84,55 +84,30 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
     const int32_t mouseDeltaX = mouseX - previousFrameCursorPos.first;
     const int32_t mouseDeltaY = mouseY - previousFrameCursorPos.second;
 
-    const auto getPixelatedMousePosX = [&]() -> int32_t {
-        const float ratio = float(_framebuffer->width()) / float(_lastGameWindowWidth);
-        return int(ratio * float(mouseX - windowPositionX));
-    };
-
-    const auto getPixelatedMousePosY = [&]() -> int32_t {
-        const float ratio = float(_framebuffer->height()) / float(_lastGameWindowHeight);
-        return int(ratio * float(mouseY - windowPositionY));
-    };
-
-    const auto mouseCoordinateX = getPixelatedMousePosX() + static_cast<int>(_renderCamera.getPosition().x);
-    const auto mouseCoordinateY = getPixelatedMousePosY() + static_cast<int>(_renderCamera.getPosition().y);
+    const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
 
     if (!(ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset == _lastGameWindowWidth &&
-          ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset == _lastGameWindowHeight)) {
+          ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset == _lastGameWindowHeight))
+    {
         _lastGameWindowWidth = ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset;
         _lastGameWindowHeight = ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset;
 
         _framebuffer->resize(_lastGameWindowWidth, _lastGameWindowHeight);
     }
 
-    // For now, only supports selecting one object
-    std::optional<jlECS::ObjectRef> selectedObjectRef = {};
-    if(!selectedObjects.empty()){
-        selectedObjectRef = selectedObjects[0];
-    }
-
     glBindTexture(GL_TEXTURE_2D, (unsigned int)_framebuffer->texture());
 
-    // Render the framebuffer as an image
     ImGui::Image((void *)(intptr_t)_framebuffer->texture(),
                  ImVec2(_lastGameWindowWidth, _lastGameWindowHeight),
                  ImVec2(0, 1),
                  ImVec2(1, 0));
 
-    // Picking objects in the scene
-    bool canSelectObject = false;
-    if (!ImGuizmo::IsOver()) {
-        // The mouse is not over any gizmo
-        canSelectObject = true;
-    }
-    if (!selectedObjectRef) {
-        // No object is currently selected
-        canSelectObject = true;
+    bool canSelectObject = true;
+    if (ImGuizmo::IsOver()) {
+        canSelectObject = false;
     }
 
-    // Note here that the ImGui::Image is the item that is being clicked on!
     if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && canSelectObject) {
-
         input.editorUpdate.engineUpdateContext.rendererModule.renderMeshesPicking(
             *_pickingFramebuffer, _renderCamera, input.editorUpdate.engineUpdateContext.currentFramePacket);
 
@@ -142,7 +117,6 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         glFinish();
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
         unsigned char data[3];
         const int mouseY_flipped = (int)_lastGameWindowHeight - (mouseY - windowPositionY);
 
@@ -151,182 +125,83 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         glReadPixels(pixelReadX, pixelReadY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, data);
 
         int pickedID = data[0] + data[1] * 256 + data[2] * 256 * 256;
-        if (pickedID != 0x00ffffff) { // If we did not hit the white background
+        if (pickedID != 0x00ffffff) {
             LOGI << "Picked object with id: " << pickedID;
-
-            // TODO: handle picked id
-            assert(false);
-
-            //std::vector<std::shared_ptr<jleScene>> scenes;
-            //if (!ctx.engineUpdateContext.gameRuntime.isGameKilled()) {
-            //    auto &game = ctx.engineUpdateContext.gameRuntime.getGame();
-            //    scenes = game.activeScenesRef();
-            //}
-
-            //scenes.insert(scenes.end(), ctx.editor.getEditorScenes().begin(), ctx.editor.getEditorScenes().end());
-
-            //for (auto &scene : scenes) {
-            //    for (auto &object : scene->sceneObjects()) {
-            //        std::shared_ptr<jleObject> o{};
-            //        object->tryFindChildWithInstanceId(pickedID, o);
-            //        if (o) {
-            //            ctx.editor.getEditorSceneObjectsWindow().SetSelectedObject(o);
-            //        }
-            //    }
-            //}
+            assert(false); // Todo
         } else {
-            LOGI << "Picking object fell out into the universe";
+            LOGI << "Picking missed or background.";
         }
 
         _pickingFramebuffer->bindDefault();
     }
 
-    const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
+    {
+        auto y = ImGui::GetCursorPosY();
+        ImGui::SetCursorPosY(y - 30 * globalImguiScale);
+        auto x = ImGui::GetCursorPosX();
+        ImGui::SetCursorPosX(x + 8 * globalImguiScale);
 
-    // Move the Perspective button up slightly
-    auto y = ImGui::GetCursorPosY();
-    ImGui::SetCursorPosY(y - 30 * globalImguiScale);
-    auto x = ImGui::GetCursorPosX();
-    ImGui::SetCursorPosX(x + 8 * globalImguiScale);
-
-    if (_perspectiveCamera) {
-        if (ImGui::Button("Orthographic")) {
-            _perspectiveCamera = false;
-            ImGuizmo::SetOrthographic(false);
+        if (_perspectiveCamera) {
+            if (ImGui::Button("Orthographic")) {
+                _perspectiveCamera = false;
+                ImGuizmo::SetOrthographic(false);
+            }
+        } else {
+            if (ImGui::Button("Perspective")) {
+                _perspectiveCamera = true;
+                ImGuizmo::SetOrthographic(true);
+            }
         }
-    } else {
-        if (ImGui::Button("Perspective")) {
-            _perspectiveCamera = true;
-            ImGuizmo::SetOrthographic(true);
+
+        ImGui::SameLine();
+        ImGui::Text("(%f, %f, %f)", fpvCamController.position.x, fpvCamController.position.y, fpvCamController.position.z);
+
+        ImGui::SameLine();
+        if (ImGui::SmallButton("R")) {
+            fpvCamController.backToOrigin();
         }
-    }
 
-    ImGui::SameLine();
+        ImGui::SameLine();
+        if (!input.editorUpdate.engineUpdateContext.gameRuntime.isGameKilled()) {
+            bool physicsEnabled = false;
+            ImGui::Checkbox("Physics Debug", &physicsEnabled);
+            // This snippet just stubs the variable; you'd implement it in your renderer or physics system
+            assert(!physicsEnabled);
+        }
 
-    ImGui::Text("(%f, %f, %f)", fpvCamController.position.x, fpvCamController.position.y, fpvCamController.position.z);
-
-    ImGui::SameLine();
-
-    if (ImGui::SmallButton("R")) {
-        fpvCamController.backToOrigin();
-    }
-
-    ImGui::SameLine();
-
-    if (!input.editorUpdate.engineUpdateContext.gameRuntime.isGameKilled()) {
-        // TODO: fix this getPhysics().renderDebugEnabled
-        bool physicsEnabled = false;
-        ImGui::Checkbox("Physics Debug", &physicsEnabled);
-        assert(!physicsEnabled);
-    }
-
-    ImGui::SameLine();
-
-    if (_renderCamera.getProjectionType() == jleCameraProjection::Perspective) {
-        ImGui::Text("[%d, %d] (%f)", _framebuffer->width(), _framebuffer->height(), cameraSpeed);
-    } else {
-        ImGui::Text("[%d, %d - Ortho Zoom: %f] (%f)",
-                    _framebuffer->width(),
-                    _framebuffer->height(),
-                    orthoZoomValue,
-                    cameraSpeed);
+        ImGui::SameLine();
+        if (_renderCamera.getProjectionType() == jleCameraProjection::Perspective) {
+            ImGui::Text("[%d, %d] (%f)", _framebuffer->width(), _framebuffer->height(), cameraSpeed);
+        } else {
+            ImGui::Text("[%d, %d - Ortho Zoom: %f] (%f)",
+                        _framebuffer->width(),
+                        _framebuffer->height(),
+                        orthoZoomValue,
+                        cameraSpeed);
+        }
     }
 
     const float *viewMatrix = &_renderCamera.getViewMatrix()[0][0];
     const float *projectionMatrix = &_renderCamera.getProjectionMatrix()[0][0];
     static const auto identityMatrix = glm::mat4{1.f};
     const static float *identityMatrixPtr = &identityMatrix[0][0];
-    // ImGuizmo::DrawGrid(viewMatrix, projectionMatrix, identityMatrixPtr, 25.f);
 
-    // The following commented code is for a camera controller "cube" in the top left corner.
-    // It contains a bug, however, and is not really usable at the moment.
-
-    /*static bool isManipulating = false;
-    static glm::mat4 manipulatingMatrix{1.f};
-    static glm::mat4 lastFrameMatrix{1.f};
-
-    if (!isManipulating) {
-        manipulatingMatrix = _renderCamera.getViewMatrix();
-    }
-
-    ImGuizmo::ViewManipulate(
-        &manipulatingMatrix[0][0],
-        250.f,
-        ImVec2(ImGui::GetWindowPos().x + 20 * globalImguiScale, ImGui::GetWindowPos().y + 35 * globalImguiScale),
-        ImVec2(128 * globalImguiScale, 128 * globalImguiScale),
-        0x10101010);
-
-    if (manipulatingMatrix != _renderCamera.getViewMatrix()) {
-        // The view manipulate function modified the view matrix
-        isManipulating = true;
-    }
-
-    if (isManipulating) {
-        if (lastFrameMatrix == manipulatingMatrix) {
-            isManipulating = false;
-        }
-    }
-
-    if (isManipulating) {
-        auto pos = glm::vec3(manipulatingMatrix[3]);
-        _renderCamera.setViewMatrix(manipulatingMatrix, pos);
-        lastFrameMatrix = manipulatingMatrix;
-    }*/
-
-    ImGui::SetCursorPosY(ImGui::GetCursorStartPos().y + 5 * globalImguiScale);
-    ImGui::SetCursorPosX(ImGui::GetCursorStartPos().x + 5 * globalImguiScale);
-
-    ImGui::BeginGroup();
-
-    if (selectedObjectRef.has_value() && selectedObjectRef->isValid()) {
-        auto* transform = selectedObjectRef->getComponentPtr<cTransform>();
-        auto* meshComponent = selectedObjectRef->getComponentPtr<cMesh>();
-
-        if(transform){
-            glm::mat4 worldMatrixBefore = transform->getWorldMatrix();
-            EditTransform((float *)viewMatrix, (float *)projectionMatrix, (float *)&worldMatrixBefore[0][0], true);
-            glm::mat4 transformMatrix = transform->getWorldMatrix();
-            if (transformMatrix != worldMatrixBefore) {
-                if (!input.editorUpdate.engineUpdateContext.gameRuntime.isGameKilled()) {
-                    if (auto *rb = selectedObjectRef->getComponentPtr<cRigidbody>()) {
-                        if(meshComponent){
-                            rb->setWorldMatrixAndScaleRigidbody(&input.physics, *transform, *meshComponent);
-                        }
-                    } else {
-                        transform->setWorldMatrix(worldMatrixBefore);
-                    }
-                } else {
-                    transform->setWorldMatrix(worldMatrixBefore);
-                }
-            }
-        }
-
-        if (meshComponent && transform) {
-            if (auto mesh = meshComponent->getMesh()) {
-                glm::mat4 modelMatrix = transform->getWorldMatrix();
-                glm::mat4 matrix1 = glm::scale(modelMatrix, glm::vec3{1.00514159265f});
-                glm::mat4 matrix2 = glm::scale(modelMatrix, glm::vec3{0.99514159265f});
-                auto material = input.editorUpdate.gizmos.selectedObjectMaterial();
-                input.editorUpdate.engineUpdateContext.currentFramePacket.sendMesh(mesh, material, matrix1, selectedObjectRef->objectIndex(), false);
-                input.editorUpdate.engineUpdateContext.currentFramePacket.sendMesh(mesh, material, matrix2, selectedObjectRef->objectIndex(), false);
-            }
-        }
-    }
-
-    ImGui::EndGroup();
-
-    // If window is hovered and Gizmo is not being moved/used
-    if (ImGui::IsWindowHovered() && !ImGuizmo::IsUsing()) {
+    // SHIFT, WASD, camera controls, etc. (unchanged)
+    if (ImGui::IsWindowHovered() && !ImGuizmo::IsUsing())
+    {
         auto t = input.editorUpdate.engineUpdateContext.frameInfo.getDeltaTime();
         auto dragDelta = ImGui::GetMouseDragDelta(1);
 
         if (_renderCamera.getProjectionType() == jleCameraProjection::Perspective ||
-            ImGui::IsKeyDown(ImGuiKey_LeftShift)) {
-            if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
+            ImGui::IsKeyDown(ImGuiKey_LeftShift))
+        {
+            if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
                 fpvCamController.applyPerspectiveMouseMovementDelta(glm::vec2{mouseDeltaX, mouseDeltaY}, 300.f);
                 ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
             }
-        } else {
+        }
+        else
+        {
             fpvCamController.move(glm::vec3{dragDelta.x, dragDelta.y, 0.f} * t * 5.f);
         }
 
@@ -363,13 +238,138 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
 
         auto currentScroll = input.editorUpdate.engineUpdateContext.inputModule.mouse.scrollY();
         if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentScroll != 0.f) {
-            orthoZoomValue -= currentScroll * 1.f * input.editorUpdate.engineUpdateContext.frameInfo.getDeltaTime();
+            orthoZoomValue -= currentScroll * 1.f * t;
             orthoZoomValue = glm::clamp(orthoZoomValue, 0.01f, 2.f);
         } else if (currentScroll != 0.f) {
-            cameraSpeed += currentScroll * 200.f * input.editorUpdate.engineUpdateContext.frameInfo.getDeltaTime();
+            cameraSpeed += currentScroll * 200.f * t;
             cameraSpeed = glm::clamp(cameraSpeed, 0.2f, 500.f);
         }
     }
+
+    ImGui::SetCursorPosY(ImGui::GetCursorStartPos().y + 5 * globalImguiScale);
+    ImGui::SetCursorPosX(ImGui::GetCursorStartPos().x + 5 * globalImguiScale);
+
+    ImGui::BeginGroup();
+    {
+        if (selectedObjects.size() > 1)
+        {
+            std::vector<std::pair<cTransform*, int>> transforms;
+            transforms.reserve(selectedObjects.size());
+            for (auto& objRef : selectedObjects)
+            {
+                if (objRef.isValid()) {
+                    auto* t = objRef.getComponentPtr<cTransform>();
+                    if (t) {
+                        transforms.push_back(std::make_pair(t, objRef.objectIndex()));
+                    }
+                }
+            }
+
+            if (!transforms.empty())
+            {
+                glm::vec3 avgPos(0.f);
+                for (auto [transform, objectIndex] : transforms) {
+                    avgPos += transform->getPosition();
+                }
+                avgPos /= (float)transforms.size();
+
+                glm::quat  baseRot   = transforms.front().first->getRotation();
+                glm::vec3  baseScale = transforms.front().first->getScale();
+
+                glm::mat4 centerMatrix = glm::translate(glm::mat4(1.f), avgPos)
+                                         * glm::mat4_cast(baseRot)
+                                         * glm::scale(glm::mat4(1.f), baseScale);
+
+                if (!ImGuizmo::IsUsing() && !_multiGizmoIsActive) {
+                    _multiGizmoCurrentMatrix = centerMatrix;
+                }
+
+                // If user starts dragging the gizmo this frame
+                if (!_multiGizmoIsActive && ImGuizmo::IsOver() && ImGuizmo::IsUsing()) {
+                    _multiGizmoIsActive = true;
+                    _multiGizmoInitialMatrix = _multiGizmoCurrentMatrix;
+                }
+
+                EditTransform((float*)viewMatrix,
+                              (float*)projectionMatrix,
+                              (float*)&_multiGizmoCurrentMatrix[0][0],
+                              true);
+
+                if (_multiGizmoIsActive && !ImGuizmo::IsUsing())
+                {
+                    _multiGizmoIsActive = false;
+
+                    glm::mat4 delta = _multiGizmoCurrentMatrix * glm::inverse(_multiGizmoInitialMatrix);
+
+                    for (auto [transform, objectIndex] : transforms)
+                    {
+                        glm::mat4 oldWorld = transform->getWorldMatrix();
+                        glm::mat4 newWorld = delta * oldWorld;
+                        transform->setWorldMatrix(newWorld);
+
+                        auto objectRef = ecs.getObject(objectIndex);
+                        if (auto* rb = objectRef.getComponentPtr<cRigidbody>())
+                        {
+                            if (auto* meshComp = objectRef.getComponentPtr<cMesh>()) {
+                                rb->setWorldMatrixAndScaleRigidbody(&input.physics, *transform, *meshComp);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if (selectedObjects.size() == 1)
+        {
+            auto& selObj = selectedObjects.front();
+            if (selObj.isValid()) {
+                auto* transform = selObj.getComponentPtr<cTransform>();
+                auto* meshComponent = selObj.getComponentPtr<cMesh>();
+                if(transform)
+                {
+                    glm::mat4 worldMatrixBefore = transform->getWorldMatrix();
+                    EditTransform((float *)viewMatrix,
+                                  (float *)projectionMatrix,
+                                  (float *)&worldMatrixBefore[0][0],
+                                  true);
+
+                    // If user changed it
+                    glm::mat4 transformMatrix = transform->getWorldMatrix();
+                    if (transformMatrix != worldMatrixBefore) {
+                        if (!editorUpdate.engineUpdateContext.gameRuntime.isGameKilled()) {
+                            if (auto *rb = selObj.getComponentPtr<cRigidbody>()) {
+                                if(meshComponent){
+                                    rb->setWorldMatrixAndScaleRigidbody(
+                                        &input.physics,
+                                        *transform,
+                                        *meshComponent);
+                                }
+                            } else {
+                                transform->setWorldMatrix(worldMatrixBefore);
+                            }
+                        } else {
+                            transform->setWorldMatrix(worldMatrixBefore);
+                        }
+                    }
+
+                    // Draw highlight
+                    if (meshComponent) {
+                        if (auto mesh = meshComponent->getMesh()) {
+                            glm::mat4 modelMatrix = transform->getWorldMatrix();
+                            glm::mat4 matrix1 = glm::scale(modelMatrix, glm::vec3{1.00514159265f});
+                            glm::mat4 matrix2 = glm::scale(modelMatrix, glm::vec3{0.99514159265f});
+                            auto material = editorUpdate.gizmos.selectedObjectMaterial();
+
+                            editorUpdate.engineUpdateContext.currentFramePacket.sendMesh(
+                                mesh, material, matrix1, selObj.objectIndex(), false);
+                            editorUpdate.engineUpdateContext.currentFramePacket.sendMesh(
+                                mesh, material, matrix2, selObj.objectIndex(), false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    ImGui::EndGroup();
 
     ImGui::End();
 }
@@ -470,15 +470,6 @@ jleSceneEditorWindow::EditTransform(float *cameraView,
                                     float *matrix,
                                     bool editTransformDecomposition)
 {
-
-    static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
-    static bool useSnap = false;
-    static float snap[3] = {1.f, 1.f, 1.f};
-    static float bounds[] = {-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f};
-    static float boundsSnap[] = {0.1f, 0.1f, 0.1f};
-    static bool boundSizing = false;
-    static bool boundSizingSnap = false;
-
     if (editTransformDecomposition) {
         if (ImGui::IsWindowFocused()) {
             if (ImGui::IsKeyPressed(ImGuiKey_T) && !ImGuizmo::IsUsing())
@@ -502,14 +493,14 @@ jleSceneEditorWindow::EditTransform(float *cameraView,
             _currentGizmoOperation = ImGuizmo::UNIVERSAL;
 
         if (_currentGizmoOperation != ImGuizmo::SCALE) {
-            if (ImGui::RadioButton("Local", mCurrentGizmoMode == ImGuizmo::LOCAL))
-                mCurrentGizmoMode = ImGuizmo::LOCAL;
+            if (ImGui::RadioButton("Local", _currentGizmoMode == ImGuizmo::LOCAL))
+                _currentGizmoMode = ImGuizmo::LOCAL;
             ImGui::SameLine();
-            if (ImGui::RadioButton("World", mCurrentGizmoMode == ImGuizmo::WORLD))
-                mCurrentGizmoMode = ImGuizmo::WORLD;
+            if (ImGui::RadioButton("World", _currentGizmoMode == ImGuizmo::WORLD))
+                _currentGizmoMode = ImGuizmo::WORLD;
         }
 
-        ImGui::Checkbox("##UseSnap", &useSnap);
+        ImGui::Checkbox("##UseSnap", &_useSnap);
         ImGui::SameLine();
 
         const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
@@ -517,21 +508,21 @@ jleSceneEditorWindow::EditTransform(float *cameraView,
         ImGui::PushItemWidth(150.f * globalImguiScale);
         switch (_currentGizmoOperation) {
         case ImGuizmo::TRANSLATE:
-            ImGui::InputFloat3("Snap", &snap[0]);
+            ImGui::InputFloat3("Snap", &_snap[0]);
             break;
         case ImGuizmo::ROTATE:
-            ImGui::InputFloat("Angle Snap", &snap[0]);
+            ImGui::InputFloat("Angle Snap", &_snap[0]);
             break;
         case ImGuizmo::SCALE:
-            ImGui::InputFloat("Scale Snap", &snap[0]);
+            ImGui::InputFloat("Scale Snap", &_snap[0]);
             break;
         }
-        ImGui::Checkbox("Bound Sizing", &boundSizing);
-        if (boundSizing) {
+        ImGui::Checkbox("Bound Sizing", &_boundSizing);
+        if (_boundSizing) {
             ImGui::PushID(3);
-            ImGui::Checkbox("##BoundSizing", &boundSizingSnap);
+            ImGui::Checkbox("##BoundSizing", &_boundSizingSnap);
             ImGui::SameLine();
-            ImGui::InputFloat3("Snap", boundsSnap);
+            ImGui::InputFloat3("Snap", _boundsSnap);
             ImGui::PopID();
         }
         ImGui::PopItemWidth();
@@ -540,10 +531,10 @@ jleSceneEditorWindow::EditTransform(float *cameraView,
     ImGuizmo::Manipulate(cameraView,
                          cameraProjection,
                          _currentGizmoOperation,
-                         mCurrentGizmoMode,
+                         _currentGizmoMode,
                          matrix,
                          NULL,
-                         useSnap ? &snap[0] : NULL,
-                         boundSizing ? bounds : NULL,
-                         boundSizingSnap ? boundsSnap : NULL);
+                         _useSnap ? &_snap[0] : NULL,
+                         _boundSizing ? _bounds : NULL,
+                         _boundSizingSnap ? _boundsSnap : NULL);
 }
