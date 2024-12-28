@@ -7,7 +7,6 @@ add_library(jleEditor STATIC
         "src/jleEditorSettingsWindow.cpp"
         "src/jleConsoleEditorWindow.cpp"
         "src/jleEditorGameControllerWidget.cpp"
-        "src/jleEditorSceneObjectsWindow.cpp"
         "src/jleEditorProfilerWindow.cpp"
         "src/jleEditorResourceViewer.cpp"
         "src/jleSceneEditorWindow.cpp"
@@ -28,6 +27,7 @@ add_library(jleEditor STATIC
         "src/jleEditorWindow.cpp"
         "src/jleLuaEnvironmentEditor.cpp"
         "src/jleUndoRedo.cpp"
+        "src/jleSystemUsageTracker.cpp"
 
         "3rdparty/ImGuiColorTextEdit/TextEditor.cpp"
         "3rdparty/ImGui/imgui.cpp"

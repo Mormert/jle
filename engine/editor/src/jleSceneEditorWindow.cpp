@@ -16,15 +16,13 @@
 #include "jleSceneEditorWindow.h"
 #include "jleEditor.h"
 #include "jleEditorGizmos.h"
-#include "jleEditorSceneObjectsWindow.h"
+#include "jleUndoRedo.h"
 #include "game/jleGame.h"
 #include "modules/graphics/core/jleFramebufferMultisample.h"
 #include "modules/graphics/core/jleFramebufferPicking.h"
 #include "modules/graphics/core/jleIncludeGL.h"
-#include "modules/graphics/jle3DSettings.h"
 #include "modules/graphics/jleFramePacket.h"
 #include "modules/graphics/jleGraphics.h"
-#include "modules/graphics/jleTexture.h"
 #include "modules/graphics/runtime/components/cMesh.h"
 #include "modules/input/jleInput.h"
 #include "modules/physics/components/cRigidbody.h"
@@ -206,13 +204,13 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         ImGui::SameLine();
         if (ImGui::SmallButton("R")) {
             fpvCamController.backToOrigin();
+            _renderCamera.setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
         }
 
         ImGui::SameLine();
         if (!input.editorUpdate.engineUpdateContext.gameRuntime.isGameKilled()) {
             bool physicsEnabled = false;
             ImGui::Checkbox("Physics Debug", &physicsEnabled);
-            // This snippet just stubs the variable; you'd implement it in your renderer or physics system
             assert(!physicsEnabled);
         }
 
@@ -233,8 +231,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
     static const auto identityMatrix = glm::mat4{1.f};
     const static float *identityMatrixPtr = &identityMatrix[0][0];
 
-    // SHIFT, WASD, camera controls, etc. (unchanged)
-    if (ImGui::IsWindowHovered() && !ImGuizmo::IsUsing())
+    if (ImGui::IsWindowHovered() && !ImGuizmo::IsUsing() && ImGui::IsMouseDown(ImGuiMouseButton_Right))
     {
         auto t = input.editorUpdate.engineUpdateContext.frameInfo.getDeltaTime();
         auto dragDelta = ImGui::GetMouseDragDelta(1);
@@ -279,9 +276,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
             fpvCamController.moveDown(cameraSpeed * t);
         }
 
-        if (dragDelta.x != 0 || dragDelta.y != 0) {
-            _renderCamera.setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
-        }
+        _renderCamera.setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
 
         auto currentScroll = input.editorUpdate.engineUpdateContext.inputModule.mouse.scrollY();
         if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentScroll != 0.f) {

@@ -20,6 +20,7 @@
 #include "jlECS/jlECS.h"
 #include "game/jleGame.h"
 #include "core/jlECSSaveLoad.h"
+#include "jleUndoRedo.h"
 
 #include <fstream>
 #include <iostream>

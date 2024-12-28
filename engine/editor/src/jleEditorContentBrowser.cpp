@@ -17,7 +17,6 @@
 #include "ImGui/imgui_stdlib.h"
 #include "core/jleResourceHolder.h"
 #include "jleEditor.h"
-#include "jleEditorSceneObjectsWindow.h"
 #include "jleEditorTextEdit.h"
 #include <ImGui/imgui.h>
 

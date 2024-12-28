@@ -16,6 +16,7 @@ add_library(jleCore STATIC
         "src/jleComponent.cpp"
         "src/jleObject.cpp"
         "src/jleScene.cpp"
+        "src/jleMalloc.cpp"
 )
 
 add_subdirectory(3rdparty)

@@ -28,7 +28,6 @@
 #include "jleEditorProfilerWindow.h"
 #include "jleEditorResourceViewer.h"
 #include "jleEditorSaveState.h"
-#include "jleEditorSceneObjectsWindow.h"
 #include "jleEditorWindowsPanel.h"
 #include "jleECSEditorWindow.h"
 #include "jleResourceIndexer.h"
@@ -102,9 +101,6 @@ public:
         settingsWindow = std::make_shared<jleEditorSettingsWindow>("Engine Settings");
         menu->addWindow(settingsWindow);
 
-        //editorSceneObjects = std::make_shared<jleEditorSceneObjectsWindow>("Scene Objects");
-        //menu->addWindow(editorSceneObjects);
-
         contentBrowser = std::make_shared<jleEditorContentBrowser>(
             "Content Browser", serializationContext, textEditWindow, resourceEditor);
         menu->addWindow(contentBrowser);
@@ -174,7 +170,6 @@ public:
         gameWindow->renderUI(context.engineUpdateContext, context.engineUpdateContext.inputModule);
         console->renderUI(context.engineUpdateContext, context.engineUpdateContext.luaEnvironment);
         settingsWindow->renderUI(context);
-        //editorSceneObjects->renderUI(context);
         contentBrowser->renderUI(context);
         buildTool->renderUI(context.engineUpdateContext, context.resourceIndexer);
         resourceViewer->renderUI(context.engineUpdateContext);
@@ -236,10 +231,6 @@ jleEditor::start(jleEngineUpdateContext &ctx)
     if (saveState().gameRunning) {
         ctx.gameRuntime.startGame();
     }
-
-    //for (auto &&scenePath : saveState().loadedScenePaths) {
-    //    loadScene(scenePath, ctx, false);
-    //}
 }
 
 void

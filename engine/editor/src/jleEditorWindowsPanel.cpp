@@ -17,12 +17,13 @@
 
 #include "jleEngineSettings.h"
 #include "jleGameEditorWindow.h"
+#include "jleSystemUsageTracker.h"
 #include "modules/windowing/jleWindow.h"
+
+#include "core/jleMalloc.h"
 
 #include <GLFW/glfw3.h>
 #include <ImGui/imgui.h>
-#include <plog/Log.h>
-
 
 jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name, jleSerializationContext& serializationContext, jleEngineSettings& settings)
     : jleEditorWindowInterface{window_name}, _gameController{"Game Controller"}
@@ -142,7 +143,7 @@ jleEditorWindowsPanel::menuButtonsupdate(jleEngineUpdateContext & ctx)
         }
 
         auto windowWidth = ImGui::GetWindowSize().x;
-        const float textOffset = ImGui::CalcTextSize("Avg FPS: XXXX  |  Run Time: HH:MM:SS.MMM").x * 0.5f;
+        const float textOffset = ImGui::CalcTextSize("Avg FPS: XXXX  |  Run Time: HH:MM:SS.MMM  | Cur. Mem. Usage: XXX MB | Mem. Alloc: XXXX MB | Threads: XX").x * 0.5f;
         ImGui::SetCursorPosX((windowWidth) * 0.5f - textOffset);
 
         // clang-format off
@@ -163,10 +164,20 @@ jleEditorWindowsPanel::menuButtonsupdate(jleEngineUpdateContext & ctx)
         };
         // clang-format on
 
+        jleSystemUsageTracker tracker;
+        auto usage = tracker.getSystemUsageInfo();
+
         const auto rolling120FramesAvgFps = (int)ImGui::GetIO().Framerate;
-        ImGui::Text("Avg FPS: %4d  |  Run Time: %s",
-                    rolling120FramesAvgFps,
-                    formatTime(static_cast<int>(ctx.frameInfo.getCurrentFrameTime() * 1000.f)).c_str());
+        if (usage.error.empty()) {
+            ImGui::Text("Avg FPS: %4d  |  Run Time: %s  | Cur. Mem. Usage: %.2f MB | Mem. Alloc: %.2f MB | Threads: %d",
+                        rolling120FramesAvgFps,
+                        formatTime(static_cast<int>(ctx.frameInfo.getCurrentFrameTime() * 1000.f)).c_str(),
+                        static_cast<float>(usage.memoryUsageKB) / 1024.f,
+                        static_cast<float>(jleMalloc::getBytesAllocated()) / 1024.f / 1024.f,
+                        usage.threadCount);
+        } else {
+            ImGui::Text("Error: %s", usage.error.c_str());
+        }
 
         {
             ImGuiStyle &style = ImGui::GetStyle();
