@@ -141,3 +141,20 @@ ImGui::EndGroupPanel()
 
     ImGui::EndGroup();
 }
+
+std::string
+jleImGuiHelpers::LeftLabelImGui(const char *const label, float factor)
+{
+    float width = ImGui::CalcItemWidth();
+
+    float x = ImGui::GetCursorPosX();
+    ImGui::Text("%s", label);
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(x + width * factor + ImGui::GetStyle().ItemInnerSpacing.x);
+    ImGui::SetNextItemWidth(-1);
+
+    std::string labelID = "##";
+    labelID += label;
+
+    return labelID;
+}

@@ -112,7 +112,7 @@ jleImGuiArchive::draw_ui_reference(const char *name,
 
     bool isEditedAndDeactivated = false;
 
-    if (ImGui::InputText(LeftLabelImGui(name).c_str(), &charData[0], charData.size())) {
+    if (ImGui::InputText(jleImGuiHelpers::LeftLabelImGui(name).c_str(), &charData[0], charData.size())) {
         value = std::string(charData.data());
     }
 
@@ -213,7 +213,7 @@ jleImGuiArchive::draw_ui_lua_reference(const char *name, std::string &className)
 
     bool isEditedAndDeactivated = false;
 
-    if (ImGui::InputText(LeftLabelImGui(name).c_str(), &charData[0], charData.size())) {
+    if (ImGui::InputText(jleImGuiHelpers::LeftLabelImGui(name).c_str(), &charData[0], charData.size())) {
         className = std::string(charData.data());
     }
 
@@ -356,11 +356,47 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, jlePath &value)
 }
 
 void
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, uint8_t &value)
+{
+    ImGui::PushID(elementCount++);
+
+    ImGui::DragScalar(jleImGuiHelpers::LeftLabelImGui(name).c_str(), ImGuiDataType_U8, &value, 0.2f, nullptr, nullptr, "%u");
+    ImGui::PopID();
+}
+
+void
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, int8_t &value)
+{
+    ImGui::PushID(elementCount++);
+
+    ImGui::DragScalar(jleImGuiHelpers::LeftLabelImGui(name).c_str(), ImGuiDataType_S8, &value, 0.2f, nullptr, nullptr, "%d");
+    ImGui::PopID();
+}
+
+void
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, uint16_t &value)
+{
+    ImGui::PushID(elementCount++);
+
+    ImGui::DragScalar(jleImGuiHelpers::LeftLabelImGui(name).c_str(), ImGuiDataType_U16, &value, 0.2f, nullptr, nullptr, "%u");
+    ImGui::PopID();
+}
+
+void
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, int16_t &value)
+{
+    ImGui::PushID(elementCount++);
+
+    ImGui::DragScalar(jleImGuiHelpers::LeftLabelImGui(name).c_str(), ImGuiDataType_S16, &value, 0.2f, nullptr, nullptr, "%d");
+    ImGui::PopID();
+}
+
+void
 jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, uint32_t &value)
 {
     ImGui::PushID(elementCount++);
 
-    ImGui::DragScalar(LeftLabelImGui(name).c_str(), ImGuiDataType_U32, &value, 0.2f, nullptr, nullptr, "%u");
+    ImGui::DragScalar(jleImGuiHelpers::LeftLabelImGui(name).c_str(), ImGuiDataType_U32, &value, 0.2f, nullptr, nullptr, "%u");
     ImGui::PopID();
 }
 
@@ -369,7 +405,7 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, int32_t &value)
 {
     ImGui::PushID(elementCount++);
 
-    ImGui::DragScalar(LeftLabelImGui(name).c_str(), ImGuiDataType_S32, &value, 0.2f, nullptr, nullptr, "%d");
+    ImGui::DragScalar(jleImGuiHelpers::LeftLabelImGui(name).c_str(), ImGuiDataType_S32, &value, 0.2f, nullptr, nullptr, "%d");
     ImGui::PopID();
 }
 
@@ -378,7 +414,7 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, uint64_t &value)
 {
     ImGui::PushID(elementCount++);
 
-    ImGui::DragScalar(LeftLabelImGui(name).c_str(), ImGuiDataType_U64, &value, 0.2f, nullptr, nullptr, "%llu");
+    ImGui::DragScalar(jleImGuiHelpers::LeftLabelImGui(name).c_str(), ImGuiDataType_U64, &value, 0.2f, nullptr, nullptr, "%llu");
     ImGui::PopID();
 }
 
@@ -387,7 +423,7 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, int64_t &value)
 {
     ImGui::PushID(elementCount++);
 
-    ImGui::DragScalar(LeftLabelImGui(name).c_str(), ImGuiDataType_S64, &value, 0.2f, nullptr, nullptr, "%lld");
+    ImGui::DragScalar(jleImGuiHelpers::LeftLabelImGui(name).c_str(), ImGuiDataType_S64, &value, 0.2f, nullptr, nullptr, "%lld");
     ImGui::PopID();
 }
 
@@ -396,7 +432,7 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, float &value)
 {
     ImGui::PushID(elementCount++);
 
-    ImGui::DragScalar(LeftLabelImGui(name).c_str(), ImGuiDataType_Float, &value, 0.005f, nullptr, nullptr, "%f");
+    ImGui::DragScalar(jleImGuiHelpers::LeftLabelImGui(name).c_str(), ImGuiDataType_Float, &value, 0.005f, nullptr, nullptr, "%f");
     ImGui::PopID();
 }
 
@@ -405,7 +441,7 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, double &value)
 {
     ImGui::PushID(elementCount++);
 
-    ImGui::DragScalar(LeftLabelImGui(name).c_str(), ImGuiDataType_Double, &value, 0.005f, nullptr, nullptr, "%f");
+    ImGui::DragScalar(jleImGuiHelpers::LeftLabelImGui(name).c_str(), ImGuiDataType_Double, &value, 0.005f, nullptr, nullptr, "%f");
     ImGui::PopID();
 }
 
@@ -414,7 +450,7 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, bool &value)
 {
     ImGui::PushID(elementCount++);
 
-    ImGui::Checkbox(LeftLabelImGui(name, 0.7f).c_str(), &value);
+    ImGui::Checkbox(jleImGuiHelpers::LeftLabelImGui(name, 0.7f).c_str(), &value);
     ImGui::PopID();
 }
 
@@ -426,7 +462,7 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, std::string &val
     std::vector<char> charData(value.begin(), value.end());
     charData.resize(1000);
 
-    if (ImGui::InputText(LeftLabelImGui(name).c_str(), &charData[0], charData.size())) {
+    if (ImGui::InputText(jleImGuiHelpers::LeftLabelImGui(name).c_str(), &charData[0], charData.size())) {
         value = std::string(charData.data());
     }
     ImGui::PopID();
@@ -437,7 +473,7 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, glm::vec2 &value
 {
     ImGui::PushID(elementCount++);
 
-    ImGui::DragFloat2(LeftLabelImGui(name).c_str(), &value[0]);
+    ImGui::DragFloat2(jleImGuiHelpers::LeftLabelImGui(name).c_str(), &value[0]);
     ImGui::PopID();
 }
 
@@ -446,7 +482,7 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, glm::vec3 &value
 {
     ImGui::PushID(elementCount++);
 
-    ImGui::DragFloat3(LeftLabelImGui(name).c_str(), &value[0]);
+    ImGui::DragFloat3(jleImGuiHelpers::LeftLabelImGui(name).c_str(), &value[0]);
     ImGui::PopID();
 }
 
@@ -455,7 +491,7 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, glm::vec4 &value
 {
     ImGui::PushID(elementCount++);
 
-    ImGui::DragFloat4(LeftLabelImGui(name).c_str(), &value[0]);
+    ImGui::DragFloat4(jleImGuiHelpers::LeftLabelImGui(name).c_str(), &value[0]);
     ImGui::PopID();
 }
 
@@ -482,25 +518,8 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, glm::quat &value
 
     glm::vec3 euler = glm::eulerAngles(value);
 
-    if (ImGui::DragFloat3(LeftLabelImGui(name).c_str(), &euler[0])) {
+    if (ImGui::DragFloat3(jleImGuiHelpers::LeftLabelImGui(name).c_str(), &euler[0])) {
         value = glm::quat(euler);
     }
     ImGui::PopID();
-}
-
-std::string
-jleImGuiArchive::LeftLabelImGui(const char *const label, float factor)
-{
-    float width = ImGui::CalcItemWidth();
-
-    float x = ImGui::GetCursorPosX();
-    ImGui::Text("%s", label);
-    ImGui::SameLine();
-    ImGui::SetCursorPosX(x + width * factor + ImGui::GetStyle().ItemInnerSpacing.x);
-    ImGui::SetNextItemWidth(-1);
-
-    std::string labelID = "##";
-    labelID += label;
-
-    return labelID;
 }

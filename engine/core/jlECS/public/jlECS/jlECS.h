@@ -167,6 +167,8 @@ public:
         return reinterpret_cast<T *>(&data[index * sizeof(T)]);
     }
 
+    ECS& getECS() { return *ecs; }
+
 protected:
     friend class ECS;
     friend class Debug::ECS_Debug;
@@ -348,6 +350,12 @@ public:
         return _objectIndex;
     }
 
+    [[nodiscard]] inline uint16_t
+    recycleCounter() const
+    {
+        return _objectRecycleCounter;
+    }
+
     bool
     operator==(const ObjectRef &other) const
     {
@@ -438,11 +446,11 @@ struct ComponentRegistrationConfig
     // pushed into this vector*, and can be cleaned up later in the frame.
     std::vector<uint16_t>* postponedDestructIndicesVecPtr = nullptr;
 
-    void (*serializeInputF_JSON)(ComponentContainer *, jleJSONInputArchive&, int /*componentIndex*/)        = nullptr;
-    void (*serializeOutputF_JSON)(ComponentContainer *, jleJSONOutputArchive&, int /*componentIndex*/)      = nullptr;
-    void (*serializeInputF_Binary)(ComponentContainer *, jleBinaryInputArchive&, int /*componentIndex*/)    = nullptr;
-    void (*serializeOutputF_Binary)(ComponentContainer *, jleBinaryOutputArchive&, int /*componentIndex*/)  = nullptr;
-    void (*serializeImGuiF)(ComponentContainer *, jleImGuiArchive&, int /*componentIndex*/)                 = nullptr;
+    void (*serializeInputF_JSON)(ComponentContainer *, jleJSONInputArchive&, int /*componentIndex*/)                = nullptr;
+    void (*serializeOutputF_JSON)(ComponentContainer *, jleJSONOutputArchive&, int /*componentIndex*/)              = nullptr;
+    void (*serializeInputF_Binary)(ComponentContainer *, jleBinaryInputArchive&, int /*componentIndex*/)            = nullptr;
+    void (*serializeOutputF_Binary)(ComponentContainer *, jleBinaryOutputArchive&, int /*componentIndex*/)          = nullptr;
+    void (*serializeImGuiF)(ComponentContainer *, jleImGuiArchive&, int /*componentIndex*/, int /*objectIndex*/)    = nullptr;
 
 };
 
@@ -724,6 +732,9 @@ public:
     [[nodiscard]] bool
     isObjectAlive(uint16_t objectIndex) const
     {
+        if(objectIndex > objectArray.aliveObjectsCount){
+            return false;
+        }
         return objectArray.aliveObjects[objectIndex];
     }
 
@@ -1159,6 +1170,10 @@ ComponentRef<T>::get() const
 bool
 ObjectRef::isValid() const
 {
+    if(_objectIndex > ecs->aliveObjectsCount()){
+        return false;
+    }
+
     return ecs->objectArray.objectRecycleCounter[_objectIndex] == _objectRecycleCounter;
 }
 
@@ -1210,7 +1225,7 @@ public:
     }
 
     // Editor inspector serialization
-    virtual void imGuiSerialize(jleImGuiArchive &ar){};
+    virtual void imGuiSerialize(jleImGuiArchive &ar, int objectIndex){};
 
     virtual void binarySerializeOut(jleBinaryOutputArchive& ar){};
     virtual void binarySerializeIn(jleBinaryInputArchive& ar){};
@@ -1241,11 +1256,11 @@ public:
         }
 
         void
-        imGuiSerialize(jleImGuiArchive &ar) override
+        imGuiSerialize(jleImGuiArchive &ar, int objectIndex) override
         {
             auto editorContainer = reinterpret_cast<ComponentContainerEditor*>(container);
             if(editorContainer->serializeImGuiF){
-                editorContainer->serializeImGuiF(container, ar, componentIndex);
+                editorContainer->serializeImGuiF(container, ar, componentIndex, objectIndex);
             }
         };
 
@@ -1342,7 +1357,7 @@ private:
     friend class Debug::ECS_Debug;
     friend class Debug::Initializer;
     ComponentDebugBase *(*getComponentDebugF)(ComponentContainer *, int, int, ECS *ecs){};
-    void (*serializeImGuiF)(ComponentContainer *, jleImGuiArchive&, int /*componentIndex*/) = nullptr;
+    void (*serializeImGuiF)(ComponentContainer *, jleImGuiArchive&, int /*componentIndex*/, int /*objectIndex*/) = nullptr;
 
     std::unique_ptr<ComponentContainerDebugBase> debugSmart;
     ComponentContainerDebugBase *debug{};
@@ -1418,7 +1433,7 @@ serializeOutputT_Binary(ComponentContainer *thiz, jleBinaryOutputArchive &archiv
 
 template <class T>
 static void
-serialize_ImGui(ComponentContainer *thiz, jleImGuiArchive &archive, int componentIndex)
+serialize_ImGui(ComponentContainer *thiz, jleImGuiArchive &archive, int componentIndex, int objectIndex)
 {
     T &ref = *thiz->getPtr<T>(componentIndex);
     archive(ref);

@@ -555,7 +555,7 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
                    std::string serializedBinaryDataBefore = ossBefore.str();
 
                    jleImGuiArchive imGuiArchive{input.editorUpdate};
-                   comp->imGuiSerialize(imGuiArchive);
+                   comp->imGuiSerialize(imGuiArchive, selectedObject.objectIndex());
 
                    std::ostringstream ossAfter{};
                    {
@@ -639,7 +639,6 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
 
                _deletionConfirmationList.push_back(line);
 
-               // Only show first 10
                count++;
                if (count >= 10) break;
            }

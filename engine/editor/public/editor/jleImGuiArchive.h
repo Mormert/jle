@@ -103,6 +103,10 @@ private:
     // clang-format off
     void draw_ui(jleImGuiArchive &ar, const char *name, jleLuaClassSerialization &value);
     void draw_ui(jleImGuiArchive &ar, const char *name, jlePath &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, uint8_t &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, int8_t &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, uint16_t &value);
+    void draw_ui(jleImGuiArchive &ar, const char *name, int16_t &value);
     void draw_ui(jleImGuiArchive &ar, const char *name, uint32_t &value);
     void draw_ui(jleImGuiArchive &ar, const char *name, int32_t &value);
     void draw_ui(jleImGuiArchive &ar, const char *name, uint64_t &value);
@@ -300,8 +304,6 @@ private:
 
         ImGui::PopID();
     }
-
-    static std::string LeftLabelImGui(const char *const label, float factor = 0.3f);
 
 public:
     int elementCount = 0;

@@ -18,9 +18,14 @@
 #include "jleBuildConfig.h"
 
 #include <ImGui/imgui.h>
+#include <string>
 
 namespace ImGui
 {
     void BeginGroupPanel(const char* name, const ImVec2& size = ImVec2(0.0f, 0.0f));
     void EndGroupPanel();
+}
+
+namespace jleImGuiHelpers{
+    std::string LeftLabelImGui(const char *const label, float factor = 0.3f);
 }

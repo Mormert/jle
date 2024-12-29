@@ -13,23 +13,27 @@
 *                                                                                           *
 *********************************************************************************************/
 
-#include "jleCoreModule.h"
+#pragma once
 
-#include <jlECS/jlECS.h>
-#include <core/serialization/jleJSONArchive.h>
-#include <core/serialization/jleBinaryArchive.h>
+#include <core/serialization/jleExternalSerialization.h>
 
-#include "components/cTransform.h"
-#include "components/cParent.h"
+class cParent{
+public:
+    template <class Archive>
+    void serialize(Archive &ar)
+    {
+        ar(CEREAL_NVP(_parentIndex),
+           CEREAL_NVP(_recycleCounter));
+    }
 
-void
-jleCoreModule::initializeECS(jlECS::ECS &ecs)
-{
-    ecs.registerComponentType<cTransform>();
-    ecs.registerComponentType<cParent>();
-}
+    [[nodiscard]] uint16_t getParentIndex() const{ return _parentIndex; }
+    jlECS::ObjectRef getParentRef(jlECS::ECS& ecs) { return jlECS::ObjectRef{_parentIndex, _recycleCounter, &ecs}; }
 
-void
-jleCoreModule::update(jleCoreModule::UpdateContext &ctx)
-{
-}
+    void setParent(jlECS::ObjectRef& parentRef) {
+        _parentIndex = parentRef.objectIndex();
+        _recycleCounter = parentRef.recycleCounter();
+    }
+private:
+    uint16_t _parentIndex;
+    uint16_t _recycleCounter;
+};
