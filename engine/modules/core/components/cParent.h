@@ -29,11 +29,11 @@ public:
     [[nodiscard]] uint16_t getParentIndex() const{ return _parentIndex; }
     jlECS::ObjectRef getParentRef(jlECS::ECS& ecs) { return jlECS::ObjectRef{_parentIndex, _recycleCounter, &ecs}; }
 
-    void setParent(jlECS::ObjectRef& parentRef) {
+    void setParent(const jlECS::ObjectRef& parentRef) {
         _parentIndex = parentRef.objectIndex();
         _recycleCounter = parentRef.recycleCounter();
     }
 private:
-    uint16_t _parentIndex;
-    uint16_t _recycleCounter;
+    uint16_t _parentIndex = 0;
+    uint16_t _recycleCounter = 0;
 };

@@ -16,6 +16,7 @@
 #pragma once
 
 #include <memory>
+#include <ranges>
 #include <vector>
 
 struct jleSerializationContext;
@@ -30,6 +31,28 @@ public:
 
     virtual void execute(const CommandContext& ctx) = 0;
     virtual void undo(const CommandContext& ctx) = 0;
+};
+
+class jleChainedUndoRedoCommand : public jleUndoRedoCommandBase{
+public:
+    explicit jleChainedUndoRedoCommand(std::vector<std::unique_ptr<jleUndoRedoCommandBase>>& chainedCommands)
+        : _chainedCommands(std::move(chainedCommands)){}
+
+    ~jleChainedUndoRedoCommand() override = default;
+
+    void execute(const CommandContext& ctx) override{
+        for (const auto& command : _chainedCommands) {
+            command->execute(ctx);
+        }
+    }
+
+    void undo(const CommandContext& ctx) override{
+        for (const auto &command : std::ranges::reverse_view(_chainedCommands)) {
+            command->undo(ctx);
+        }
+    }
+private:
+    std::vector<std::unique_ptr<jleUndoRedoCommandBase>> _chainedCommands;
 };
 
 class jleUndoRedoManager {

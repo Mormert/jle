@@ -22,10 +22,16 @@
 #include "core/jlECSSaveLoad.h"
 #include "jleUndoRedo.h"
 
+#include "modules/core/components/cParent.h"
+
 #include <fstream>
 #include <iostream>
 #include <algorithm>
 #include <utility>
+#include <chrono>
+#include <map>
+#include <set>
+#include <sstream>
 
 namespace {
 
@@ -129,7 +135,9 @@ public:
     void execute(const CommandContext& ctx) override{
         for(auto& object : _objects){
             jleAssert(object.isValid());
-            _ecs->addComponent(object.objectIndex(), _componentType);
+            if (!_ecs->getComponent(object.objectIndex(), _componentType)) {
+                _ecs->addComponent(object.objectIndex(), _componentType);
+            }
         }
     }
 
@@ -201,8 +209,8 @@ private:
 class ChangeValuesOnComponentCommand : public jleUndoRedoCommandBase{
 public:
     ChangeValuesOnComponentCommand(const jlECS::ObjectRef& object, int componentType, std::string binaryDataBefore, std::string binaryDataAfter)
-                                    : _object(object), _componentType(componentType),
-                                    _serializedBinaryDataBefore(binaryDataBefore), _serializedBinaryDataAfter(binaryDataAfter) {}
+        : _object(object), _componentType(componentType),
+          _serializedBinaryDataBefore(binaryDataBefore), _serializedBinaryDataAfter(binaryDataAfter) {}
 
     void execute(const CommandContext& ctx) override{
         auto components = _object.componentsDebug2();
@@ -243,7 +251,60 @@ private:
     jlECS::ObjectRef _object;
 };
 
+std::string getSerializedBinaryStringFromComponent(jlECS::Debug::ComponentDebugBase& debugComponent, const jleSerializationContext& serializationContext) {
+    std::ostringstream oss(std::ios::binary | std::ios::out);
+    {
+        jleBinaryOutputArchive archive(oss, serializationContext);
+        debugComponent.binarySerializeOut(archive);
+    }
+
+    return oss.str();
 }
+
+std::unique_ptr<jleChainedUndoRedoCommand> createSetParentCommand(
+    jlECS::ECS* ecs,
+    jleSerializationContext& serializationContext,
+    jlECS::ObjectRef& child,
+    const std::optional<jlECS::ObjectRef>& newParent)
+{
+    const int parentComponentType = jlECS::ComponentNumV<cParent>;
+
+    std::vector<std::unique_ptr<jleUndoRedoCommandBase>> commands;
+
+    jleAssert(child.isValid());
+    if(newParent.has_value()){
+        jleAssert(newParent->isValid());
+        std::vector<jlECS::ObjectRef> childObjectRefVec{child};
+        auto addParentComponendCommand = std::make_unique<AddComponentCommand>(ecs, childObjectRefVec, parentComponentType);
+        if (!child.getComponentPtr<cParent>()) {
+            addParentComponendCommand->execute({serializationContext});
+        }
+        commands.push_back(std::move(addParentComponendCommand));
+
+        auto components = child.componentsDebug2();
+
+        for (auto& component : components) {
+            if (component->componentType == parentComponentType) {
+                std::string serializedBinaryDataBefore = getSerializedBinaryStringFromComponent(*component, serializationContext);
+
+                child.getComponentPtr<cParent>()->setParent(newParent.value());
+
+                std::string serializedBinaryDataAfter = getSerializedBinaryStringFromComponent(*component, serializationContext);
+                commands.push_back(std::make_unique<ChangeValuesOnComponentCommand>(child, parentComponentType, serializedBinaryDataBefore, serializedBinaryDataAfter));
+                break;
+            }
+        }
+    }else{
+        if(ecs->getComponent<cParent>(child.objectIndex())){
+            commands.push_back(std::make_unique<RemoveComponentCommand>(ecs, child, parentComponentType));
+        }
+    }
+
+    return std::make_unique<jleChainedUndoRedoCommand>(commands);
+}
+
+}
+
 
 jleECSEditorWindow::jleECSEditorWindow(const std::string &window_name)
    : jleEditorWindowInterface(window_name)
@@ -296,7 +357,6 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
    }
 
    ImGui::BeginGroup();
-
    if (ImGui::Button("Save")) {
        auto start = std::chrono::high_resolution_clock::now();
 
@@ -350,88 +410,147 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
        std::chrono::duration<double, std::milli> duration = end - start;
        std::cout << "jlECS::load bin execution time: " << duration.count() << " ms" << std::endl;
    }
+   ImGui::EndGroup();
 
-   ImGui::Text("Objects");
-   ImGui::BeginChild("objects pane", ImVec2(280 * globalImguiScale, 0), true);
+   ImGui::SameLine();
+
+   ImGui::BeginGroup();
+   ImGui::TextUnformatted("Object Hierarchy");
+
+   ImGui::BeginChild("hierarchy_tree", ImVec2(280 * globalImguiScale, 0), true);
 
    auto* objectsDebug = ecs.getAllObjectsDebug();
 
-   int currentIndex = 0;
-   for (jlECS::ObjectRef &object : *objectsDebug)
+   std::unordered_map<int /*parentIndex*/, std::vector<jlECS::ObjectRef> /*children list*/> childrenMap;
    {
-       std::string str = std::to_string(object.objectIndex()) + " <";
-       auto components = object.componentsDebug2();
+       for (auto& obj : *objectsDebug)
+       {
+           auto parentComponent = ecs.getComponent<cParent>(obj.objectIndex());
+           if (parentComponent && parentComponent->getParentRef(ecs).isValid())
+           {
+               int parentIdx = parentComponent->getParentIndex();
+               childrenMap[parentIdx].push_back(obj);
+           }
+       }
+   }
+
+   auto isSelectedLambda = [&](const jlECS::ObjectRef& ref){
+       return (std::find(_selectedObjects->begin(), _selectedObjects->end(), ref) != _selectedObjects->end());
+   };
+
+   std::function<void(jlECS::ObjectRef)> drawObjectNode;
+   drawObjectNode = [&](jlECS::ObjectRef object)
+   {
+       int idx = object.objectIndex();
+
+       std::string label = std::to_string(idx) + " <";
+       auto comps = object.componentsDebug2();
        bool first = true;
-       for (auto &component : components) {
-           if (!first) str += ", ";
-           str += component->getName();
+       for (auto &component : comps) {
+           if (!first) label += ", ";
+           label += component->getName();
            first = false;
        }
-       str += ">";
+       label += ">";
 
-       bool isCurrentlySelected =
-           (std::find(_selectedObjects->begin(),
-                      _selectedObjects->end(),
-                      object) != _selectedObjects->end());
+       // Figure out tree flags
+       ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow;
+       if (childrenMap.find(idx) == childrenMap.end()) {
+           // no children => leaf node
+           nodeFlags |= ImGuiTreeNodeFlags_Leaf;
+       }
+       if (isSelectedLambda(object)) {
+           nodeFlags |= ImGuiTreeNodeFlags_Selected;
+       }
 
-       if (ImGui::Selectable(str.c_str(), isCurrentlySelected, ImGuiSelectableFlags_AllowDoubleClick))
+       // Tree node
+       bool opened = ImGui::TreeNodeEx(
+           (void*)(intptr_t)idx,
+           nodeFlags,
+           "%s",
+           label.c_str()
+       );
+
+       // Drag object
+       if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
        {
-           // SHIFT + Click => range select
-           if (ImGui::GetIO().KeyShift && _lastSelectedIndex >= 0 && _lastSelectedIndex < (int)objectsDebug->size())
-           {
-               _selectedObjects->clear();
-               int start = std::min(currentIndex, _lastSelectedIndex);
-               int end   = std::max(currentIndex, _lastSelectedIndex);
+           // We send the object index as payload
+           ImGui::SetDragDropPayload("OBJECT_INDEX", &idx, sizeof(int));
+           ImGui::Text("Dragging Object %d", idx);
+           ImGui::EndDragDropSource();
+       }
 
-               for (int idx = start; idx <= end; idx++) {
-                   _selectedObjects->push_back(objectsDebug->at(idx));
+       // Drop object
+       if (ImGui::BeginDragDropTarget())
+       {
+           if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("OBJECT_INDEX"))
+           {
+               int draggedIndex = *(const int*)payload->Data;
+               if (draggedIndex != idx)
+               {
+                   // The user dropped "draggedIndex" onto "idx" => set parent
+                   jlECS::ObjectRef childRef = ecs.getObject(draggedIndex);
+
+                   // Create & dispatch an undoable command
+                   auto command = createSetParentCommand(&ecs, serializationContext, childRef, object);
+                   input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
                }
            }
-           // CTRL + Click => toggle this single item
-           else if (ImGui::GetIO().KeyCtrl)
+           ImGui::EndDragDropTarget();
+       }
+
+       // Select object
+       if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+       {
+           bool currentlySelected = isSelectedLambda(object);
+           if (io.KeyShift && _lastSelectedIndex >= 0 && _lastSelectedIndex < (int)objectsDebug->size())
            {
-               if (isCurrentlySelected) {
+               // SHIFT + Click => range select
+               _selectedObjects->clear();
+
+           }
+           else if (io.KeyCtrl)
+           {
+               // CTRL + Click => toggle
+               if (currentlySelected) {
                    _selectedObjects->erase(std::remove(_selectedObjects->begin(),
                                                        _selectedObjects->end(),
                                                        object),
-                                                       _selectedObjects->end());
+                                           _selectedObjects->end());
                } else {
                    _selectedObjects->push_back(object);
                }
            }
-           // Normal click => single selection
            else
            {
+               // Normal click => single selection
                _selectedObjects->clear();
                _selectedObjects->push_back(object);
            }
 
-           _lastSelectedIndex = currentIndex;
+           _lastSelectedIndex = idx;
        }
 
+       // Right-click context menu on the tree node
        if (ImGui::BeginPopupContextItem())
        {
-           bool isInSelection = (std::find(_selectedObjects->begin(),
-                                           _selectedObjects->end(),
-                                           ecs.getObject(currentIndex)) != _selectedObjects->end());
-
+           bool isInSelection = isSelectedLambda(object);
            std::vector<jlECS::ObjectRef> finalSelection = *_selectedObjects;
-           if (!isInSelection)
-           {
-               finalSelection.push_back(ecs.getObject(currentIndex));
+           if (!isInSelection) {
+               finalSelection.clear();
+               finalSelection.push_back(object);
            }
 
-           const auto buildIDListString = [](const std::vector<jlECS::ObjectRef>& objects){
+           const auto buildIDListString = [&](const std::vector<jlECS::ObjectRef>& objs){
                std::string listStr = "[";
-               bool first = true;
-               for (auto& obj : objects)
+               bool fst = true;
+               for (auto& o : objs)
                {
-                   if (obj.isValid())
+                   if (o.isValid())
                    {
-                       if (!first)
-                           listStr += ", ";
-                       listStr += std::to_string(obj.objectIndex());
-                       first = false;
+                       if (!fst) listStr += ", ";
+                       listStr += std::to_string(o.objectIndex());
+                       fst = false;
                    }
                }
                listStr += "]";
@@ -443,41 +562,23 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
            {
                if (ImGui::BeginMenu("Add Component"))
                {
-                   const auto getObjectsMissingComponent = [](
-                                                               const std::vector<jlECS::ObjectRef>& objects,
-                                                               jlECS::ECS& ecs,
-                                                               int compType)
-                   {
-                       std::vector<jlECS::ObjectRef> missing;
-                       missing.reserve(objects.size());
-                       for (auto& obj : objects)
-                       {
-                           if (obj.isValid())
-                           {
-                               // If this object doesn't have the component, add it to the result.
-                               if (!ecs.getComponent(obj.objectIndex(), compType))
-                               {
-                                   missing.push_back(obj);
-                               }
-                           }
-                       }
-                       return missing;
-                   };
-
                    for (auto registeredComponentType : registeredComponentTypes)
                    {
-                       auto missingList = getObjectsMissingComponent(
-                           finalSelection, ecs, registeredComponentType.componentType);
-
-                       if (missingList.empty())
-                           continue;
+                       // Filter out objects that already have this component
+                       std::vector<jlECS::ObjectRef> missingList;
+                       for (auto& o : finalSelection)
+                       {
+                           if (!ecs.getComponent(o.objectIndex(), registeredComponentType.componentType))
+                           {
+                               missingList.push_back(o);
+                           }
+                       }
+                       if (missingList.empty()) continue;
 
                        std::string label = "Add ";
                        label += registeredComponentType.componentTypeName;
-                       label += " to ";
-                       label += buildIDListString(missingList);
+                       label += " to " + buildIDListString(missingList);
 
-                       // On click => add the component to all missing objects
                        if (ImGui::MenuItem(label.c_str()))
                        {
                            auto command = std::make_unique<AddComponentCommand>(&ecs, missingList, registeredComponentType.componentType);
@@ -490,37 +591,84 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
 
            if (!finalSelection.empty())
            {
-               std::string destroyLabel = "Destroy Objects " + buildIDListString(finalSelection);
+               std::string destroyLabel = "Destroy " + buildIDListString(finalSelection);
                if (ImGui::MenuItem(destroyLabel.c_str()))
                {
                    auto command = std::make_unique<RemoveObjectsCommand>(&ecs, finalSelection);
                    input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
-
+                   // remove from selection any that got destroyed
                    _selectedObjects->erase(
-                       std::remove_if(_selectedObjects->begin(),
-                                      _selectedObjects->end(),
-                                      [&](const jlECS::ObjectRef& ref) {
-                                          return !ref.isValid();
-                                      }),
-                       _selectedObjects->end());
+                       std::remove_if(_selectedObjects->begin(), _selectedObjects->end(),
+                                      [&](const jlECS::ObjectRef& ref){ return !ref.isValid(); }),
+                       _selectedObjects->end()
+                   );
                }
            }
 
            ImGui::EndPopup();
        }
 
-       currentIndex++;
+       // If we have children, recurse
+       if (opened)
+       {
+           // find children
+           auto it = childrenMap.find(idx);
+           if (it != childrenMap.end())
+           {
+               for (auto& childRef : it->second)
+               {
+                   if (childRef.isValid()) {
+                       drawObjectNode(childRef);
+                   }
+               }
+           }
+           ImGui::TreePop();
+       }
+   };
+
+   // Draw objects with no valid parent
+   std::set<int> drawnSet; // track objects that get drawn in recursion
+   for (auto& obj : *objectsDebug) {
+       drawnSet.insert(obj.objectIndex());
+   }
+   // For each object that has a parent, it will appear inside the parent's node.
+   // We only explicitly draw objects that do not have a valid parent or cParent at all.
+   for (auto& obj : *objectsDebug)
+   {
+       auto cpar = ecs.getComponent<cParent>(obj.objectIndex());
+       bool hasParent = (cpar && cpar->getParentRef(ecs).isValid());
+       if (!hasParent)
+       {
+           drawObjectNode(obj);
+       }
    }
 
-   if (ImGui::Button("Add Object")) {
-       input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::make_unique<AddObjectCommand>(&ecs));
+   ImGui::Spacing();
+   ImGui::BulletText("Drag here to remove parent");
+   if (ImGui::BeginDragDropTarget())
+   {
+       if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("OBJECT_INDEX"))
+       {
+           int draggedIndex = *static_cast<const int *>(payload->Data);
+           jlECS::ObjectRef draggedRef = ecs.getObject(draggedIndex);
+           auto command = createSetParentCommand(&ecs, serializationContext, draggedRef, std::optional<jlECS::ObjectRef>{});
+           input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
+       }
+       ImGui::EndDragDropTarget();
+   }
+
+   if (ImGui::Button("Add Object"))
+   {
+       input.undoRedo.enqueueAndExecute(
+           undoRedoCommandCtx,
+           std::make_unique<AddObjectCommand>(&ecs)
+       );
    }
 
    ImGui::EndChild();
    ImGui::EndGroup();
 
    ImGui::SameLine();
-
    ImGui::BeginGroup();
    ImGui::Text("Selected Objects (%d)", (int)_selectedObjects->size());
    ImGui::BeginChild("selected object pane", ImVec2(280 * globalImguiScale, 0), true);
@@ -529,17 +677,15 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
    {
        if (_selectedObjects->size() == 1)
        {
-           auto& selectedObject = _selectedObjects->front();
-
-           if (selectedObject.isValid()) {
+           auto selectedObject = _selectedObjects->front();
+           if (selectedObject.isValid())
+           {
                if (ImGui::Button("Destroy Object")) {
                    auto command = std::make_unique<RemoveObjectsCommand>(&ecs, std::vector<jlECS::ObjectRef>{selectedObject});
                    input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
                    _selectedObjects->clear();
                }
-
                ImGui::Text("Components");
-
                auto components = selectedObject.componentsDebug2();
                int compCounter = 0;
                for (auto &comp : components)
@@ -547,35 +693,27 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
                    ImGui::PushID(compCounter);
                    ImGui::BeginGroupPanel(comp->getName());
 
-                   std::ostringstream ossBefore{};
-                   {
-                       jleBinaryOutputArchive ar{ossBefore, input.editorUpdate.engineUpdateContext.serializationContext};
-                       comp->binarySerializeOut(ar);
-                   }
-                   std::string serializedBinaryDataBefore = ossBefore.str();
+                   std::string serializedBinaryDataBefore = getSerializedBinaryStringFromComponent(*comp, serializationContext);
 
                    jleImGuiArchive imGuiArchive{input.editorUpdate};
                    comp->imGuiSerialize(imGuiArchive, selectedObject.objectIndex());
 
-                   std::ostringstream ossAfter{};
-                   {
-                       jleBinaryOutputArchive ar{ossAfter, input.editorUpdate.engineUpdateContext.serializationContext};
-                       comp->binarySerializeOut(ar);
-                   }
-                   std::string serializedBinaryDataAfter = ossAfter.str();
+                   std::string serializedBinaryDataAfter = getSerializedBinaryStringFromComponent(*comp, serializationContext);
 
-                   // Check if the component was changed, then add the entire component's binary data (before and after) to the undo-redo system
                    if(serializedBinaryDataBefore != serializedBinaryDataAfter){
-                        auto command = std::make_unique<ChangeValuesOnComponentCommand>(selectedObject, comp->componentType,
-                                                                                       serializedBinaryDataBefore, serializedBinaryDataAfter);
-                        input.undoRedo.enqueue(std::move(command));
+                       auto command = std::make_unique<ChangeValuesOnComponentCommand>(
+                           selectedObject,
+                           comp->componentType,
+                           serializedBinaryDataBefore,
+                           serializedBinaryDataAfter
+                       );
+                       input.undoRedo.enqueue(std::move(command));
                    }
 
                    std::string removeString = "Remove " + std::string{comp->getName()};
                    if (ImGui::Button(removeString.c_str())) {
                        auto command = std::make_unique<RemoveComponentCommand>(&ecs, selectedObject, comp->componentType);
                        input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
-
                        ImGui::EndGroupPanel();
                        ImGui::PopID();
                        break;
@@ -587,15 +725,17 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
                }
 
                if (ImGui::BeginMenu("Add Component")) {
-                   const auto &registeredComponentTypes = ecs.getRegisteredComponents();
-                   for (auto registeredComponentType : registeredComponentTypes) {
-                       if (!ecs.getComponent(selectedObject.objectIndex(),
-                                             registeredComponentType.componentType) &&
-                           ImGui::MenuItem(registeredComponentType.componentTypeName))
+                   auto& registeredComponentTypes = ecs.getRegisteredComponents();
+                   for (auto registeredComponentType : registeredComponentTypes)
+                   {
+                       if (!ecs.getComponent(selectedObject.objectIndex(), registeredComponentType.componentType))
                        {
-                           std::vector<jlECS::ObjectRef> selectedObjects {selectedObject};
-                           auto command = std::make_unique<AddComponentCommand>(&ecs, selectedObjects, registeredComponentType.componentType);
-                           input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
+                           if (ImGui::MenuItem(registeredComponentType.componentTypeName))
+                           {
+                               std::vector<jlECS::ObjectRef> so {selectedObject};
+                               auto command = std::make_unique<AddComponentCommand>(&ecs, so, registeredComponentType.componentType);
+                               input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
+                           }
                        }
                    }
                    ImGui::EndMenu();
@@ -609,14 +749,12 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
                input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
                _selectedObjects->clear();
            }
-
            ImGui::Text("Multiple objects selected...");
        }
    }
 
    ImGui::EndChild();
    ImGui::EndGroup();
-
 
    if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
        ImGui::IsKeyPressed(ImGuiKey_Delete) &&
@@ -636,7 +774,6 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
                    first = false;
                }
                line += ">";
-
                _deletionConfirmationList.push_back(line);
 
                count++;
@@ -678,10 +815,9 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
        ImVec4 oldButtonHovered   = ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered);
        ImVec4 oldButtonActive    = ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive);
 
-       ImGui::PushStyleColor(ImGuiCol_Button,        (ImVec4)ImColor::HSV(0.0f, 0.6f, 0.6f)); // red-ish
+       ImGui::PushStyleColor(ImGuiCol_Button,        (ImVec4)ImColor::HSV(0.0f, 0.6f, 0.6f));
        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.0f, 0.7f, 0.7f));
        ImGui::PushStyleColor(ImGuiCol_ButtonActive,  (ImVec4)ImColor::HSV(0.0f, 0.8f, 0.8f));
-
        if (ImGui::Button("Yes, delete")) {
            auto command = std::make_unique<RemoveObjectsCommand>(&ecs, *_selectedObjects);
            input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
@@ -695,7 +831,6 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
        ImGui::PushStyleColor(ImGuiCol_Button,        oldButtonColor);
        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, oldButtonHovered);
        ImGui::PushStyleColor(ImGuiCol_ButtonActive,  oldButtonActive);
-
        if (ImGui::Button("Cancel")) {
            ImGui::CloseCurrentPopup();
        }
