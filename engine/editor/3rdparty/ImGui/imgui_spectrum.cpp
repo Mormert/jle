@@ -1,5 +1,7 @@
 #include "imgui_spectrum.h"
 
+#include <cassert>
+
 #include "imgui.h"
 
 namespace ImGui {
