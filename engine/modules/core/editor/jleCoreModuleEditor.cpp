@@ -60,12 +60,11 @@ void serializeTransformEditor(jlECS::ComponentContainer *thiz, jleImGuiArchive &
 
 void serializeParentEditor(jlECS::ComponentContainer *thiz, jleImGuiArchive &archive, int componentIndex, int objectIndex)
 {
-    cParent &parentComponent = *thiz->getPtr<cParent>(componentIndex);
+    const cParent &parentComponent = *thiz->getPtr<cParent>(componentIndex);
 
     auto& ecs = thiz->getECS();
-    auto parentRef = parentComponent.getParentRef(ecs);
 
-    if(!parentRef.isValid()){
+    if(auto parentRef = parentComponent.getParentRef(ecs); !parentRef.isValid()){
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.1f, 0.1f, 1.0f));
         ImGui::Text("Parent ID (%d) is invalid (rec. cnt = %d)", parentRef.objectIndex(), parentRef.recycleCounter());
         ImGui::PopStyleColor();

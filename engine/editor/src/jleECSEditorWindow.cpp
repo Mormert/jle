@@ -263,6 +263,10 @@ public:
 
     void execute(const CommandContext& ctx) override
     {
+        if (!_parent->getComponentPtr<cParent>() && _child.getComponentPtr<cParent>()) {
+            _parent = {};
+        }
+
         // Store the child's current parent
         if (auto* childParentComponent = _child.getComponentPtr<cParent>())
         {
@@ -491,7 +495,6 @@ void jleECSEditorWindow::handleObjectHierarchy(const RenderUIInput& input, jleUn
                 if (draggedIndex != idx)
                 {
                     jlECS::ObjectRef childRef = ecs.getObject(draggedIndex);
-                    //auto command = createSetParentCommand(&ecs, serializationContext, childRef, object);
                     auto command = std::make_unique<SetParentCommand>(childRef, object);
                     input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
                 }
@@ -618,20 +621,7 @@ void jleECSEditorWindow::handleObjectHierarchy(const RenderUIInput& input, jleUn
             drawObjectNode(obj);
         }
     }
-    ImGui::Spacing();
-    ImGui::BulletText("Drag here to remove parent");
-    if (ImGui::BeginDragDropTarget())
-    {
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("OBJECT_INDEX"))
-        {
-            int draggedIndex = *static_cast<const int *>(payload->Data);
-            jlECS::ObjectRef draggedRef = ecs.getObject(draggedIndex);
-            //auto command = createSetParentCommand(&ecs, serializationContext, draggedRef, std::optional<jlECS::ObjectRef>{});
-            auto command = std::make_unique<SetParentCommand>(draggedRef, std::optional<jlECS::ObjectRef>{});
-            input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
-        }
-        ImGui::EndDragDropTarget();
-    }
+
     if (ImGui::Button("Add Object"))
     {
         input.undoRedo.enqueueAndExecute(
@@ -642,6 +632,7 @@ void jleECSEditorWindow::handleObjectHierarchy(const RenderUIInput& input, jleUn
     ImGui::EndChild();
     ImGui::EndGroup();
 }
+
 
 void jleECSEditorWindow::handleSelectedObjectsPane(const RenderUIInput& input, jleUndoRedoCommandBase::CommandContext& undoRedoCommandCtx, jlECS::ECS& ecs)
 {
