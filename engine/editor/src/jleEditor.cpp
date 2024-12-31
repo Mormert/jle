@@ -148,6 +148,12 @@ public:
     renderUI(jleEditorUpdateContext &context)
     {
         jlECS::ECS* ecs = context.engineUpdateContext.gameRuntime.isGameKilled() ? nullptr : context.gameState.ecs.get();
+
+        // Temporary work-around to ensure we get the *game* ECS
+        if (!ecs) {
+            context.engineUpdateContext.gameRuntime.startGame();
+            return;
+        }
         assert(dynamic_cast<jlECS::Debug::ECS_Debug*>(ecs));
 
         menu->renderUI(context.engineUpdateContext);

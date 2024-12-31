@@ -76,13 +76,13 @@ void serializeParentEditor(jlECS::ComponentContainer *thiz, jleImGuiArchive &arc
     const uint16_t max = ecs.aliveObjectsCount() - 1;
     ImGui::DragScalar(jleImGuiHelpers::LeftLabelImGui("Parent").c_str(), ImGuiDataType_U16, &parentIndex, 0.2f, &min, &max, "%u");
     if(parentIndex != parentComponent.getParentIndex() && ecs.isObjectAlive(parentIndex)){
-        auto newParentRef = ecs.getObject(parentIndex);
-        parentComponent.setParent(newParentRef);
+        auto newParentRef = std::optional<jlECS::ObjectRef>(ecs.getObject(parentIndex));
+        auto childObjectRef = ecs.getObject(objectIndex);
+        cParent::setParent(childObjectRef, newParentRef);
     }
 
     if(parentIndex == objectIndex){
         ImGui::Text("Parent ID (%d) can't be same as object ID!", parentIndex);
-        return;
     }
 }
 

@@ -330,7 +330,7 @@ public:
 
     [[nodiscard]] inline bool isValid() const;
 
-    uint16_t componentCount();
+    [[nodiscard]] uint16_t componentCount() const;
 
     template <class T>
     ComponentRef<T> addComponent();
@@ -339,22 +339,16 @@ public:
     void removeComponent();
 
     template <class T>
-    ComponentRef<T> getComponent();
+    [[nodiscard]] ComponentRef<T> getComponent() const;
 
     template <class T>
-    T *getComponentPtr();
+    [[nodiscard]] T *getComponentPtr() const;
 
     [[nodiscard]] inline uint16_t
-    objectIndex() const
-    {
-        return _objectIndex;
-    }
+    objectIndex() const{ return _objectIndex; }
 
     [[nodiscard]] inline uint16_t
-    recycleCounter() const
-    {
-        return _objectRecycleCounter;
-    }
+    recycleCounter() const { return _objectRecycleCounter; }
 
     bool
     operator==(const ObjectRef &other) const
@@ -372,6 +366,8 @@ public:
     static inline void (*gObjectRefDestructFunction)(ObjectRef* objectRef);
 
     ~ObjectRef();
+
+    [[nodiscard]] ECS& getECS() const { return *ecs; }
 
     // Can only be called from editor code
     // TODO: move this outside ObjectRef and into editor code
@@ -492,6 +488,12 @@ public:
     aliveObjectsCount() const
     {
         return objectArray.aliveObjectsCount;
+    }
+
+    [[nodiscard]] inline int
+    allocatedObjectsCount() const
+    {
+        return objectArray.aliveObjects.size();
     }
 
     template <class T>
@@ -732,7 +734,7 @@ public:
     [[nodiscard]] bool
     isObjectAlive(uint16_t objectIndex) const
     {
-        if(objectIndex > objectArray.aliveObjectsCount){
+        if(objectIndex > allocatedObjectsCount()){
             return false;
         }
         return objectArray.aliveObjects[objectIndex];
@@ -1170,7 +1172,7 @@ ComponentRef<T>::get() const
 bool
 ObjectRef::isValid() const
 {
-    if(_objectIndex > ecs->aliveObjectsCount()){
+    if(_objectIndex > ecs->allocatedObjectsCount()){
         return false;
     }
 
@@ -1199,15 +1201,13 @@ ObjectRef::removeComponent()
 
 template <class T>
 ComponentRef<T>
-ObjectRef::getComponent()
-{
+ObjectRef::getComponent() const {
     return ecs->getComponentRef<T>(_objectIndex);
 }
 
 template <class T>
 T *
-ObjectRef::getComponentPtr()
-{
+ObjectRef::getComponentPtr() const {
     return ecs->getComponent<T>(_objectIndex);
 }
 

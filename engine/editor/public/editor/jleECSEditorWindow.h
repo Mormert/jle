@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include <jleUndoRedo.h>
+
 #include "jleBuildConfig.h"
 
 #include <jlECS/jlECS.h>
@@ -48,6 +50,23 @@ public:
     RenderUIOutput renderUI(const RenderUIInput& input);
 
 private:
+    void handleUndoRedoShortcuts(const RenderUIInput &input,
+                                 jleUndoRedoCommandBase::CommandContext &undoRedoCommandCtx);
+
+    void handleSaveLoadButtons(const RenderUIInput &input, jleUndoRedoCommandBase::CommandContext &undoRedoCommandCtx,
+                               jlECS::ECS &ecs, jleSerializationContext &serializationContext);
+
+    void handleObjectHierarchy(const RenderUIInput &input, jleUndoRedoCommandBase::CommandContext &undoRedoCommandCtx,
+                               jlECS::ECS &ecs, jleSerializationContext &serializationContext);
+
+    void handleSelectedObjectsPane(const RenderUIInput &input,
+                                   jleUndoRedoCommandBase::CommandContext &undoRedoCommandCtx,
+                                   jlECS::ECS &ecs);
+
+    void handleDeletionConfirmation(const RenderUIInput &input,
+                                    jleUndoRedoCommandBase::CommandContext &undoRedoCommandCtx,
+                                    jlECS::ECS &ecs);
+
     std::shared_ptr<std::vector<jlECS::ObjectRef>> _selectedObjects;
     std::vector<std::string> _deletionConfirmationList;
     int _lastSelectedIndex;

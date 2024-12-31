@@ -24,8 +24,7 @@ ObjectRef::ObjectRef(uint16_t objectIndex, uint16_t objectRecycleCounter, ECS *e
 }
 
 uint16_t
-ObjectRef::componentCount()
-{
+ObjectRef::componentCount() const {
     uint16_t count = 0;
     auto *c = &ecs->objectArray.componentIndices[_objectIndex * ecs->registeredComponentTypesCount];
     for (int componentType = 0; componentType < ecs->registeredComponentTypesCount; componentType++) {
