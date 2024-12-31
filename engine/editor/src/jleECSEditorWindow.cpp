@@ -264,7 +264,18 @@ public:
     void execute(const CommandContext& ctx) override
     {
         if (!_parent->getComponentPtr<cParent>() && _child.getComponentPtr<cParent>()) {
-            _parent = {};
+            auto currentChildComponent = _child.getComponentPtr<cParent>();
+            while (currentChildComponent) {
+                jlECS::ObjectRef currentChildObject = currentChildComponent->getParentRef(_child.getECS());
+                // If the current child object is the parent, update and break
+                if (currentChildObject == _parent) {
+                    _parent = {};
+                    break;
+                }
+
+                // Move to the next child in the chain
+                currentChildComponent = currentChildObject.getComponentPtr<cParent>();
+            }
         }
 
         // Store the child's current parent
@@ -459,6 +470,14 @@ void jleECSEditorWindow::handleObjectHierarchy(const RenderUIInput& input, jleUn
     drawObjectNode = [&](jlECS::ObjectRef object)
     {
         int idx = object.objectIndex();
+        if (_expandParentIndex == idx)
+        {
+            // Forces ImGui to open this tree node regardless of previous state
+            ImGui::SetNextItemOpen(true, ImGuiCond_Always);
+            // Reset so we don't keep opening it every frame
+            _expandParentIndex = -1;
+        }
+
         std::string label = std::to_string(idx) + " <";
         auto comps = object.componentsDebug2();
         bool first = true;
@@ -497,8 +516,11 @@ void jleECSEditorWindow::handleObjectHierarchy(const RenderUIInput& input, jleUn
                     jlECS::ObjectRef childRef = ecs.getObject(draggedIndex);
                     auto command = std::make_unique<SetParentCommand>(childRef, object);
                     input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
+
+                    _expandParentIndex = idx;
                 }
             }
+
             ImGui::EndDragDropTarget();
         }
         if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())

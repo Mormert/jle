@@ -70,5 +70,6 @@ private:
     std::shared_ptr<std::vector<jlECS::ObjectRef>> _selectedObjects;
     std::vector<std::string> _deletionConfirmationList;
     int _lastSelectedIndex;
+    int _expandParentIndex = -1;
     jlECS::ECS *_ecs;
 };
