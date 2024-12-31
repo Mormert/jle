@@ -263,21 +263,6 @@ public:
 
     void execute(const CommandContext& ctx) override
     {
-        if (!_parent->getComponentPtr<cParent>() && _child.getComponentPtr<cParent>()) {
-            auto currentChildComponent = _child.getComponentPtr<cParent>();
-            while (currentChildComponent) {
-                jlECS::ObjectRef currentChildObject = currentChildComponent->getParentRef(_child.getECS());
-                // If the current child object is the parent, update and break
-                if (currentChildObject == _parent) {
-                    _parent = {};
-                    break;
-                }
-
-                // Move to the next child in the chain
-                currentChildComponent = currentChildObject.getComponentPtr<cParent>();
-            }
-        }
-
         // Store the child's current parent
         if (auto* childParentComponent = _child.getComponentPtr<cParent>())
         {
@@ -446,6 +431,43 @@ void jleECSEditorWindow::handleObjectHierarchy(const RenderUIInput& input, jleUn
     float globalImguiScale = io.FontGlobalScale;
     ImGui::BeginGroup();
     ImGui::TextUnformatted("Object Hierarchy");
+
+    if (ImGui::Button("Add Object"))
+    {
+        input.undoRedo.enqueueAndExecute(
+            undoRedoCommandCtx,
+            std::make_unique<AddObjectCommand>(&ecs)
+        );
+    }
+
+    const ImGuiPayload* currentPayload = ImGui::GetDragDropPayload();
+    bool isDraggingObject = false;
+    if (currentPayload && currentPayload->IsDataType("OBJECT_INDEX"))
+    {
+        isDraggingObject = true;
+    }
+
+    if (isDraggingObject)
+    {
+        ImGui::SameLine();
+
+        if (ImGui::Button("Drag-To-Root", ImVec2(150 * globalImguiScale, 0))) {}
+
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("OBJECT_INDEX"))
+            {
+                int draggedIndex = *(const int*)payload->Data;
+                jlECS::ObjectRef childRef = ecs.getObject(draggedIndex);
+
+                // Make this object a root (no parent)
+                auto command = std::make_unique<SetParentCommand>(childRef, std::optional<jlECS::ObjectRef>());
+                input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
+            }
+            ImGui::EndDragDropTarget();
+        }
+    }
+
     ImGui::BeginChild("hierarchy_tree", ImVec2(280 * globalImguiScale, 0), true);
 
     auto* objectsDebug = ecs.getAllObjectsDebug();
@@ -644,13 +666,6 @@ void jleECSEditorWindow::handleObjectHierarchy(const RenderUIInput& input, jleUn
         }
     }
 
-    if (ImGui::Button("Add Object"))
-    {
-        input.undoRedo.enqueueAndExecute(
-            undoRedoCommandCtx,
-            std::make_unique<AddObjectCommand>(&ecs)
-        );
-    }
     ImGui::EndChild();
     ImGui::EndGroup();
 }
