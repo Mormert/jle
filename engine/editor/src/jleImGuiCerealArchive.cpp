@@ -18,6 +18,7 @@
 #include "modules/scripting/jleLuaEnvironment.h"
 
 #include <jleVectorSet.h>
+#include <glm/gtc/quaternion.hpp>
 
 void
 jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, jleTextureRefOrRGBA &value)

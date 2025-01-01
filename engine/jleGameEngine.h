@@ -117,8 +117,6 @@ protected:
 
     void killRmlUi();
 
-    virtual void update(jleEngineUpdateContext &ctx);
-
     virtual void render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem::context &jobsCtx);
 
     virtual void exiting();

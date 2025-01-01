@@ -208,12 +208,6 @@ jleGameEngine::start(jleEngineUpdateContext &ctx)
 }
 
 void
-jleGameEngine::update(jleEngineUpdateContext &ctx)
-{
-    ctx.gameRuntime.update(ctx);
-}
-
-void
 jleGameEngine::render(jleCamera &camera, jleEngineUpdateContext &ctx, wi::jobsystem::context &jobsCtx)
 {
     JLE_SCOPE_PROFILE_CPU(jleGameEngine_render)

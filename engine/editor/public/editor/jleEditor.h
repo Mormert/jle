@@ -50,28 +50,9 @@ public:
 
     void render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem::context &jobsCtx) override;
 
-    void update(jleEngineUpdateContext &ctx) override;
-
     jleEditorGizmos &gizmos();
 
     jleEditorSaveState &saveState();
-
-    void updateEditorLoadedScenes(jleEngineUpdateContext &ctx);
-
-    //std::vector<std::shared_ptr<jleScene>> &getEditorScenes();
-
-    //jleEditorTextEdit &editorTextEdit();
-
-    //jleEditorSceneObjectsWindow &getEditorSceneObjectsWindow();
-
-    //jleResourceIndexer &resourceIndexer();
-
-    bool checkSceneIsActiveEditor(const std::string &sceneName);
-
-    //std::shared_ptr<jleScene> loadScene(const jlePath &scenePath,
-    //                                    jleEngineUpdateContext &ctx,
-    //                                    bool startObjects = true);
-
 private:
     struct jleEditorInternal;
     std::unique_ptr<jleEditorInternal> _internal;
@@ -86,16 +67,12 @@ private:
 
     void initImgui();
 
-    void renderEditorGizmos(jleFramePacket &renderGraph, jleGameRuntime &gameRuntime);
-
-    void renderEditorGizmosObject(jleObject *object, jleFramePacket &renderGraph);
+    void renderEditorGizmos(jleFramePacket &framePacket, jleGameRuntime &gameRuntime);
 
     void mainEditorWindowResized(const jleWindowResizeEvent &resizeEvent);
 
     class jleEditorWindows;
     std::unique_ptr<jleEditorWindows> _editorWindows{};
-
-    std::vector<std::shared_ptr<jleScene>> _editorScenes;
 
     std::shared_ptr<jleSceneEditorWindow> _sceneWindow;
 

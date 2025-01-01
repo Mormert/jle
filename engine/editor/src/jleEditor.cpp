@@ -244,6 +244,9 @@ jleEditor::render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem:
 {
     JLE_SCOPE_PROFILE_GPU(EditorRender);
 
+    _resourceIndexer->update(ctx.serializationContext, *_editorWindows->textEditWindow);
+    _luaEnvironment->loadNewlyAddedScripts(ctx.serializationContext);
+
     jleFramePacket& framePacket = *_previousFramePacket;
 
     if(!ctx.gameRuntime.isGameKilled() && _previousFramePacket)
@@ -302,16 +305,6 @@ jleEditor::renderEditorSceneView(jleEditorUpdateContext &ctx)
 {
     JLE_SCOPE_PROFILE_CPU(RenderEditorSceneView);
 
-    //if (!ctx.gameRuntime.isGameKilled()) {
-    //    if (auto &&scene = getEditorSceneObjectsWindow().GetSelectedScene().lock()) {
-    //        if (scene->getPhysics().renderDebugEnabled) {
-    //            if (_previousFramePacket) {
-    //                scene->getPhysics().renderDebug(*_previousFramePacket);
-    //            }
-    //        }
-    //    }
-    //}
-
     if (_previousFramePacket) {
         _editorWindows->sceneWindow->render(*_previousFramePacket, ctx);
     }
@@ -337,7 +330,6 @@ jleEditor::renderEditorUI(jleEditorUpdateContext& ctx)
     ImGui::NewFrame();
 
     ImGuizmo::BeginFrame();
-
 
     _editorWindows->renderUI(ctx);
 
@@ -391,6 +383,9 @@ jleEditor::initImgui()
     ImGui::Spectrum::LoadFont();
 }
 
+void jleEditor::renderEditorGizmos(jleFramePacket &framePacket, jleGameRuntime &gameRuntime) {
+}
+
 void
 jleEditor::mainEditorWindowResized(const jleWindowResizeEvent &resizeEvent)
 {
@@ -426,79 +421,12 @@ jleEditor::mainEditorWindowResized(const jleWindowResizeEvent &resizeEvent)
     }
 }
 
-//std::vector<std::shared_ptr<jleScene>> &
-//jleEditor::getEditorScenes()
-//{
-//    return _editorScenes;
-//}
-
-void
-jleEditor::updateEditorLoadedScenes(jleEngineUpdateContext &ctx)
-{
-    JLE_SCOPE_PROFILE_CPU(jleEditor_updateEditorLoadedScenes)
-    //for (int i = _editorScenes.size() - 1; i >= 0; i--) {
-    //    if (!_editorScenes[i] || _editorScenes[i]->bPendingSceneDestruction) {
-    //        _editorScenes.erase(_editorScenes.begin() + i);
-    //        continue;
-    //    }
-//
-    //    _editorScenes[i]->updateSceneEditor(ctx);
-    //}
-}
-
-void
-jleEditor::update(jleEngineUpdateContext &ctx)
-{
-    _resourceIndexer->update(ctx.serializationContext, *_editorWindows->textEditWindow);
-
-    _luaEnvironment->loadNewlyAddedScripts(ctx.serializationContext);
-    jleGameEngine::update(ctx);
-    if (ctx.gameRuntime.isGameKilled()) {
-        JLE_SCOPE_PROFILE_CPU(updateEditorLoadedScenes)
-        updateEditorLoadedScenes(ctx);
-    }
-}
-
-void
-jleEditor::renderEditorGizmos(jleFramePacket &renderGraph, jleGameRuntime &gameRuntime)
-{
-    JLE_SCOPE_PROFILE_CPU(renderEditorGizmos)
-
-    //if (!gameRuntime.isGameKilled()) {
-    //    for (const auto &scene : gameRuntime.getGame().activeScenesRef()) {
-    //        for (auto &&o : scene->sceneObjects()) {
-    //            renderEditorGizmosObject(o.get(), renderGraph);
-    //        }
-    //    }
-    //}
-
-    //for (const auto &scene : getEditorScenes()) {
-    //    for (auto &&o : scene->sceneObjects()) {
-    //        renderEditorGizmosObject(o.get(), renderGraph);
-    //    }
-    //}
-}
-
-void
-jleEditor::renderEditorGizmosObject(jleObject *object, jleFramePacket &renderGraph)
-{
-    //for (auto &&c : object->components()) {
-    //    c->editorGizmosRender(renderGraph, *_gizmos);
-    //}
-    //for (auto &&child : object->childObjects()) {
-    //    renderEditorGizmosObject(child.get(), renderGraph);
-    //}
-}
-
 void
 jleEditor::exiting()
 {
     saveState().gameRunning = !_gameRuntime->isGameKilled();
     saveState().cameraPosition = _editorWindows->sceneWindow->getCameraPosition();
     saveState().loadedScenePaths.clear();
-    for (auto &&scene : _editorScenes) {
-       // saveState().loadedScenePaths.push_back(scene->path);
-    }
     saveState().cameraYaw = _sceneWindow->fpvCamController.yaw;
     saveState().cameraPitch = _sceneWindow->fpvCamController.pitch;
 
@@ -507,54 +435,10 @@ jleEditor::exiting()
 
     jleGameEngine::exiting();
 }
-
-//jleEditorTextEdit &
-//jleEditor::editorTextEdit()
-//{
-//    return *_textEditWindow;
-//}
-//
-//jleEditorSceneObjectsWindow &
-//jleEditor::getEditorSceneObjectsWindow()
-//{
-//    return *_editorSceneObjects;
-//}
-
-bool
-
-jleEditor::checkSceneIsActiveEditor(const std::string &sceneName)
-{
-    //ßfor (auto &&scene : _editorScenes) {
-    //ß    if (sceneName == scene->sceneName) {
-    //ß        return true;
-    //ß    }
-    //ß}
-
-    return false;
-}
-
-//std::shared_ptr<jleScene>
-//jleEditor::loadScene(const jlePath &scenePath, jleEngineUpdateContext &ctx, bool startObjects)
-//{
-//    auto scene = ctx.resourcesModule.loadResourceFromFileT<jleScene>(scenePath, ctx.serializationContext, true);
-//
-//    auto it = std::find(_editorScenes.begin(), _editorScenes.end(), scene);
-//    if (it == _editorScenes.end()) {
-//        _editorScenes.push_back(scene);
-//        if (startObjects) {
-//            scene->startObjects(ctx);
-//        }
-//    } else {
-//        LOG_WARNING << "Loaded scene is already loaded";
-//    }
-//
-//    return scene;
-//}
-
 jleEditorGizmos &
 jleEditor::gizmos()
 {
-    return *_gizmos.get();
+    return *_gizmos;
 }
 
 jleEditorSaveState &
@@ -562,11 +446,5 @@ jleEditor::saveState()
 {
     return *_internal->editorSaveState.get();
 }
-
-//jleResourceIndexer &
-//jleEditor::resourceIndexer()
-//{
-//    return *_resourceIndexer.get();
-//}
 
 jleEditor::~jleEditor() = default;

@@ -27,18 +27,15 @@
 #include "core/jleRGB.h"
 #include "core/jleResourceRef.h"
 #include "core/serialization/jleExternalSerialization.h"
-#include "jleEditor.h"
+#include "modules/jleEditorUpdateContext.h"
 #include "modules/graphics/jleTextureRefOrRGBA.h"
 #include "modules/scripting/jleLuaClassSerialization.h"
 
 #include "jleImGuiExtensions.h"
-#include <ImGui/ImGuizmo.h>
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
 
 #include <cereal/cereal.hpp>
 #include <cereal/details/helpers.hpp>
@@ -50,7 +47,6 @@
 #include <Tracy.hpp>
 
 #include <filesystem>
-#include <iostream>
 #include <vector>
 
 class jleImGuiArchiveInternal : public jleSerializationArchive_EditorOnly,

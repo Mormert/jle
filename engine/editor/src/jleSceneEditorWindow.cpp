@@ -148,7 +148,9 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
                  ImVec2(1, 0));
 
     bool canSelectObject = true;
-    if (ImGuizmo::IsOver()) {
+
+    if (ImGuizmo::IsOver() && !input.selectedObjects->empty() ||
+        (ImGui::IsAnyItemHovered() && ImGui::IsItemHovered())) {
         canSelectObject = false;
     }
 
@@ -171,10 +173,15 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
 
         int pickedID = data[0] + data[1] * 256 + data[2] * 256 * 256;
         if (pickedID != 0x00ffffff) {
-            LOGI << "Picked object with id: " << pickedID;
-            assert(false); // Todo
-        } else {
-            LOGI << "Picking missed or background.";
+            ImGuiIO& io = ImGui::GetIO();
+            if (!io.KeyCtrl) {
+                input.selectedObjects->clear();
+            }
+            if (std::find(input.selectedObjects->begin(), input.selectedObjects->end(), ecs.getObject(pickedID)) == input.selectedObjects->end()) {
+                input.selectedObjects->push_back(ecs.getObject(pickedID));
+            }
+        }else {
+            input.selectedObjects->clear();
         }
 
         _pickingFramebuffer->bindDefault();

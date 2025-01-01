@@ -25,13 +25,41 @@
 #include "modules/graphics/runtime/components/cSkybox.h"
 
 
+namespace {
+    void serializeMeshEditor(jlECS::ComponentContainer *thiz, jleImGuiArchive &archive, int componentIndex, int objectIndex)
+    {
+        cMesh &meshComponent = *thiz->getPtr<cMesh>(componentIndex);
+        archive(meshComponent);
+
+        auto& ecs = thiz->getECS();
+        if (auto object = ecs.getObject(objectIndex); !object.getComponentPtr<cTransform>()) {
+            ImGui::Text("Object does not have a transform!");
+            if (ImGui::Button("Add cTransform")) {
+                object.addComponent<cTransform>();
+            }
+        }
+    }
+}
+
 void
 jleGraphicsModuleEditor::initializeECS(jlECS::ECS &ecs)
 {
     registerEditorECSComponent<cCamera>(ecs);
     registerEditorECSComponent<cLight>(ecs);
     registerEditorECSComponent<cLightDirectional>(ecs);
-    registerEditorECSComponent<cMesh>(ecs);
+
+    {
+        jlECS::ComponentRegistrationConfig config{
+            .serializeInputF_JSON = jlECS::Serialization::serializeInputT_JSON<cMesh>,
+            .serializeOutputF_JSON = jlECS::Serialization::serializeOutputT_JSON<cMesh>,
+            .serializeInputF_Binary = jlECS::Serialization::serializeInputT_Binary<cMesh>,
+            .serializeOutputF_Binary = jlECS::Serialization::serializeOutputT_Binary<cMesh>,
+            .serializeImGuiF = serializeMeshEditor
+        };
+        ecs.registerComponentType<cMesh>(config);
+    }
+
+
     registerEditorECSComponent<cSkinnedMesh>(ecs);
     registerEditorECSComponent<cSkybox>(ecs);
 }
