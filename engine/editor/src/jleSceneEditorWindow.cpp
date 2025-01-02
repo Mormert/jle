@@ -46,7 +46,7 @@ public:
     void execute(const CommandContext& ctx) override{
         for(auto& object : _objects){
             assert(object.isValid());
-            auto transform = object.getComponentPtr<cTransform>();
+            auto* transform = object.getComponentPtr<cTransform>();
             assert(transform);
 
             glm::mat4 oldWorld = transform->getWorldMatrix();
@@ -349,13 +349,15 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
                 glm::mat4 delta = _multiGizmoCurrentMatrix * glm::inverse(_multiGizmoInitialMatrix);
 
                 std::vector<glm::mat4> initialTransforms;
+                std::vector<jlECS::ObjectRef> selectedObjectsWithTransforms;
                 for (auto [transform, objectIndex] : transforms){
                     initialTransforms.push_back(transform->getWorldMatrix());
+                    selectedObjectsWithTransforms.push_back(ecs.getObject(objectIndex));
                 }
 
                 jleUndoRedoCommandBase::CommandContext undoRedoCommandCtx = {input.editorUpdate.engineUpdateContext.serializationContext};
 
-                auto command = std::make_unique<MoveTransformsCommand>(selectedObjects, initialTransforms, delta, &input.physics);
+                auto command = std::make_unique<MoveTransformsCommand>(selectedObjectsWithTransforms, initialTransforms, delta, &input.physics);
                 input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
             }
 

@@ -83,3 +83,7 @@ jlePhysicsModule::onRigidbodyDestroyed(cRigidbody *rb)
 {
     _physics->removeRigidbody(&rb->getBody());
 }
+
+void jlePhysicsModule::onRigidbodyCopied(cRigidbody *source, cRigidbody *dest) {
+    assert(false); // todo
+}

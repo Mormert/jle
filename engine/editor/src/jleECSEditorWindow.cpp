@@ -304,6 +304,34 @@ private:
     std::optional<jlECS::ObjectRef> _oldParentOfNewParent{};
 };
 
+class DuplicateObjectsCommand : public jleUndoRedoCommandBase {
+public:
+    DuplicateObjectsCommand(jlECS::ECS* ecs, const std::vector<jlECS::ObjectRef>& objects)
+        : _ecs(ecs), _originalObjects(objects) {}
+
+    void execute(const CommandContext& ctx) override {
+        _duplicatedObjects.clear();
+        for (auto& obj : _originalObjects) {
+            jleAssert(obj.isValid());
+            cParent::duplicateObjectIncludeChildren(obj, _duplicatedObjects);
+        }
+    }
+
+    void undo(const CommandContext& ctx) override {
+        for (auto& obj : _duplicatedObjects) {
+            jleAssert(obj.isValid());
+            _ecs->destroyObject(obj);
+        }
+        _duplicatedObjects.clear();
+    }
+
+private:
+    jlECS::ECS* _ecs;
+    std::vector<jlECS::ObjectRef> _originalObjects;
+    std::vector<jlECS::ObjectRef> _duplicatedObjects;
+};
+
+
 std::string getSerializedBinaryStringFromComponent(jlECS::Debug::ComponentDebugBase& debugComponent, const jleSerializationContext& serializationContext) {
     std::ostringstream oss(std::ios::binary | std::ios::out);
     {
@@ -633,6 +661,12 @@ void jleECSEditorWindow::handleObjectHierarchy(const RenderUIInput& input, jleUn
                                        [&](const jlECS::ObjectRef& ref){ return !ref.isValid(); }),
                         _selectedObjects->end()
                     );
+                }
+                std::string duplicateLabel = "Duplicate " + buildIDListString(finalSelection);
+                if (ImGui::MenuItem(duplicateLabel.c_str()))
+                {
+                    auto command = std::make_unique<DuplicateObjectsCommand>(&ecs, finalSelection);
+                    input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
                 }
             }
             ImGui::EndPopup();

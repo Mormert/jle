@@ -231,13 +231,14 @@ protected:
 
     template <class T>
     static void
-    removeComponentT_Immediate(ComponentContainer *thiz, int componentIndex)
+    removeComponentT(ComponentContainer *thiz, int componentIndex)
     {
         auto &last = thiz->get<T>(thiz->_componentCount - 1);
         T &toRemove = thiz->get<T>(componentIndex);
 
-        toRemove = std::move(last);
-        last.~T();
+        static_assert(std::is_move_assignable<T>() && std::is_move_constructible<T>());
+        toRemove.~T();
+        new (&toRemove) T(std::move(last));
 
         thiz->data.resize(thiz->data.size() - sizeof(T));
         thiz->_componentCount--;
@@ -245,7 +246,7 @@ protected:
 
     template <class T>
     static void
-    removeComponentT_ImmediateDestructCallback(ComponentContainer *thiz, int componentIndex)
+    removeComponentT_DestructCallback(ComponentContainer *thiz, int componentIndex)
     {
         auto &last = thiz->get<T>(thiz->_componentCount - 1);
         T &toRemove = thiz->get<T>(componentIndex);
@@ -253,18 +254,12 @@ protected:
         assert(thiz->onDestroyCallback);
         thiz->onDestroyCallback(reinterpret_cast<void*>(&toRemove));
 
-        toRemove = std::move(last);
-        last.~T();
+        static_assert(std::is_move_assignable<T>() && std::is_move_constructible<T>());
+        toRemove.~T();
+        new (&toRemove) T(std::move(last));
 
         thiz->data.resize(thiz->data.size() - sizeof(T));
         thiz->_componentCount--;
-    }
-
-    template <class T>
-    static void
-    removeComponentT_Postponed(ComponentContainer *thiz, int componentIndex)
-    {
-        thiz->postponedDestructIndicesVecPtr->push_back(componentIndex);
     }
 
     uint16_t (*addComponentF)(ComponentContainer *, int /*objectIndex*/);
@@ -279,8 +274,7 @@ protected:
 
     std::function<void(CreateCallbackData&)> onCreateCallback = nullptr;
     std::function<void(void* /*component*/)> onDestroyCallback = nullptr;
-
-    std::vector<uint16_t>* postponedDestructIndicesVecPtr = nullptr;
+    std::function<void(void* /*source component*/, void* /*duplicated component*/)> onDuplicateCallback = nullptr;
 
     // The raw component data
     std::vector<std::byte> data;
@@ -422,25 +416,9 @@ struct CreateCallbackData{
 
 struct ComponentRegistrationConfig
 {
-    enum class ExecutionTiming {
-        IMMEDIATE,
-        DEFERRED,
-    };
-
-    ExecutionTiming destructTime = ExecutionTiming::IMMEDIATE;
-
-    // Will be used if it's set
-    // Is called when adding a component
     std::function<void(CreateCallbackData&)> onCreateCallback = nullptr;
-
-    // Will be used if destructTime == IMMEDIATE and if it's set
-    // Is called when removing a component
     std::function<void(void* /*component*/)> onDestroyCallback = nullptr;
-
-    // Will be used if destructTime == DEFERRED, instead of destroying and calling the
-    // destructors and cleaning up for the component immediately on component removal, it's index is
-    // pushed into this vector*, and can be cleaned up later in the frame.
-    std::vector<uint16_t>* postponedDestructIndicesVecPtr = nullptr;
+    std::function<void(void* /*source component*/, void* /*duplicated component*/)> onDuplicateCallback = nullptr;
 
     void (*serializeInputF_JSON)(ComponentContainer *, jleJSONInputArchive&, int /*componentIndex*/)                = nullptr;
     void (*serializeOutputF_JSON)(ComponentContainer *, jleJSONOutputArchive&, int /*componentIndex*/)              = nullptr;
@@ -533,17 +511,25 @@ public:
         container.allocateComponentsF = ComponentContainer::allocateComponentsT<T>;
         container.getComponentF = ComponentContainer::getComponentT<T>;
 
-        if(config.destructTime == ComponentRegistrationConfig::ExecutionTiming::IMMEDIATE){
-            if(config.onDestroyCallback){
-                container.removeComponentF = ComponentContainer::removeComponentT_ImmediateDestructCallback<T>;
-                container.onDestroyCallback = config.onDestroyCallback;
-            }else{
-                container.removeComponentF = ComponentContainer::removeComponentT_Immediate<T>;
+        if(config.onDestroyCallback){
+            container.removeComponentF = ComponentContainer::removeComponentT_DestructCallback<T>;
+            container.onDestroyCallback = config.onDestroyCallback;
+        }else{
+            container.removeComponentF = ComponentContainer::removeComponentT<T>;
+        }
+
+        if (config.onDuplicateCallback) {
+            container.onDuplicateCallback = config.onDuplicateCallback;
+        }else {
+            if constexpr (std::is_copy_assignable_v<T>) {
+                container.onDuplicateCallback = [](void* sourceComponent, void* newComponent) {
+                    T& newComponentT = *static_cast<T*>(newComponent);
+                    T& sourceComponentT = *static_cast<T*>(sourceComponent);
+                    newComponentT = sourceComponentT;
+                };
+            }else {
+                assert(false && "missing duplication function for given type");
             }
-        }else if(config.destructTime == ComponentRegistrationConfig::ExecutionTiming::DEFERRED){
-            assert(config.postponedDestructIndicesVecPtr);
-            container.removeComponentF = ComponentContainer::removeComponentT_Postponed<T>;
-            container.postponedDestructIndicesVecPtr = config.postponedDestructIndicesVecPtr;
         }
 
         container.componentTypeName = getCleanTypeName(typeid(T).name());
@@ -590,9 +576,8 @@ public:
 
     template <class T>
     void
-    registerComponentType()
-    {
-        ComponentRegistrationConfig config{};
+    registerComponentType() {
+        const ComponentRegistrationConfig config{};
         registerComponentType<T>(config);
     }
 
@@ -680,6 +665,25 @@ public:
         objectArray.objectRecycleCounter[objectRef._objectIndex] = objectRef._objectRecycleCounter;
 
         assert(objectRef.isValid());
+    }
+
+    ObjectRef duplicateObject(const ObjectRef &originalObject)
+    {
+        assert(originalObject.isValid());
+
+        ObjectRef newObject = instantiateObject();
+
+        for (int componentType = 0; componentType < registeredComponentTypesCount; ++componentType) {
+            if (void *originalComponent = getComponent(originalObject.objectIndex(), componentType)) {
+                uint16_t newComponentIndex = addComponent(newObject.objectIndex(), componentType);
+                void *newComponent = getComponent(newObject.objectIndex(), componentType);
+
+                auto &container = *componentContainers[componentType];
+                container.onDuplicateCallback(originalComponent, newComponent);
+            }
+        }
+
+        return newObject;
     }
 
     void
@@ -1335,7 +1339,7 @@ public:
     static void
     removeComponentT_Debug(ComponentContainer *thiz, int componentIndex)
     {
-        ComponentContainer::removeComponentT_Immediate<T>(thiz, componentIndex);
+        ComponentContainer::removeComponentT<T>(thiz, componentIndex);
         reinterpret_cast<ComponentContainerEditor*>(thiz)->debug->count = thiz->componentCount();
     }
 

@@ -29,18 +29,30 @@
 cRigidbody::cRigidbody() = default;
 cRigidbody::~cRigidbody() = default;
 
-cRigidbody &
-cRigidbody::operator=(cRigidbody &&) noexcept = default;
+cRigidbody::cRigidbody(cRigidbody&& other) noexcept
+    : _mass(other._mass),
+      _size(other._size),
+      _body(std::move(other._body)),
+      _optionalLocalShape(std::move(other._optionalLocalShape)) {
+}
 
-cRigidbody::cRigidbody(const cRigidbody &other)
-{
-    _mass = other._mass;
+cRigidbody& cRigidbody::operator=(cRigidbody&& other) noexcept {
+    if (this != &other) {
+        _mass = other._mass;
+        _size = other._size;
+        _body = std::move(other._body);
+        _optionalLocalShape = std::move(other._optionalLocalShape);
+    }
+    return *this;
+}
 
-    // TODO: add mechanism to the ECS to handle callbacks for copying/cloning components
-    // Explicitly run setup when component cloning
-   // if (other._body) {
-   //     setupRigidbody();
-   // }
+void cRigidbody::duplicate(jlePhysics* physics, cRigidbody *source, cRigidbody *dest) {
+    dest->_mass = source->_mass;
+    if (source->_body) {
+        assert(false);
+        // Todo : fix this
+        //dest->setupRigidbody();
+    }
 }
 
 std::unique_ptr<btRigidBody>

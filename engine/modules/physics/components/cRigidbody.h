@@ -30,17 +30,25 @@ class cMesh;
 class cTransform;
 class jlePhysics;
 
+namespace jlECS {
+    class ECS;
+}
+
 class cRigidbody
 {
 public:
     cRigidbody();
-
     ~cRigidbody();
 
-    // Called when cloned/duplicated
-    cRigidbody(const cRigidbody &other);
+    // Move Constructor & Assignment
+    cRigidbody(cRigidbody&& other) noexcept;
+    cRigidbody& operator=(cRigidbody&& other) noexcept;
 
-    cRigidbody& operator=(cRigidbody&&) noexcept;
+    // Delete Copy Operations
+    cRigidbody(const cRigidbody&) = delete;
+    cRigidbody& operator=(const cRigidbody&) = delete;
+
+    static void duplicate(jlePhysics* physics, cRigidbody* source, cRigidbody* dest);
 
     template <class Archive>
     void

@@ -22,5 +22,19 @@
 void
 jlePhysicsModuleEditor::initializeECS(jlECS::ECS &ecs)
 {
-    registerEditorECSComponent<cRigidbody>(ecs);
+    {
+        jlECS::ComponentRegistrationConfig config;
+        setupDefaultEditorComponentConfig<cRigidbody>(config);
+        config.onCreateCallback = [this](jlECS::CreateCallbackData& data) {
+            onRigidbodyCreated(data);
+        };
+        config.onDestroyCallback = [this](void* componentPtr) {
+            onRigidbodyDestroyed(static_cast<cRigidbody*>(componentPtr));
+        };
+        config.onDuplicateCallback = [this](void* sourceComp, void* destComp) {
+            onRigidbodyCopied(static_cast<cRigidbody*>(sourceComp), static_cast<cRigidbody*>(destComp));
+        };
+
+        ecs.registerComponentType<cRigidbody>(config);
+    }
 }

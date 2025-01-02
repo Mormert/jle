@@ -46,9 +46,10 @@ public:
 
     void update(UpdateContext &ctx);
 
-private:
+protected:
     void onRigidbodyCreated(jlECS::CreateCallbackData &createCallbackData);
     void onRigidbodyDestroyed(cRigidbody* rb);
+    void onRigidbodyCopied(cRigidbody *source, cRigidbody *dest);
 
     jlePhysics* _physics;
 };

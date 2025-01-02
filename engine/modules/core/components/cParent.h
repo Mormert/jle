@@ -93,6 +93,53 @@ public:
         return true;
     }
 
+    // Expensive operation as it needs to iterate through all objects in the ECS to find the children!
+    static jlECS::ObjectRef duplicateObjectIncludeChildren(const jlECS::ObjectRef &originalObject, std::vector<jlECS::ObjectRef>& newObjects)
+    {
+        assert(originalObject.isValid());
+
+        auto& ecs = originalObject.getECS();
+        jlECS::ObjectRef newObject = originalObject.getECS().duplicateObject(originalObject);
+
+        const int allocatedObjects = ecs.getObjectArray().aliveObjects.size();
+        for (int i = 0; i < allocatedObjects; i++) {
+            if (!ecs.isObjectAlive(i)) continue;
+            auto potentialChild = ecs.getObject(i);
+
+            auto* parentComponent = ecs.getComponent<cParent>(potentialChild.objectIndex());
+            if (parentComponent && parentComponent->getParentRef(ecs) == originalObject) {
+                jlECS::ObjectRef duplicatedChild = duplicateObjectIncludeChildren(potentialChild, newObjects);
+
+                std::optional<jlECS::ObjectRef> newObjectOptional(newObject);
+                setParent(duplicatedChild, newObjectOptional);
+            }
+        }
+
+        newObjects.emplace_back(std::move(newObject));
+        return newObject;
+    }
+
+    // Expensive operation as it needs to iterate through all objects in the ECS to find the children!
+    static void destroyObjectIncludeChildren(const jlECS::ObjectRef &objectToDestroy)
+    {
+        assert(objectToDestroy.isValid());
+
+        auto& ecs = objectToDestroy.getECS();
+
+        const int allocatedObjects = ecs.getObjectArray().aliveObjects.size();
+        for (int i = 0; i < allocatedObjects; i++) {
+            if (!ecs.isObjectAlive(i)) continue;
+            auto potentialChild = ecs.getObject(i);
+
+            auto* parentComponent = ecs.getComponent<cParent>(potentialChild.objectIndex());
+            if (parentComponent && parentComponent->getParentRef(ecs) == objectToDestroy) {
+                destroyObjectIncludeChildren(potentialChild);
+            }
+        }
+
+        ecs.destroyObject(objectToDestroy);
+    }
+
 private:
     uint16_t _parentIndex = 0;
     uint16_t _recycleCounter = std::numeric_limits<uint16_t>::max();

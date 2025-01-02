@@ -39,12 +39,12 @@ namespace {
     size_t allocationCount = 0;
     size_t totalAllocatedBytes = 0;
 
-    static std::atomic_flag mallocLock = ATOMIC_FLAG_INIT;
+    std::atomic_flag mallocLock = ATOMIC_FLAG_INIT;
 
     // Function pointers to the original malloc/free
     // Note: On Windows, the C runtime might be in different DLLs depending on compiler flags.
-    static void* (*real_malloc)(size_t) = nullptr;
-    static void (*real_free)(void*) = nullptr;
+    void* (*real_malloc)(size_t) = nullptr;
+    void (*real_free)(void*) = nullptr;
 
     inline void lockMalloc() {
         while (mallocLock.test_and_set(std::memory_order_acquire)) {
