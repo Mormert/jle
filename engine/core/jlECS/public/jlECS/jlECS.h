@@ -738,7 +738,7 @@ public:
     [[nodiscard]] bool
     isObjectAlive(uint16_t objectIndex) const
     {
-        if(objectIndex > allocatedObjectsCount()){
+        if(objectIndex >= allocatedObjectsCount()){
             return false;
         }
         return objectArray.aliveObjects[objectIndex];

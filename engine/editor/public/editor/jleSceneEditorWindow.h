@@ -77,5 +77,11 @@ private:
     bool _boundSizing = false;
     bool _boundSizingSnap = false;
 
+    bool _isSelecting = false;
+    int _selectStartX = 0;
+    int _selectStartY = 0;
+    int _selectCurrentX = 0;
+    int _selectCurrentY = 0;
+
     void EditTransform(float *cameraView, float *cameraProjection, float *matrix, bool editTransformDecomposition);
 };

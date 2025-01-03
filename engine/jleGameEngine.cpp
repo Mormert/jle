@@ -322,7 +322,8 @@ jleGameEngine::mainLoop()
     Wait(jobsCtx);
 
     // Double buffer COPY (todo: don't make a copy here, instead move it..)
-    _previousFramePacket = std::make_unique<jleFramePacket>(*_currentFramePacket);
+    auto cpy = *_currentFramePacket;
+    _previousFramePacket = std::make_unique<jleFramePacket>(cpy);
     _currentFramePacket->emptyQueues();
 
     FrameMark;

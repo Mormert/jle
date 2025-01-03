@@ -114,8 +114,8 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
                       (float)ImGui::GetWindowWidth(),
                       (float)ImGui::GetWindowHeight());
 
-    constexpr float negYOffset = 8;
-    constexpr float negXOffset = 6;
+    constexpr float negYOffset = 8.0f;
+    constexpr float negXOffset = 6.0f;
 
     const auto &cursorScreenPos = ImGui::GetCursorScreenPos();
     const auto viewport = ImGui::GetMainViewport();
@@ -141,7 +141,6 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
     }
 
     glBindTexture(GL_TEXTURE_2D, (unsigned int)_framebuffer->texture());
-
     ImGui::Image((void *)(intptr_t)_framebuffer->texture(),
                  ImVec2(_lastGameWindowWidth, _lastGameWindowHeight),
                  ImVec2(0, 1),
@@ -149,42 +148,171 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
 
     bool canSelectObject = true;
 
-    if (ImGuizmo::IsOver() && !input.selectedObjects->empty() ||
+    // If we're over a gizmo or an ImGui item, disallow picking.
+    if ((ImGuizmo::IsOver() && !selectedObjects.empty()) ||
         (ImGui::IsAnyItemHovered() && ImGui::IsItemHovered())) {
         canSelectObject = false;
     }
 
-    if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && canSelectObject) {
+    if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && canSelectObject)
+    {
+        _isSelecting    = true;
+        _selectStartX   = mouseX;
+        _selectStartY   = mouseY;
+        _selectCurrentX = mouseX;
+        _selectCurrentY = mouseY;
+    }
+
+    if (_isSelecting && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+    {
+        _selectCurrentX = mouseX;
+        _selectCurrentY = mouseY;
+    }
+
+    if (_isSelecting && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+    {
+        _isSelecting = false;
+
+        const int dragThreshold = 3; // minimal move to consider it a "box selection"
+        int dragWidth  = std::abs(_selectCurrentX - _selectStartX);
+        int dragHeight = std::abs(_selectCurrentY - _selectStartY);
+
         input.editorUpdate.engineUpdateContext.rendererModule.renderMeshesPicking(
             *_pickingFramebuffer, _renderCamera, input.editorUpdate.engineUpdateContext.currentFramePacket);
-
         _pickingFramebuffer->bind();
+
+        GLint previousPackAlignment;
+        glGetIntegerv(GL_PACK_ALIGNMENT, &previousPackAlignment);
 
         glFlush();
         glFinish();
 
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        unsigned char data[3];
-        const int mouseY_flipped = (int)_lastGameWindowHeight - (mouseY - windowPositionY);
-
-        int pixelReadX = (mouseX - windowPositionX) * (_pickingFramebuffer->width() / _lastGameWindowWidth);
-        int pixelReadY = mouseY_flipped * (_pickingFramebuffer->height() / _lastGameWindowHeight);
-        glReadPixels(pixelReadX, pixelReadY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, data);
-
-        int pickedID = data[0] + data[1] * 256 + data[2] * 256 * 256;
-        if (pickedID != 0x00ffffff) {
-            ImGuiIO& io = ImGui::GetIO();
-            if (!io.KeyCtrl) {
-                input.selectedObjects->clear();
-            }
-            if (std::find(input.selectedObjects->begin(), input.selectedObjects->end(), ecs.getObject(pickedID)) == input.selectedObjects->end()) {
-                input.selectedObjects->push_back(ecs.getObject(pickedID));
-            }
-        }else {
-            input.selectedObjects->clear();
+        ImGuiIO& io = ImGui::GetIO();
+        if (!io.KeyCtrl) {
+            selectedObjects.clear();
         }
 
-        _pickingFramebuffer->bindDefault();
+        if (dragWidth < dragThreshold && dragHeight < dragThreshold)
+        {
+            unsigned char data[3];
+            int mouseY_flipped = (int)_lastGameWindowHeight - (mouseY - windowPositionY);
+
+            int pixelReadX = (mouseX - windowPositionX) * (_pickingFramebuffer->width()  / _lastGameWindowWidth);
+            int pixelReadY = mouseY_flipped            * (_pickingFramebuffer->height() / _lastGameWindowHeight);
+
+
+            glPixelStorei(GL_PACK_ALIGNMENT, 1);
+            glReadPixels(pixelReadX, pixelReadY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glPixelStorei(GL_PACK_ALIGNMENT, previousPackAlignment);
+
+            int pickedID = data[0] + data[1] * 256 + data[2] * 256 * 256;
+            if (pickedID != 0x00ffffff) {
+                auto obj = ecs.getObject(pickedID);
+                if (std::find(selectedObjects.begin(), selectedObjects.end(), obj) == selectedObjects.end()) {
+                    selectedObjects.push_back(obj);
+                }
+            } else {
+                if (!io.KeyCtrl) {
+                    selectedObjects.clear();
+                }
+            }
+        }
+        else {
+            // Box picking
+
+            int boxMinX = std::min(_selectStartX, _selectCurrentX);
+            int boxMinY = std::min(_selectStartY, _selectCurrentY);
+            int boxMaxX = std::max(_selectStartX, _selectCurrentX);
+            int boxMaxY = std::max(_selectStartY, _selectCurrentY);
+
+            // Clip to the game window, if needed
+            boxMinX = std::max(boxMinX, windowPositionX);
+            boxMinY = std::max(boxMinY, windowPositionY);
+            boxMaxX = std::min(boxMaxX, windowPositionX + (int)_lastGameWindowWidth);
+            boxMaxY = std::min(boxMaxY, windowPositionY + (int)_lastGameWindowHeight);
+
+            int readWidth  = boxMaxX - boxMinX;
+            int readHeight = boxMaxY - boxMinY;
+            if (readWidth <= 0 || readHeight <= 0) {
+                _pickingFramebuffer->bindDefault();
+                ImGui::End();
+                return;
+            }
+
+            int flippedY = (int)_lastGameWindowHeight - (boxMaxY - windowPositionY);
+            float scaleX = float(_pickingFramebuffer->width())  / float(_lastGameWindowWidth);
+            float scaleY = float(_pickingFramebuffer->height()) / float(_lastGameWindowHeight);
+
+            int pixelReadX = int((boxMinX - windowPositionX) * scaleX);
+            int pixelReadY = int(flippedY * scaleY);
+            int pixelReadWidth  = int(readWidth  * scaleX);
+            int pixelReadHeight = int(readHeight * scaleY);
+
+            if (pixelReadWidth <= 0 || pixelReadHeight <= 0) {
+                LOGE << "Picking invalid read region. Skipping read.";
+            } else if (pixelReadX < 0 || pixelReadY < 0 ||
+                       (pixelReadX + pixelReadWidth > _pickingFramebuffer->width()) ||
+                       (pixelReadY + pixelReadHeight > _pickingFramebuffer->height())) {
+                LOGE << "Picking region out of FBO bounds. Skipping read.";
+                       } else {
+                           std::vector<unsigned char> data(pixelReadWidth * pixelReadHeight * 3);
+
+                           glPixelStorei(GL_PACK_ALIGNMENT, 1);
+                           glReadPixels(pixelReadX,
+                                         pixelReadY,
+                                         pixelReadWidth,
+                                         pixelReadHeight,
+                                        GL_RGB,
+                                        GL_UNSIGNED_BYTE,
+                                        data.data());
+                           glPixelStorei(GL_PACK_ALIGNMENT, previousPackAlignment);
+
+                           std::unordered_set<int> pickedIDs;
+                           for (int i = 0; i < pixelReadWidth * pixelReadHeight; i++)
+                           {
+                               int r = data[i*3 + 0];
+                               int g = data[i*3 + 1];
+                               int b = data[i*3 + 2];
+                               int id = (r) + (g << 8) + (b << 16);
+                               if (id != 0x00ffffff) {
+                                   pickedIDs.insert(id);
+                               }
+                           }
+
+                           // Add them all to selected objects (unless already present)
+                           for (auto id : pickedIDs) {
+                               if (!ecs.isObjectAlive(id)) {
+                                   continue;
+                               }
+                               auto obj = ecs.getObject(id);
+                               if (std::find(selectedObjects.begin(), selectedObjects.end(), obj) == selectedObjects.end()) {
+                                   selectedObjects.push_back(obj);
+                               }
+                           }
+                       }
+
+            // Return to default framebuffer
+            _pickingFramebuffer->bindDefault();
+        }
+    }
+
+    if (_isSelecting) {
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        ImVec2 start( (float)_selectStartX,   (float)_selectStartY   );
+        ImVec2 end(   (float)_selectCurrentX, (float)_selectCurrentY );
+
+        start.x -= viewport->Pos.x; start.y += viewport->Pos.y;
+        end.x   -= viewport->Pos.x; end.y   += viewport->Pos.y;
+
+        drawList->AddRectFilled(
+            start, end,
+            IM_COL32(0, 0, 255, 50) // Translucent fill
+        );
+        drawList->AddRect(
+            start, end,
+            IM_COL32(0, 0, 255, 255) // Solid outline
+        );
     }
 
     {

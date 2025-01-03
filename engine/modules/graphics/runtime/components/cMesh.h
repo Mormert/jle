@@ -44,7 +44,3 @@ protected:
     jleResourceRef<jleMaterial> _materialRef;
 };
 
-//JLE_EXTERN_TEMPLATE_CEREAL_H(cMesh)
-
-//CEREAL_REGISTER_TYPE(cMesh)
-//CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cMesh)
