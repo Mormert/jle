@@ -62,7 +62,7 @@ getCleanTypeName(const char *name)
 
     const char *result = name;
 
-    const bool is_digit = [](char c) {
+    const auto is_digit = [](char c) -> bool {
         return c >= '0' && c <= '9';
     };
 
