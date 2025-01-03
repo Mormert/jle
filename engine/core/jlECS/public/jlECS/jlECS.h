@@ -19,7 +19,7 @@
 
 #include <cassert>
 #include <climits>
-
+#include <cctype>
 #include <algorithm>
 #include <memory>
 #include <vector>
