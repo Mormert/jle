@@ -19,7 +19,6 @@
 
 #include <cassert>
 #include <climits>
-#include <cctype>
 #include <algorithm>
 #include <memory>
 #include <vector>
@@ -63,8 +62,12 @@ getCleanTypeName(const char *name)
 
     const char *result = name;
 
+    const bool is_digit = [](char c) {
+        return c >= '0' && c <= '9';
+    };
+
     // Skip all leading digits
-    while (std::isdigit(*result)) {
+    while (is_digit(*result)) {
         ++result;
     }
 
