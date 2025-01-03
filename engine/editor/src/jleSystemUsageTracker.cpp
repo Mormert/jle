@@ -61,7 +61,6 @@ jleSystemUsageTracker::getSystemUsageInfo(bool queryOpenGLMemUsage)
         uint64_t kernelTimeMicro = FileTimeToMicroseconds(kernelTime);
         uint64_t userTimeMicro = FileTimeToMicroseconds(userTime);
         usageInfo.cpuUsageMicroseconds = kernelTimeMicro + userTimeMicro;
-        usageInfo.cpuUtilizationPercentage = static_cast<double>(usageInfo.cpuUsageMicroseconds) / (1000000.0 * std::thread::hardware_concurrency()) * 100.0;
     } else {
         usageInfo.error = "Unable to fetch CPU usage on Windows.";
         return usageInfo;
@@ -89,7 +88,6 @@ jleSystemUsageTracker::getSystemUsageInfo(bool queryOpenGLMemUsage)
                 iss >> cpu >> user >> nice >> system >> idle;
                 uint64_t totalTime = user + nice + system;
                 usageInfo.cpuUsageMicroseconds = totalTime * 1000;
-                usageInfo.cpuUtilizationPercentage = static_cast<double>(totalTime) / (totalTime + idle) * 100.0;
                 break;
             }
         }
