@@ -207,9 +207,11 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
 
             int pickedID = data[0] + data[1] * 256 + data[2] * 256 * 256;
             if (pickedID != 0x00ffffff) {
-                auto obj = ecs.getObject(pickedID);
-                if (std::find(selectedObjects.begin(), selectedObjects.end(), obj) == selectedObjects.end()) {
-                    selectedObjects.push_back(obj);
+                if (ecs.isObjectAlive(pickedID)) {
+                    auto obj = ecs.getObject(pickedID);
+                    if (std::find(selectedObjects.begin(), selectedObjects.end(), obj) == selectedObjects.end()) {
+                        selectedObjects.push_back(obj);
+                    }
                 }
             } else {
                 if (!io.KeyCtrl) {
@@ -299,20 +301,12 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
     if (_isSelecting) {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-        ImVec2 start( (float)_selectStartX,   (float)_selectStartY   );
-        ImVec2 end(   (float)_selectCurrentX, (float)_selectCurrentY );
+        ImVec2 vpPos = viewport->Pos; // absolute screen coords of the main viewport
+        ImVec2 start(vpPos.x + _selectStartX,    vpPos.y + _selectStartY);
+        ImVec2 end  (vpPos.x + _selectCurrentX,  vpPos.y + _selectCurrentY);
 
-        start.x -= viewport->Pos.x; start.y += viewport->Pos.y;
-        end.x   -= viewport->Pos.x; end.y   += viewport->Pos.y;
-
-        drawList->AddRectFilled(
-            start, end,
-            IM_COL32(0, 0, 255, 50) // Translucent fill
-        );
-        drawList->AddRect(
-            start, end,
-            IM_COL32(0, 0, 255, 255) // Solid outline
-        );
+        drawList->AddRectFilled(start, end, IM_COL32(0, 0, 255, 50));   // Translucent fill
+        drawList->AddRect(start, end,IM_COL32(0, 0, 255, 255));         // Solid outline
     }
 
     {
