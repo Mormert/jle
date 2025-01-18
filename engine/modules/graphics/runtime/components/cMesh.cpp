@@ -17,12 +17,12 @@
 #include <modules/core/components/cTransform.h>
 
 void
-cMesh::ecsUpdate(jleFramePacket &packet, const cTransform& transform, int instanceId)
+cMesh::ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix, int instanceId)
 {
     if (_meshRef) {
         std::shared_ptr<jleMesh> mesh = _meshRef.get();
         std::shared_ptr<jleMaterial> material = _materialRef.get();
-        packet.sendMesh(mesh, material, transform.getWorldMatrix(), instanceId, true);
+        packet.sendMesh(mesh, material, worldMatrix, instanceId, true);
     }
 }
 

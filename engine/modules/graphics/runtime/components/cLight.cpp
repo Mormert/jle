@@ -25,9 +25,9 @@ cLight::update(jleEngineUpdateContext &ctx, cTransform& transform)
 }*/
 
 void
-cLight::ecsUpdate(jleFramePacket &packet, const cTransform& transform)
+cLight::ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix)
 {
-    packet.sendLight(transform.getPosition(), _color);
+    packet.sendLight(glm::vec3(worldMatrix[3]), _color);
 }
 
 /*

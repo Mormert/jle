@@ -32,7 +32,7 @@ void serializeTransformEditor(jlECS::ComponentContainer *thiz, jleImGuiArchive &
 {
     cTransform &transform = *thiz->getPtr<cTransform>(componentIndex);
 
-    glm::mat4 cpyMat = transform.getWorldMatrix();
+    glm::mat4 cpyMat = transform.getLocalMatrix();
     float* cpyMatPtr = &cpyMat[0][0];
 
     float matrixTranslation[3], matrixRotation[3], matrixScale[3];
@@ -54,7 +54,7 @@ void serializeTransformEditor(jlECS::ComponentContainer *thiz, jleImGuiArchive &
             matrixScale,
             cpyMatPtr
         );
-        transform.setWorldMatrix(cpyMat);
+        transform.setLocalMatrix(cpyMat);
     }
 }
 

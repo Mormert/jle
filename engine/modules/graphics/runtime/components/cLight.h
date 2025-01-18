@@ -37,7 +37,7 @@ public:
         ar(CEREAL_NVP(_color));
     }
 
-    void ecsUpdate(jleFramePacket &packet, const cTransform& transform);
+    void ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix);
 
     //void editorGizmosRender(jleFramePacket &renderGraph, jleEditorGizmos &gizmos);
 

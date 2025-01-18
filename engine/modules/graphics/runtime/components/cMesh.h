@@ -31,7 +31,7 @@ public:
         ar(CEREAL_NVP(_meshRef), CEREAL_NVP(_materialRef));
     }
 
-    void ecsUpdate(jleFramePacket &packet, const cTransform& transform, int instanceId);
+    void ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix, int instanceId);
 
     std::shared_ptr<jleMesh> getMesh();
     std::shared_ptr<jleMaterial> getMaterial();

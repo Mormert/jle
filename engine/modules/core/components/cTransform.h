@@ -25,43 +25,47 @@
 class cTransform
 {
 public:
+
+    cTransform() = default;
+    cTransform(const glm::mat4& localMatrix) : _localMatrix(localMatrix) {}
+
     template <class Archive>
     void serialize(Archive &ar)
     {
-        ar(CEREAL_NVP(_worldMatrix));
+        ar(CEREAL_NVP(_localMatrix));
     }
 
-    // Retrieve the full world transformation matrix
-    [[nodiscard]] inline const glm::mat4& getWorldMatrix() const
+    // Retrieve the full local transformation matrix
+    [[nodiscard]] inline const glm::mat4& getLocalMatrix() const
     {
-        return _worldMatrix;
+        return _localMatrix;
     }
 
-    // Set the full world transformation matrix directly
-    inline void setWorldMatrix(const glm::mat4 &matrix)
+    // Set the full local transformation matrix directly
+    inline void setLocalMatrix(const glm::mat4 &matrix)
     {
-        _worldMatrix = matrix;
+        _localMatrix = matrix;
     }
 
     // Extract position from the matrix (translation is stored in the fourth column)
     [[nodiscard]] inline glm::vec3 getPosition() const
     {
-        return {(_worldMatrix[3])};
+        return {(_localMatrix[3])};
     }
 
     // Set position: (modifies the fourth matrix column)
     inline void setPosition(const glm::vec3 &pos)
     {
-        _worldMatrix[3] = glm::vec4(pos, 1.0f);
+        _localMatrix[3] = glm::vec4(pos, 1.0f);
     }
 
     // Translation convenience methods
     inline void translate(const glm::vec3 &delta)
     {
-        _worldMatrix = glm::translate(_worldMatrix, delta);
+        _localMatrix = glm::translate(_localMatrix, delta);
     }
 
-    // Get rotation as a quaternion from the world matrix
+    // Get rotation as a quaternion from the local matrix
     [[nodiscard]] inline glm::quat getRotation() const
     {
         glm::vec3 scale;
@@ -82,17 +86,17 @@ public:
 
     [[nodiscard]] inline glm::vec3 getRight() const
     {
-        return glm::normalize(glm::vec3{getWorldMatrix()[0]});
+        return glm::normalize(glm::vec3{getLocalMatrix()[0]});
     }
 
     [[nodiscard]] inline glm::vec3 getUp() const
     {
-        return glm::normalize(glm::vec3{getWorldMatrix()[1]});
+        return glm::normalize(glm::vec3{getLocalMatrix()[1]});
     }
 
     [[nodiscard]] inline glm::vec3 getForward() const
     {
-        return glm::normalize(glm::vec3{getWorldMatrix()[2]});
+        return glm::normalize(glm::vec3{getLocalMatrix()[2]});
     }
 
     // Rotate by a quaternion increment
@@ -135,16 +139,16 @@ public:
     }
 
 private:
-    glm::mat4 _worldMatrix = glm::mat4(1.0f);
+    glm::mat4 _localMatrix = glm::mat4(1.0f);
 
-    // Decompose the world matrix into position, rotation (quaternion), and scale.
+    // Decompose the local matrix into position, rotation (quaternion), and scale.
     // Assumes no shear and a valid transform matrix.
     inline void decompose(glm::vec3 &outScale, glm::quat &outRotation) const
     {
         // Extract basis vectors
-        glm::vec3 col0(_worldMatrix[0][0], _worldMatrix[0][1], _worldMatrix[0][2]);
-        glm::vec3 col1(_worldMatrix[1][0], _worldMatrix[1][1], _worldMatrix[1][2]);
-        glm::vec3 col2(_worldMatrix[2][0], _worldMatrix[2][1], _worldMatrix[2][2]);
+        glm::vec3 col0(_localMatrix[0][0], _localMatrix[0][1], _localMatrix[0][2]);
+        glm::vec3 col1(_localMatrix[1][0], _localMatrix[1][1], _localMatrix[1][2]);
+        glm::vec3 col2(_localMatrix[2][0], _localMatrix[2][1], _localMatrix[2][2]);
 
         // Extract scales
         float scaleX = glm::length(col0);
@@ -162,13 +166,13 @@ private:
         outScale = glm::vec3(scaleX, scaleY, scaleZ);
     }
 
-    // Rebuild the world matrix from position, rotation, and scale
+    // Rebuild the local matrix from position, rotation, and scale
     inline void recompose(const glm::vec3 &position, const glm::quat &rotation, const glm::vec3 &scale)
     {
         glm::mat4 t = glm::translate(glm::mat4(1.0f), position);
         glm::mat4 r = glm::toMat4(rotation);
         glm::mat4 s = glm::scale(glm::mat4(1.0f), scale);
 
-        _worldMatrix = t * r * s;
+        _localMatrix = t * r * s;
     }
 };

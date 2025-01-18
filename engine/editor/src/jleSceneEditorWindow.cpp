@@ -49,9 +49,9 @@ public:
             auto* transform = object.getComponentPtr<cTransform>();
             assert(transform);
 
-            glm::mat4 oldWorld = transform->getWorldMatrix();
+            glm::mat4 oldWorld = transform->getLocalMatrix();
             glm::mat4 newWorld = _delta * oldWorld;
-            transform->setWorldMatrix(newWorld);
+            transform->setLocalMatrix(newWorld);
 
             if (auto* rb = object.getComponentPtr<cRigidbody>())
             {
@@ -68,7 +68,7 @@ public:
         int i = 0;
         for(auto& object : _objects){
             auto transform = object.getComponentPtr<cTransform>();
-            transform->setWorldMatrix(_initialTransforms[i]);
+            transform->setLocalMatrix(_initialTransforms[i]);
             i++;
         }
     }
@@ -473,7 +473,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
                 std::vector<glm::mat4> initialTransforms;
                 std::vector<jlECS::ObjectRef> selectedObjectsWithTransforms;
                 for (auto [transform, objectIndex] : transforms){
-                    initialTransforms.push_back(transform->getWorldMatrix());
+                    initialTransforms.push_back(transform->getLocalMatrix());
                     selectedObjectsWithTransforms.push_back(ecs.getObject(objectIndex));
                 }
 

@@ -31,7 +31,7 @@ public:
         ar(CEREAL_NVP(_skinnedMeshRef), CEREAL_NVP(_materialRef));
     }
 
-    void ecsUpdate(jleFramePacket &packet, const cTransform& transform, const cAnimator* optionalAnimator, int objectIndex);
+    void ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix, const cAnimator* optionalAnimator, int objectIndex);
 
     std::shared_ptr<jleSkinnedMesh> getMesh();
     std::shared_ptr<jleMaterial> getMaterial();

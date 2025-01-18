@@ -39,12 +39,12 @@ jlePhysicsModule::update(jlePhysicsModule::UpdateContext &ctx)
     // Copy cTransform data into bullet
     for(auto [rb, transform] : ctx.inOut.ecs.iterateMulti<cRigidbody, cTransform>()){
         btTransform centerOfMassWorldTrans;
-        centerOfMassWorldTrans.setFromOpenGLMatrix((btScalar *)&transform->getWorldMatrix()[0]);
+        centerOfMassWorldTrans.setFromOpenGLMatrix((btScalar *)&transform->getLocalMatrix()[0]);
         rb->getBody().setCenterOfMassTransform(centerOfMassWorldTrans);
 
-        rb->_size.x = glm::length(glm::vec3(transform->getWorldMatrix()[0])); // Basis vector X
-        rb->_size.y = glm::length(glm::vec3(transform->getWorldMatrix()[1])); // Basis vector Y
-        rb->_size.z = glm::length(glm::vec3(transform->getWorldMatrix()[2])); // Basis vector Z
+        rb->_size.x = glm::length(glm::vec3(transform->getLocalMatrix()[0])); // Basis vector X
+        rb->_size.y = glm::length(glm::vec3(transform->getLocalMatrix()[1])); // Basis vector Y
+        rb->_size.z = glm::length(glm::vec3(transform->getLocalMatrix()[2])); // Basis vector Z
     }
 
     // Update bullet physics
@@ -55,7 +55,7 @@ jlePhysicsModule::update(jlePhysicsModule::UpdateContext &ctx)
         glm::mat4 matrix;
         rb->getBody().getWorldTransform().getOpenGLMatrix((btScalar *)&matrix);
         matrix = glm::scale(matrix, rb->_size);
-        transform->setWorldMatrix(matrix);
+        transform->setLocalMatrix(matrix);
     }
 }
 

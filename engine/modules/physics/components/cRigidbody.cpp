@@ -64,9 +64,9 @@ cRigidbody::createRigidbody(bool isDynamic, const cTransform& transform, btColli
     if (isDynamic) {
         shape->calculateLocalInertia(_mass, localInertia);
     } else {
-        _size.x = glm::length(glm::vec3(transform.getWorldMatrix()[0])); // Basis vector X
-        _size.y = glm::length(glm::vec3(transform.getWorldMatrix()[1])); // Basis vector Y
-        _size.z = glm::length(glm::vec3(transform.getWorldMatrix()[2])); // Basis vector Z
+        _size.x = glm::length(glm::vec3(transform.getLocalMatrix()[0])); // Basis vector X
+        _size.y = glm::length(glm::vec3(transform.getLocalMatrix()[1])); // Basis vector Y
+        _size.z = glm::length(glm::vec3(transform.getLocalMatrix()[2])); // Basis vector Z
 
         auto v = btVector3{_size.x, _size.y, _size.z};
         _optionalLocalShape = std::make_unique<btScaledBvhTriangleMeshShape>(reinterpret_cast<btBvhTriangleMeshShape *>(shape), v);
@@ -122,7 +122,7 @@ cRigidbody::getBody()
 void
 cRigidbody::setWorldMatrixAndScaleRigidbody(jlePhysics* physics, cTransform& transform, cMesh& mesh)
 {
-    const auto& worldMatrix = transform.getWorldMatrix();
+    const auto& worldMatrix = transform.getLocalMatrix();
 
     if (isDynamic()) {
         assert(false); // todo fix this
@@ -145,7 +145,7 @@ cRigidbody::setWorldMatrixAndScaleRigidbody(jlePhysics* physics, cTransform& tra
         size.y = glm::length(glm::vec3(worldMatrix[1])); // Basis vector Y
         size.z = glm::length(glm::vec3(worldMatrix[2])); // Basis vector Z
 
-        transform.setWorldMatrix(worldMatrix);
+        transform.setLocalMatrix(worldMatrix);
 
         const glm::mat4 scaledMatrix = glm::scale(worldMatrix, glm::vec3(1.f / size.x, 1.f / size.y, 1.f / size.z));
 

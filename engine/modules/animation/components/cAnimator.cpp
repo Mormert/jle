@@ -194,7 +194,7 @@ cAnimator::applyRootMotion(cTransform& transform)
     auto quat = glm::quat(matrix);
 
     glm::vec3 scale;
-    auto modelMatrix = transform.getWorldMatrix();
+    auto modelMatrix = transform.getLocalMatrix();
     scale.x = glm::length(glm::vec3(modelMatrix[0]));
     scale.y = glm::length(glm::vec3(modelMatrix[1]));
     scale.z = glm::length(glm::vec3(modelMatrix[2]));

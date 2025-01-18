@@ -210,10 +210,10 @@ jleGraphics::renderMeshes(const jleCamera &camera,
             _shaders->missingMaterialShader->use();
             _shaders->missingMaterialShader->SetMat4("uView", camera.getViewMatrix());
             _shaders->missingMaterialShader->SetMat4("uProj", camera.getProjectionMatrix());
-            _shaders->missingMaterialShader->SetMat4("uModel", mesh.transform);
+            _shaders->missingMaterialShader->SetMat4("uModel", mesh.worldMatrix);
         } else {
             mesh.material->useMaterial(camera, lights, settings);
-            mesh.material->getShader()->SetMat4("uModel", mesh.transform);
+            mesh.material->getShader()->SetMat4("uModel", mesh.worldMatrix);
             mesh.material->getShader()->SetBool("uUseSkinning", false);
         }
 
@@ -242,10 +242,10 @@ jleGraphics::renderSkinnedMeshes(const jleCamera &camera,
             _shaders->missingMaterialShader->use();
             _shaders->missingMaterialShader->SetMat4("uView", camera.getViewMatrix());
             _shaders->missingMaterialShader->SetMat4("uProj", camera.getProjectionMatrix());
-            _shaders->missingMaterialShader->SetMat4("uModel", mesh.transform);
+            _shaders->missingMaterialShader->SetMat4("uModel", mesh.worldMatrix);
         } else {
             mesh.material->useMaterial(camera, lights, settings);
-            mesh.material->getShader()->SetMat4("uModel", mesh.transform);
+            mesh.material->getShader()->SetMat4("uModel", mesh.worldMatrix);
             mesh.material->getShader()->SetBool("uUseSkinning", true);
 
             for (int i = 0; i < mesh.matrices->matrices.size(); ++i) {
@@ -273,8 +273,8 @@ jleGraphics::sortTranslucentMeshes(const jleCamera &camera, std::vector<jle3DQue
     std::sort(translucentMeshes.begin(),
               translucentMeshes.end(),
               [&camPosition](const jle3DQueuedMesh &mesh1, const jle3DQueuedMesh &mesh2) {
-                  return glm::distance2(camPosition, glm::vec3(mesh1.transform[3])) >
-                         glm::distance2(camPosition, glm::vec3(mesh2.transform[3]));
+                  return glm::distance2(camPosition, glm::vec3(mesh1.worldMatrix[3])) >
+                         glm::distance2(camPosition, glm::vec3(mesh2.worldMatrix[3]));
               });
 }
 
@@ -339,7 +339,7 @@ jleGraphics::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
             int g = (mesh.instanceId & 0x0000FF00) >> 8;
             int b = (mesh.instanceId & 0x00FF0000) >> 16;
             _shaders->pickingShader->SetVec4("PickingColor", glm::vec4{r / 255.0f, g / 255.0f, b / 255.0f, 1.f});
-            _shaders->pickingShader->SetMat4("model", mesh.transform);
+            _shaders->pickingShader->SetMat4("model", mesh.worldMatrix);
             glBindVertexArray(mesh.mesh->getVAO());
             if (mesh.mesh->usesIndexing()) {
                 glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
@@ -444,7 +444,7 @@ jleGraphics::renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jleS
         if (!mesh.castShadows) {
             return;
         }
-        shader.SetMat4("model", mesh.transform);
+        shader.SetMat4("model", mesh.worldMatrix);
         if (mesh.material) {
             if (auto opacity = mesh.material->getOpacityTexture()) {
                 shader.SetBool("uUseOpacityTexture", true);
@@ -479,7 +479,7 @@ jleGraphics::renderShadowMeshesSkinned(const std::vector<jle3DQueuedSkinnedMesh>
         if (!mesh.castShadows) {
             return;
         }
-        shader.SetMat4("model", mesh.transform);
+        shader.SetMat4("model", mesh.worldMatrix);
         if (mesh.material) {
             if (auto opacity = mesh.material->getOpacityTexture()) {
                 shader.SetBool("uUseOpacityTexture", true);

@@ -19,7 +19,7 @@
 #include "modules/animation/jleAnimationFinalMatrices.h"
 
 void
-cSkinnedMesh::ecsUpdate(jleFramePacket &packet, const cTransform& transform, const cAnimator* optionalAnimator, int objectIndex)
+cSkinnedMesh::ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix, const cAnimator* optionalAnimator, int objectIndex)
 {
     std::shared_ptr<jleAnimationFinalMatrices> animationMatrices;
     if (optionalAnimator) {
@@ -32,7 +32,7 @@ cSkinnedMesh::ecsUpdate(jleFramePacket &packet, const cTransform& transform, con
     if (_skinnedMeshRef) {
         std::shared_ptr<jleSkinnedMesh> mesh = _skinnedMeshRef.get();
         std::shared_ptr<jleMaterial> material = _materialRef.get();
-        packet.sendSkinnedMesh(mesh, material, animationMatrices, transform.getWorldMatrix(), objectIndex, true);
+        packet.sendSkinnedMesh(mesh, material, animationMatrices, worldMatrix, objectIndex, true);
     }
 }
 

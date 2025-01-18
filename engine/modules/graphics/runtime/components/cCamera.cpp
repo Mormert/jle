@@ -30,7 +30,7 @@ cCamera::update(UpdateContext& ctx) const
         ctx.out.camera.setOrthographicProjection(width, height, farPlane, nearPlane);
     }
 
-    auto &&transformation = ctx.in.transform.getWorldMatrix();
+    auto &&transformation = ctx.in.transform.getLocalMatrix();
     ctx.out.camera.setViewMatrix(glm::inverse(transformation), ctx.in.transform.getPosition());
 }
 

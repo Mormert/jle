@@ -20,12 +20,10 @@
 
 
 void
-cLightDirectional::ecsUpdate(jleFramePacket &packet, const cTransform& transform)
+cLightDirectional::ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix)
 {
     packet.settings.useDirectionalLight = true;
-    auto mat4 = transform.getWorldMatrix();
-
-    packet.settings.setDirectionalLight(mat4, _color);
+    packet.settings.setDirectionalLight(worldMatrix, _color);
 }
 
 /*

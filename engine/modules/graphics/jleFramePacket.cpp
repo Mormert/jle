@@ -19,14 +19,14 @@
 void
 jleFramePacket::sendMesh(std::shared_ptr<jleMesh> &mesh,
                      std::shared_ptr<jleMaterial> &material,
-                     const glm::mat4 &transform,
+                     const glm::mat4 &worldMatrix,
                      int instanceId,
                      bool castShadows)
 {
     if (material && material->isTranslucent()) {
-        _translucentMeshes.emplace_back(jle3DQueuedMesh{mesh, material, transform, instanceId, castShadows});
+        _translucentMeshes.emplace_back(jle3DQueuedMesh{mesh, material, worldMatrix, instanceId, castShadows});
     } else {
-        _meshes.emplace_back(jle3DQueuedMesh{mesh, material, transform, instanceId, castShadows});
+        _meshes.emplace_back(jle3DQueuedMesh{mesh, material, worldMatrix, instanceId, castShadows});
     }
 }
 
@@ -34,11 +34,11 @@ void
 jleFramePacket::sendSkinnedMesh(std::shared_ptr<jleSkinnedMesh> &mesh,
                             std::shared_ptr<jleMaterial> &material,
                             std::shared_ptr<jleAnimationFinalMatrices> &matrices,
-                            const glm::mat4 &transform,
+                            const glm::mat4 &worldMatrix,
                             int instanceId,
                             bool castShadows)
 {
-    _skinnedMeshes.emplace_back(jle3DQueuedSkinnedMesh{mesh, material, matrices, transform, instanceId, castShadows});
+    _skinnedMeshes.emplace_back(jle3DQueuedSkinnedMesh{mesh, material, matrices, worldMatrix, instanceId, castShadows});
 }
 
 void
