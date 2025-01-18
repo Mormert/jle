@@ -67,7 +67,7 @@ namespace {
     std::vector<glm::mat4> getWorldTransforms(jlECS::ECS &ecs)
     {
         std::vector<glm::mat4> worldTransforms(ecs.allocatedObjectsCount());
-        std::vector touchedTransforms(ecs.allocatedObjectsCount(), false);
+        std::vector<bool> touchedTransforms(ecs.allocatedObjectsCount(), false);
 
         for (auto [objectIndex, transform] : ecs.iterateMulti_IncludeObjectIndex<cTransform>())
         {
