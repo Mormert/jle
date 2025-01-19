@@ -15,34 +15,13 @@
 
 #include "cLight.h"
 #include "modules/graphics/jleFramePacket.h"
-#include <modules/core/components/cTransform.h>
-
-/*
-void
-cLight::update(jleEngineUpdateContext &ctx, cTransform& transform)
-{
-    ctx.currentFramePacket.sendLight(getTransform().getWorldPosition(), _color);
-}*/
+#include <modules/hierarchy/components/cTransform.h>
 
 void
 cLight::ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix)
 {
     packet.sendLight(glm::vec3(worldMatrix[3]), _color);
 }
-
-/*
-void
-cLight::editorGizmosRender(jleFramePacket &packet, jleEditorGizmos& gizmos)
-{
-#if JLE_BUILD_EDITOR
-    auto mesh = gizmos.lightLampMesh();
-    std::shared_ptr<jleMaterial> material = gizmos.lampMaterial();
-    auto matrix = glm::translate(glm::mat4{1.0f}, _attachedToObject->getTransform().getWorldPosition());
-    renderGraph.sendMesh(mesh, material, matrix, _attachedToObject->instanceID(), false);
-#endif // JLE_BUILD_EDITOR
-
-}
- */
 
 void
 cLight::registerLua(sol::state &lua)

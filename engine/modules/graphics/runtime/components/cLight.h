@@ -39,13 +39,9 @@ public:
 
     void ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix);
 
-    //void editorGizmosRender(jleFramePacket &renderGraph, jleEditorGizmos &gizmos);
-
     static void registerLua(sol::state &lua);
 
 protected:
     glm::vec3 _color{1.f};
 };
 
-//CEREAL_REGISTER_TYPE(cLight)
-//CEREAL_REGISTER_POLYMORPHIC_RELATION(jleComponent, cLight)

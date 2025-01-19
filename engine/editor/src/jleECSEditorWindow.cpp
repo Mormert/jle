@@ -22,7 +22,7 @@
 #include "core/jlECSSaveLoad.h"
 #include "jleUndoRedo.h"
 
-#include "modules/core/components/cParent.h"
+#include "modules/hierarchy/components/cParent.h"
 
 #include <fstream>
 #include <iostream>
@@ -32,6 +32,7 @@
 #include <map>
 #include <set>
 #include <sstream>
+#include <modules/hierarchy/jleHierarchyFuncs.h>
 
 namespace {
 
@@ -278,18 +279,18 @@ public:
             }
         }
 
-        cParent::setParent(_child, _parent);
+        jleHierarchyFuncs::setParent(_child, _parent);
     }
 
     void undo(const CommandContext& /* ctx */) override
     {
         // Restore the child's old parent
-        cParent::setParent(_child, _oldParent);
+        jleHierarchyFuncs::setParent(_child, _oldParent);
 
         // Restore the new parent's old parent (if there was a new parent)
         if (_parent.has_value())
         {
-            cParent::setParent(*_parent, _oldParentOfNewParent);
+            jleHierarchyFuncs::setParent(*_parent, _oldParentOfNewParent);
         }
     }
 
@@ -313,7 +314,7 @@ public:
         _duplicatedObjects.clear();
         for (auto& obj : _originalObjects) {
             jleAssert(obj.isValid());
-            cParent::duplicateObjectIncludeChildren(obj, _duplicatedObjects);
+            jleHierarchyFuncs::duplicateObjectIncludeChildren(obj, _duplicatedObjects);
         }
     }
 

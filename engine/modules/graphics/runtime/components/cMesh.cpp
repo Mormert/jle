@@ -14,7 +14,7 @@
  *********************************************************************************************/
 
 #include "cMesh.h"
-#include <modules/core/components/cTransform.h>
+#include <modules/hierarchy/components/cTransform.h>
 
 void
 cMesh::ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix, int instanceId)

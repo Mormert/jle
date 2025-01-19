@@ -15,9 +15,9 @@
 
 #pragma once
 
-#include "modules/core/jleCoreModule.h"
+#include "modules/hierarchy/jleHierarchyModule.h"
 
-class jleCoreModuleEditor : public jleCoreModule
+class jleHierarchyModuleEditor : public jleHierarchyModule
 {
 public:
     void initializeECS(jlECS::ECS &ecs) override;

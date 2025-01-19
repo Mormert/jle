@@ -56,6 +56,8 @@
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
 #include <implot/implot.h>
+#include <modules/hierarchy/editor/jleHierarchyModuleEditor.h>
+#include <modules/graphics/editor/jleGraphicsModuleEditor.h>
 
 #include <WickedEngine/wiJobSystem.h>
 #include <plog/Log.h>
@@ -259,23 +261,24 @@ jleEditor::render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem:
     // Wait for game thread
     Wait(jobsCtx);
 
-
     if (_previousFramePacket) {
         jleFramePacket& framePacketModifiedByEditor = *_previousFramePacket;
         _editorWindows->sceneWindow->renderEditorGrid(framePacketModifiedByEditor);
-        renderEditorGizmos(framePacketModifiedByEditor, ctx.gameRuntime);
+
+        jleEditorUpdateContext editorUpdateCtx{
+            .engineUpdateContext = ctx,
+            .resourceIndexer = *_resourceIndexer,
+            .gizmos = *_gizmos,
+            .gameState = _gameRuntime->getGame().getGameState(),
+            .editorFramePacket = framePacketModifiedByEditor
+        };
+
+        updateEditorGameModules(editorUpdateCtx);
+
+        renderEditorSceneView(editorUpdateCtx);
+
+        renderEditorUI(editorUpdateCtx);
     }
-
-    jleEditorUpdateContext editorUpdateCtx{
-        .engineUpdateContext = ctx,
-        .resourceIndexer = *_resourceIndexer,
-        .gizmos = *_gizmos,
-        .gameState = _gameRuntime->getGame().getGameState()
-    };
-
-    renderEditorSceneView(editorUpdateCtx);
-
-    renderEditorUI(editorUpdateCtx);
 
     glCheckError("Main Editor Render");
 }
@@ -383,8 +386,6 @@ jleEditor::initImgui()
     ImGui::Spectrum::LoadFont();
 }
 
-void jleEditor::renderEditorGizmos(jleFramePacket &framePacket, jleGameRuntime &gameRuntime) {
-}
 
 void
 jleEditor::mainEditorWindowResized(const jleWindowResizeEvent &resizeEvent)
@@ -448,3 +449,12 @@ jleEditor::saveState()
 }
 
 jleEditor::~jleEditor() = default;
+
+void jleEditor::updateEditorGameModules(jleEditorUpdateContext &ctx) {
+
+    auto& modules = ctx.engineUpdateContext.gameRuntime.getGame().getModules();
+
+    if (auto* graphicsEditorModule = dynamic_cast<jleGraphicsModuleEditor*>(modules.graphicsModule.get())){
+        graphicsEditorModule->updateEditor(ctx);
+    }
+}

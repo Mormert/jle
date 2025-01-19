@@ -16,8 +16,7 @@
 #include "cLightDirectional.h"
 
 #include "modules/graphics/jleFramePacket.h"
-#include <modules/core/components/cTransform.h>
-
+#include <modules/hierarchy/components/cTransform.h>
 
 void
 cLightDirectional::ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix)
@@ -25,18 +24,6 @@ cLightDirectional::ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatri
     packet.settings.useDirectionalLight = true;
     packet.settings.setDirectionalLight(worldMatrix, _color);
 }
-
-/*
-void
-cLightDirectional::editorGizmosRender(jleFramePacket &renderGraph, jleEditorGizmos &gizmos)
-{
-#if JLE_BUILD_EDITOR
-    auto mesh = gizmos.sunMesh();
-    std::shared_ptr<jleMaterial> material = gizmos.sunMaterial();
-    renderGraph.sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
-#endif // JLE_BUILD_EDITOR
-}
- */
 
 void
 cLightDirectional::registerLua(sol::state &lua)

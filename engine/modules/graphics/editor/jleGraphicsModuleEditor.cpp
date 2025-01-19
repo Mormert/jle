@@ -15,7 +15,13 @@
 
 #include "jleGraphicsModuleEditor.h"
 
+#include <jleEditorGizmos.h>
 #include <editor/serialization/jleEditorECSRegistration.h>
+#include <game/jleGame.h>
+#include <game/jleGameRuntime.h>
+#include <modules/hierarchy/jleHierarchyFuncs.h>
+#include <modules/hierarchy/components/cTransform.h>
+#include <modules/graphics/jleGraphics.h>
 
 #include "modules/graphics/runtime/components/cCamera.h"
 #include "modules/graphics/runtime/components/cLight.h"
@@ -23,6 +29,9 @@
 #include "modules/graphics/runtime/components/cMesh.h"
 #include "modules/graphics/runtime/components/cSkinnedMesh.h"
 #include "modules/graphics/runtime/components/cSkybox.h"
+
+#include "modules/graphics/core/jleIncludeGL.h"
+#include <modules/graphics/core/jleFrameBufferInterface.h>
 
 
 namespace {
@@ -39,12 +48,59 @@ namespace {
             }
         }
     }
+
+    void serializeCameraEditor(jlECS::ComponentContainer *thiz, jleImGuiArchive &archive, int componentIndex, int objectIndex)
+    {
+        cCamera &cameraComponent = *thiz->getPtr<cCamera>(componentIndex);
+        archive(cameraComponent);
+
+        if (auto* editorGraphicsModule = dynamic_cast<jleGraphicsModuleEditor*>(archive.editorCtx.engineUpdateContext.gameRuntime.getGame().getModules().graphicsModule.get())) {
+            constexpr unsigned int width = 400;
+            constexpr unsigned int height = 400;
+
+            ImGui::Text("Camera Preview");
+
+            if (!editorGraphicsModule->cameraPreviewFramebuffer) {
+                editorGraphicsModule->cameraPreviewFramebuffer = std::make_unique<jleFramebufferScreen>(width, height);
+            }
+
+            glm::mat4 worldMatrix = jleHierarchyFuncs::getWorldMatrix(thiz->getECS().getObject(objectIndex));
+
+            archive.editorCtx.engineUpdateContext.currentFramePacket.camera.setViewMatrix(glm::inverse(worldMatrix));
+            if (cameraComponent.perspective) {
+                archive.editorCtx.engineUpdateContext.currentFramePacket.camera.setPerspectiveProjection(cameraComponent.perspectiveFov, width, height, cameraComponent.farPlane, cameraComponent.nearPlane);
+            }else {
+                archive.editorCtx.engineUpdateContext.currentFramePacket.camera.setOrthographicProjection(cameraComponent.framebufferSizeX, cameraComponent.framebufferSizeY, cameraComponent.farPlane, cameraComponent.nearPlane);
+            }
+
+            auto &fb = *editorGraphicsModule->cameraPreviewFramebuffer;
+
+            archive.editorCtx.engineUpdateContext.rendererModule.render(*editorGraphicsModule->cameraPreviewFramebuffer,
+                archive.editorCtx.engineUpdateContext.currentFramePacket);
+
+            // Get the texture from the framebuffer
+            glBindTexture(GL_TEXTURE_2D, (unsigned int)fb.texture());
+            ImGui::Image((void *)(intptr_t)fb.texture(), ImVec2(width / 2.f, height / 2.f),ImVec2(0, 1), ImVec2(1, 0));
+        }
+
+
+    }
 }
 
 void
 jleGraphicsModuleEditor::initializeECS(jlECS::ECS &ecs)
 {
-    registerEditorECSComponent<cCamera>(ecs);
+    {
+        jlECS::ComponentRegistrationConfig config{
+            .serializeInputF_JSON = jlECS::Serialization::serializeInputT_JSON<cCamera>,
+            .serializeOutputF_JSON = jlECS::Serialization::serializeOutputT_JSON<cCamera>,
+            .serializeInputF_Binary = jlECS::Serialization::serializeInputT_Binary<cCamera>,
+            .serializeOutputF_Binary = jlECS::Serialization::serializeOutputT_Binary<cCamera>,
+            .serializeImGuiF = serializeCameraEditor
+        };
+        ecs.registerComponentType<cCamera>(config);
+    }
+
     registerEditorECSComponent<cLight>(ecs);
     registerEditorECSComponent<cLightDirectional>(ecs);
 
@@ -62,4 +118,28 @@ jleGraphicsModuleEditor::initializeECS(jlECS::ECS &ecs)
 
     registerEditorECSComponent<cSkinnedMesh>(ecs);
     registerEditorECSComponent<cSkybox>(ecs);
+}
+
+void jleGraphicsModuleEditor::updateEditor(jleEditorUpdateContext &ctx) {
+
+    auto& ecs = *ctx.engineUpdateContext.gameRuntime.getGame().getGameState().ecs;
+    const auto worldTransforms = getWorldTransforms(ecs);
+
+    for (auto [objectIndex, _] : ecs.iterateMulti_IncludeObjectIndex<cCamera>()) {
+        auto mesh = ctx.gizmos.cameraMesh();
+        auto material = ctx.gizmos.cameraMaterial();
+        ctx.editorFramePacket.sendMesh(mesh, material, worldTransforms[objectIndex], objectIndex, false);
+    }
+
+    for (auto [objectIndex, _] : ecs.iterateMulti_IncludeObjectIndex<cLight>()) {
+        auto mesh = ctx.gizmos.lightLampMesh();
+        auto material = ctx.gizmos.lampMaterial();
+        ctx.editorFramePacket.sendMesh(mesh, material, worldTransforms[objectIndex], objectIndex, false);
+    }
+
+    for (auto [objectIndex, _] : ecs.iterateMulti_IncludeObjectIndex<cLightDirectional>()) {
+        auto mesh = ctx.gizmos.sunMesh();
+        auto material = ctx.gizmos.sunMaterial();
+        ctx.editorFramePacket.sendMesh(mesh, material, worldTransforms[objectIndex], objectIndex, false);
+    }
 }

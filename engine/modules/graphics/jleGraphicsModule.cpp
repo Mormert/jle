@@ -23,8 +23,8 @@
 #include "runtime/components/cSkybox.h"
 
 #include <jlECS/jlECS.h>
-#include <modules/core/components/cParent.h>
-#include <modules/core/components/cTransform.h>
+#include <modules/hierarchy/components/cParent.h>
+#include <modules/hierarchy/components/cTransform.h>
 
 namespace {
     // Recursively compute and set each object's world transform in-place
@@ -63,20 +63,22 @@ namespace {
         touchedTransforms[index] = true;
     }
 
-    // Gets the final world transforms from the local matrices stored in cTransforms
-    std::vector<glm::mat4> getWorldTransforms(jlECS::ECS &ecs)
+
+}
+
+// Gets the final world transforms from the local matrices stored in cTransforms
+std::vector<glm::mat4> jleGraphicsModule::getWorldTransforms(jlECS::ECS &ecs)
+{
+    std::vector<glm::mat4> worldTransforms(ecs.allocatedObjectsCount());
+    std::vector<bool> touchedTransforms(ecs.allocatedObjectsCount(), false);
+
+    for (auto [objectIndex, transform] : ecs.iterateMulti_IncludeObjectIndex<cTransform>())
     {
-        std::vector<glm::mat4> worldTransforms(ecs.allocatedObjectsCount());
-        std::vector<bool> touchedTransforms(ecs.allocatedObjectsCount(), false);
-
-        for (auto [objectIndex, transform] : ecs.iterateMulti_IncludeObjectIndex<cTransform>())
-        {
-            jlECS::ObjectRef object = ecs.getObject(objectIndex);
-            computeWorldMatrixRecursive(object, ecs, worldTransforms, touchedTransforms);
-        }
-
-        return worldTransforms;
+        jlECS::ObjectRef object = ecs.getObject(objectIndex);
+        computeWorldMatrixRecursive(object, ecs, worldTransforms, touchedTransforms);
     }
+
+    return worldTransforms;
 }
 
 void
@@ -89,6 +91,8 @@ jleGraphicsModule::initializeECS(jlECS::ECS &ecs)
     ecs.registerComponentType<cSkinnedMesh>();
     ecs.registerComponentType<cSkybox>();
 }
+
+
 
 void
 jleGraphicsModule::update(jleGraphicsModule::UpdateContext &ctx)

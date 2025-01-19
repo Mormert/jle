@@ -16,7 +16,7 @@
 #include "cCamera.h"
 
 #include "core/jleCamera.h"
-#include "modules/core/components/cTransform.h"
+#include "modules/hierarchy/components/cTransform.h"
 
 void
 cCamera::update(UpdateContext& ctx) const
@@ -31,35 +31,7 @@ cCamera::update(UpdateContext& ctx) const
     }
 
     auto &&transformation = ctx.in.transform.getLocalMatrix();
-    ctx.out.camera.setViewMatrix(glm::inverse(transformation), ctx.in.transform.getPosition());
+    ctx.out.camera.setViewMatrix(glm::inverse(transformation));
 }
 
-/*
-void
-cCamera::editorInspectorImGuiRender(jleEditorUpdateContext &ctx)
-{
-#if JLE_BUILD_IMGUI
-    ImGui::Text("Camera Preview");
-
-    // Get the texture from the framebuffer
-    auto &fb = ctx.engineUpdateContext.gameRuntime.mainGameScreenFramebuffer;
-    glBindTexture(GL_TEXTURE_2D, (unsigned int)fb->texture());
-    ImGui::Image(
-        (void *)(intptr_t)fb->texture(), ImVec2(fb->width() / 4.f, fb->height() / 4.f), ImVec2(0, 1), ImVec2(1, 0));
-
-#endif
-
-} */
-
-/*
-void
-cCamera::editorGizmosRender(jleFramePacket &packet, jleEditorGizmos &gizmos)
-{
-#if JLE_BUILD_EDITOR
-    auto mesh = gizmos.cameraMesh();
-    auto material = gizmos.cameraMaterial();
-    packet.sendMesh(mesh, material, getTransform().getWorldMatrix(), _attachedToObject->instanceID(), false);
-#endif // JLE_BUILD_EDITOR
-
-}*/
 

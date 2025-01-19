@@ -15,7 +15,9 @@
 
 #pragma once
 
+#include <modules/jleEditorUpdateContext.h>
 #include <modules/graphics/jleGraphicsModule.h>
+#include <modules/graphics/core/jleFramebufferScreen.h>
 
 namespace jlECS
 {
@@ -26,4 +28,8 @@ class jleGraphicsModuleEditor : public jleGraphicsModule
 {
 public:
     void initializeECS(jlECS::ECS &ecs) override;
+
+    void updateEditor(jleEditorUpdateContext& ctx);
+
+    std::unique_ptr<jleFramebufferScreen> cameraPreviewFramebuffer;
 };

@@ -21,7 +21,6 @@
 
 #include <glm/vec3.hpp>
 
-
 class jleFramePacket;
 class cTransform;
 
@@ -41,9 +40,6 @@ public:
     void ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix);
 
     static void registerLua(sol::state &lua);
-
-    //void editorGizmosRender(jleFramePacket &renderGraph, jleEditorGizmos &gizmos) override;
-
 protected:
     glm::vec3 _color{1.f};
 };

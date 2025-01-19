@@ -17,7 +17,7 @@
 
 #include "core/jleResourceRef.h"
 
-#include <modules/core/components/cTransform.h>
+#include <modules/hierarchy/components/cTransform.h>
 
 #include <sol2/sol.hpp>
 #include <glm/gtc/quaternion.hpp>

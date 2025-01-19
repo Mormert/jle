@@ -14,7 +14,7 @@
  *********************************************************************************************/
 
 #include "cSkinnedMesh.h"
-#include "modules/core/components/cTransform.h"
+#include "modules/hierarchy/components/cTransform.h"
 #include "modules/animation/components/cAnimator.h"
 #include "modules/animation/jleAnimationFinalMatrices.h"
 

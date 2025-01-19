@@ -13,21 +13,31 @@
 *                                                                                           *
 *********************************************************************************************/
 
+#pragma once
 
-#include "jleGameModulesLoaderEditor.h"
+#include <core/serialization/jleExternalSerialization.h>
 
-#include <modules/graphics/editor/jleGraphicsModuleEditor.h>
-#include <modules/hierarchy/editor/jleHierarchyModuleEditor.h>
-#include <modules/physics/editor/jlePhysicsModuleEditor.h>
+#include "jlECS/jlECS.h"
 
-std::unique_ptr<jleGameModules>
-jleModuleLoading::createDefaultModules_Editor()
-{
-    auto modules = std::make_unique<jleGameModules>();
-
-    modules->coreModule = std::make_unique<jleHierarchyModuleEditor>();
-    modules->graphicsModule = std::make_unique<jleGraphicsModuleEditor>();
-    modules->physicsModule = std::make_unique<jlePhysicsModuleEditor>();
-
-    return modules;
+namespace jleHierarchyFuncs {
+    bool setParent(jlECS::ObjectRef& object, std::optional<jlECS::ObjectRef>& newParentOptional);
 }
+
+class cParent{
+public:
+    template <class Archive>
+    void serialize(Archive &ar)
+    {
+        ar(CEREAL_NVP(_parentIndex),
+           CEREAL_NVP(_recycleCounter));
+    }
+
+    [[nodiscard]] uint16_t getParentIndex() const{ return _parentIndex; }
+    [[nodiscard]] jlECS::ObjectRef getParentRef(jlECS::ECS& ecs) const { return jlECS::ObjectRef{_parentIndex, _recycleCounter, &ecs}; }
+
+private:
+    uint16_t _parentIndex = 0;
+    uint16_t _recycleCounter = std::numeric_limits<uint16_t>::max();
+
+    friend bool jleHierarchyFuncs::setParent(jlECS::ObjectRef& object, std::optional<jlECS::ObjectRef>& newParentOptional);
+};

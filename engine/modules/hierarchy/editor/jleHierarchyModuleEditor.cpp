@@ -13,7 +13,7 @@
 *                                                                                           *
 *********************************************************************************************/
 
-#include "jleCoreModuleEditor.h"
+#include "jleHierarchyModuleEditor.h"
 #include "jlECS/jlECS.h"
 
 #include <ImGui/ImGuizmo.h>
@@ -24,8 +24,8 @@
 
 #include "editor/serialization/jleEditorECSRegistration.h"
 
-#include "modules/core/components/cTransform.h"
-#include "modules/core/components/cParent.h"
+#include "modules/hierarchy/components/cTransform.h"
+#include "modules/hierarchy/components/cParent.h"
 
 namespace {
 void serializeTransformEditor(jlECS::ComponentContainer *thiz, jleImGuiArchive &archive, int componentIndex, int objectIndex)
@@ -77,7 +77,7 @@ void serializeParentEditor(jlECS::ComponentContainer *thiz, jleImGuiArchive &arc
     if(parentIndex != parentComponent.getParentIndex() && ecs.isObjectAlive(parentIndex)){
         auto newParentRef = std::optional<jlECS::ObjectRef>(ecs.getObject(parentIndex));
         auto childObjectRef = ecs.getObject(objectIndex);
-        cParent::setParent(childObjectRef, newParentRef);
+        jleHierarchyFuncs::setParent(childObjectRef, newParentRef);
     }
 
     if(parentIndex == objectIndex){
@@ -88,7 +88,7 @@ void serializeParentEditor(jlECS::ComponentContainer *thiz, jleImGuiArchive &arc
 }
 
 void
-jleCoreModuleEditor::initializeECS(jlECS::ECS &ecs)
+jleHierarchyModuleEditor::initializeECS(jlECS::ECS &ecs)
 {
     {
         jlECS::ComponentRegistrationConfig config{

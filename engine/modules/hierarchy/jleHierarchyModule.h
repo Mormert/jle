@@ -20,21 +20,8 @@ namespace jlECS
 class ECS;
 }
 
-class jleCoreModule
+class jleHierarchyModule
 {
 public:
     virtual void initializeECS(jlECS::ECS &ecs);
-
-    struct UpdateContext {
-        struct In {
-        } in;
-
-        struct InOut {
-        } inOut;
-
-        struct Out {
-        } out;
-    };
-
-    void update(UpdateContext &ctx);
 };

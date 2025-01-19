@@ -13,7 +13,7 @@
 *                                                                                           *
 *********************************************************************************************/
 
-#include "jleCoreModule.h"
+#include "jleHierarchyModule.h"
 
 #include <jlECS/jlECS.h>
 #include <core/serialization/jleJSONArchive.h>
@@ -23,13 +23,8 @@
 #include "components/cParent.h"
 
 void
-jleCoreModule::initializeECS(jlECS::ECS &ecs)
+jleHierarchyModule::initializeECS(jlECS::ECS &ecs)
 {
     ecs.registerComponentType<cTransform>();
     ecs.registerComponentType<cParent>();
-}
-
-void
-jleCoreModule::update(jleCoreModule::UpdateContext &ctx)
-{
 }

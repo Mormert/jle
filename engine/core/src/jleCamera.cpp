@@ -55,10 +55,9 @@ jleCamera::setOrthographicProjection(uint32_t screenWidth, uint32_t screenHeight
 }
 
 void
-jleCamera::setViewMatrix(const glm::mat4 &view, const glm::vec3 &position)
+jleCamera::setViewMatrix(const glm::mat4 &view)
 {
     _viewMatrix = view;
-    _position = position;
 }
 
 glm::mat4
@@ -81,7 +80,7 @@ jleCamera::getViewMatrix() const
 glm::vec3
 jleCamera::getPosition() const
 {
-    return _position;
+    return glm::vec3(_viewMatrix[3]);
 }
 void
 jleCamera::setBackgroundColor(const glm::vec3 &color)

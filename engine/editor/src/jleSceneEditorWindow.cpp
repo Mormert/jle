@@ -28,13 +28,15 @@
 #include "modules/physics/components/cRigidbody.h"
 #include "modules/physics/jlePhysics.h"
 #include "modules/windowing/jleWindow.h"
-#include "modules/core/components/cTransform.h"
+#include "modules/hierarchy/components/cTransform.h"
 #include <modules/graphics/core/jleFramebufferScreen.h>
 
 #include <ImGui/imgui.h>
 #include <btBulletDynamicsCommon.h>
 #include <glm/common.hpp>
 #include <utility>
+#include <modules/hierarchy/jleHierarchyFuncs.h>
+#include <modules/hierarchy/components/cParent.h>
 
 namespace{
 
@@ -46,13 +48,13 @@ public:
     void execute(const CommandContext& ctx) override{
         for(auto& object : _objects){
             assert(object.isValid());
+            glm::mat4 oldWorld = jleHierarchyFuncs::getWorldMatrix(object);
+            glm::mat4 newWorld = _delta * oldWorld;
+
+            jleHierarchyFuncs::setLocalMatrixFromWorld(object, newWorld);
+
             auto* transform = object.getComponentPtr<cTransform>();
             assert(transform);
-
-            glm::mat4 oldWorld = transform->getLocalMatrix();
-            glm::mat4 newWorld = _delta * oldWorld;
-            transform->setLocalMatrix(newWorld);
-
             if (auto* rb = object.getComponentPtr<cRigidbody>())
             {
                 if (auto* meshComp = object.getComponentPtr<cMesh>()) {
@@ -178,7 +180,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         int dragHeight = std::abs(_selectCurrentY - _selectStartY);
 
         input.editorUpdate.engineUpdateContext.rendererModule.renderMeshesPicking(
-            *_pickingFramebuffer, _renderCamera, input.editorUpdate.engineUpdateContext.currentFramePacket);
+            *_pickingFramebuffer, _renderCamera, input.editorUpdate.editorFramePacket);
         _pickingFramebuffer->bind();
 
         GLint previousPackAlignment;
@@ -333,7 +335,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         ImGui::SameLine();
         if (ImGui::SmallButton("R")) {
             fpvCamController.backToOrigin();
-            _renderCamera.setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
+            _renderCamera.setViewMatrix(fpvCamController.getLookAtViewMatrix());
         }
 
         ImGui::SameLine();
@@ -405,7 +407,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
             fpvCamController.moveDown(cameraSpeed * t);
         }
 
-        _renderCamera.setViewMatrix(fpvCamController.getLookAtViewMatrix(), fpvCamController.position);
+        _renderCamera.setViewMatrix(fpvCamController.getLookAtViewMatrix());
 
         auto currentScroll = input.editorUpdate.engineUpdateContext.inputModule.mouse.scrollY();
         if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentScroll != 0.f) {
@@ -438,7 +440,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         {
             glm::vec3 avgPos(0.f);
             for (auto [transform, objectIndex] : transforms) {
-                avgPos += transform->getPosition();
+                avgPos += jleHierarchyFuncs::getWorldPosition(ecs.getObject(objectIndex));
             }
             avgPos /= (float)transforms.size();
 

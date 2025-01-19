@@ -16,6 +16,8 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
+#include <glm/glm.hpp>
 
 class jleFramePacket;
 class jleCamera;
@@ -46,4 +48,7 @@ public:
     };
 
     void update(UpdateContext &ctx);
+
+protected:
+    std::vector<glm::mat4> getWorldTransforms(jlECS::ECS &ecs);
 };

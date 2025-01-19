@@ -18,7 +18,7 @@
 #include <jlECS/jlECS.h>
 
 #include "components/cRigidbody.h"
-#include "modules/core/components/cTransform.h"
+#include "modules/hierarchy/components/cTransform.h"
 
 void
 jlePhysicsModule::initializeECS(jlECS::ECS &ecs)

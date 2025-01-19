@@ -29,7 +29,7 @@
 #include <modules/jleEngineUpdateContext.h>
 #include <modules/graphics/jleGraphicsModule.h>
 #include <modules/physics/jlePhysicsModule.h>
-#include <modules/core/jleCoreModule.h>
+#include <modules/hierarchy/jleHierarchyModule.h>
 
 
 #include <execution>
@@ -46,7 +46,7 @@ struct jleGameState
 };
 
 struct jleGameModules{
-    std::unique_ptr<jleCoreModule> coreModule;
+    std::unique_ptr<jleHierarchyModule> coreModule;
     std::unique_ptr<jleGraphicsModule> graphicsModule;
     std::unique_ptr<jlePhysicsModule> physicsModule;
 };
@@ -62,6 +62,7 @@ public:
     };
 
     void injectModules(std::unique_ptr<jleGameModules> modules);
+    jleGameModules& getModules() const { return *_modules; }
 
     virtual void update(jleEngineUpdateContext &ctx);
     virtual void start(GameStartContext& ctx);

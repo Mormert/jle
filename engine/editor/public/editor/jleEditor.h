@@ -67,8 +67,6 @@ private:
 
     void initImgui();
 
-    void renderEditorGizmos(jleFramePacket &framePacket, jleGameRuntime &gameRuntime);
-
     void mainEditorWindowResized(const jleWindowResizeEvent &resizeEvent);
 
     class jleEditorWindows;
@@ -83,4 +81,7 @@ private:
     std::shared_ptr<jleEditorTextEdit> _textEditWindow;
 
     std::unique_ptr<jleEditorGizmos> _gizmos;
+
+protected:
+    virtual void updateEditorGameModules(jleEditorUpdateContext& ctx);
 };
