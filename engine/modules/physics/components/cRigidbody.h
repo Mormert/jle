@@ -19,12 +19,9 @@
 #include "modules/graphics/jleMaterial.h"
 #include "modules/graphics/jleMesh.h"
 
-#include "core/jleResourceRef.h"
+#include "LinearMath/btMotionState.h"
 
-
-#include <BulletDynamics/Dynamics/btRigidBody.h>
-#include <LinearMath/btMotionState.h>
-
+class btCollisionShape;
 class btRigidBody;
 class cMesh;
 class cTransform;
@@ -33,6 +30,17 @@ class jlePhysics;
 namespace jlECS {
     class ECS;
 }
+
+class cRigidbodyMotionState final : public btMotionState {
+public:
+    cRigidbodyMotionState(jlECS::ECS *ecs, uint16_t objectIndex) : _ecs(ecs), _objectIndex(objectIndex){}
+
+    void getWorldTransform(btTransform &worldTrans) const override;
+    void setWorldTransform(const btTransform &worldTrans) override;
+private:
+    jlECS::ECS* _ecs;
+    uint16_t _objectIndex;
+};
 
 class cRigidbody
 {
@@ -48,32 +56,36 @@ public:
     cRigidbody(const cRigidbody&) = delete;
     cRigidbody& operator=(const cRigidbody&) = delete;
 
-    static void duplicate(jlePhysics* physics, cRigidbody* source, cRigidbody* dest);
-
     template <class Archive>
     void
     serialize(Archive &ar)
     {
-        ar(CEREAL_NVP(_mass));
+        ar(CEREAL_NVP(_mass), CEREAL_NVP(_shapeType));
     }
 
     btRigidBody &getBody();
 
-    void setWorldMatrixAndScaleRigidbody(jlePhysics* physics, cTransform& transform, cMesh& mesh);
+    // Will update the rigidbody's shape to match the transforms scale
+    void updateRigidbodyScaling() { _updateRigidbodyScaling = true; }
 
     bool isDynamic();
+
+    enum class cRigidbodyShapeType {
+        USE_MESH,
+        CUBE,       // Not supported atm
+        SPHERE,     // Not supported atm
+    };
 
 protected:
     friend class jlePhysics;
     friend class jlePhysicsModule;
 
-    void setupRigidbody(jlePhysics* physics, cTransform& transform, cMesh& mesh);
-
-    std::unique_ptr<btRigidBody> createRigidbody(bool isDynamic, const cTransform& transform, btCollisionShape *shape);
-
+    cRigidbodyShapeType _shapeType = cRigidbodyShapeType::USE_MESH;
     float _mass{0.f}; // Setting mass to 0 makes this rigidbody static.
-    glm::vec3 _size{1.f};
 
-    std::unique_ptr<btRigidBody> _body{nullptr};
+    bool _updateRigidbodyScaling = false;
+
+    btRigidBody* _body{nullptr};
     std::unique_ptr<btCollisionShape> _optionalLocalShape{nullptr};
+    std::unique_ptr<cRigidbodyMotionState> _motionState{nullptr};
 };

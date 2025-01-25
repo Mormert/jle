@@ -43,8 +43,29 @@ ObjectRef::~ObjectRef() {
 void
 ComponentContainer::callAddComponentConstruct(ComponentContainer *thiz, uint16_t objectIndex, uint16_t componentIndex, void* component)
 {
-    CreateCallbackData data{ObjectRef{thiz->ecs->getObject(objectIndex)}, componentIndex, component};
+    assert(thiz->onCreateCallback);
+    CreateComponentData data{ObjectRef{thiz->ecs->getObject(objectIndex)}, componentIndex, component};
     thiz->onCreateCallback(data);
+}
+
+void
+ComponentContainer::callRemoveComponentDestruct(ComponentContainer *thiz, uint16_t componentIndex, void *component)
+{
+    assert(thiz->onDestroyCallback);
+    DestroyComponentData data{componentIndex, component};
+    thiz->onDestroyCallback(data);
+}
+
+void ComponentContainer::constructAllComponents() {
+    if (onCreateCallback) {
+        for (auto object : objectIndices) {
+            auto objectRef = getECS().getObject(object);
+            uint16_t componentIndex = getECS().getComponentIndex(object, componentTypeId);
+            void* componentPtr = getECS().getComponent(object, componentTypeId);
+            CreateComponentData data{objectRef, componentIndex, componentPtr};
+            onCreateCallback(data);
+        }
+    }
 }
 
 std::vector<Debug::ComponentDebugBase *> *

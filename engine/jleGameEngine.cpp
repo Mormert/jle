@@ -289,7 +289,7 @@ jleGameEngine::mainLoop()
     // Especially now that the framepacket contains a camera... ??
     jleCamera camera = jleCamera{};
     if(!_gameRuntime->isGameKilled()){
-        auto& ecs = *_gameRuntime->getGame().getGameState().ecs;
+        auto& ecs = _gameRuntime->getGame().getECS();
         for(auto [cameraComponent, transformComponent] : ecs.iterateMulti<cCamera, cTransform>()){
             cCamera::UpdateContext cameraUpdateCtx{
                 .in ={ .transform = *transformComponent,

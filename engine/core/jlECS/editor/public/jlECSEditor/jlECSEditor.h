@@ -166,8 +166,8 @@ public:
         container.addComponentF = ComponentContainerEditor::addComponentT<T>;
         container.allocateComponentsF = ComponentContainerEditor::allocateComponentsT<T>;
         container.getComponentF = ComponentContainer::getComponentT<T>;
-        //container.removeComponentF = ComponentContainerEditor::removeComponentT<T>;
         container.componentTypeName = getCleanTypeName(typeid(T).name());
+        container.componentTypeId = ComponentNum<T>::num;
 
         // Verify that this work
         auto oldRemoveComponentF = container.removeComponentF;

@@ -31,23 +31,35 @@ jleGame::injectModules(std::unique_ptr<jleGameModules> modules)
 void
 jleGame::update(jleEngineUpdateContext &ctx)
 {
+    _modules->hierarchyModule->updateWorldMatrices(*_ecs);
+    const std::vector<glm::mat4>& worldMatrices = _modules->hierarchyModule->getWorldMatrices();
+
     jleGraphicsModule::UpdateContext graphicsUpdateContext{
-        .in = {.screenX = ctx.gameRuntime.mainGameScreenFramebuffer->width(),
-               .screenY = ctx.gameRuntime.mainGameScreenFramebuffer->height()},
-        .inOut = {.ecs = *_gameState.ecs},
+        .in = {  .screenX = ctx.gameRuntime.mainGameScreenFramebuffer->width(),
+                    .screenY = ctx.gameRuntime.mainGameScreenFramebuffer->height(),
+                    .worldMatrices = worldMatrices   },
+        .inOut = {.ecs = *_ecs},
         .out = {.framePacket = ctx.currentFramePacket}};
 
     _modules->graphicsModule->update(graphicsUpdateContext);
+
+    jlePhysicsModule::UpdateContext physicsUpdateContext{
+        .in = {  .dt = 1.f / 60.f,
+                    .worldMatrices = worldMatrices   },
+        .inOut = {
+            .ecs = *_ecs,
+        }};
+
+    _modules->physicsModule->update(physicsUpdateContext);
 }
 
 void
 jleGame::start(GameStartContext& ctx)
 {
-    _gameState.ecs = std::move(ctx.ecs);
-    auto& ecs = *_gameState.ecs;
+    _ecs = std::move(ctx.ecs);
 
-    _modules->coreModule->initializeECS(ecs);
-    _modules->graphicsModule->initializeECS(ecs);
-    _modules->physicsModule->initializeECS(ecs);
+    _modules->hierarchyModule->initializeECS(*_ecs);
+    _modules->graphicsModule->initializeECS(*_ecs);
+    _modules->physicsModule->initializeECS(*_ecs);
 }
 

@@ -58,7 +58,7 @@ public:
             if (auto* rb = object.getComponentPtr<cRigidbody>())
             {
                 if (auto* meshComp = object.getComponentPtr<cMesh>()) {
-                    rb->setWorldMatrixAndScaleRigidbody(_physics, *transform, *meshComp);
+                    rb->updateRigidbodyScaling();
                 }
             }
         }
@@ -340,9 +340,10 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
 
         ImGui::SameLine();
         if (!input.editorUpdate.engineUpdateContext.gameRuntime.isGameKilled()) {
-            bool physicsEnabled = false;
-            ImGui::Checkbox("Physics Debug", &physicsEnabled);
-            assert(!physicsEnabled);
+            ImGui::Checkbox("Physics Debug", &_debugRenderPhysics);
+            if (_debugRenderPhysics) {
+                input.editorUpdate.engineUpdateContext.gameRuntime.getGame().getModules().physicsModule->getPhysics().renderDebug(input.editorUpdate.editorFramePacket);
+            }
         }
 
         ImGui::SameLine();

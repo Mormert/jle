@@ -85,7 +85,8 @@ getCleanTypeName(const char *name)
 template <class T>
 inline const auto &ComponentNumV = ComponentNum<T>::num;
 
-struct CreateCallbackData;
+struct CreateComponentData;
+struct DestroyComponentData;
 
 class ComponentContainer
 {
@@ -94,6 +95,12 @@ public:
     getComponentTypeName()
     {
         return componentTypeName;
+    }
+
+    [[nodiscard]] uint16_t
+    getComponentTypeId()
+    {
+        return componentTypeId;
     }
 
     std::vector<uint16_t> &
@@ -144,6 +151,8 @@ public:
         return addComponentF(this, objectIndex);
     }
 
+    void constructAllComponents();
+
     void
     allocateComponents(int count)
     {
@@ -192,6 +201,7 @@ protected:
     }
 
     static void callAddComponentConstruct(ComponentContainer *thiz, uint16_t objectIndex, uint16_t componentIndex, void* component);
+    static void callRemoveComponentDestruct(ComponentContainer *thiz, uint16_t objectIndex, void *component);
 
     template <class T>
     static uint16_t
@@ -254,8 +264,7 @@ protected:
         auto &last = thiz->get<T>(thiz->_componentCount - 1);
         T &toRemove = thiz->get<T>(componentIndex);
 
-        assert(thiz->onDestroyCallback);
-        thiz->onDestroyCallback(reinterpret_cast<void*>(&toRemove));
+        callRemoveComponentDestruct(thiz, componentIndex, &toRemove);
 
         static_assert(std::is_move_assignable<T>() && std::is_move_constructible<T>());
         toRemove.~T();
@@ -275,8 +284,8 @@ protected:
     void (*serializeInputF_Binary)(ComponentContainer *, jleBinaryInputArchive &, int /*componentIndex*/);
     void (*serializeOutputF_Binary)(ComponentContainer *, jleBinaryOutputArchive &, int /*componentIndex*/);
 
-    std::function<void(CreateCallbackData&)> onCreateCallback = nullptr;
-    std::function<void(void* /*component*/)> onDestroyCallback = nullptr;
+    std::function<void(CreateComponentData&)> onCreateCallback = nullptr;
+    std::function<void(DestroyComponentData&)> onDestroyCallback = nullptr;
     std::function<void(void* /*source component*/, void* /*duplicated component*/)> onDuplicateCallback = nullptr;
 
     // The raw component data
@@ -286,6 +295,7 @@ protected:
     std::vector<uint16_t> objectIndices;
 
     uint16_t _componentCount = 0;
+    uint16_t componentTypeId = 0;
     const char *componentTypeName{};
 
     ECS* ecs;
@@ -411,16 +421,21 @@ struct RegisteredComponentType {
     const char *componentTypeName;
 };
 
-struct CreateCallbackData{
+struct CreateComponentData{
     ObjectRef objectRef;
+    uint16_t componentIndex;
+    void* componentPtr;
+};
+
+struct DestroyComponentData{
     uint16_t componentIndex;
     void* componentPtr;
 };
 
 struct ComponentRegistrationConfig
 {
-    std::function<void(CreateCallbackData&)> onCreateCallback = nullptr;
-    std::function<void(void* /*component*/)> onDestroyCallback = nullptr;
+    std::function<void(CreateComponentData&)> onCreateCallback = nullptr;
+    std::function<void(DestroyComponentData&)> onDestroyCallback = nullptr;
     std::function<void(void* /*source component*/, void* /*duplicated component*/)> onDuplicateCallback = nullptr;
 
     void (*serializeInputF_JSON)(ComponentContainer *, jleJSONInputArchive&, int /*componentIndex*/)                = nullptr;
@@ -536,6 +551,7 @@ public:
         }
 
         container.componentTypeName = getCleanTypeName(typeid(T).name());
+        container.componentTypeId = ComponentNum<T>::num;
 
         container.serializeInputF_JSON = config.serializeInputF_JSON;
         container.serializeOutputF_JSON = config.serializeOutputF_JSON;
@@ -787,18 +803,27 @@ public:
         return reinterpret_cast<T *>(getComponent(objectIndex, componentType));
     }
 
-    void *
-    getComponent(uint16_t objectIndex, int componentType)
+    [[nodiscard]] uint16_t
+    getComponentIndex(uint16_t objectIndex, int componentType)
     {
-        auto &container = componentContainers[componentType];
+        const auto &container = componentContainers[componentType];
 
         auto *c = &objectArray.componentIndices[objectIndex * registeredComponentTypesCount];
         uint16_t componentIndex = c[componentType];
+
+        return componentIndex;
+    }
+
+    [[nodiscard]] void *
+    getComponent(uint16_t objectIndex, int componentType)
+    {
+        uint16_t componentIndex = getComponentIndex(objectIndex, componentType);
 
         if (componentIndex == 65535) {
             return nullptr;
         }
 
+        auto &container = componentContainers[componentType];
         return container->getComponent(componentIndex);
     }
 
@@ -1331,6 +1356,15 @@ public:
     }
 
     template <class T>
+    static uint16_t
+    addComponentT_Debug_ConstructCallback(ComponentContainer *thiz, int objectIndex)
+    {
+        const auto ret = ComponentContainer::addComponentT_ConstructCallback<T>(thiz, objectIndex);
+        reinterpret_cast<ComponentContainerEditor*>(thiz)->debug->count = thiz->componentCount();
+        return ret;
+    }
+
+    template <class T>
     static void
     allocateComponentsT_Debug(ComponentContainer *thiz, int count)
     {
@@ -1343,6 +1377,14 @@ public:
     removeComponentT_Debug(ComponentContainer *thiz, int componentIndex)
     {
         ComponentContainer::removeComponentT<T>(thiz, componentIndex);
+        reinterpret_cast<ComponentContainerEditor*>(thiz)->debug->count = thiz->componentCount();
+    }
+
+    template <class T>
+    static void
+    removeComponentT_Debug_DestructCallback(ComponentContainer *thiz, int componentIndex)
+    {
+        ComponentContainer::removeComponentT_DestructCallback<T>(thiz, componentIndex);
         reinterpret_cast<ComponentContainerEditor*>(thiz)->debug->count = thiz->componentCount();
     }
 
@@ -1388,9 +1430,19 @@ template <class T>
 void
 Initializer::initializeContainerDebugT(ComponentContainerEditor& container, const ComponentRegistrationConfig& config)
 {
-    container.addComponentF = (uint16_t (*)(ComponentContainer*, int))ComponentContainerEditor::addComponentT_Debug<T>;
+    if (config.onCreateCallback) {
+        container.addComponentF = (uint16_t (*)(ComponentContainer*, int))ComponentContainerEditor::addComponentT_Debug_ConstructCallback<T>;
+    }else {
+        container.addComponentF = (uint16_t (*)(ComponentContainer*, int))ComponentContainerEditor::addComponentT_Debug<T>;
+    }
+
     container.allocateComponentsF = (void (*)(ComponentContainer*, int))ComponentContainerEditor::allocateComponentsT_Debug<T>;
-    container.removeComponentF = ComponentContainerEditor::removeComponentT_Debug<T>;
+
+    if (config.onDestroyCallback){
+        container.removeComponentF = ComponentContainerEditor::removeComponentT_Debug_DestructCallback<T>;
+    }else {
+        container.removeComponentF = ComponentContainerEditor::removeComponentT_Debug<T>;
+    }
 
     container.getComponentDebugF = ComponentContainerEditor::getComponentDebugT<T>;
     auto debug = std::make_unique<ComponentContainerEditor::ComponentContainerDebug<T>>(getCleanTypeName(typeid(T).name()), &container);

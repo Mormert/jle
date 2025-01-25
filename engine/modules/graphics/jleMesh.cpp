@@ -353,24 +353,6 @@ jleMesh::saveToFile(jleSerializationContext &ctx)
     }
 }
 
-btBvhTriangleMeshShape *
-jleMesh::getStaticConcaveShape()
-{
-    if (!_staticConcaveShape) {
-        generateStaticConcaveShape();
-    }
-    return _staticConcaveShape.get();
-}
-
-btConvexHullShape *
-jleMesh::getDynamicConvexShape()
-{
-    if (!_dynamicConvexShape) {
-        generateDynamicConvexShape();
-    }
-    return _dynamicConvexShape.get();
-}
-
 void
 jleMesh::saveMeshToAssimpScene(aiScene &scene)
 {
@@ -428,56 +410,3 @@ jleMesh::saveMeshToAssimpScene(aiScene &scene)
     }
 }
 
-void
-jleMesh::generateStaticConcaveShape()
-{
-    _staticConcaveShapeMeshInterface = std::make_unique<btTriangleMesh>();
-
-    if (usesIndexing()) {
-        for (int i = 0; i < _indices.size() / 3; i++) {
-            btVector3 v0 =
-                btVector3{_positions[_indices[i * 3]].x, _positions[_indices[i * 3]].y, _positions[_indices[i * 3]].z};
-            btVector3 v1 = btVector3{_positions[_indices[i * 3 + 1]].x,
-                                     _positions[_indices[i * 3 + 1]].y,
-                                     _positions[_indices[i * 3 + 1]].z};
-            btVector3 v2 = btVector3{_positions[_indices[i * 3 + 2]].x,
-                                     _positions[_indices[i * 3 + 2]].y,
-                                     _positions[_indices[i * 3 + 2]].z};
-
-            // Make sure to check that the triangle is large enough to have a normal calculated from it,
-            // else we won't add it. For very small triangles, precision errors will cause the normal to have length 0.
-            btVector3 normal = (v1 - v0).cross(v2 - v0);
-            if (!normal.fuzzyZero()) {
-                _staticConcaveShapeMeshInterface->addTriangle(v0, v1, v2);
-            }
-        }
-    } else {
-        for (int i = 0; i < _positions.size() / 3; i++) {
-            btVector3 v0 = btVector3{_positions[i * 3].x, _positions[i * 3].y, _positions[i * 3].z};
-            btVector3 v1 = btVector3{_positions[i * 3 + 1].x, _positions[i * 3 + 1].y, _positions[i * 3 + 1].z};
-            btVector3 v2 = btVector3{_positions[i * 3 + 2].x, _positions[i * 3 + 2].y, _positions[i * 3 + 2].z};
-
-            btVector3 normal = (v1 - v0).cross(v2 - v0);
-            if (!normal.fuzzyZero()) {
-                _staticConcaveShapeMeshInterface->addTriangle(v0, v1, v2);
-            }
-        }
-    }
-
-    _staticConcaveShape = std::make_unique<btBvhTriangleMeshShape>(_staticConcaveShapeMeshInterface.get(), true, true);
-}
-
-void
-jleMesh::generateDynamicConvexShape()
-{
-    // TODO Find proper solution to separating physics stuff into its own module here
-    // GCC compiles about that btConvexHullShape is undefined etc (because this is in the graphics module, and
-    // bullet is not contained in graphics...)
-#if !defined(__linux__) && (!defined(__GNUC__) || defined(_MSC_VER))
-    _dynamicConvexShape =
-        std::make_unique<btConvexHullShape>((&(positions()[0].x)), (int)positions().size(), sizeof(glm::vec3));
-#endif
-
-    // _dynamicConvexShape->optimizeConvexHull();
-    // _dynamicConvexShape->initializePolyhedralFeatures();
-}

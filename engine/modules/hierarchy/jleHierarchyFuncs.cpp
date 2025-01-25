@@ -54,7 +54,7 @@ namespace jleHierarchyFuncs{
         return glm::vec3(getWorldMatrix(object)[3]);
     }
 
-    void setLocalMatrixFromWorld(jlECS::ObjectRef &object, const glm::mat4 &worldMatrix) {
+    void setLocalMatrixFromWorld(const jlECS::ObjectRef &object, const glm::mat4 &worldMatrix) {
         auto* transformComp = object.getComponentPtr<cTransform>();
         if (!transformComp) {
             return;

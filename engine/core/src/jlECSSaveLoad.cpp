@@ -130,6 +130,10 @@ jlECS::load(jlECS::ECS &ecs, jleJSONInputArchive &archive)
     archive.finishNode();
 
     reconstructComponentIndicesVector(ecs);
+
+    for (auto& container : componentContainers) {
+        container->constructAllComponents();
+    }
 }
 
 void
@@ -177,4 +181,8 @@ jlECS::load(jlECS::ECS &ecs, jleBinaryInputArchive &archive)
     }
 
     reconstructComponentIndicesVector(ecs);
+
+    for (auto& container : componentContainers) {
+        container->constructAllComponents();
+    }
 }

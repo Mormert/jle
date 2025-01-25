@@ -36,6 +36,7 @@ public:
         struct In {
             uint32_t screenX;
             uint32_t screenY;
+            const std::vector<glm::mat4>& worldMatrices;
         } in;
 
         struct InOut {
@@ -47,8 +48,5 @@ public:
         } out;
     };
 
-    void update(UpdateContext &ctx);
-
-protected:
-    std::vector<glm::mat4> getWorldTransforms(jlECS::ECS &ecs);
+    void update(const UpdateContext &ctx);
 };

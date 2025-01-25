@@ -41,12 +41,11 @@ struct jleEngineUpdateContext;
 
 struct jleGameState
 {
-    std::unique_ptr<jlECS::ECS> ecs;
     std::unique_ptr<jlePhysics> physics;
 };
 
 struct jleGameModules{
-    std::unique_ptr<jleHierarchyModule> coreModule;
+    std::unique_ptr<jleHierarchyModule> hierarchyModule;
     std::unique_ptr<jleGraphicsModule> graphicsModule;
     std::unique_ptr<jlePhysicsModule> physicsModule;
 };
@@ -67,11 +66,9 @@ public:
     virtual void update(jleEngineUpdateContext &ctx);
     virtual void start(GameStartContext& ctx);
 
-    [[nodiscard]] jleGameState& getGameState() { return _gameState; }
+    [[nodiscard]] jlECS::ECS& getECS() { return *_ecs; }
 
 protected:
     std::unique_ptr<jleGameModules> _modules;
-
-    jleGameState _gameState{};
-
+    std::unique_ptr<jlECS::ECS> _ecs;
 };

@@ -120,26 +120,24 @@ jleGraphicsModuleEditor::initializeECS(jlECS::ECS &ecs)
     registerEditorECSComponent<cSkybox>(ecs);
 }
 
-void jleGraphicsModuleEditor::updateEditor(jleEditorUpdateContext &ctx) {
-
-    auto& ecs = *ctx.engineUpdateContext.gameRuntime.getGame().getGameState().ecs;
-    const auto worldTransforms = getWorldTransforms(ecs);
+void jleGraphicsModuleEditor::updateEditor(jleEditorUpdateContext &ctx, const std::vector<glm::mat4>& worldMatrices) {
+    auto& ecs = ctx.engineUpdateContext.gameRuntime.getGame().getECS();
 
     for (auto [objectIndex, _] : ecs.iterateMulti_IncludeObjectIndex<cCamera>()) {
         auto mesh = ctx.gizmos.cameraMesh();
         auto material = ctx.gizmos.cameraMaterial();
-        ctx.editorFramePacket.sendMesh(mesh, material, worldTransforms[objectIndex], objectIndex, false);
+        ctx.editorFramePacket.sendMesh(mesh, material, worldMatrices[objectIndex], objectIndex, false);
     }
 
     for (auto [objectIndex, _] : ecs.iterateMulti_IncludeObjectIndex<cLight>()) {
         auto mesh = ctx.gizmos.lightLampMesh();
         auto material = ctx.gizmos.lampMaterial();
-        ctx.editorFramePacket.sendMesh(mesh, material, worldTransforms[objectIndex], objectIndex, false);
+        ctx.editorFramePacket.sendMesh(mesh, material, worldMatrices[objectIndex], objectIndex, false);
     }
 
     for (auto [objectIndex, _] : ecs.iterateMulti_IncludeObjectIndex<cLightDirectional>()) {
         auto mesh = ctx.gizmos.sunMesh();
         auto material = ctx.gizmos.sunMaterial();
-        ctx.editorFramePacket.sendMesh(mesh, material, worldTransforms[objectIndex], objectIndex, false);
+        ctx.editorFramePacket.sendMesh(mesh, material, worldMatrices[objectIndex], objectIndex, false);
     }
 }

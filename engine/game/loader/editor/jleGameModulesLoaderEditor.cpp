@@ -25,7 +25,7 @@ jleModuleLoading::createDefaultModules_Editor()
 {
     auto modules = std::make_unique<jleGameModules>();
 
-    modules->coreModule = std::make_unique<jleHierarchyModuleEditor>();
+    modules->hierarchyModule = std::make_unique<jleHierarchyModuleEditor>();
     modules->graphicsModule = std::make_unique<jleGraphicsModuleEditor>();
     modules->physicsModule = std::make_unique<jlePhysicsModuleEditor>();
 

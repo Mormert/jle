@@ -29,10 +29,6 @@ struct aiMesh;
 struct aiScene;
 class jleRenderThread;
 
-class btBvhTriangleMeshShape;
-class btConvexHullShape;
-class btTriangleMesh;
-
 class jleMesh : public jleResourceInterface
 {
 public:
@@ -83,17 +79,10 @@ public:
 
     void saveToFile(jleSerializationContext &ctx) override;
 
-    btBvhTriangleMeshShape *getStaticConcaveShape();
-
-    btConvexHullShape *getDynamicConvexShape();
-
 protected:
     void destroyOldBuffers();
 
     void saveMeshToAssimpScene(aiScene &scene);
-
-    void generateStaticConcaveShape();
-    void generateDynamicConvexShape();
 
     unsigned int _trianglesCount{};
 
@@ -111,10 +100,4 @@ protected:
     std::vector<glm::vec3> _tangents{};
     std::vector<glm::vec3> _bitangents{};
     std::vector<unsigned int> _indices{};
-
-private:
-    std::unique_ptr<btTriangleMesh> _staticConcaveShapeMeshInterface;
-    std::unique_ptr<btBvhTriangleMeshShape> _staticConcaveShape{nullptr};
-
-    std::unique_ptr<btConvexHullShape> _dynamicConvexShape{nullptr};
 };

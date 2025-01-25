@@ -89,11 +89,8 @@ jlePhysics::removeRigidbody(btRigidBody *body)
 void
 jlePhysics::renderDebug(jleFramePacket &framePacket)
 {
-    if (renderDebugEnabled) {
-        JLE_SCOPE_PROFILE_CPU(renderPhysicsDebug)
-        _internal->debugDraw->setFramePacket(&framePacket);
-        _internal->dynamicsWorld->debugDrawWorld();
-    }
+    _internal->debugDraw->setFramePacket(&framePacket);
+    _internal->dynamicsWorld->debugDrawWorld();
 }
 
 btDiscreteDynamicsWorld &

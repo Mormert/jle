@@ -29,7 +29,7 @@ namespace jleHierarchyFuncs {
 
     glm::vec3 getWorldPosition(const jlECS::ObjectRef& object);
 
-    void setLocalMatrixFromWorld(jlECS::ObjectRef& object, const glm::mat4& worldMatrix);
+    void setLocalMatrixFromWorld(const jlECS::ObjectRef& object, const glm::mat4& worldMatrix);
 
     // Expensive operation as it needs to iterate through all objects in the ECS to find the children!
     void destroyObjectIncludeChildren(const jlECS::ObjectRef &objectToDestroy);

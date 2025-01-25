@@ -38,8 +38,6 @@ public:
 
     void removeRigidbody(btRigidBody *body);
 
-    bool renderDebugEnabled = false;
-
     void renderDebug(jleFramePacket &packet);
 
     btDiscreteDynamicsWorld &dynamicsWorld();

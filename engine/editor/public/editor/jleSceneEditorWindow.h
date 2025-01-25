@@ -37,7 +37,6 @@ public:
         jleEditorUpdateContext &editorUpdate;
         jlECS::ECS& ecs;
         std::shared_ptr<std::vector<jlECS::ObjectRef>> selectedObjects;
-        jlePhysics& physics;
         jleUndoRedoManager& undoRedo;
     };
 
@@ -63,6 +62,8 @@ private:
     std::unique_ptr<jleFramebufferMultisample> _msaa;
 
     std::shared_ptr<jleFramebufferInterface> _framebuffer;
+
+    bool _debugRenderPhysics = false;
 
     bool _multiGizmoIsActive = false;
     glm::mat4 _multiGizmoInitialMatrix{1.f};

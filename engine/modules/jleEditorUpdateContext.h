@@ -28,6 +28,5 @@ public:
     jleEngineUpdateContext &engineUpdateContext;
     jleResourceIndexer &resourceIndexer;
     jleEditorGizmos &gizmos;
-    jleGameState &gameState;
     jleFramePacket &editorFramePacket;
 };

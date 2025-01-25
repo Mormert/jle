@@ -149,7 +149,7 @@ public:
     void
     renderUI(jleEditorUpdateContext &context)
     {
-        jlECS::ECS* ecs = context.engineUpdateContext.gameRuntime.isGameKilled() ? nullptr : context.gameState.ecs.get();
+        jlECS::ECS* ecs = context.engineUpdateContext.gameRuntime.isGameKilled() ? nullptr : &context.engineUpdateContext.gameRuntime.getGame().getECS();
 
         // Temporary work-around to ensure we get the *game* ECS
         if (!ecs) {
@@ -171,7 +171,6 @@ public:
         sceneWindow->renderUI({.editorUpdate = context,
                                .ecs = *ecs,
                                .selectedObjects = ecsWindowOutput.selectedObjects,
-                               .physics = *context.gameState.physics,
                                .undoRedo = _undoRedo
         });
 
@@ -269,7 +268,6 @@ jleEditor::render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem:
             .engineUpdateContext = ctx,
             .resourceIndexer = *_resourceIndexer,
             .gizmos = *_gizmos,
-            .gameState = _gameRuntime->getGame().getGameState(),
             .editorFramePacket = framePacketModifiedByEditor
         };
 
@@ -454,7 +452,9 @@ void jleEditor::updateEditorGameModules(jleEditorUpdateContext &ctx) {
 
     auto& modules = ctx.engineUpdateContext.gameRuntime.getGame().getModules();
 
+    const std::vector<glm::mat4>& worldMatrices = modules.hierarchyModule->getWorldMatrices();
+
     if (auto* graphicsEditorModule = dynamic_cast<jleGraphicsModuleEditor*>(modules.graphicsModule.get())){
-        graphicsEditorModule->updateEditor(ctx);
+        graphicsEditorModule->updateEditor(ctx, worldMatrices);
     }
 }

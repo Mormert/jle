@@ -23,63 +23,7 @@
 #include "runtime/components/cSkybox.h"
 
 #include <jlECS/jlECS.h>
-#include <modules/hierarchy/components/cParent.h>
 #include <modules/hierarchy/components/cTransform.h>
-
-namespace {
-    // Recursively compute and set each object's world transform in-place
-    void computeWorldMatrixRecursive(const jlECS::ObjectRef &object,
-                                     jlECS::ECS &ecs,
-                                     std::vector<glm::mat4> &worldMatrices,
-                                     std::vector<bool> &touchedTransforms)
-    {
-        const auto index = object.objectIndex();
-
-        // If we've already computed this object's world transform, just return
-        if (touchedTransforms[index]) {
-            return;
-        }
-
-        const auto* transformComp = object.getComponentPtr<cTransform>();
-        const glm::mat4 localMatrix = transformComp ? transformComp->getLocalMatrix() : glm::mat4(1.0f);
-
-        const auto* parentComp = object.getComponentPtr<cParent>();
-        if (!parentComp)
-        {
-            worldMatrices[index] = localMatrix;
-            touchedTransforms[index] = true;
-            return;
-        }
-
-        auto parentObj = parentComp->getParentRef(ecs);
-        if (!touchedTransforms[parentObj.objectIndex()]) {
-            computeWorldMatrixRecursive(parentObj, ecs, worldMatrices, touchedTransforms);
-        }
-
-        const glm::mat4 parentWorldMatrix = worldMatrices[parentObj.objectIndex()];
-        const glm::mat4 finalWorldMatrix = parentWorldMatrix * localMatrix;
-
-        worldMatrices[index] = finalWorldMatrix;
-        touchedTransforms[index] = true;
-    }
-
-
-}
-
-// Gets the final world transforms from the local matrices stored in cTransforms
-std::vector<glm::mat4> jleGraphicsModule::getWorldTransforms(jlECS::ECS &ecs)
-{
-    std::vector<glm::mat4> worldTransforms(ecs.allocatedObjectsCount());
-    std::vector<bool> touchedTransforms(ecs.allocatedObjectsCount(), false);
-
-    for (auto [objectIndex, transform] : ecs.iterateMulti_IncludeObjectIndex<cTransform>())
-    {
-        jlECS::ObjectRef object = ecs.getObject(objectIndex);
-        computeWorldMatrixRecursive(object, ecs, worldTransforms, touchedTransforms);
-    }
-
-    return worldTransforms;
-}
 
 void
 jleGraphicsModule::initializeECS(jlECS::ECS &ecs)
@@ -92,16 +36,14 @@ jleGraphicsModule::initializeECS(jlECS::ECS &ecs)
     ecs.registerComponentType<cSkybox>();
 }
 
-
-
 void
-jleGraphicsModule::update(jleGraphicsModule::UpdateContext &ctx)
+jleGraphicsModule::update(const jleGraphicsModule::UpdateContext &ctx)
 {
-    const auto worldTransforms = getWorldTransforms(ctx.inOut.ecs);
+    const std::vector<glm::mat4>& worldMatrices = ctx.in.worldMatrices;
 
     for (auto [objectIndex, camera] : ctx.inOut.ecs.iterateMulti_IncludeObjectIndex<cCamera>()) {
         cCamera::UpdateContext cameraUpdateCtx = {
-            .in = {.transform = worldTransforms[objectIndex],
+            .in = {.transform = worldMatrices[objectIndex],
                    .width = ctx.in.screenX,
                    .height = ctx.in.screenY},
             .out = {
@@ -115,15 +57,15 @@ jleGraphicsModule::update(jleGraphicsModule::UpdateContext &ctx)
     }
 
     for (auto [objectIndex, light] : ctx.inOut.ecs.iterateMulti_IncludeObjectIndex<cLight>()) {
-        light->ecsUpdate(ctx.out.framePacket, worldTransforms[objectIndex]);
+        light->ecsUpdate(ctx.out.framePacket, worldMatrices[objectIndex]);
     }
 
     for (auto [objectIndex, lightDirectional] : ctx.inOut.ecs.iterateMulti_IncludeObjectIndex<cLightDirectional>()) {
-        lightDirectional->ecsUpdate(ctx.out.framePacket, worldTransforms[objectIndex]);
+        lightDirectional->ecsUpdate(ctx.out.framePacket, worldMatrices[objectIndex]);
     }
 
     for (auto [objectIndex, mesh] : ctx.inOut.ecs.iterateMulti_IncludeObjectIndex<cMesh>()) {
-        mesh->ecsUpdate(ctx.out.framePacket, worldTransforms[objectIndex], objectIndex);
+        mesh->ecsUpdate(ctx.out.framePacket, worldMatrices[objectIndex], objectIndex);
     }
 
     for (auto [objectIndex, skinnedMesh] :
@@ -132,7 +74,7 @@ jleGraphicsModule::update(jleGraphicsModule::UpdateContext &ctx)
         auto object = ctx.inOut.ecs.getObject(objectIndex);
         auto optionalAnimator = object.getComponentPtr<cAnimator>();
 
-        skinnedMesh->ecsUpdate(ctx.out.framePacket, worldTransforms[objectIndex], optionalAnimator, objectIndex);
+        skinnedMesh->ecsUpdate(ctx.out.framePacket, worldMatrices[objectIndex], optionalAnimator, objectIndex);
     }
 
     for (auto &skybox : ctx.inOut.ecs.iterate<cSkybox>()) {

@@ -24,7 +24,7 @@ jleModuleLoading::createDefaultModules()
 {
     auto modules = std::make_unique<jleGameModules>();
 
-    modules->coreModule = std::make_unique<jleHierarchyModule>();
+    modules->hierarchyModule = std::make_unique<jleHierarchyModule>();
     modules->graphicsModule = std::make_unique<jleGraphicsModule>();
     modules->physicsModule = std::make_unique<jlePhysicsModule>();
 

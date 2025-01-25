@@ -29,7 +29,7 @@ class jleGraphicsModuleEditor : public jleGraphicsModule
 public:
     void initializeECS(jlECS::ECS &ecs) override;
 
-    void updateEditor(jleEditorUpdateContext& ctx);
+    void updateEditor(jleEditorUpdateContext& ctx, const std::vector<glm::mat4>& worldMatrices);
 
     std::unique_ptr<jleFramebufferScreen> cameraPreviewFramebuffer;
 };
