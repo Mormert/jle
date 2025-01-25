@@ -15,12 +15,20 @@
 
 #pragma once
 
+#include <modules/jleEditorUpdateContext.h>
 #include "modules/physics/jlePhysicsModule.h"
 
 class jlePhysicsModuleEditor : public jlePhysicsModule
 {
 public:
     void initializeECS(jlECS::ECS &ecs) override;
+
+    void updateEditor(jleFramePacket &framePacket);
+
+    bool& getDebugRenderingEnabledRef(){ return _renderPhysicsDebug; }
+
+private:
+    bool _renderPhysicsDebug = false;
 };
 
 

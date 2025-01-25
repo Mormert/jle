@@ -38,3 +38,9 @@ jlePhysicsModuleEditor::initializeECS(jlECS::ECS &ecs)
         ecs.registerComponentType<cRigidbody>(config);
     }
 }
+
+void jlePhysicsModuleEditor::updateEditor(jleFramePacket &framePacket) {
+    if (_renderPhysicsDebug) {
+        _physics->renderDebug(framePacket);
+    }
+}

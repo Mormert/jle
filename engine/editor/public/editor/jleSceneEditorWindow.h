@@ -50,7 +50,7 @@ public:
     float cameraSpeed = 100.f;
     float orthoZoomValue = 10.f;
 
-    [[nodiscard]] glm::vec3 getCameraPosition() { return _renderCamera.getPosition(); }
+    [[nodiscard]] glm::vec3 getCameraPosition() const { return _renderCamera.getPosition(); }
 private:
     float _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;
     std::pair<int32_t, int32_t> _lastCursorPos;
@@ -62,8 +62,6 @@ private:
     std::unique_ptr<jleFramebufferMultisample> _msaa;
 
     std::shared_ptr<jleFramebufferInterface> _framebuffer;
-
-    bool _debugRenderPhysics = false;
 
     bool _multiGizmoIsActive = false;
     glm::mat4 _multiGizmoInitialMatrix{1.f};

@@ -37,13 +37,14 @@
 #include <utility>
 #include <modules/hierarchy/jleHierarchyFuncs.h>
 #include <modules/hierarchy/components/cParent.h>
+#include <modules/physics/editor/jlePhysicsModuleEditor.h>
 
 namespace{
 
 class MoveTransformsCommand : public jleUndoRedoCommandBase{
 public:
-    MoveTransformsCommand(std::vector<jlECS::ObjectRef> objects, std::vector<glm::mat4> initialTransforms, glm::mat4 delta, jlePhysics* physics)
-        :_objects(std::move(objects)), _initialTransforms(std::move(initialTransforms)), _delta(delta), _physics(physics) {}
+    MoveTransformsCommand(std::vector<jlECS::ObjectRef> objects, std::vector<glm::mat4> initialTransforms, const glm::mat4& delta)
+        :_objects(std::move(objects)), _initialTransforms(std::move(initialTransforms)), _delta(delta) {}
 
     void execute(const CommandContext& ctx) override{
         for(auto& object : _objects){
@@ -79,7 +80,6 @@ private:
     std::vector<jlECS::ObjectRef> _objects;
     std::vector<glm::mat4> _initialTransforms;
     glm::mat4 _delta;
-    jlePhysics* _physics;
 };
 
 }
@@ -340,9 +340,11 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
 
         ImGui::SameLine();
         if (!input.editorUpdate.engineUpdateContext.gameRuntime.isGameKilled()) {
-            ImGui::Checkbox("Physics Debug", &_debugRenderPhysics);
-            if (_debugRenderPhysics) {
-                input.editorUpdate.engineUpdateContext.gameRuntime.getGame().getModules().physicsModule->getPhysics().renderDebug(input.editorUpdate.editorFramePacket);
+
+            auto& modules = input.editorUpdate.engineUpdateContext.gameRuntime.getGame().getModules();
+            if (auto* physicsEditorModule = dynamic_cast<jlePhysicsModuleEditor*>(modules.physicsModule.get())) {
+                bool& debugRenderPhysics = physicsEditorModule->getDebugRenderingEnabledRef();
+                ImGui::Checkbox("Physics Debug", &debugRenderPhysics);
             }
         }
 
@@ -482,7 +484,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
 
                 jleUndoRedoCommandBase::CommandContext undoRedoCommandCtx = {input.editorUpdate.engineUpdateContext.serializationContext};
 
-                auto command = std::make_unique<MoveTransformsCommand>(selectedObjectsWithTransforms, initialTransforms, delta, &input.physics);
+                auto command = std::make_unique<MoveTransformsCommand>(selectedObjectsWithTransforms, initialTransforms, delta);
                 input.undoRedo.enqueueAndExecute(undoRedoCommandCtx, std::move(command));
             }
 

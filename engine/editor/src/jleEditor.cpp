@@ -58,6 +58,7 @@
 #include <implot/implot.h>
 #include <modules/hierarchy/editor/jleHierarchyModuleEditor.h>
 #include <modules/graphics/editor/jleGraphicsModuleEditor.h>
+#include <modules/physics/editor/jlePhysicsModuleEditor.h>
 
 #include <WickedEngine/wiJobSystem.h>
 #include <plog/Log.h>
@@ -456,5 +457,9 @@ void jleEditor::updateEditorGameModules(jleEditorUpdateContext &ctx) {
 
     if (auto* graphicsEditorModule = dynamic_cast<jleGraphicsModuleEditor*>(modules.graphicsModule.get())){
         graphicsEditorModule->updateEditor(ctx, worldMatrices);
+    }
+
+    if (auto* physicsEditorModule = dynamic_cast<jlePhysicsModuleEditor*>(modules.physicsModule.get())){
+        physicsEditorModule->updateEditor(ctx.editorFramePacket);
     }
 }
