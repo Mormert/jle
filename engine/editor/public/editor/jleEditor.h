@@ -46,7 +46,7 @@ public:
 
     ~jleEditor() override;
 
-    void start(jleEngineUpdateContext &context) override;
+    void start() override;
 
     void render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem::context &jobsCtx) override;
 

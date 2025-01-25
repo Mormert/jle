@@ -55,7 +55,7 @@ jleGameEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleInput& input)
         ImGui::SetCursorPosY(ImGui::GetWindowHeight() / 2.f);
 
         if (ImGui::Button(startGameString)) {
-            ctx.gameRuntime.startGame();
+            ctx.gameRuntime.startGame(ctx.serializationContext);
         }
 
         ImGui::End();

@@ -6,14 +6,13 @@ jleEngineUpdateContext::jleEngineUpdateContext(jleGameRuntime &gameRuntime,
                                                  jleFramePacket &renderGraph_,
                                                  jleEngineSettings &engineSettings,
                                                  jleInput &input,
-                                                 jleLuaEnvironment &luaEnvironment_,
                                                  jleWindow &window,
                                                  jleResourceHolder &resources,
                                                  jleFrameInfo &info,
                                                  jleSerializationContext& serializationContext)
     : gameRuntime(gameRuntime), rendererModule(renderer), renderThread(renderThread),
       currentFramePacket(renderGraph_),
-      settings(engineSettings), inputModule(input), luaEnvironment(luaEnvironment_), windowModule(window),
+      settings(engineSettings), inputModule(input), windowModule(window),
       resourcesModule(resources), frameInfo(info), serializationContext(serializationContext)
 {
 }

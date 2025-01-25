@@ -59,6 +59,7 @@
 #include <modules/hierarchy/editor/jleHierarchyModuleEditor.h>
 #include <modules/graphics/editor/jleGraphicsModuleEditor.h>
 #include <modules/physics/editor/jlePhysicsModuleEditor.h>
+#include <modules/scripting/editor/jleLuaEditorModule.h>
 
 #include <WickedEngine/wiJobSystem.h>
 #include <plog/Log.h>
@@ -154,7 +155,7 @@ public:
 
         // Temporary work-around to ensure we get the *game* ECS
         if (!ecs) {
-            context.engineUpdateContext.gameRuntime.startGame();
+            context.engineUpdateContext.gameRuntime.startGame(context.engineUpdateContext.serializationContext);
             return;
         }
         assert(dynamic_cast<jlECS::Debug::ECS_Debug*>(ecs));
@@ -175,8 +176,13 @@ public:
                                .undoRedo = _undoRedo
         });
 
+        jleLuaEnvironment* luaGameEnvironment = nullptr;
+        if (!context.engineUpdateContext.gameRuntime.isGameKilled()) {
+            luaGameEnvironment = &context.engineUpdateContext.gameRuntime.getGame().getModules().luaModule->getEnvironment();
+        }
+
         gameWindow->renderUI(context.engineUpdateContext, context.engineUpdateContext.inputModule);
-        console->renderUI(context.engineUpdateContext, context.engineUpdateContext.luaEnvironment);
+        console->renderUI(context.engineUpdateContext, luaGameEnvironment);
         settingsWindow->renderUI(context);
         contentBrowser->renderUI(context);
         buildTool->renderUI(context.engineUpdateContext, context.resourceIndexer);
@@ -191,14 +197,14 @@ public:
 jleEditor::jleEditor(EngineConstructConfig& config) : jleGameEngine(config) {}
 
 void
-jleEditor::start(jleEngineUpdateContext &ctx)
+jleEditor::start()
 {
+    auto serializationContext = createSerializationContext();
+
     _internal = std::make_unique<jleEditorInternal>();
-    _gizmos = std::make_unique<jleEditorGizmos>(ctx.serializationContext);
+    _gizmos = std::make_unique<jleEditorGizmos>(serializationContext);
 
     LOG_INFO << "Starting the editor";
-
-    jleSerializationContext& serializationContext = ctx.serializationContext;
 
     _internal->editorSaveState =
         jleResourceRef<jleEditorSaveState>(jlePath{"BI:editor_save.edsave"}, serializationContext);
@@ -214,30 +220,25 @@ jleEditor::start(jleEngineUpdateContext &ctx)
     jleEditorWindows::ConstructContext editorWindowsConstructCtx{
         .serializationContext = serializationContext,
         .saveState = *_internal->editorSaveState.get(),
-        .engineSettings = ctx.settings,
+        .engineSettings = getSettings(),
     };
    _editorWindows = std::make_unique<jleEditorWindows>(editorWindowsConstructCtx);
 
     _sceneWindow = _editorWindows->sceneWindow;
     _editorSceneObjects = _editorWindows->editorSceneObjects;
 
-    ctx.windowModule.addWindowResizeCallback(
-        std::bind(&jleEditor::mainEditorWindowResized, this, std::placeholders::_1));
+    _window->addWindowResizeCallback([this]<typename T0>(T0 && PH1) { mainEditorWindowResized(std::forward<T0>(PH1)); });
 
     int x, y;
-    glfwGetFramebufferSize(ctx.windowModule.glfwWindow(), &x, &y);
-    ctx.windowModule.glfwFramebufferSizeCallback(ctx.windowModule.glfwWindow(), x, y);
+    glfwGetFramebufferSize(_window->glfwWindow(), &x, &y);
+    _window->glfwFramebufferSizeCallback(_window->glfwWindow(), x, y);
 
     LOG_INFO << "Starting the game in editor mode";
-
-    _luaEnvironment->loadScript("ER:/scripts/engine.lua", serializationContext);
-    _luaEnvironment->loadScript("ER:/scripts/globals.lua", serializationContext);
-    _luaEnvironment->loadScript("ED:/scripts/editor.lua", serializationContext);
 
     startRmlUi();
 
     if (saveState().gameRunning) {
-        ctx.gameRuntime.startGame();
+        _gameRuntime->startGame(serializationContext);
     }
 }
 
@@ -247,7 +248,6 @@ jleEditor::render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem:
     JLE_SCOPE_PROFILE_GPU(EditorRender);
 
     _resourceIndexer->update(ctx.serializationContext, *_editorWindows->textEditWindow);
-    _luaEnvironment->loadNewlyAddedScripts(ctx.serializationContext);
 
     jleFramePacket& framePacket = *_previousFramePacket;
 
@@ -461,5 +461,9 @@ void jleEditor::updateEditorGameModules(jleEditorUpdateContext &ctx) {
 
     if (auto* physicsEditorModule = dynamic_cast<jlePhysicsModuleEditor*>(modules.physicsModule.get())){
         physicsEditorModule->updateEditor(ctx.editorFramePacket);
+    }
+
+    if (auto* luaEditorModule = dynamic_cast<jleLuaEditorModule*>(modules.luaModule.get())){
+        luaEditorModule->updateEditor(ctx.engineUpdateContext.serializationContext);
     }
 }

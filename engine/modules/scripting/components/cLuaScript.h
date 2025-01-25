@@ -18,19 +18,16 @@
 #include "jleBuildConfig.h"
 
 #include <core/jleResourceRef.h>
+#include <sol2/sol.hpp>
+
 #include "modules/scripting/jleLuaClassSerialization.h"
 #include "modules/scripting/jleLuaScript.h"
-
-#include "jleGameEngine.h"
 #include "modules/scripting/jleLuaEnvironment.h"
 
 class cLuaScript
 {
 public:
     cLuaScript() = default;
-
-    // Called when cloned/duplicated
-    cLuaScript(const cLuaScript &other);
 
     template <class Archive>
     void
@@ -42,13 +39,15 @@ public:
 
             ar(CEREAL_NVP(_luaClass));
 
-            if (!_isInitialized) {
+            if (!_isInitialized && !_luaClass.luaClassName.empty()) {
                 initializeLuaComponent(luaEnv);
             }
 
             auto it = luaEnv.loadedLuaClasses().find(_luaClass.luaClassName);
             if (it != luaEnv.loadedLuaClasses().end()) {
                 it->second.serializeClass(ar, _self);
+            }else {
+                _isInitialized = false;
             }
         } catch (std::exception &e) {
             LOGE << "Failed to serialize cLuaScript";
@@ -67,9 +66,8 @@ private:
     void initializeLuaComponent(jleLuaEnvironment &luaEnvironment);
     bool _isInitialized{false};
 
-    jleLuaClassSerialization _luaClass;
-
-    jleLuaEnvironment* _luaEnvironment;
-
+    jleLuaClassSerialization _luaClass{};
     sol::table _self;
+
+    friend class jleLuaModule;
 };

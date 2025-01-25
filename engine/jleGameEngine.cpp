@@ -73,14 +73,9 @@ jleGameEngine::jleGameEngine(EngineConstructConfig& config)
 
     JLE_EXEC_IF(JLE_BUILD_EDITOR) { LOGI << "Editor Resources located at: " << jlePath{"ED:/"}.getRealPath(); }
 
-    LOG_INFO << "Starting the lua environment";
-    _luaEnvironment = std::make_unique<jleLuaEnvironment>();
-
     jleSerializationContext serializationContext{
         .resources = _resources.get(),
-        .serializationInterfaces = {_renderThread.get(), _luaEnvironment.get()}};
-
-    _luaEnvironment->loadInitialScripts(serializationContext);
+        .serializationInterfaces = {_renderThread.get()}};
 
     _internal = std::make_unique<jleEngineInternal>();
     _internal->engineSettings =
@@ -182,21 +177,19 @@ jleGameEngine::startRmlUi()
 }
 
 void
-jleGameEngine::start(jleEngineUpdateContext &ctx)
+jleGameEngine::start()
 {
+    auto serializationContext = createSerializationContext();
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
     {
-        _luaEnvironment->loadScript("ER:/scripts/engine.lua", ctx.serializationContext);
-        _luaEnvironment->loadScript("ER:/scripts/globals.lua", ctx.serializationContext);
-
         startRmlUi();
 
-        _fullscreen_renderer = std::make_unique<jleFullscreenRendering>(ctx.serializationContext);
+        _fullscreen_renderer = std::make_unique<jleFullscreenRendering>(serializationContext);
 
         JLE_EXEC_IF_NOT(JLE_BUILD_EDITOR)
         {
             const auto gameWindowResizeFunc = [&](const jleWindowResizeEvent &resizeEvent) {
-                ctx.gameRuntime.gameWindowResizedEvent(resizeEvent.framebufferWidth, resizeEvent.framebufferHeight);
+                _gameRuntime->gameWindowResizedEvent(resizeEvent.framebufferWidth, resizeEvent.framebufferHeight);
             };
 
             _window->addWindowResizeCallback(gameWindowResizeFunc);
@@ -204,7 +197,7 @@ jleGameEngine::start(jleEngineUpdateContext &ctx)
     }
     LOG_INFO << "Starting the game engine";
 
-    _gameRuntime->startGame();
+    _gameRuntime->startGame(serializationContext);
 }
 
 void
@@ -258,10 +251,8 @@ jleGameEngine::run()
 {
     PLOG_INFO << "Starting the game loop";
 
-    auto updateContext = createUpdateContext();
-
     _running = true;
-    start(updateContext);
+    start();
 #ifdef __EMSCRIPTEN__
     _emscriptenEnginePtr = this;
     emscripten_set_main_loop(mainLoopEmscripten, 0, true);
@@ -356,6 +347,11 @@ jleGameEngine::refreshDeltaTimes()
     _frameInfo._lastFrame = _frameInfo._currentFrame;
     _frameInfo._fps = static_cast<int>(1.0 / _frameInfo._deltaTime);
 }
+
+jleEngineSettings & jleGameEngine::getSettings() const {
+    return *_internal->engineSettings.get();
+}
+
 jleGraphics &
 jleGameEngine::renderer()
 {
@@ -365,9 +361,17 @@ jleGameEngine::renderer()
 jleSerializationContext
 jleGameEngine::createSerializationContext()
 {
+    std::vector<jleSerializableInterface *> interfaces;
+    interfaces.push_back(_renderThread.get());
+
+    if (!_gameRuntime->isGameKilled()) {
+        auto luaEnvironment = &_gameRuntime->getGame().getModules().luaModule->getEnvironment();
+        interfaces.push_back(luaEnvironment);
+    }
+
     return jleSerializationContext {
         .resources = _resources.get(),
-        .serializationInterfaces = {_renderThread.get(), _luaEnvironment.get()}
+        .serializationInterfaces = interfaces
     };
 }
 
@@ -382,7 +386,6 @@ jleGameEngine::createUpdateContext()
                                   *_currentFramePacket,
                                   *_internal->engineSettings.get(),
                                   *_input,
-                                  *_luaEnvironment,
                                   *_window,
                                   *_resources,
                                   _frameInfo,

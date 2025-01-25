@@ -34,6 +34,11 @@ public:
 
     ~jleConsoleEditorWindow() override;
 
+    void renderUI(jleEngineUpdateContext &ctx, jleLuaEnvironment *luaEnvironment);
+
+    void write(const plog::Record &record) override;
+
+protected:
     static int stricmp(const char *s1, const char *s2);
 
     static int strnicmp(const char *s1, const char *s2, int n);
@@ -46,16 +51,11 @@ public:
 
     void addLog(const char *fmt, ...) IM_FMTARGS(2);
 
-    void execCommand(const char *command_line, jleLuaEnvironment &luaEnvironment);
-
-    void renderUI(jleEngineUpdateContext &ctx, jleLuaEnvironment &luaEnvironment);
+    void execCommand(const char *command_line, jleLuaEnvironment *luaEnvironment);
 
     static int textEditCallbackStub(ImGuiInputTextCallbackData *data);
 
     int textEditCallback(ImGuiInputTextCallbackData *data);
-
-    void write(const plog::Record &record) override;
-
 private:
     static const unsigned int InputBufSize = 256;
     char InputBuf[InputBufSize];

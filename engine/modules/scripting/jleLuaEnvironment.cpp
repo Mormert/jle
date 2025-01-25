@@ -578,7 +578,6 @@ jleLuaEnvironment::loadedLuaClasses()
     return _loadedLuaClasses;
 }
 
-#if JLE_BUILD_EDITOR
 void
 jleLuaEnvironment::loadNewlyAddedScripts(jleSerializationContext& ctx)
 {
@@ -598,5 +597,3 @@ jleLuaEnvironment::loadNewlyAddedScripts(jleSerializationContext& ctx)
         _fileWatchFuture = std::async(std::launch::async, [&]() { return _scriptFilesWatcher.sweep(); });
     }
 }
-
-#endif

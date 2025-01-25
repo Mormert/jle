@@ -14,6 +14,10 @@
  *********************************************************************************************/
 
 #include "jleLuaScript.h"
+
+#include <sol2/sol.hpp>
+
+#include "jleLuaClass.h"
 #include "jleLuaEnvironment.h"
 
 bool
@@ -29,6 +33,10 @@ jleLuaScript::loadFromFile(jleSerializationContext& ctx, const jlePath &path)
 
     _sourceCode = buffer.str();
     _luaScriptName = path.getFileNameNoEnding();
+
+    if (jleLuaEnvironment* luaEnvironment = ctx.get<jleLuaEnvironment>()) {
+        luaEnvironment->loadScript(path, ctx);
+    }
 
     return true;
 }

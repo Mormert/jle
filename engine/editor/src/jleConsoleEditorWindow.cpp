@@ -140,7 +140,7 @@ void jleConsoleEditorWindow::addLog(const char *fmt, ...) {
     Items.push_back(strdup(buf));
 }
 
-void jleConsoleEditorWindow::execCommand(const char *command_line, jleLuaEnvironment& luaEnvironment) {
+void jleConsoleEditorWindow::execCommand(const char *command_line, jleLuaEnvironment* luaEnvironment) {
     addLog("# %s\n", command_line);
 
     // Insert into history. First find match and delete it so it can be pushed
@@ -154,13 +154,18 @@ void jleConsoleEditorWindow::execCommand(const char *command_line, jleLuaEnviron
         }
     History.push_back(strdup(command_line));
 
-    luaEnvironment.executeScript(command_line);
+    if (luaEnvironment == nullptr) {
+        addLog("[error] %s\n", "no lua environment found");
+    }
+    else {
+        luaEnvironment->executeScript(command_line);
+    }
 
     // On command input, we scroll to bottom even if AutoScroll==false
     ScrollToBottom = true;
 }
 
-void jleConsoleEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleLuaEnvironment& luaEnvironment) {
+void jleConsoleEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleLuaEnvironment* luaGameEnvironment) {
     if (!isOpened) {
         return;
     }
@@ -270,7 +275,7 @@ void jleConsoleEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleLuaEnviron
         char *s = InputBuf;
         strtrim(s);
         if (s[0])
-            execCommand(s, luaEnvironment);
+            execCommand(s, luaGameEnvironment);
         // strcpy(s, "");
         std::fill(s, s + InputBufSize, 0);
         reclaim_focus = true;

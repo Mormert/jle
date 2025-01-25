@@ -1,4 +1,5 @@
 add_library(jleScripting STATIC
+        jleLuaModule.cpp
         jleLuaScript.cpp
         jleLuaEnvironment.cpp
         jleLuaClass.cpp

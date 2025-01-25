@@ -16,49 +16,49 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 
-#include <core/serialization/jleSerialization.h>
+struct jleSerializationContext;
 
-class jleWindow;
-class jleResourceHolder;
-class jleInput;
+namespace jlECS
+{
+class ECS;
+class ObjectRef;
+struct CreateComponentData;
+struct DestroyComponentData;
+}
+
 class jleLuaEnvironment;
-class jleGraphics;
-struct jle3DSettings;
-class jleFramePacket;
-class jleFrameInfo;
-class jleGameRuntime;
-class jleEngineSettings;
-class jleRenderThread;
+class cLuaScript;
 
-struct jleEngineUpdateContext {
-    explicit jleEngineUpdateContext(jleGameRuntime &gameRuntime,
-                                     jleGraphics &renderer,
-                                     jleRenderThread &renderThread,
-                                     jleFramePacket &renderGraph,
-                                     jleEngineSettings &engineSettings,
-                                     jleInput &input,
-                                     jleWindow &window,
-                                     jleResourceHolder &resources,
-                                     jleFrameInfo &info,
-                                     jleSerializationContext& serializationContext);
+class jleLuaModule
+{
+public:
+    jleLuaModule();
 
-    // Modules
-    jleGameRuntime &gameRuntime;
-    jleGraphics &rendererModule;
-    jleWindow &windowModule;
-    jleResourceHolder &resourcesModule;
-    jleInput &inputModule;
+    virtual ~jleLuaModule();
 
-    // Rendering
-    jleRenderThread &renderThread;
-    jleFramePacket &currentFramePacket;
+    virtual void initializeECS(jlECS::ECS &ecs);
 
-    // Utilities
-    jleFrameInfo &frameInfo;
+    virtual void initializeModule(jleSerializationContext& serializationContext);
 
-    jleSerializationContext serializationContext;
+    struct UpdateContext {
+        struct In {
+            float dt;
+        } in;
 
-    jleEngineSettings &settings;
+        struct InOut {
+            jlECS::ECS &ecs;
+        } inOut;
+    };
+
+    void update(const UpdateContext &ctx);
+
+    [[nodiscard]] jleLuaEnvironment& getEnvironment() const { return *_luaEnvironment; }
+
+protected:
+    void onLuaComponentCreated(const jlECS::CreateComponentData &createCallbackData);
+    void onLuaComponentDestroyed(const jlECS::DestroyComponentData &destroyCallbackData);
+    void onLuaComponentCopied(cLuaScript *source, cLuaScript *dest);
+
+    std::unique_ptr<jleLuaEnvironment> _luaEnvironment;
 };

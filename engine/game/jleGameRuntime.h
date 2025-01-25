@@ -18,6 +18,7 @@
 #include <functional>
 #include <memory>
 
+struct jleSerializationContext;
 class jleGame;
 class jleGameModules;
 class jleGameEngine;
@@ -44,9 +45,9 @@ public:
 
     jleGame &getGame();
 
-    void startGame();
+    void startGame(jleSerializationContext& serializationContext);
 
-    void restartGame();
+    void restartGame(jleSerializationContext& serializationContext);
 
     void killGame();
 

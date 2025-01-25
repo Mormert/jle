@@ -20,9 +20,9 @@
 #include "core/jlePath.h"
 #include <core/serialization/jleSerialization.h>
 
-#include "jleLuaClass.h"
-
 #include <future>
+
+#include "jleLuaClass.h"
 
 class jleLuaScript;
 class jleFileWatcher;
@@ -38,7 +38,7 @@ class jleLuaEnvironment : public jleSerializableInterface
 public:
     jleLuaEnvironment();
 
-    ~jleLuaEnvironment();
+    ~jleLuaEnvironment() override;
 
     void loadScript(const jlePath &path, jleSerializationContext &ctx);
 
@@ -52,9 +52,7 @@ public:
 
     std::unordered_map<std::string, jleLuaClass> &loadedLuaClasses();
 
-#if JLE_BUILD_EDITOR
     void loadNewlyAddedScripts(jleSerializationContext &ctx);
-#endif
 
 protected:
     virtual void setupLua(sol::state &lua);

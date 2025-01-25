@@ -30,6 +30,7 @@
 #include <modules/graphics/jleGraphicsModule.h>
 #include <modules/physics/jlePhysicsModule.h>
 #include <modules/hierarchy/jleHierarchyModule.h>
+#include <modules/scripting/jleLuaModule.h>
 
 
 #include <execution>
@@ -48,6 +49,7 @@ struct jleGameModules{
     std::unique_ptr<jleHierarchyModule> hierarchyModule;
     std::unique_ptr<jleGraphicsModule> graphicsModule;
     std::unique_ptr<jlePhysicsModule> physicsModule;
+    std::unique_ptr<jleLuaModule> luaModule;
 };
 
 class jleGame
@@ -57,11 +59,12 @@ public:
     virtual ~jleGame();
 
     struct GameStartContext{
+        jleSerializationContext& serializationContext;
         std::unique_ptr<jlECS::ECS> ecs;
     };
 
     void injectModules(std::unique_ptr<jleGameModules> modules);
-    jleGameModules& getModules() const { return *_modules; }
+    [[nodiscard]] jleGameModules& getModules() const { return *_modules; }
 
     virtual void update(jleEngineUpdateContext &ctx);
     virtual void start(GameStartContext& ctx);

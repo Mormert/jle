@@ -111,7 +111,7 @@ protected:
     std::unique_ptr<jleFullscreenRendering> _fullscreen_renderer;
 
 protected:
-    virtual void start(jleEngineUpdateContext &context);
+    virtual void start();
 
     void startRmlUi();
 
@@ -139,10 +139,10 @@ protected:
     struct jleEngineInternal;
     std::unique_ptr<jleEngineInternal> _internal;
 
+    [[nodiscard]] jleEngineSettings& getSettings() const;
+
     jleGraphics &renderer();
 
     void refreshDeltaTimes();
     jleFrameInfo _frameInfo{};
-
-    std::shared_ptr<jleLuaEnvironment> _luaEnvironment;
 };

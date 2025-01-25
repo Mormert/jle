@@ -1,5 +1,5 @@
 /*********************************************************************************************
- *                                                                                           *
+*                                                                                           *
  *               ,     .     ,                      .   ,--.                                 *
  *               |     |     |                      |   |            o                       *
  *               | ,-. |- -- |    ,-: ,-: ,-: ,-. ,-|   |-   ;-. ,-: . ;-. ,-.               *
@@ -13,6 +13,16 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#include <core/jleCommon.h>
+#pragma once
 
-#include <editor/serialization/jleEditorSerialization.h>
+#include <modules/jleEditorUpdateContext.h>
+#include "modules/scripting/jleLuaModule.h"
+
+class jleLuaEditorModule final : public jleLuaModule
+{
+public:
+    void initializeECS(jlECS::ECS &ecs) override;
+    void initializeModule(jleSerializationContext &serializationContext) override;
+
+    void updateEditor(jleSerializationContext &serializationContext) const;
+};

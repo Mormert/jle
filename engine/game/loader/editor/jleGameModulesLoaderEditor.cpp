@@ -19,6 +19,7 @@
 #include <modules/graphics/editor/jleGraphicsModuleEditor.h>
 #include <modules/hierarchy/editor/jleHierarchyModuleEditor.h>
 #include <modules/physics/editor/jlePhysicsModuleEditor.h>
+#include <modules/scripting/editor/jleLuaEditorModule.h>
 
 std::unique_ptr<jleGameModules>
 jleModuleLoading::createDefaultModules_Editor()
@@ -28,6 +29,7 @@ jleModuleLoading::createDefaultModules_Editor()
     modules->hierarchyModule = std::make_unique<jleHierarchyModuleEditor>();
     modules->graphicsModule = std::make_unique<jleGraphicsModuleEditor>();
     modules->physicsModule = std::make_unique<jlePhysicsModuleEditor>();
+    modules->luaModule = std::make_unique<jleLuaEditorModule>();
 
     return modules;
 }

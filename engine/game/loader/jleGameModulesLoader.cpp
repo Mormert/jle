@@ -27,6 +27,7 @@ jleModuleLoading::createDefaultModules()
     modules->hierarchyModule = std::make_unique<jleHierarchyModule>();
     modules->graphicsModule = std::make_unique<jleGraphicsModule>();
     modules->physicsModule = std::make_unique<jlePhysicsModule>();
+    modules->luaModule = std::make_unique<jleLuaModule>();
 
     return modules;
 }

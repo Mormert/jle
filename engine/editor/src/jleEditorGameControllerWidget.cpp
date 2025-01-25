@@ -27,7 +27,7 @@ jleEditorGameControllerWidget::jleEditorGameControllerWidget(
     : jleEditorWindowInterface{window_name} {
 }
 
-void jleEditorGameControllerWidget::render(jleEngineUpdateContext & ctx) {
+void jleEditorGameControllerWidget::render(jleEngineUpdateContext& ctx) {
 
     const ImVec2 iconSize{ImGui::GetWindowHeight() - 3,
                           ImGui::GetWindowHeight() - 3};
@@ -35,13 +35,13 @@ void jleEditorGameControllerWidget::render(jleEngineUpdateContext & ctx) {
     if (ctx.gameRuntime.isGameKilled()) {
         if (ImGui::Button(("Start Game"))) {
             LOG_VERBOSE << "Starting the game.";
-            ctx.gameRuntime.startGame();
+            ctx.gameRuntime.startGame(ctx.serializationContext);
         }
     }
     else {
         if (ImGui::Button(("Restart Game"))) {
             LOG_VERBOSE << "Restarting the game.";
-            ctx.gameRuntime.restartGame();
+            ctx.gameRuntime.restartGame(ctx.serializationContext);
         }
         if (ImGui::Button(("Kill Game"))) {
             LOG_VERBOSE << "Killing the game.";

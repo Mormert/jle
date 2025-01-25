@@ -54,12 +54,13 @@ jleGameRuntime::timerManager()
 }
 
 void
-jleGameRuntime::restartGame()
+jleGameRuntime::restartGame(jleSerializationContext& serializationContext)
 {
     _game.reset();
 
     _timerManager->clearTimers();
-    startGame();
+
+    startGame(serializationContext);
 }
 
 void
@@ -153,9 +154,10 @@ jleGameRuntime::getGame()
 }
 
 void
-jleGameRuntime::startGame()
+jleGameRuntime::startGame(jleSerializationContext& serializationContext)
 {
     jleGame::GameStartContext startContext{
+        .serializationContext = serializationContext,
         .ecs = _gameConstructConfig.ecsCreator()
     };
 

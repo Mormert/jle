@@ -21,7 +21,7 @@ void
 cLuaScript::start(jleLuaEnvironment& environment)
 {
     if (!_isInitialized) {
-        initializeLuaComponent(environment);
+        return;
     }
 
     const auto luaClass = environment.getState()[_luaClass.luaClassName];
@@ -37,6 +37,10 @@ cLuaScript::start(jleLuaEnvironment& environment)
 void
 cLuaScript::update(jleLuaEnvironment& environment, float dt)
 {
+    if (!_isInitialized) {
+        return;
+    }
+
     const auto luaClass = environment.getState()[_luaClass.luaClassName];
 
     try {
@@ -50,6 +54,10 @@ cLuaScript::update(jleLuaEnvironment& environment, float dt)
 void
 cLuaScript::onDestroy(jleLuaEnvironment& environment)
 {
+    if (!_isInitialized) {
+        return;
+    }
+
     const auto luaClass = environment.getState()[_luaClass.luaClassName];
 
     try {
@@ -69,9 +77,13 @@ cLuaScript::getSelf()
 void
 cLuaScript::initializeLuaComponent(jleLuaEnvironment& luaEnvironment)
 {
-    const auto luaClass = luaEnvironment.getState()[_luaClass.luaClassName];
+    if (!luaEnvironment.loadedLuaClasses().contains(_luaClass.luaClassName)) {
+        _isInitialized = false;
+        LOGE << "Failed to load Lua class component on cLuaScript " << _luaClass.luaClassName;
+        return;
+    }
 
-    luaEnvironment.loadedLuaClasses()[_luaClass.luaClassName];
+    const auto luaClass = luaEnvironment.getState()[_luaClass.luaClassName];
 
     try {
         sol::protected_function classConstructor = luaClass["new"];
@@ -89,37 +101,3 @@ cLuaScript::initializeLuaComponent(jleLuaEnvironment& luaEnvironment)
         _isInitialized = false;
     }
 }
-
-namespace
-{
-void
-deep_copy(sol::state &lua, const sol::table &src, sol::table &dest)
-{
-    if (src.is<sol::table>()) {
-        sol::table src_table = src;
-        for (auto const &kv_pair : src_table) {
-            sol::object key = kv_pair.first;
-            sol::object value = kv_pair.second;
-            if (value.is<sol::table>()) {
-                sol::table nested_dest_table = lua.create_table();
-                deep_copy(lua, value, nested_dest_table);
-                dest[key] = nested_dest_table;
-            } else {
-                dest[key] = value;
-            }
-        }
-    }
-}
-} // namespace
-
-cLuaScript::cLuaScript(const cLuaScript &other)
-{
-
-    _luaClass = other._luaClass;
-    // TODO implement proper ECS copying here
-    // let it crash for now
-    assert(false);
-    //initializeLuaComponent(nullptr);
-    //deep_copy(_luaEnvironment->getState(), other._self, _self);
-}
-
