@@ -230,8 +230,7 @@ cAnimator::setAnimation(const jlePath &path, jleSerializationContext& ctx)
 {
     _animations.clear();
     _animations.push_back({});
-    _animations[0].currentAnimation.path = path;
-    _animations[0].currentAnimation.loadResource(ctx);
+    _animations[0].currentAnimation = jleResourceRef<jleAnimation>(path, ctx);
 
     for (auto &animation : _animations) {
         animation.currentAnimationLocal = *animation.currentAnimation.get();

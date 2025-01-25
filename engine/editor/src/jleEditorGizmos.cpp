@@ -22,13 +22,13 @@ struct jleEditorGizmos::jleEditorGizmosMeshMaterialHolder {
 
     jleEditorGizmosMeshMaterialHolder(jleSerializationContext& ctx)
     {
-        lightLampMeshRef = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_lamp.fbx"}, ctx};
-        sunMeshRef = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/gizmo_sun.fbx"}, ctx};
-        cameraMeshRef = jleResourceRef<jleMesh>{jlePath{"ED:gizmos/models/camera/camera.fbx"}, ctx};
-        lampMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/lamp.mat"}, ctx};
-        sunMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/sun.mat"}, ctx};
-        cameraMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/models/camera/camera.mat"}, ctx};
-        selectedObjectMaterialRef = jleResourceRef<jleMaterial>{jlePath{"ED:gizmos/selectedObject.mat"}, ctx};
+        lightLampMeshRef = jleResourceRef<jleMesh>{JLE_PATH_HASH("ED:/gizmos/models/gizmo_lamp.fbx"), ctx};
+        sunMeshRef = jleResourceRef<jleMesh>{JLE_PATH_HASH("ED:/gizmos/models/gizmo_sun.fbx"), ctx};
+        cameraMeshRef = jleResourceRef<jleMesh>{JLE_PATH_HASH("ED:/gizmos/models/camera/camera.fbx"), ctx};
+        lampMaterialRef = jleResourceRef<jleMaterial>{JLE_PATH_HASH("ED:/gizmos/models/lamp.mat"), ctx};
+        sunMaterialRef = jleResourceRef<jleMaterial>{JLE_PATH_HASH("ED:/gizmos/models/sun.mat"), ctx};
+        cameraMaterialRef = jleResourceRef<jleMaterial>{JLE_PATH_HASH("ED:/gizmos/models/camera/camera.mat"), ctx};
+        selectedObjectMaterialRef = jleResourceRef<jleMaterial>{JLE_PATH_HASH("ED:/gizmos/selectedObject.mat"), ctx};
     }
 
     jleResourceRef<jleMesh> lightLampMeshRef;

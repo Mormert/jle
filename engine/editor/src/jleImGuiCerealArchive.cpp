@@ -148,8 +148,8 @@ jleImGuiArchive::draw_ui_reference(const char *name,
                 // Perform search
                 for (auto &files : indexedFileSets) {
                     for (auto &file : *files) {
-                        if (strstr(file.getVirtualPath().c_str(), value.c_str()) != NULL) {
-                            searchResults.push_back(file.getVirtualPath());
+                        if (strstr(file.getVirtualPath().str().c_str(), value.c_str()) != NULL) {
+                            searchResults.push_back(file.getVirtualPath().str());
                         }
                     }
                 }
@@ -334,7 +334,7 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar,
         ImGui::PopStyleColor(2);
     } else {
         ImGui::PopStyleColor(1);
-        ImGui::Text("Loaded from script: %s", it->second.getScriptPathWhereClassIsDefined().getVirtualPath().c_str());
+        ImGui::Text("Loaded from script: %s", it->second.getScriptPathWhereClassIsDefined().getVirtualPath().str().c_str());
         ImGui::Separator();
     }
 
@@ -346,11 +346,12 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, jlePath &value)
 {
     ImGui::PushID(elementCount++);
 
-    std::string copy = value._virtualPath;
-    draw_ui(ar, std::string{name + std::string{" (path)"}}.c_str(), value._virtualPath);
-    if (copy != value._virtualPath) {
-        // Assign value to "itself", re-creating the real path
-        value = jlePath{value._virtualPath};
+    const jleVirtualPath virtualPath = value.getVirtualPath();
+
+    std::string copy = virtualPath.str();
+    draw_ui(ar, std::string{name + std::string{" (path)"}}.c_str(), copy);
+    if (copy != virtualPath.str()) {
+        value = jlePath{jleVirtualPath{(copy.c_str())}};
     }
 
     ImGui::PopID();

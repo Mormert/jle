@@ -30,7 +30,7 @@ bool
 jleImage::loadImage(const jlePath &path)
 {
     const auto &realPath = path.getRealPath();
-    image_data = stbi_load(realPath.c_str(), &_width, &_height, &_nrChannels, 0);
+    image_data = stbi_load(realPath.str().c_str(), &_width, &_height, &_nrChannels, 0);
 
     if (image_data) {
         return true;
@@ -41,7 +41,7 @@ jleImage::loadImage(const jlePath &path)
 jleImage::jleImage(const jlePath &path)
 {
     if (!loadImage(path)) {
-        LOGE << "Failed loading image with path: " << path.getVirtualPath();
+        LOGE << "Failed loading image with path: " << path.getVirtualPath().str();
     }
 }
 

@@ -18,75 +18,75 @@
 
 #include <plog/Log.h>
 
-jlePath::jlePath(const std::string &path, bool virtualPath)
-{
-    std::string processedPath = path;
-    fixSlashes(processedPath);
+#include <shared_mutex>
 
-    if (virtualPath) {
-        _virtualPath = processedPath;
-        _realPath = findRealPathFromVirtualPath(processedPath);
-    } else {
-        _realPath = processedPath;
-        _virtualPath = findVirtualPathFromRealPath(processedPath);
+namespace {
+
+class jleGlobalPathStorage {
+public:
+    jlePathHash getHash(const jleVirtualPath& virtualPath) {
+        {
+            std::shared_lock lock(_mutex);
+            if (const auto it = _virtualPathToHash.find(virtualPath); it != _virtualPathToHash.end()) {
+                return it->second;
+            }
+        }
+
+        std::unique_lock lock(_mutex);
+
+        auto it = _virtualPathToHash.find(virtualPath);
+        if (it != _virtualPathToHash.end()) {
+            return it->second;
+        }
+
+        const jlePathHash hash = jlePathHashingFunc(virtualPath.str());
+        jleAssert(hash != 0ull);
+        jleAssert(!_hashToRealPath.contains(hash));
+
+        _virtualPathToHash.emplace(virtualPath, hash);
+        _hashToVirtualPath.emplace(hash, virtualPath);
+        _hashToRealPath.emplace(hash, virtualPath.getRealPath());
+
+        return hash;
     }
 
-    _hash = std::hash<std::string>()(_virtualPath);
+    const jleVirtualPath& getVirtualPathRef(const jlePathHash hash) const {
+        std::shared_lock lock(_mutex);
+        if (const auto it = _hashToVirtualPath.find(hash); it != _hashToVirtualPath.end()) {
+            return it->second;
+        }
+        for (auto [p, h] : _virtualPathToHash) {
+            LOGI << "Virtual path " << p.str() << " hash " << h;
+        }
+        jleErrorDesc("Virtual path not found from path hash. Asset may not yet be indexed, or does not exist.");
+        static jleVirtualPath invalidVirtualPath{""};
+        return invalidVirtualPath;
+    }
+
+    const jleRealPath& getRealPathRef(const jlePathHash hash) const {
+        std::shared_lock lock(_mutex);
+        if (const auto it = _hashToRealPath.find(hash); it != _hashToRealPath.end()) {
+            return it->second;
+        }
+        jleErrorDesc("Real path not found from hash. Asset may not yet be indexed, or does not exist.");
+        static jleRealPath invalidRealPath{""};
+        return invalidRealPath;
+    }
+
+private:
+    mutable std::shared_mutex _mutex;
+    std::unordered_map<jleVirtualPath, jlePathHash>    _virtualPathToHash;
+    std::unordered_map<jlePathHash, jleVirtualPath>       _hashToVirtualPath;
+    std::unordered_map<jlePathHash, jleRealPath>       _hashToRealPath;
+};
+
+jleGlobalPathStorage g_pathStorage;
+
 }
 
-jlePath::jlePath(const char *virtualPath) : jlePath(std::string{virtualPath}, true) {}
 
-jlePath::jlePath(const std::string &virtualPath) : jlePath(virtualPath, true) {}
-
-std::string
-jlePath::getPathVirtualDrive() const
-{
-    return _virtualPath.substr(0, 3);
-}
-
-std::string
-jlePath::findVirtualPathFromRealPath(const std::string &realPath)
-{
-    const std::string gameResourcesStr{"GameResources"};
-
-    std::string path = realPath;
-    std::string virtualPath;
-
-    int gameResoures = path.find(gameResourcesStr);
-    if (gameResoures >= 0) {
-        path.erase(0, gameResoures + gameResourcesStr.length());
-        const std::string relpath = "GR:" + path;
-        virtualPath = relpath;
-        return virtualPath;
-    }
-
-    const std::string engineResourcesStr{"EngineResources"};
-    int engineResoures = path.find(engineResourcesStr);
-    if (engineResoures >= 0) {
-        path.erase(0, engineResoures + engineResourcesStr.length());
-        const std::string relpath = "ER:" + path;
-        virtualPath = relpath;
-        return virtualPath;
-    }
-
-    const std::string editorResourcesStr{"EditorResources"};
-    int editorResoures = path.find(editorResourcesStr);
-    if (editorResoures >= 0) {
-        path.erase(0, editorResoures + editorResourcesStr.length());
-        const std::string relpath = "ED:" + path;
-        virtualPath = relpath;
-        return virtualPath;
-    }
-
-    // Assume binary path if none of the above
-    virtualPath = "BI:" + path;
-    return virtualPath;
-}
-
-std::string
-jlePath::findRealPathFromVirtualPath(const std::string &virtualPath)
-{
-    std::string path = virtualPath;
+jleRealPath jleVirtualPath::getRealPath() const {
+    std::string path = _virtualPath;
     std::string realPath;
 
     jleRootFolder rootFolder = jleRootFolder::None;
@@ -100,37 +100,37 @@ jlePath::findRealPathFromVirtualPath(const std::string &virtualPath)
         rootFolder = jleRootFolder::EditorResources;
     } else if (prefixString == BINARY_RESOURCES_PREFIX) {
         path.erase(0, 4);
-        return path;
+        return jleRealPath(path.c_str());
     }
 
     std::string rootFolderStr;
     const std::string *resourcesDirectory;
     switch (rootFolder) {
-    case jleRootFolder::EngineResources:
-        rootFolderStr = ENGINE_RESOURCES_PREFIX;
+        case jleRootFolder::EngineResources:
+            rootFolderStr = ENGINE_RESOURCES_PREFIX;
         resourcesDirectory = &JLE_ENGINE_RESOURCES_PATH;
         break;
-    case jleRootFolder::GameResources:
-        rootFolderStr = GAME_RESOURCES_PREFIX;
+        case jleRootFolder::GameResources:
+            rootFolderStr = GAME_RESOURCES_PREFIX;
         resourcesDirectory = &GAME_RESOURCES_DIRECTORY;
         break;
-    case jleRootFolder::EditorResources:
-        rootFolderStr = EDITOR_RESOURCES_PREFIX;
+        case jleRootFolder::EditorResources:
+            rootFolderStr = EDITOR_RESOURCES_PREFIX;
         resourcesDirectory = &JLE_EDITOR_RESOURCES_PATH;
         break;
-    case jleRootFolder::BinaryFolder:
-        rootFolderStr = BINARY_RESOURCES_PREFIX;
+        case jleRootFolder::BinaryFolder:
+            rootFolderStr = BINARY_RESOURCES_PREFIX;
         resourcesDirectory = &JLE_BINARY_RESOURCES_PATH;
         break;
-    case jleRootFolder::None:
-        realPath = path;
-        return realPath;
+        case jleRootFolder::None:
+            realPath = path;
+        return jleRealPath(realPath.c_str());
     }
 
     if (path.find(rootFolderStr) == std::string::npos) {
         LOG_ERROR << "Could not find true game resource path. Path did not contain " << rootFolderStr;
         realPath = path;
-        return realPath;
+        return jleRealPath(realPath.c_str());
     }
 
     // Remove the root folder prefix ("GR:", "ER:" or "ED:")
@@ -143,131 +143,107 @@ jlePath::findRealPathFromVirtualPath(const std::string &virtualPath)
     {
         realPath = *resourcesDirectory + '/' + path;
     }
-    return realPath;
-}
-bool
-jlePath::isEmpty()
-{
-    return _virtualPath.empty();
+    return jleRealPath(realPath.c_str());
 }
 
-bool
-jlePath::operator==(const jlePath &other) const
-{
-    return (_virtualPath == other._virtualPath);
-}
+jleVirtualPath jleRealPath::getVirtualPath() const {
+    const std::string gameResourcesStr{"GameResources"};
 
-std::string
-jlePath::getVirtualPath() const
-{
-    return _virtualPath;
-}
+    std::string path = _realPath;
+    std::string virtualPath;
 
-std::string
-jlePath::getRealPath()
-{
-    if (_realPath.empty()) {
-        _realPath = findRealPathFromVirtualPath(_virtualPath);
+    int gameResoures = path.find(gameResourcesStr);
+    if (gameResoures >= 0) {
+        path.erase(0, gameResoures + gameResourcesStr.length());
+        const std::string relpath = "GR:" + path;
+        virtualPath = relpath;
+        return jleVirtualPath(virtualPath.c_str());
     }
-    return _realPath;
-}
 
-std::string
-jlePath::getVirtualPath()
-{
-    if (_virtualPath.empty()) {
-        _virtualPath = findVirtualPathFromRealPath(_realPath);
-        _hash = std::hash<std::string>()(_virtualPath);
+    const std::string engineResourcesStr{"EngineResources"};
+    int engineResoures = path.find(engineResourcesStr);
+    if (engineResoures >= 0) {
+        path.erase(0, engineResoures + engineResourcesStr.length());
+        const std::string relpath = "ER:" + path;
+        virtualPath = relpath;
+        return jleVirtualPath(virtualPath.c_str());
     }
-    return _virtualPath;
-}
 
-std::string
-jlePath::getRealPath() const
-{
-    if (_realPath.empty()) {
-        _realPath = findRealPathFromVirtualPath(_virtualPath);
+    const std::string editorResourcesStr{"EditorResources"};
+    int editorResoures = path.find(editorResourcesStr);
+    if (editorResoures >= 0) {
+        path.erase(0, editorResoures + editorResourcesStr.length());
+        const std::string relpath = "ED:" + path;
+        virtualPath = relpath;
+        return jleVirtualPath(virtualPath.c_str());
     }
-    return _realPath;
+
+    // Assume binary path if none of the above
+    virtualPath = "BI:" + path;
+    return jleVirtualPath(virtualPath.c_str());
 }
 
-void
-jlePath::fixSlashes(std::string &str)
-{
-    const auto str_replace = [](std::string &str, const std::string &oldStr, const std::string &newStr) {
-        std::string::size_type pos = 0u;
-        while ((pos = str.find(oldStr, pos)) != std::string::npos) {
-            str.replace(pos, oldStr.length(), newStr);
-            pos += newStr.length();
-        }
-    };
-
-    str_replace(str, ":", ":/");
-    str_replace(str, "\\", "/");
-    str_replace(str, "//", "/");
+jlePath::jlePath(const jlePathHash pathHash) {
+    _hash = pathHash;
 }
 
-std::string
-jlePath::getFileEnding() const
+jlePath::jlePath(const jleVirtualPath& virtualPath)
 {
-    size_t pos = _virtualPath.find_first_of('.');
+    _hash = g_pathStorage.getHash(virtualPath);
+}
+
+jlePath::jlePath(const jleRealPath& realPath)
+{
+    const jleVirtualPath virtualPath = realPath.getVirtualPath();
+    _hash = g_pathStorage.getHash(virtualPath);
+}
+
+std::string jlePath::getPathVirtualDrive() const
+{
+    const auto& virtualPath = getVirtualPath();
+    return virtualPath->substr(0, 3);
+}
+
+
+const jleVirtualPath &jlePath::getVirtualPath() const
+{
+    return g_pathStorage.getVirtualPathRef(_hash);
+}
+
+const jleRealPath &jlePath::getRealPath() const
+{
+    return g_pathStorage.getRealPathRef(_hash);
+}
+
+std::string jlePath::getFileEnding() const
+{
+    const auto& virtualPath = getVirtualPath();
+    size_t pos = virtualPath->find_first_of('.');
 
     if (pos != std::string::npos) {
-        return _virtualPath.substr(pos + 1);
-    } else {
-        return "";
+        return virtualPath->substr(pos + 1);
     }
+    return "";
 }
 
-std::string
-jlePath::getFileNameNoEnding() const
+std::string jlePath::getFileNameNoEnding() const
 {
-    size_t posDot = _virtualPath.find_last_of('.');
-    size_t posSlash = _virtualPath.find_last_of('/');
+    const auto& virtualPath = getVirtualPath();
+    size_t posDot = virtualPath->find_last_of('.');
+    size_t posSlash = virtualPath->find_last_of('/');
 
     if (posDot != std::string::npos) {
-        return _virtualPath.substr(posSlash+1, posDot-posSlash-1);
-    } else {
-        return "";
+        return virtualPath->substr(posSlash+1, posDot-posSlash-1);
     }
+    return "";
 }
 
-// Below operator broke Lua bindings for some reason:
-// std::ostream &
-// operator<<(std::ostream &stream, const jlePath &path)
-// {
-//     stream << path.getVirtualPath();
-//     return stream;
-// }
-
-std::string
-jlePath::getRealPathConst() const
+std::string jlePath::getVirtualFolder() const
 {
-    return getRealPath();
-}
-std::string
-jlePath::getVirtualPathConst() const
-{
-    return getVirtualPath();
-}
+    const auto& virtualPath = getVirtualPath();
 
-std::string
-jlePath::getVirtualFolder() const
-{
-
-    auto slash = getVirtualPath().find_last_of('/');
-    auto folder = getVirtualPath().substr(0, slash);
+    auto slash = virtualPath->find_last_of('/');
+    auto folder = virtualPath->substr(0, slash);
     return folder;
 }
 
-bool
-jlePath::operator<(const jlePath &other) const
-{
-    return _virtualPath < other._virtualPath;
-}
-
-size_t
-jlePath::hash() const
-{
-    return _hash;
-}

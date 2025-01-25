@@ -206,13 +206,12 @@ jleEditor::start()
 
     LOG_INFO << "Starting the editor";
 
-    _internal->editorSaveState =
-        jleResourceRef<jleEditorSaveState>(jlePath{"BI:editor_save.edsave"}, serializationContext);
+    _internal->editorSaveState = jleResourceRef<jleEditorSaveState>(jlePath{jleVirtualPath{"BI:editor_save.edsave"}}, serializationContext);
 
     std::vector<std::string> directoriesForNotification;
-    directoriesForNotification.push_back(jlePath{"ER:/"}.getRealPath());
-    directoriesForNotification.push_back(jlePath{"ED:/"}.getRealPath());
-    directoriesForNotification.push_back(jlePath{"GR:/"}.getRealPath());
+    directoriesForNotification.push_back(jleVirtualPath{"ER:/"}.getRealPath().str());
+    directoriesForNotification.push_back(jleVirtualPath{"ED:/"}.getRealPath().str());
+    directoriesForNotification.push_back(jleVirtualPath{"GR:/"}.getRealPath().str());
     _resourceIndexer = std::make_unique<jleResourceIndexer>(directoriesForNotification);
 
     initImgui();

@@ -22,7 +22,7 @@
 #define SAVE_SHARED_THIS_SERIALIZED_JSON(PARENT_TYPE)                                                                  \
     void saveToFile(jleSerializationContext &ctx) override                                                             \
     {                                                                                                                  \
-        std::ofstream save{path.getRealPath()};                                                                        \
+        std::ofstream save{path.getRealPath().str()};                                                                        \
         jleJSONOutputArchive outputArchive(save, ctx);                                                         \
         std::shared_ptr<PARENT_TYPE> thiz = std::static_pointer_cast<PARENT_TYPE>(shared_from_this());                 \
         outputArchive(thiz);                                                                                           \

@@ -32,8 +32,7 @@ public:
     void kickStart(std::unique_ptr<jleGameEngine> engine, int argc, char *argv[])
     {
 #if JLE_BUILD_RUNTIME_CONFIGURABLE
-        auto& commandArguments = jleCommandArguments::getInstance();
-        commandArguments.parse(argc, argv);
+        jleCommandArguments commandArguments{argc, argv};
         configureRuntime(commandArguments);
 #endif
         // Initialize plog when kickstarting, so logging is enabled everywhere after the kickstart

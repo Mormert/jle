@@ -21,7 +21,7 @@ jleEditorNotifications::jleEditorNotifications(const std::string &windowName, jl
 {
     dynamicAppender().addAppender(this);
 
-    _errorImage = jleResourceRef<jleTexture>(jlePath{"ED:icons/error.png"}, ctx);
+    _errorImage = jleResourceRef<jleTexture>(JLE_PATH_HASH("ED:/icons/error.png"), ctx);
 }
 
 jleEditorNotifications::~jleEditorNotifications() { dynamicAppender().removeAppender(this); }

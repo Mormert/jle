@@ -36,8 +36,6 @@ class jleFileWatcher
 public:
     explicit jleFileWatcher(const std::vector<std::string> &directories);
 
-    void setWatchDirectories(const std::vector<std::string> &directories);
-
     jleFileIndexerResult sweep();
 
 private:

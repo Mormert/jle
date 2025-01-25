@@ -44,7 +44,7 @@ void jleEditorResourceViewer::renderUI(jleEngineUpdateContext &ctx) {
 
             for (auto &&path : drive.second) {
                 const std::string pathStr =
-                    path.first.getVirtualPath() + " (" +
+                    path.first.getVirtualPath().str() + " (" +
                     std::to_string(path.second.second.use_count() - 1) + " users)";
 
                 if (ImGui::TreeNode(pathStr.c_str())) {
@@ -94,10 +94,9 @@ jleEditorResourceViewer::update(jleResourceHolder &resourcesModule)
             ImGui::EndPopup();
         }
         if (open) {
-
             for (auto &&path : drive.second) {
                 const std::string pathStr =
-                    path.first.getVirtualPath() + " (" +
+                    path.first.getVirtualPath().str() + " (" +
                     std::to_string(path.second.second.use_count() - 1) + " users)";
 
                 if (ImGui::TreeNode(pathStr.c_str())) {

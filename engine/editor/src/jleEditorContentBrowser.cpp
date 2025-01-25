@@ -35,41 +35,21 @@ jleEditorContentBrowser::jleEditorContentBrowser(const std::string &window_name,
                                                  const std::shared_ptr<jleEditorResourceEdit> &editorResourceEdit)
     : jleEditorWindowInterface(window_name)
 {
-    _directoryIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(
-        jlePath{"ED:/icons/directory.png"}, serializationContext);
-    _fileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/files.png"},
-                                                                                  serializationContext);
-    _backDirectoryIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(
-        jlePath{"ED:/icons/back_directory.png"}, serializationContext);
-
-    _sceneFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/scene.png"},
-                                                                                       serializationContext);
-
-    _imageFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/image.png"},
-                                                                                       serializationContext);
-
-    _jsonFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/json.png"},
-                                                                                      serializationContext);
-
-    _luaFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/script.png"},
-                                                                                     serializationContext);
-
-    _shaderFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/shader.png"},
-                                                                                        serializationContext);
-
-    _materialFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(
-        jlePath{"ED:/icons/material.png"}, serializationContext);
-
-    _objTemplateFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(
-        jlePath{"ED:/icons/obj_template.png"}, serializationContext);
-
-    _obj3dFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(jlePath{"ED:/icons/object.png"},
-                                                                                       serializationContext);
+    _directoryIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(JLE_PATH_HASH("ED:/icons/directory.png"), serializationContext);
+    _fileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(JLE_PATH_HASH("ED:/icons/files.png"), serializationContext);
+    _backDirectoryIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(JLE_PATH_HASH("ED:/icons/back_directory.png"), serializationContext);
+    _sceneFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(JLE_PATH_HASH("ED:/icons/scene.png"),serializationContext);
+    _imageFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(JLE_PATH_HASH("ED:/icons/image.png"),serializationContext);
+    _jsonFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(JLE_PATH_HASH("ED:/icons/json.png"),serializationContext);
+    _luaFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(JLE_PATH_HASH("ED:/icons/script.png"),serializationContext);
+    _shaderFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(JLE_PATH_HASH("ED:/icons/shader.png"), serializationContext);
+    _materialFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(JLE_PATH_HASH("ED:/icons/material.png"), serializationContext);
+    _objTemplateFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(JLE_PATH_HASH("ED:/icons/obj_template.png"), serializationContext);
+    _obj3dFileIcon = serializationContext.resources->loadResourceFromFileT<jleTexture>(JLE_PATH_HASH("ED:/icons/object.png"), serializationContext);
 
     _selectedDirectory = GAME_RESOURCES_DIRECTORY;
 
     _editorTextEdit = std::move(editorTextEdit);
-
     _editorResourceEdit = std::move(editorResourceEdit);
 }
 
@@ -242,10 +222,8 @@ jleEditorContentBrowser::contentBrowser(jleEditorUpdateContext &editorCtx)
             ImGui::InputText("File Name", newFileName, sizeof(newFileName));
 
             if (ImGui::Button("Create")) {
-                auto createdResource = newResourceFunction();
-                jlePath path = jlePath{_selectedDirectory.string() + "/" + std::string{newFileName}, false};
-                createdResource->path = path;
-
+                const std::shared_ptr<jleResourceInterface> createdResource = newResourceFunction();
+                createdResource->path = jlePath{jleRealPath{_selectedDirectory.string() + "/" + std::string{newFileName}}};
                 createdResource->saveToFile(ctx.serializationContext);
                 openedNewResource = false;
             }
@@ -314,8 +292,8 @@ jleEditorContentBrowser::contentBrowser(jleEditorUpdateContext &editorCtx)
 
     {
         auto text = _selectedDirectory.wstring();
-        auto virtualPath = jlePath{_selectedDirectory.string(), false}.getVirtualPath();
-        ImGui::Text("%.*ls (%s)", static_cast<int>(text.size()), text.data(), virtualPath.c_str());
+        const jlePath path = jlePath{jleRealPath{_selectedDirectory.string()}};
+        ImGui::Text("%.*ls (%s)", static_cast<int>(text.size()), text.data(), path.getVirtualPath().str().c_str());
     }
 
     ImGui::BeginGroup();
@@ -352,13 +330,12 @@ jleEditorContentBrowser::contentBrowser(jleEditorUpdateContext &editorCtx)
                     } else if (dir_entry.path().extension() == ".png" || dir_entry.path().extension() == ".jpg" ||
                                dir_entry.path().extension() == ".tga" || dir_entry.path().extension() == ".bmp" ||
                                dir_entry.path().extension() == ".psd") {
-                        auto path = jlePath{dir_entry.path().string(), false};
+                        auto path = jlePath{jleRealPath{dir_entry.path().string()}};
                         auto it = _referencedTextures.find(path);
                         if (it != _referencedTextures.end()) {
                             iconTexture = it->second;
                         } else {
-                            iconTexture = ctx.resourcesModule.loadResourceFromFileT<jleTexture>(
-                                jlePath{dir_entry.path().string(), false}, ctx.serializationContext);
+                            iconTexture = ctx.resourcesModule.loadResourceFromFileT<jleTexture>(jlePath{jleRealPath{dir_entry.path().string()}}, ctx.serializationContext);
                             _referencedTextures.insert(std::make_pair(path, iconTexture));
                         }
                     } else if (dir_entry.path().extension() == ".json") {
@@ -605,7 +582,7 @@ jleEditorContentBrowser::openAsText(std::filesystem::path &file)
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
 
     if (ImGui::Button("Open As Text", size)) {
-        _editorTextEdit->open(jlePath{file.string(), false});
+        _editorTextEdit->open(jlePath{jleRealPath{file.string()}});
     }
 }
 
@@ -616,6 +593,6 @@ jleEditorContentBrowser::openAsResource(std::filesystem::path &file, jleResource
     const ImVec2 size{100 * globalImguiScale, 25 * globalImguiScale};
 
     if (ImGui::Button("Open As Resource", size)) {
-        _editorResourceEdit->tryOpen(jlePath{file.string(), false}, resources);
+        _editorResourceEdit->tryOpen(jlePath{jleRealPath{file.string()}}, resources);
     }
 }

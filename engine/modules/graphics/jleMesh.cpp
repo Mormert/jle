@@ -197,7 +197,7 @@ jleMesh::usesIndexing()
 bool
 jleMesh::loadAssimp(const jlePath &path, jleRenderThread *renderThread)
 {
-    auto pathStr = path.getRealPath();
+    auto pathStr = path.getRealPath().str();
 
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(pathStr,
@@ -220,17 +220,17 @@ jleMesh::loadAssimp(const jlePath &path, jleRenderThread *renderThread)
         auto assimpMesh = scene->mMeshes[0];
         loadAssimpMesh(assimpMesh, out_vertices, out_normals, out_uvs, out_tangents, out_bitangents, out_indices);
     } else {
-        LOGW << "Found no meshes in " << path.getVirtualPath();
+        LOGW << "Found no meshes in " << path.getVirtualPath().str();
         return false;
     }
 
     if (scene->mNumMeshes > 1) {
-        LOGW << "Found multiple meshes in " << path.getVirtualPath() << ", only first mesh found will be used!";
+        LOGW << "Found multiple meshes in " << path.getVirtualPath().str() << ", only first mesh found will be used!";
     }
 
     makeMesh(out_vertices, out_normals, out_uvs, out_tangents, out_bitangents, out_indices, renderThread);
 
-    LOGV << "Loaded mesh " << path.getVirtualPath() << " with " << out_vertices.size() << " vertices";
+    LOGV << "Loaded mesh " << path.getVirtualPath().str() << " with " << out_vertices.size() << " vertices";
 
     return true;
 }
@@ -343,13 +343,13 @@ jleMesh::saveToFile(jleSerializationContext &ctx)
 
     Assimp::Exporter exporter;
     const auto &format = path.getFileEnding();
-    auto ret = exporter.Export(&scene, format, path.getRealPath(), aiProcess_JoinIdenticalVertices | aiProcess_FlipUVs);
+    auto ret = exporter.Export(&scene, format, path.getRealPath().str(), aiProcess_JoinIdenticalVertices | aiProcess_FlipUVs);
 
     if (ret == aiReturn_SUCCESS) {
-        LOGI << "Exported " << path.getVirtualPath() << " successfully.";
+        LOGI << "Exported " << path.getVirtualPath().str() << " successfully.";
     } else {
         const char *errorString = exporter.GetErrorString();
-        LOGE << "Failed to save mesh: " << path.getVirtualPath() << ", reason: " << errorString;
+        LOGE << "Failed to save mesh: " << path.getVirtualPath().str() << ", reason: " << errorString;
     }
 }
 

@@ -283,7 +283,7 @@ private:
     {
         ImGui::PushID(elementCount++);
 
-        std::string copy = value.path._virtualPath;
+        std::string copy = value.getPath().isEmpty() ? "" : value.getPath().getVirtualPath().str();
 
         static std::unique_ptr<T> dummyResource;
         if (!dummyResource) {
@@ -292,10 +292,10 @@ private:
 
         auto fileExtensionAssociated = dummyResource->getFileAssociations();
 
-        bool isEditedAndDeactivated = draw_ui_reference(
-            std::string{name + std::string{" (ref)"}}.c_str(), value.path._virtualPath, fileExtensionAssociated);
+        bool isEditedAndDeactivated = draw_ui_reference(std::string{name + std::string{" (ref)"}}.c_str(), copy, fileExtensionAssociated);
         if (isEditedAndDeactivated) {
-            value.load_minimal(ar, value.path._virtualPath);
+            jlePath newPath{jleVirtualPath{copy.c_str()}};
+            value.load_minimal(ar, newPath.getHash());
         }
 
         ImGui::PopID();

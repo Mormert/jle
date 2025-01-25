@@ -23,17 +23,10 @@
 class jleCommandArguments
 {
 public:
-    jleCommandArguments(const jleCommandArguments&) = delete;
-    jleCommandArguments& operator=(const jleCommandArguments&) = delete;
-
-    void parse(int argc, char *argv[]);
+    jleCommandArguments(int argc, char *argv[]);
 
     [[nodiscard]] bool hasArgument(const std::string &arg) const;
-
-    const std::string& getProgramArgsString();
-
-    static jleCommandArguments& getInstance();
-
+    [[nodiscard]] const std::string& getProgramArgsString();
 private:
     jleCommandArguments() = default;
 

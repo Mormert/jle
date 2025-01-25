@@ -25,7 +25,7 @@ jleAnimation::loadFromFile(jleSerializationContext& ctx, const jlePath &path)
     Assimp::Importer importer;
     // importer.SetPropertyBool("AI_CONFIG_FBX_USE_SKELETON_BONE_CONTAINER", true);
     const aiScene *scene = importer.ReadFile(
-        path.getRealPath(), aiProcess_Triangulate | aiProcess_PopulateArmatureData | aiProcess_LimitBoneWeights);
+        path.getRealPath().str(), aiProcess_Triangulate | aiProcess_PopulateArmatureData | aiProcess_LimitBoneWeights);
     if (!scene || !scene->mRootNode) {
         LOGE << "Failed loading animation, no scene or no root node.";
         return false;

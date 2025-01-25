@@ -64,22 +64,28 @@ jleGameEngine::jleGameEngine(EngineConstructConfig& config)
     LOGI << "Initializing job system, available hardware threads: " << std::thread::hardware_concurrency();
     wi::jobsystem::Initialize();
 
+    std::vector<std::string> directories;
+    directories.push_back(jleVirtualPath{"GR:/"}.getRealPath().str());
+    directories.push_back(jleVirtualPath{"ER:/"}.getRealPath().str());
+    JLE_EXEC_IF(JLE_BUILD_EDITOR) { directories.push_back(jleVirtualPath{"ED:/"}.getRealPath().str()); }
+    jleFileWatcher initialPathIndexing(directories);
+    initialPathIndexing.sweep();
+
     _resources = std::make_unique<jleResourceHolder>();
 
     _renderThread = std::make_unique<jleRenderThread>();
 
-    LOGI << "Game Resources located at: " << jlePath{"GR:/"}.getRealPath();
-    LOGI << "Engine Resources located at: " << jlePath{"ER:/"}.getRealPath();
+    LOGI << "Game Resources located at: " << jleVirtualPath{"GR:/"}.getRealPath().str();
+    LOGI << "Engine Resources located at: " << jleVirtualPath{"ER:/"}.getRealPath().str();
 
-    JLE_EXEC_IF(JLE_BUILD_EDITOR) { LOGI << "Editor Resources located at: " << jlePath{"ED:/"}.getRealPath(); }
+    JLE_EXEC_IF(JLE_BUILD_EDITOR) { LOGI << "Editor Resources located at: " << jleVirtualPath{"ED:/"}.getRealPath().str(); }
 
     jleSerializationContext serializationContext{
         .resources = _resources.get(),
         .serializationInterfaces = {_renderThread.get()}};
 
     _internal = std::make_unique<jleEngineInternal>();
-    _internal->engineSettings =
-        jleResourceRef<jleEngineSettings>("GR:/settings/enginesettings.es", serializationContext);
+    _internal->engineSettings = jleResourceRef<jleEngineSettings>(jlePath{jleVirtualPath{"GR:/settings/enginesettings.es"}}, serializationContext);
 
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
     {

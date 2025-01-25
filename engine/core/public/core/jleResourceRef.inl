@@ -21,9 +21,9 @@ template <typename T>
 void
 jleResourceRef<T>::loadResource(jleSerializationContext &ctx)
 {
-    ptr = nullptr;
-    if (!path.isEmpty()) {
-        ptr = ctx.resources->loadResourceFromFileT<T>(path, ctx);
+    _ptr = nullptr;
+    if (!_path.isEmpty()) {
+        _ptr = ctx.resources->loadResourceFromFileT<T>(_path, ctx);
     }
 }
 
@@ -31,7 +31,7 @@ template <typename T>
 void
 jleResourceRef<T>::reloadWithNewPath(const jlePath &newPath, jleSerializationContext& ctx)
 {
-    path = newPath;
+    _path = newPath;
     loadResource(ctx);
 }
 
@@ -39,27 +39,45 @@ template <typename T>
 void
 jleResourceRef<T>::saveResource(jleSerializationContext &ctx)
 {
-    ptr->saveToFile(ctx);
+    _ptr->saveToFile(ctx);
 }
 
-template <typename T>
-template <class Archive>
-std::string
-jleResourceRef<T>::save_minimal(const Archive &) const
-{
-    return path.getVirtualPath();
+template<typename T>
+template<class Archive>
+auto jleResourceRef<T>::save_minimal(const Archive &) const -> std::enable_if_t<cereal::traits::is_text_archive<Archive>::value, std::string> {
+    // Save the path in a human-readable format for JSON formats
+    return _path.getVirtualPath().str();
 }
 
-template <typename T>
-template <class Archive>
-void
-jleResourceRef<T>::load_minimal(const Archive &ar, const std::string &value)
-{
-    path = jlePath{value};
-    ptr = nullptr;
-    if (!path.isEmpty()) {
+template<typename T>
+template<class Archive>
+auto jleResourceRef<T>::save_minimal(const Archive &) const -> std::enable_if_t<!cereal::traits::is_text_archive<Archive>::value, jlePathHash> {
+    // Save the path as a non human-readable integer hash for binary formats
+    return _path.getHash();
+}
+
+template<typename T>
+template<class Archive>
+auto jleResourceRef<T>::load_minimal(const Archive &ar, const std::string &value) -> std::enable_if_t<cereal::traits::is_text_archive<Archive>::value> {
+    // Loads the path from a virtual path
+    _path = jlePath{jleVirtualPath{value}};
+    _ptr = nullptr;
+    if (!_path.isEmpty()) {
         jleSerializationContext &ctx = const_cast<jleSerializationContext&>(ar.ctx);
         jleAssert(ctx.resources);
-        ptr = ctx.resources->loadResourceFromFileT<T>(path, ctx);
+        _ptr = ctx.resources->loadResourceFromFileT<T>(_path, ctx);
+    }
+}
+
+template<typename T>
+template<class Archive>
+auto jleResourceRef<T>::load_minimal(Archive const &ar, const jlePathHash &value) -> std::enable_if_t<!cereal::traits::is_text_archive<Archive>::value> {
+    // Loads the path from a path hash
+    _path = jlePath{value};
+    _ptr = nullptr;
+    if (!_path.isEmpty()) {
+        jleSerializationContext &ctx = const_cast<jleSerializationContext&>(ar.ctx);
+        jleAssert(ctx.resources);
+        _ptr = ctx.resources->loadResourceFromFileT<T>(_path, ctx);
     }
 }

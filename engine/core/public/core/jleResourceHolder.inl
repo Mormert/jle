@@ -46,7 +46,7 @@ jleResourceHolder::loadResourceFromFileT(const jlePath &path, jleSerializationCo
         for (const auto &ending : possibleFileEndingsForThisType) {
             possibleEndings += '.' + ending + " ";
         }
-        LOGE << "Resource '" << path.getVirtualPath() << "' of type '" << typeid(T).name()
+        LOGE << "Resource '" << path.getVirtualPath().str() << "' of type '" << typeid(T).name()
              << "' can't be loaded with provided path extension: '" << path.getFileEnding()
              << "'. Possible endings are: {" << possibleEndings << '}';
 
@@ -63,7 +63,7 @@ jleResourceHolder::loadResourceFromFileT(const jlePath &path, jleSerializationCo
                 return std::static_pointer_cast<T>(it->second.second);
             } else {
                 LOGW << "Found another type usage from the same resource. Overwriting previous resource for: "
-                     << path.getVirtualPath();
+                     << path.getVirtualPath().str();
             }
         }
     }
@@ -75,7 +75,7 @@ jleResourceHolder::loadResourceFromFileT(const jlePath &path, jleSerializationCo
     if constexpr (std::is_base_of<jleSerializedResource, T>::value) {
         if (newResource->getPrimaryFileAssociation() == path.getFileEnding()) {
             if (!loadSerializedResource(newResource, path, ctx)) {
-                LOGE << "Failed to load serialized resource " << path.getVirtualPath();
+                LOGE << "Failed to load serialized resource " << path.getVirtualPath().str();
             } else {
                 loadSuccess = true;
             }
@@ -92,7 +92,7 @@ jleResourceHolder::loadResourceFromFileT(const jlePath &path, jleSerializationCo
     if (loadSuccess) {
         _resources[virtualDrive].insert(std::make_pair(path, std::make_pair(typeid(T).hash_code(), newResource)));
     } else {
-        LOGE << "Failed to load: " << path._virtualPath;
+        LOGE << "Failed to load: " << path.getVirtualPath().str();
     }
 
     periodicResourcesCleanUp();

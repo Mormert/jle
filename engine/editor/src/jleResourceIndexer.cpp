@@ -57,7 +57,7 @@ jleResourceIndexer::getIndexedFilesPtr(const jleString &extension)
 void
 jleResourceIndexer::notifyAdded(const jlePath &path)
 {
-    LOGI << "File indexed: " << path.getVirtualPath();
+    LOGI << "File indexed: " << path.getVirtualPath().str();
     _indexedFiles.insert(path);
     _indexedFilesWithExtension[path.getFileEnding().c_str()].insert(path);
 }
@@ -66,20 +66,20 @@ void
 jleResourceIndexer::notifyModification(const jlePath &path, jleSerializationContext &ctx)
 {
     if (ctx.resources->isResourceLoaded(path)) {
-        LOGI << "File modified: " << path.getVirtualPath() << " (reloading resource)";
+        LOGI << "File modified: " << path.getVirtualPath().str() << " (reloading resource)";
         if (!ctx.resources->getResource(path)->loadFromFile(ctx, path)) {
-            LOGW << "Failed reloading resource: " << path.getVirtualPath();
+            LOGW << "Failed reloading resource: " << path.getVirtualPath().str();
         }
     } else {
-        LOGI << "File modified: " << path.getVirtualPath();
+        LOGI << "File modified: " << path.getVirtualPath().str();
     }
 }
 
 void
 jleResourceIndexer::notifyErase(const jlePath &path)
 {
-    LOGI << "File erased: " << path.getVirtualPath();
-    _indexedFiles.erase(path.getVirtualPath().data());
+    LOGI << "File erased: " << path.getVirtualPath().str();
+    _indexedFiles.erase(path);
 
     auto it = _indexedFilesWithExtension.find(path.getFileEnding().c_str());
     if (it) {

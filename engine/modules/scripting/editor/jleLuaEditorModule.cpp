@@ -41,7 +41,7 @@ void jleLuaEditorModule::initializeECS(jlECS::ECS &ecs) {
 void jleLuaEditorModule::initializeModule(jleSerializationContext &serializationContext) {
     jleLuaModule::initializeModule(serializationContext);
 
-    _luaEnvironment->loadScript("ED:/scripts/editor.lua", serializationContext);
+    _luaEnvironment->loadScript(JLE_PATH_HASH("ED:/scripts/editor.lua"), serializationContext);
 }
 
 void jleLuaEditorModule::updateEditor(jleSerializationContext &serializationContext) const {

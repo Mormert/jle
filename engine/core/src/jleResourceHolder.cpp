@@ -37,14 +37,14 @@ jleResourceHolder::reloadSerializedResource(const std::shared_ptr<jleSerializedR
 {
     jlePath path = resource->path;
     try {
-        std::ifstream i(path.getRealPath());
+        std::ifstream i(path.getRealPath().str());
         std::shared_ptr<jleSerializedResource> f = std::const_pointer_cast<jleSerializedResource>(resource);
 
         jleSerializationContext ctx = {.resources = this, .serializationInterfaces = {}};
         jleJSONInputArchive archive{i, ctx};
         archive(f);
         if (!f->loadFromFile(ctx, path)) {
-            LOGE << "Failed reloading serialized resource file: " << resource->path.getVirtualPath();
+            LOGE << "Failed reloading serialized resource file: " << resource->path.getVirtualPath().str();
         }
 
         const auto prefix = path.getPathVirtualDrive();
@@ -71,7 +71,7 @@ jleResourceHolder::loadSerializedResourceFromFile(const jlePath &path, bool forc
     }
 
     try {
-        std::ifstream i(path.getRealPath());
+        std::ifstream i(path.getRealPath().str());
 
         jleSerializationContext ctx = {.resources = this, .serializationInterfaces = {}};
         jleJSONInputArchive iarchive{i, ctx};
@@ -170,7 +170,7 @@ jleResourceHolder::loadSerializedResource(std::shared_ptr<jleResourceInterface> 
 {
     if (resource->getPrimaryFileAssociation() == path.getFileEnding()) {
         try {
-            std::ifstream i(path.getRealPath());
+            std::ifstream i(path.getRealPath().str());
             jleJSONInputArchive iarchive{i, ctx};
             std::shared_ptr<jleSerializedResource> sr = std::static_pointer_cast<jleSerializedResource>(resource);
             iarchive(sr);

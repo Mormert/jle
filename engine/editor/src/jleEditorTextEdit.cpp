@@ -17,8 +17,8 @@
 jleEditorTextEdit::jleEditorTextEdit(const std::string &window_name) : jleEditorWindowInterface(window_name)
 {
     ImGuiIO &io = ImGui::GetIO();
-    std::string path = jlePath{"ED:/fonts/Cascadia.ttf"}.getRealPath();
-    font = io.Fonts->AddFontFromFileTTF(path.c_str(), 20.0f);
+    const char* path = JLE_PATH_HASH("ED:/fonts/Cascadia.ttf").getRealPath().str().c_str();
+    font = io.Fonts->AddFontFromFileTTF(path, 20.0f);
 }
 
 void
@@ -28,7 +28,7 @@ jleEditorTextEdit::renderUI()
 
     for (auto &[path, textEditorPtr] : _textEditorsMap) {
         auto &textEditor = *textEditorPtr.get();
-        auto tabName = "File: " + path.getVirtualPath();
+        auto tabName = "File: " + path.getVirtualPath().str();
         bool shouldBeOpened = true;
         ImGui::SetNextWindowSize(ImVec2(500, 700), ImGuiCond_FirstUseEver);
         if (ImGui::Begin(tabName.c_str(), &shouldBeOpened, ImGuiWindowFlags_MenuBar)) {
@@ -39,17 +39,17 @@ jleEditorTextEdit::renderUI()
             if (ImGui::BeginMenuBar()) {
                 if (ImGui::BeginMenu("File")) {
                     if (ImGui::MenuItem("Save", "Ctrl-S")) {
-                        std::ofstream stream{path.getRealPath()};
+                        std::ofstream stream{path.getRealPath().str().c_str()};
                         stream << textEditor.GetText();
                     }
                     if (ImGui::MenuItem("Reload", "Ctrl-R")) {
-                        std::ifstream i(path.getRealPath());
+                        std::ifstream i(path.getRealPath().str().c_str());
                         if (i.good()) {
                             std::stringstream buffer;
                             buffer << i.rdbuf();
                             _textEditorsMap[path].get()->SetText(buffer.str());
                         } else {
-                            LOGE << "Failed to open file with absolute path:" << path.getRealPath();
+                            LOGE << "Failed to open file with absolute path:" << path.getRealPath().str();
                         }
                     }
                     if (ImGui::MenuItem("Close")) {
@@ -108,14 +108,14 @@ jleEditorTextEdit::renderUI()
                         textEditor.IsOverwrite() ? "Ovr" : "Ins",
                         textEditor.CanUndo() ? "*" : " ",
                         textEditor.GetLanguageDefinition().mName.c_str(),
-                        path.getRealPath().c_str(),
-                        path.getVirtualPath().c_str());
+                        path.getRealPath().str().c_str(),
+                        path.getVirtualPath().str().c_str());
 
             ImGui::PushFont(font);
             textEditor.Render(tabName.c_str(), ImVec2(), true);
             if(textEditor.DocumentSavedThisFrame())
             {
-                std::ofstream stream{path.getRealPath()};
+                std::ofstream stream{path.getRealPath().str()};
                 stream << textEditor.GetText();
             }
             ImGui::PopFont();
@@ -145,7 +145,7 @@ jleEditorTextEdit::open(const jlePath &path)
         return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
     };
 
-    auto pathStr = path.getVirtualPath();
+    auto pathStr = path.getVirtualPath().str();
     if (ends_with(pathStr, ".frag") || ends_with(pathStr, ".vert") || ends_with(pathStr, ".glsl")) {
         e->SetLanguageDefinition(TextEditor::LanguageDefinition::GLSL());
     } else if (ends_with(pathStr, ".cpp") || ends_with(pathStr, ".h") || ends_with(pathStr, ".c")) {
@@ -156,13 +156,13 @@ jleEditorTextEdit::open(const jlePath &path)
         e->SetLanguageDefinition(TextEditor::LanguageDefinition::RegularText());
     }
 
-    std::ifstream i(path.getRealPath());
+    std::ifstream i(path.getRealPath().str());
     if (i.good()) {
         std::stringstream buffer;
         buffer << i.rdbuf();
         e->SetText(buffer.str());
     } else {
-        LOGE << "Failed to open file with real path: " << path.getRealPath();
+        LOGE << "Failed to open file with real path: " << path.getRealPath().str();
     }
 
     _textEditorsMap.insert(std::make_pair(path, std::move(e)));
@@ -177,13 +177,13 @@ jleEditorTextEdit::reloadIfOpened(const jlePath &path)
         return;
     }
 
-    std::ifstream i(path.getRealPath());
+    std::ifstream i(path.getRealPath().str());
     if (i.good()) {
         std::stringstream buffer;
         buffer << i.rdbuf();
         doc->second->SetText(buffer.str());
     } else {
-        LOGE << "Failed to open file with real path: " << path.getRealPath();
+        LOGE << "Failed to open file with real path: " << path.getRealPath().str();
     }
 
 }

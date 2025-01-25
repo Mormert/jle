@@ -29,13 +29,8 @@
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol2/sol.hpp>
 
-jleLuaEnvironment::jleLuaEnvironment() : _scriptFilesWatcher({})
+jleLuaEnvironment::jleLuaEnvironment() : _scriptFilesWatcher({jleVirtualPath("GR:/scripts").getRealPath().str()})
 {
-    std::vector<std::string> directories;
-    directories.push_back(jlePath{"GR:/scripts"}.getRealPath());
-
-    _scriptFilesWatcher.setWatchDirectories(directories);
-
     _luaState = std::make_unique<sol::state>();
     setupLua(*_luaState);
 }
@@ -63,26 +58,35 @@ jleLuaEnvironment::setupLua(sol::state &lua)
 
     auto scriptLoadingTable = lua.create_named_table("ScriptEnv");
     scriptLoadingTable.set_function("loadScriptIntoLuaEnv", [&](const std::string path, jleSerializationContext &serializationContext) {
-        loadScript(path.c_str(), serializationContext);
+        loadScript(jlePath{jleVirtualPath{(path.c_str())}}, serializationContext);
     });
+
+    lua.new_usertype<jleVirtualPath>("jleVirtualPath", sol::constructors<jleVirtualPath(std::string)>(),
+        sol::meta_function::to_string,
+        &jleVirtualPath::str);
+
+    lua.new_usertype<jleRealPath>("jleRealPath", sol::constructors<jleRealPath(std::string)>(),
+        sol::meta_function::to_string,
+        &jleRealPath::str);
 
     lua.new_usertype<jlePath>(
         "jlePath",
-        sol::constructors<jlePath(), jlePath(const std::string &), jlePath(const std::string &, bool)>(),
-        "prefix",
+        sol::constructors<jlePath(const jleVirtualPath &), jlePath(const jleRealPath &)>(),
+        "getPathVirtualDrive",
         &jlePath::getPathVirtualDrive,
-        "virtual",
-        &jlePath::getVirtualPathConst,
-        "real",
-        &jlePath::getRealPathConst,
+        "getVirtualPath",
+        &jlePath::getVirtualPath,
+        "getRealPath",
+        &jlePath::getRealPath,
         "isEmpty",
         &jlePath::isEmpty,
-        "fileEnding",
+        "getFileEnding",
         &jlePath::getFileEnding,
-        "fileName",
+        "getFileNameNoEnding",
         &jlePath::getFileNameNoEnding,
         sol::meta_function::to_string,
-        &jlePath::getVirtualPathConst);
+        [](const jlePath& path) -> std::string { return path.getVirtualPath().str(); }
+    );
 
     lua.new_usertype<jleKeyboardInput>("jleKeyboardInput",
                                        "keyPressed",

@@ -156,7 +156,7 @@ jleSkinnedMesh::loadFromFile(jleSerializationContext& ctx, const jlePath &path)
 bool
 jleSkinnedMesh::loadSkinnedAssimp(const jlePath &path)
 {
-    auto pathStr = path.getRealPath();
+    auto pathStr = path.getRealPath().str();
 
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(pathStr,
@@ -191,12 +191,12 @@ jleSkinnedMesh::loadSkinnedAssimp(const jlePath &path)
                               out_boneWeights,
                               out_boneMapping);
     } else {
-        LOGE << "Found no skinned meshes in " << path.getVirtualPath();
+        LOGE << "Found no skinned meshes in " << path.getVirtualPath().str();
         return false;
     }
 
     if (scene->mNumMeshes > 1) {
-        LOGW << "Found multiple skinned meshes in " << path.getVirtualPath() << ", only first mesh found will be used!";
+        LOGW << "Found multiple skinned meshes in " << path.getVirtualPath().str() << ", only first mesh found will be used!";
     }
 
     makeSkinnedMesh(out_vertices,
@@ -211,7 +211,7 @@ jleSkinnedMesh::loadSkinnedAssimp(const jlePath &path)
 
     processBoneNode(scene, scene->mRootNode, boneHierarchy);
 
-    LOGV << "Loaded skinned mesh " << path.getVirtualPath() << " with " << out_vertices.size() << " vertices";
+    LOGV << "Loaded skinned mesh " << path.getVirtualPath().str() << " with " << out_vertices.size() << " vertices";
 
     return true;
 }
@@ -272,13 +272,13 @@ jleSkinnedMesh::saveToFile(jleSerializationContext& ctx)
     const auto &format = path.getFileEnding();
     auto ret = exporter.Export(&scene,
                                format,
-                               path.getRealPath(),
+                               path.getRealPath().str(),
                                aiProcess_JoinIdenticalVertices | aiProcess_FlipUVs);
 
     if (ret == aiReturn_SUCCESS) {
-        LOGI << "Exported skinned mesh " << path.getVirtualPath() << " successfully.";
+        LOGI << "Exported skinned mesh " << path.getVirtualPath().str() << " successfully.";
     } else {
-        LOGE << "Failed to save skinned mesh: " << path.getVirtualPath();
+        LOGE << "Failed to save skinned mesh: " << path.getVirtualPath().str();
     }
 }
 

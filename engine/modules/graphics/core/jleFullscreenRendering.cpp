@@ -29,7 +29,7 @@ constexpr float quadVertices[] =
         1.0f,  0.0f, 1.0f, 1.0f,  1.0f,  1.0f};
 
 jleFullscreenRendering::jleFullscreenRendering(jleSerializationContext& ctx)
-    : quadScreenShader{jlePath{"ER:shaders/quadScreen.glsl"}, ctx} {
+    : quadScreenShader{JLE_PATH_HASH("ER:/shaders/quadScreen.glsl"), ctx} {
     // Configure screen quad
     glGenVertexArrays(1, &quadVAO);
     glGenBuffers(1, &quadVBO);

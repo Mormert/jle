@@ -15,97 +15,125 @@
 
 #pragma once
 
-#include "jleBuildConfig.h"
-
 #include <cereal/cereal.hpp>
 #include <string>
+#include <utility>
 
 // A class that holds paths such as for example "ER:SomeFolder/SomeFile.txt", that
 // is actually located in the "EngineResources" folder, that can be located at
 // different places, depending on build configuration, etc
 
+class jleRealPath;
+
+class jleVirtualPath {
+public:
+    explicit jleVirtualPath(const char* path) : _virtualPath(path) {}
+    explicit jleVirtualPath(std::string path) : _virtualPath(std::move(path)) {}
+
+    std::string* operator->() { return &_virtualPath; }
+    const std::string* operator->() const { return &_virtualPath; }
+    bool operator==(const jleVirtualPath& other) const { return _virtualPath == other._virtualPath; }
+
+    [[nodiscard]] const std::string& str() const { return _virtualPath; }
+
+    [[nodiscard]] jleRealPath getRealPath() const;
+
+private:
+    std::string _virtualPath;
+};
+
+class jleRealPath {
+public:
+    explicit jleRealPath(const char* path) : _realPath(path) {}
+    explicit jleRealPath(std::string path) : _realPath(std::move(path)) {}
+
+    std::string* operator->() { return &_realPath; }
+    const std::string* operator->() const { return &_realPath; }
+    bool operator==(const jleRealPath& other) const { return _realPath == other._realPath; }
+
+    [[nodiscard]] const std::string& str() const { return _realPath; }
+
+    [[nodiscard]] jleVirtualPath getVirtualPath() const;
+private:
+    std::string _realPath;
+};
+
+using jlePathHash = uint64_t;
+
+constexpr jlePathHash jlePathHashingFunc(std::string_view virtualPath) {
+    // fnv1a_hash
+    uint64_t hash = 14695981039346656037ull;
+    for (const char c : virtualPath) {
+        hash = (hash ^ static_cast<uint8_t>(c)) * 1099511628211ull;
+    }
+    return hash;
+}
+
+#define JLE_PATH_HASH(virtualPath) jlePath{jlePathHashingFunc(virtualPath)}
+
 class jlePath
 {
 public:
-    jlePath() = default;
+    jlePath() = default; // Default initialization contains an empty path
+
+    explicit jlePath(jlePathHash pathHash);
+    explicit jlePath(const jleVirtualPath& virtualPath);
+    explicit jlePath(const jleRealPath& realPath);
 
     template <class Archive>
-    std::string
-    save_minimal(Archive const &) const
-    {
-        return _virtualPath;
-    }
+    auto save_minimal(const Archive&) const -> std::enable_if_t<cereal::traits::is_text_archive<Archive>::value, std::string> { return getVirtualPath().str(); }
 
     template <class Archive>
-    void
-    load_minimal(Archive const &, std::string const &value)
-    {
-        _virtualPath = value;
-        fixSlashes(_virtualPath);
-        _realPath = findRealPathFromVirtualPath(_virtualPath);
-        _hash = std::hash<std::string>()(_virtualPath);
-    }
+    auto save_minimal(const Archive&) const -> std::enable_if_t<!cereal::traits::is_text_archive<Archive>::value, jlePathHash> { return _hash; }
 
-    jlePath(const char* virtualPath);
+    template <class Archive>
+    auto load_minimal(const Archive&, const std::string& value) -> std::enable_if_t<cereal::traits::is_text_archive<Archive>::value> { _hash = jlePathHashingFunc(value); }
 
-    explicit jlePath(const std::string &virtualPath);
-    explicit jlePath(const std::string &path, bool virtualPath);
+    template <class Archive>
+    auto load_minimal(Archive const &, const jlePathHash& value) -> std::enable_if_t<!cereal::traits::is_text_archive<Archive>::value> { _hash = value; }
 
     // Returns the drive, like "GR:"
     [[nodiscard]] std::string getPathVirtualDrive() const;
 
-    [[nodiscard]] std::string getVirtualPath() const;
-    [[nodiscard]] std::string getVirtualPath();
-
-    [[nodiscard]] std::string getRealPath() const;
-    [[nodiscard]] std::string getRealPath();
-
-    [[nodiscard]] std::string getRealPathConst() const;
-    [[nodiscard]] std::string getVirtualPathConst() const;
+    [[nodiscard]] const jleVirtualPath&  getVirtualPath() const;
+    [[nodiscard]] const jleRealPath&     getRealPath() const;
+    [[nodiscard]] jlePathHash getHash() const { return _hash; }
 
     [[nodiscard]] std::string getVirtualFolder() const;
 
-    bool isEmpty();
+    [[nodiscard]] bool isEmpty() const { return _hash == 0; }
 
-    std::string getFileEnding() const;
+    [[nodiscard]] std::string getFileEnding() const;
+    [[nodiscard]] std::string getFileNameNoEnding() const;
 
-    std::string getFileNameNoEnding() const;
+    bool operator==(const jlePath &other) const { return _hash == other._hash; }
+    bool operator<(const jlePath& other) const { return _hash < other._hash; }
 
-    bool operator==(const jlePath &other) const;
-
-    bool operator<(const jlePath& other) const;
-
+private:
+    jlePathHash _hash{0};
     friend class std::hash<jlePath>;
-
-    // Below operator broke Lua bindings for some reason:
-    // friend std::ostream &operator<<(std::ostream &stream, const jlePath &path);
-
-    // Note: should actually be private!
-    // Don't modify!
-    std::string _virtualPath;
-
-    size_t hash() const;
-
-private:
-    mutable std::string _realPath;
-
-private:
-    static std::string findVirtualPathFromRealPath(const std::string &realPath);
-    static std::string findRealPathFromVirtualPath(const std::string &virtualPath);
-
-    static void fixSlashes(std::string &str);
-
-    size_t _hash;
 };
 
 namespace std
 {
 template <>
 struct hash<jlePath> {
-    std::size_t
-    operator()(const jlePath &path) const
-    {
+    size_t operator()(const jlePath &path) const noexcept {
         return path._hash;
+    }
+};
+
+template <>
+struct hash<jleVirtualPath> {
+    size_t operator()(const jleVirtualPath& path) const noexcept {
+        return hash<std::string>()(path.str());
+    }
+};
+
+template <>
+struct hash<jleRealPath> {
+    size_t operator()(const jleRealPath& path) const noexcept {
+        return hash<std::string>()(path.str());
     }
 };
 } // namespace std

@@ -15,8 +15,7 @@
 
 #include "jleCommandArguments.h"
 
-void jleCommandArguments::parse(int argc, char **argv)
-{
+jleCommandArguments::jleCommandArguments(int argc, char *argv[]) {
     _arguments.resize(argc - 1);
     for (int i = 1; i < argc; ++i) {
         _arguments[i - 1] = argv[i];
@@ -42,11 +41,4 @@ const std::string &
 jleCommandArguments::getProgramArgsString()
 {
     return _programArgsString;
-}
-
-jleCommandArguments &
-jleCommandArguments::getInstance()
-{
-    static jleCommandArguments args;
-    return args;
 }

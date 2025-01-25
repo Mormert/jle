@@ -115,7 +115,7 @@ public:
                CEREAL_NVP(_blendModeDst));
 
             if (!_shaderRef) {
-                _shaderRef = jleResourceRef<jleShader>(jlePath{"ER:/shaders/defaultMesh.glsl"}, ar.ctx);
+                _shaderRef = jleResourceRef<jleShader>(JLE_PATH_HASH("ER:/shaders/defaultMesh.glsl"), ar.ctx);
             }
         } catch (std::exception &e) {
             LOGE << "Failed loading material:" << e.what();

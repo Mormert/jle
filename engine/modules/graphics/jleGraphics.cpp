@@ -48,14 +48,14 @@
 
 struct jleGraphics::jle3DRendererShaders {
     jle3DRendererShaders(jleSerializationContext &ctx)
-        : defaultMeshShader{jlePath{"ER:/shaders/defaultMesh.glsl"}, ctx},
-          missingMaterialShader{jlePath{"ER:/shaders/missingMaterialShader.glsl"}, ctx},
-          skyboxShader{jlePath{"ER:/shaders/skybox.glsl"}, ctx},
-          pickingShader{jlePath{"ER:/shaders/picking.glsl"}, ctx},
-          shadowMappingShader{jlePath{"ER:/shaders/shadowMapping.glsl"}, ctx},
-          shadowMappingPointShader{jlePath{"ER:/shaders/shadowMappingPoint.glsl"}, ctx},
-          debugDepthQuad{jlePath{"ER:/shaders/debugDepthQuad.glsl"}, ctx},
-          linesShader{jlePath{"ER:/shaders/lines.glsl"}, ctx}
+        : defaultMeshShader{JLE_PATH_HASH("ER:/shaders/defaultMesh.glsl"), ctx},
+          missingMaterialShader{JLE_PATH_HASH("ER:/shaders/missingMaterialShader.glsl"), ctx},
+          skyboxShader{JLE_PATH_HASH("ER:/shaders/skybox.glsl"), ctx},
+          pickingShader{JLE_PATH_HASH("ER:/shaders/picking.glsl"), ctx},
+          shadowMappingShader{JLE_PATH_HASH("ER:/shaders/shadowMapping.glsl"), ctx},
+          shadowMappingPointShader{JLE_PATH_HASH("ER:/shaders/shadowMappingPoint.glsl"), ctx},
+          debugDepthQuad{JLE_PATH_HASH("ER:/shaders/debugDepthQuad.glsl"), ctx},
+          linesShader{JLE_PATH_HASH("ER:/shaders/lines.glsl"), ctx}
     {
     }
 
@@ -79,8 +79,7 @@ jleGraphics::jleGraphics(jleSerializationContext& ctx)
     glBindVertexArray(_lineVAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, _lineVBO);
-    glBufferData(
-        GL_ARRAY_BUFFER, (GLuint)JLE_LINE_DRAW_BATCH_SIZE * sizeof(jle3DLineVertex), (void *)0, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, (GLuint)JLE_LINE_DRAW_BATCH_SIZE * sizeof(jle3DLineVertex), (void *)0, GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(jle3DLineVertex), (void *)0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(jle3DLineVertex), (void *)(1 * sizeof(glm::vec3)));

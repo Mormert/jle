@@ -73,7 +73,9 @@ jleEditorBuild::packageResources(jleVectorSet<jlePath> indexedFiles)
 
     int ctr = 0;
     for (auto &path : indexedFiles) {
-        archive.addFile(path.getVirtualPath().c_str(), path.getRealPath().c_str());
+        const std::string nameAsHash = std::to_string(path.getHash());
+        const bool success = archive.addFile(nameAsHash, path.getRealPath().str());
+        jleAssert(success);
 
         if (ctr > 800) {
             break;
@@ -128,7 +130,7 @@ jleEditorBuild::testPackagedResources()
         }
     }
 
-    {
+    /*{
         JLE_SCOPED_PROFILE_LOG("Using FS");
         for (const auto &thing : archive.getEntries()) {
             auto realPath = jlePath{thing.getName()}.getRealPath();
@@ -141,5 +143,5 @@ jleEditorBuild::testPackagedResources()
             buffer << load.rdbuf();
             //auto src = buffer.str();
         }
-    }
+    }*/
 }

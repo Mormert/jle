@@ -20,14 +20,8 @@
 
 jleFileWatcher::jleFileWatcher(const std::vector<std::string> &directories) : _watchDirectories(directories)
 {
-    setWatchDirectories(directories);
 }
 
-void
-jleFileWatcher::setWatchDirectories(const std::vector<std::string> &directories)
-{
-    _watchDirectories = directories;
-}
 
 jleFileIndexerResult
 jleFileWatcher::sweep()
@@ -41,7 +35,8 @@ jleFileWatcher::sweep()
     auto it = _pathsMonitored.begin();
     while (it != _pathsMonitored.end()) {
         if (!std::filesystem::exists(it->first)) {
-            result.erased.emplace_back(it->first, false);
+            jleVirtualPath virtualPath{it->first.c_str()};
+            result.erased.emplace_back(virtualPath);
             it = _pathsMonitored.erase(it);
         } else {
             it++;
@@ -62,13 +57,17 @@ jleFileWatcher::sweep()
             if ((_pathsMonitored.find(file.path().string()) == _pathsMonitored.end())) {
                 _pathsMonitored[file.path().string()] = current_file_last_write_time;
                 if (file.is_regular_file()) {
-                    result.added.emplace_back(file.path().string(), false);
+                    jleRealPath realPath{file.path().string().c_str()};
+                    jlePath path{realPath};
+                    result.added.emplace_back(path);
                 }
             } else {
                 if (_pathsMonitored[file.path().string()] != current_file_last_write_time) {
                     _pathsMonitored[file.path().string()] = current_file_last_write_time;
                     if (file.is_regular_file()) {
-                        result.modified.emplace_back(file.path().string(), false);
+                        jleRealPath realPath{file.path().string().c_str()};
+                        jlePath path{realPath};
+                        result.modified.emplace_back(path);
                     }
                 }
             }

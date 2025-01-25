@@ -51,7 +51,7 @@ jleTexture::loadFromFile(jleSerializationContext &ctx, const jlePath &path)
     _nrChannels = _image->nrChannels();
 
     if (!_image->data()) {
-        PLOG_ERROR << "Failed to generate OpenGL texture " << _id << " with path: " << path.getVirtualPath();
+        PLOG_ERROR << "Failed to generate OpenGL texture " << _id << " with path: " << path.getVirtualPath().str();
         return false;
     }
 
@@ -103,7 +103,7 @@ jleTexture::loadFromFile(jleSerializationContext &ctx, const jlePath &path)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-            PLOG_VERBOSE << "Generated OpenGL texture (ID=" << _id << ") " << path.getVirtualPath() << " ("
+            PLOG_VERBOSE << "Generated OpenGL texture (ID=" << _id << ") " << path.getVirtualPath().str() << " ("
                          << _image->nrChannels() << " channels)";
 
             glBindTexture(GL_TEXTURE_2D, 0);

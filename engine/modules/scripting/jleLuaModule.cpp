@@ -62,8 +62,8 @@ jleLuaModule::initializeECS(jlECS::ECS &ecs)
 }
 
 void jleLuaModule::initializeModule(jleSerializationContext &serializationContext) {
-    _luaEnvironment->loadScript("ER:/scripts/engine.lua", serializationContext);
-    _luaEnvironment->loadScript("ER:/scripts/globals.lua", serializationContext);
+    _luaEnvironment->loadScript(JLE_PATH_HASH("ER:/scripts/engine.lua"), serializationContext);
+    _luaEnvironment->loadScript(JLE_PATH_HASH("ER:/scripts/globals.lua"), serializationContext);
 
     _luaEnvironment->loadInitialScripts(serializationContext);
 }

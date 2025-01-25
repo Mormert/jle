@@ -55,8 +55,8 @@ jleEditor3DImportWindow::renderUI(jleEditorUpdateContext &ctx)
         ImGui::InputText("Destination folder", bufDestination, sizeof(bufDestination));
 
         if (ImGui::Button("Process")) {
-            jlePath pathImport = bufImport;
-            jlePath pathDest = bufImport;
+            jlePath pathImport{jleVirtualPath{bufImport}};
+            jlePath pathDest{jleVirtualPath{bufDestination}};
             if (pathImport.isEmpty() || pathDest.isEmpty()) {
                 LOGW << "Paths not specified for 3D model import!";
             } else {
@@ -123,12 +123,15 @@ jleEditor3DImportWindow::importModel(const jlePath &importPath,
                                      jleEditorUpdateContext &editorCtx)
 {
     auto ctx = editorCtx.engineUpdateContext;
-    auto pathStr = importPath.getRealPath();
+    jleRealPath pathStr = importPath.getRealPath();
 
     Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(pathStr,
-                                             aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace |
-                                                 aiProcess_FlipUVs | aiProcess_GenUVCoords);
+    const aiScene *scene = importer.ReadFile(pathStr.str(),
+                                             aiProcess_Triangulate
+                                             | aiProcess_GenNormals
+                                             | aiProcess_CalcTangentSpace
+                                             | aiProcess_FlipUVs
+                                             | aiProcess_GenUVCoords);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         LOGE << "Error loading mesh with Assimp" << importer.GetErrorString();
@@ -143,8 +146,7 @@ jleEditor3DImportWindow::importModel(const jlePath &importPath,
         auto assimpMaterial = scene->mMaterials[i];
         std::string materialName = assimpMaterial->GetName().C_Str();
 
-        auto material = jleResourceRef<jleMaterialPBR>(
-            jlePath{destinationPath.getVirtualFolder() + '/' + materialName + ".mat"}, ctx.serializationContext);
+        auto material = jleResourceRef<jleMaterialPBR>(jlePath{jleVirtualPath{(destinationPath.getVirtualFolder() + '/' + materialName + ".mat")}}, ctx.serializationContext);
 
         const auto setTexture = [&](aiTextureType textureType, jleResourceRef<jleTexture> &textureRef) {
             if (assimpMaterial->GetTextureCount(textureType)) {
@@ -161,7 +163,7 @@ jleEditor3DImportWindow::importModel(const jlePath &importPath,
                 std::replace(assimpPathStr.begin(), assimpPathStr.end(), ' ', '_');
 
                 std::string virtualMaterialPath = destinationPath.getVirtualFolder() + '/' + assimpPathStr;
-                textureRef = jleResourceRef<jleTexture>(jlePath{virtualMaterialPath}, ctx.serializationContext);
+                textureRef = jleResourceRef<jleTexture>(jlePath{jleVirtualPath{(virtualMaterialPath)}}, ctx.serializationContext);
             }
         };
 
@@ -247,7 +249,7 @@ jleEditor3DImportWindow::importModel(const jlePath &importPath,
             createdMesh = mesh;
         }
 
-        createdMesh->path = jlePath{destinationPath.getVirtualFolder() + '/' + meshName + ".fbx"};
+        createdMesh->path = jlePath{jleVirtualPath{(destinationPath.getVirtualFolder() + '/' + meshName + ".fbx")}};
 
         createdMesh->saveToFile(ctx.serializationContext);
 

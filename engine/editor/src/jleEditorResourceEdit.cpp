@@ -30,7 +30,7 @@ jleEditorResourceEdit::renderUI(jleEditorUpdateContext &ctx)
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
         ImGui::SetNextWindowSize(ImVec2(500, 700), ImGuiCond_FirstUseEver);
         bool shouldBeOpened = true;
-        ImGui::Begin(std::string{"Resource: " + path.getVirtualPath()}.c_str(), &shouldBeOpened, flags);
+        ImGui::Begin(std::string{"Resource: " + path.getVirtualPath().str()}.c_str(), &shouldBeOpened, flags);
 
         if (!shouldBeOpened) {
             toBeRemoved.push_back(path);
@@ -75,7 +75,7 @@ jleEditorResourceEdit::tryOpen(const jlePath &path, jleResourceHolder &resources
         auto resource = resources.loadSerializedResourceFromFile(path);
         _resources.insert(std::make_pair(path, resource));
     } catch (std::exception &e) {
-        LOGV << "Failed to open resource with path: " << path.getVirtualPath() << ", error: " << e.what();
+        LOGV << "Failed to open resource with path: " << path.getVirtualPath().str() << ", error: " << e.what();
         return false;
     }
 

@@ -184,12 +184,7 @@ jleWindow::initWindow()
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     }
 
-#if JLE_BUILD_RUNTIME_CONFIGURABLE
-    std::string windowTitle =
-        windowSettings.WindowTitle + " [" + jleCommandArguments::getInstance().getProgramArgsString() + "]";
-#else
-    std::string windowTitle = windowSettings.WindowTitle;
-#endif
+    const std::string& windowTitle = windowSettings.WindowTitle;
 
     _glfwWindow = initGlfwWindow(windowSettings.width, windowSettings.height, windowTitle.c_str());
 
@@ -220,7 +215,7 @@ jleWindow::initWindow()
     if (!windowSettings.iconPath.isEmpty()) {
         GLFWimage images[1];
         images[0].pixels =
-            stbi_load(windowSettings.iconPath.getRealPath().c_str(), &images[0].width, &images[0].height, nullptr, 4);
+            stbi_load(windowSettings.iconPath.getRealPath().str().c_str(), &images[0].width, &images[0].height, nullptr, 4);
 #ifndef __linux__
         glfwSetWindowIcon(_glfwWindow, 1, images);
 #endif

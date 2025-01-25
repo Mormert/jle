@@ -23,7 +23,7 @@
 bool
 jleLuaScript::loadFromFile(jleSerializationContext& ctx, const jlePath &path)
 {
-    std::ifstream load{path.getRealPath()};
+    std::ifstream load{path.getRealPath().str()};
     if (!load.good()) {
         return false;
     }
@@ -46,7 +46,7 @@ jleLuaScript::loadScriptIntoLuaEnv(jleLuaEnvironment& luaEnvironment)
 {
     try {
         const auto absoluteSrcCodePath = path.getRealPath();
-        luaEnvironment.getState().script(_sourceCode, absoluteSrcCodePath);
+        luaEnvironment.getState().script(_sourceCode, absoluteSrcCodePath.str());
         _failsLoading = false;
 
         const auto classes = jleLuaClass::getLuaClassesFromLuaSrc(path, _sourceCode);
@@ -66,6 +66,6 @@ jleLuaScript::loadScriptIntoLuaEnv(jleLuaEnvironment& luaEnvironment)
 void
 jleLuaScript::saveToFile(jleSerializationContext& ctx)
 {
-    std::ofstream save{path.getRealPath()};
+    std::ofstream save{path.getRealPath().str()};
     save << _sourceCode;
 }

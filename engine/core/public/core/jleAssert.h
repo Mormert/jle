@@ -45,9 +45,46 @@
         }                                                                                                              \
     } while (0)
 
+#define jleErrorDesc(desc)                                                                         \
+    do {                                                                                           \
+        LOGE << "Error: " << #desc << " at " << __FILE__ << ":" << __LINE__ << std::endl;          \
+        JLE_DEBUG_BREAK;                                                                           \
+    } while (0)
+
+#define jleErrorDescOnce(desc)                                                                     \
+    do {                                                                                           \
+        static bool triggeredOnce{false};                                                          \
+        if (!triggeredOnce) {                                                               \
+            LOGE << "Error: " << #desc << " at " << __FILE__ << ":" << __LINE__ << std::endl;      \
+            JLE_DEBUG_BREAK;                                                                       \
+        }                                                                                          \
+    } while (0)
+
+#define jleAssertDesc(condition, desc)                                                                                              \
+    do {                                                                                                                            \
+        if (!(condition)) {                                                                                                         \
+            LOGE << "Assertion failed: " << #condition << " - " << #desc << ", at " << __FILE__ << ":" << __LINE__ << std::endl;    \
+            JLE_DEBUG_BREAK;                                                                                                        \
+        }                                                                                                                           \
+    } while (0)
+
+#define jleAssertDescOnce(condition, desc)                                                                                          \
+    do {                                                                                                                            \
+        static bool triggeredOnce{false};                                                                                           \
+        if (!(condition && !triggeredOnce)) {                                                                                       \
+            triggeredOnce = true;                                                                                                   \
+            LOGE << "Assertion failed: " << #condition << " - " << #desc << ", at " << __FILE__ << ":" << __LINE__ << std::endl;    \
+            JLE_DEBUG_BREAK;                                                                                                        \
+        }                                                                                                                           \
+    } while (0)
+
 #else
-#define jleAssert(condition) ((void)0)
 #define jleAssertOnce(condition) ((void)0)
+#define jleAssert(condition) ((void)0)
+#define jleAssertDesc(condition) ((void)0)
+#define jleAssertDescOnce(condition) ((void)0)
+#define jleErrorDesc(condition) ((void)0)
+#define jleErrorDescOnce(condition) ((void)0)
 #endif
 
 #endif // JLE_ASSERT_H

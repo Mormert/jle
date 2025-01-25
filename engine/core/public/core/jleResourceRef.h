@@ -33,7 +33,7 @@ struct jleResourceRef {
 
     jleResourceRef() = default;
 
-    explicit jleResourceRef(const jlePath &path, jleSerializationContext &ctx, bool loadLater = false) : path{path}
+    explicit jleResourceRef(const jlePath &path, jleSerializationContext &ctx, bool loadLater = false) : _path{path}
     {
         if (!loadLater) {
             loadResource(ctx);
@@ -41,10 +41,16 @@ struct jleResourceRef {
     };
 
     template <class Archive>
-    std::string save_minimal(Archive const &) const;
+    auto save_minimal(const Archive&) const -> std::enable_if_t<cereal::traits::is_text_archive<Archive>::value, std::string>;
 
     template <class Archive>
-    void load_minimal(Archive const &, std::string const &value);
+    auto save_minimal(const Archive&) const -> std::enable_if_t<!cereal::traits::is_text_archive<Archive>::value, jlePathHash>;
+
+    template <class Archive>
+    auto load_minimal(const Archive&, const std::string& value) -> std::enable_if_t<cereal::traits::is_text_archive<Archive>::value>;
+
+    template <class Archive>
+    auto load_minimal(Archive const &, const jlePathHash& value) -> std::enable_if_t<!cereal::traits::is_text_archive<Archive>::value>;
 
     void reloadWithNewPath(const jlePath &path, jleSerializationContext& ctx);
 
@@ -55,54 +61,20 @@ struct jleResourceRef {
     void saveResource(jleSerializationContext &ctx);
 
     template <class OTHER>
-    jleResourceRef &
-    operator=(const OTHER &other)
-    {
-        *ptr = other;
-        return *this;
-    }
+    jleResourceRef & operator=(const OTHER &other) { *_ptr = other; return *this; }
 
-    explicit
-    operator bool() const
-    {
-        return ptr.get();
-    }
+    std::shared_ptr<T> get() const { return std::static_pointer_cast<T>(_ptr); }
+    [[nodiscard]] jlePath getPath() const { return _path; }
 
-    std::shared_ptr<T>
-    get()
-    {
-        return std::static_pointer_cast<T>(ptr);
-    }
-
-    explicit
-    operator T &()
-    {
-        return *ptr;
-    }
-
-    explicit
-    operator const T &() const
-    {
-        return *ptr;
-    }
-
-    T &
-    operator*() const noexcept
-    {
-        return *ptr;
-    }
-
-    T *
-    operator->() const noexcept
-    {
-        T *p = static_cast<T *>(ptr.get());
-        return p;
-    }
-
-    jlePath path{};
+    explicit operator bool() const { return _ptr.get(); }
+    explicit operator T &() { return *_ptr; }
+    explicit operator const T &() const { return *_ptr; }
+    T & operator*() const noexcept { return *_ptr; }
+    T * operator->() const noexcept { return static_cast<T *>(_ptr.get()); }
 
 private:
-    std::shared_ptr<jleResourceInterface> ptr{};
+    jlePath _path;
+    std::shared_ptr<jleResourceInterface> _ptr{};
 };
 
 #include "jleResourceRef.inl"
