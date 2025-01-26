@@ -59,7 +59,7 @@ jleEditorBuild::renderUI(jleEngineUpdateContext &ctx, jleResourceIndexer& resour
 }
 
 void
-jleEditorBuild::packageResources(jleVectorSet<jlePath> indexedFiles)
+jleEditorBuild::packageResources(std::set<jlePath> indexedFiles)
 {
     auto archive = libzippp::ZipArchive("gamedata.zip");
 

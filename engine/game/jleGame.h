@@ -63,7 +63,7 @@ public:
         std::unique_ptr<jlECS::ECS> ecs;
     };
 
-    void injectModules(std::unique_ptr<jleGameModules> modules);
+    void injectModules(std::unique_ptr<jleGameModules> modules) { _modules = std::move(modules); }
     [[nodiscard]] jleGameModules& getModules() const { return *_modules; }
 
     virtual void update(jleEngineUpdateContext &ctx);

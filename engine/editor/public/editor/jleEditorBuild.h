@@ -23,11 +23,9 @@
 
 #include "core/jlePath.h"
 
-#include "jleString.h"
-#include "jleVectorSet.h"
-
 #include <libzippp.h>
 
+#include <set>
 #include <atomic>
 
 class jleResourceIndexer;
@@ -47,7 +45,7 @@ private:
 
     void testPackagedResources();
 
-    void packageResources(jleVectorSet<jlePath> indexedFiles);
+    void packageResources(std::set<jlePath> indexedFiles);
     std::atomic<double> _packagingProgress{};
 };
 

@@ -163,8 +163,8 @@ WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
 }
 
-static GLFWwindow *
-initEditorWindowWin32(jleWindow &window)
+static void
+initEditorWindowWin32(GLFWwindow* glfwWindow,  trfge3aqwcveWindow &window)
 {
     const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
@@ -176,8 +176,6 @@ initEditorWindowWin32(jleWindow &window)
         workAreaWidth = ((float)workArea.right - (float)workArea.left);
         workAreaHeight = ((float)workArea.bottom - (float)workArea.top);
     }
-
-    auto glfwWindow = window.initGlfwWindow(workAreaWidth, workAreaHeight, "");
 
     // Get the native window handle
     HWND hwnd = glfwGetWin32Window(glfwWindow);
@@ -195,8 +193,6 @@ initEditorWindowWin32(jleWindow &window)
 
     // Maximises the window on startup
     ShowWindow(hwnd, SW_MAXIMIZE);
-
-    return glfwWindow;
 }
 
 #endif
@@ -208,7 +204,8 @@ jleEditorWindow::initGlfwWindow(int width, int height, const char *title)
 {
     GLFWwindow* glfwWindow;
 #ifdef WIN32
-    glfwWindow = initEditorWindowWin32(*this);
+    glfwWindow = jleWindow::initGlfwWindow(width, height, title);
+    initEditorWindowWin32(glfwWindow, *this);
 #else
     glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
     const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());

@@ -48,24 +48,28 @@ jleFileWatcher::sweep()
             continue;
         }
         for (auto &file : std::filesystem::recursive_directory_iterator(dir)) {
-            auto end = file.path().string()[file.path().string().size() - 1];
+            std::string fileString = file.path().string();
+            auto end = fileString[fileString.size() - 1];
             if (end == '~') {
                 continue;
             }
+
+            cleanFileString(fileString);
+
             auto current_file_last_write_time = std::filesystem::last_write_time(file);
 
-            if ((_pathsMonitored.find(file.path().string()) == _pathsMonitored.end())) {
-                _pathsMonitored[file.path().string()] = current_file_last_write_time;
+            if ((_pathsMonitored.find(fileString) == _pathsMonitored.end())) {
+                _pathsMonitored[fileString] = current_file_last_write_time;
                 if (file.is_regular_file()) {
-                    jleRealPath realPath{file.path().string().c_str()};
+                    jleRealPath realPath{fileString.c_str()};
                     jlePath path{realPath};
                     result.added.emplace_back(path);
                 }
             } else {
-                if (_pathsMonitored[file.path().string()] != current_file_last_write_time) {
-                    _pathsMonitored[file.path().string()] = current_file_last_write_time;
+                if (_pathsMonitored[fileString] != current_file_last_write_time) {
+                    _pathsMonitored[fileString] = current_file_last_write_time;
                     if (file.is_regular_file()) {
-                        jleRealPath realPath{file.path().string().c_str()};
+                        jleRealPath realPath{fileString.c_str()};
                         jlePath path{realPath};
                         result.modified.emplace_back(path);
                     }
@@ -75,4 +79,10 @@ jleFileWatcher::sweep()
     }
 
     return result;
+}
+
+void
+jleFileWatcher::cleanFileString(std::string& fileString)
+{
+    std::replace(fileString.begin(), fileString.end(), '\\', '/');
 }

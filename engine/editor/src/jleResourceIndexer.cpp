@@ -22,7 +22,7 @@
 
 jleResourceIndexer::jleResourceIndexer(const std::vector<std::string> &directories) : _fileWatcher(directories) {}
 
-const jleVectorSet<jlePath> &
+const std::set<jlePath> &
 jleResourceIndexer::getIndexedFiles()
 {
     std::future<int> asd;
@@ -30,24 +30,24 @@ jleResourceIndexer::getIndexedFiles()
     return _indexedFiles;
 }
 
-const jleVectorSet<jlePath> &
-jleResourceIndexer::getIndexedFilesRef(const jleString &extension)
+const std::set<jlePath> &
+jleResourceIndexer::getIndexedFilesRef(const std::string &extension)
 {
     auto it = _indexedFilesWithExtension.find(extension);
-    if (!it) {
-        static const jleVectorSet<jlePath> empty;
+    if (it == _indexedFilesWithExtension.end()) {
+        static const std::set<jlePath> empty;
         return empty;
     } else {
         return it->second;
     }
 }
 
-const jleVectorSet<jlePath> *
-jleResourceIndexer::getIndexedFilesPtr(const jleString &extension)
+const std::set<jlePath> *
+jleResourceIndexer::getIndexedFilesPtr(const std::string &extension)
 {
     auto it = _indexedFilesWithExtension.find(extension);
-    if (!it) {
-        static const jleVectorSet<jlePath> empty;
+    if (it == _indexedFilesWithExtension.end()) {
+        static const std::set<jlePath> empty;
         return &empty;
     } else {
         return &it->second;
@@ -81,8 +81,8 @@ jleResourceIndexer::notifyErase(const jlePath &path)
     LOGI << "File erased: " << path.getVirtualPath().str();
     _indexedFiles.erase(path);
 
-    auto it = _indexedFilesWithExtension.find(path.getFileEnding().c_str());
-    if (it) {
+    auto it = _indexedFilesWithExtension.find(path.getFileEnding());
+    if (it != _indexedFilesWithExtension.end()) {
         it->second.erase(path);
     }
 }

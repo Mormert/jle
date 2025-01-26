@@ -2,9 +2,9 @@
  *               Copyright (c) 2023-2024 Johan Lind. All rights reserved.                    *
  *********************************************************************************************/
 
+#include <game/loader/editor/jleGameModulesLoaderEditor.h>
 #include <editor/jleEditor.h>
 #include <editor/jleEditorWindow.h>
-#include <game/loader/editor/jleGameModulesLoaderEditor.h>
 #include <runtime/jleKickStarter.h>
 
 int

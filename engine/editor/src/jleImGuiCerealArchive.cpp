@@ -17,7 +17,6 @@
 #include "jleImGuiArchive.h"
 #include "modules/scripting/jleLuaEnvironment.h"
 
-#include <jleVectorSet.h>
 #include <glm/gtc/quaternion.hpp>
 
 void
@@ -117,7 +116,7 @@ jleImGuiArchive::draw_ui_reference(const char *name,
         value = std::string(charData.data());
     }
 
-    std::vector<const jleVectorSet<jlePath> *> indexedFileSets;
+    std::vector<const std::set<jlePath> *> indexedFileSets;
 
     bool existsSomeFiles = false;
     for (auto &extension : fileExtensions) {

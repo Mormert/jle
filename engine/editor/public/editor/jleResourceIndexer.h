@@ -17,12 +17,7 @@
 
 #include "core/jleFileWatcher.h"
 
-#include "core/jleSTL/jleString.h"
-
-//#include <jleString.h>
-#include <jleVectorMap.h>
-#include <jleVectorSet.h>
-
+#include <set>
 #include <future>
 
 class jleEditorTextEdit;
@@ -38,11 +33,11 @@ public:
     void update(jleSerializationContext &ctx, jleEditorTextEdit &textEdit);
 
     // Gets all indexed files in the system
-    const jleVectorSet<jlePath> &getIndexedFiles();
+    const std::set<jlePath> &getIndexedFiles();
 
     // Gets all indexed files in the system, with a specified file extension
-    const jleVectorSet<jlePath> &getIndexedFilesRef(const jleString &extension);
-    const jleVectorSet<jlePath> *getIndexedFilesPtr(const jleString &extension);
+    const std::set<jlePath> &getIndexedFilesRef(const std::string &extension);
+    const std::set<jlePath> *getIndexedFilesPtr(const std::string &extension);
 
 private:
     struct CallbacksContext {
@@ -58,6 +53,6 @@ private:
     jleFileWatcher _fileWatcher;
     std::future<jleFileIndexerResult> _fileWatchFuture;
 
-    jleVectorSet<jlePath> _indexedFiles;
-    jleVectorMap<jleString, jleVectorSet<jlePath>> _indexedFilesWithExtension;
+    std::set<jlePath> _indexedFiles;
+    std::unordered_map<std::string, std::set<jlePath>> _indexedFilesWithExtension;
 };

@@ -24,12 +24,6 @@ jleGame::jleGame() = default;
 jleGame::~jleGame() = default;
 
 void
-jleGame::injectModules(std::unique_ptr<jleGameModules> modules)
-{
-    _modules = std::move(modules);
-}
-
-void
 jleGame::update(jleEngineUpdateContext &ctx)
 {
     _modules->hierarchyModule->updateWorldMatrices(*_ecs);

@@ -42,6 +42,8 @@ private:
     std::vector<std::string> _watchDirectories;
     std::unordered_map<std::string, std::filesystem::file_time_type> _pathsMonitored;
     int ctr = 0;
+
+    static void cleanFileString(std::string& pathString);
 };
 
 #endif // JLE_FILECHANGENOTIFIER_H

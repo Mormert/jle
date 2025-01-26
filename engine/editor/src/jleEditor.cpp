@@ -450,6 +450,11 @@ jleEditor::~jleEditor() = default;
 
 void jleEditor::updateEditorGameModules(jleEditorUpdateContext &ctx) {
 
+    if(ctx.engineUpdateContext.gameRuntime.isGameKilled())
+    {
+        return;
+    }
+
     auto& modules = ctx.engineUpdateContext.gameRuntime.getGame().getModules();
 
     const std::vector<glm::mat4>& worldMatrices = modules.hierarchyModule->getWorldMatrices();
