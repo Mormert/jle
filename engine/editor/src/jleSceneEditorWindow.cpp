@@ -528,7 +528,7 @@ jleSceneEditorWindow::updateEditorGrid(jleFramePacket &framePacket)
 {
     ZoneScoped;
 
-    jle3DLineVertex v1{glm::vec3{0.f}, glm::vec3{1.f, 0.f, 0.f}, {1.0f, 0.44f, 1.2f}};
+    jle3DLineVertex v1{glm::vec3{0.f}, glm::vec3{1.f, 0.f, 0.f}, {1.0f, 0.0f, 0.0f}};
     jle3DLineVertex v2 = v1;
     v2.position = glm::vec3{100.f, 0.f, 0.f};
     v1.position = glm::vec3{-100.f, 0.f, 0.f};
@@ -549,7 +549,7 @@ jleSceneEditorWindow::updateEditorGrid(jleFramePacket &framePacket)
 
     v1.color = glm::vec3(1.0f, 0.3f, 0.3f);
     v2.color = glm::vec3(1.0f, 0.3f, 0.3f);
-    auto pos = _renderCamera.getPosition();
+    auto pos = fpvCamController.position;
 
     float scale = 1.f;
     if (abs(pos.y) < 50.f) {
