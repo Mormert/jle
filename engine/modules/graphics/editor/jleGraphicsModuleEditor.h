@@ -22,6 +22,8 @@
 class jleGraphicsModuleEditor : public jleGraphicsModule
 {
 public:
+    void postRender() override;
+
     void initializeECS(jlECS::ECS &ecs) override;
 
     void updateEditor(jleEditorUpdateContext& ctx, const std::vector<glm::mat4>& worldMatrices);
@@ -32,6 +34,13 @@ public:
 
     uint32_t getGameWindowTextureId() const { return _screenFramebuffer->texture(); };
 
+    jleFramePacket& getCurrentFramePacketEditor() { return _currentFramePacketIndex == 0 ? _framePacketsEditor[0] : _framePacketsEditor[1];  }
+    const jleFramePacket& getPreviousFramePacketEditor() { return _currentFramePacketIndex == 0 ? _framePacketsEditor[1] : _framePacketsEditor[0]; }
+    const jleFramePacket& getPreviousFramePacketGame() { return getPreviousFramePacket(); }
+
 protected:
     void display() override;
+
+private:
+    jleFramePacket _framePacketsEditor[2]; // Current and previous frame's editor packet
 };

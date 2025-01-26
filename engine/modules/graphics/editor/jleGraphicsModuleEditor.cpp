@@ -17,8 +17,6 @@
 
 #include <jleEditorGizmos.h>
 #include <editor/serialization/jleEditorECSRegistration.h>
-#include <game/jleGame.h>
-#include <game/jleGameRuntime.h>
 #include <modules/hierarchy/jleHierarchyFuncs.h>
 #include <modules/hierarchy/components/cTransform.h>
 #include <modules/graphics/jleGraphics.h>
@@ -31,44 +29,62 @@
 
 #include "modules/graphics/core/jleIncludeGL.h"
 #include "modules/graphics/runtime/components/cMeshRenderer.h"
+#include "modules/mesh/editor/jleMeshModuleEditor.h"
 
 #include <modules/graphics/core/jleFrameBufferInterface.h>
 
 
-namespace {
-    void serializeCameraEditor(jlECS::ComponentContainer *thiz, jleImGuiArchive &archive, int componentIndex, int objectIndex)
-    {
-        cCamera &cameraComponent = *thiz->getPtr<cCamera>(componentIndex);
-        archive(cameraComponent);
+namespace
+{
+void
+serializeCameraEditor(jlECS::ComponentContainer *thiz, jleImGuiArchive &archive, int componentIndex, int objectIndex)
+{
+    cCamera &cameraComponent = *thiz->getPtr<cCamera>(componentIndex);
+    archive(cameraComponent);
 
-        if (auto* editorGraphicsModule = archive.editorCtx.getCurrentModules().getModule<jleGraphicsModuleEditor>()) {
-            constexpr unsigned int width = 400;
-            constexpr unsigned int height = 400;
+    if (auto *editorGraphicsModule = archive.editorCtx.getCurrentModules().getModule<jleGraphicsModuleEditor>()) {
+        constexpr unsigned int width = 400;
+        constexpr unsigned int height = 400;
 
-            ImGui::Text("Camera Preview");
+        ImGui::Text("Camera Preview");
 
-            if (!editorGraphicsModule->cameraPreviewFramebuffer) {
-                editorGraphicsModule->cameraPreviewFramebuffer = std::make_unique<jleFramebufferScreen>(width, height);
-            }
-
-            glm::mat4 worldMatrix = jleHierarchyFuncs::getWorldMatrix(thiz->getECS().getObject(objectIndex));
-
-            archive.editorCtx.editorFramePacket.camera.setViewMatrix(glm::inverse(worldMatrix));
-            if (cameraComponent.perspective) {
-                archive.editorCtx.editorFramePacket.camera.setPerspectiveProjection(cameraComponent.perspectiveFov, width, height, cameraComponent.farPlane, cameraComponent.nearPlane);
-            }else {
-                archive.editorCtx.editorFramePacket.camera.setOrthographicProjection(cameraComponent.framebufferSizeX, cameraComponent.framebufferSizeY, cameraComponent.farPlane, cameraComponent.nearPlane);
-            }
-
-            auto &fb = *editorGraphicsModule->cameraPreviewFramebuffer;
-
-            archive.editorCtx.getCurrentModules().getModule<jleGraphicsModule>()->getGraphics().render(*editorGraphicsModule->cameraPreviewFramebuffer, archive.editorCtx.editorFramePacket);
-
-            // Get the texture from the framebuffer
-            glBindTexture(GL_TEXTURE_2D, (unsigned int)fb.texture());
-            ImGui::Image((void *)(intptr_t)fb.texture(), ImVec2(width / 2.f, height / 2.f),ImVec2(0, 1), ImVec2(1, 0));
+        if (!editorGraphicsModule->cameraPreviewFramebuffer) {
+            editorGraphicsModule->cameraPreviewFramebuffer = std::make_unique<jleFramebufferScreen>(width, height);
         }
+
+        glm::mat4 worldMatrix = jleHierarchyFuncs::getWorldMatrix(thiz->getECS().getObject(objectIndex));
+
+        const jleFramePacket &framePacket = editorGraphicsModule->getPreviousFramePacketGame();
+
+        jleCamera cameraOverride;
+        cameraOverride.setViewMatrix(glm::inverse(worldMatrix));
+        if (cameraComponent.perspective) {
+            cameraOverride.setPerspectiveProjection(
+                cameraComponent.perspectiveFov, width, height, cameraComponent.farPlane, cameraComponent.nearPlane);
+        } else {
+            cameraOverride.setOrthographicProjection(cameraComponent.framebufferSizeX,
+                                                     cameraComponent.framebufferSizeY,
+                                                     cameraComponent.farPlane,
+                                                     cameraComponent.nearPlane);
+        }
+
+        archive.editorCtx.getCurrentModules().getModule<jleGraphicsModule>()->getGraphics().render(
+            *editorGraphicsModule->cameraPreviewFramebuffer, framePacket, &cameraOverride);
+
+        auto &fb = *editorGraphicsModule->cameraPreviewFramebuffer;
+
+        // Get the texture from the framebuffer
+        glBindTexture(GL_TEXTURE_2D, (unsigned int)fb.texture());
+        ImGui::Image((void *)(intptr_t)fb.texture(), ImVec2(width / 2.f, height / 2.f), ImVec2(0, 1), ImVec2(1, 0));
     }
+}
+} // namespace
+
+void
+jleGraphicsModuleEditor::postRender()
+{
+    _framePacketsEditor[_currentFramePacketIndex] = _framePackets[_currentFramePacketIndex];
+    jleGraphicsModule::postRender();
 }
 
 void
@@ -98,24 +114,35 @@ jleGraphicsModuleEditor::updateEditor(jleEditorUpdateContext &ctx, const std::ve
     ZoneScoped;
     auto &ecs = ctx.getCurrentECS();
 
-    // TODO: Set up gizmo meshes for rendering using the new rendering system
+    const auto sendGizmoMesh = [&](const jlePath& meshPath, std::shared_ptr<jleMaterial>& material, int objectIndex) {
+        if (const auto it = _meshGPULookup.find(meshPath); it != _meshGPULookup.end()) {
+            getCurrentFramePacketEditor().sendMesh(it->second, material, worldMatrices[objectIndex], objectIndex, false);
+        } else {
+            if (const std::shared_ptr<jleMesh> loadedMesh = ctx.getCurrentModules().getModule<jleMeshModuleEditor>()->loadMeshSync(meshPath)) {
+                _meshesToLoadIntoGPU.insert(loadedMesh);
+            }
+        }
+    };
 
     for (auto [objectIndex, _] : ecs.iterateMulti_IncludeObjectIndex<cCamera>()) {
-        auto mesh = ctx.gizmos.cameraMesh();
+        auto meshPath = ctx.gizmos.cameraMesh()->path;
         auto material = ctx.gizmos.cameraMaterial();
-        //ctx.editorFramePacket.sendMesh(mesh, material, worldMatrices[objectIndex], objectIndex, false);
+
+        sendGizmoMesh(meshPath, material, objectIndex);
     }
 
     for (auto [objectIndex, _] : ecs.iterateMulti_IncludeObjectIndex<cLight>()) {
-        auto mesh = ctx.gizmos.lightLampMesh();
+        auto meshPath = ctx.gizmos.lightLampMesh()->path;
         auto material = ctx.gizmos.lampMaterial();
-        //ctx.editorFramePacket.sendMesh(mesh, material, worldMatrices[objectIndex], objectIndex, false);
+
+        sendGizmoMesh(meshPath, material, objectIndex);
     }
 
     for (auto [objectIndex, _] : ecs.iterateMulti_IncludeObjectIndex<cLightDirectional>()) {
-        auto mesh = ctx.gizmos.sunMesh();
+        auto meshPath = ctx.gizmos.sunMesh()->path;
         auto material = ctx.gizmos.sunMaterial();
-        //ctx.editorFramePacket.sendMesh(mesh, material, worldMatrices[objectIndex], objectIndex, false);
+
+        sendGizmoMesh(meshPath, material, objectIndex);
     }
 
     _renderThread->processRenderQueue();
@@ -131,5 +158,4 @@ jleGraphicsModuleEditor::setGameWindowSize(uint32_t width, uint32_t height)
 void
 jleGraphicsModuleEditor::display()
 {
-
 }

@@ -58,6 +58,7 @@ jleMeshModule::getLoadedMesh(const jlePath &path) const
     }
     return nullptr;
 }
+
 std::shared_ptr<jleMesh>
 jleMeshModule::loadMeshSync(const jlePath &path)
 {
@@ -75,6 +76,7 @@ jleMeshModule::loadMeshSync(const jlePath &path)
 
     return nullptr;
 }
+
 void
 jleMeshModule::loadMeshAsync(const jlePath &path)
 {

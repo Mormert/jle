@@ -39,7 +39,6 @@ public:
     jleResourceIndexer &resourceIndexer;
     jleEditorWindow &editorWindow;
     jleEditorGizmos &gizmos;
-    jleFramePacket &editorFramePacket;
     jlECS::ECS &editorEcs;
     jleGameModules &editorGameModules;
 

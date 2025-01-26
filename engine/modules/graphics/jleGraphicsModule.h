@@ -47,9 +47,9 @@ public:
     virtual void initializeECS(jlECS::ECS &ecs);
     void initializeModule(jleSerializationContext& ctx);
 
-    void preRender();
-    void render(int windowX, int windowY);
-    void postRender();
+    virtual void preRender();
+    virtual void render(int windowX, int windowY);
+    virtual void postRender();
 
     ~jleGraphicsModule() override;
 
@@ -84,7 +84,7 @@ protected:
     int _currentFramePacketIndex = 0;
 
     jleFramePacket& getCurrentFramePacket() { return _currentFramePacketIndex == 0 ? _framePackets[0] : _framePackets[1]; }
-    jleFramePacket& getPreviousFramePacket() { return _currentFramePacketIndex == 0 ? _framePackets[1] : _framePackets[0]; }
+    const jleFramePacket& getPreviousFramePacket() { return _currentFramePacketIndex == 0 ? _framePackets[1] : _framePackets[0]; }
 
     std::unique_ptr<jleRenderThread> _renderThread;
 

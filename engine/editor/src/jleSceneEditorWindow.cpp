@@ -21,12 +21,13 @@
 #include "modules/graphics/core/jleFramebufferMultisample.h"
 #include "modules/graphics/core/jleFramebufferPicking.h"
 #include "modules/graphics/core/jleIncludeGL.h"
+#include "modules/graphics/editor/jleGraphicsModuleEditor.h"
 #include "modules/graphics/jleFramePacket.h"
 #include "modules/graphics/jleGraphics.h"
 #include "modules/graphics/jleGraphicsModule.h"
-#include "modules/mesh/components/cMesh.h"
 #include "modules/hierarchy/components/cTransform.h"
 #include "modules/input/jleInputModule.h"
+#include "modules/mesh/components/cMesh.h"
 #include "modules/physics/components/cRigidbody.h"
 #include "modules/physics/jlePhysics.h"
 #include "modules/windowing/jleWindowModule.h"
@@ -174,7 +175,8 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         int dragWidth  = std::abs(_selectCurrent.x - _selectStart.x);
         int dragHeight = std::abs(_selectCurrent.y - _selectStart.y);
 
-        input.editorUpdate.getCurrentModules().getModule<jleGraphicsModule>()->getGraphics().renderMeshesPicking(*_pickingFramebuffer, _renderCamera, input.editorUpdate.editorFramePacket);
+        auto graphicsModuleEditor = input.editorUpdate.editorGameModules.getModule<jleGraphicsModuleEditor>();
+        graphicsModuleEditor->getGraphics().renderMeshesPicking(*_pickingFramebuffer, _renderCamera, graphicsModuleEditor->getPreviousFramePacketEditor());
         _pickingFramebuffer->bind();
 
         GLint previousPackAlignment;
@@ -500,7 +502,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
 }
 
 void
-jleSceneEditorWindow::render(jleFramePacket &framePacket, const jleEditorUpdateContext &ctx)
+jleSceneEditorWindow::render(const jleFramePacket &framePacket, const jleEditorUpdateContext &ctx)
 {
     if (_perspectiveCamera) {
         _renderCamera.setPerspectiveProjection(45.f, _framebuffer->width(), _framebuffer->height(), 10000.f, 0.1f);
@@ -512,14 +514,13 @@ jleSceneEditorWindow::render(jleFramePacket &framePacket, const jleEditorUpdateC
         _msaa->resize(_framebuffer->width(), _framebuffer->height());
     }
 
-    framePacket.camera = _renderCamera;
-    ctx.getCurrentModules().getModule<jleGraphicsModule>()->getGraphics().render(*_msaa, framePacket);
+    ctx.getCurrentModules().getModule<jleGraphicsModule>()->getGraphics().render(*_msaa, framePacket, &_renderCamera);
 
     _msaa->blitToOther(*_framebuffer);
 }
 
 void
-jleSceneEditorWindow::renderEditorGrid(jleFramePacket &framePacket)
+jleSceneEditorWindow::updateEditorGrid(jleFramePacket &framePacket)
 {
     ZoneScoped;
 

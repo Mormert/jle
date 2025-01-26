@@ -93,12 +93,7 @@ public:
     inline void
     emptyQueues()
     {
-        _meshes.clear();
-        _translucentMeshes.clear();
-        _skinnedMeshes.clear();
-        _lineStrips.clear();
-        _lines.clear();
-        _lights.clear();
+        *this = {};
     }
 
     jle3DSettings settings{};
@@ -112,5 +107,4 @@ private:
     std::vector<std::vector<jle3DLineVertex>> _lineStrips;
     std::vector<jle3DLineVertex> _lines;
     std::vector<jle3DRendererLight> _lights;
-
 };

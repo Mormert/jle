@@ -421,6 +421,10 @@ jleEditor::mainEditorLoop()
 
     _resourceIndexer->update(engineUpdateCtx.serializationContext, *_editorWindows->textEditWindow);
 
+    // Store packets here, since in preRender it gets swapped out
+    const jleFramePacket& previousFramePacketEditor = getCurrentGameModules()->getModule<jleGraphicsModuleEditor>()->getPreviousFramePacketEditor();
+    jleFramePacket& currentFramePacketEditor = getCurrentGameModules()->getModule<jleGraphicsModuleEditor>()->getCurrentFramePacketEditor();
+
     if (!_gameEngine.getGameRuntime().isGameKilled()) {
         _gameEngine.getGameRuntime().processGameReset(engineUpdateCtx);
 
@@ -447,26 +451,44 @@ jleEditor::mainEditorLoop()
             postRender(*getCurrentGameModules(), engineUpdateCtx.serializationContext);
         }
     }else {
-        _editorConstructConfig.modulesUpdateRenderablesOnly(*_editorModules, engineUpdateCtx, *_editorEcs);
-    }
+        if(auto preRender = _gameEngine.getEngineConstructConfig().gameConfig.modulesPreRender){
+            preRender(*getCurrentGameModules(), engineUpdateCtx.serializationContext);
+        }
 
-    jleFramePacket& previousFramePacket = getCurrentGameModules()->getModule<jleGraphicsModuleEditor>()->getPreviousFramePacket();
+        wi::jobsystem::context jobsCtx;
+        wi::jobsystem::Execute(jobsCtx, [&](wi::jobsystem::JobArgs args) {
+            _editorConstructConfig.modulesUpdateRenderablesOnly(*_editorModules, engineUpdateCtx, *_editorEcs);
+        });
+
+        if (auto render = _gameEngine.getEngineConstructConfig().gameConfig.modulesRender){
+            render(*getCurrentGameModules(), engineUpdateCtx.serializationContext);
+        }
+
+        Wait(jobsCtx);
+
+        if (auto postRender = _gameEngine.getEngineConstructConfig().gameConfig.modulesPostRender) {
+            postRender(*getCurrentGameModules(), engineUpdateCtx.serializationContext);
+        }
+    }
 
     jleEditorUpdateContext editorUpdateCtx{
         .engineUpdateContext = engineUpdateCtx,
         .resourceIndexer = *_resourceIndexer,
         .editorWindow = *_mainEditorWindow,
-        .editorFramePacket = previousFramePacket,
         .gizmos = *_gizmos,
         .editorEcs = *_editorEcs,
         .editorGameModules = *_editorModules
     };
 
-    _editorConstructConfig.updateEditorGameModules(editorUpdateCtx);
+    wi::jobsystem::context jobsCtx;
+    wi::jobsystem::Execute(jobsCtx, [&](wi::jobsystem::JobArgs args) {
+        _editorConstructConfig.updateEditorGameModules(editorUpdateCtx);
+        _editorWindows->sceneWindow->updateEditorGrid(currentFramePacketEditor);
+    });
 
-    _editorWindows->sceneWindow->renderEditorGrid(previousFramePacket);
+    _editorWindows->sceneWindow->render(previousFramePacketEditor, editorUpdateCtx);
 
-    _editorWindows->sceneWindow->render(previousFramePacket, editorUpdateCtx);
+    Wait(jobsCtx);
 
     renderEditorUI(editorUpdateCtx);
 

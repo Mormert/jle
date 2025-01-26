@@ -40,11 +40,11 @@ public:
         jleUndoRedoManager& undoRedo;
     };
 
+    void updateEditorGrid(jleFramePacket &packet);
+
     void renderUI(const RenderUIInput& input);
 
-    void renderEditorGrid(jleFramePacket &graph);
-
-    void render(jleFramePacket &framePacket, const jleEditorUpdateContext &context);
+    void render(const jleFramePacket &framePacket, const jleEditorUpdateContext &context);
 
     jleCameraSimpleFPVController fpvCamController{};
     float cameraSpeed = 100.f;

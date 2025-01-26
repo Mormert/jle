@@ -103,13 +103,15 @@ jleGraphics::~jleGraphics()
 }
 
 void
-jleGraphics::render(jleFramebufferInterface &framebufferOut, const jleFramePacket &framePacket)
+jleGraphics::render(jleFramebufferInterface &framebufferOut, const jleFramePacket &framePacket, const jleCamera* cameraOverride)
 {
     ZoneScoped;
 
     framebufferOut.bind();
 
-    const auto backgroundColor = framePacket.camera.getBackgroundColor();
+    const jleCamera& camera = cameraOverride ? *cameraOverride : framePacket.camera;
+
+    const auto backgroundColor = camera.getBackgroundColor();
     glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -121,15 +123,15 @@ jleGraphics::render(jleFramebufferInterface &framebufferOut, const jleFramePacke
     // Sort translucency early on another thread, sync before rendering translucency
     wi::jobsystem::context sortCtx;
     if (!framePacket._translucentMeshes.empty()) {
-        wi::jobsystem::Execute(sortCtx, [&](wi::jobsystem::JobArgs args) { sortTranslucentMeshes(framePacket.camera, framePacket._translucentMeshes); });
+        wi::jobsystem::Execute(sortCtx, [&](wi::jobsystem::JobArgs args) { sortTranslucentMeshes(camera, framePacket._translucentMeshes); });
     }
 
     // Directional light renders to the shadow mapping framebuffer
-    renderDirectionalLight(framePacket.camera, framePacket._meshes, framePacket._skinnedMeshes, framePacket.settings);
+    renderDirectionalLight(camera, framePacket._meshes, framePacket._skinnedMeshes, framePacket.settings);
 
     glCheckError("3D Render - Directional Lights");
 
-    renderPointLights(framePacket.camera, framePacket);
+    renderPointLights(camera, framePacket);
 
     glCheckError("3D Render - Point Lights");
 
@@ -144,22 +146,22 @@ jleGraphics::render(jleFramebufferInterface &framebufferOut, const jleFramePacke
     bindShadowmapFramebuffers(framePacket.settings);
 
     {
-        renderMeshes(framePacket.camera, framePacket._meshes, framePacket._lights, framePacket.settings);
+        renderMeshes(camera, framePacket._meshes, framePacket._lights, framePacket.settings);
         glCheckError("3D Render - Opaque Meshes");
     }
 
     {
-        renderSkinnedMeshes(framePacket.camera, framePacket._skinnedMeshes, framePacket._lights, framePacket.settings);
+        renderSkinnedMeshes(camera, framePacket._skinnedMeshes, framePacket._lights, framePacket.settings);
         glCheckError("3D Render - Opaque Skinned Meshes");
     }
 
-    renderLineStrips(framePacket.camera, framePacket._lineStrips);
+    renderLineStrips(camera, framePacket._lineStrips);
     glCheckError("3D Render - Strip Lines");
 
-    renderLines(framePacket.camera, framePacket._lines);
+    renderLines(camera, framePacket._lines);
     glCheckError("3D Render - Lines");
 
-    renderSkybox(framePacket.camera, framePacket.settings);
+    renderSkybox(camera, framePacket.settings);
     glCheckError("3D Render - Skybox");
 
     {
@@ -167,7 +169,7 @@ jleGraphics::render(jleFramebufferInterface &framebufferOut, const jleFramePacke
             wi::jobsystem::Wait(sortCtx);
         }
 
-        renderMeshes(framePacket.camera, framePacket._translucentMeshes, framePacket._lights, framePacket.settings);
+        renderMeshes(camera, framePacket._translucentMeshes, framePacket._lights, framePacket.settings);
         glCheckError("3D Render - Translucent Meshes");
     }
 

@@ -31,12 +31,12 @@ jleDefaultGameEditorFunctions::createDefaultModules_Editor(bool gameRunning)
 {
     auto modules = std::make_unique<jleGameModules>();
 
+    modules->addModule<jleWindowModuleEditor, jleWindowModuleBase>(std::make_unique<jleWindowModuleEditor>());
+
     if (gameRunning) {
-        modules->addModule<jleWindowModuleEditor, jleWindowModuleBase>(std::make_unique<jleWindowModuleEditor>());
         modules->addModule<jleInputModuleEditor, jleInputModuleBase>(std::make_unique<jleInputModuleEditor>());
     }else {
         // Add dummy modules for editor mode
-        modules->addModule<jleWindowModuleBase>(nullptr);
         modules->addModule<jleInputModuleBase>(nullptr);
     }
 
@@ -58,10 +58,11 @@ jleDefaultGameEditorFunctions::updateEditorGameModules(jleEditorUpdateContext &c
 
     if (auto* graphicsEditorModule = modules.getModule<jleGraphicsModuleEditor>()){
         graphicsEditorModule->updateEditor(ctx, worldMatrices);
-    }
 
-    if (auto* physicsEditorModule = modules.getModule<jlePhysicsModuleEditor>()){
-        physicsEditorModule->updateEditor(ctx.editorFramePacket);
+        if (auto* physicsEditorModule = modules.getModule<jlePhysicsModuleEditor>()){
+            jleFramePacket& currentFramePacketEditor = graphicsEditorModule->getCurrentFramePacketEditor();
+            physicsEditorModule->updateEditor(currentFramePacketEditor);
+        }
     }
 
     if (auto* luaEditorModule = modules.getModule<jleLuaEditorModule>()){
