@@ -52,6 +52,8 @@ target_include_directories(jleEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/public
 
 add_subdirectory(../game/editor ${CMAKE_CURRENT_BINARY_DIR}/gameEditor)
 add_subdirectory(../modules/hierarchy/editor ${CMAKE_CURRENT_BINARY_DIR}/hierarchyEditor)
+add_subdirectory(../modules/windowing/editor ${CMAKE_CURRENT_BINARY_DIR}/windowingEditor)
 add_subdirectory(../modules/graphics/editor ${CMAKE_CURRENT_BINARY_DIR}/graphicsEditor)
+add_subdirectory(../modules/input/editor ${CMAKE_CURRENT_BINARY_DIR}/inputEditor)
 add_subdirectory(../modules/scripting/editor ${CMAKE_CURRENT_BINARY_DIR}/scriptingEditor)
 add_subdirectory(../modules/physics/editor ${CMAKE_CURRENT_BINARY_DIR}/physicsEditor)

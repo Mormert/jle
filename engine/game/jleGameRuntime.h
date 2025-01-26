@@ -70,6 +70,8 @@ public:
 
     void update(jleEngineUpdateContext &ctx);
 
+    void processGameReset(jleEngineUpdateContext &ctx);
+
 private:
     std::unique_ptr<jleGame> _game{};
 

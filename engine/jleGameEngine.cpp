@@ -116,6 +116,8 @@ jleGameEngine::mainLoop()
 
     auto updateContext = createUpdateContext();
 
+    _gameRuntime->processGameReset(updateContext);
+
     // Game thread and render thread are synced here
     if(auto preRender = _engineConstructConfig.gameConfig.modulesPreRender){
         preRender(*getCurrentGameModules(), updateContext.serializationContext);

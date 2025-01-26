@@ -109,19 +109,13 @@ resize_canvas_js(int width, int height)
 #endif
 
 float
-jleWindow::time()
-{
-    return static_cast<float>(glfwGetTime());
-}
-
-float
-jleWindow::scrollX() const
+jleWindow::getScrollX() const
 {
     return _currentScrollX;
 }
 
 float
-jleWindow::scrollY() const
+jleWindow::getScrollY() const
 {
     return _currentScrollY;
 }
@@ -156,13 +150,13 @@ jleWindow::isCursorDisplayed() const
 }
 
 unsigned int
-jleWindow::height() const
+jleWindow::getHeight() const
 {
     return windowSettings.height;
 }
 
 unsigned int
-jleWindow::width() const
+jleWindow::getWidth() const
 {
     return windowSettings.width;
 }
@@ -241,25 +235,25 @@ jleWindow::windowShouldClose()
 }
 
 bool
-jleWindow::keyDown(int key) const
+jleWindow::getKeyDown(int key) const
 {
     return glfwGetKey(_glfwWindow, key);
 }
 
 bool
-jleWindow::keyPressed(int key) const
+jleWindow::getKeyPressed(int key) const
 {
     return _pressedKeys[key];
 }
 
 bool
-jleWindow::keyReleased(int key) const
+jleWindow::getKeyReleased(int key) const
 {
     return _releasedKeys[key];
 }
 
 std::pair<int, int>
-jleWindow::cursor() const
+jleWindow::getCursor() const
 {
     double x, y;
     glfwGetCursorPos(_glfwWindow, &x, &y);
@@ -267,7 +261,7 @@ jleWindow::cursor() const
 }
 
 bool
-jleWindow::mouseClick(int button)
+jleWindow::getMouseClick(int button)
 {
     return glfwGetMouseButton(_glfwWindow, button);
 }
@@ -444,15 +438,4 @@ jleWindow::initGlfwWindow(int width, int height, const char *title)
 #endif
 
     return glfwWindow;
-}
-void
-jleWindowModule::initWindowModule()
-{
-    window.initWindow();
-}
-
-GLFWwindow *
-jleWindow::glfwWindow()
-{
-    return _glfwWindow;
 }

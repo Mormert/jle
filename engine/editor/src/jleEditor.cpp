@@ -304,7 +304,7 @@ jleEditor::renderEditorUI(jleEditorUpdateContext& ctx)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Set viewport to cover the entire screen
-    glViewport(0, 0, _mainEditorWindow->width(), _mainEditorWindow->height());
+    glViewport(0, 0, _mainEditorWindow->getWidth(), _mainEditorWindow->getHeight());
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -352,7 +352,7 @@ jleEditor::initImgui()
     ImGui::Spectrum::StyleColorsSpectrum();
 
     // Setup Platform/Renderer bindings
-    ImGui_ImplGlfw_InitForOpenGL(_mainEditorWindow->glfwWindow(), true);
+    ImGui_ImplGlfw_InitForOpenGL(_mainEditorWindow->getGlfwWindow(), true);
 
     JLE_EXEC_IF(JLE_BUILD_OPENGLES30) { ImGui_ImplOpenGL3_Init("#version 300 es"); }
     else
@@ -422,6 +422,8 @@ jleEditor::mainEditorLoop()
     _resourceIndexer->update(engineUpdateCtx.serializationContext, *_editorWindows->textEditWindow);
 
     if (!_gameEngine.getGameRuntime().isGameKilled()) {
+        _gameEngine.getGameRuntime().processGameReset(engineUpdateCtx);
+
         // Game thread and render thread are synced here
         if(auto preRender = _gameEngine.getEngineConstructConfig().gameConfig.modulesPreRender){
             preRender(*getCurrentGameModules(), engineUpdateCtx.serializationContext);

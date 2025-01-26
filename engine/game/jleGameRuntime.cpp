@@ -96,21 +96,23 @@ jleGameRuntime::update(jleEngineUpdateContext &ctx)
 {
     ZoneScoped;
 
-    if(_gameIsGettingRestarted)
-    {
+    if (!_gameHalted && _game) {
+        _gameConstructConfig.modulesUpdate(getGame().getModules(), ctx, _game->getECS());
+    }
+}
+
+void
+jleGameRuntime::processGameReset(jleEngineUpdateContext &ctx)
+{
+    if (_gameIsGettingRestarted) {
         _game.reset();
         startGame(ctx.serializationContext);
         _gameIsGettingRestarted = false;
     }
 
-    if(_gameIsGettingKilled)
-    {
+    if (_gameIsGettingKilled) {
         _game.reset();
         _gameIsGettingKilled = false;
-    }
-
-    if (!_gameHalted && _game) {
-        _gameConstructConfig.modulesUpdate(getGame().getModules(), ctx, _game->getECS());
     }
 }
 

@@ -239,45 +239,21 @@ jleLuaEnvironment::setupLuaBindings(sol::state &lua)
         [](const jlePath& path) -> std::string { return path.getVirtualPath().str(); }
     );
 
-    lua.new_usertype<jleKeyboardInput>("jleKeyboardInput",
-                                       "keyPressed",
-                                       &jleKeyboardInput::keyPressed,
-                                       "keyReleased",
-                                       &jleKeyboardInput::keyReleased,
-                                       "keyDown",
-                                       &jleKeyboardInput::keyDown,
-                                       "setEnabled",
-                                       &jleKeyboardInput::setEnabled,
-                                       "isEnabled",
-                                       &jleKeyboardInput::isEnabled);
-
-    lua.new_usertype<jleMouseInput>("jleMouseInput",
-                                    "mouseX",
-                                    &jleMouseInput::mouseX,
-                                    "mouseY",
-                                    &jleMouseInput::mouseY,
-                                    "xDelta",
-                                    &jleMouseInput::xDelta,
-                                    "yDelta",
-                                    &jleMouseInput::yDelta,
-                                    "scrollX",
-                                    &jleMouseInput::scrollX,
-                                    "scrollY",
-                                    &jleMouseInput::scrollY,
-                                    "mouseClick",
-                                    &jleMouseInput::mouseClick_int,
-                                    "setEnabled",
-                                    &jleMouseInput::setEnabled,
-                                    "isEnabled",
-                                    &jleMouseInput::isEnabled,
-                                    "setFpsMode",
-                                    &jleMouseInput::setFpsMode,
-                                    "isFpsMode",
-                                    &jleMouseInput::isFpsMode);
-
-    // TODO: Add accessor to this somewhere
-    lua.new_usertype<jleInputModule>(
-        "jleInput", "keyboard", sol::readonly(&jleInputModule::keyboard), "mouse", sol::readonly(&jleInputModule::mouse));
+    lua.new_usertype<jleInputModuleBase>("jleInput",
+                                          "isKeyPressed", &jleInputModuleBase::isKeyPressed,
+                                          "isKeyReleased", &jleInputModuleBase::isKeyReleased,
+                                          "isKeyDown", &jleInputModuleBase::isKeyDown,
+                                          "getMouseX", &jleInputModuleBase::getMouseX,
+                                          "getMouseY", &jleInputModuleBase::getMouseY,
+                                          "getMouseDeltaX", &jleInputModuleBase::getMouseDeltaX,
+                                          "getMouseDeltaY", &jleInputModuleBase::getMouseDeltaY,
+                                          "getScrollX", &jleInputModuleBase::getScrollX,
+                                          "getScrollY", &jleInputModuleBase::getScrollY,
+                                          "getMouseClick", &jleInputModuleBase::getMouseClick,
+                                          "setInputEnabled", &jleInputModuleBase::setInputEnabled,
+                                          "getInputEnabled", &jleInputModuleBase::getInputEnabled,
+                                          "setFpsMode", &jleInputModuleBase::setFpsMode,
+                                          "isFpsMode", &jleInputModuleBase::isFpsMode);
 
     //lua.new_usertype<jleTransform>("jleTransform",
     //                               "getLocalPosition",

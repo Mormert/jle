@@ -13,79 +13,21 @@
  *                                                                                           *
  *********************************************************************************************/
 
+#pragma once
 
-#include "jleInputModule.h"
 #include "modules/windowing/jleWindowModule.h"
 
-void
-jleInputModuleBase::update()
-{
-    const int32_t currentX = getMouseX();
-    const int32_t currentY = getMouseY();
-    _deltaX = currentX - _lastMouseX;
-    _deltaY = currentY - _lastMouseY;
-    _lastMouseX = currentX;
-    _lastMouseY = currentY;
-}
+class jleEditorWindow;
 
-jleGameInputModule::jleGameInputModule(jleWindow& window) : _window(window) { }
-
-bool
-jleGameInputModule::isKeyPressed(jleKey key)
+class jleWindowModuleEditor final : public jleWindowModuleBase
 {
-    if (!_isInputEnabled) {
-        return false;
-    }
-    return _window.getKeyPressed(static_cast<int>(key));
-}
+public:
+    uint32_t getWindowWidth() override { return _windowWidth; }
+    uint32_t getWindowHeight() override { return _windowHeight; }
 
-bool
-jleGameInputModule::isKeyReleased(jleKey key)
-{
-    if (!_isInputEnabled) {
-        return false;
-    }
-    return _window.getKeyReleased(static_cast<int>(key));
-}
-
-bool
-jleGameInputModule::isKeyDown(jleKey key)
-{
-    if (!_isInputEnabled) {
-        return false;
-    }
-    return _window.getKeyDown(static_cast<int>(key));
-}
-
-int32_t
-jleGameInputModule::getMouseX()
-{
-    return _window.getCursor().first;
-}
-
-int32_t
-jleGameInputModule::getMouseY()
-{
-    return _window.getCursor().second;
-}
-
-float
-jleGameInputModule::getScrollX()
-{
-    return _window.getScrollX();
-}
-
-float
-jleGameInputModule::getScrollY()
-{
-    return _window.getScrollY();
-}
-
-bool
-jleGameInputModule::getMouseClick(jleButton button)
-{
-    if (!_isInputEnabled) {
-        return false;
-    }
-    return _window.getMouseClick(static_cast<int>(button));
-}
+    void setWindowWidth(uint32_t width) { _windowWidth = width; }
+    void setWindowHeight(uint32_t height) { _windowHeight = height; }
+private:
+    uint32_t _windowWidth{0};
+    uint32_t _windowHeight{0};
+};

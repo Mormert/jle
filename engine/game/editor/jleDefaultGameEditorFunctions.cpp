@@ -15,9 +15,10 @@
 
 #include "jleDefaultGameEditorFunctions.h"
 
-#include "modules/input/jleInputModule.h"
 #include "modules/windowing/jleWindowModule.h"
+#include "modules/windowing/editor/jleWindowModuleEditor.h"
 
+#include "modules/input/editor/jleInputModuleEditor.h"
 #include <modules/graphics/editor/jleGraphicsModuleEditor.h>
 #include <modules/hierarchy/editor/jleHierarchyModuleEditor.h>
 #include <modules/physics/editor/jlePhysicsModuleEditor.h>
@@ -29,12 +30,12 @@ jleDefaultGameEditorFunctions::createDefaultModules_Editor(bool gameRunning)
     auto modules = std::make_unique<jleGameModules>();
 
     if (gameRunning) {
-        modules->addModule<jleWindowModule>(std::make_unique<jleWindowModule>());
-        modules->addModule<jleInputModule>(std::make_unique<jleInputModule>(modules->getModule<jleWindowModule>()->window));
+        modules->addModule<jleWindowModuleEditor, jleWindowModuleBase>(std::make_unique<jleWindowModuleEditor>());
+        modules->addModule<jleInputModuleEditor, jleInputModuleBase>(std::make_unique<jleInputModuleEditor>());
     }else {
         // Add dummy modules for editor mode
-        modules->addModule<jleWindowModule>(nullptr);
-        modules->addModule<jleInputModule>(nullptr);
+        modules->addModule<jleWindowModuleBase>(nullptr);
+        modules->addModule<jleInputModuleBase>(nullptr);
     }
 
     modules->addModule<jleHierarchyModuleEditor, jleHierarchyModule>(std::make_unique<jleHierarchyModuleEditor>());

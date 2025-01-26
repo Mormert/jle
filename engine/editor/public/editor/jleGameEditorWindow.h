@@ -15,13 +15,10 @@
 
 #pragma once
 
-#include "core/jleCommon.h"
-
-#if JLE_BUILD_EDITOR
-
 #include "editor/jleEditorImGuiWindowInterface.h"
 
-#include "jleGameEngine.h"
+class jleEditorWindow;
+struct jleEngineUpdateContext;
 
 class jleGameEditorWindow : public jleEditorWindowInterface
 {
@@ -39,9 +36,7 @@ public:
     int y() const;
 
 private:
-    float _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;
-    int _windowPositionX, _windowPositionY;
+    uint32_t _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;
+    uint32_t _windowPositionX = 0, _windowPositionY = 0;
     bool _wasFocused = false;
 };
-
-#endif // JLE_BUILD_EDITOR

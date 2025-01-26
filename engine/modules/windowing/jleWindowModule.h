@@ -58,9 +58,9 @@ public:
 
     void setCursorPosition(int x, int y);
 
-    [[nodiscard]] unsigned int height() const;
+    [[nodiscard]] unsigned int getHeight() const;
 
-    [[nodiscard]] unsigned int width() const;
+    [[nodiscard]] unsigned int getWidth() const;
 
     void initWindow();
 
@@ -68,25 +68,23 @@ public:
 
     bool windowShouldClose();
 
-    float time();
+    bool getMouseClick(int button);
 
-    bool mouseClick(int button);
+    [[nodiscard]] bool getKeyDown(int key) const;
 
-    bool keyDown(int key) const;
+    [[nodiscard]] bool getKeyPressed(int key) const;
 
-    bool keyPressed(int key) const;
+    [[nodiscard]] bool getKeyReleased(int key) const;
 
-    bool keyReleased(int key) const;
+    [[nodiscard]] float getScrollX() const;
 
-    float scrollX() const;
+    [[nodiscard]] float getScrollY() const;
 
-    float scrollY() const;
+    [[nodiscard]] std::pair<int, int> getCursor() const;
 
-    std::pair<int, int> cursor() const;
+    [[nodiscard]] const jleWindowDimensions& getDimensions() const { return windowDimensions; }
 
-    GLFWwindow *glfwWindow();
-
-    const jleWindowDimensions& getDimensions() const { return windowDimensions; }
+    GLFWwindow* getGlfwWindow() const { return _glfwWindow; }
 
 protected:
     virtual GLFWwindow *initGlfwWindow(int width, int height, const char *title);
@@ -107,10 +105,31 @@ protected:
     bool _releasedKeys[512] = {};
 };
 
-class jleWindowModule : public jleGameBaseModule
+class jleWindowModuleBase : public jleGameBaseModule
 {
 public:
-    void initWindowModule();
+    virtual void initWindowModule() {}
+    virtual void updateWindowModule() {}
 
+    virtual uint32_t getWindowWidth() = 0;
+    virtual uint32_t getWindowHeight() = 0;
+
+    virtual bool windowShouldClose() { return false; }
+};
+
+class jleGameWindowModule : public jleWindowModuleBase
+{
+public:
+    void initWindowModule() override { window.initWindow(); }
+    void updateWindowModule() override { window.updateWindow(); }
+
+    uint32_t getWindowWidth() override { return window.getDimensions().framebufferWidth; }
+    uint32_t getWindowHeight() override { return window.getDimensions().framebufferHeight; }
+
+    bool windowShouldClose() override { return window.windowShouldClose(); }
+
+    jleWindow& getWindow() { return window; }
+    
+private:
     jleWindow window;
 };

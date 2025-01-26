@@ -15,60 +15,34 @@
 
 #pragma once
 
-class jleWindow;
+#include "modules/input/jleInputModule.h"
 
-enum class jleButton : int
-{
-    BUTTON_1        = 0,
-    BUTTON_2        = 1,
-    BUTTON_3        = 2,
-    BUTTON_4        = 3,
-    BUTTON_5        = 4,
-    BUTTON_6        = 5,
-    BUTTON_7        = 6,
-    BUTTON_8        = 7,
-    BUTTON_LAST     = BUTTON_8,
-    BUTTON_LEFT     = BUTTON_1,
-    BUTTON_RIGHT    = BUTTON_2,
-    BUTTON_MIDDLE   = BUTTON_3
-};
-
-class jleMouseInput
+class jleInputModuleEditor : public jleInputModuleBase
 {
 public:
-    explicit jleMouseInput(jleWindow& window);
+    jleInputModuleEditor() = default;
 
-    void updateDeltas();
+    bool isKeyPressed(jleKey key) override;
+    bool isKeyReleased(jleKey key) override;
+    bool isKeyDown(jleKey key) override;
 
-    int mouseX();
-    int mouseY();
+    int32_t getMouseX() override;
+    int32_t getMouseY() override;
 
-    [[nodiscard]] float xDelta() const;
-    [[nodiscard]] float yDelta() const;
+    float getScrollX() override;
+    float getScrollY() override;
 
-    float scrollX();
-    float scrollY();
+    bool getMouseClick(jleButton button) override;
 
-    bool mouseClick(jleButton button);
-    bool mouseClick_int(int button);
+    void setScreenBeginCoords(uint32_t x, uint32_t y) { _screenBeginX = x; _screenBeginY = y; }
 
-    void setScreenBeginCoords(int x, int y);
-    void setScreenSize(int width, int height);
-
-    void setEnabled(bool value);
-    [[nodiscard]] bool isEnabled();
-
-    void setFpsMode(bool fpsMode);
-
-    [[nodiscard]] bool isFpsMode() const;
+    void setGameWindowFocused(bool focused) { _gameWindowFocused = focused; }
+    [[nodiscard]] bool isGameWindowFocused() const { return _gameWindowFocused; }
 
 private:
-    jleWindow& _window;
+    int32_t _screenBeginX{0}, _screenBeginY{0};
+    bool _gameWindowFocused{false};
 
-    int _lastMouseX{}, _lastMouseY{};
-    int _deltaX{}, _deltaY{};
-    int _screenBeginX{0}, _screenBeginY{0};
-    int _screenWidth{}, _screenHeight{};
-    bool _isEnabled = true;
-    bool _fpsMode{false};
+    static int jleKeyToImGuiKey(jleKey key);
+    static int jleButtonToImGuiButton(jleButton button);
 };

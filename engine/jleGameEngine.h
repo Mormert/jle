@@ -33,7 +33,6 @@ struct context;
 class jleGame;
 class jleResourceHolder;
 class jleEngineSettings;
-class jleInputModule;
 class jleWindow;
 class jleGraphics;
 class jle3DSettings;
