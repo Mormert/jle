@@ -1,5 +1,6 @@
 
 include(FetchContent)
+include(ExternalProject)
 
 # EASTL / jleSTL
 file(GLOB_RECURSE JLE_STL_HEADERS "core/jleSTL/**.h")
@@ -127,20 +128,21 @@ FetchContent_MakeAvailable(assimp)
 
 target_link_libraries(jleCore_3rdparty PUBLIC assimp)
 
-# Tracy
-add_definitions(-DTRACY_ENABLE)
-add_definitions(-DTRACY_ON_DEMAND)
-add_definitions(-DRMLUI_ENABLE_PROFILING)
-
 # Fetch Tracy
 FetchContent_Declare(
         tracy
         GIT_REPOSITORY https://github.com/wolfpld/tracy.git
-        GIT_TAG        v0.11.1
+        GIT_TAG        v0.11.0
 )
+
+set(TRACY_ENABLE ON)
+set(TRACY_ON_DEMAND ON)
 
 FetchContent_MakeAvailable(tracy)
 target_link_libraries(jleCore_3rdparty PUBLIC Tracy::TracyClient)
+
+set(TRACY_PROFILER_DIR "${tracy_SOURCE_DIR}/profiler")
+target_compile_definitions(jleCore_3rdparty PUBLIC JLE_TRACY_PROFILER_PATH="${TRACY_PROFILER_DIR}")
 
 FetchContent_Declare(
         glm

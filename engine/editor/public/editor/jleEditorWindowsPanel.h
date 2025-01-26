@@ -46,6 +46,9 @@ private:
     std::vector<std::shared_ptr<jleEditorWindowInterface>> windows;
 
     jleEditorGameControllerWidget _gameController;
+
+    std::future<void> _tracyBuildFuture{};
+    bool _tracyBuildDone{};
 };
 
 #endif // JLE_BUILD_EDITOR

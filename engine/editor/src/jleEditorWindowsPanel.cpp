@@ -24,6 +24,7 @@
 
 #include <GLFW/glfw3.h>
 #include <ImGui/imgui.h>
+#include <filesystem>
 
 jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name, jleSerializationContext& serializationContext, jleEngineSettings& settings)
     : jleEditorWindowInterface{window_name}, _gameController{"Game Controller"}
@@ -137,6 +138,84 @@ jleEditorWindowsPanel::menuButtonsupdate(jleEngineUpdateContext & ctx)
 
             ImGui::EndMenu();
         }
+
+        if (ImGui::BeginMenu("Tools")) {
+            std::string profilerDir = {JLE_TRACY_PROFILER_PATH};
+            bool profilerExists = false;
+            bool isBuilding = !_tracyBuildDone && _tracyBuildFuture.valid();
+
+            std::filesystem::path exePath = profilerDir;
+            exePath /= "build";
+            exePath /= "Release";
+#if defined(_WIN32)
+            exePath /= "tracy-profiler.exe";
+#else
+            exePath /= "tracy-profiler";
+#endif
+            profilerExists = std::filesystem::exists(exePath);
+
+            // Check if build folder exists but exe doesn't
+            bool buildFolderExists = std::filesystem::exists(profilerDir + "/build");
+            bool needsCleanInstall = buildFolderExists && !profilerExists;
+
+            if (profilerExists && !_tracyBuildDone) {
+                _tracyBuildDone = true;
+                isBuilding = false;
+            }
+
+            std::string menuText = "Tracy Profiler";
+            bool clickable = true;
+
+            if (isBuilding) {
+                menuText += " (Installing..)";
+                clickable = false;
+            } else if (!profilerExists) {
+                menuText += " (Install)";
+            }
+
+            ImGui::BeginDisabled(!clickable);
+            if (ImGui::MenuItem(menuText.c_str())) {
+                if (!profilerExists) {
+                    // If build folder exists but exe doesn't, clean it first
+                    if (needsCleanInstall) {
+                        try {
+                            std::filesystem::remove_all(profilerDir + "/build");
+                        } catch (const std::exception& e) {
+                            LOGE << "Failed clean Tracy build folder: " << profilerDir << "/build - try manually deleting the folder.";
+                        }
+                    }
+
+                    const std::string buildCommand = "cd " + profilerDir +
+#if defined(_WIN32)
+                                                     " && if not exist build mkdir build"
+#else
+                                                     " && mkdir -p build"
+#endif
+                                                     " && cd build && cmake -DDOWNLOAD_FREETYPE=ON .. && cmake --build . --config Release";
+
+                    _tracyBuildFuture = std::async(std::launch::async, [this, buildCommand]() {
+                        std::system(buildCommand.c_str());
+                        _tracyBuildDone = true;
+                    });
+                } else {
+                    std::string launchCommand;
+#if defined(_WIN32)
+                    launchCommand = R"(start "" ")" + exePath.string() + "\"";
+#elif defined(__APPLE__)
+                    // On macOS, use open
+                    launchCommand = "open \"" + exePath.string() + "\"";
+#else
+                    // On Linux, use xdg-open or direct execution
+                    launchCommand = "\"" + exePath.string() + "\" &";
+#endif
+                    std::system(launchCommand.c_str());
+                }
+            }
+            ImGui::EndDisabled();
+
+            ImGui::EndMenu();
+        }
+
         if (ImGui::BeginMenu("Game Controller")) {
             _gameController.render(ctx);
             ImGui::EndMenu();
