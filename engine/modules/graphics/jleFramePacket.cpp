@@ -17,28 +17,28 @@
 #include "jleMaterial.h"
 
 void
-jleFramePacket::sendMesh(std::shared_ptr<jleMesh> &mesh,
+jleFramePacket::sendMesh(jleMeshGPUDataHandle meshGpuHandle,
                      std::shared_ptr<jleMaterial> &material,
                      const glm::mat4 &worldMatrix,
                      int instanceId,
                      bool castShadows)
 {
     if (material && material->isTranslucent()) {
-        _translucentMeshes.emplace_back(jle3DQueuedMesh{mesh, material, worldMatrix, instanceId, castShadows});
+        _translucentMeshes.emplace_back(jle3DQueuedMesh{meshGpuHandle, material, worldMatrix, instanceId, castShadows});
     } else {
-        _meshes.emplace_back(jle3DQueuedMesh{mesh, material, worldMatrix, instanceId, castShadows});
+        _meshes.emplace_back(jle3DQueuedMesh{meshGpuHandle, material, worldMatrix, instanceId, castShadows});
     }
 }
 
 void
-jleFramePacket::sendSkinnedMesh(std::shared_ptr<jleSkinnedMesh> &mesh,
+jleFramePacket::sendSkinnedMesh(jleSkinnedMeshGPUDataHandle skinnedMeshGpuHandle,
                             std::shared_ptr<jleMaterial> &material,
                             std::shared_ptr<jleAnimationFinalMatrices> &matrices,
                             const glm::mat4 &worldMatrix,
                             int instanceId,
                             bool castShadows)
 {
-    _skinnedMeshes.emplace_back(jle3DQueuedSkinnedMesh{mesh, material, matrices, worldMatrix, instanceId, castShadows});
+    _skinnedMeshes.emplace_back(jle3DQueuedSkinnedMesh{skinnedMeshGpuHandle, material, matrices, worldMatrix, instanceId, castShadows});
 }
 
 void

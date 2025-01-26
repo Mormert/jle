@@ -15,32 +15,34 @@
 
 #pragma once
 
-#include "core/jleCommon.h"
+#include "jlECS/jlECS.h"
+#include "jleMesh.h"
+#include "modules/jleGameModules.h"
 
-#include "modules/graphics/jleMaterial.h"
-#include "modules/graphics/jleMesh.h"
+namespace jlECS
+{
+class ECS;
+}
 
-class cTransform;
-
-class cMesh
+class jleMeshModule : public jleGameBaseModule
 {
 public:
-    template <class Archive>
-    void
-    serialize(Archive &ar){
-        ar(CEREAL_NVP(_meshRef), CEREAL_NVP(_materialRef));
-    }
+    virtual void initializeECS(jlECS::ECS &ecs);
 
-    void ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix, int instanceId);
+    void loadMeshes(jlECS::ECS &ecs);
 
-    std::shared_ptr<jleMesh> getMesh();
-    std::shared_ptr<jleMaterial> getMaterial();
+    [[nodiscard]] std::shared_ptr<jleMesh> getLoadedMesh(const jlePath &path) const;
+    std::shared_ptr<jleMesh> loadMeshSync(const jlePath &path);
+    void loadMeshAsync(const jlePath &path);
 
-    jleResourceRef<jleMesh> &getMeshRef();
-    jleResourceRef<jleMaterial> &getMaterialRef();
+    // Allows for inserting meshes that are generated at runtime
+    void insertRuntimeMesh(const std::shared_ptr<jleMesh> &mesh, const jlePath &path);
 
 protected:
-    jleResourceRef<jleMesh> _meshRef;
-    jleResourceRef<jleMaterial> _materialRef;
-};
+    void onMeshComponentCreated(const jlECS::CreateComponentData & data);
+    void onMeshComponentDestroyed(jlECS::DestroyComponentData data);
 
+private:
+    std::unordered_set<jlePath> _meshPathsToLoad;
+    std::unordered_map<jlePath, std::shared_ptr<jleMesh>> _loadedMeshes;
+};

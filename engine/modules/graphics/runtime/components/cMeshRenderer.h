@@ -15,21 +15,39 @@
 
 #pragma once
 
-#include "jleBuildConfig.h"
+#include "core/jleCommon.h"
 
-// This header file is used to enforce inclusion of object and components, to
-// make sure that they are registered and can be seen in the editor. It needs to
-// be included from something that is compiled and used in the engine.
+#include "modules/graphics/jleMaterial.h"
+#include "core/jlePath.h"
 
-#include "modules/animation/components/cAnimator.h"
-#include "modules/graphics/runtime/components/cCamera.h"
-#include "modules/graphics/runtime/components/cLight.h"
-#include "modules/graphics/runtime/components/cLightDirectional.h"
-#include "modules/mesh/components/cMesh.h"
-#include "modules/graphics/runtime/components/cSkinnedMesh.h"
-#include "modules/graphics/runtime/components/cSkybox.h"
-#include "modules/networking/components/cTransformNetSync.h"
-#include "modules/networking/jleSceneClient.h"
-#include "modules/networking/jleSceneServer.h"
-#include "modules/physics/components/cRigidbody.h"
-#include "modules/scripting/components/cLuaScript.h"
+class cTransform;
+struct jleMeshGPUData;
+
+class cMeshRenderer
+{
+public:
+    template <class Archive>
+    void
+    serialize(Archive &ar){
+        ar(CEREAL_NVP(_materialRef));
+    }
+
+    void ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix, int instanceId, const jlePath& meshPath, std::shared_ptr<jleMesh> mesh);
+
+    std::shared_ptr<jleMaterial> getMaterial();     // Will be removed
+    jleResourceRef<jleMaterial> &getMaterialRef();  // Will be removed
+
+    [[nodiscard]] jlePath getGpuMeshPath() const { return _gpuMeshPath; }
+
+    inline void setGpuMesh(const jlePath& path, jleMeshGPUDataHandle gpuMeshId) { _gpuMeshPath = path; _gpuMeshId = gpuMeshId; }
+
+protected:
+    // TODO: Replace with jlePath(Ref?)
+    jleResourceRef<jleMaterial> _materialRef;
+
+    jlePath _gpuMeshPath{};
+    //jlePath _gpuMaterialPath{};
+
+    jleMeshGPUDataHandle _gpuMeshId{jleMeshGPUDataHandle::InvalidValue};
+    //uint32_t _gpuMaterialId = 0;
+};

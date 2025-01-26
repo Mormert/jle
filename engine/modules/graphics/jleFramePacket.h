@@ -18,6 +18,7 @@
 #include "core/jleCommon.h"
 #include "core/jleCamera.h"
 #include "jle3DSettings.h"
+#include "jleGraphicsModuleTypes.h"
 
 #include <glm/glm.hpp>
 
@@ -42,7 +43,7 @@ struct jle3DLineVertex {
 };
 
 struct jle3DQueuedMesh {
-    std::shared_ptr<jleMesh> mesh;
+    jleMeshGPUDataHandle meshGpuHandle;
     std::shared_ptr<jleMaterial> material;
     glm::mat4 worldMatrix;
     int instanceId;
@@ -50,7 +51,7 @@ struct jle3DQueuedMesh {
 };
 
 struct jle3DQueuedSkinnedMesh {
-    std::shared_ptr<jleSkinnedMesh> skinnedMesh;
+    jleSkinnedMeshGPUDataHandle skinnedMeshGpuHandle;
     std::shared_ptr<jleMaterial> material;
     std::shared_ptr<jleAnimationFinalMatrices> matrices;
     glm::mat4 worldMatrix;
@@ -64,13 +65,13 @@ private:
     friend class jleGraphics;
 
 public:
-    void sendMesh(std::shared_ptr<jleMesh> &mesh,
+    void sendMesh(jleMeshGPUDataHandle meshGpuHandle,
                   std::shared_ptr<jleMaterial> &material,
                   const glm::mat4 &transform,
                   int instanceId,
                   bool castShadows);
 
-    void sendSkinnedMesh(std::shared_ptr<jleSkinnedMesh> &mesh,
+    void sendSkinnedMesh(jleSkinnedMeshGPUDataHandle skinnedMeshGpuHandle,
                          std::shared_ptr<jleMaterial> &material,
                          std::shared_ptr<jleAnimationFinalMatrices> &matrices,
                          const glm::mat4 &transform,

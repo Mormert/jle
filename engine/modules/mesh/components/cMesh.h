@@ -15,21 +15,26 @@
 
 #pragma once
 
-#include "jleBuildConfig.h"
+#include "core/jleCommon.h"
 
-// This header file is used to enforce inclusion of object and components, to
-// make sure that they are registered and can be seen in the editor. It needs to
-// be included from something that is compiled and used in the engine.
+#include "modules/mesh/jleMesh.h"
 
-#include "modules/animation/components/cAnimator.h"
-#include "modules/graphics/runtime/components/cCamera.h"
-#include "modules/graphics/runtime/components/cLight.h"
-#include "modules/graphics/runtime/components/cLightDirectional.h"
-#include "modules/mesh/components/cMesh.h"
-#include "modules/graphics/runtime/components/cSkinnedMesh.h"
-#include "modules/graphics/runtime/components/cSkybox.h"
-#include "modules/networking/components/cTransformNetSync.h"
-#include "modules/networking/jleSceneClient.h"
-#include "modules/networking/jleSceneServer.h"
-#include "modules/physics/components/cRigidbody.h"
-#include "modules/scripting/components/cLuaScript.h"
+class cTransform;
+
+class cMesh
+{
+public:
+    template <class Archive>
+    void
+    serialize(Archive &ar){
+        ar(CEREAL_NVP(_meshRef));
+    }
+
+    std::shared_ptr<jleMesh> getMesh();     // Will be removed.
+    jleResourceRef<jleMesh> &getMeshRef();  // Will be removed.
+
+protected:
+    // TODO: Replace with jlePath(Ref?)
+    jleResourceRef<jleMesh> _meshRef;
+};
+

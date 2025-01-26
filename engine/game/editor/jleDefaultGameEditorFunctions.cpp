@@ -19,6 +19,8 @@
 #include "modules/windowing/editor/jleWindowModuleEditor.h"
 
 #include "modules/input/editor/jleInputModuleEditor.h"
+#include "modules/mesh/editor/jleMeshModuleEditor.h"
+
 #include <modules/graphics/editor/jleGraphicsModuleEditor.h>
 #include <modules/hierarchy/editor/jleHierarchyModuleEditor.h>
 #include <modules/physics/editor/jlePhysicsModuleEditor.h>
@@ -39,6 +41,7 @@ jleDefaultGameEditorFunctions::createDefaultModules_Editor(bool gameRunning)
     }
 
     modules->addModule<jleHierarchyModuleEditor, jleHierarchyModule>(std::make_unique<jleHierarchyModuleEditor>());
+    modules->addModule<jleMeshModuleEditor, jleMeshModule>(std::make_unique<jleMeshModuleEditor>());
     modules->addModule<jleGraphicsModuleEditor, jleGraphicsModule>(std::make_unique<jleGraphicsModuleEditor>());
     modules->addModule<jlePhysicsModuleEditor, jlePhysicsModule>(std::make_unique<jlePhysicsModuleEditor>());
     modules->addModule<jleLuaEditorModule, jleLuaModule>(std::make_unique<jleLuaEditorModule>(gameRunning));

@@ -16,7 +16,7 @@
 #include "jlePhysicsModule.h"
 
 #include <jlECS/jlECS.h>
-#include <modules/graphics/runtime/components/cMesh.h>
+#include <modules/mesh/components/cMesh.h>
 #include <modules/hierarchy/jleHierarchyFuncs.h>
 #include "modules/hierarchy/components/cTransform.h"
 

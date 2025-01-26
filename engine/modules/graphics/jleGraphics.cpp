@@ -18,8 +18,8 @@
 
 #include "jle3DSettings.h"
 #include "jleFramePacket.h"
+#include "jleGraphicsModule.h"
 #include "jleMaterial.h"
-#include "jleMesh.h"
 #include "jleShader.h"
 #include "jleSkinnedMesh.h"
 #include "jleSkybox.h"
@@ -68,8 +68,9 @@ struct jleGraphics::jle3DRendererShaders {
     jleResourceRef<jleShader> skyboxShader;
 };
 
-jleGraphics::jleGraphics(jleSerializationContext& ctx)
+jleGraphics::jleGraphics(jleSerializationContext& ctx, jleGraphicsModule* graphicsModule)
 {
+    _graphicsModule = graphicsModule;
     _shaders = std::make_unique<jle3DRendererShaders>(ctx);
 
     // Generate buffers for line drawing
@@ -192,13 +193,13 @@ jleGraphics::renderMeshes(const jleCamera &camera,
             mesh.material->getShader()->SetBool("uUseSkinning", false);
         }
 
-        uint32_t vao = mesh.mesh->getVAO();
-        if (vao != UINT32_MAX) {
-            glBindVertexArray(vao);
-            if (mesh.mesh->usesIndexing()) {
-                glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+        const jleMeshGPUData& meshGpuData = _graphicsModule->_meshGpuBuffers[mesh.meshGpuHandle];
+        if (meshGpuData.vao != UINT32_MAX) {
+            glBindVertexArray(meshGpuData.vao);
+            if (meshGpuData.usesIndexing) {
+                glDrawElements(GL_TRIANGLES, meshGpuData.trianglesCount, GL_UNSIGNED_INT, (void *)0);
             } else {
-                glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+                glDrawArrays(GL_TRIANGLES, 0, meshGpuData.trianglesCount);
             }
             glBindVertexArray(0);
         }
@@ -229,11 +230,15 @@ jleGraphics::renderSkinnedMeshes(const jleCamera &camera,
             }
         }
 
-        glBindVertexArray(mesh.skinnedMesh->getVAO());
-        if (mesh.skinnedMesh->usesIndexing()) {
-            glDrawElements(GL_TRIANGLES, mesh.skinnedMesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+        const jleSkinnedMeshGPUData& skinnedMeshGpuData = _graphicsModule->_skinnedMeshGpuBuffers[mesh.skinnedMeshGpuHandle];
+
+        if (skinnedMeshGpuData.vao != UINT32_MAX) {
+            glBindVertexArray(skinnedMeshGpuData.vao);
+        }
+        if (skinnedMeshGpuData.usesIndexing) {
+            glDrawElements(GL_TRIANGLES, skinnedMeshGpuData.trianglesCount, GL_UNSIGNED_INT, (void *)0);
         } else {
-            glDrawArrays(GL_TRIANGLES, 0, mesh.skinnedMesh->getTrianglesCount());
+            glDrawArrays(GL_TRIANGLES, 0, skinnedMeshGpuData.trianglesCount);
         }
         glBindVertexArray(0);
     }
@@ -315,11 +320,15 @@ jleGraphics::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
             int b = (mesh.instanceId & 0x00FF0000) >> 16;
             _shaders->pickingShader->SetVec4("PickingColor", glm::vec4{r / 255.0f, g / 255.0f, b / 255.0f, 1.f});
             _shaders->pickingShader->SetMat4("model", mesh.worldMatrix);
-            glBindVertexArray(mesh.mesh->getVAO());
-            if (mesh.mesh->usesIndexing()) {
-                glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+
+            const jleMeshGPUData& meshGpuData = _graphicsModule->_meshGpuBuffers[mesh.meshGpuHandle];
+            if (meshGpuData.vao != UINT32_MAX) {
+                glBindVertexArray(meshGpuData.vao);
+            }
+            if (meshGpuData.usesIndexing) {
+                glDrawElements(GL_TRIANGLES, meshGpuData.trianglesCount, GL_UNSIGNED_INT, (void *)0);
             } else {
-                glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+                glDrawArrays(GL_TRIANGLES, 0, meshGpuData.trianglesCount);
             }
             glBindVertexArray(0);
         }
@@ -434,13 +443,13 @@ jleGraphics::renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jleS
 
         shader.SetBool("uUseSkinning", false);
 
-        const auto vao = mesh.mesh->getVAO();
-        if (vao != UINT32_MAX) {
-            glBindVertexArray(vao);
-            if (mesh.mesh->usesIndexing()) {
-                glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+        const jleMeshGPUData& meshGpuData = _graphicsModule->_meshGpuBuffers[mesh.meshGpuHandle];
+        if (meshGpuData.vao != UINT32_MAX) {
+            glBindVertexArray(meshGpuData.vao);
+            if (meshGpuData.usesIndexing) {
+                glDrawElements(GL_TRIANGLES, meshGpuData.trianglesCount, GL_UNSIGNED_INT, (void *)0);
             } else {
-                glDrawArrays(GL_TRIANGLES, 0, mesh.mesh->getTrianglesCount());
+                glDrawArrays(GL_TRIANGLES, 0, meshGpuData.trianglesCount);
             }
             glBindVertexArray(0);
         }
@@ -474,11 +483,15 @@ jleGraphics::renderShadowMeshesSkinned(const std::vector<jle3DQueuedSkinnedMesh>
                                                 mesh.matrices->matrices[i]);
         }
 
-        glBindVertexArray(mesh.skinnedMesh->getVAO());
-        if (mesh.skinnedMesh->usesIndexing()) {
-            glDrawElements(GL_TRIANGLES, mesh.skinnedMesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
+        const jleSkinnedMeshGPUData& skinnedMeshGpuData = _graphicsModule->_skinnedMeshGpuBuffers[mesh.skinnedMeshGpuHandle];
+
+        if (skinnedMeshGpuData.vao != UINT32_MAX) {
+            glBindVertexArray(skinnedMeshGpuData.vao);
+        }
+        if (skinnedMeshGpuData.usesIndexing) {
+            glDrawElements(GL_TRIANGLES, skinnedMeshGpuData.trianglesCount, GL_UNSIGNED_INT, (void *)0);
         } else {
-            glDrawArrays(GL_TRIANGLES, 0, mesh.skinnedMesh->getTrianglesCount());
+            glDrawArrays(GL_TRIANGLES, 0, skinnedMeshGpuData.trianglesCount);
         }
         glBindVertexArray(0);
     }

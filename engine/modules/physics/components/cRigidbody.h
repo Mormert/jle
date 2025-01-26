@@ -17,7 +17,7 @@
 
 #include "core/jleCommon.h"
 #include "modules/graphics/jleMaterial.h"
-#include "modules/graphics/jleMesh.h"
+#include "modules/mesh/jleMesh.h"
 
 #include "LinearMath/btMotionState.h"
 

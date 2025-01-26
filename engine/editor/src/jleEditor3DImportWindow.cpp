@@ -17,9 +17,9 @@
 #include "core/jlePath.h"
 #include "jleEditor.h"
 #include "modules/graphics/jleMaterial.h"
-#include "modules/graphics/jleMesh.h"
+#include "modules/mesh/jleMesh.h"
 #include "modules/graphics/jleSkinnedMesh.h"
-#include "modules/graphics/runtime/components/cMesh.h"
+#include "modules/mesh/components/cMesh.h"
 #include "modules/graphics/runtime/components/cSkinnedMesh.h"
 
 #include <assimp/Importer.hpp>

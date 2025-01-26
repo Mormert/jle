@@ -28,11 +28,12 @@
 class jleFramebufferShadowCubeMap;
 class jleFramebufferShadowMap;
 class jleShader;
+class jleGraphicsModule;
 
 class jleGraphics
 {
 public:
-    jleGraphics(jleSerializationContext &ctx);
+    jleGraphics(jleSerializationContext &ctx, jleGraphicsModule* graphicsModule);
 
     virtual ~jleGraphics();
 
@@ -82,4 +83,8 @@ private:
     std::unique_ptr<jleFramebufferShadowCubeMap> _pointsShadowMappingFramebuffer{};
 
     unsigned int _lineVAO{}, _lineVBO{};
+
+    // TODO: Merge jleGraphics with jleGraphicsModule. Remove this pointer here then.
+    jleGraphicsModule* _graphicsModule{nullptr};
+
 };

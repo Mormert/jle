@@ -16,8 +16,7 @@
 #pragma once
 
 #include "core/jleCommon.h"
-
-#include "jleMesh.h"
+#include "modules/mesh/jleMesh.h"
 
 struct jleSkinnedMeshBone {
     int index{0};
@@ -63,6 +62,9 @@ public:
     std::unordered_map<std::string, jleSkinnedMeshBone> &
     getBoneMapping();
 
+    const std::vector<glm::ivec4> &boneIndices();
+    const std::vector<glm::vec4> &boneWeights();
+
     struct jleSkinnedMeshBoneHierarchy {
         std::string name;
         glm::mat4 offset{1.f};
@@ -74,11 +76,6 @@ public:
     void processBoneNode(const aiScene *scene, const aiNode *boneNode, jleSkinnedMeshBoneHierarchy &hierarchy);
 
 private:
-    void destroyOldBuffersSkinned();
-
-    unsigned int _vbo_boneIndices{};
-    unsigned int _vbo_boneWeights{};
-
     std::vector<glm::ivec4> _boneIndices{};
     std::vector<glm::vec4> _boneWeights;
 

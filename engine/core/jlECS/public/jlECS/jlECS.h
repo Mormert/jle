@@ -1140,6 +1140,7 @@ public:
         [&] {
             using ComponentType = Components;
             int componentType = jlECS::ComponentNum<ComponentType>::num;
+            assert(componentType != 65535);
             int size = componentContainers[componentType]->componentCount();
             if (size < minSize) {
                 minSize = size;

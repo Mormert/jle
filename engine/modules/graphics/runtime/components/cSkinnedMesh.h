@@ -22,6 +22,7 @@
 
 class cAnimator;
 class cTransform;
+struct jleSkinnedMeshGPUData;
 
 class cSkinnedMesh
 {

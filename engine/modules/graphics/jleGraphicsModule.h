@@ -15,8 +15,11 @@
 
 #pragma once
 
+#include "jleGraphicsModuleTypes.h"
+
 #include "core/jleFramebufferMultisample.h"
 #include "core/jleFullscreenRendering.h"
+#include "core/jlePath.h"
 #include "jleFramePacket.h"
 #include "jleGraphics.h"
 #include "jleRenderThread.h"
@@ -24,9 +27,14 @@
 #include "modules/jleGameModules.h"
 
 #include <glm/glm.hpp>
+#include <memory>
+#include <unordered_map>
 #include <vector>
 
 struct jleCamera;
+class jleMesh;
+class jleSkinnedMesh;
+class jleMeshModule;
 
 namespace jlECS
 {
@@ -52,6 +60,7 @@ public:
             uint32_t screenX;
             uint32_t screenY;
             const std::vector<glm::mat4>& worldMatrices;
+            const jleMeshModule* meshModule;
         } in;
 
         struct InOut {
@@ -79,5 +88,21 @@ protected:
 
     std::unique_ptr<jleRenderThread> _renderThread;
 
+    std::unordered_map<jlePath, jleMeshGPUDataHandle> _meshGPULookup;
+    std::unordered_set<std::shared_ptr<jleMesh>> _meshesToLoadIntoGPU;
+    std::vector<jleMeshGPUData> _meshGpuBuffers;
+
+    std::unordered_map<jlePath, jleSkinnedMeshGPUDataHandle> _skinnedMeshGPULookup;
+    std::vector<jleSkinnedMeshGPUData> _skinnedMeshGpuBuffers;
+
+    static void createMeshGPUBuffers(jleMeshGPUData* gpuData, const jleMesh* mesh);
+    static void destroyMeshGPUBuffers(jleMeshGPUData* gpuData);
+
+    static void createSkinnedMeshGPUBuffers(jleSkinnedMeshGPUData* gpuData, jleSkinnedMesh* mesh);
+    static void destroySkinnedMeshGPUBuffers(jleSkinnedMeshGPUData* gpuData);
+
     friend class jleEditor;
+
+    // TODO: Remove when we merge with jleGraphics.
+    friend class jleGraphics;
 };

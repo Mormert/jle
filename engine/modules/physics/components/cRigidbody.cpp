@@ -15,7 +15,7 @@
 
 #include "cRigidbody.h"
 
-#include "modules/graphics/runtime/components/cMesh.h"
+#include "modules/mesh/components/cMesh.h"
 #include "modules/physics/jlePhysics.h"
 #include "modules/hierarchy/components/cTransform.h"
 

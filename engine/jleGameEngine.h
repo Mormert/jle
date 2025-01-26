@@ -51,11 +51,19 @@ public:
     [[nodiscard]] inline float getDeltaTime() const         { return _deltaTime; }
     [[nodiscard]] inline float getCurrentFrameTime() const  { return _currentFrame; }
     [[nodiscard]] inline float getLastFrameTime() const     { return _lastFrame; }
+
+    jleFrameInfo() {
+        _startTime = std::chrono::steady_clock::now();
+        _lastFrameTimePoint = _startTime;
+    }
 private:
     int _fps = 0;
     float _deltaTime = 0;
     float _currentFrame = 0;
     float _lastFrame = 0;
+
+    std::chrono::steady_clock::time_point _startTime;
+    std::chrono::steady_clock::time_point _lastFrameTimePoint;
 
     friend class jleGameEngine;
 };

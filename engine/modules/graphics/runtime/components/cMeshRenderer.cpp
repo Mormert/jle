@@ -13,40 +13,26 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#include "cMesh.h"
+#include "cMeshRenderer.h"
 #include <modules/hierarchy/components/cTransform.h>
 
 void
-cMesh::ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix, int instanceId)
+cMeshRenderer::ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix, int instanceId, const jlePath& meshPath, std::shared_ptr<jleMesh> mesh)
 {
-    if (_meshRef) {
-        std::shared_ptr<jleMesh> mesh = _meshRef.get();
+    if (_gpuMeshId) {
         std::shared_ptr<jleMaterial> material = _materialRef.get();
-        packet.sendMesh(mesh, material, worldMatrix, instanceId, true);
+        packet.sendMesh(_gpuMeshId, material, worldMatrix, instanceId, true);
     }
 }
 
-std::shared_ptr<jleMesh>
-cMesh::getMesh()
-{
-    return _meshRef.get();
-}
-
 std::shared_ptr<jleMaterial>
-cMesh::getMaterial()
+cMeshRenderer::getMaterial()
 {
     return _materialRef.get();
 }
 
-jleResourceRef<jleMesh> &
-cMesh::getMeshRef()
-{
-    return _meshRef;
-}
-
 jleResourceRef<jleMaterial> &
-cMesh::getMaterialRef()
+cMeshRenderer::getMaterialRef()
 {
     return _materialRef;
 }
-

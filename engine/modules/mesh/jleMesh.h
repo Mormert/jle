@@ -27,8 +27,8 @@
 
 struct aiMesh;
 struct aiScene;
-class jleRenderThread;
 
+// TODO: remove inheriting from resource interface
 class jleMesh : public jleResourceInterface
 {
 public:
@@ -40,7 +40,7 @@ public:
 
     [[nodiscard]] bool loadFromFile(jleSerializationContext &ctx, const jlePath &path) override;
 
-    bool loadAssimp(const jlePath &path, jleRenderThread *renderThread);
+    bool loadAssimp(const jlePath &path);
 
     // Lays out the attributes in the order:
     // position (0), normal (1), texcoords (2), tangent (3), bitangent (4)
@@ -49,8 +49,7 @@ public:
                   const std::vector<glm::vec2> &texCoords = {},
                   const std::vector<glm::vec3> &tangents = {},
                   const std::vector<glm::vec3> &bitangents = {},
-                  const std::vector<unsigned int> &indices = {},
-                  jleRenderThread *renderThread = nullptr);
+                  const std::vector<unsigned int> &indices = {});
 
     static void loadAssimpMesh(aiMesh *assimpMesh,
                                std::vector<glm::vec3> &out_positions,
@@ -59,40 +58,28 @@ public:
                                std::vector<glm::vec3> &out_tangents,
                                std::vector<glm::vec3> &out_bitangents,
                                std::vector<unsigned int> &out_indices);
-    bool usesIndexing();
+    bool usesIndexing() const;
 
-    unsigned int getVAO();
+    unsigned int getTrianglesCount() const;
 
-    unsigned int getTrianglesCount();
+    const std::vector<glm::vec3> &positions() const;
 
-    const std::vector<glm::vec3> &positions();
+    const std::vector<glm::vec3> &normals() const;
 
-    const std::vector<glm::vec3> &normals();
+    const std::vector<glm::vec2> &texCoords() const;
 
-    const std::vector<glm::vec2> &texCoords();
+    const std::vector<glm::vec3> &tangents() const;
 
-    const std::vector<glm::vec3> &tangents();
+    const std::vector<glm::vec3> &bitangents() const;
 
-    const std::vector<glm::vec3> &bitangents();
-
-    const std::vector<unsigned int> &indices();
+    const std::vector<unsigned int> &indices() const;
 
     void saveToFile(jleSerializationContext &ctx) override;
 
 protected:
-    void destroyOldBuffers();
-
     void saveMeshToAssimpScene(aiScene &scene);
 
     unsigned int _trianglesCount{};
-
-    unsigned int _vao{UINT32_MAX};
-    unsigned int _vbo_pos{UINT32_MAX};
-    unsigned int _vbo_normal{UINT32_MAX};
-    unsigned int _vbo_texcoords{UINT32_MAX};
-    unsigned int _vbo_tangent{UINT32_MAX};
-    unsigned int _vbo_bitangent{UINT32_MAX};
-    unsigned int _ebo{UINT32_MAX};
 
     std::vector<glm::vec3> _positions{};
     std::vector<glm::vec3> _normals{};

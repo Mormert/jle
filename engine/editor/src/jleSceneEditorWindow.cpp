@@ -24,7 +24,7 @@
 #include "modules/graphics/jleFramePacket.h"
 #include "modules/graphics/jleGraphics.h"
 #include "modules/graphics/jleGraphicsModule.h"
-#include "modules/graphics/runtime/components/cMesh.h"
+#include "modules/mesh/components/cMesh.h"
 #include "modules/hierarchy/components/cTransform.h"
 #include "modules/input/jleInputModule.h"
 #include "modules/physics/components/cRigidbody.h"
@@ -513,7 +513,7 @@ jleSceneEditorWindow::render(jleFramePacket &framePacket, const jleEditorUpdateC
     }
 
     framePacket.camera = _renderCamera;
-    ctx.editorGameModules.getModule<jleGraphicsModule>()->getGraphics().render(*_msaa, framePacket);
+    ctx.getCurrentModules().getModule<jleGraphicsModule>()->getGraphics().render(*_msaa, framePacket);
 
     _msaa->blitToOther(*_framebuffer);
 }

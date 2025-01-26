@@ -22,24 +22,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "modules/graphics/core/jleIncludeGL.h"
-
-void
-jleSkinnedMesh::destroyOldBuffersSkinned()
-{
-    destroyOldBuffers();
-
-    if (_vbo_boneIndices) {
-        glDeleteBuffers(1, &_vbo_boneIndices);
-        _vbo_boneIndices = 0;
-    }
-    if (_vbo_boneWeights) {
-        glDeleteBuffers(1, &_vbo_boneWeights);
-        _vbo_boneWeights = 0;
-    }
-}
-
-jleSkinnedMesh::~jleSkinnedMesh() { destroyOldBuffersSkinned(); }
+jleSkinnedMesh::~jleSkinnedMesh() = default;
 
 void
 jleSkinnedMesh::makeSkinnedMesh(const std::vector<glm::vec3> &positions,
@@ -52,24 +35,7 @@ jleSkinnedMesh::makeSkinnedMesh(const std::vector<glm::vec3> &positions,
                                 const std::vector<glm::vec4> &boneWeights,
                                 const std::unordered_map<std::string, jleSkinnedMeshBone> &boneMapping)
 {
-    destroyOldBuffersSkinned();
     makeMesh(positions, normals, texCoords, tangents, bitangents, indices);
-
-    if (!boneIndices.empty()) {
-        glGenBuffers(1, &_vbo_boneIndices);
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo_boneIndices);
-        glBufferData(GL_ARRAY_BUFFER, boneIndices.size() * sizeof(glm::ivec4), &boneIndices[0], GL_STATIC_DRAW);
-        glVertexAttribIPointer(5, 4, GL_INT, sizeof(float) * 4, 0);
-        glEnableVertexAttribArray(5);
-    }
-
-    if (!boneWeights.empty()) {
-        glGenBuffers(1, &_vbo_boneWeights);
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo_boneWeights);
-        glBufferData(GL_ARRAY_BUFFER, boneWeights.size() * sizeof(glm::vec4), &boneWeights[0], GL_STATIC_DRAW);
-        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
-        glEnableVertexAttribArray(6);
-    }
 
     _boneIndices = boneIndices;
     _boneWeights = boneWeights;
@@ -332,4 +298,16 @@ std::unordered_map<std::string, jleSkinnedMeshBone> &
 jleSkinnedMesh::getBoneMapping()
 {
     return _boneMapping;
+}
+
+const std::vector<glm::ivec4> &
+jleSkinnedMesh::boneIndices()
+{
+    return _boneIndices;
+}
+
+const std::vector<glm::vec4> &
+jleSkinnedMesh::boneWeights()
+{
+    return _boneWeights;
 }

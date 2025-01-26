@@ -156,10 +156,14 @@ void
 jleGameEngine::updateFrameInfo()
 {
     ZoneScoped;
-    _frameInfo._currentFrame = std::chrono::duration<float>(std::chrono::system_clock::now().time_since_epoch()).count();
-    _frameInfo._deltaTime = _frameInfo._currentFrame - _frameInfo._lastFrame;
-    _frameInfo._lastFrame = _frameInfo._currentFrame;
-    _frameInfo._fps = static_cast<int>(1.0 / _frameInfo._deltaTime);
+
+    const auto now = std::chrono::steady_clock::now();
+
+    _frameInfo._currentFrame = std::chrono::duration<float>(now - _frameInfo._startTime).count();
+    _frameInfo._deltaTime = std::chrono::duration<float>(now - _frameInfo._lastFrameTimePoint).count();
+    _frameInfo._fps = (_frameInfo._deltaTime > 0.0f) ? static_cast<int>(1.0f / _frameInfo._deltaTime) : 0;
+    _frameInfo._lastFrame = std::chrono::duration<float>(_frameInfo._lastFrameTimePoint - _frameInfo._startTime).count();
+    _frameInfo._lastFrameTimePoint = now;
 }
 
 jleEngineSettings & jleGameEngine::getSettings() const {

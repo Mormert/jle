@@ -21,8 +21,8 @@
 void
 cCamera::update(UpdateContext& ctx) const
 {
-    const auto width = ctx.in.width;
-    const auto height = ctx.in.height;
+    const uint32_t width = ctx.in.width;
+    const uint32_t height = ctx.in.height;
 
     if (perspective && width > 0 && height > 0) {
         ctx.out.camera.setPerspectiveProjection(perspectiveFov, width, height, farPlane, nearPlane);
@@ -30,7 +30,7 @@ cCamera::update(UpdateContext& ctx) const
         ctx.out.camera.setOrthographicProjection(width, height, farPlane, nearPlane);
     }
 
-    auto &&transformation = ctx.in.transform.getLocalMatrix();
+    const auto &transformation = ctx.in.transform.getLocalMatrix();
     ctx.out.camera.setViewMatrix(glm::inverse(transformation));
 }
 

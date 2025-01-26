@@ -13,23 +13,17 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#pragma once
+#include "cMesh.h"
 
-#include "jleBuildConfig.h"
+std::shared_ptr<jleMesh>
+cMesh::getMesh()
+{
+    return _meshRef.get();
+}
 
-// This header file is used to enforce inclusion of object and components, to
-// make sure that they are registered and can be seen in the editor. It needs to
-// be included from something that is compiled and used in the engine.
+jleResourceRef<jleMesh> &
+cMesh::getMeshRef()
+{
+    return _meshRef;
+}
 
-#include "modules/animation/components/cAnimator.h"
-#include "modules/graphics/runtime/components/cCamera.h"
-#include "modules/graphics/runtime/components/cLight.h"
-#include "modules/graphics/runtime/components/cLightDirectional.h"
-#include "modules/mesh/components/cMesh.h"
-#include "modules/graphics/runtime/components/cSkinnedMesh.h"
-#include "modules/graphics/runtime/components/cSkybox.h"
-#include "modules/networking/components/cTransformNetSync.h"
-#include "modules/networking/jleSceneClient.h"
-#include "modules/networking/jleSceneServer.h"
-#include "modules/physics/components/cRigidbody.h"
-#include "modules/scripting/components/cLuaScript.h"

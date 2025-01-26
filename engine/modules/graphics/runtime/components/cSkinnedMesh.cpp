@@ -21,6 +21,8 @@
 void
 cSkinnedMesh::ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix, const cAnimator* optionalAnimator, int objectIndex)
 {
+    assert(false); // Temporarily disabled
+    /*
     std::shared_ptr<jleAnimationFinalMatrices> animationMatrices;
     if (optionalAnimator) {
         animationMatrices = optionalAnimator->animationMatrices();
@@ -32,8 +34,8 @@ cSkinnedMesh::ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix, co
     if (_skinnedMeshRef) {
         std::shared_ptr<jleSkinnedMesh> mesh = _skinnedMeshRef.get();
         std::shared_ptr<jleMaterial> material = _materialRef.get();
-        packet.sendSkinnedMesh(mesh, material, animationMatrices, worldMatrix, objectIndex, true);
-    }
+        packet.sendSkinnedMesh(mesh, material, animationMatrices, worldMatrix, objectIndex, true, gpuData);
+    }*/
 }
 
 

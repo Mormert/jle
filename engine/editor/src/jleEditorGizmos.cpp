@@ -16,7 +16,7 @@
 #include "jleEditorGizmos.h"
 #include "core/jleResourceRef.h"
 #include "modules/graphics/jleMaterial.h"
-#include "modules/graphics/jleMesh.h"
+#include "modules/mesh/jleMesh.h"
 
 struct jleEditorGizmos::jleEditorGizmosMeshMaterialHolder {
 
