@@ -54,7 +54,7 @@ namespace {
         cCamera &cameraComponent = *thiz->getPtr<cCamera>(componentIndex);
         archive(cameraComponent);
 
-        if (auto* editorGraphicsModule = dynamic_cast<jleGraphicsModuleEditor*>(archive.editorCtx.engineUpdateContext.gameRuntime.getGame().getModules().graphicsModule.get())) {
+        if (auto* editorGraphicsModule = archive.editorCtx.engineUpdateContext.gameRuntime.getGame().getModules().getModule<jleGraphicsModuleEditor>()) {
             constexpr unsigned int width = 400;
             constexpr unsigned int height = 400;
 
@@ -75,7 +75,7 @@ namespace {
 
             auto &fb = *editorGraphicsModule->cameraPreviewFramebuffer;
 
-            archive.editorCtx.engineUpdateContext.rendererModule.render(*editorGraphicsModule->cameraPreviewFramebuffer,
+            archive.editorCtx.engineUpdateContext.graphics.render(*editorGraphicsModule->cameraPreviewFramebuffer,
                 archive.editorCtx.engineUpdateContext.currentFramePacket);
 
             // Get the texture from the framebuffer

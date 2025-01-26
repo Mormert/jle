@@ -16,25 +16,6 @@
 #include "jleResourceHolder.h"
 #include "jleTypeReflectionUtils.h"
 
-inline std::map<std::string, std::function<std::shared_ptr<jleObject>()>> &
-jleTypeReflectionUtils::registeredObjectsRef()
-{
-    if (!_registeredObjectsPtr) {
-        _registeredObjectsPtr = std::make_unique<std::map<std::string, std::function<std::shared_ptr<jleObject>()>>>();
-    }
-    return *_registeredObjectsPtr;
-}
-
-inline std::map<std::string, std::function<std::shared_ptr<jleComponent>()>> &
-jleTypeReflectionUtils::registeredComponentsRef()
-{
-    if (!_registeredComponentsPtr) {
-        _registeredComponentsPtr =
-            std::make_unique<std::map<std::string, std::function<std::shared_ptr<jleComponent>()>>>();
-    }
-    return *_registeredComponentsPtr;
-}
-
 inline std::map<std::string, jleTypeReflectionUtils::jleRegisteredResourceInterfaceData> &
 jleTypeReflectionUtils::registeredResourcesRef()
 {

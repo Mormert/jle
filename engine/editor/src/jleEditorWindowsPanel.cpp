@@ -292,11 +292,11 @@ jleEditorWindowsPanel::menuButtonsupdate(jleEngineUpdateContext & ctx)
                 ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
 
                 if (ImGui::ImageButton((void *)(intptr_t)_minimizeIcon->id(), buttonSize)) {
-                    glfwIconifyWindow(ctx.windowModule.glfwWindow());
+                    glfwIconifyWindow(ctx.window.glfwWindow());
                 }
 
                 if (ImGui::ImageButton((void *)(intptr_t)_maximizeIcon->id(), buttonSize)) {
-                    const auto window = ctx.windowModule.glfwWindow();
+                    const auto window = ctx.window.glfwWindow();
                     if (glfwGetWindowAttrib(window, GLFW_MAXIMIZED)) {
                         glfwRestoreWindow(window);
                     } else {
@@ -309,7 +309,7 @@ jleEditorWindowsPanel::menuButtonsupdate(jleEngineUpdateContext & ctx)
                     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, grayRedHoveredColor);
 
                     if (ImGui::ImageButton((void *)(intptr_t)_crossIcon->id(), buttonSize)) {
-                        glfwSetWindowShouldClose(ctx.windowModule.glfwWindow(), true);
+                        glfwSetWindowShouldClose(ctx.window.glfwWindow(), true);
                     }
                     ImGui::PopStyleColor();
                 }

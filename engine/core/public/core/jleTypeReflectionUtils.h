@@ -56,11 +56,6 @@ class jleResourceInterface;
 class jleTypeReflectionUtils
 {
 public:
-
-    static std::map<std::string, std::function<std::shared_ptr<jleObject>()>> &registeredObjectsRef();
-
-    static std::map<std::string, std::function<std::shared_ptr<jleComponent>()>> &registeredComponentsRef();
-
     struct jleRegisteredResourceInterfaceData {
         std::vector<std::string> fileExtensions;
         std::function<std::shared_ptr<jleResourceInterface>()> creationFunction;
@@ -74,17 +69,8 @@ public:
     registeredFileTypeLoadersRef();
 
 private:
-    // Should always be accessed via registeredObjectsRef()
-    static inline std::unique_ptr<std::map<std::string, std::function<std::shared_ptr<jleObject>()>>>
-        _registeredObjectsPtr{nullptr};
-
-    // Should always be accessed via registeredComponentsRef()
-    static inline std::unique_ptr<std::map<std::string, std::function<std::shared_ptr<jleComponent>()>>>
-        _registeredComponentsPtr{nullptr};
-
     // Should always be accessed via registeredResourcesRef()
-    static inline std::unique_ptr<std::map<std::string, jleRegisteredResourceInterfaceData>> _registeredResourcesPtr{
-        nullptr};
+    static inline std::unique_ptr<std::map<std::string, jleRegisteredResourceInterfaceData>> _registeredResourcesPtr{nullptr};
 
     static inline std::unique_ptr<std::map<
         std::string,

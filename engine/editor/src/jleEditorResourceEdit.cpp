@@ -55,7 +55,7 @@ jleEditorResourceEdit::renderUI(jleEditorUpdateContext &ctx)
         ImGui::SameLine();
 
         if (resource && ImGui::Button("Reload Resource")) {
-            ctx.engineUpdateContext.resourcesModule.reloadSerializedResource(resource);
+            ctx.engineUpdateContext.resourcesHolder.reloadSerializedResource(resource);
         }
 
         ImGui::End();

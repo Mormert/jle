@@ -26,10 +26,15 @@ jleModuleLoading::createDefaultModules_Editor(bool gameRunning)
 {
     auto modules = std::make_unique<jleGameModules>();
 
-    modules->hierarchyModule = std::make_unique<jleHierarchyModuleEditor>();
-    modules->graphicsModule = std::make_unique<jleGraphicsModuleEditor>();
-    modules->physicsModule = std::make_unique<jlePhysicsModuleEditor>();
-    modules->luaModule = std::make_unique<jleLuaEditorModule>(gameRunning);
+    modules->addModule<jleHierarchyModuleEditor, jleHierarchyModule>(std::make_unique<jleHierarchyModuleEditor>());
+    modules->addModule<jleGraphicsModuleEditor, jleGraphicsModule>(std::make_unique<jleGraphicsModuleEditor>());
+    modules->addModule<jlePhysicsModuleEditor, jlePhysicsModule>(std::make_unique<jlePhysicsModuleEditor>());
+    modules->addModule<jleLuaEditorModule, jleLuaModule>(std::make_unique<jleLuaEditorModule>(gameRunning));
+
+    //modules->hierarchyModule = std::make_unique<jleHierarchyModuleEditor>();
+    //modules->graphicsModule = std::make_unique<jleGraphicsModuleEditor>();
+    //modules->physicsModule = std::make_unique<jlePhysicsModuleEditor>();
+    //modules->luaModule = std::make_unique<jleLuaEditorModule>(gameRunning);
 
     return modules;
 }

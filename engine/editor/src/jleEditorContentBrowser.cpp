@@ -339,7 +339,7 @@ jleEditorContentBrowser::contentBrowser(jleEditorUpdateContext &editorCtx)
                         if (it != _referencedTextures.end()) {
                             iconTexture = it->second;
                         } else {
-                            iconTexture = ctx.resourcesModule.loadResourceFromFileT<jleTexture>(jlePath{jleRealPath{dir_entry.path().string()}}, ctx.serializationContext);
+                            iconTexture = ctx.resourcesHolder.loadResourceFromFileT<jleTexture>(jlePath{jleRealPath{dir_entry.path().string()}}, ctx.serializationContext);
                             _referencedTextures.insert(std::make_pair(path, iconTexture));
                         }
                     } else if (dir_entry.path().extension() == ".json") {
@@ -431,7 +431,7 @@ jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file, jleEdito
 
     openAsText(file);
 
-    openAsResource(file, ctx.engineUpdateContext.resourcesModule);
+    openAsResource(file, ctx.engineUpdateContext.resourcesHolder);
 
     { // Delete File
         static bool opened = false;

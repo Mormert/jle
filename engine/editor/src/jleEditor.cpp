@@ -170,10 +170,10 @@ public:
 
         jleLuaEnvironment* luaGameEnvironment = nullptr;
         if (!context.engineUpdateContext.gameRuntime.isGameKilled()) {
-            luaGameEnvironment = &context.engineUpdateContext.gameRuntime.getGame().getModules().luaModule->getEnvironment();
+            luaGameEnvironment = &context.engineUpdateContext.gameRuntime.getGame().getModules().getModule<jleLuaModule>()->getEnvironment();
         }
 
-        gameWindow->renderUI(context.engineUpdateContext, context.engineUpdateContext.inputModule);
+        gameWindow->renderUI(context.engineUpdateContext, context.engineUpdateContext.input);
         console->renderUI(context.engineUpdateContext, luaGameEnvironment);
         settingsWindow->renderUI(context);
         contentBrowser->renderUI(context);
@@ -471,17 +471,17 @@ void jleEditor::updateEditorGameModules(jleEditorUpdateContext &ctx) {
 
     jleGameModules& modules = ctx.getCurrentModules();
 
-    const std::vector<glm::mat4>& worldMatrices = modules.hierarchyModule->getWorldMatrices();
+    const std::vector<glm::mat4>& worldMatrices = modules.getModule<jleHierarchyModule>()->getWorldMatrices();
 
-    if (auto* graphicsEditorModule = dynamic_cast<jleGraphicsModuleEditor*>(modules.graphicsModule.get())){
+    if (auto* graphicsEditorModule = modules.getModule<jleGraphicsModuleEditor>()){
         graphicsEditorModule->updateEditor(ctx, worldMatrices);
     }
 
-    if (auto* physicsEditorModule = dynamic_cast<jlePhysicsModuleEditor*>(modules.physicsModule.get())){
+    if (auto* physicsEditorModule = modules.getModule<jlePhysicsModuleEditor>()){
         physicsEditorModule->updateEditor(ctx.editorFramePacket);
     }
 
-    if (auto* luaEditorModule = dynamic_cast<jleLuaEditorModule*>(modules.luaModule.get())){
+    if (auto* luaEditorModule = modules.getModule<jleLuaEditorModule>()){
         luaEditorModule->updateEditor(ctx.engineUpdateContext.serializationContext);
     }
 }

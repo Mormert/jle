@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include "modules/jleGameModules.h"
+
 #include <memory>
 #include <vector>
 
@@ -32,7 +34,7 @@ struct DestroyComponentData;
 class jleLuaEnvironment;
 class cLuaScript;
 
-class jleLuaModule
+class jleLuaModule : public jleGameBaseModule
 {
 public:
     jleLuaModule();

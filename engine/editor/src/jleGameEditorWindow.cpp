@@ -92,13 +92,13 @@ jleGameEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleInput& input)
 
     if (ImGui::IsWindowFocused() != _wasFocused) {
         _wasFocused = ImGui::IsWindowFocused();
-        ctx.inputModule.setInputEnabled(_wasFocused);
+        ctx.input.setInputEnabled(_wasFocused);
     }
 
-    if (ImGui::IsWindowFocused() && ctx.inputModule.mouse.isFpsMode() && ImGui::IsKeyPressed(ImGuiKey_Tab)) {
-        ctx.inputModule.mouse.setFpsMode(false);
+    if (ImGui::IsWindowFocused() && ctx.input.mouse.isFpsMode() && ImGui::IsKeyPressed(ImGuiKey_Tab)) {
+        ctx.input.mouse.setFpsMode(false);
     } else if (ImGui::IsKeyPressed(ImGuiKey_Tab)) {
-        ctx.inputModule.mouse.setFpsMode(true);
+        ctx.input.mouse.setFpsMode(true);
     }
 
     ImGui::End();

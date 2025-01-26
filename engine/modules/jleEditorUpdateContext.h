@@ -20,7 +20,7 @@
 class jleEditor;
 class jleResourceIndexer;
 class jleEditorGizmos;
-class jleGameModules;
+struct jleGameModules;
 
 namespace jlECS
 {

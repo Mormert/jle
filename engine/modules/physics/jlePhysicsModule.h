@@ -17,6 +17,8 @@
 
 #include <glm/fwd.hpp>
 #include <jlECS/jlECS.h>
+#include "modules/jleGameModules.h"
+
 
 #include "jlePhysics.h"
 
@@ -37,7 +39,7 @@ class cTransform;
 class cMesh;
 class cRigidbody;
 
-class jlePhysicsModule
+class jlePhysicsModule : public jleGameBaseModule
 {
 public:
     jlePhysicsModule();

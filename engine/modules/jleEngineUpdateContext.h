@@ -42,23 +42,15 @@ struct jleEngineUpdateContext {
                                      jleWindow &window,
                                      jleResourceHolder &resources,
                                      jleFrameInfo &info,
-                                     jleSerializationContext& serializationContext);
-
-    // Modules
+                                     const jleSerializationContext & serializationContext);
+    jleSerializationContext serializationContext;
     jleGameRuntime &gameRuntime;
-    jleGraphics &rendererModule;
-    jleWindow &windowModule;
-    jleResourceHolder &resourcesModule;
-    jleInput &inputModule;
-
-    // Rendering
+    jleGraphics &graphics;
+    jleWindow &window;
+    jleResourceHolder &resourcesHolder;
+    jleInput &input;
     jleRenderThread &renderThread;
     jleFramePacket &currentFramePacket;
-
-    // Utilities
     jleFrameInfo &frameInfo;
-
-    jleSerializationContext serializationContext;
-
     jleEngineSettings &settings;
 };

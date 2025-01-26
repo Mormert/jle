@@ -37,6 +37,10 @@ cLuaScript::start(jleLuaEnvironment& environment)
 void
 cLuaScript::update(jleLuaEnvironment& environment, float dt)
 {
+    if (!environment.getLuaClassPtr(_luaComponent.luaClassName)) {
+        return;
+    }
+
     if (!_isInitialized && !_luaComponent.luaClassName.empty()) {
         initializeLuaComponent(environment);
     }

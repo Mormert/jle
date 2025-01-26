@@ -20,7 +20,7 @@
 
 struct jleSerializationContext;
 class jleGame;
-class jleGameModules;
+struct jleGameModules;
 class jleGameEngine;
 class jleFramebufferInterface;
 struct jleEngineUpdateContext;

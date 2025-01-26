@@ -15,9 +15,11 @@
 
 #pragma once
 
+#include "modules/jleGameModules.h"
+
 #include <cstdint>
-#include <vector>
 #include <glm/glm.hpp>
+#include <vector>
 
 class jleFramePacket;
 class jleCamera;
@@ -27,7 +29,7 @@ namespace jlECS
 class ECS;
 }
 
-class jleGraphicsModule
+class jleGraphicsModule : public jleGameBaseModule
 {
 public:
     virtual void initializeECS(jlECS::ECS &ecs);

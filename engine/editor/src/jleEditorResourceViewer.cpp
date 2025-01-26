@@ -27,7 +27,7 @@ void jleEditorResourceViewer::renderUI(jleEngineUpdateContext &ctx) {
     ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_NoCollapse);
 
-    auto &resources = ctx.resourcesModule;
+    auto &resources = ctx.resourcesHolder;
 
     std::vector<jlePath> resourcesToBeUnloaded;
     for (auto &&drive : resources.resourcesMap()) {

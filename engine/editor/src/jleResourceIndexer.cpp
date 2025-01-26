@@ -25,8 +25,6 @@ jleResourceIndexer::jleResourceIndexer(const std::vector<std::string> &directori
 const std::set<jlePath> &
 jleResourceIndexer::getIndexedFiles()
 {
-    std::future<int> asd;
-
     return _indexedFiles;
 }
 

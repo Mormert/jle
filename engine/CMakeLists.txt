@@ -38,6 +38,7 @@ add_library(engine STATIC
         "jleGameEngine.cpp"
         "modules/jleEngineUpdateContext.cpp"
         "modules/jleEditorUpdateContext.cpp"
+        "modules/jleGameModules.cpp"
         "game/jleGameRuntime.cpp"
         "game/jleGame.cpp"
         "game/loader/jleGameModulesLoader.cpp"

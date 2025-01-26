@@ -9,10 +9,10 @@ jleEngineUpdateContext::jleEngineUpdateContext(jleGameRuntime &gameRuntime,
                                                  jleWindow &window,
                                                  jleResourceHolder &resources,
                                                  jleFrameInfo &info,
-                                                 jleSerializationContext& serializationContext)
-    : gameRuntime(gameRuntime), rendererModule(renderer), renderThread(renderThread),
-      currentFramePacket(renderGraph_),
-      settings(engineSettings), inputModule(input), windowModule(window),
-      resourcesModule(resources), frameInfo(info), serializationContext(serializationContext)
+                                                 const jleSerializationContext & serializationContext)
+    : serializationContext(serializationContext), gameRuntime(gameRuntime), graphics(renderer),
+      window(window),
+      resourcesHolder(resources), input(input), renderThread(renderThread),
+      currentFramePacket(renderGraph_), frameInfo(info), settings(engineSettings)
 {
 }

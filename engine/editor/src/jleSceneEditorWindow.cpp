@@ -126,7 +126,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
     const int32_t windowPositionY = int32_t(cursorScreenPos.y) - (int32_t)viewport->Pos.y;
 
     const auto previousFrameCursorPos = _lastCursorPos;
-    _lastCursorPos = editorUpdate.engineUpdateContext.windowModule.cursor();
+    _lastCursorPos = editorUpdate.engineUpdateContext.window.cursor();
     const int32_t mouseX = _lastCursorPos.first;
     const int32_t mouseY = _lastCursorPos.second;
     const int32_t mouseDeltaX = mouseX - previousFrameCursorPos.first;
@@ -180,7 +180,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         int dragWidth  = std::abs(_selectCurrentX - _selectStartX);
         int dragHeight = std::abs(_selectCurrentY - _selectStartY);
 
-        input.editorUpdate.engineUpdateContext.rendererModule.renderMeshesPicking(
+        input.editorUpdate.engineUpdateContext.graphics.renderMeshesPicking(
             *_pickingFramebuffer, _renderCamera, input.editorUpdate.editorFramePacket);
         _pickingFramebuffer->bind();
 
@@ -343,7 +343,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         if (!input.editorUpdate.engineUpdateContext.gameRuntime.isGameKilled()) {
 
             auto& modules = input.editorUpdate.engineUpdateContext.gameRuntime.getGame().getModules();
-            if (auto* physicsEditorModule = dynamic_cast<jlePhysicsModuleEditor*>(modules.physicsModule.get())) {
+            if (auto* physicsEditorModule = modules.getModule<jlePhysicsModuleEditor>()) {
                 bool& debugRenderPhysics = physicsEditorModule->getDebugRenderingEnabledRef();
                 ImGui::Checkbox("Physics Debug", &debugRenderPhysics);
             }
@@ -413,7 +413,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
 
         _renderCamera.setViewMatrix(fpvCamController.getLookAtViewMatrix());
 
-        auto currentScroll = input.editorUpdate.engineUpdateContext.inputModule.mouse.scrollY();
+        auto currentScroll = input.editorUpdate.engineUpdateContext.input.mouse.scrollY();
         if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentScroll != 0.f) {
             orthoZoomValue -= currentScroll * 1.f * t;
             orthoZoomValue = glm::clamp(orthoZoomValue, 0.01f, 2.f);
@@ -526,7 +526,7 @@ jleSceneEditorWindow::render(jleFramePacket &framePacket, const jleEditorUpdateC
     }
 
     framePacket.camera = _renderCamera;
-    ctx.engineUpdateContext.rendererModule.render(*_msaa, framePacket);
+    ctx.engineUpdateContext.graphics.render(*_msaa, framePacket);
 
     _msaa->blitToOther(*_framebuffer);
 }

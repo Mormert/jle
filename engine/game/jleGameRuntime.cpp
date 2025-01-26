@@ -109,7 +109,7 @@ jleGameRuntime::resizeMainFramebuffer(jleEngineUpdateContext &ctx, unsigned int 
 {
     ctx.renderThread.runOnRenderThread([this, width, height]() { mainGameScreenFramebuffer->resize(width, height); });
 
-    auto &inputMouse = ctx.inputModule.mouse;
+    auto &inputMouse = ctx.input.mouse;
     inputMouse.setScreenSize(width, height);
 }
 

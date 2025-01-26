@@ -21,37 +21,14 @@
 #include <vector>
 
 #include "core/jleCamera.h"
-//#include "core/jleProfiler.h"
 #include "core/jleResourceHolder.h"
-//#include "core/jleScene.h"
 #include "jlECS/jlECS.h"
 
 #include <modules/jleEngineUpdateContext.h>
-#include <modules/graphics/jleGraphicsModule.h>
-#include <modules/physics/jlePhysicsModule.h>
-#include <modules/hierarchy/jleHierarchyModule.h>
-#include <modules/scripting/jleLuaModule.h>
 
-
-#include <execution>
-#include <fstream>
-#include <iostream>
-#include <typeinfo>
+#include "modules/jleGameModules.h"
 
 struct jleEngineUpdateContext;
-
-struct jleGameModules
-{
-    std::unique_ptr<jleHierarchyModule> hierarchyModule;
-    std::unique_ptr<jleGraphicsModule> graphicsModule;
-    std::unique_ptr<jlePhysicsModule> physicsModule;
-    std::unique_ptr<jleLuaModule> luaModule;
-
-    virtual void initialize(jlECS::ECS &ecs, jleSerializationContext& serializationContext);
-    virtual void update(jleEngineUpdateContext& ctx, jlECS::ECS& ecs);
-    virtual void updateRenderablesOnly(jleEngineUpdateContext& ctx, jlECS::ECS& ecs);
-    virtual void populateSerializeableInterfaces(std::vector<jleSerializableInterface*>& interfaces);
-};
 
 class jleGame
 {

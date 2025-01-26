@@ -15,8 +15,10 @@
 
 #pragma once
 
+#include "modules/jleGameModules.h"
+
+#include <glm/glm.hpp>
 #include <vector>
-#include <glm/fwd.hpp>
 
 namespace jlECS
 {
@@ -25,7 +27,7 @@ class ECS;
 
 
 
-class jleHierarchyModule
+class jleHierarchyModule : public jleGameBaseModule
 {
 public:
     virtual void initializeECS(jlECS::ECS &ecs);
