@@ -29,6 +29,9 @@
 #include <modules/mesh/components/cMesh.h>
 #include <modules/mesh/jleMeshModule.h>
 #include <modules/mesh/jleMesh.h>
+#include <modules/image/jleImageModule.h>
+#include <core/jleImage.h>
+#include "jleMaterial.h"
 
 #include "core/jleIncludeGL.h"
 #include "jleSkinnedMesh.h"
@@ -84,6 +87,21 @@ jleGraphicsModule::render(int windowX, int windowY)
         _meshGPULookup[mesh->path] = gpuDataHandle;
     }
     _meshesToLoadIntoGPU.clear();
+
+    for (const auto& materialPath : _materialsToLoadIntoGPU) {
+        jleSerializationContext ctx{};
+        ctx.resources = &_resourceHolder;
+        ctx.serializationInterfaces.push_back(_renderThread.get());
+
+        auto material = jleResourceRef<jleMaterial>{materialPath, ctx};
+
+        _materialGpuBuffers.emplace_back();
+        jleMaterialGPUData* gpuData = &_materialGpuBuffers.back();
+        createMaterialGPUData(gpuData, material.get(), materialPath);
+        jleMaterialGPUDataHandle gpuDataHandle {static_cast<uint32_t>(_materialGpuBuffers.size() - 1)};
+        _materialGPULookup[materialPath] = gpuDataHandle;
+    }
+    _materialsToLoadIntoGPU.clear();
 
     if (_screenFramebuffer->width() != windowX || _screenFramebuffer->height() != windowY) {
         _screenFramebuffer->resize(windowX, windowY);
@@ -148,7 +166,8 @@ jleGraphicsModule::update(const jleGraphicsModule::UpdateContext &ctx)
             continue;
         if (mesh->getMeshRef()->path.isEmpty())
             continue;
-        
+
+        // Check and set GPU mesh
         if (meshRenderer->getGpuMeshPath() == mesh->getMesh()->path) {
             meshRenderer->ecsUpdate(framePacket, worldMatrices[objectIndex], objectIndex, mesh->getMesh()->path, mesh->getMesh());
         } else {
@@ -157,6 +176,18 @@ jleGraphicsModule::update(const jleGraphicsModule::UpdateContext &ctx)
             } else {
                 if (std::shared_ptr<jleMesh> loadedMesh = ctx.in.meshModule->getLoadedMesh(mesh->getMesh()->path)) {
                     _meshesToLoadIntoGPU.insert(loadedMesh);
+                }
+            }
+        }
+
+        // Check and set GPU material
+        const jlePath materialPath = meshRenderer->getMaterialPath();
+        if (!materialPath.isEmpty()) {
+            if (meshRenderer->getGpuMaterialPath() != materialPath) {
+                if (auto it = _materialGPULookup.find(materialPath); it != _materialGPULookup.end()) {
+                    meshRenderer->setGpuMaterial(materialPath, it->second);
+                } else {
+                    _materialsToLoadIntoGPU.insert(materialPath);
                 }
             }
         }
@@ -327,4 +358,22 @@ jleGraphicsModule::createSkinnedMeshGPUBuffers(jleSkinnedMeshGPUData* gpuData, j
     }
 
     glBindVertexArray(0);
+}
+
+void
+jleGraphicsModule::createMaterialGPUData(jleMaterialGPUData* gpuData, std::shared_ptr<jleMaterial> material, const jlePath& path)
+{
+    if (!gpuData) return;
+
+    gpuData->material = std::move(material);
+    gpuData->materialPath = path;
+}
+
+void
+jleGraphicsModule::destroyMaterialGPUData(jleMaterialGPUData* gpuData)
+{
+    if (!gpuData) return;
+
+    gpuData->material.reset();
+    gpuData->materialPath = jlePath{};
 }

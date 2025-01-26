@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+    <Type Name="jlePath">
+        <DisplayString>{getVirtualPath().str()}</DisplayString>
+        <Expand>
+            <Item Name="[virtual path]">getVirtualPath().str()</Item>
+            <Item Name="[real path]">getRealPath().str()</Item>
+            <Item Name="[hash]">_hash</Item>
+        </Expand>
+    </Type>
+
+    <Type Name="jleVirtualPath">
+        <DisplayString>{_virtualPath}</DisplayString>
+        <Expand>
+            <Item Name="[path]">_virtualPath</Item>
+        </Expand>
+    </Type>
+
+    <Type Name="jleRealPath">
+        <DisplayString>{_realPath}</DisplayString>
+        <Expand>
+            <Item Name="[path]">_realPath</Item>
+        </Expand>
+    </Type>
+
+</AutoVisualizer>

@@ -35,6 +35,7 @@ struct jleCamera;
 class jleMesh;
 class jleSkinnedMesh;
 class jleMeshModule;
+class jleImageModule;
 
 namespace jlECS
 {
@@ -61,6 +62,7 @@ public:
             uint32_t screenY;
             const std::vector<glm::mat4>& worldMatrices;
             const jleMeshModule* meshModule;
+            const jleImageModule* imageModule;
         } in;
 
         struct InOut {
@@ -95,13 +97,22 @@ protected:
     std::unordered_map<jlePath, jleSkinnedMeshGPUDataHandle> _skinnedMeshGPULookup;
     std::vector<jleSkinnedMeshGPUData> _skinnedMeshGpuBuffers;
 
+    std::unordered_map<jlePath, jleMaterialGPUDataHandle> _materialGPULookup;
+    std::unordered_set<jlePath> _materialsToLoadIntoGPU;
+    std::vector<jleMaterialGPUData> _materialGpuBuffers;
+
     static void createMeshGPUBuffers(jleMeshGPUData* gpuData, const jleMesh* mesh);
     static void destroyMeshGPUBuffers(jleMeshGPUData* gpuData);
 
     static void createSkinnedMeshGPUBuffers(jleSkinnedMeshGPUData* gpuData, jleSkinnedMesh* mesh);
     static void destroySkinnedMeshGPUBuffers(jleSkinnedMeshGPUData* gpuData);
 
+    static void createMaterialGPUData(jleMaterialGPUData* gpuData, std::shared_ptr<jleMaterial> material, const jlePath& path);
+    static void destroyMaterialGPUData(jleMaterialGPUData* gpuData);
+
     friend class jleEditor;
+
+    jleResourceHolder _resourceHolder;
 
     // TODO: Remove when we merge with jleGraphics.
     friend class jleGraphics;

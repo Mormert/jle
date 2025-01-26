@@ -55,6 +55,7 @@ add_subdirectory(../modules/hierarchy/editor ${CMAKE_CURRENT_BINARY_DIR}/hierarc
 add_subdirectory(../modules/windowing/editor ${CMAKE_CURRENT_BINARY_DIR}/windowingEditor)
 add_subdirectory(../modules/graphics/editor ${CMAKE_CURRENT_BINARY_DIR}/graphicsEditor)
 add_subdirectory(../modules/mesh/editor ${CMAKE_CURRENT_BINARY_DIR}/meshEditor)
+add_subdirectory(../modules/image/editor ${CMAKE_CURRENT_BINARY_DIR}/imageEditor)
 add_subdirectory(../modules/input/editor ${CMAKE_CURRENT_BINARY_DIR}/inputEditor)
 add_subdirectory(../modules/scripting/editor ${CMAKE_CURRENT_BINARY_DIR}/scriptingEditor)
 add_subdirectory(../modules/physics/editor ${CMAKE_CURRENT_BINARY_DIR}/physicsEditor)

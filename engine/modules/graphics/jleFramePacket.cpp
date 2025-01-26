@@ -18,27 +18,24 @@
 
 void
 jleFramePacket::sendMesh(jleMeshGPUDataHandle meshGpuHandle,
-                     std::shared_ptr<jleMaterial> &material,
+                     jleMaterialGPUDataHandle materialGpuHandle,
                      const glm::mat4 &worldMatrix,
                      int instanceId,
                      bool castShadows)
 {
-    if (material && material->isTranslucent()) {
-        _translucentMeshes.emplace_back(jle3DQueuedMesh{meshGpuHandle, material, worldMatrix, instanceId, castShadows});
-    } else {
-        _meshes.emplace_back(jle3DQueuedMesh{meshGpuHandle, material, worldMatrix, instanceId, castShadows});
-    }
+    // Note: Translucency check will be done in graphics module where we have access to material data
+    _meshes.emplace_back(jle3DQueuedMesh{meshGpuHandle, materialGpuHandle, worldMatrix, instanceId, castShadows});
 }
 
 void
 jleFramePacket::sendSkinnedMesh(jleSkinnedMeshGPUDataHandle skinnedMeshGpuHandle,
-                            std::shared_ptr<jleMaterial> &material,
+                            jleMaterialGPUDataHandle materialGpuHandle,
                             std::shared_ptr<jleAnimationFinalMatrices> &matrices,
                             const glm::mat4 &worldMatrix,
                             int instanceId,
                             bool castShadows)
 {
-    _skinnedMeshes.emplace_back(jle3DQueuedSkinnedMesh{skinnedMeshGpuHandle, material, matrices, worldMatrix, instanceId, castShadows});
+    _skinnedMeshes.emplace_back(jle3DQueuedSkinnedMesh{skinnedMeshGpuHandle, materialGpuHandle, matrices, worldMatrix, instanceId, castShadows});
 }
 
 void

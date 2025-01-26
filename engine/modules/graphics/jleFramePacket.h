@@ -44,7 +44,7 @@ struct jle3DLineVertex {
 
 struct jle3DQueuedMesh {
     jleMeshGPUDataHandle meshGpuHandle;
-    std::shared_ptr<jleMaterial> material;
+    jleMaterialGPUDataHandle materialGpuHandle;
     glm::mat4 worldMatrix;
     int instanceId;
     bool castShadows;
@@ -52,7 +52,7 @@ struct jle3DQueuedMesh {
 
 struct jle3DQueuedSkinnedMesh {
     jleSkinnedMeshGPUDataHandle skinnedMeshGpuHandle;
-    std::shared_ptr<jleMaterial> material;
+    jleMaterialGPUDataHandle materialGpuHandle;
     std::shared_ptr<jleAnimationFinalMatrices> matrices;
     glm::mat4 worldMatrix;
     int instanceId;
@@ -66,13 +66,13 @@ private:
 
 public:
     void sendMesh(jleMeshGPUDataHandle meshGpuHandle,
-                  std::shared_ptr<jleMaterial> &material,
+                  jleMaterialGPUDataHandle materialGpuHandle,
                   const glm::mat4 &transform,
                   int instanceId,
                   bool castShadows);
 
     void sendSkinnedMesh(jleSkinnedMeshGPUDataHandle skinnedMeshGpuHandle,
-                         std::shared_ptr<jleMaterial> &material,
+                         jleMaterialGPUDataHandle materialGpuHandle,
                          std::shared_ptr<jleAnimationFinalMatrices> &matrices,
                          const glm::mat4 &transform,
                          int instanceId,

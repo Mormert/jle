@@ -114,35 +114,48 @@ jleGraphicsModuleEditor::updateEditor(jleEditorUpdateContext &ctx, const std::ve
     ZoneScoped;
     auto &ecs = ctx.getCurrentECS();
 
-    const auto sendGizmoMesh = [&](const jlePath& meshPath, std::shared_ptr<jleMaterial>& material, int objectIndex) {
+    const auto sendGizmoMesh = [&](const jlePath& meshPath, const jlePath& materialPath, int objectIndex) {
+        jleMeshGPUDataHandle meshHandle{jleMeshGPUDataHandle::InvalidValue};
+        jleMaterialGPUDataHandle materialHandle{jleMaterialGPUDataHandle::InvalidValue};
+
         if (const auto it = _meshGPULookup.find(meshPath); it != _meshGPULookup.end()) {
-            getFramePacketEditor().sendMesh(it->second, material, worldMatrices[objectIndex], objectIndex, false);
+            meshHandle = it->second;
         } else {
             if (const std::shared_ptr<jleMesh> loadedMesh = ctx.getCurrentModules().getModule<jleMeshModuleEditor>()->loadMeshSync(meshPath)) {
                 _meshesToLoadIntoGPU.insert(loadedMesh);
             }
         }
+
+        if (const auto it = _materialGPULookup.find(materialPath); it != _materialGPULookup.end()) {
+            materialHandle = it->second;
+        } else {
+            _materialsToLoadIntoGPU.insert(materialPath);
+        }
+
+        if (meshHandle && materialHandle) {
+            getFramePacketEditor().sendMesh(meshHandle, materialHandle, worldMatrices[objectIndex], objectIndex, false);
+        }
     };
 
     for (auto [objectIndex, _] : ecs.iterateMulti_IncludeObjectIndex<cCamera>()) {
         auto meshPath = ctx.gizmos.cameraMesh()->path;
-        auto material = ctx.gizmos.cameraMaterial();
+        const jlePath materialPath = jlePath(jleVirtualPath{"ED:/gizmos/models/camera/camera.mat"});
 
-        sendGizmoMesh(meshPath, material, objectIndex);
+        sendGizmoMesh(meshPath, materialPath, objectIndex);
     }
 
     for (auto [objectIndex, _] : ecs.iterateMulti_IncludeObjectIndex<cLight>()) {
         auto meshPath = ctx.gizmos.lightLampMesh()->path;
-        auto material = ctx.gizmos.lampMaterial();
+        const jlePath materialPath = jlePath(jleVirtualPath{"ED:/gizmos/models/lamp.mat"});
 
-        sendGizmoMesh(meshPath, material, objectIndex);
+        sendGizmoMesh(meshPath, materialPath, objectIndex);
     }
 
     for (auto [objectIndex, _] : ecs.iterateMulti_IncludeObjectIndex<cLightDirectional>()) {
         auto meshPath = ctx.gizmos.sunMesh()->path;
-        auto material = ctx.gizmos.sunMaterial();
+        const jlePath materialPath = jlePath(jleVirtualPath{"ED:/gizmos/models/sun.mat"});
 
-        sendGizmoMesh(meshPath, material, objectIndex);
+        sendGizmoMesh(meshPath, materialPath, objectIndex);
     }
 
     _renderThread->processRenderQueue();

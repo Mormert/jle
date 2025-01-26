@@ -184,15 +184,20 @@ jleGraphics::renderMeshes(const jleCamera &camera,
 {
     ZoneScoped;
     for (auto &&mesh : meshes) {
-        if (!mesh.material || !mesh.material->getShader()) {
+        jleMaterial* material = nullptr;
+        if (mesh.materialGpuHandle && mesh.materialGpuHandle.value < _graphicsModule->_materialGpuBuffers.size()) {
+            material = _graphicsModule->_materialGpuBuffers[mesh.materialGpuHandle.value].material.get();
+        }
+
+        if (!material || !material->getShader()) {
             _shaders->missingMaterialShader->use();
             _shaders->missingMaterialShader->SetMat4("uView", camera.getViewMatrix());
             _shaders->missingMaterialShader->SetMat4("uProj", camera.getProjectionMatrix());
             _shaders->missingMaterialShader->SetMat4("uModel", mesh.worldMatrix);
         } else {
-            mesh.material->useMaterial(camera, lights, settings);
-            mesh.material->getShader()->SetMat4("uModel", mesh.worldMatrix);
-            mesh.material->getShader()->SetBool("uUseSkinning", false);
+            material->useMaterial(camera, lights, settings);
+            material->getShader()->SetMat4("uModel", mesh.worldMatrix);
+            material->getShader()->SetBool("uUseSkinning", false);
         }
 
         const jleMeshGPUData& meshGpuData = _graphicsModule->_meshGpuBuffers[mesh.meshGpuHandle];
@@ -216,18 +221,23 @@ jleGraphics::renderSkinnedMeshes(const jleCamera &camera,
 {
     ZoneScoped;
     for (auto &&mesh : skinnedMeshes) {
-        if (!mesh.material || !mesh.material->getShader()) {
+        jleMaterial* material = nullptr;
+        if (mesh.materialGpuHandle && mesh.materialGpuHandle.value < _graphicsModule->_materialGpuBuffers.size()) {
+            material = _graphicsModule->_materialGpuBuffers[mesh.materialGpuHandle.value].material.get();
+        }
+
+        if (!material || !material->getShader()) {
             _shaders->missingMaterialShader->use();
             _shaders->missingMaterialShader->SetMat4("uView", camera.getViewMatrix());
             _shaders->missingMaterialShader->SetMat4("uProj", camera.getProjectionMatrix());
             _shaders->missingMaterialShader->SetMat4("uModel", mesh.worldMatrix);
         } else {
-            mesh.material->useMaterial(camera, lights, settings);
-            mesh.material->getShader()->SetMat4("uModel", mesh.worldMatrix);
-            mesh.material->getShader()->SetBool("uUseSkinning", true);
+            material->useMaterial(camera, lights, settings);
+            material->getShader()->SetMat4("uModel", mesh.worldMatrix);
+            material->getShader()->SetBool("uUseSkinning", true);
 
             for (int i = 0; i < mesh.matrices->matrices.size(); ++i) {
-                mesh.material->getShader()->SetMat4("uAnimBonesMatrices[" + std::to_string(i) + "]",
+                material->getShader()->SetMat4("uAnimBonesMatrices[" + std::to_string(i) + "]",
                                                     mesh.matrices->matrices[i]);
             }
         }
@@ -431,8 +441,14 @@ jleGraphics::renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jleS
             return;
         }
         shader.SetMat4("model", mesh.worldMatrix);
-        if (mesh.material) {
-            if (auto opacity = mesh.material->getOpacityTexture()) {
+
+        jleMaterial* material = nullptr;
+        if (mesh.materialGpuHandle && mesh.materialGpuHandle.value < _graphicsModule->_materialGpuBuffers.size()) {
+            material = _graphicsModule->_materialGpuBuffers[mesh.materialGpuHandle.value].material.get();
+        }
+
+        if (material) {
+            if (auto opacity = material->getOpacityTexture()) {
                 shader.SetBool("uUseOpacityTexture", true);
                 shader.SetTextureSlot("uOpacityTexture", jleTextureSlot::Opacity);
                 opacity->setActive(jleTextureSlot::Opacity);
@@ -465,9 +481,15 @@ jleGraphics::renderShadowMeshesSkinned(const std::vector<jle3DQueuedSkinnedMesh>
         if (!mesh.castShadows) {
             return;
         }
+
+        jleMaterial* material = nullptr;
+        if (mesh.materialGpuHandle && mesh.materialGpuHandle.value < _graphicsModule->_materialGpuBuffers.size()) {
+            material = _graphicsModule->_materialGpuBuffers[mesh.materialGpuHandle.value].material.get();
+        }
+
         shader.SetMat4("model", mesh.worldMatrix);
-        if (mesh.material) {
-            if (auto opacity = mesh.material->getOpacityTexture()) {
+        if (material) {
+            if (auto opacity = material->getOpacityTexture()) {
                 shader.SetBool("uUseOpacityTexture", true);
                 shader.SetTextureSlot("uOpacityTexture", jleTextureSlot::Opacity);
                 opacity->setActive(jleTextureSlot::Opacity);
@@ -481,8 +503,7 @@ jleGraphics::renderShadowMeshesSkinned(const std::vector<jle3DQueuedSkinnedMesh>
         shader.SetBool("uUseSkinning", true);
 
         for (int i = 0; i < mesh.matrices->matrices.size(); ++i) {
-            mesh.material->getShader()->SetMat4("uAnimBonesMatrices[" + std::to_string(i) + "]",
-                                                mesh.matrices->matrices[i]);
+            material->getShader()->SetMat4("uAnimBonesMatrices[" + std::to_string(i) + "]", mesh.matrices->matrices[i]);
         }
 
         const jleSkinnedMeshGPUData& skinnedMeshGpuData = _graphicsModule->_skinnedMeshGpuBuffers[mesh.skinnedMeshGpuHandle];

@@ -23,6 +23,7 @@
 #include "modules/input/jleInputModule.h"
 #include "modules/jleEngineUpdateContext.h"
 #include "modules/mesh/jleMeshModule.h"
+#include "modules/image/jleImageModule.h"
 #include "modules/physics/jlePhysicsModule.h"
 #include "modules/scripting/jleLuaModule.h"
 #include "modules/windowing/jleWindowModule.h"
@@ -36,6 +37,7 @@ jleDefaultGameFunctions::createDefaultModules(bool gameRunning)
     modules->addModule<jleGameInputModule, jleInputModuleBase>(std::make_unique<jleGameInputModule>(modules->getModule<jleGameWindowModule>()->getWindow()));
     modules->addModule<jleHierarchyModule>(std::make_unique<jleHierarchyModule>());
     modules->addModule<jleMeshModule>(std::make_unique<jleMeshModule>());
+    modules->addModule<jleImageModule>(std::make_unique<jleImageModule>());
     modules->addModule<jleGraphicsModule>(std::make_unique<jleGraphicsModule>());
     modules->addModule<jlePhysicsModule>(std::make_unique<jlePhysicsModule>());
     modules->addModule<jleLuaModule>(std::make_unique<jleLuaModule>());
@@ -51,17 +53,19 @@ jleDefaultGameFunctions::defaultModulesInitialize(jleGameModules &modules,
     auto* windowModule = modules.getModule<jleWindowModuleBase>();
     auto *hierarchyModule = modules.getModule<jleHierarchyModule>();
     auto *meshModule = modules.getModule<jleMeshModule>();
+    auto *imageModule = modules.getModule<jleImageModule>();
     auto *graphicsModule = modules.getModule<jleGraphicsModule>();
     auto *physicsModule = modules.getModule<jlePhysicsModule>();
     auto *luaModule = modules.getModule<jleLuaModule>();
 
-    assert(hierarchyModule && meshModule && graphicsModule && physicsModule && luaModule);
+    assert(hierarchyModule && meshModule && imageModule && graphicsModule && physicsModule && luaModule);
 
     if (windowModule)
         windowModule->initWindowModule();
 
     hierarchyModule->initializeECS(ecs);
     meshModule->initializeECS(ecs);
+    imageModule->initializeECS(ecs);
 
     graphicsModule->initializeModule(serializationContext);
     graphicsModule->initializeECS(ecs);
@@ -78,15 +82,17 @@ void jleDefaultGameFunctions::defaultModulesUpdate(jleGameModules& modules, jleE
     auto* inputModule = modules.getModule<jleInputModuleBase>();
     auto* hierarchyModule = modules.getModule<jleHierarchyModule>();
     auto* meshModule = modules.getModule<jleMeshModule>();
+    auto* imageModule = modules.getModule<jleImageModule>();
     auto* graphicsModule = modules.getModule<jleGraphicsModule>();
     auto* physicsModule = modules.getModule<jlePhysicsModule>();
     auto* luaModule = modules.getModule<jleLuaModule>();
 
-    assert(meshModule && inputModule && hierarchyModule && physicsModule && luaModule);
+    assert(meshModule && imageModule && inputModule && hierarchyModule && physicsModule && luaModule);
 
     inputModule->update();
 
     meshModule->loadMeshes(ecs);
+    imageModule->loadImages(ecs);
 
     hierarchyModule->updateWorldMatrices(ecs);
     const std::vector<glm::mat4>& worldMatrices = hierarchyModule->getWorldMatrices();
@@ -100,7 +106,8 @@ void jleDefaultGameFunctions::defaultModulesUpdate(jleGameModules& modules, jleE
                 .in =    {   .screenX = windowX,
                                 .screenY = windowY,
                                 .worldMatrices = worldMatrices,
-                                .meshModule = meshModule },
+                                .meshModule = meshModule,
+                                .imageModule = imageModule },
                 .inOut = {  .ecs = ecs }
             };
 
@@ -136,20 +143,23 @@ jleDefaultGameFunctions::defaultModulesUpdateRenderablesOnly(jleGameModules &mod
     auto *hierarchyModule = modules.getModule<jleHierarchyModule>();
     auto *graphicsModule = modules.getModule<jleGraphicsModule>();
     auto *meshModule = modules.getModule<jleMeshModule>();
+    auto *imageModule = modules.getModule<jleImageModule>();
 
-    assert(meshModule && hierarchyModule && graphicsModule);
+    assert(meshModule && imageModule && hierarchyModule && graphicsModule);
 
     hierarchyModule->updateWorldMatrices(ecs);
     const std::vector<glm::mat4> &worldMatrices = hierarchyModule->getWorldMatrices();
 
     meshModule->loadMeshes(ecs);
+    imageModule->loadImages(ecs);
 
     {
         jleGraphicsModule::UpdateContext graphicsUpdateContext{
             .in = {     .screenX = 1920,
                         .screenY = 1080,
                         .worldMatrices = worldMatrices,
-                        .meshModule = meshModule},
+                        .meshModule = meshModule,
+                        .imageModule = imageModule},
             .inOut = {.ecs = ecs}
         };
 

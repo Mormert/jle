@@ -18,6 +18,9 @@
 #include <cstdint>
 #include <limits>
 #include <functional>
+#include <memory>
+
+#include "core/jlePath.h"
 
 template <typename T = uint32_t, typename Tag = void>
 struct jleGpuHandle
@@ -64,5 +67,13 @@ struct jleSkinnedMeshGPUData : public jleMeshGPUData {
     uint32_t vbo_boneWeights = UINT32_MAX;
 };
 
+class jleMaterial;
+
+struct jleMaterialGPUData {
+    std::shared_ptr<jleMaterial> material;
+    jlePath materialPath;
+};
+
 using jleMeshGPUDataHandle = jleGpuHandle<uint32_t, struct jleMeshGPUDataTag>;
 using jleSkinnedMeshGPUDataHandle = jleGpuHandle<uint32_t, struct jleSkinnedMeshGPUDataTag>;
+using jleMaterialGPUDataHandle = jleGpuHandle<uint32_t, struct jleMaterialGPUDataTag>;

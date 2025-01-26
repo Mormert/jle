@@ -14,25 +14,12 @@
  *********************************************************************************************/
 
 #include "cMeshRenderer.h"
-#include <modules/hierarchy/components/cTransform.h>
+#include "modules/graphics/jleFramePacket.h"
 
 void
 cMeshRenderer::ecsUpdate(jleFramePacket &packet, const glm::mat4& worldMatrix, int instanceId, const jlePath& meshPath, std::shared_ptr<jleMesh> mesh)
 {
-    if (_gpuMeshId) {
-        std::shared_ptr<jleMaterial> material = _materialRef.get();
-        packet.sendMesh(_gpuMeshId, material, worldMatrix, instanceId, true);
+    if (_gpuMeshId && _gpuMaterialId) {
+        packet.sendMesh(_gpuMeshId, _gpuMaterialId, worldMatrix, instanceId, true);
     }
-}
-
-std::shared_ptr<jleMaterial>
-cMeshRenderer::getMaterial()
-{
-    return _materialRef.get();
-}
-
-jleResourceRef<jleMaterial> &
-cMeshRenderer::getMaterialRef()
-{
-    return _materialRef;
 }
