@@ -132,17 +132,22 @@ target_link_libraries(jleCore_3rdparty PUBLIC assimp)
 FetchContent_Declare(
         tracy
         GIT_REPOSITORY https://github.com/wolfpld/tracy.git
-        GIT_TAG        v0.11.0
+        GIT_TAG        v0.12.2
 )
 
-set(TRACY_ENABLE ON)
-set(TRACY_ON_DEMAND ON)
+set(TRACY_ENABLE ON CACHE BOOL "" FORCE)
+set(TRACY_ON_DEMAND ON CACHE BOOL "" FORCE)
+set(TRACY_NO_CALLSTACK ON CACHE BOOL "" FORCE)
+set(TRACY_MANUAL_LIFETIME OFF CACHE BOOL "" FORCE)
+set(TRACY_DELAYED_INIT OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(tracy)
-target_link_libraries(jleCore_3rdparty PUBLIC Tracy::TracyClient)
 
 set(TRACY_PROFILER_DIR "${tracy_SOURCE_DIR}/profiler")
 target_compile_definitions(jleCore_3rdparty PUBLIC JLE_TRACY_PROFILER_PATH="${TRACY_PROFILER_DIR}")
+
+target_link_libraries(jleCore_3rdparty PUBLIC Tracy::TracyClient)
+
 
 FetchContent_Declare(
         glm
