@@ -29,9 +29,9 @@
 #include <assimp/scene.h>
 
 // TODO: Remove dependency here
-#include <modules/physics/3rdparty/jle_bullet3/src/BulletCollision/CollisionShapes/btTriangleMesh.h>
-#include <modules/physics/3rdparty/jle_bullet3/src/BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
-#include <modules/physics/3rdparty/jle_bullet3/src/BulletCollision/CollisionShapes/btConvexHullShape.h>
+#include <BulletCollision/CollisionShapes/btTriangleMesh.h>
+#include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
+#include <BulletCollision/CollisionShapes/btConvexHullShape.h>
 
 bool
 jleMesh::loadFromFile(jleSerializationContext &ctx, const jlePath &path)
