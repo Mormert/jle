@@ -41,17 +41,17 @@ void
 jleMeshModuleEditor::initializeECS(jlECS::ECS &ecs)
 {
     jlECS::ComponentRegistrationConfig config{
-        .serializeInputF_JSON = jlECS::Serialization::serializeInputT_JSON<cMesh>,
-        .serializeOutputF_JSON = jlECS::Serialization::serializeOutputT_JSON<cMesh>,
-        .serializeInputF_Binary = jlECS::Serialization::serializeInputT_Binary<cMesh>,
-        .serializeOutputF_Binary = jlECS::Serialization::serializeOutputT_Binary<cMesh>,
-        .serializeImGuiF = serializeMeshEditor,
         .onCreateCallback = [this](jlECS::CreateComponentData& data) {
             onMeshComponentCreated(data);
         },
         .onDestroyCallback = [this](jlECS::DestroyComponentData& data) {
             onMeshComponentDestroyed(data);
-        }
+        },
+        .serializeInputF_JSON = jlECS::Serialization::serializeInputT_JSON<cMesh>,
+        .serializeOutputF_JSON = jlECS::Serialization::serializeOutputT_JSON<cMesh>,
+        .serializeInputF_Binary = jlECS::Serialization::serializeInputT_Binary<cMesh>,
+        .serializeOutputF_Binary = jlECS::Serialization::serializeOutputT_Binary<cMesh>,
+        .serializeImGuiF = serializeMeshEditor
     };
     ecs.registerComponentType<cMesh>(config);
 }

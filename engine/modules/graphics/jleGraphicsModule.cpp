@@ -92,6 +92,11 @@ jleGraphicsModule::render(int windowX, int windowY)
 
     _renderThread->processRenderQueue();
 
+    if(!(windowX > 0 && windowY > 0))
+    {
+        return;
+    }
+
     _graphics->render(*_msaaFramebuffer, getPreviousFramePacket());
     _msaaFramebuffer->blitToOther(*_screenFramebuffer);
     display();

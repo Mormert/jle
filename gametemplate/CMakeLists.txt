@@ -18,7 +18,7 @@ include(${JLE_ENGINE_PATH}/cmake/game1.cmake)
 
 project(${JLE_GAME_BUILD})
 
-add_library(${JLE_GAME_BUILD} SHARED
+add_library(${JLE_GAME_BUILD} STATIC
         "GameTemplate.cpp")
 
 target_include_directories(${JLE_GAME_BUILD} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

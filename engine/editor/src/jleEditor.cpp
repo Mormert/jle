@@ -421,10 +421,6 @@ jleEditor::mainEditorLoop()
 
     _resourceIndexer->update(engineUpdateCtx.serializationContext, *_editorWindows->textEditWindow);
 
-    // Store packets here, since in preRender it gets swapped out
-    const jleFramePacket& previousFramePacketEditor = getCurrentGameModules()->getModule<jleGraphicsModuleEditor>()->getPreviousFramePacketEditor();
-    jleFramePacket& currentFramePacketEditor = getCurrentGameModules()->getModule<jleGraphicsModuleEditor>()->getCurrentFramePacketEditor();
-
     if (!_gameEngine.getGameRuntime().isGameKilled()) {
         _gameEngine.getGameRuntime().processGameReset(engineUpdateCtx);
 
@@ -471,6 +467,8 @@ jleEditor::mainEditorLoop()
         }
     }
 
+    jleFramePacket& framePacketEditor = getCurrentGameModules()->getModule<jleGraphicsModuleEditor>()->getFramePacketEditor();
+
     jleEditorUpdateContext editorUpdateCtx{
         .engineUpdateContext = engineUpdateCtx,
         .resourceIndexer = *_resourceIndexer,
@@ -480,15 +478,15 @@ jleEditor::mainEditorLoop()
         .editorGameModules = *_editorModules
     };
 
-    wi::jobsystem::context jobsCtx;
-    wi::jobsystem::Execute(jobsCtx, [&](wi::jobsystem::JobArgs args) {
+    // wi::jobsystem::context jobsCtx; // TODO: Make this run in parallel for increased editor performance
+    // wi::jobsystem::Execute(jobsCtx, [&](wi::jobsystem::JobArgs args) {
         _editorConstructConfig.updateEditorGameModules(editorUpdateCtx);
-        _editorWindows->sceneWindow->updateEditorGrid(currentFramePacketEditor);
-    });
+        _editorWindows->sceneWindow->updateEditorGrid(framePacketEditor);
+    // });
 
-    _editorWindows->sceneWindow->render(previousFramePacketEditor, editorUpdateCtx);
+    _editorWindows->sceneWindow->render(framePacketEditor, editorUpdateCtx);
 
-    Wait(jobsCtx);
+    // Wait(jobsCtx);
 
     renderEditorUI(editorUpdateCtx);
 

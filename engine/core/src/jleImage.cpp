@@ -110,8 +110,6 @@ jleImage::~jleImage()
     if (image_data) {
         stbi_image_free(image_data);
     }
-
-    PLOG_VERBOSE << "Destroyed image [" << _width << ", " << _height << "].";
 }
 
 unsigned int

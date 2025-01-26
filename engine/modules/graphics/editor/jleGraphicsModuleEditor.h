@@ -34,13 +34,13 @@ public:
 
     uint32_t getGameWindowTextureId() const { return _screenFramebuffer->texture(); };
 
-    jleFramePacket& getCurrentFramePacketEditor() { return _currentFramePacketIndex == 0 ? _framePacketsEditor[0] : _framePacketsEditor[1];  }
-    const jleFramePacket& getPreviousFramePacketEditor() { return _currentFramePacketIndex == 0 ? _framePacketsEditor[1] : _framePacketsEditor[0]; }
+    jleFramePacket& getFramePacketEditor() { return _framePacketsEditor; }
     const jleFramePacket& getPreviousFramePacketGame() { return getPreviousFramePacket(); }
 
 protected:
     void display() override;
 
 private:
-    jleFramePacket _framePacketsEditor[2]; // Current and previous frame's editor packet
+    // The editor only has one frame packet, as it NOT rendered on a separate thread
+    jleFramePacket _framePacketsEditor;
 };

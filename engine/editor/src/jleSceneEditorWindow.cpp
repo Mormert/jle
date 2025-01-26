@@ -127,7 +127,11 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
     const int32_t windowPositionY = int32_t(cursorScreenPos.y) - (int32_t)viewport->Pos.y;
 
     const auto previousFrameCursorPos = _lastCursorPos;
-    _lastCursorPos = glm::ivec2{ImGui::GetMousePos().x, ImGui::GetMousePos().y};
+
+    ImVec2 mousePos = ImGui::GetIO().MousePos;
+    ImVec2 windowPos = ImGui::GetMainViewport()->Pos; // top-left of the window in screen coords
+
+    _lastCursorPos = glm::ivec2{mousePos.x - windowPos.x, mousePos.y - windowPos.y};
     const glm::ivec2 mouseDelta = _lastCursorPos - previousFrameCursorPos;
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
@@ -175,8 +179,8 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         int dragWidth  = std::abs(_selectCurrent.x - _selectStart.x);
         int dragHeight = std::abs(_selectCurrent.y - _selectStart.y);
 
-        auto graphicsModuleEditor = input.editorUpdate.editorGameModules.getModule<jleGraphicsModuleEditor>();
-        graphicsModuleEditor->getGraphics().renderMeshesPicking(*_pickingFramebuffer, _renderCamera, graphicsModuleEditor->getPreviousFramePacketEditor());
+        auto graphicsModuleEditor = input.editorUpdate.getCurrentModules().getModule<jleGraphicsModuleEditor>();
+        graphicsModuleEditor->getGraphics().renderMeshesPicking(*_pickingFramebuffer, _renderCamera, graphicsModuleEditor->getFramePacketEditor());
         _pickingFramebuffer->bind();
 
         GLint previousPackAlignment;

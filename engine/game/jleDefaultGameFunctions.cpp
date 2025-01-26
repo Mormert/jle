@@ -142,9 +142,11 @@ jleDefaultGameFunctions::defaultModulesUpdateRenderablesOnly(jleGameModules &mod
     hierarchyModule->updateWorldMatrices(ecs);
     const std::vector<glm::mat4> &worldMatrices = hierarchyModule->getWorldMatrices();
 
+    meshModule->loadMeshes(ecs);
+
     {
         jleGraphicsModule::UpdateContext graphicsUpdateContext{
-            .in = {  .screenX = 1920,
+            .in = {     .screenX = 1920,
                         .screenY = 1080,
                         .worldMatrices = worldMatrices,
                         .meshModule = meshModule},

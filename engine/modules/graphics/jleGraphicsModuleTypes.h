@@ -17,6 +17,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <functional>
 
 template <typename T = uint32_t, typename Tag = void>
 struct jleGpuHandle
@@ -31,8 +32,6 @@ struct jleGpuHandle
     constexpr explicit jleGpuHandle(T v) noexcept : value(v) {}
 
     constexpr operator T() const noexcept { return value; }
-
-    constexpr auto operator<=>(const jleGpuHandle&) const noexcept = default;
 
     constexpr explicit operator bool() const noexcept { return value != InvalidValue; }
 };

@@ -83,7 +83,7 @@ serializeCameraEditor(jlECS::ComponentContainer *thiz, jleImGuiArchive &archive,
 void
 jleGraphicsModuleEditor::postRender()
 {
-    _framePacketsEditor[_currentFramePacketIndex] = _framePackets[_currentFramePacketIndex];
+    _framePacketsEditor = getCurrentFramePacket();
     jleGraphicsModule::postRender();
 }
 
@@ -116,7 +116,7 @@ jleGraphicsModuleEditor::updateEditor(jleEditorUpdateContext &ctx, const std::ve
 
     const auto sendGizmoMesh = [&](const jlePath& meshPath, std::shared_ptr<jleMaterial>& material, int objectIndex) {
         if (const auto it = _meshGPULookup.find(meshPath); it != _meshGPULookup.end()) {
-            getCurrentFramePacketEditor().sendMesh(it->second, material, worldMatrices[objectIndex], objectIndex, false);
+            getFramePacketEditor().sendMesh(it->second, material, worldMatrices[objectIndex], objectIndex, false);
         } else {
             if (const std::shared_ptr<jleMesh> loadedMesh = ctx.getCurrentModules().getModule<jleMeshModuleEditor>()->loadMeshSync(meshPath)) {
                 _meshesToLoadIntoGPU.insert(loadedMesh);

@@ -60,7 +60,7 @@ jleDefaultGameEditorFunctions::updateEditorGameModules(jleEditorUpdateContext &c
         graphicsEditorModule->updateEditor(ctx, worldMatrices);
 
         if (auto* physicsEditorModule = modules.getModule<jlePhysicsModuleEditor>()){
-            jleFramePacket& currentFramePacketEditor = graphicsEditorModule->getCurrentFramePacketEditor();
+            jleFramePacket& currentFramePacketEditor = graphicsEditorModule->getFramePacketEditor();
             physicsEditorModule->updateEditor(currentFramePacketEditor);
         }
     }
