@@ -45,5 +45,6 @@ void jleLuaEditorModule::initializeModule(jleSerializationContext &serialization
 }
 
 void jleLuaEditorModule::updateEditor(jleSerializationContext &serializationContext) const {
+    ZoneScoped;
     _luaEnvironment->loadNewlyAddedScripts(serializationContext);
 }

@@ -166,6 +166,7 @@ void jleConsoleEditorWindow::execCommand(const char *command_line, jleLuaEnviron
 }
 
 void jleConsoleEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleLuaEnvironment* luaGameEnvironment) {
+    ZoneScoped;
     if (!isOpened) {
         return;
     }

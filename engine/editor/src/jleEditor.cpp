@@ -25,7 +25,6 @@
 #include "jleEditorFrameGraphWindow.h"
 #include "jleEditorGizmos.h"
 #include "jleEditorNotifications.h"
-#include "jleEditorProfilerWindow.h"
 #include "jleEditorResourceViewer.h"
 #include "jleEditorSaveState.h"
 #include "jleEditorWindowsPanel.h"
@@ -115,9 +114,6 @@ public:
         resourceViewer = std::make_shared<jleEditorResourceViewer>("Resource Viewer");
         menu->addWindow(resourceViewer);
 
-        profilerWindow = std::make_shared<jleEditorProfilerWindow>("Profiler");
-        menu->addWindow(profilerWindow);
-
         import3DWindow = std::make_shared<jleEditor3DImportWindow>("Model Importer");
         menu->addWindow(import3DWindow);
 
@@ -140,7 +136,6 @@ public:
     std::shared_ptr<jleEditorContentBrowser> contentBrowser;
     std::shared_ptr<jleEditorBuild> buildTool;
     std::shared_ptr<jleEditorResourceViewer> resourceViewer;
-    std::shared_ptr<jleEditorProfilerWindow> profilerWindow;
     std::shared_ptr<jleEditor3DImportWindow> import3DWindow;
     std::shared_ptr<jleEditorNotifications> notifications;
     std::shared_ptr<jleEditorFrameGraphWindow> frameGraph;
@@ -151,6 +146,7 @@ public:
     void
     renderUI(jleEditorUpdateContext &context)
     {
+        ZoneScoped;
         jlECS::ECS* ecs = context.engineUpdateContext.gameRuntime.isGameKilled() ? nullptr : &context.engineUpdateContext.gameRuntime.getGame().getECS();
 
         // Temporary work-around to ensure we get the *game* ECS
@@ -187,7 +183,6 @@ public:
         contentBrowser->renderUI(context);
         buildTool->renderUI(context.engineUpdateContext, context.resourceIndexer);
         resourceViewer->renderUI(context.engineUpdateContext);
-        profilerWindow->renderUI(context.engineUpdateContext);
         import3DWindow->renderUI(context);
         notifications->renderUI(context.engineUpdateContext);
         frameGraph->renderUI(context.engineUpdateContext);
@@ -244,7 +239,7 @@ jleEditor::start()
 void
 jleEditor::render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem::context &jobsCtx)
 {
-    JLE_SCOPE_PROFILE_GPU(EditorRender);
+    ZoneScoped;
 
     _resourceIndexer->update(ctx.serializationContext, *_editorWindows->textEditWindow);
 
@@ -285,7 +280,7 @@ void
 jleEditor::renderGameView(const jleFramePacket &framePacketIn,
                           jleFramebufferInterface &framebufferOut)
 {
-    JLE_SCOPE_PROFILE_CPU(RenderGameView);
+    ZoneScoped;
 
     _renderThread->processRenderQueue();
 
@@ -304,7 +299,7 @@ jleEditor::renderGameView(const jleFramePacket &framePacketIn,
 void
 jleEditor::renderEditorSceneView(jleEditorUpdateContext &ctx)
 {
-    JLE_SCOPE_PROFILE_CPU(RenderEditorSceneView);
+    ZoneScoped;
 
     if (_previousFramePacket) {
         _editorWindows->sceneWindow->render(*_previousFramePacket, ctx);
@@ -449,6 +444,7 @@ jleEditor::saveState()
 jleEditor::~jleEditor() = default;
 
 void jleEditor::updateEditorGameModules(jleEditorUpdateContext &ctx) {
+    ZoneScoped;
 
     if(ctx.engineUpdateContext.gameRuntime.isGameKilled())
     {

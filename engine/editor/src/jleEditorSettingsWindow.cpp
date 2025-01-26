@@ -26,6 +26,7 @@ jleEditorSettingsWindow::jleEditorSettingsWindow(const std::string &window_name)
 void
 jleEditorSettingsWindow::renderUI(jleEditorUpdateContext &ctx)
 {
+    ZoneScoped;
     if (!isOpened) {
         return;
     }

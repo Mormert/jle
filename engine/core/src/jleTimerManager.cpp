@@ -19,7 +19,7 @@
 #include <chrono>
 
 void jleTimerManager::process() {
-    JLE_SCOPE_PROFILE_CPU(jleTimerManager_process)
+    ZoneScoped;
 
     using namespace std::chrono;
     const auto timeNow = duration<double>(high_resolution_clock::now().time_since_epoch()).count();

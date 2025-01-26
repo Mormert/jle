@@ -24,6 +24,7 @@ jleEditorFrameGraphWindow::jleEditorFrameGraphWindow(const std::string &window_n
 void
 jleEditorFrameGraphWindow::renderUI(jleEngineUpdateContext &ctx)
 {
+    ZoneScoped;
     static std::vector<float> data{};
     static bool enabled = false;
 

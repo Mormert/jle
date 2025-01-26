@@ -132,18 +132,14 @@ jleGameRuntime::resizeMainFramebuffer(jleEngineUpdateContext &ctx, unsigned int 
 void
 jleGameRuntime::update(jleEngineUpdateContext &ctx)
 {
+    ZoneScoped;
+
     if (!_gameHalted && _game) {
         _timerManager->process();
 
-        {
-            JLE_SCOPE_PROFILE_CPU(jleGameEngine_updateGame)
-            _game->update(ctx);
-        }
+        _game->update(ctx);
 
-        {
-            JLE_SCOPE_PROFILE_CPU(RmlUi)
-            // rmlContext_notUsed->Update();
-        }
+        // rmlContext_notUsed->Update();
     }
 }
 

@@ -29,6 +29,7 @@ void
 
 jleEditorBuild::renderUI(jleEngineUpdateContext &ctx, jleResourceIndexer& resourceIndexer)
 {
+    ZoneScoped;
     if (!isOpened) {
         return;
     }

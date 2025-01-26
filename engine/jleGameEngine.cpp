@@ -209,7 +209,7 @@ jleGameEngine::start()
 void
 jleGameEngine::render(jleCamera &camera, jleEngineUpdateContext &ctx, wi::jobsystem::context &jobsCtx)
 {
-    JLE_SCOPE_PROFILE_CPU(jleGameEngine_render)
+    ZoneScoped;
 
     _renderThread->processRenderQueue();
 
@@ -266,11 +266,11 @@ jleGameEngine::run()
     loop();
 #endif
 }
+
 void
 jleGameEngine::mainLoop()
 {
-    jleProfiler::NewFrame();
-    JLE_SCOPE_PROFILE_CPU(mainLoop)
+    ZoneScoped;
 
     auto frameStart = std::chrono::steady_clock::now();
 

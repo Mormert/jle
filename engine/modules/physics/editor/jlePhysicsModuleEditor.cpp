@@ -40,6 +40,7 @@ jlePhysicsModuleEditor::initializeECS(jlECS::ECS &ecs)
 }
 
 void jlePhysicsModuleEditor::updateEditor(jleFramePacket &framePacket) {
+    ZoneScoped;
     if (_renderPhysicsDebug) {
         _physics->renderDebug(framePacket);
     }

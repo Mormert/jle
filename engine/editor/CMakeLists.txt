@@ -7,7 +7,6 @@ add_library(jleEditor STATIC
         "src/jleEditorSettingsWindow.cpp"
         "src/jleConsoleEditorWindow.cpp"
         "src/jleEditorGameControllerWidget.cpp"
-        "src/jleEditorProfilerWindow.cpp"
         "src/jleEditorResourceViewer.cpp"
         "src/jleSceneEditorWindow.cpp"
         "src/jleGameEditorWindow.cpp"

@@ -48,11 +48,23 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(FREETYPE_INCLUDE_DIRS ../../core/3rdparty/freetype)
 set(FREETYPE_LIBRARY freetype)
 
-add_subdirectory(3rdparty/git_submodules/jle_RmlUi)
+include(FetchContent)
+
+FetchContent_Declare(
+        jle_RmlUi
+        GIT_REPOSITORY https://github.com/Mormert/jle_RmlUi.git
+        GIT_TAG        master
+)
+
+FetchContent_MakeAvailable(jle_RmlUi)
+
+target_include_directories(jleGraphics PUBLIC
+        "${jle_RmlUi_SOURCE_DIR}/Include"
+        "${CMAKE_CURRENT_SOURCE_DIR}/RmlUiImplementation"
+        "${CMAKE_CURRENT_SOURCE_DIR}/RmlUiImplementation/shell/include"
+)
+
+target_link_libraries(jleGraphics PUBLIC RmlCore RmlDebugger)
 if (WIN32)
     target_link_libraries(jleGraphics PRIVATE shlwapi imm32) # shlwapi and imm32 needed for "shell"
 endif ()
-target_include_directories(jleGraphics PUBLIC 3rdparty/git_submodules/jle_RmlUi/Include RmlUiImplementation RmlUiImplementation/shell/include)
-target_link_libraries(jleGraphics PUBLIC RmlCore RmlDebugger)
-
-target_include_directories(jleGraphics PUBLIC "${JLE_3RDPARTY_DIRECTORY}/git_submodules_forks/jle_RmlUi/Include" "RmlUiImplementation" "RmlUiImplementation/shell/include")

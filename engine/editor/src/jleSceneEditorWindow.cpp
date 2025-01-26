@@ -533,7 +533,7 @@ jleSceneEditorWindow::render(jleFramePacket &framePacket, const jleEditorUpdateC
 void
 jleSceneEditorWindow::renderEditorGrid(jleFramePacket &framePacket)
 {
-    JLE_SCOPE_PROFILE_CPU(renderEditorGrid)
+    ZoneScoped;
 
     jle3DLineVertex v1{glm::vec3{0.f}, glm::vec3{1.f, 0.f, 0.f}, {1.0f, 0.44f, 1.2f}};
     jle3DLineVertex v2 = v1;

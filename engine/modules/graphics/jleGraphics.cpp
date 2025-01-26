@@ -106,8 +106,7 @@ void
 jleGraphics::render(jleFramebufferInterface &framebufferOut,
                       const jleFramePacket &framePacketRef)
 {
-    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_render)
-
+    ZoneScoped;
 
     // TODO: Don't make this silly copy here, this is just a work around since the frame packet needs to be const ref
     jleFramePacket framePacket = framePacketRef;
@@ -150,13 +149,11 @@ jleGraphics::render(jleFramebufferInterface &framebufferOut,
     bindShadowmapFramebuffers(framePacket.settings);
 
     {
-        JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes_Opaque)
         renderMeshes(framePacket.camera, framePacket._meshes, framePacket._lights, framePacket.settings);
         glCheckError("3D Render - Opaque Meshes");
     }
 
     {
-        JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderSkinnedMeshes_Opaque)
         renderSkinnedMeshes(framePacket.camera, framePacket._skinnedMeshes, framePacket._lights, framePacket.settings);
         glCheckError("3D Render - Opaque Skinned Meshes");
     }
@@ -171,7 +168,6 @@ jleGraphics::render(jleFramebufferInterface &framebufferOut,
     glCheckError("3D Render - Skybox");
 
     {
-        JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshes_Translucent)
         if (!framePacket._translucentMeshes.empty()) {
             wi::jobsystem::Wait(sortCtx);
         }
@@ -203,8 +199,8 @@ jleGraphics::renderMeshes(const jleCamera &camera,
                             const std::vector<jle3DRendererLight> &lights,
                             const jle3DSettings &settings)
 {
+    ZoneScoped;
     for (auto &&mesh : meshes) {
-        JLE_SCOPE_PROFILE_GPU(MeshRender);
         if (!mesh.material || !mesh.material->getShader()) {
             _shaders->missingMaterialShader->use();
             _shaders->missingMaterialShader->SetMat4("uView", camera.getViewMatrix());
@@ -235,8 +231,8 @@ jleGraphics::renderSkinnedMeshes(const jleCamera &camera,
                                    const std::vector<jle3DRendererLight> &lights,
                                    const jle3DSettings &settings)
 {
+    ZoneScoped;
     for (auto &&mesh : skinnedMeshes) {
-        JLE_SCOPE_PROFILE_GPU(SkinnedMeshRender);
         if (!mesh.material || !mesh.material->getShader()) {
             _shaders->missingMaterialShader->use();
             _shaders->missingMaterialShader->SetMat4("uView", camera.getViewMatrix());
@@ -280,7 +276,7 @@ jleGraphics::sortTranslucentMeshes(const jleCamera &camera, std::vector<jle3DQue
 void
 jleGraphics::renderSkybox(const jleCamera &camera, const jle3DSettings &settings)
 {
-    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderSkybox)
+    ZoneScoped;
 
     if (!settings.skybox) {
         return;
@@ -315,7 +311,7 @@ jleGraphics::renderMeshesPicking(jleFramebufferInterface &framebufferOut,
                                    const jleCamera &camera,
                                    const jleFramePacket &framePacket)
 {
-    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderMeshesPicking)
+    ZoneScoped;
 
     const int viewportWidth = framebufferOut.width();
     const int viewportHeight = framebufferOut.height();
@@ -361,7 +357,7 @@ jleGraphics::renderDirectionalLight(const jleCamera &camera,
                                       const std::vector<jle3DQueuedSkinnedMesh> &skinnedMeshes,
                                       const jle3DSettings &settings)
 {
-    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderDirectionalLight)
+    ZoneScoped;
 
     if (!settings.useDirectionalLight) {
         return;
@@ -390,7 +386,7 @@ jleGraphics::renderDirectionalLight(const jleCamera &camera,
 void
 jleGraphics::renderPointLights(const jleCamera &camera, const jleFramePacket &framePacket)
 {
-    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderPointLights)
+    ZoneScoped;
 
     if (framePacket._lights.empty()) {
         return;
@@ -511,7 +507,7 @@ jleGraphics::renderShadowMeshesSkinned(const std::vector<jle3DQueuedSkinnedMesh>
 void
 jleGraphics::renderLines(const jleCamera &camera, const std::vector<jle3DLineVertex> &linesBatch)
 {
-    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderLines)
+    ZoneScoped;
 
     if (linesBatch.empty()) {
         return;
@@ -550,7 +546,7 @@ void
 jleGraphics::renderLineStrips(const jleCamera &camera,
                                 const std::vector<std::vector<jle3DLineVertex>> &lineStripBatch)
 {
-    JLE_SCOPE_PROFILE_CPU(jle3DRenderer_renderLineStrips)
+    ZoneScoped;
 
     // Not implemented
 }

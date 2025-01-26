@@ -31,6 +31,7 @@ jleGameEditorWindow::jleGameEditorWindow(const std::string &window_name) : jleEd
 void
 jleGameEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleInput& input)
 {
+    ZoneScoped;
     if (!isOpened) {
         return;
     }

@@ -17,7 +17,6 @@
 
 #include "jleCommon.h"
 
-#include "core/jleSTL/jleStringView.h"
 #include <plog/Log.h>
 
 #include <chrono>
@@ -27,7 +26,7 @@
 class jleScopeProfileLog
 {
 public:
-    explicit jleScopeProfileLog(const jleStringView &message)
+    explicit jleScopeProfileLog(const std::string_view &message)
     {
         _message = message;
         _start = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -44,6 +43,6 @@ public:
     }
 
 private:
-    jleStringView _message;
+    std::string_view _message;
     uint64_t _start;
 };

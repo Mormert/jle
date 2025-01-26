@@ -68,7 +68,7 @@ jlePhysics::jlePhysics()
 void
 jlePhysics::step(float dt)
 {
-    JLE_SCOPE_PROFILE_CPU(physics)
+    ZoneScoped;
 
     _internal->dynamicsWorld->stepSimulation(dt);
 }

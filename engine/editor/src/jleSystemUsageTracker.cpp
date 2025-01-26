@@ -17,6 +17,7 @@
 
 #include <sstream>
 #ifdef _WIN32
+#include <Tracy.hpp>
 #include <future>
 #include <mutex>
 #include <windows.h>
@@ -48,6 +49,7 @@ std::mutex g_resultMutex;
 int g_cachedResult = -1;
 
 int GetThreadCountWin32(DWORD processId) {
+    ZoneScoped;
     std::lock_guard<std::mutex> lock(g_resultMutex);
 
     if (g_taskRunning && g_threadCountFuture.valid()) {

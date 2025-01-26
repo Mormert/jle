@@ -29,6 +29,7 @@ jleEditorNotifications::~jleEditorNotifications() { dynamicAppender().removeAppe
 void
 jleEditorNotifications::renderUI(jleEngineUpdateContext &ctx)
 {
+    ZoneScoped;
     using namespace std::chrono;
     long long now = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 

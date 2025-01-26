@@ -35,6 +35,7 @@ jleEditor3DImportWindow::jleEditor3DImportWindow(const std::string &window_name)
 void
 jleEditor3DImportWindow::renderUI(jleEditorUpdateContext &ctx)
 {
+    ZoneScoped;
     if (!isOpened) {
         return;
     }

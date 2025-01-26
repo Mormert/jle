@@ -226,7 +226,7 @@ jleWindow::initWindow()
 void
 jleWindow::updateWindow()
 {
-    JLE_SCOPE_PROFILE_CPU(WindowUpdate);
+    ZoneScoped;
 
     _currentScrollX = 0.f;
     _currentScrollY = 0.f;
@@ -240,7 +240,7 @@ jleWindow::updateWindow()
 bool
 jleWindow::windowShouldClose()
 {
-    JLE_SCOPE_PROFILE_CPU(WindowCloseCheck);
+    ZoneScoped;
     return glfwWindowShouldClose(_glfwWindow);
 }
 

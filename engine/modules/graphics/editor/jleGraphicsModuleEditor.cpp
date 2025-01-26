@@ -121,6 +121,7 @@ jleGraphicsModuleEditor::initializeECS(jlECS::ECS &ecs)
 }
 
 void jleGraphicsModuleEditor::updateEditor(jleEditorUpdateContext &ctx, const std::vector<glm::mat4>& worldMatrices) {
+    ZoneScoped;
     auto& ecs = ctx.engineUpdateContext.gameRuntime.getGame().getECS();
 
     for (auto [objectIndex, _] : ecs.iterateMulti_IncludeObjectIndex<cCamera>()) {

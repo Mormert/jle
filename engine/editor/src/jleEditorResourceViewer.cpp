@@ -19,6 +19,7 @@
 #include <ImGui/imgui.h>
 
 void jleEditorResourceViewer::renderUI(jleEngineUpdateContext &ctx) {
+    ZoneScoped;
     if (!isOpened) {
         return;
     }

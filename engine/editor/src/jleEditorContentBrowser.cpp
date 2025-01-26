@@ -14,15 +14,18 @@
  *********************************************************************************************/
 
 #include "jleEditorContentBrowser.h"
-#include "ImGui/imgui_stdlib.h"
+
 #include "core/jleResourceHolder.h"
+#include "core/jlePathDefines.h"
+#include "game/jleGame.h"
+
 #include "jleEditor.h"
 #include "jleEditorTextEdit.h"
+
 #include <ImGui/imgui.h>
+#include "ImGui/imgui_stdlib.h"
 
 #include <plog/Log.h>
-
-#include "game/jleGame.h"
 
 #include <fstream>
 #include <string.h>
@@ -154,6 +157,7 @@ jleEditorContentBrowser::contentHierarchy(std::string directoryPath, const std::
 void
 jleEditorContentBrowser::renderUI(jleEditorUpdateContext &ctx)
 {
+    ZoneScoped;
     if (!isOpened) {
         return;
     }
