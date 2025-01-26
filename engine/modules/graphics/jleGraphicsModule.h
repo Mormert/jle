@@ -63,7 +63,9 @@ public:
 
     jleGraphics& getGraphics() const { return *_graphics; }
 
-private:
+protected:
+    virtual void display();
+
     std::unique_ptr<jleGraphics> _graphics;
     std::unique_ptr<jleFullscreenRendering> _fullscreen_renderer;
     std::unique_ptr<jleFramebufferInterface> _screenFramebuffer;
@@ -76,4 +78,6 @@ private:
     jleFramePacket& getPreviousFramePacket() { return _currentFramePacketIndex == 0 ? _framePackets[1] : _framePackets[0]; }
 
     std::unique_ptr<jleRenderThread> _renderThread;
+
+    friend class jleEditor;
 };

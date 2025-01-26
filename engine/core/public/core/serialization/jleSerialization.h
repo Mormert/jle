@@ -19,6 +19,7 @@
 #include <vector>
 
 class jleResourceHolder;
+struct jleGameModules;
 
 // Classes that should be accessible in a jleSerializationArchive should derive from this interface
 class jleSerializableInterface
@@ -30,6 +31,7 @@ public:
 struct jleSerializationContext {
     jleResourceHolder *resources{nullptr};
     std::vector<jleSerializableInterface *> serializationInterfaces = {};
+    jleGameModules* modules{nullptr}; // TODO: In the future, don't use this
 
     template <typename T>
     T* get()

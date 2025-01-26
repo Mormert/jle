@@ -15,7 +15,7 @@ main(int argc, char *argv[])
     jleCommandArguments commandArguments{argc, argv};
 
     jleGameEngine::EngineConstructConfig config{
-        .windowCreator = std::make_unique<jleWindowModule>,
+        .windowCreator = std::make_unique<jleWindow>,
         .gameConfig = {
             .modulesCreator = GameTemplateFunctions::createModules,
             .ecsCreator = std::make_unique<jlECS::Debug::ECS_Debug>,

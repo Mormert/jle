@@ -33,7 +33,7 @@ jleDefaultGameFunctions::createDefaultModules(bool gameRunning)
     auto modules = std::make_unique<jleGameModules>();
 
     modules->addModule<jleWindowModule>(std::make_unique<jleWindowModule>());
-    modules->addModule<jleInputModule>(std::make_unique<jleInputModule>(*modules->getModule<jleWindowModule>()));
+    modules->addModule<jleInputModule>(std::make_unique<jleInputModule>(modules->getModule<jleWindowModule>()->window));
     modules->addModule<jleHierarchyModule>(std::make_unique<jleHierarchyModule>());
     modules->addModule<jleGraphicsModule>(std::make_unique<jleGraphicsModule>());
     modules->addModule<jlePhysicsModule>(std::make_unique<jlePhysicsModule>());
@@ -53,9 +53,10 @@ jleDefaultGameFunctions::defaultModulesInitialize(jleGameModules &modules,
     auto *physicsModule = modules.getModule<jlePhysicsModule>();
     auto *luaModule = modules.getModule<jleLuaModule>();
 
-    assert(windowModule && hierarchyModule && graphicsModule && physicsModule && luaModule);
+    assert(hierarchyModule && graphicsModule && physicsModule && luaModule);
 
-    windowModule->initWindowModule();
+    if (windowModule)
+        windowModule->initWindowModule();
 
     hierarchyModule->initializeECS(ecs);
 
@@ -79,7 +80,7 @@ void jleDefaultGameFunctions::defaultModulesUpdate(jleGameModules& modules, jleE
 
     assert(windowModule && inputModule && hierarchyModule && graphicsModule && physicsModule && luaModule);
 
-    auto windowDimensions = windowModule->getDimensions();
+    auto windowDimensions = windowModule->window.getDimensions();
     uint32_t windowX = windowDimensions.framebufferWidth;
     uint32_t windowY = windowDimensions.framebufferHeight;
 
@@ -173,15 +174,15 @@ bool
 jleDefaultGameFunctions::defaultRender(jleGameModules &modules, jleSerializationContext &ctx)
 {
     if (auto *windowModule = modules.getModule<jleWindowModule>()) {
-        const int windowX = windowModule->getDimensions().framebufferWidth;
-        const int windowY = windowModule->getDimensions().framebufferHeight;
+        const int windowX = windowModule->window.getDimensions().framebufferWidth;
+        const int windowY = windowModule->window.getDimensions().framebufferHeight;
 
         if (auto *graphicsModule = modules.getModule<jleGraphicsModule>()) {
             graphicsModule->render(windowX, windowY);
         }
 
-        windowModule->updateWindow();
-        return windowModule->windowShouldClose();
+        windowModule->window.updateWindow();
+        return windowModule->window.windowShouldClose();
     }
     return false;
 }

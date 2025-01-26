@@ -93,12 +93,6 @@ jleGameEngine::start()
 }
 
 void
-jleGameEngine::exiting()
-{
-    _gameRuntime->killGame();
-}
-
-void
 jleGameEngine::run()
 {
     PLOG_INFO << "Starting the game loop";
@@ -118,9 +112,8 @@ jleGameEngine::mainLoop()
 {
     ZoneScoped;
 
-    refreshDeltaTimes();
+    updateFrameInfo();
 
-    wi::jobsystem::context jobsCtx;
     auto updateContext = createUpdateContext();
 
     // Game thread and render thread are synced here
@@ -129,6 +122,7 @@ jleGameEngine::mainLoop()
     }
 
     // Game thread
+    wi::jobsystem::context jobsCtx;
     wi::jobsystem::Execute(jobsCtx, [&](wi::jobsystem::JobArgs args) { _gameRuntime->update(updateContext); });
 
     // Render thread
@@ -153,11 +147,11 @@ jleGameEngine::loop()
     while (_running) {
         mainLoop();
     }
-    exiting();
 }
+
 void
 
-jleGameEngine::refreshDeltaTimes()
+jleGameEngine::updateFrameInfo()
 {
     ZoneScoped;
     _frameInfo._currentFrame = std::chrono::duration<float>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -181,7 +175,8 @@ jleGameEngine::createSerializationContext()
 
     return jleSerializationContext {
         .resources = _resources.get(),
-        .serializationInterfaces = interfaces
+        .serializationInterfaces = interfaces,
+        .modules = getCurrentGameModules() // TODO: In the future, don't use this
     };
 }
 

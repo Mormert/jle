@@ -15,9 +15,6 @@
 
 #pragma once
 
-#include <memory>
-#include <vector>
-
 #include <core/serialization/jleSerialization.h>
 
 class jleResourceHolder;

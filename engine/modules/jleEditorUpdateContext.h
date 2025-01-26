@@ -17,6 +17,11 @@
 
 #include "jleEngineUpdateContext.h"
 
+#include "game/jleGameRuntime.h"
+#include "game/jleGame.h"
+
+class jleEditorWindow;
+class jleFramePacket;
 class jleEditor;
 class jleResourceIndexer;
 class jleEditorGizmos;
@@ -32,11 +37,19 @@ class jleEditorUpdateContext
 public:
     jleEngineUpdateContext &engineUpdateContext;
     jleResourceIndexer &resourceIndexer;
+    jleEditorWindow &editorWindow;
     jleEditorGizmos &gizmos;
-    //jleFramePacket &editorFramePacket;
+    jleFramePacket &editorFramePacket;
     jlECS::ECS &editorEcs;
     jleGameModules &editorGameModules;
 
-    jlECS::ECS &getCurrentECS();
-    jleGameModules &getCurrentModules();
+    jlECS::ECS &getCurrentECS() const
+    {
+        return engineUpdateContext.gameRuntime.isGameKilled() ? editorEcs : engineUpdateContext.gameRuntime.getGame().getECS();
+    }
+
+    jleGameModules &getCurrentModules() const
+    {
+        return engineUpdateContext.gameRuntime.isGameKilled() ? editorGameModules : engineUpdateContext.gameRuntime.getGame().getModules();
+    }
 };

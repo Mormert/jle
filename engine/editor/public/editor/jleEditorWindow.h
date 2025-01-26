@@ -21,7 +21,7 @@
 void customizeTitleBarMacOS(GLFWwindow *window);
 #endif
 
-class jleEditorWindow : public jleWindowModule
+class jleEditorWindow : public jleWindow
 {
 public:
     GLFWwindow *initGlfwWindow(int width, int height, const char *title) override;

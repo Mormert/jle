@@ -15,7 +15,7 @@
 
 #pragma once
 
-class jleWindowModule;
+class jleWindow;
 
 enum class jleKey : int {
     SPACE = 32,
@@ -146,7 +146,7 @@ enum class jleKey : int {
 class jleKeyboardInput
 {
 public:
-    explicit jleKeyboardInput(const jleWindowModule &window);
+    explicit jleKeyboardInput(const jleWindow &window);
 
     bool keyPressed(jleKey key);
 
@@ -159,7 +159,7 @@ public:
     [[nodiscard]] bool isEnabled();
 
 private:
-    const jleWindowModule &_window;
+    const jleWindow &_window;
 
     bool _isEnabled = true;
 };

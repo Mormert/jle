@@ -37,10 +37,10 @@ struct jleWindowDimensions {
     float contentScaleY;
 };
 
-class jleWindowModule : public jleGameBaseModule
+class jleWindow
 {
 public:
-    ~jleWindowModule() override;
+    virtual ~jleWindow();
 
     static void error_callback(int error, const char *description);
 
@@ -62,7 +62,7 @@ public:
 
     [[nodiscard]] unsigned int width() const;
 
-    void initWindowModule();
+    void initWindow();
 
     void updateWindow();
 
@@ -105,4 +105,12 @@ protected:
     // TODO: Use bitset instead of bool arrays for key states
     bool _pressedKeys[512] = {};
     bool _releasedKeys[512] = {};
+};
+
+class jleWindowModule : public jleGameBaseModule
+{
+public:
+    void initWindowModule();
+
+    jleWindow window;
 };

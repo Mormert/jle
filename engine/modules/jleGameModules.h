@@ -17,6 +17,7 @@
 
 #include <memory>
 #include <vector>
+#include <cassert>
 
 class jleSerializableInterface;
 struct jleSerializationContext;
@@ -36,12 +37,12 @@ struct jleGameModules
     T* getModule()
     {
         static_assert(std::is_base_of<jleGameBaseModule, T>::value, "Module must derive from jleGameBaseModule");
-
-        if (ModuleNum<T>::num == UINT16_MAX) {
+        auto moduleNum = ModuleNum<T>::num;
+        if (moduleNum == UINT16_MAX) {
             return nullptr;
         }
 
-        return static_cast<T*>(_modules[ModuleNum<T>::num].get());
+        return static_cast<T*>(_modules[moduleNum].get());
     }
 
     template <typename Primary, typename... Aliases>
@@ -50,6 +51,17 @@ struct jleGameModules
         static_assert(std::is_base_of<jleGameBaseModule, Primary>::value, "Module must derive from jleGameBaseModule");
 
         uint16_t index = static_cast<uint16_t>(_modules.size());
+
+        if (ModuleNum<Primary>::num != UINT16_MAX) {
+            assert(ModuleNum<Primary>::num == index && "Module index mismatch from previous registration. Make sure to register modules in the same order.");
+        }
+
+        (void)std::initializer_list<int>{
+            (ModuleNum<Aliases>::num != UINT16_MAX
+                ? (assert(ModuleNum<Aliases>::num == index && "Module index mismatch from previous registration. Make sure to register modules in the same order."), 0)
+                : 0)...
+        };
+
         _modules.push_back(std::move(module));
 
         ModuleNum<Primary>::num = index;

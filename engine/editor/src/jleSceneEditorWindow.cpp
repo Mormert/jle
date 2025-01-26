@@ -103,7 +103,6 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         return;
     }
 
-    jleEditorUpdateContext& editorUpdate = input.editorUpdate;
     const std::shared_ptr<std::vector<jlECS::ObjectRef>>& selectedObjects = input.selectedObjects;
     jlECS::ECS& ecs = input.ecs;
 
@@ -127,11 +126,8 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
     const int32_t windowPositionY = int32_t(cursorScreenPos.y) - (int32_t)viewport->Pos.y;
 
     const auto previousFrameCursorPos = _lastCursorPos;
-    _lastCursorPos = editorUpdate.engineUpdateContext.window.cursor();
-    const int32_t mouseX = _lastCursorPos.first;
-    const int32_t mouseY = _lastCursorPos.second;
-    const int32_t mouseDeltaX = mouseX - previousFrameCursorPos.first;
-    const int32_t mouseDeltaY = mouseY - previousFrameCursorPos.second;
+    _lastCursorPos = glm::ivec2{ImGui::GetMousePos().x, ImGui::GetMousePos().y};
+    const glm::ivec2 mouseDelta = _lastCursorPos - previousFrameCursorPos;
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
 
@@ -161,16 +157,13 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
     if (ImGui::IsItemClicked(ImGuiMouseButton_Left) && canSelectObject)
     {
         _isSelecting    = true;
-        _selectStartX   = mouseX;
-        _selectStartY   = mouseY;
-        _selectCurrentX = mouseX;
-        _selectCurrentY = mouseY;
+        _selectStart = _lastCursorPos;
+        _selectCurrent = _lastCursorPos;
     }
 
     if (_isSelecting && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
     {
-        _selectCurrentX = mouseX;
-        _selectCurrentY = mouseY;
+        _selectCurrent = _lastCursorPos;
     }
 
     if (_isSelecting && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
@@ -178,11 +171,10 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         _isSelecting = false;
 
         const int dragThreshold = 3; // minimal move to consider it a "box selection"
-        int dragWidth  = std::abs(_selectCurrentX - _selectStartX);
-        int dragHeight = std::abs(_selectCurrentY - _selectStartY);
+        int dragWidth  = std::abs(_selectCurrent.x - _selectStart.x);
+        int dragHeight = std::abs(_selectCurrent.y - _selectStart.y);
 
-        input.editorUpdate.getCurrentModules().getModule<jleGraphicsModule>()->getGraphics().renderMeshesPicking(
-            *_pickingFramebuffer, _renderCamera, input.editorUpdate.editorFramePacket);
+        input.editorUpdate.getCurrentModules().getModule<jleGraphicsModule>()->getGraphics().renderMeshesPicking(*_pickingFramebuffer, _renderCamera, input.editorUpdate.editorFramePacket);
         _pickingFramebuffer->bind();
 
         GLint previousPackAlignment;
@@ -199,9 +191,9 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         if (dragWidth < dragThreshold && dragHeight < dragThreshold)
         {
             unsigned char data[3];
-            int mouseY_flipped = (int)_lastGameWindowHeight - (mouseY - windowPositionY);
+            int mouseY_flipped = (int)_lastGameWindowHeight - (_lastCursorPos.y - windowPositionY);
 
-            int pixelReadX = (mouseX - windowPositionX) * (_pickingFramebuffer->width()  / _lastGameWindowWidth);
+            int pixelReadX = (_lastCursorPos.x - windowPositionX) * (_pickingFramebuffer->width()  / _lastGameWindowWidth);
             int pixelReadY = mouseY_flipped            * (_pickingFramebuffer->height() / _lastGameWindowHeight);
 
 
@@ -226,10 +218,10 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         else {
             // Box picking
 
-            int boxMinX = std::min(_selectStartX, _selectCurrentX);
-            int boxMinY = std::min(_selectStartY, _selectCurrentY);
-            int boxMaxX = std::max(_selectStartX, _selectCurrentX);
-            int boxMaxY = std::max(_selectStartY, _selectCurrentY);
+            int boxMinX = std::min(_selectStart.x, _selectCurrent.x);
+            int boxMinY = std::min(_selectStart.y, _selectCurrent.y);
+            int boxMaxX = std::max(_selectStart.x, _selectCurrent.x);
+            int boxMaxY = std::max(_selectStart.y, _selectCurrent.y);
 
             // Clip to the game window, if needed
             boxMinX = std::max(boxMinX, windowPositionX);
@@ -306,8 +298,8 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
         ImVec2 vpPos = viewport->Pos; // absolute screen coords of the main viewport
-        ImVec2 start(vpPos.x + _selectStartX,    vpPos.y + _selectStartY);
-        ImVec2 end  (vpPos.x + _selectCurrentX,  vpPos.y + _selectCurrentY);
+        ImVec2 start(vpPos.x + _selectStart.x,    vpPos.y + _selectStart.y);
+        ImVec2 end  (vpPos.x + _selectCurrent.x,  vpPos.y + _selectCurrent.y);
 
         drawList->AddRectFilled(start, end, IM_COL32(0, 0, 255, 50));   // Translucent fill
         drawList->AddRect(start, end,IM_COL32(0, 0, 255, 255));         // Solid outline
@@ -354,18 +346,13 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         if (_renderCamera.getProjectionType() == jleCameraProjection::Perspective) {
             ImGui::Text("[%d, %d] (%f)", _framebuffer->width(), _framebuffer->height(), cameraSpeed);
         } else {
-            ImGui::Text("[%d, %d - Ortho Zoom: %f] (%f)",
-                        _framebuffer->width(),
-                        _framebuffer->height(),
-                        orthoZoomValue,
-                        cameraSpeed);
+            ImGui::Text("[%d, %d - Ortho Zoom: %f] (%f)", _framebuffer->width(), _framebuffer->height(), orthoZoomValue, cameraSpeed);
         }
     }
 
+
     const float *viewMatrix = &_renderCamera.getViewMatrix()[0][0];
     const float *projectionMatrix = &_renderCamera.getProjectionMatrix()[0][0];
-    static const auto identityMatrix = glm::mat4{1.f};
-    const static float *identityMatrixPtr = &identityMatrix[0][0];
 
     if (ImGui::IsWindowHovered() && !ImGuizmo::IsUsing() && ImGui::IsMouseDown(ImGuiMouseButton_Right))
     {
@@ -376,7 +363,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
             ImGui::IsKeyDown(ImGuiKey_LeftShift))
         {
             if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
-                fpvCamController.applyPerspectiveMouseMovementDelta(glm::vec2{mouseDeltaX, mouseDeltaY}, 300.f);
+                fpvCamController.applyPerspectiveMouseMovementDelta(glm::vec2{mouseDelta}, 300.f);
                 ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
             }
         }
@@ -414,7 +401,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
 
         _renderCamera.setViewMatrix(fpvCamController.getLookAtViewMatrix());
 
-        auto currentScroll = input.editorUpdate.engineUpdateContext.input.mouse.scrollY();
+        float currentScroll = ImGui::GetScrollY();
         if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentScroll != 0.f) {
             orthoZoomValue -= currentScroll * 1.f * t;
             orthoZoomValue = glm::clamp(orthoZoomValue, 0.01f, 2.f);
@@ -518,8 +505,7 @@ jleSceneEditorWindow::render(jleFramePacket &framePacket, const jleEditorUpdateC
     if (_perspectiveCamera) {
         _renderCamera.setPerspectiveProjection(45.f, _framebuffer->width(), _framebuffer->height(), 10000.f, 0.1f);
     } else {
-        _renderCamera.setOrthographicProjection(
-            _framebuffer->width() * orthoZoomValue, _framebuffer->height() * orthoZoomValue, 10000.f, -10000.f);
+        _renderCamera.setOrthographicProjection(_framebuffer->width() * orthoZoomValue, _framebuffer->height() * orthoZoomValue, 10000.f, -10000.f);
     }
 
     if (_framebuffer->width() != _msaa->width() || _framebuffer->height() != _msaa->height()) {

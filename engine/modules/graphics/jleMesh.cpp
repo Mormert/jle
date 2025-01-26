@@ -29,9 +29,12 @@
 #include <assimp/scene.h>
 
 // TODO: Remove dependency here
-#include <BulletCollision/CollisionShapes/btTriangleMesh.h>
+#include "jleGraphicsModule.h"
+#include "modules/jleGameModules.h"
+
 #include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
 #include <BulletCollision/CollisionShapes/btConvexHullShape.h>
+#include <BulletCollision/CollisionShapes/btTriangleMesh.h>
 
 bool
 jleMesh::loadFromFile(jleSerializationContext &ctx, const jlePath &path)

@@ -102,8 +102,7 @@ jleGraphics::~jleGraphics()
 }
 
 void
-jleGraphics::render(jleFramebufferInterface &framebufferOut,
-                      const jleFramePacket &framePacket)
+jleGraphics::render(jleFramebufferInterface &framebufferOut, const jleFramePacket &framePacket)
 {
     ZoneScoped;
 

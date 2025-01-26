@@ -7,17 +7,17 @@
 #include "game/jleDefaultGameFunctions.h"
 
 #include <core/jleMalloc.h>
+#include "core/jleCommandArguments.h"
 #include <editor/jleEditor.h>
 #include <editor/jleEditorWindow.h>
 
-#include <runtime/jleKickStarter.h>
 
 int
 main(int argc, char *argv[])
 {
-    jleMalloc::InstallMemTrackingHooks();
+    jleCommandArguments commandArguments{argc, argv};
 
-    auto kickstarter = jleKickStarter{};
+    jleMalloc::InstallMemTrackingHooks();
 
     jleEditor::EditorConstructConfig editorConstructConfig{
         .modulesUpdateRenderablesOnly = GameTemplateFunctions::modulesUpdateRenderablesOnly,
@@ -38,7 +38,8 @@ main(int argc, char *argv[])
         }
     };
 
-    auto editor = std::make_unique<jleEditor>(editorConstructConfig, engineConstructConfig);
-    kickstarter.kickStart(std::move(editor), argc, argv);
+    auto editor = jleEditor(editorConstructConfig, engineConstructConfig);
+    editor.run();
+
     return 0;
 }

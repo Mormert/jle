@@ -54,6 +54,7 @@ jleGraphicsModule::initializeModule(jleSerializationContext &ctx)
     _screenFramebuffer = std::make_unique<jleFramebufferScreen>(initialScreenX, initialScreenY);
     _msaaFramebuffer = std::make_unique<jleFramebufferMultisample>(initialScreenX, initialScreenY, 4);
 }
+
 void
 jleGraphicsModule::preRender()
 {
@@ -79,7 +80,7 @@ jleGraphicsModule::render(int windowX, int windowY)
 
     _graphics->render(*_msaaFramebuffer, getPreviousFramePacket());
     _msaaFramebuffer->blitToOther(*_screenFramebuffer);
-    _fullscreen_renderer->renderFramebufferFullscreen(*_screenFramebuffer, windowX, windowY);
+    display();
 }
 
 void
@@ -101,19 +102,14 @@ jleGraphicsModule::populateSerializeableInterface(std::vector<jleSerializableInt
 void
 jleGraphicsModule::update(const jleGraphicsModule::UpdateContext &ctx)
 {
-    const std::vector<glm::mat4>& worldMatrices = ctx.in.worldMatrices;
+    const std::vector<glm::mat4> &worldMatrices = ctx.in.worldMatrices;
 
-    auto& framePacket = getCurrentFramePacket();
+    auto &framePacket = getCurrentFramePacket();
 
     for (auto [objectIndex, camera] : ctx.inOut.ecs.iterateMulti_IncludeObjectIndex<cCamera>()) {
         cCamera::UpdateContext cameraUpdateCtx = {
-            .in = {.transform = worldMatrices[objectIndex],
-                   .width = ctx.in.screenX,
-                   .height = ctx.in.screenY},
-            .out = {
-                .camera = framePacket.camera
-            }
-        };
+            .in = {.transform = worldMatrices[objectIndex], .width = ctx.in.screenX, .height = ctx.in.screenY},
+            .out = {.camera = framePacket.camera}};
         camera->update(cameraUpdateCtx);
 
         // Break here, so we only get one camera
@@ -132,8 +128,7 @@ jleGraphicsModule::update(const jleGraphicsModule::UpdateContext &ctx)
         mesh->ecsUpdate(framePacket, worldMatrices[objectIndex], objectIndex);
     }
 
-    for (auto [objectIndex, skinnedMesh] :
-         ctx.inOut.ecs.iterateMulti_IncludeObjectIndex<cSkinnedMesh>()) {
+    for (auto [objectIndex, skinnedMesh] : ctx.inOut.ecs.iterateMulti_IncludeObjectIndex<cSkinnedMesh>()) {
 
         auto object = ctx.inOut.ecs.getObject(objectIndex);
         auto optionalAnimator = object.getComponentPtr<cAnimator>();
@@ -146,4 +141,10 @@ jleGraphicsModule::update(const jleGraphicsModule::UpdateContext &ctx)
         // Break here so we only get one skybox
         break;
     }
+}
+
+void
+jleGraphicsModule::display()
+{
+    _fullscreen_renderer->renderFramebufferFullscreen(*_screenFramebuffer, _screenFramebuffer->width(), _screenFramebuffer->width());
 }

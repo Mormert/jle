@@ -20,14 +20,14 @@
 
 #include "modules/jleGameModules.h"
 
-class jleWindowModule;
+class jleWindow;
 
 class jleInputModule : public jleGameBaseModule
 {
 public:
     ~jleInputModule() override = default;
 
-    explicit jleInputModule(jleWindowModule &window);
+    explicit jleInputModule(jleWindow &window);
 
     jleKeyboardInput keyboard;
     jleMouseInput mouse;

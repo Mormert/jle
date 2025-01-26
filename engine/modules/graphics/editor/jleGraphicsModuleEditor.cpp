@@ -66,16 +66,16 @@ namespace {
 
             glm::mat4 worldMatrix = jleHierarchyFuncs::getWorldMatrix(thiz->getECS().getObject(objectIndex));
 
-            archive.editorCtx.engineUpdateContext.currentFramePacket.camera.setViewMatrix(glm::inverse(worldMatrix));
+            archive.editorCtx.editorFramePacket.camera.setViewMatrix(glm::inverse(worldMatrix));
             if (cameraComponent.perspective) {
-                archive.editorCtx.engineUpdateContext.currentFramePacket.camera.setPerspectiveProjection(cameraComponent.perspectiveFov, width, height, cameraComponent.farPlane, cameraComponent.nearPlane);
+                archive.editorCtx.editorFramePacket.camera.setPerspectiveProjection(cameraComponent.perspectiveFov, width, height, cameraComponent.farPlane, cameraComponent.nearPlane);
             }else {
-                archive.editorCtx.engineUpdateContext.currentFramePacket.camera.setOrthographicProjection(cameraComponent.framebufferSizeX, cameraComponent.framebufferSizeY, cameraComponent.farPlane, cameraComponent.nearPlane);
+                archive.editorCtx.editorFramePacket.camera.setOrthographicProjection(cameraComponent.framebufferSizeX, cameraComponent.framebufferSizeY, cameraComponent.farPlane, cameraComponent.nearPlane);
             }
 
             auto &fb = *editorGraphicsModule->cameraPreviewFramebuffer;
 
-            archive.editorCtx.getCurrentModules().getModule<jleGraphicsModule>()->getGraphics().render(*editorGraphicsModule->cameraPreviewFramebuffer, archive.editorCtx.engineUpdateContext.currentFramePacket);
+            archive.editorCtx.getCurrentModules().getModule<jleGraphicsModule>()->getGraphics().render(*editorGraphicsModule->cameraPreviewFramebuffer, archive.editorCtx.editorFramePacket);
 
             // Get the texture from the framebuffer
             glBindTexture(GL_TEXTURE_2D, (unsigned int)fb.texture());
@@ -117,9 +117,11 @@ jleGraphicsModuleEditor::initializeECS(jlECS::ECS &ecs)
     registerEditorECSComponent<cSkybox>(ecs);
 }
 
-void jleGraphicsModuleEditor::updateEditor(jleEditorUpdateContext &ctx, const std::vector<glm::mat4>& worldMatrices) {
+void
+jleGraphicsModuleEditor::updateEditor(jleEditorUpdateContext &ctx, const std::vector<glm::mat4> &worldMatrices)
+{
     ZoneScoped;
-    auto& ecs = ctx.getCurrentECS();
+    auto &ecs = ctx.getCurrentECS();
 
     for (auto [objectIndex, _] : ecs.iterateMulti_IncludeObjectIndex<cCamera>()) {
         auto mesh = ctx.gizmos.cameraMesh();
@@ -138,4 +140,19 @@ void jleGraphicsModuleEditor::updateEditor(jleEditorUpdateContext &ctx, const st
         auto material = ctx.gizmos.sunMaterial();
         ctx.editorFramePacket.sendMesh(mesh, material, worldMatrices[objectIndex], objectIndex, false);
     }
+
+    _renderThread->processRenderQueue();
+}
+
+void
+jleGraphicsModuleEditor::setGameWindowSize(uint32_t width, uint32_t height)
+{
+    _screenFramebuffer->resize(width, height);
+    _msaaFramebuffer->resize(width, height);
+}
+
+void
+jleGraphicsModuleEditor::display()
+{
+
 }

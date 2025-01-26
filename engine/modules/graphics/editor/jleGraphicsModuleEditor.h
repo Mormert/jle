@@ -27,4 +27,11 @@ public:
     void updateEditor(jleEditorUpdateContext& ctx, const std::vector<glm::mat4>& worldMatrices);
 
     std::unique_ptr<jleFramebufferScreen> cameraPreviewFramebuffer;
+
+    void setGameWindowSize(uint32_t width, uint32_t height);
+
+    uint32_t getGameWindowTextureId() const { return _screenFramebuffer->texture(); };
+
+protected:
+    void display() override;
 };

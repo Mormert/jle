@@ -53,7 +53,7 @@ public:
     [[nodiscard]] glm::vec3 getCameraPosition() const { return _renderCamera.getPosition(); }
 private:
     float _lastGameWindowWidth = 0.f, _lastGameWindowHeight = 0.f;
-    std::pair<int32_t, int32_t> _lastCursorPos;
+    glm::ivec2 _lastCursorPos;
 
     jleCamera _renderCamera{};
     bool _perspectiveCamera = true;
@@ -77,10 +77,8 @@ private:
     bool _boundSizingSnap = false;
 
     bool _isSelecting = false;
-    int _selectStartX = 0;
-    int _selectStartY = 0;
-    int _selectCurrentX = 0;
-    int _selectCurrentY = 0;
+    glm::ivec2 _selectStart{};
+    glm::ivec2 _selectCurrent{};
 
     void EditTransform(float *cameraView, float *cameraProjection, float *matrix, bool editTransformDecomposition);
 };

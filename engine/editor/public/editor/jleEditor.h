@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 
+class jleEditorWindow;
 class jleFileWatcher;
 class jleEditorWindowInterface;
 class jleFramebufferInterface;
@@ -48,7 +49,7 @@ class ECS_Debug;
 }
 }
 
-class jleEditor : public jleGameEngine
+class jleEditor
 {
 public:
     struct EditorConstructConfig{
@@ -56,13 +57,13 @@ public:
         std::function<void(jleEditorUpdateContext&)> updateEditorGameModules = {};
     };
 
-    explicit jleEditor(const EditorConstructConfig &editorConfig, const EngineConstructConfig &engineConfig);
+    explicit jleEditor(const EditorConstructConfig &editorConfig, const jleGameEngine::EngineConstructConfig &engineConfig);
 
-    ~jleEditor() override;
+    ~jleEditor();
 
-    void start() override;
+    void run();
 
-    void render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem::context &jobsCtx) override;
+    void render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem::context &jobsCtx);
 
     jleEditorGizmos &gizmos();
 
@@ -71,11 +72,13 @@ private:
     struct jleEditorInternal;
     std::unique_ptr<jleEditorInternal> _internal;
 
-    jleGameModules* getCurrentGameModules() override;
+    jleGameModules* getCurrentGameModules();
 
-    void exiting() override;
+    void init();
 
-    void renderGameView(const jleFramePacket& framePacketIn, jleFramebufferInterface& framebufferOut);
+    void mainEditorLoop();
+
+    void exiting();
 
     void renderEditorSceneView(jleEditorUpdateContext &ctx);
 
@@ -86,6 +89,9 @@ private:
     void mainEditorWindowResized(const jleWindowDimensions &windowDimensions);
 
     class jleEditorWindows;
+
+    std::unique_ptr<jleEditorWindow> _mainEditorWindow;
+
     std::unique_ptr<jleEditorWindows> _editorWindows{};
 
     std::shared_ptr<jleSceneEditorWindow> _sceneWindow;
@@ -102,4 +108,8 @@ private:
     std::unique_ptr<jleGameModules> _editorModules;
 
     EditorConstructConfig _editorConstructConfig;
+
+    bool _editorRunning = false;
+
+    jleGameEngine _gameEngine;
 };

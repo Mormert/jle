@@ -32,15 +32,15 @@
 // JLE_EXTERN_TEMPLATE_CEREAL_CPP(WindowSettings)
 
 void
-jleWindowModule::error_callback(int error, const char *description)
+jleWindow::error_callback(int error, const char *description)
 {
     LOGE << "GLFW ERROR: " << description << '\n';
 }
 
 void
-jleWindowModule::glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+jleWindow::glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-    auto thiz = reinterpret_cast<jleWindowModule *>(glfwGetWindowUserPointer(window));
+    auto thiz = reinterpret_cast<jleWindow *>(glfwGetWindowUserPointer(window));
     if (action == GLFW_PRESS) {
         thiz->_pressedKeys[key] = true;
     }
@@ -51,18 +51,18 @@ jleWindowModule::glfwKeyCallback(GLFWwindow *window, int key, int scancode, int 
 }
 
 void
-jleWindowModule::glfwScrollCallback(GLFWwindow *window, double xoffset, double yoffset)
+jleWindow::glfwScrollCallback(GLFWwindow *window, double xoffset, double yoffset)
 {
-    auto thiz = reinterpret_cast<jleWindowModule *>(glfwGetWindowUserPointer(window));
+    auto thiz = reinterpret_cast<jleWindow *>(glfwGetWindowUserPointer(window));
 
     thiz->_currentScrollX = static_cast<float>(xoffset);
     thiz->_currentScrollY = static_cast<float>(yoffset);
 }
 
 void
-jleWindowModule::glfwFramebufferSizeCallback(GLFWwindow *window, int fbWidth, int fbHeight)
+jleWindow::glfwFramebufferSizeCallback(GLFWwindow *window, int fbWidth, int fbHeight)
 {
-    auto thiz = reinterpret_cast<jleWindowModule *>(glfwGetWindowUserPointer(window));
+    auto thiz = reinterpret_cast<jleWindow *>(glfwGetWindowUserPointer(window));
 
     thiz->windowSettings.width = static_cast<unsigned int>(fbWidth);
     thiz->windowSettings.height = static_cast<unsigned int>(fbHeight);
@@ -109,37 +109,37 @@ resize_canvas_js(int width, int height)
 #endif
 
 float
-jleWindowModule::time()
+jleWindow::time()
 {
     return static_cast<float>(glfwGetTime());
 }
 
 float
-jleWindowModule::scrollX() const
+jleWindow::scrollX() const
 {
     return _currentScrollX;
 }
 
 float
-jleWindowModule::scrollY() const
+jleWindow::scrollY() const
 {
     return _currentScrollY;
 }
 
-jleWindowModule::~jleWindowModule()
+jleWindow::~jleWindow()
 {
     glfwDestroyWindow(_glfwWindow);
     glfwTerminate();
 }
 
 void
-jleWindowModule::settings(WindowSettings &windowSettings)
+jleWindow::settings(WindowSettings &windowSettings)
 {
     this->windowSettings = windowSettings;
 }
 
 void
-jleWindowModule::displayCursor(bool enable)
+jleWindow::displayCursor(bool enable)
 {
     if (enable) {
         glfwSetInputMode(_glfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -150,25 +150,25 @@ jleWindowModule::displayCursor(bool enable)
 }
 
 bool
-jleWindowModule::isCursorDisplayed() const
+jleWindow::isCursorDisplayed() const
 {
     return _cursorVisible;
 }
 
 unsigned int
-jleWindowModule::height() const
+jleWindow::height() const
 {
     return windowSettings.height;
 }
 
 unsigned int
-jleWindowModule::width() const
+jleWindow::width() const
 {
     return windowSettings.width;
 }
 
 void
-jleWindowModule::initWindowModule()
+jleWindow::initWindow()
 {
     glfwSetErrorCallback(error_callback);
 
@@ -220,7 +220,7 @@ jleWindowModule::initWindowModule()
 }
 
 void
-jleWindowModule::updateWindow()
+jleWindow::updateWindow()
 {
     ZoneScoped;
 
@@ -234,32 +234,32 @@ jleWindowModule::updateWindow()
 }
 
 bool
-jleWindowModule::windowShouldClose()
+jleWindow::windowShouldClose()
 {
     ZoneScoped;
     return glfwWindowShouldClose(_glfwWindow);
 }
 
 bool
-jleWindowModule::keyDown(int key) const
+jleWindow::keyDown(int key) const
 {
     return glfwGetKey(_glfwWindow, key);
 }
 
 bool
-jleWindowModule::keyPressed(int key) const
+jleWindow::keyPressed(int key) const
 {
     return _pressedKeys[key];
 }
 
 bool
-jleWindowModule::keyReleased(int key) const
+jleWindow::keyReleased(int key) const
 {
     return _releasedKeys[key];
 }
 
 std::pair<int, int>
-jleWindowModule::cursor() const
+jleWindow::cursor() const
 {
     double x, y;
     glfwGetCursorPos(_glfwWindow, &x, &y);
@@ -267,12 +267,12 @@ jleWindowModule::cursor() const
 }
 
 bool
-jleWindowModule::mouseClick(int button)
+jleWindow::mouseClick(int button)
 {
     return glfwGetMouseButton(_glfwWindow, button);
 }
 void
-jleWindowModule::setCursorPosition(int x, int y)
+jleWindow::setCursorPosition(int x, int y)
 {
     glfwSetCursorPos(_glfwWindow, x, y);
 }
@@ -368,7 +368,7 @@ glDebugOutput(GLenum source,
 #endif
 
 GLFWwindow *
-jleWindowModule::initGlfwWindow(int width, int height, const char *title)
+jleWindow::initGlfwWindow(int width, int height, const char *title)
 {
     JLE_EXEC_IF(JLE_BUILD_OPENGLES30)
     {
@@ -445,9 +445,14 @@ jleWindowModule::initGlfwWindow(int width, int height, const char *title)
 
     return glfwWindow;
 }
+void
+jleWindowModule::initWindowModule()
+{
+    window.initWindow();
+}
 
 GLFWwindow *
-jleWindowModule::glfwWindow()
+jleWindow::glfwWindow()
 {
     return _glfwWindow;
 }

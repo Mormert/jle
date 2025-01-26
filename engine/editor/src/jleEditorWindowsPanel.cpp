@@ -15,12 +15,14 @@
 
 #include "jleEditorWindowsPanel.h"
 
+#include "jleEditorWindow.h"
 #include "jleEngineSettings.h"
 #include "jleGameEditorWindow.h"
 #include "jleSystemUsageTracker.h"
 #include "modules/windowing/jleWindowModule.h"
 
 #include "core/jleMalloc.h"
+#include "modules/graphics/editor/jleGraphicsModuleEditor.h"
 
 #include <GLFW/glfw3.h>
 #include <ImGui/imgui.h>
@@ -36,21 +38,9 @@ jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name, jle
 }
 
 void
-jleEditorWindowsPanel::renderUI(jleEngineUpdateContext & ctx)
+jleEditorWindowsPanel::renderUI(jleEditorUpdateContext &ctx)
 {
     ZoneScoped;
-    dockspaceupdate(ctx);
-}
-
-void
-jleEditorWindowsPanel::addWindow(std::shared_ptr<jleEditorWindowInterface> window)
-{
-    windows.push_back(window);
-}
-
-void
-jleEditorWindowsPanel::dockspaceupdate(jleEngineUpdateContext & ctx)
-{
 
     static bool opt_fullscreen = true;
     static bool opt_padding = false;
@@ -106,13 +96,19 @@ jleEditorWindowsPanel::dockspaceupdate(jleEngineUpdateContext & ctx)
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
     }
 
-    menuButtonsupdate(ctx);
+    menuButtonsUpdate(ctx);
 
     ImGui::End();
 }
 
 void
-jleEditorWindowsPanel::menuButtonsupdate(jleEngineUpdateContext & ctx)
+jleEditorWindowsPanel::addWindow(std::shared_ptr<jleEditorWindowInterface> window)
+{
+    windows.push_back(window);
+}
+
+void
+jleEditorWindowsPanel::menuButtonsUpdate(jleEditorUpdateContext &ctx)
 {
     if (ImGui::BeginMenuBar()) {
 
@@ -218,7 +214,7 @@ jleEditorWindowsPanel::menuButtonsupdate(jleEngineUpdateContext & ctx)
         }
 
         if (ImGui::BeginMenu("Game Controller")) {
-            _gameController.render(ctx);
+            _gameController.render(ctx.engineUpdateContext);
             ImGui::EndMenu();
         }
 
@@ -251,7 +247,7 @@ jleEditorWindowsPanel::menuButtonsupdate(jleEngineUpdateContext & ctx)
         if (usage.error.empty()) {
             ImGui::Text("Avg FPS: %4d  |  Run Time: %s  | Cur. Mem. Usage: %.2f MB | Mem. Alloc: %.2f MB | Threads: %d",
                         rolling120FramesAvgFps,
-                        formatTime(static_cast<int>(ctx.frameInfo.getCurrentFrameTime() * 1000.f)).c_str(),
+                        formatTime(static_cast<int>(ctx.engineUpdateContext.frameInfo.getCurrentFrameTime() * 1000.f)).c_str(),
                         static_cast<float>(usage.memoryUsageKB) / 1024.f,
                         static_cast<float>(jleMalloc::getBytesAllocated()) / 1024.f / 1024.f,
                         usage.threadCount);
@@ -292,11 +288,11 @@ jleEditorWindowsPanel::menuButtonsupdate(jleEngineUpdateContext & ctx)
                 ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
 
                 if (ImGui::ImageButton((void *)(intptr_t)_minimizeIcon->id(), buttonSize)) {
-                    glfwIconifyWindow(ctx.window.glfwWindow());
+                    glfwIconifyWindow(ctx.editorWindow.glfwWindow());
                 }
 
                 if (ImGui::ImageButton((void *)(intptr_t)_maximizeIcon->id(), buttonSize)) {
-                    const auto window = ctx.window.glfwWindow();
+                    GLFWwindow* window = ctx.editorWindow.glfwWindow();
                     if (glfwGetWindowAttrib(window, GLFW_MAXIMIZED)) {
                         glfwRestoreWindow(window);
                     } else {
@@ -309,7 +305,7 @@ jleEditorWindowsPanel::menuButtonsupdate(jleEngineUpdateContext & ctx)
                     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, grayRedHoveredColor);
 
                     if (ImGui::ImageButton((void *)(intptr_t)_crossIcon->id(), buttonSize)) {
-                        glfwSetWindowShouldClose(ctx.window.glfwWindow(), true);
+                        glfwSetWindowShouldClose(ctx.editorWindow.glfwWindow(), true);
                     }
                     ImGui::PopStyleColor();
                 }

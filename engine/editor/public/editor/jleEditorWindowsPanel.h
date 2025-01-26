@@ -22,22 +22,20 @@
 #include "jleEditorGameControllerWidget.h"
 #include "jleEditorImGuiWindowInterface.h"
 
+class jleEditorUpdateContext;
+
 class jleEditorWindowsPanel : public jleEditorWindowInterface
 {
 public:
-    explicit jleEditorWindowsPanel(const std::string &window_name,
-                                   jleSerializationContext& serializationContext,
-                                   jleEngineSettings &settings);
+    explicit jleEditorWindowsPanel(const std::string &window_name, jleSerializationContext& serializationContext, jleEngineSettings &settings);
 
-    void renderUI(jleEngineUpdateContext &ctx);
+    void renderUI(jleEditorUpdateContext &ctx);
 
     void addWindow(std::shared_ptr<jleEditorWindowInterface> window);
 
-    inline void menuButtonsupdate(jleEngineUpdateContext &ctx);
-
-    inline void dockspaceupdate(jleEngineUpdateContext &ctx);
-
 private:
+    void menuButtonsUpdate(jleEditorUpdateContext &ctx);
+
     std::shared_ptr<jleTexture> _crossIcon;    // X
     std::shared_ptr<jleTexture> _maximizeIcon; // [ ]
     std::shared_ptr<jleTexture> _minimizeIcon; // -

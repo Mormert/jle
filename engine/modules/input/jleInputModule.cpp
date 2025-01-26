@@ -18,7 +18,7 @@
 #include "modules/input/hardware/jleKeyboardInput.h"
 #include "modules/input/hardware/jleMouseInput.h"
 
-jleInputModule::jleInputModule(jleWindowModule& window)
+jleInputModule::jleInputModule(jleWindow& window)
     : keyboard{window}, mouse{window}
 {
 }

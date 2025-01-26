@@ -14,6 +14,8 @@
  *********************************************************************************************/
 
 #include "jleGameEditorWindow.h"
+
+#include "game/jleGame.h"
 #include "modules/graphics/core/jleFrameBufferInterface.h"
 #include "modules/input/hardware/jleMouseInput.h"
 #include "modules/input/jleInputModule.h"
@@ -21,15 +23,18 @@
 
 #include "modules/graphics/core/jleIncludeGL.h"
 
-#include <ImGui/imgui.h>
 #include "jlECS/jlECS.h"
+#include "modules/graphics/editor/jleGraphicsModuleEditor.h"
+#include "modules/graphics/jleGraphicsModule.h"
+
+#include <ImGui/imgui.h>
 
 jleGameEditorWindow::jleGameEditorWindow(const std::string &window_name) : jleEditorWindowInterface{window_name}
 {
 }
 
 void
-jleGameEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleInputModule& input)
+jleGameEditorWindow::renderUI(jleEngineUpdateContext &ctx)
 {
     ZoneScoped;
     if (!isOpened) {
@@ -63,6 +68,13 @@ jleGameEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleInputModule& input
         return;
     }
 
+    auto inputModule = ctx.gameRuntime.getGame().getModules().getModule<jleInputModule>();
+    auto graphicsModule = ctx.gameRuntime.getGame().getModules().getModule<jleGraphicsModuleEditor>();
+    if (!inputModule || !graphicsModule) {
+        ImGui::Text("Error: Input or Graphics module not found.");
+        return;
+    }
+
     constexpr float negYOffset = 8;
     constexpr float negXOffset = 6;
 
@@ -71,7 +83,7 @@ jleGameEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleInputModule& input
     _windowPositionX = cursorScreenPos.x - viewport->Pos.x;
     _windowPositionY = cursorScreenPos.y - viewport->Pos.y;
 
-    auto &internalInputMouse = input.mouse;
+    auto &internalInputMouse = inputModule->mouse;
     internalInputMouse.setScreenBeginCoords(_windowPositionX, _windowPositionY);
     internalInputMouse.setScreenSize(width(), height());
 
@@ -80,25 +92,26 @@ jleGameEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleInputModule& input
         _lastGameWindowWidth = ImGui::GetWindowWidth() - ImGui::GetCursorStartPos().x - negXOffset;
         _lastGameWindowHeight = ImGui::GetWindowHeight() - ImGui::GetCursorStartPos().y - negYOffset;
 
-        ctx.gameRuntime.gameWindowResizedEvent((int)_lastGameWindowWidth, (int)_lastGameWindowHeight);
+        graphicsModule->setGameWindowSize((uint32_t)_lastGameWindowHeight, (uint32_t)_lastGameWindowWidth);
     }
 
     // Get the texture from the framebuffer
-    glBindTexture(GL_TEXTURE_2D, (unsigned int)ctx.gameRuntime.mainGameScreenFramebuffer->texture());
-    ImGui::Image((void *)(intptr_t)ctx.gameRuntime.mainGameScreenFramebuffer->texture(),
+    const uint32_t gameWindowTextureId = graphicsModule->getGameWindowTextureId();
+    glBindTexture(GL_TEXTURE_2D, gameWindowTextureId);
+    ImGui::Image((void *)(intptr_t)gameWindowTextureId,
                  ImVec2(_lastGameWindowWidth, _lastGameWindowHeight),
                  ImVec2(0, 1),
                  ImVec2(1, 0));
 
     if (ImGui::IsWindowFocused() != _wasFocused) {
         _wasFocused = ImGui::IsWindowFocused();
-        ctx.input.setInputEnabled(_wasFocused);
+        inputModule->setInputEnabled(_wasFocused);
     }
 
-    if (ImGui::IsWindowFocused() && ctx.input.mouse.isFpsMode() && ImGui::IsKeyPressed(ImGuiKey_Tab)) {
-        ctx.input.mouse.setFpsMode(false);
+    if (ImGui::IsWindowFocused() && inputModule->mouse.isFpsMode() && ImGui::IsKeyPressed(ImGuiKey_Tab)) {
+        inputModule->mouse.setFpsMode(false);
     } else if (ImGui::IsKeyPressed(ImGuiKey_Tab)) {
-        ctx.input.mouse.setFpsMode(true);
+        inputModule->mouse.setFpsMode(true);
     }
 
     ImGui::End();

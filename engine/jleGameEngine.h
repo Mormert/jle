@@ -34,7 +34,7 @@ class jleGame;
 class jleResourceHolder;
 class jleEngineSettings;
 class jleInputModule;
-class jleWindowModule;
+class jleWindow;
 class jleGraphics;
 class jle3DSettings;
 class jleFramePacket;
@@ -68,17 +68,25 @@ public:
 
     struct EngineConstructConfig
     {
-        std::function<std::unique_ptr<jleWindowModule>()> windowCreator = {};
+        std::function<std::unique_ptr<jleWindow>()> windowCreator = {};
         const jleGameConstructConfig& gameConfig;
     };
 
     explicit jleGameEngine(const EngineConstructConfig& config);
 
     void run();
-private:
+
+    [[nodiscard]] const EngineConstructConfig& getEngineConstructConfig() const { return _engineConstructConfig; }
+    [[nodiscard]] jleGameRuntime& getGameRuntime() const { return *_gameRuntime; }
+    [[nodiscard]] jleResourceHolder& getResources() const { return *_resources; }
+    [[nodiscard]] const jleFrameInfo& getFrameInfo() const { return _frameInfo; }
+    [[nodiscard]] jleEngineSettings& getSettings() const;
+
     jleSerializationContext createSerializationContext();
     jleEngineUpdateContext createUpdateContext();
 
+    void updateFrameInfo();
+private:
     jleGameModules* getCurrentGameModules();
 
     void mainLoop();
@@ -92,9 +100,7 @@ private:
 
     void loop();
     void start();
-    void exiting();
 
-    friend class jleGameRuntime;
     std::unique_ptr<jleGameRuntime> _gameRuntime;
     std::unique_ptr<jleResourceHolder> _resources;
 
@@ -103,9 +109,6 @@ private:
 
     const EngineConstructConfig _engineConstructConfig;
 
-    [[nodiscard]] jleEngineSettings& getSettings() const;
-
-    void refreshDeltaTimes();
     jleFrameInfo _frameInfo;
 
     plog::RollingFileAppender<plog::TxtFormatter> _loggingFileAppender;
