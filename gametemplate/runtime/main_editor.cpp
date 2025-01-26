@@ -21,7 +21,9 @@ main(int argc, char *argv[])
 
     jleEditor::EditorConstructConfig editorConstructConfig{
         .modulesUpdateRenderablesOnly = GameTemplateFunctions::modulesUpdateRenderablesOnly,
-        .updateEditorGameModules = GameTemplateFunctionsEditor::updateEditorGameModules
+        .updateEditorGameModules = GameTemplateFunctionsEditor::updateEditorGameModules,
+        .renderUIEditorGameModules = GameTemplateFunctionsEditor::renderUIEditorGameModules,
+        .registerEditorResources = GameTemplateFunctionsEditor::registerEditorResources
     };
 
     jleGameEngine::EngineConstructConfig engineConstructConfig = {

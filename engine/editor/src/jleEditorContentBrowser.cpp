@@ -20,6 +20,7 @@
 #include "game/jleGame.h"
 
 #include "jleEditor.h"
+#include "jleEditorResourceRegistration.h"
 #include "jleEditorTextEdit.h"
 
 #include <ImGui/imgui.h>
@@ -155,7 +156,7 @@ jleEditorContentBrowser::contentHierarchy(std::string directoryPath, const std::
 }
 
 void
-jleEditorContentBrowser::renderUI(jleEditorUpdateContext &ctx)
+jleEditorContentBrowser::renderUI(jleEditorUpdateContext &ctx, const jleEditorResourceRegistration &resourceRegistration)
 {
     ZoneScoped;
     if (!isOpened) {
@@ -165,11 +166,11 @@ jleEditorContentBrowser::renderUI(jleEditorUpdateContext &ctx)
     // contentHierarchy(JLE_ENGINE_PATH + "/EditorResources", "Editor");
     contentHierarchy(GAME_RESOURCES_DIRECTORY, "Game Resources");
 
-    contentBrowser(ctx);
+    contentBrowser(ctx, resourceRegistration);
 }
 
 void
-jleEditorContentBrowser::contentBrowser(jleEditorUpdateContext &editorCtx)
+jleEditorContentBrowser::contentBrowser(jleEditorUpdateContext &editorCtx, const jleEditorResourceRegistration &resourceRegistration)
 {
     auto &ctx = editorCtx.engineUpdateContext;
     ImGui::Begin(window_name.c_str(), &isOpened, ImGuiWindowFlags_MenuBar);
@@ -387,7 +388,7 @@ jleEditorContentBrowser::contentBrowser(jleEditorUpdateContext &editorCtx)
 
         if (!_fileSelected.empty() && ImGui::BeginPopup("selected_file_popup")) {
 
-            selectedFilePopup(_fileSelected, editorCtx);
+            selectedFilePopup(_fileSelected, editorCtx, resourceRegistration);
             ImGui::EndPopup();
         }
 
@@ -406,7 +407,7 @@ jleEditorContentBrowser::contentBrowser(jleEditorUpdateContext &editorCtx)
 }
 
 void
-jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file, jleEditorUpdateContext &ctx)
+jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file, jleEditorUpdateContext &ctx, const jleEditorResourceRegistration &resourceRegistration)
 {
 
     const float globalImguiScale = ImGui::GetIO().FontGlobalScale;
@@ -428,6 +429,8 @@ jleEditorContentBrowser::selectedFilePopup(std::filesystem::path &file, jleEdito
     if (fileExtension == ".jobj") {
         selectedFilePopupObjectTemplate(file, ctx);
     }
+
+    openCallbacks(resourceRegistration, ctx.editorGameModules, jlePath{jleRealPath{file.string()}});
 
     openAsText(file);
 
@@ -599,4 +602,10 @@ jleEditorContentBrowser::openAsResource(std::filesystem::path &file, jleResource
     if (ImGui::Button("Open As Resource", size)) {
         _editorResourceEdit->tryOpen(jlePath{jleRealPath{file.string()}}, resources);
     }
+}
+
+void
+jleEditorContentBrowser::openCallbacks(const jleEditorResourceRegistration &resourceRegistration, jleGameModules &gameModules, const jlePath &path)
+{
+    resourceRegistration.invokeOpenResourcePromptFunctions(path, gameModules);
 }

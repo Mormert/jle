@@ -29,6 +29,7 @@
 #include "jleEditorGizmos.h"
 #include "jleEditorNotifications.h"
 #include "jleEditorResourceEdit.h"
+#include "jleEditorResourceRegistration.h"
 #include "jleEditorResourceViewer.h"
 #include "jleEditorSaveState.h"
 #include "jleEditorSettingsWindow.h"
@@ -143,7 +144,7 @@ public:
     jleUndoRedoManager _undoRedo{};
 
     void
-    renderUI(jleEditorUpdateContext &context)
+    renderUI(jleEditorUpdateContext &context, const jleEditorResourceRegistration& resourceRegistration)
     {
         ZoneScoped;
 
@@ -175,7 +176,7 @@ public:
         gameWindow->renderUI(context.engineUpdateContext);
         console->renderUI(context.engineUpdateContext, luaGameEnvironment);
         settingsWindow->renderUI(context);
-        contentBrowser->renderUI(context);
+        contentBrowser->renderUI(context, resourceRegistration);
         buildTool->renderUI(context.engineUpdateContext, context.resourceIndexer);
         resourceViewer->renderUI(context.engineUpdateContext);
         import3DWindow->renderUI(context);
@@ -196,11 +197,15 @@ jleEditor::init()
     LOG_INFO << "Initializing the editor";
     auto serializationContext = _gameEngine.createSerializationContext();
 
+
     _editorEcs = std::make_unique<jlECS::Debug::ECS_Debug>();
 
     constexpr bool gameRunning = false;
     _editorModules = _gameEngine.getEngineConstructConfig().gameConfig.modulesCreator(gameRunning);
     _gameEngine.getEngineConstructConfig().gameConfig.modulesInitialize(*_editorModules, *_editorEcs, serializationContext);
+
+    _resourceRegistration = std::make_unique<jleEditorResourceRegistration>();
+    _editorConstructConfig.registerEditorResources(*_resourceRegistration);
 
     _internal = std::make_unique<jleEditorInternal>();
     _internal->editorSaveState = jleResourceRef<jleEditorSaveState>(jlePath{jleVirtualPath{"BI:editor_save.edsave"}}, serializationContext);
@@ -312,7 +317,8 @@ jleEditor::renderEditorUI(jleEditorUpdateContext& ctx)
 
     ImGuizmo::BeginFrame();
 
-    _editorWindows->renderUI(ctx);
+    _editorWindows->renderUI(ctx, *_resourceRegistration);
+    _editorConstructConfig.renderUIEditorGameModules(*_editorModules);
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

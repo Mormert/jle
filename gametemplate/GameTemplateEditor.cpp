@@ -15,3 +15,15 @@ GameTemplateFunctionsEditor::updateEditorGameModules(jleEditorUpdateContext &ctx
 {
     jleDefaultGameEditorFunctions::updateEditorGameModules(ctx);
 }
+
+void
+GameTemplateFunctionsEditor::renderUIEditorGameModules(jleGameModules &editorModules)
+{
+    jleDefaultGameEditorFunctions::renderUIEditorGameModules(editorModules);
+}
+
+void
+GameTemplateFunctionsEditor::registerEditorResources(jleEditorResourceRegistration& registration)
+{
+    jleDefaultGameEditorFunctions::registerEditorResources(registration);
+}

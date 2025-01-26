@@ -15,8 +15,9 @@
 
 #include "jleDefaultGameEditorFunctions.h"
 
-#include "modules/windowing/jleWindowModule.h"
+#include "jleEditorResourceRegistration.h"
 #include "modules/windowing/editor/jleWindowModuleEditor.h"
+#include "modules/windowing/jleWindowModule.h"
 
 #include "modules/input/editor/jleInputModuleEditor.h"
 #include "modules/mesh/editor/jleMeshModuleEditor.h"
@@ -54,20 +55,48 @@ jleDefaultGameEditorFunctions::createDefaultModules_Editor(bool gameRunning)
 void
 jleDefaultGameEditorFunctions::updateEditorGameModules(jleEditorUpdateContext &ctx)
 {
-    jleGameModules& modules = ctx.getCurrentModules();
+    jleGameModules &modules = ctx.getCurrentModules();
 
-    const std::vector<glm::mat4>& worldMatrices = modules.getModule<jleHierarchyModule>()->getWorldMatrices();
+    const std::vector<glm::mat4> &worldMatrices = modules.getModule<jleHierarchyModule>()->getWorldMatrices();
 
-    if (auto* graphicsEditorModule = modules.getModule<jleGraphicsModuleEditor>()){
+    if (auto *graphicsEditorModule = modules.getModule<jleGraphicsModuleEditor>()) {
         graphicsEditorModule->updateEditor(ctx, worldMatrices);
 
-        if (auto* physicsEditorModule = modules.getModule<jlePhysicsModuleEditor>()){
-            jleFramePacket& currentFramePacketEditor = graphicsEditorModule->getFramePacketEditor();
+        if (auto *physicsEditorModule = modules.getModule<jlePhysicsModuleEditor>()) {
+            jleFramePacket &currentFramePacketEditor = graphicsEditorModule->getFramePacketEditor();
             physicsEditorModule->updateEditor(currentFramePacketEditor);
         }
     }
 
-    if (auto* luaEditorModule = modules.getModule<jleLuaEditorModule>()){
+    if (auto *luaEditorModule = modules.getModule<jleLuaEditorModule>()) {
         luaEditorModule->updateEditor(ctx.engineUpdateContext.serializationContext);
     }
+}
+
+void
+jleDefaultGameEditorFunctions::renderUIEditorGameModules(jleGameModules &editorModules)
+{
+    if (auto *graphicsEditorModule = editorModules.getModule<jleGraphicsModuleEditor>()) {
+        if (auto *imageEditorModule = editorModules.getModule<jleImageModuleEditor>()) {
+            if (auto *meshEditorModule = editorModules.getModule<jleMeshModuleEditor>()) {
+                graphicsEditorModule->ui.renderUI(*imageEditorModule, *graphicsEditorModule, *meshEditorModule);
+            }
+        }
+    }
+}
+
+void
+jleDefaultGameEditorFunctions::registerEditorResources(jleEditorResourceRegistration &registration)
+{
+    registration.addResource({"png", "jpg", "jpeg", "tga", "psd", "gif"}, [](const jlePath& path, jleGameModules &gameModules) {
+        if (auto graphicsModule = gameModules.getModule<jleGraphicsModuleEditor>()) {
+            graphicsModule->ui.openImageEditorResourcePrompt(path);
+        }
+    });
+
+    registration.addResource({"fbx"}, [](const jlePath& path, jleGameModules &gameModules) {
+        if (auto graphicsModule = gameModules.getModule<jleGraphicsModuleEditor>()) {
+            graphicsModule->ui.openMeshEditorResourcePrompt(path);
+        }
+    });
 }

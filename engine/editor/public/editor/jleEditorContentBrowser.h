@@ -25,6 +25,7 @@
 #include <filesystem>
 
 class jleEditorTextEdit;
+class jleEditorResourceRegistration;
 
 class jleEditorContentBrowser : public jleEditorWindowInterface
 {
@@ -34,7 +35,7 @@ public:
                                      const std::shared_ptr<jleEditorTextEdit> &editorTextEdit,
                                      const std::shared_ptr<jleEditorResourceEdit> &editorResourceEdit);
 
-    void renderUI(jleEditorUpdateContext & ctx);
+    void renderUI(jleEditorUpdateContext &ctx, const jleEditorResourceRegistration &resourceRegistration);
 
 private:
     std::shared_ptr<jleTexture> _fileIcon;
@@ -61,9 +62,9 @@ private:
 
     void contentHierarchy(std::string directoryPath, const std::string &folderName);
 
-    void contentBrowser(jleEditorUpdateContext & ctx);
+    void contentBrowser(jleEditorUpdateContext &ctx, const jleEditorResourceRegistration &resourceRegistration);
 
-    void selectedFilePopup(std::filesystem::path &file, jleEditorUpdateContext &ctx);
+    void selectedFilePopup(std::filesystem::path &file, jleEditorUpdateContext &ctx, const jleEditorResourceRegistration &resourceRegistration);
 
     void selectedFilePopupScene(std::filesystem::path &file, jleEditorUpdateContext &ctx);
 
@@ -72,6 +73,8 @@ private:
     void openAsText(std::filesystem::path &file);
 
     void openAsResource(std::filesystem::path &file, jleResourceHolder & resources);
+
+    void openCallbacks(const jleEditorResourceRegistration &resourceRegistration, jleGameModules& gameModules, const jlePath& path);
 
     std::shared_ptr<jleEditorTextEdit> _editorTextEdit;
 

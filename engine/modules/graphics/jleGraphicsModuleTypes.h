@@ -77,3 +77,4 @@ struct jleMaterialGPUData {
 using jleMeshGPUDataHandle = jleGpuHandle<uint32_t, struct jleMeshGPUDataTag>;
 using jleSkinnedMeshGPUDataHandle = jleGpuHandle<uint32_t, struct jleSkinnedMeshGPUDataTag>;
 using jleMaterialGPUDataHandle = jleGpuHandle<uint32_t, struct jleMaterialGPUDataTag>;
+using jleTextureGPUDataHandle = jleGpuHandle<uint32_t, struct jleTextureGPUDataTag>;

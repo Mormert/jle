@@ -14,6 +14,7 @@ add_library(jleEditor STATIC
         "src/jleEditorWindowsPanel.cpp"
         "src/jleEditorTextEdit.cpp"
         "src/jleEditorResourceEdit.cpp"
+        "src/jleEditorResourceRegistration.cpp"
         "src/jleEditorNotifications.cpp"
         "src/jleEditorGizmos.cpp"
         "src/jleEditorSaveState.cpp"

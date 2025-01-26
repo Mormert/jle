@@ -101,6 +101,9 @@ protected:
     std::unordered_set<jlePath> _materialsToLoadIntoGPU;
     std::vector<jleMaterialGPUData> _materialGpuBuffers;
 
+    std::unordered_map<jlePath, jleTextureGPUDataHandle> _textureGPULookup;
+    std::unordered_set<jlePath> _texturesToLoadIntoGPU;
+
     static void createMeshGPUBuffers(jleMeshGPUData* gpuData, const jleMesh* mesh);
     static void destroyMeshGPUBuffers(jleMeshGPUData* gpuData);
 

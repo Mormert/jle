@@ -1,2 +1,3 @@
 target_sources(jleEditor PRIVATE
-    "jleGraphicsModuleEditor.cpp")
+    "jleGraphicsModuleEditor.cpp"
+    "jleGraphicsModuleEditorUI.cpp")

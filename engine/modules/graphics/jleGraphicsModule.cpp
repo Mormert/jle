@@ -79,6 +79,10 @@ jleGraphicsModule::render(int windowX, int windowY)
         return;
     }
 
+    jleSerializationContext ctx{};
+    ctx.resources = &_resourceHolder;
+    ctx.serializationInterfaces.push_back(_renderThread.get());
+
     for (const auto& mesh : _meshesToLoadIntoGPU) {
         _meshGpuBuffers.push_back({});
         jleMeshGPUData* gpuData = &_meshGpuBuffers.back();
@@ -88,11 +92,15 @@ jleGraphicsModule::render(int windowX, int windowY)
     }
     _meshesToLoadIntoGPU.clear();
 
-    for (const auto& materialPath : _materialsToLoadIntoGPU) {
-        jleSerializationContext ctx{};
-        ctx.resources = &_resourceHolder;
-        ctx.serializationInterfaces.push_back(_renderThread.get());
+    for (const auto& texturePath : _texturesToLoadIntoGPU) {
 
+        const jleResourceRef<jleTexture> texture{texturePath, ctx}; // Load texture resource into resourceHolder (rework this later)
+        _renderThread->processRenderQueue(); // Ensure that we fully load the texture onto the GPU before accessing its ID
+        _textureGPULookup.insert(std::make_pair(texturePath, texture->id()));
+    }
+    _texturesToLoadIntoGPU.clear();
+
+    for (const auto& materialPath : _materialsToLoadIntoGPU) {
         auto material = jleResourceRef<jleMaterial>{materialPath, ctx};
 
         _materialGpuBuffers.emplace_back();

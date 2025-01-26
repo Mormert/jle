@@ -29,6 +29,7 @@
 
 #include "modules/graphics/core/jleIncludeGL.h"
 #include "modules/graphics/runtime/components/cMeshRenderer.h"
+#include "modules/image/editor/jleImageModuleEditor.h"
 #include "modules/mesh/editor/jleMeshModuleEditor.h"
 
 #include <modules/graphics/core/jleFrameBufferInterface.h>

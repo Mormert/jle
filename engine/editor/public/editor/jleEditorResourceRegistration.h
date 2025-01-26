@@ -15,37 +15,23 @@
 
 #pragma once
 
-#include "jleGraphicsModuleEditorUI.h"
+#include "core/jlePath.h"
 
-#include <modules/graphics/core/jleFramebufferScreen.h>
-#include <modules/graphics/jleGraphicsModule.h>
-#include <modules/jleEditorUpdateContext.h>
+#include <functional>
+#include <unordered_map>
 
-class jleGraphicsModuleEditor : public jleGraphicsModule
+class jlePath;
+struct jleGameModules;
+
+class jleEditorResourceRegistration
 {
 public:
-    void postRender() override;
+    void addResource(
+        const std::vector<std::string> &fileEndings,
+        const std::function<void(const jlePath &path, jleGameModules &gameModules)> &openResourcePromptFunction);
 
-    void initializeECS(jlECS::ECS &ecs) override;
-
-    void updateEditor(jleEditorUpdateContext& ctx, const std::vector<glm::mat4>& worldMatrices);
-
-    std::unique_ptr<jleFramebufferScreen> cameraPreviewFramebuffer;
-
-    void setGameWindowSize(uint32_t width, uint32_t height);
-
-    uint32_t getGameWindowTextureId() const { return _screenFramebuffer->texture(); };
-
-    jleFramePacket& getFramePacketEditor() { return _framePacketsEditor; }
-    const jleFramePacket& getPreviousFramePacketGame() { return getPreviousFramePacket(); }
-
-    friend class jleGraphicsModuleEditorUI;
-    jleGraphicsModuleEditorUI ui;
-
-protected:
-    void display() override;
+    void invokeOpenResourcePromptFunctions(const jlePath &path, jleGameModules &gameModules) const;
 
 private:
-    // The editor only has one frame packet, as it NOT rendered on a separate thread
-    jleFramePacket _framePacketsEditor;
+    std::unordered_map<std::string, std::vector<std::function<void(const jlePath& path, jleGameModules& gameModules)>>> _openResourcePromptFunctions;
 };

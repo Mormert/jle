@@ -13,39 +13,22 @@
  *                                                                                           *
  *********************************************************************************************/
 
-#pragma once
-
-#include "jleGraphicsModuleEditorUI.h"
-
-#include <modules/graphics/core/jleFramebufferScreen.h>
-#include <modules/graphics/jleGraphicsModule.h>
-#include <modules/jleEditorUpdateContext.h>
-
-class jleGraphicsModuleEditor : public jleGraphicsModule
+#include "editor/jleEditorResourceRegistration.h"
+void
+jleEditorResourceRegistration::addResource(
+    const std::vector<std::string> &fileEndings,
+    const std::function<void(const jlePath &path, jleGameModules &gameModules)> &openResourcePromptFunction)
 {
-public:
-    void postRender() override;
-
-    void initializeECS(jlECS::ECS &ecs) override;
-
-    void updateEditor(jleEditorUpdateContext& ctx, const std::vector<glm::mat4>& worldMatrices);
-
-    std::unique_ptr<jleFramebufferScreen> cameraPreviewFramebuffer;
-
-    void setGameWindowSize(uint32_t width, uint32_t height);
-
-    uint32_t getGameWindowTextureId() const { return _screenFramebuffer->texture(); };
-
-    jleFramePacket& getFramePacketEditor() { return _framePacketsEditor; }
-    const jleFramePacket& getPreviousFramePacketGame() { return getPreviousFramePacket(); }
-
-    friend class jleGraphicsModuleEditorUI;
-    jleGraphicsModuleEditorUI ui;
-
-protected:
-    void display() override;
-
-private:
-    // The editor only has one frame packet, as it NOT rendered on a separate thread
-    jleFramePacket _framePacketsEditor;
-};
+    for (const auto &fileEnding : fileEndings) {
+        _openResourcePromptFunctions[fileEnding].push_back(openResourcePromptFunction);
+    }
+}
+void
+jleEditorResourceRegistration::invokeOpenResourcePromptFunctions(const jlePath &path, jleGameModules &gameModules) const
+{
+    if (const auto it = _openResourcePromptFunctions.find(path.getFileEnding()); it != _openResourcePromptFunctions.end()) {
+        for (const auto &func : it->second) {
+            func(path, gameModules);
+        }
+    }
+}

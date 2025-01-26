@@ -17,6 +17,7 @@
 
 #include <memory>
 
+class jleEditorResourceRegistration;
 class jleEditorUpdateContext;
 struct jleGameModules;
 
@@ -24,4 +25,6 @@ namespace jleDefaultGameEditorFunctions
 {
     std::unique_ptr<jleGameModules> createDefaultModules_Editor(bool gameRunning);
     void updateEditorGameModules(jleEditorUpdateContext &ctx);
+    void renderUIEditorGameModules(jleGameModules &editorModules);
+    void registerEditorResources(jleEditorResourceRegistration& registration);
 };

@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 
+class jleEditorResourceRegistration;
 class jleEditorWindow;
 class jleFileWatcher;
 class jleEditorWindowInterface;
@@ -55,6 +56,8 @@ public:
     struct EditorConstructConfig{
         std::function<void(jleGameModules&, jleEngineUpdateContext&, jlECS::ECS&)> modulesUpdateRenderablesOnly = {};
         std::function<void(jleEditorUpdateContext&)> updateEditorGameModules = {};
+        std::function<void(jleGameModules&)> renderUIEditorGameModules = {};
+        std::function<void(jleEditorResourceRegistration&)> registerEditorResources = {};
     };
 
     explicit jleEditor(const EditorConstructConfig &editorConfig, const jleGameEngine::EngineConstructConfig &engineConfig);
@@ -103,6 +106,8 @@ private:
     std::shared_ptr<jleEditorTextEdit> _textEditWindow;
 
     std::unique_ptr<jleEditorGizmos> _gizmos;
+
+    std::unique_ptr<jleEditorResourceRegistration> _resourceRegistration;
 
     std::unique_ptr<jlECS::Debug::ECS_Debug> _editorEcs;
     std::unique_ptr<jleGameModules> _editorModules;
