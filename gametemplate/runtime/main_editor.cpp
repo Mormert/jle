@@ -2,6 +2,8 @@
  *               Copyright (c) 2023-2024 Johan Lind. All rights reserved.                    *
  *********************************************************************************************/
 
+#include "core/jleMalloc.h"
+
 #include <game/loader/editor/jleGameModulesLoaderEditor.h>
 #include <editor/jleEditor.h>
 #include <editor/jleEditorWindow.h>
@@ -10,6 +12,8 @@
 int
 main(int argc, char *argv[])
 {
+    jleMalloc::InstallMemTrackingHooks();
+
     auto kickstarter = jleKickStarter{};
 
     jleGameEngine::EngineConstructConfig config{

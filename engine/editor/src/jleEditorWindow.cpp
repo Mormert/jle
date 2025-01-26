@@ -164,7 +164,7 @@ WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 static void
-initEditorWindowWin32(GLFWwindow* glfwWindow,  trfge3aqwcveWindow &window)
+initEditorWindowWin32(GLFWwindow* glfwWindow,  jleWindow &window)
 {
     const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 

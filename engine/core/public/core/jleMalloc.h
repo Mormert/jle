@@ -17,11 +17,10 @@
 
 #include <cstddef>
 
+// Add -DJLE_BUILD_MEMTRACK=ON to the build to enable detailed memory tracking debugging
 namespace jleMalloc{
-#ifndef NDEBUG
     size_t getBytesAllocated();
-#else
-    size_t getBytesAllocated(){ return 0; }
-#endif
-}
 
+    // Should be called at the top of main()
+    unsigned long InstallMemTrackingHooks();
+}

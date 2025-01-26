@@ -110,3 +110,6 @@ target_include_directories(jleCore_3rdparty PUBLIC SYSTEM
     "${CMAKE_CURRENT_SOURCE_DIR}/lua/lua"
     "${CMAKE_CURRENT_BINARY_DIR}/git_submodules/assimp/include"
 )
+
+add_subdirectory(detours)
+target_link_libraries(jleCore_3rdparty PRIVATE lib_detours)

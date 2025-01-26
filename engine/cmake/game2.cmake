@@ -21,6 +21,7 @@ option(JLE_BUILD_EDITOR "Build the game in the editor" ON)
 option(JLE_BUILD_HEADLESS "Build the game without graphics (for servers)" OFF)
 option(JLE_BUILD_EMSCRIPTEN "Build with Emscripten targeting WebAssembly" OFF)
 option(JLE_BUILD_OPENGLES30 "Use OpenGL ES 3.0 instead of desktop core 3.3" ON)
+option(JLE_BUILD_MEMTRACK "Use memory tracking for each single allocation" OFF)
 option(JLE_BUILD_UNITY "Smash compilation units into chunks for faster build times" OFF)
 option(JLE_BUILD_PRECOMPILED_HEADER "Use the precompiled header technique for faster iteration build times" OFF)
 

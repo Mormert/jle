@@ -17,8 +17,11 @@
 
 #include <sstream>
 #ifdef _WIN32
+#include <future>
+#include <mutex>
 #include <windows.h>
 #include <psapi.h>
+#include <tlhelp32.h>
 #elif __linux__
 #include <unistd.h>
 #include <sys/types.h>
@@ -38,6 +41,50 @@ namespace
 uint64_t FileTimeToMicroseconds(const FILETIME& ft) {
     return ((uint64_t(ft.dwHighDateTime) << 32) | ft.dwLowDateTime) / 10;
 }
+
+std::future<int> g_threadCountFuture;
+std::atomic<bool> g_taskRunning(false);
+std::mutex g_resultMutex;
+int g_cachedResult = -1;
+
+int GetThreadCountWin32(DWORD processId) {
+    std::lock_guard<std::mutex> lock(g_resultMutex);
+
+    if (g_taskRunning && g_threadCountFuture.valid()) {
+        return g_cachedResult;
+    }
+
+    g_taskRunning = true;
+
+    g_threadCountFuture = std::async(std::launch::async, [processId]() {
+        HANDLE hThreadSnap = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+        if (hThreadSnap == INVALID_HANDLE_VALUE)
+            return -1;
+
+        THREADENTRY32 te32;
+        te32.dwSize = sizeof(THREADENTRY32);
+
+        if (!Thread32First(hThreadSnap, &te32)) {
+            CloseHandle(hThreadSnap);
+            return -1;
+        }
+
+        int count = 0;
+        do {
+            if (te32.th32OwnerProcessID == processId)
+                count++;
+        } while (Thread32Next(hThreadSnap, &te32));
+
+        CloseHandle(hThreadSnap);
+
+        g_cachedResult = count;
+        g_taskRunning = false;
+        return count;
+    });
+
+    return g_cachedResult;
+}
+
 #endif
 
 }
@@ -66,7 +113,8 @@ jleSystemUsageTracker::getSystemUsageInfo(bool queryOpenGLMemUsage)
         return usageInfo;
     }
 
-    usageInfo.threadCount = GetCurrentThreadId();
+    DWORD pid = GetCurrentProcessId();
+    usageInfo.threadCount = GetThreadCountWin32(pid);
 
 #elif __linux__
     struct sysinfo memInfo;
