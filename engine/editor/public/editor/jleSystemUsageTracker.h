@@ -16,6 +16,7 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
 
 struct jleSystemUsageInfo {
     uint64_t memoryUsageKB;
