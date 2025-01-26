@@ -26,50 +26,80 @@ jleGame::~jleGame() = default;
 void
 jleGame::update(jleEngineUpdateContext &ctx)
 {
-    _modules->hierarchyModule->updateWorldMatrices(*_ecs);
-    const std::vector<glm::mat4>& worldMatrices = _modules->hierarchyModule->getWorldMatrices();
+    _modules->update(ctx, *_ecs);
+}
+
+void
+jleGame::start(jleSerializationContext& serializationContext) {}
+
+void
+jleGameModules::initialize(jlECS::ECS &ecs, jleSerializationContext& serializationContext)
+{
+    hierarchyModule->initializeECS(ecs);
+    graphicsModule->initializeECS(ecs);
+    physicsModule->initializeECS(ecs);
+
+    luaModule->initializeModule(serializationContext);
+    luaModule->initializeECS(ecs);
+}
+
+void
+jleGameModules::update(jleEngineUpdateContext &ctx, jlECS::ECS& ecs)
+{
+    hierarchyModule->updateWorldMatrices(ecs);
+    const std::vector<glm::mat4>& worldMatrices = hierarchyModule->getWorldMatrices();
 
     {
         jleGraphicsModule::UpdateContext graphicsUpdateContext{
-            .in = {  .screenX = ctx.gameRuntime.mainGameScreenFramebuffer->width(),
+            .in =    {  .screenX = ctx.gameRuntime.mainGameScreenFramebuffer->width(),
                         .screenY = ctx.gameRuntime.mainGameScreenFramebuffer->height(),
-                        .worldMatrices = worldMatrices   },
-            .inOut = {.ecs = *_ecs},
-            .out = {.framePacket = ctx.currentFramePacket}};
+                        .worldMatrices = worldMatrices },
+            .inOut = {  .ecs = ecs },
+            .out =   {  .framePacket = ctx.currentFramePacket }};
 
-        _modules->graphicsModule->update(graphicsUpdateContext);
+        graphicsModule->update(graphicsUpdateContext);
     }
 
     {
         jlePhysicsModule::UpdateContext physicsUpdateContext{
-            .in = {  .dt = 1.f / 60.f,
-                        .worldMatrices = worldMatrices   },
-            .inOut = { .ecs = *_ecs}
+            .in =     { .dt = 1.f / 60.f,
+                        .worldMatrices = worldMatrices },
+            .inOut =  { .ecs = ecs}
         };
 
-        _modules->physicsModule->update(physicsUpdateContext);
+        physicsModule->update(physicsUpdateContext);
     }
 
     {
         jleLuaModule::UpdateContext luaUpdateContext{
-            .in = {.dt = ctx.frameInfo.getDeltaTime()},
-            .inOut = {.ecs = *_ecs}
+            .in =    { .dt = ctx.frameInfo.getDeltaTime() },
+            .inOut = { .ecs = ecs }
         };
 
-        _modules->luaModule->update(luaUpdateContext);
+        luaModule->update(luaUpdateContext);
     }
 }
 
 void
-jleGame::start(GameStartContext& ctx)
+jleGameModules::updateRenderablesOnly(jleEngineUpdateContext &ctx, jlECS::ECS& ecs)
 {
-    _ecs = std::move(ctx.ecs);
+    hierarchyModule->updateWorldMatrices(ecs);
+    const std::vector<glm::mat4>& worldMatrices = hierarchyModule->getWorldMatrices();
 
-    _modules->hierarchyModule->initializeECS(*_ecs);
-    _modules->graphicsModule->initializeECS(*_ecs);
-    _modules->physicsModule->initializeECS(*_ecs);
+    {
+        jleGraphicsModule::UpdateContext graphicsUpdateContext{
+            .in =    {  .screenX = ctx.gameRuntime.mainGameScreenFramebuffer->width(),
+                   .screenY = ctx.gameRuntime.mainGameScreenFramebuffer->height(),
+                   .worldMatrices = worldMatrices },
+            .inOut = {  .ecs = ecs },
+            .out =   {  .framePacket = ctx.currentFramePacket }};
 
-    _modules->luaModule->initializeModule(ctx.serializationContext);
-    _modules->luaModule->initializeECS(*_ecs);
+        graphicsModule->update(graphicsUpdateContext);
+    }
 }
 
+void
+jleGameModules::populateSerializeableInterfaces(std::vector<jleSerializableInterface *> &interfaces)
+{
+    luaModule->populateSerializeableInterface(interfaces);
+}

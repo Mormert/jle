@@ -3,13 +3,7 @@
 #include "GameTemplate.h"
 
 void
-GameTemplate::start(GameStartContext& ctx)
+GameTemplate::start(jleSerializationContext &serializationContext)
 {
-    jleGame::start(ctx);
-}
-
-void
-GameTemplate::update(jleEngineUpdateContext& ctx)
-{
-    jleGame::update(ctx);
+    jleGame::start(serializationContext);
 }

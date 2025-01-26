@@ -21,6 +21,8 @@ project(${JLE_GAME_BUILD})
 add_library(${JLE_GAME_BUILD} SHARED
         "GameTemplate.cpp")
 
+target_compile_definitions(${JLE_GAME_BUILD} PRIVATE GAMETEMPLATE_EXPORTS)
+
 target_include_directories(${JLE_GAME_BUILD} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 include(${JLE_ENGINE_PATH}/cmake/game2.cmake)

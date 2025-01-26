@@ -212,8 +212,8 @@ jleGraphics::renderMeshes(const jleCamera &camera,
             mesh.material->getShader()->SetBool("uUseSkinning", false);
         }
 
-        const auto vao = mesh.mesh->getVAO();
-        if (vao != 0) {
+        uint32_t vao = mesh.mesh->getVAO();
+        if (vao != UINT32_MAX) {
             glBindVertexArray(vao);
             if (mesh.mesh->usesIndexing()) {
                 glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);
@@ -455,7 +455,7 @@ jleGraphics::renderShadowMeshes(const std::vector<jle3DQueuedMesh> &meshes, jleS
         shader.SetBool("uUseSkinning", false);
 
         const auto vao = mesh.mesh->getVAO();
-        if (vao != 0) {
+        if (vao != UINT32_MAX) {
             glBindVertexArray(vao);
             if (mesh.mesh->usesIndexing()) {
                 glDrawElements(GL_TRIANGLES, mesh.mesh->getTrianglesCount(), GL_UNSIGNED_INT, (void *)0);

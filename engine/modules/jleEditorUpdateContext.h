@@ -20,7 +20,12 @@
 class jleEditor;
 class jleResourceIndexer;
 class jleEditorGizmos;
-struct jleGameState;
+class jleGameModules;
+
+namespace jlECS
+{
+class ECS;
+}
 
 class jleEditorUpdateContext
 {
@@ -29,4 +34,9 @@ public:
     jleResourceIndexer &resourceIndexer;
     jleEditorGizmos &gizmos;
     jleFramePacket &editorFramePacket;
+    jlECS::ECS &editorEcs;
+    jleGameModules &editorGameModules;
+
+    jlECS::ECS &getCurrentECS();
+    jleGameModules &getCurrentModules();
 };

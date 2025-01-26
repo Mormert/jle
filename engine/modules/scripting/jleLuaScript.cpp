@@ -49,11 +49,11 @@ jleLuaScript::loadScriptIntoLuaEnv(jleLuaEnvironment& luaEnvironment)
         luaEnvironment.getState().script(_sourceCode, absoluteSrcCodePath.str());
         _failsLoading = false;
 
-        const auto classes = jleLuaClass::getLuaClassesFromLuaSrc(path, _sourceCode);
+        const auto classes = jleLuaClass::extractLuaClassesFromLuaSrc(path, _sourceCode);
 
-        for (auto &c : classes) {
-            const auto &className = c.getClassName();
-            luaEnvironment.loadedLuaClasses()[className] = c;
+        for (auto &luaClass : classes) {
+            const auto &className = luaClass.getClassName();
+            luaEnvironment.insertLuaClass(className, luaClass);
         }
 
     } catch (std::exception &e) {

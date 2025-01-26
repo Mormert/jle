@@ -23,6 +23,8 @@ jleEditorResourceEdit::jleEditorResourceEdit(const std::string &window_name) : j
 void
 jleEditorResourceEdit::renderUI(jleEditorUpdateContext &ctx)
 {
+    ZoneScoped;
+
     std::vector<jlePath> toBeRemoved{};
 
     for (auto &[path, resource] : _resources) {

@@ -26,7 +26,7 @@
 #include <sstream>
 
 std::vector<jleLuaClass>
-jleLuaClass::getLuaClassesFromLuaSrc(const jlePath &srcPath, const std::string &luaSrc)
+jleLuaClass::extractLuaClassesFromLuaSrc(const jlePath &srcPath, const std::string &luaSrc)
 {
     std::vector<jleLuaClass> classes;
 
@@ -43,9 +43,33 @@ jleLuaClass::getLuaClassesFromLuaSrc(const jlePath &srcPath, const std::string &
             }
 
             std::istringstream iss2(line.substr(10));
-            std::string className;
+            std::string className, colon, baseClass;
             iss2 >> className;
+
             currentClass._className = className;
+
+            std::string remainder;
+            std::getline(iss2, remainder);
+            size_t colonPos = remainder.find(':');
+            if (colonPos != std::string::npos) {
+                std::string parentsPart = remainder.substr(colonPos + 1);
+                std::istringstream parentStream(parentsPart);
+                std::string parentName;
+                while (std::getline(parentStream, parentName, ',')) {
+                    parentName.erase(0, parentName.find_first_not_of(" \t"));
+                    parentName.erase(parentName.find_last_not_of(" \t") + 1);
+                    if (!parentName.empty()) {
+                        currentClass._parentsClassNames.push_back(parentName);
+
+                        if (parentName != currentClass._className) {
+                            LuaTypeData luaTypeData;
+                            luaTypeData.type = LuaType::DerivedFromLuaClass;
+                            luaTypeData.luaClass = parentName;
+                            currentClass._attributes.emplace_back(luaTypeData, parentName);
+                        }
+                    }
+                }
+            }
         } else if (line.find("---@serialized") == 0) {
             std::istringstream iss2(line.substr(15));
             std::string type, name;
@@ -83,18 +107,6 @@ jleLuaClass::getLuaClassesFromLuaSrc(const jlePath &srcPath, const std::string &
             }
 
             currentClass._attributes.emplace_back(luaTypeData, name);
-        } else if (line.find("---@inherits") == 0) {
-            std::istringstream iss2(line.substr(13));
-            std::string deriveFrom;
-            iss2 >> deriveFrom;
-
-            jleAssert(deriveFrom != currentClass._className);
-
-            LuaTypeData luaTypeData;
-            luaTypeData.type = LuaType::DerivedFromLuaClass;
-            luaTypeData.luaClass = deriveFrom;
-
-            currentClass._attributes.emplace_back(luaTypeData, deriveFrom);
         }
     }
 
@@ -118,15 +130,14 @@ jleLuaClass::getScriptPathWhereClassIsDefined() const
     return _srcCodePath;
 }
 
-std::unordered_map<std::string, jleLuaClass>& jleLuaClass::getLoadedLuaClasses(jleSerializationContext &ctx) {
+jleLuaClass* jleLuaClass::getLoadedLuaClass(jleSerializationContext &ctx, const std::string& luaClassName) {
     jleAssert(ctx.get<jleLuaEnvironment>());
     const auto &luaEnv = ctx.get<jleLuaEnvironment>();
-    auto &loadedClasses = luaEnv->loadedLuaClasses();
-    return loadedClasses;
+    return luaEnv->getLuaClassPtr(luaClassName);
 }
 
-const jleLuaClass::ClassNameHashType
-jleLuaClass::getClassHash()
+jleLuaClass::ClassNameHashType
+jleLuaClass::getClassHash() const
 {
     if (!_classNameHash) {
         static const auto hashFunc = std::hash<std::string>();
@@ -135,3 +146,4 @@ jleLuaClass::getClassHash()
 
     return _classNameHash;
 }
+

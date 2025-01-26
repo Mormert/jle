@@ -356,11 +356,10 @@ jleECSEditorWindow::jleECSEditorWindow(const std::string &window_name)
 jleECSEditorWindow::RenderUIOutput
 jleECSEditorWindow::renderUI(const RenderUIInput& input)
 {
+    ZoneScoped;
+
     if (!isOpened) {
-        return {};
-    }
-    if (input.editorUpdate.engineUpdateContext.gameRuntime.isGameKilled()) {
-        return {};
+        return RenderUIOutput{_selectedObjects};
     }
 
     jleUndoRedoCommandBase::CommandContext undoRedoCommandCtx = {input.editorUpdate.engineUpdateContext.serializationContext};
@@ -391,11 +390,13 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
 
     ImGui::End();
 
-    return {_selectedObjects};
+    return RenderUIOutput{_selectedObjects};
 }
 
 void jleECSEditorWindow::handleUndoRedoShortcuts(const RenderUIInput& input, jleUndoRedoCommandBase::CommandContext& undoRedoCommandCtx)
 {
+    ZoneScoped;
+
     ImGuiIO& io = ImGui::GetIO();
     if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z, false))
     {
@@ -410,6 +411,8 @@ void jleECSEditorWindow::handleUndoRedoShortcuts(const RenderUIInput& input, jle
 
 void jleECSEditorWindow::handleSaveLoadButtons(const RenderUIInput& input, jleUndoRedoCommandBase::CommandContext& undoRedoCommandCtx, jlECS::ECS& ecs, jleSerializationContext& serializationContext)
 {
+    ZoneScoped;
+
     ImGui::BeginGroup();
     if (ImGui::Button("Save")) {
         auto start = std::chrono::high_resolution_clock::now();
@@ -456,6 +459,8 @@ void jleECSEditorWindow::handleSaveLoadButtons(const RenderUIInput& input, jleUn
 
 void jleECSEditorWindow::handleObjectHierarchy(const RenderUIInput& input, jleUndoRedoCommandBase::CommandContext& undoRedoCommandCtx, jlECS::ECS& ecs, jleSerializationContext& serializationContext)
 {
+    ZoneScoped;
+
     ImGuiIO& io = ImGui::GetIO();
     float globalImguiScale = io.FontGlobalScale;
     ImGui::BeginGroup();
@@ -499,9 +504,15 @@ void jleECSEditorWindow::handleObjectHierarchy(const RenderUIInput& input, jleUn
 
     ImGui::BeginChild("hierarchy_tree", ImVec2(280 * globalImguiScale, 0), true);
 
-    auto* objectsDebug = ecs.getAllObjectsDebug();
+    std::vector<jlECS::ObjectRef>* objectsDebug;
+    {
+        ZoneScopedN("GetAllObjectsDebug");
+        objectsDebug = ecs.getAllObjectsDebug();
+    }
     std::unordered_map<int, std::vector<jlECS::ObjectRef>> childrenMap;
     {
+        ZoneScopedN("FillChildrenMap");
+
         for (auto& obj : *objectsDebug)
         {
             auto parentComponent = ecs.getComponent<cParent>(obj.objectIndex());
@@ -708,6 +719,8 @@ void jleECSEditorWindow::handleObjectHierarchy(const RenderUIInput& input, jleUn
 
 void jleECSEditorWindow::handleSelectedObjectsPane(const RenderUIInput& input, jleUndoRedoCommandBase::CommandContext& undoRedoCommandCtx, jlECS::ECS& ecs)
 {
+    ZoneScoped;
+
     ImGuiIO& io = ImGui::GetIO();
     float globalImguiScale = io.FontGlobalScale;
     ImGui::BeginGroup();
@@ -791,6 +804,8 @@ void jleECSEditorWindow::handleSelectedObjectsPane(const RenderUIInput& input, j
 
 void jleECSEditorWindow::handleDeletionConfirmation(const RenderUIInput& input, jleUndoRedoCommandBase::CommandContext& undoRedoCommandCtx, jlECS::ECS& ecs)
 {
+    ZoneScoped;
+
     ImGuiIO& io = ImGui::GetIO();
     if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
         ImGui::IsKeyPressed(ImGuiKey_Delete) &&

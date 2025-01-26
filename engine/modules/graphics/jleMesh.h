@@ -86,13 +86,13 @@ protected:
 
     unsigned int _trianglesCount{};
 
-    unsigned int _vao{};
-    unsigned int _vbo_pos{};
-    unsigned int _vbo_normal{};
-    unsigned int _vbo_texcoords{};
-    unsigned int _vbo_tangent{};
-    unsigned int _vbo_bitangent{};
-    unsigned int _ebo{};
+    unsigned int _vao{UINT32_MAX};
+    unsigned int _vbo_pos{UINT32_MAX};
+    unsigned int _vbo_normal{UINT32_MAX};
+    unsigned int _vbo_texcoords{UINT32_MAX};
+    unsigned int _vbo_tangent{UINT32_MAX};
+    unsigned int _vbo_bitangent{UINT32_MAX};
+    unsigned int _ebo{UINT32_MAX};
 
     std::vector<glm::vec3> _positions{};
     std::vector<glm::vec3> _normals{};

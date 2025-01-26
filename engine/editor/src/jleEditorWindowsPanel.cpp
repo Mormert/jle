@@ -38,6 +38,7 @@ jleEditorWindowsPanel::jleEditorWindowsPanel(const std::string &window_name, jle
 void
 jleEditorWindowsPanel::renderUI(jleEngineUpdateContext & ctx)
 {
+    ZoneScoped;
     dockspaceupdate(ctx);
 }
 

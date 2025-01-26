@@ -20,7 +20,6 @@
 class jleLuaEnvironmentEditor : public jleLuaEnvironment
 {
 public:
-    void setupLua(sol::state &lua) override;
-
+    jleLuaEnvironmentEditor();
 };
 

@@ -29,4 +29,5 @@ public:
     { luaClassName = value; }
 
     std::string luaClassName;
+    const char* baseClass = nullptr; // Optionally provide a base class, such that only classes derived from the base class can be selected in the editor
 };

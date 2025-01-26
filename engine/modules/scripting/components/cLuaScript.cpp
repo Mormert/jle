@@ -24,7 +24,7 @@ cLuaScript::start(jleLuaEnvironment& environment)
         return;
     }
 
-    const auto luaClass = environment.getState()[_luaClass.luaClassName];
+    const auto luaClass = environment.getState()[_luaComponent.luaClassName];
 
     try {
         sol::protected_function startFunc = luaClass["start"];
@@ -37,11 +37,11 @@ cLuaScript::start(jleLuaEnvironment& environment)
 void
 cLuaScript::update(jleLuaEnvironment& environment, float dt)
 {
-    if (!_isInitialized) {
-        return;
+    if (!_isInitialized && !_luaComponent.luaClassName.empty()) {
+        initializeLuaComponent(environment);
     }
 
-    const auto luaClass = environment.getState()[_luaClass.luaClassName];
+    const auto luaClass = environment.getState()[_luaComponent.luaClassName];
 
     try {
         sol::protected_function updateFunc = luaClass["update"];
@@ -58,7 +58,7 @@ cLuaScript::onDestroy(jleLuaEnvironment& environment)
         return;
     }
 
-    const auto luaClass = environment.getState()[_luaClass.luaClassName];
+    const auto luaClass = environment.getState()[_luaComponent.luaClassName];
 
     try {
         sol::protected_function destroyFunc = luaClass["destroy"];
@@ -77,13 +77,13 @@ cLuaScript::getSelf()
 void
 cLuaScript::initializeLuaComponent(jleLuaEnvironment& luaEnvironment)
 {
-    if (!luaEnvironment.loadedLuaClasses().contains(_luaClass.luaClassName)) {
+    if (!luaEnvironment.getLuaClassPtr(_luaComponent.luaClassName)) {
         _isInitialized = false;
-        LOGE << "Failed to load Lua class component on cLuaScript " << _luaClass.luaClassName;
+        LOGE << "Failed to load Lua class component on cLuaScript " << _luaComponent.luaClassName;
         return;
     }
 
-    const auto luaClass = luaEnvironment.getState()[_luaClass.luaClassName];
+    const auto luaClass = luaEnvironment.getState()[_luaComponent.luaClassName];
 
     try {
         sol::protected_function classConstructor = luaClass["new"];
@@ -92,12 +92,11 @@ cLuaScript::initializeLuaComponent(jleLuaEnvironment& luaEnvironment)
 
             _isInitialized = true;
         } else {
-            LOGE << "Failed to initialize Lua class component on cLuaScript " << _luaClass.luaClassName;
+            LOGE << "Failed to initialize Lua class component on cLuaScript " << _luaComponent.luaClassName;
             _isInitialized = false;
         }
     } catch (std::exception &e) {
-        LOGE << "Failed to initialize Lua class component on cLuaScript " << _luaClass.luaClassName
-             << " reason: " << e.what();
+        LOGE << "Failed to initialize Lua class component on cLuaScript " << _luaComponent.luaClassName << " reason: " << e.what();
         _isInitialized = false;
     }
 }

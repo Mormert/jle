@@ -2,7 +2,7 @@
 
 ---@class ClassOne
 ---@serialized number aNumber
----@serialized number anotherNumber
+---@serialized string aString
 ---@serialized array<number> aNumberArray
 ClassOne = {}
 
@@ -10,16 +10,16 @@ function ClassOne.new(o)
 end
 
 ---@class ClassTwo
----@serialized number classTwoNumber
+---@serialized number aNumberFromClassTwo
 ClassTwo = {}
 
 function ClassTwo.new(o)
 end
 
----@class TestComponent : LuaComponent
----@inherits ClassOne
+---@class TestComponent : LuaComponent, ClassOne, ClassTwo
 ---@serialized array<integer> anIntegerArray
 ---@serialized ClassTwo aClassTwo
+---@serialized number myNumber
 TestComponent = TestComponent or {}
 
 function TestComponent:new(o)
@@ -31,9 +31,9 @@ function TestComponent:new(o)
 end
 
 function TestComponent:updateTimer(dt)
-    self.timer = self.timer + 1
-    if(self.timer % 100 == 0) then
-        print("updating TestComponent " .. self.timer)
+    self.myNumber = self.myNumber + 1
+    if(self.myNumber % 10 == 0) then
+        print("updating TestComponent " .. self.myNumbero)
     end
 end
 
@@ -44,9 +44,9 @@ end
 
 
 function TestComponent:start()
-    print("start TestComponent")
+    print("Start TestComponent")
 end
 
 function TestComponent:destroy()
-    print("destroy TestComponent")
+    print("Destroy TestComponent")
 end

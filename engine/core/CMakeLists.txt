@@ -3,7 +3,6 @@ add_library(jleCore STATIC
         "src/jleResourceHolder.cpp"
         "src/jleFileWatcher.cpp"
         "src/jleResourceInterface.cpp"
-        "src/jleTimerManager.cpp"
         "src/jlePath.cpp"
         "src/jleProfiler.cpp"
         "src/jleTransform.cpp"

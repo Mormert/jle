@@ -15,22 +15,18 @@
 
 #include "jleGameEngine.h"
 #include "core/jleResourceRef.h"
-#include "core/jleTimerManager.h"
 #include "jlECS/jlECS.h"
 #include "jleEngineSettings.h"
 #include "jleExplicitInclude.h"
 #include "game/jleGame.h"
 #include "game/jleGameRuntime.h"
 #include "modules/graphics/core/jleFramebufferMultisample.h"
-#include "modules/graphics/core/jleFramebufferScreen.h"
 #include "modules/graphics/core/jleFullscreenRendering.h"
 #include "modules/graphics/jle3DSettings.h"
 #include "modules/graphics/jleFramePacket.h"
 #include "modules/graphics/jleGraphics.h"
 #include "modules/graphics/jleRenderThread.h"
-#include "modules/input/hardware/jleMouseInput.h"
 #include "modules/input/jleInput.h"
-#include "modules/physics/jlePhysics.h"
 #include "modules/scripting/jleLuaEnvironment.h"
 #include "modules/windowing/jleWindow.h"
 
@@ -105,8 +101,6 @@ jleGameEngine::jleGameEngine(EngineConstructConfig& config)
         PLOG_INFO << "Initializing sound engine...";
         _soLoud->init();
     }
-
-    _timerManager = std::make_unique<jleTimerManager>();
 
     jleNetworkingModule::initialize();
 
@@ -370,9 +364,9 @@ jleGameEngine::createSerializationContext()
     std::vector<jleSerializableInterface *> interfaces;
     interfaces.push_back(_renderThread.get());
 
-    if (!_gameRuntime->isGameKilled()) {
-        auto luaEnvironment = &_gameRuntime->getGame().getModules().luaModule->getEnvironment();
-        interfaces.push_back(luaEnvironment);
+    if(jleGameModules* gameModules = getCurrentGameModules())
+    {
+        gameModules->populateSerializeableInterfaces(interfaces);
     }
 
     return jleSerializationContext {
@@ -398,3 +392,11 @@ jleGameEngine::createUpdateContext()
                                   serializationContext);
 }
 
+jleGameModules*
+jleGameEngine::getCurrentGameModules()
+{
+    if (!_gameRuntime->isGameKilled()) {
+        return &_gameRuntime->getGame().getModules();
+    }
+    return nullptr;
+}

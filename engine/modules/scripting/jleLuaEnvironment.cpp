@@ -29,16 +29,169 @@
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol2/sol.hpp>
 
-jleLuaEnvironment::jleLuaEnvironment() : _scriptFilesWatcher({jleVirtualPath("GR:/scripts").getRealPath().str()})
+jleLuaEnvironment::jleLuaEnvironment(bool editorMode) : _scriptFilesWatcher({jleVirtualPath("GR:/scripts").getRealPath().str()})
 {
     _luaState = std::make_unique<sol::state>();
-    setupLua(*_luaState);
+    setupLuaBindings(*_luaState);
+
+    const char* luaComponentName = "LuaComponent";
+    jleLuaClass luaComponentClass;
+    luaComponentClass._className = luaComponentName;
+    insertLuaClass(luaComponentName, luaComponentClass);
+
+    _editorMode = editorMode;
 }
 
 jleLuaEnvironment::~jleLuaEnvironment() = default;
 
 void
-jleLuaEnvironment::setupLua(sol::state &lua)
+jleLuaEnvironment::insertLuaClass(const std::string &name, const jleLuaClass &luaClass)
+{
+    jleLuaClassIndex luaClassIndex;
+    auto it = _loadedLuaClassesLookup.find(name);
+
+    if(it != _loadedLuaClassesLookup.end())
+    {
+         luaClassIndex = it->second;
+        _loadedLuaClasses[luaClassIndex] = luaClass;
+    }
+    else
+    {
+        _loadedLuaClasses.push_back(luaClass);
+        luaClassIndex = static_cast<int16_t>(_loadedLuaClasses.size()) - 1;
+        _loadedLuaClassesLookup[name] = luaClassIndex;
+
+        _loadedLuaClassesParents.resize(_loadedLuaClasses.size());
+        _loadedLuaClassesChildren.resize(_loadedLuaClasses.size());
+    }
+
+    _loadedLuaClassesParents[luaClassIndex].clear();
+
+    for (const std::string& parentName : luaClass.getParentsClassNames())
+    {
+        auto parentIt = _loadedLuaClassesLookup.find(parentName);
+        if (parentIt != _loadedLuaClassesLookup.end())
+        {
+            jleLuaClassIndex parentIndex = parentIt->second;
+
+            auto& children = _loadedLuaClassesChildren[parentIndex];
+            if (std::find(children.begin(), children.end(), luaClassIndex) == children.end())
+            {
+                children.push_back(luaClassIndex);
+            }
+
+            _loadedLuaClassesParents[luaClassIndex].push_back(parentIndex);
+        }
+        else
+        {
+            LOGE << luaClass.getClassName() << " has unknown parent: " << parentName;
+        }
+    }
+}
+
+std::vector<jleLuaClass*>
+jleLuaEnvironment::getImmediateParentClasses(const std::string& className)
+{
+    std::vector<jleLuaClass*> result;
+
+    auto it = _loadedLuaClassesLookup.find(className);
+    if (it == _loadedLuaClassesLookup.end())
+        return result;
+
+    jleLuaClassIndex classIndex = it->second;
+    for (jleLuaClassIndex parentIdx : _loadedLuaClassesParents[classIndex])
+    {
+        if (parentIdx >= 0 && parentIdx < static_cast<jleLuaClassIndex>(_loadedLuaClasses.size()))
+            result.push_back(&_loadedLuaClasses[parentIdx]);
+    }
+
+    return result;
+}
+
+std::vector<jleLuaClass*>
+jleLuaEnvironment::getAllParentClasses(const std::string& className)
+{
+    std::vector<jleLuaClass*> result;
+    std::unordered_set<jleLuaClassIndex> visited;
+
+    auto it = _loadedLuaClassesLookup.find(className);
+    if (it == _loadedLuaClassesLookup.end())
+        return result;
+
+    std::function<void(jleLuaClassIndex)> dfs = [&](jleLuaClassIndex idx) {
+        for (jleLuaClassIndex parentIdx : _loadedLuaClassesParents[idx])
+        {
+            if (visited.insert(parentIdx).second)
+            {
+                if (parentIdx >= 0 && parentIdx < static_cast<jleLuaClassIndex>(_loadedLuaClasses.size()))
+                    result.push_back(&_loadedLuaClasses[parentIdx]);
+                dfs(parentIdx);
+            }
+        }
+    };
+
+    dfs(it->second);
+    return result;
+}
+
+std::vector<jleLuaClass*>
+jleLuaEnvironment::getImmediateChildClasses(const std::string& className)
+{
+    std::vector<jleLuaClass*> result;
+
+    auto it = _loadedLuaClassesLookup.find(className);
+    if (it == _loadedLuaClassesLookup.end())
+        return result;
+
+    jleLuaClassIndex classIndex = it->second;
+    for (jleLuaClassIndex childIdx : _loadedLuaClassesChildren[classIndex])
+    {
+        if (childIdx >= 0 && childIdx < static_cast<jleLuaClassIndex>(_loadedLuaClasses.size()))
+            result.push_back(&_loadedLuaClasses[childIdx]);
+    }
+
+    return result;
+}
+
+std::vector<jleLuaClass*>
+jleLuaEnvironment::getAllChildClasses(const std::string& className)
+{
+    std::vector<jleLuaClass*> result;
+    std::unordered_set<jleLuaClassIndex> visited;
+
+    auto it = _loadedLuaClassesLookup.find(className);
+    if (it == _loadedLuaClassesLookup.end())
+        return result;
+
+    std::function<void(jleLuaClassIndex)> dfs = [&](jleLuaClassIndex idx) {
+        for (jleLuaClassIndex childIdx : _loadedLuaClassesChildren[idx])
+        {
+            if (visited.insert(childIdx).second)
+            {
+                if (childIdx >= 0 && childIdx < static_cast<jleLuaClassIndex>(_loadedLuaClasses.size()))
+                    result.push_back(&_loadedLuaClasses[childIdx]);
+                dfs(childIdx);
+            }
+        }
+    };
+
+    dfs(it->second);
+    return result;
+}
+
+std::vector<jleLuaClass *>
+jleLuaEnvironment::getAllLuaClasses()
+{
+    std::vector<jleLuaClass*> result;
+    for(auto& luaClass : _loadedLuaClasses)
+    {
+        result.push_back(&luaClass);
+    }
+    return result;
+}
+
+void
+jleLuaEnvironment::setupLuaBindings(sol::state &lua)
 {
 
     lua.open_libraries(sol::lib::base,
@@ -51,7 +204,7 @@ jleLuaEnvironment::setupLua(sol::state &lua)
                        sol::lib::table,
                        sol::lib::os);
 
-    setupLuaGLM(lua);
+    setupLuaGLMBindings(lua);
 
     lua["JLE_ENGINE_RESOURCES_PATH"] = JLE_ENGINE_RESOURCES_PATH;
     lua["JLE_EDITOR_RESOURCES_PATH"] = JLE_EDITOR_RESOURCES_PATH;
@@ -188,34 +341,29 @@ jleLuaEnvironment::setupLua(sol::state &lua)
     lua.set_function("LOGE", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::error)) {
         } else
-            (*plog::get<0>()) += plog::Record(plog::error, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
-                                 << s;
+            (*plog::get<0>()) += plog::Record(plog::error, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref() << s;
     });
 
     lua.set_function("LOGF", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::fatal)) {
         } else
-            (*plog::get<0>()) += plog::Record(plog::fatal, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
-                                 << s;
+            (*plog::get<0>()) += plog::Record(plog::fatal, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref() << s;
     });
 
     lua.set_function("LOGI", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::info)) {
         } else
-            (*plog::get<0>()) += plog::Record(plog::info, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
-                                 << s;
+            (*plog::get<0>()) += plog::Record(plog::info, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref() << s;
     });
     lua.set_function("LOGW", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::warning)) {
         } else
-            (*plog::get<0>()) += plog::Record(plog::warning, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
-                                 << s;
+            (*plog::get<0>()) += plog::Record(plog::warning, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref() << s;
     });
     lua.set_function("LOGV", [](const std::string &s) {
         if (!plog::get<0>() || !plog::get<0>()->checkSeverity(plog::verbose)) {
         } else
-            (*plog::get<0>()) += plog::Record(plog::verbose, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref()
-                                 << s;
+            (*plog::get<0>()) += plog::Record(plog::verbose, "(Lua)", 0, "(Lua)", reinterpret_cast<void *>(0), 0).ref() << s;
     });
 
     JLE_EXEC_IF(JLE_BUILD_EDITOR)
@@ -228,7 +376,7 @@ jleLuaEnvironment::setupLua(sol::state &lua)
 }
 
 void
-jleLuaEnvironment::setupLuaGLM(sol::state &lua)
+jleLuaEnvironment::setupLuaGLMBindings(sol::state &lua)
 {
     auto multOverloadsVec2 =
         sol::overload([](const glm::vec2 &v1, const glm::vec2 &v2) -> glm::vec2 { return v1 * v2; },
@@ -576,16 +724,21 @@ jleLuaEnvironment::loadedScripts()
     return _loadedScripts;
 }
 
-std::unordered_map<std::string, jleLuaClass> &
-jleLuaEnvironment::loadedLuaClasses()
+jleLuaClass *
+jleLuaEnvironment::getLuaClassPtr(const std::string &className)
 {
-    return _loadedLuaClasses;
+    auto it = _loadedLuaClassesLookup.find(className);
+    if(it != _loadedLuaClassesLookup.end())
+    {
+        return &_loadedLuaClasses[it->second];
+    }
+    return nullptr;
 }
 
 void
 jleLuaEnvironment::loadNewlyAddedScripts(jleSerializationContext& ctx)
 {
-    ZoneScopedNC("jleLuaEnvironment_loadNewlyAddedScripts", 0xe57395);
+    ZoneScoped;
 
     if (_fileWatchFuture.valid()) {
         if (_fileWatchFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {

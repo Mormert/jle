@@ -26,7 +26,7 @@ jleFileWatcher::jleFileWatcher(const std::vector<std::string> &directories) : _w
 jleFileIndexerResult
 jleFileWatcher::sweep()
 {
-    ZoneScopedNC("jleFileWatcher_sweep", 0xe57395);
+    ZoneScoped;
 
     ctr++;
 

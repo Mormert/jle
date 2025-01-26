@@ -20,7 +20,7 @@
 #include <modules/physics/jlePhysicsModule.h>
 
 std::unique_ptr<jleGameModules>
-jleModuleLoading::createDefaultModules()
+jleModuleLoading::createDefaultModules(bool gameRunning)
 {
     auto modules = std::make_unique<jleGameModules>();
 

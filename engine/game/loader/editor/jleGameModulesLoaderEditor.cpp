@@ -22,14 +22,14 @@
 #include <modules/scripting/editor/jleLuaEditorModule.h>
 
 std::unique_ptr<jleGameModules>
-jleModuleLoading::createDefaultModules_Editor()
+jleModuleLoading::createDefaultModules_Editor(bool gameRunning)
 {
     auto modules = std::make_unique<jleGameModules>();
 
     modules->hierarchyModule = std::make_unique<jleHierarchyModuleEditor>();
     modules->graphicsModule = std::make_unique<jleGraphicsModuleEditor>();
     modules->physicsModule = std::make_unique<jlePhysicsModuleEditor>();
-    modules->luaModule = std::make_unique<jleLuaEditorModule>();
+    modules->luaModule = std::make_unique<jleLuaEditorModule>(gameRunning);
 
     return modules;
 }

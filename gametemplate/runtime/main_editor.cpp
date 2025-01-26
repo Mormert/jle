@@ -9,6 +9,8 @@
 #include <editor/jleEditorWindow.h>
 #include <runtime/jleKickStarter.h>
 
+#include "GameTemplate.h"
+
 int
 main(int argc, char *argv[])
 {
@@ -19,7 +21,7 @@ main(int argc, char *argv[])
     jleGameEngine::EngineConstructConfig config{
         .window = std::make_unique<jleEditorWindow>(),
         .gameConfig = {
-            .gameCreator = std::make_unique<jleGame>,
+            .gameCreator = std::make_unique<GameTemplate>,
             .modulesCreator = jleModuleLoading::createDefaultModules_Editor,
             .ecsCreator = std::make_unique<jlECS::Debug::ECS_Debug> }
     };

@@ -42,7 +42,6 @@ class jleResourceHolder;
 class jleEngineSettings;
 class jleInput;
 class jleWindow;
-class jleTimerManager;
 class jleGraphics;
 class jle3DSettings;
 class jleFramePacket;
@@ -92,6 +91,8 @@ protected:
     jleSerializationContext createSerializationContext();
     jleEngineUpdateContext createUpdateContext();
 
+    virtual jleGameModules* getCurrentGameModules();
+
     void mainLoop();
 
     bool _running{false};
@@ -124,7 +125,6 @@ protected:
     friend class jleGameRuntime;
     std::unique_ptr<jleGameRuntime> _gameRuntime;
     std::unique_ptr<jleResourceHolder> _resources;
-    std::unique_ptr<jleTimerManager> _timerManager;
     std::shared_ptr<jleWindow> _window;
     std::unique_ptr<jleInput> _input;
     std::unique_ptr<SoLoud::Soloud> _soLoud;

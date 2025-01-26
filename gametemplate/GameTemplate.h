@@ -4,14 +4,26 @@
 
 #pragma once
 
-// Just an empty game template that can be started in editor or as a standalone program
+// An empty game template that can be started in editor or as a standalone program
 
-class GameTemplate final : public jleGame
+#if defined _WIN32 || defined __CYGWIN__
+    #ifdef GAMETEMPLATE_EXPORTS
+        #define GAMETEMPLATE_API __declspec(dllexport)
+    #else
+        #define GAMETEMPLATE_API __declspec(dllimport)
+    #endif
+#else
+    #ifdef GAMETEMPLATE_EXPORTS
+        #define GAMETEMPLATE_API __attribute__ ((visibility ("default")))
+    #else
+        #define GAMETEMPLATE_API
+    #endif
+#endif
+
+class GAMETEMPLATE_API GameTemplate final : public jleGame
 {
 public:
     ~GameTemplate() override = default;
 
-    void start(GameStartContext& ctx) override;
-
-    void update(jleEngineUpdateContext& ctx) override;
+    void start(jleSerializationContext& serializationContext) override;
 };

@@ -94,7 +94,7 @@ private:
     void draw_ui(jleImGuiArchive &ar, const char *name, jleTextureRefOrAlpha &value);
 
     bool draw_ui_reference(const char *name, std::string &value, std::vector<std::string> fileExtensions);
-    bool draw_ui_lua_reference(const char *name, std::string &value);
+    bool draw_ui_lua_reference(const char *name, jleLuaClassSerialization &value);
 
     // clang-format off
     void draw_ui(jleImGuiArchive &ar, const char *name, jleLuaClassSerialization &value);

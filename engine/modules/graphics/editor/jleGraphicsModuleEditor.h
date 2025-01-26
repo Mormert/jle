@@ -19,11 +19,6 @@
 #include <modules/graphics/jleGraphicsModule.h>
 #include <modules/graphics/core/jleFramebufferScreen.h>
 
-namespace jlECS
-{
-class ECS_Debug;
-}
-
 class jleGraphicsModuleEditor : public jleGraphicsModule
 {
 public:

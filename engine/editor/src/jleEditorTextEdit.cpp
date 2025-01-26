@@ -24,6 +24,8 @@ jleEditorTextEdit::jleEditorTextEdit(const std::string &window_name) : jleEditor
 void
 jleEditorTextEdit::renderUI()
 {
+    ZoneScoped;
+
     std::vector<jlePath> toBeClosed;
 
     for (auto &[path, textEditorPtr] : _textEditorsMap) {

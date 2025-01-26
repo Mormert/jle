@@ -22,17 +22,20 @@ struct jleSerializationContext;
 class jleGame;
 class jleGameModules;
 class jleGameEngine;
-class jleTimerManager;
 class jleFramebufferInterface;
 struct jleEngineUpdateContext;
 
 namespace jlECS{
 class ECS;
+namespace Debug
+{
+class ECS_Debug;
+}
 }
 
 struct jleGameConstructConfig{
     std::function<std::unique_ptr<jleGame>()> gameCreator = {};
-    std::function<std::unique_ptr<jleGameModules>()> modulesCreator = {};
+    std::function<std::unique_ptr<jleGameModules>(bool /*gameRunning*/)> modulesCreator = {};
     std::function<std::unique_ptr<jlECS::ECS>()> ecsCreator = {};
 };
 
@@ -40,8 +43,6 @@ class jleGameRuntime
 {
 public:
     jleGameRuntime(const jleGameConstructConfig &config, jleGameEngine& engine);
-
-    jleTimerManager &timerManager();
 
     jleGame &getGame();
 
@@ -69,6 +70,8 @@ public:
 
     std::unique_ptr<jleFramebufferInterface> mainGameScreenFramebuffer;
 
+    std::unique_ptr<jleGameModules> createModules(jlECS::ECS& ecs, jleSerializationContext& serializationContext, bool gameRunning);
+
 private:
     void update(jleEngineUpdateContext &ctx);
 
@@ -79,11 +82,11 @@ private:
     jleGameEngine &_engine;
     friend class jleGameEngine;
 
-    std::unique_ptr<jleTimerManager> _timerManager{};
-
     std::unique_ptr<jleGame> _game{};
 
     jleGameConstructConfig _gameConstructConfig{};
 
     bool _gameHalted = false;
+    bool _gameIsGettingKilled = false;
+    bool _gameIsGettingRestarted = false;
 };

@@ -16,8 +16,10 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 struct jleSerializationContext;
+class jleSerializableInterface;
 
 namespace jlECS
 {
@@ -41,6 +43,8 @@ public:
 
     virtual void initializeModule(jleSerializationContext& serializationContext);
 
+    void populateSerializeableInterface(std::vector<jleSerializableInterface*>& interfaces);
+
     struct UpdateContext {
         struct In {
             float dt;
@@ -60,5 +64,5 @@ protected:
     void onLuaComponentDestroyed(const jlECS::DestroyComponentData &destroyCallbackData);
     void onLuaComponentCopied(cLuaScript *source, cLuaScript *dest);
 
-    std::unique_ptr<jleLuaEnvironment> _luaEnvironment;
+    std::unique_ptr<jleLuaEnvironment> _luaEnvironment{};
 };

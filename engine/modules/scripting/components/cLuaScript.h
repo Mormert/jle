@@ -30,29 +30,7 @@ public:
     cLuaScript() = default;
 
     template <class Archive>
-    void
-    serialize(Archive &ar){
-        try {
-            jleSerializationContext &ctx = ar.ctx;
-            jleAssert(ctx.get<jleLuaEnvironment>());
-            auto &luaEnv = *ctx.get<jleLuaEnvironment>();
-
-            ar(CEREAL_NVP(_luaClass));
-
-            if (!_isInitialized && !_luaClass.luaClassName.empty()) {
-                initializeLuaComponent(luaEnv);
-            }
-
-            auto it = luaEnv.loadedLuaClasses().find(_luaClass.luaClassName);
-            if (it != luaEnv.loadedLuaClasses().end()) {
-                it->second.serializeClass(ar, _self);
-            }else {
-                _isInitialized = false;
-            }
-        } catch (std::exception &e) {
-            LOGE << "Failed to serialize cLuaScript";
-        }
-    }
+    void serialize(Archive &ar);
 
     void start(jleLuaEnvironment& environment);
 
@@ -64,10 +42,43 @@ public:
 
 private:
     void initializeLuaComponent(jleLuaEnvironment &luaEnvironment);
+    jleLuaClassSerialization _luaComponent{};
+
+    sol::table _self{};
+
     bool _isInitialized{false};
 
-    jleLuaClassSerialization _luaClass{};
-    sol::table _self;
-
     friend class jleLuaModule;
+    friend class jleLuaEditorModule;
 };
+
+template <class Archive>
+void
+cLuaScript::serialize(Archive &ar)
+{
+    try {
+        jleSerializationContext &ctx = ar.ctx;
+
+        _luaComponent.baseClass = "LuaComponent";
+        ar(CEREAL_NVP(_luaComponent));
+
+        if(auto* luaEnv = ctx.get<jleLuaEnvironment>())
+        {
+            if (!_isInitialized && !_luaComponent.luaClassName.empty() && !luaEnv->isEditorMode()) {
+                initializeLuaComponent(*luaEnv);
+            }
+
+            jleLuaClass* luaClass = luaEnv->getLuaClassPtr(_luaComponent.luaClassName);
+            if (luaClass != nullptr) {
+                if(_self.valid())
+                {
+                    luaClass->serializeClass(ar, _self);
+                }
+            }else {
+                _isInitialized = false;
+            }
+        }
+    } catch (std::exception &e) {
+        LOGE << "Failed to serialize cLuaScript";
+    }
+}

@@ -15,7 +15,6 @@
 
 #include "jleGameRuntime.h"
 
-#include "core/jleTimerManager.h"
 #include "jleEngineSettings.h"
 #include "jleGame.h"
 #include "jleGameEngine.h"
@@ -34,8 +33,6 @@ jleGameRuntime::jleGameRuntime(const jleGameConstructConfig &config, jleGameEngi
         _gameConstructConfig.ecsCreator = [](){ return std::make_unique<jlECS::ECS>(); };
     }
 
-    _timerManager = std::make_unique<jleTimerManager>();
-
     constexpr int initialScreenX = 1024;
     constexpr int initialScreenY = 1024;
     mainGameScreenFramebuffer = std::make_unique<jleFramebufferScreen>(initialScreenX, initialScreenY);
@@ -47,40 +44,27 @@ jleGameRuntime::jleGameRuntime(const jleGameConstructConfig &config, jleGameEngi
     });
 }
 
-jleTimerManager &
-jleGameRuntime::timerManager()
-{
-    return *_timerManager;
-}
-
 void
 jleGameRuntime::restartGame(jleSerializationContext& serializationContext)
 {
-    _game.reset();
-
-    _timerManager->clearTimers();
-
-    startGame(serializationContext);
+    _gameIsGettingRestarted = true;
 }
 
 void
 jleGameRuntime::killGame()
 {
-    _timerManager->clearTimers();
-    _game.reset();
+    _gameIsGettingKilled = true;
 }
 
 void
 jleGameRuntime::haltGame()
 {
-    // TODO: Halt timers
     _gameHalted = true;
 }
 
 void
 jleGameRuntime::unhaltGame()
 {
-    // TODO: Unhalt timers
     _gameHalted = false;
 }
 
@@ -134,12 +118,21 @@ jleGameRuntime::update(jleEngineUpdateContext &ctx)
 {
     ZoneScoped;
 
+    if(_gameIsGettingRestarted)
+    {
+        _game.reset();
+        startGame(ctx.serializationContext);
+        _gameIsGettingRestarted = false;
+    }
+
+    if(_gameIsGettingKilled)
+    {
+        _game.reset();
+        _gameIsGettingKilled = false;
+    }
+
     if (!_gameHalted && _game) {
-        _timerManager->process();
-
         _game->update(ctx);
-
-        // rmlContext_notUsed->Update();
     }
 }
 
@@ -152,15 +145,15 @@ jleGameRuntime::getGame()
 void
 jleGameRuntime::startGame(jleSerializationContext& serializationContext)
 {
-    jleGame::GameStartContext startContext{
-        .serializationContext = serializationContext,
-        .ecs = _gameConstructConfig.ecsCreator()
-    };
-
     _game = _gameConstructConfig.gameCreator();
-    std::unique_ptr<jleGameModules> modules = _gameConstructConfig.modulesCreator();
-    _game->injectModules(std::move(modules));
-    _game->start(startContext);
+
+    std::unique_ptr<jlECS::ECS> ecs = _gameConstructConfig.ecsCreator();
+    std::unique_ptr<jleGameModules> modules = createModules(*ecs, serializationContext, true);
+
+    _game->_modules = std::move(modules);
+    _game->_ecs = std::move(ecs);
+
+    _game->start(serializationContext);
 }
 
 void
@@ -192,4 +185,12 @@ void
 jleGameRuntime::removeGameWindowResizeCallback(unsigned int callbackId)
 {
     _gameWindowResizedCallbacks.erase(callbackId);
+}
+
+std::unique_ptr<jleGameModules>
+jleGameRuntime::createModules(jlECS::ECS& ecs, jleSerializationContext& serializationContext, bool gameRunning)
+{
+    std::unique_ptr<jleGameModules> modules = _gameConstructConfig.modulesCreator(gameRunning);
+    modules->initialize(ecs, serializationContext);
+    return modules;
 }

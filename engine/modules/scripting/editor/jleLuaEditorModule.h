@@ -1,5 +1,5 @@
 /*********************************************************************************************
-*                                                                                           *
+ *                                                                                           *
  *               ,     .     ,                      .   ,--.                                 *
  *               |     |     |                      |   |            o                       *
  *               | ,-. |- -- |    ,-: ,-: ,-: ,-. ,-|   |-   ;-. ,-: . ;-. ,-.               *
@@ -15,14 +15,27 @@
 
 #pragma once
 
-#include <modules/jleEditorUpdateContext.h>
 #include "modules/scripting/jleLuaModule.h"
+#include <modules/jleEditorUpdateContext.h>
+
+namespace jlECS
+{
+class ComponentContainer;
+}
+class jleImGuiArchive;
 
 class jleLuaEditorModule final : public jleLuaModule
 {
 public:
+    explicit jleLuaEditorModule(bool gameRunning) : _gameRunning{gameRunning} {}
+
     void initializeECS(jlECS::ECS &ecs) override;
     void initializeModule(jleSerializationContext &serializationContext) override;
 
     void updateEditor(jleSerializationContext &serializationContext) const;
+
+private:
+    static void editorSerializeLuaScript(jlECS::ComponentContainer *cc, jleImGuiArchive& archive, int componentIndex, int objectIndex);
+
+    bool _gameRunning;
 };

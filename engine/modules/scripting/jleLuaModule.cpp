@@ -40,9 +40,7 @@ deep_copy(sol::state &lua, const sol::table &src, sol::table &dest)
 }
 }
 
-jleLuaModule::jleLuaModule() {
-    _luaEnvironment = std::make_unique<jleLuaEnvironment>();
-}
+jleLuaModule::jleLuaModule() = default;
 jleLuaModule::~jleLuaModule() = default;
 
 void
@@ -62,10 +60,20 @@ jleLuaModule::initializeECS(jlECS::ECS &ecs)
 }
 
 void jleLuaModule::initializeModule(jleSerializationContext &serializationContext) {
+    _luaEnvironment = std::make_unique<jleLuaEnvironment>();
+
     _luaEnvironment->loadScript(JLE_PATH_HASH("ER:/scripts/engine.lua"), serializationContext);
     _luaEnvironment->loadScript(JLE_PATH_HASH("ER:/scripts/globals.lua"), serializationContext);
 
     _luaEnvironment->loadInitialScripts(serializationContext);
+}
+
+void
+jleLuaModule::populateSerializeableInterface(std::vector<jleSerializableInterface *> &interfaces)
+{
+    jleLuaEnvironment* luaEnvironment = _luaEnvironment.get();
+    jleAssert(luaEnvironment);
+    interfaces.push_back(luaEnvironment);
 }
 
 void
@@ -94,7 +102,7 @@ jleLuaModule::onLuaComponentDestroyed(const jlECS::DestroyComponentData& destroy
 void
 jleLuaModule::onLuaComponentCopied(cLuaScript *source, cLuaScript *dest)
 {
-    dest->_luaClass = source->_luaClass;
+    dest->_luaComponent = source->_luaComponent;
 
     if (source->_isInitialized) {
         dest->initializeLuaComponent(*_luaEnvironment);

@@ -40,16 +40,17 @@
 
 struct jleEngineUpdateContext;
 
-struct jleGameState
+struct jleGameModules
 {
-    std::unique_ptr<jlePhysics> physics;
-};
-
-struct jleGameModules{
     std::unique_ptr<jleHierarchyModule> hierarchyModule;
     std::unique_ptr<jleGraphicsModule> graphicsModule;
     std::unique_ptr<jlePhysicsModule> physicsModule;
     std::unique_ptr<jleLuaModule> luaModule;
+
+    virtual void initialize(jlECS::ECS &ecs, jleSerializationContext& serializationContext);
+    virtual void update(jleEngineUpdateContext& ctx, jlECS::ECS& ecs);
+    virtual void updateRenderablesOnly(jleEngineUpdateContext& ctx, jlECS::ECS& ecs);
+    virtual void populateSerializeableInterfaces(std::vector<jleSerializableInterface*>& interfaces);
 };
 
 class jleGame
@@ -58,20 +59,16 @@ public:
     jleGame();
     virtual ~jleGame();
 
-    struct GameStartContext{
-        jleSerializationContext& serializationContext;
-        std::unique_ptr<jlECS::ECS> ecs;
-    };
-
-    void injectModules(std::unique_ptr<jleGameModules> modules) { _modules = std::move(modules); }
     [[nodiscard]] jleGameModules& getModules() const { return *_modules; }
 
-    virtual void update(jleEngineUpdateContext &ctx);
-    virtual void start(GameStartContext& ctx);
+    void update(jleEngineUpdateContext &ctx);
+    virtual void start(jleSerializationContext& serializationContext);
 
     [[nodiscard]] jlECS::ECS& getECS() { return *_ecs; }
 
 protected:
+    friend class jleGameRuntime;
+
     std::unique_ptr<jleGameModules> _modules;
     std::unique_ptr<jlECS::ECS> _ecs;
 };

@@ -39,10 +39,19 @@ class jleResourceIndexer;
 struct jleWindowResizeEvent;
 class jleSerializationContext;
 
+namespace jlECS
+{
+class ECS;
+namespace Debug
+{
+class ECS_Debug;
+}
+}
+
 class jleEditor : public jleGameEngine
 {
 public:
-    jleEditor(EngineConstructConfig& config);
+    explicit jleEditor(EngineConstructConfig& config);
 
     ~jleEditor() override;
 
@@ -56,6 +65,8 @@ public:
 private:
     struct jleEditorInternal;
     std::unique_ptr<jleEditorInternal> _internal;
+
+    jleGameModules* getCurrentGameModules() override;
 
     void exiting() override;
 
@@ -81,6 +92,9 @@ private:
     std::shared_ptr<jleEditorTextEdit> _textEditWindow;
 
     std::unique_ptr<jleEditorGizmos> _gizmos;
+
+    std::unique_ptr<jlECS::Debug::ECS_Debug> _editorEcs;
+    std::unique_ptr<jleGameModules> _editorModules;
 
 protected:
     virtual void updateEditorGameModules(jleEditorUpdateContext& ctx);

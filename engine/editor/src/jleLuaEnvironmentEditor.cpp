@@ -17,9 +17,7 @@
 
 #include "ImGui/sol_ImGui.h"
 
-void jleLuaEnvironmentEditor::setupLua(sol::state &lua)
-{
-    jleLuaEnvironment::setupLua(lua);
-
-    sol_ImGui::Init(lua);
+jleLuaEnvironmentEditor::jleLuaEnvironmentEditor() : jleLuaEnvironment() {
+    jleLuaEnvironment::setupLuaBindings(*_luaState);
+    sol_ImGui::Init(*_luaState);
 }

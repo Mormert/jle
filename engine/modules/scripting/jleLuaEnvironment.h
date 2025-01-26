@@ -36,7 +36,7 @@ class state;
 class jleLuaEnvironment : public jleSerializableInterface
 {
 public:
-    jleLuaEnvironment();
+    jleLuaEnvironment(bool editorMode = false);
 
     ~jleLuaEnvironment() override;
 
@@ -50,21 +50,41 @@ public:
 
     std::unordered_map<jlePath, std::shared_ptr<jleLuaScript>> &loadedScripts();
 
-    std::unordered_map<std::string, jleLuaClass> &loadedLuaClasses();
+    jleLuaClass* getLuaClassPtr(const std::string& className);
 
     void loadNewlyAddedScripts(jleSerializationContext &ctx);
 
-protected:
-    virtual void setupLua(sol::state &lua);
+    std::vector<jleLuaClass*> getImmediateParentClasses(const std::string& className);
+    std::vector<jleLuaClass*> getAllParentClasses(const std::string& className);
 
-    void setupLuaGLM(sol::state &lua);
+    std::vector<jleLuaClass*> getImmediateChildClasses(const std::string& className);
+    std::vector<jleLuaClass*> getAllChildClasses(const std::string& className);
+
+    std::vector<jleLuaClass*> getAllLuaClasses();
+
+    [[nodiscard]] bool isEditorMode() const { return _editorMode; }
+
+protected:
+    friend class jleLuaScript;
+    friend class jleLuaEditorModule;
+    void insertLuaClass(const std::string& name, const jleLuaClass& luaClass);
+
+    void setupLuaBindings(sol::state &lua);
+
+    void setupLuaGLMBindings(sol::state &lua);
 
     jleFileWatcher _scriptFilesWatcher;
     std::future<jleFileIndexerResult> _fileWatchFuture;
 
-    std::unordered_map<std::string, jleLuaClass> _loadedLuaClasses;
+    std::vector<jleLuaClass> _loadedLuaClasses;
+    std::unordered_map<std::string /*class name*/, jleLuaClassIndex> _loadedLuaClassesLookup;
+
+    std::vector<std::vector<jleLuaClassIndex>> _loadedLuaClassesParents;
+    std::vector<std::vector<jleLuaClassIndex>> _loadedLuaClassesChildren;
 
     std::unordered_map<jlePath, std::shared_ptr<jleLuaScript>> _loadedScripts;
 
     std::unique_ptr<sol::state> _luaState;
+
+    bool _editorMode{};
 };

@@ -38,7 +38,7 @@ template <class T>
 class ComponentNum
 {
 public:
-    static inline uint16_t num = 0;
+    static inline uint16_t num = 65535;
 };
 
 class ComponentContainer;
@@ -179,6 +179,8 @@ public:
         return reinterpret_cast<T *>(&data[index * sizeof(T)]);
     }
 
+    void* getModule() { return module; }
+
     ECS& getECS() { return *ecs; }
 
 protected:
@@ -288,6 +290,8 @@ protected:
     std::function<void(DestroyComponentData&)> onDestroyCallback = nullptr;
     std::function<void(void* /*source component*/, void* /*duplicated component*/)> onDuplicateCallback = nullptr;
 
+    void *module = nullptr;
+
     // The raw component data
     std::vector<std::byte> data;
 
@@ -305,18 +309,18 @@ protected:
 
 struct EcsObjectArray {
     // Vector containing true/false if indexed object is alive or not
-    std::vector<bool> aliveObjects;
+    std::vector<bool> aliveObjects{};
 
     // Vector containing component indices for each object
     // Need to take componentTypeCount into account when indexing!
-    std::vector<uint16_t> componentIndices;
+    std::vector<uint16_t> componentIndices{};
 
     // Vector containing the recycle counter for each object
     // Used to know if an ObjectRef is valid or not
-    std::vector<uint16_t> objectRecycleCounter;
+    std::vector<uint16_t> objectRecycleCounter{};
 
     // Holds indices to dead objects, that will be re-used when adding objects
-    std::vector<uint16_t> freeIndices;
+    std::vector<uint16_t> freeIndices{};
 
     uint32_t aliveObjectsCount{};
 };
@@ -444,6 +448,7 @@ struct ComponentRegistrationConfig
     void (*serializeOutputF_Binary)(ComponentContainer *, jleBinaryOutputArchive&, int /*componentIndex*/)          = nullptr;
     void (*serializeImGuiF)(ComponentContainer *, jleImGuiArchive&, int /*componentIndex*/, int /*objectIndex*/)    = nullptr;
 
+    void *module = nullptr;
 };
 
 namespace Debug
@@ -558,6 +563,8 @@ public:
 
         container.serializeInputF_Binary = config.serializeInputF_Binary;
         container.serializeOutputF_Binary = config.serializeOutputF_Binary;
+
+        container.module = config.module;
     }
 
     template <class T>
@@ -578,9 +585,15 @@ public:
     void
     registerComponentType(const ComponentRegistrationConfig& config)
     {
-        assert(ComponentNum<T>::num == 0);
+        uint16_t previousNum = ComponentNum<T>::num;
 
         ComponentNum<T>::num = componentContainers.size();
+        if(previousNum != 65535)
+        {
+            // We check to make sure that if we are re-registering a type, the component type id needs to be the same
+            // as the last time it was registered.
+            assert(previousNum == ComponentNum<T>::num);
+        }
         auto container = createContainerT<T>(config);
 
         componentContainers.emplace_back(std::move(container));
@@ -1145,7 +1158,7 @@ protected:
     std::vector<std::unique_ptr<ComponentContainer>> componentContainers;
     std::vector<RegisteredComponentType> registeredComponentTypeNames;
 
-    EcsObjectArray objectArray;
+    EcsObjectArray objectArray{};
 
     uint16_t registeredComponentTypesCount{};
 

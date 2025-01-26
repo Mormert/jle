@@ -19,5 +19,5 @@
 #include "game/jleGame.h"
 
 namespace jleModuleLoading{
-    std::unique_ptr<jleGameModules> createDefaultModules_Editor();
+    std::unique_ptr<jleGameModules> createDefaultModules_Editor(bool gameRunning);
 }

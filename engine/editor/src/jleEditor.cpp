@@ -147,20 +147,16 @@ public:
     renderUI(jleEditorUpdateContext &context)
     {
         ZoneScoped;
-        jlECS::ECS* ecs = context.engineUpdateContext.gameRuntime.isGameKilled() ? nullptr : &context.engineUpdateContext.gameRuntime.getGame().getECS();
 
-        // Temporary work-around to ensure we get the *game* ECS
-        if (!ecs) {
-            context.engineUpdateContext.gameRuntime.startGame(context.engineUpdateContext.serializationContext);
-            return;
-        }
+        jlECS::ECS* ecs = &context.getCurrentECS();
+
         assert(dynamic_cast<jlECS::Debug::ECS_Debug*>(ecs));
 
         menu->renderUI(context.engineUpdateContext);
         textEditWindow->renderUI();
         resourceEditor->renderUI(context);
 
-        const auto ecsWindowOutput = ecsWindow->renderUI({
+        const jleECSEditorWindow::RenderUIOutput ecsWindowOutput = ecsWindow->renderUI({
             .editorUpdate = context,
             .ecs = *ecs,
             .undoRedo = _undoRedo
@@ -199,6 +195,9 @@ jleEditor::start()
     _internal = std::make_unique<jleEditorInternal>();
     _gizmos = std::make_unique<jleEditorGizmos>(serializationContext);
 
+    _editorEcs = std::make_unique<jlECS::Debug::ECS_Debug>();
+    _editorModules = _gameRuntime->createModules(*_editorEcs, serializationContext, false);
+
     LOG_INFO << "Starting the editor";
 
     _internal->editorSaveState = jleResourceRef<jleEditorSaveState>(jlePath{jleVirtualPath{"BI:editor_save.edsave"}}, serializationContext);
@@ -216,7 +215,7 @@ jleEditor::start()
         .saveState = *_internal->editorSaveState.get(),
         .engineSettings = getSettings(),
     };
-   _editorWindows = std::make_unique<jleEditorWindows>(editorWindowsConstructCtx);
+    _editorWindows = std::make_unique<jleEditorWindows>(editorWindowsConstructCtx);
 
     _sceneWindow = _editorWindows->sceneWindow;
     _editorSceneObjects = _editorWindows->editorSceneObjects;
@@ -245,11 +244,17 @@ jleEditor::render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem:
 
     jleFramePacket& framePacket = *_previousFramePacket;
 
+    _renderThread->processRenderQueue();
+
     if(!ctx.gameRuntime.isGameKilled() && _previousFramePacket)
     {
         jleFramebufferInterface& gameFramebuffer = *ctx.gameRuntime.mainGameScreenFramebuffer;
         framePacket.camera = camera;
         renderGameView(framePacket, gameFramebuffer);
+    }
+    else
+    {
+       _editorModules->updateRenderablesOnly(ctx, *_editorEcs);
     }
 
     // Wait for game thread
@@ -263,7 +268,9 @@ jleEditor::render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem:
             .engineUpdateContext = ctx,
             .resourceIndexer = *_resourceIndexer,
             .gizmos = *_gizmos,
-            .editorFramePacket = framePacketModifiedByEditor
+            .editorFramePacket = framePacketModifiedByEditor,
+            .editorEcs = *_editorEcs,
+            .editorGameModules = *_editorModules
         };
 
         updateEditorGameModules(editorUpdateCtx);
@@ -281,8 +288,6 @@ jleEditor::renderGameView(const jleFramePacket &framePacketIn,
                           jleFramebufferInterface &framebufferOut)
 {
     ZoneScoped;
-
-    _renderThread->processRenderQueue();
 
     static jleFramebufferMultisample msaa{framebufferOut.width(), framebufferOut.height(), 4};
 
@@ -415,6 +420,19 @@ jleEditor::mainEditorWindowResized(const jleWindowResizeEvent &resizeEvent)
     }
 }
 
+jleGameModules *
+jleEditor::getCurrentGameModules()
+{
+    if(_gameRuntime->isGameKilled())
+    {
+        return _editorModules.get();
+    }
+    else
+    {
+        return &_gameRuntime->getGame().getModules();
+    }
+}
+
 void
 jleEditor::exiting()
 {
@@ -441,17 +459,17 @@ jleEditor::saveState()
     return *_internal->editorSaveState.get();
 }
 
-jleEditor::~jleEditor() = default;
+jleEditor::~jleEditor()
+{
+    // Clear the ECS before the modules as the ECS may reference things in the modules
+    _editorEcs.reset();
+    _editorModules.reset();
+}
 
 void jleEditor::updateEditorGameModules(jleEditorUpdateContext &ctx) {
     ZoneScoped;
 
-    if(ctx.engineUpdateContext.gameRuntime.isGameKilled())
-    {
-        return;
-    }
-
-    auto& modules = ctx.engineUpdateContext.gameRuntime.getGame().getModules();
+    jleGameModules& modules = ctx.getCurrentModules();
 
     const std::vector<glm::mat4>& worldMatrices = modules.hierarchyModule->getWorldMatrices();
 

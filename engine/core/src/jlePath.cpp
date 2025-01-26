@@ -55,15 +55,12 @@ public:
         if (const auto it = _hashToVirtualPath.find(hash); it != _hashToVirtualPath.end()) {
             return it->second;
         }
-        for (auto [p, h] : _virtualPathToHash) {
-            LOGI << "Virtual path " << p.str() << " hash " << h;
-        }
-        jleErrorDesc("Virtual path not found from path hash. Asset may not yet be indexed, or does not exist.");
         static jleVirtualPath invalidVirtualPath{""};
         return invalidVirtualPath;
     }
 
     const jleRealPath& getRealPathRef(const jlePathHash hash) const {
+        jleAssert(hash != 0ull);
         std::shared_lock lock(_mutex);
         if (const auto it = _hashToRealPath.find(hash); it != _hashToRealPath.end()) {
             return it->second;

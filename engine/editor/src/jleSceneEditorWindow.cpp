@@ -96,16 +96,17 @@ jleSceneEditorWindow::jleSceneEditorWindow(const std::string &window_name) : jle
 void
 jleSceneEditorWindow::renderUI(const RenderUIInput& input)
 {
+    ZoneScoped;
+
     if (!isOpened) {
         return;
     }
 
-    auto& editorUpdate = input.editorUpdate;
-    auto& selectedObjects = *input.selectedObjects;
-    auto& ecs = input.ecs;
+    jleEditorUpdateContext& editorUpdate = input.editorUpdate;
+    const std::shared_ptr<std::vector<jlECS::ObjectRef>>& selectedObjects = input.selectedObjects;
+    jlECS::ECS& ecs = input.ecs;
 
-    ImGuiWindowFlags flags =
-        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, flags);
@@ -151,7 +152,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
     bool canSelectObject = true;
 
     // If we're over a gizmo or an ImGui item, disallow picking.
-    if ((ImGuizmo::IsOver() && !selectedObjects.empty()) ||
+    if ((ImGuizmo::IsOver() && !selectedObjects->empty()) ||
         (ImGui::IsAnyItemHovered() && ImGui::IsItemHovered())) {
         canSelectObject = false;
     }
@@ -191,7 +192,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
 
         ImGuiIO& io = ImGui::GetIO();
         if (!io.KeyCtrl) {
-            selectedObjects.clear();
+            selectedObjects->clear();
         }
 
         if (dragWidth < dragThreshold && dragHeight < dragThreshold)
@@ -211,13 +212,13 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
             if (pickedID != 0x00ffffff) {
                 if (ecs.isObjectAlive(pickedID)) {
                     auto obj = ecs.getObject(pickedID);
-                    if (std::find(selectedObjects.begin(), selectedObjects.end(), obj) == selectedObjects.end()) {
-                        selectedObjects.push_back(obj);
+                    if (std::find(selectedObjects->begin(), selectedObjects->end(), obj) == selectedObjects->end()) {
+                        selectedObjects->push_back(obj);
                     }
                 }
             } else {
                 if (!io.KeyCtrl) {
-                    selectedObjects.clear();
+                    selectedObjects->clear();
                 }
             }
         }
@@ -289,8 +290,8 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
                                    continue;
                                }
                                auto obj = ecs.getObject(id);
-                               if (std::find(selectedObjects.begin(), selectedObjects.end(), obj) == selectedObjects.end()) {
-                                   selectedObjects.push_back(obj);
+                               if (std::find(selectedObjects->begin(), selectedObjects->end(), obj) == selectedObjects->end()) {
+                                   selectedObjects->push_back(obj);
                                }
                            }
                        }
@@ -428,8 +429,8 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
     ImGui::BeginGroup();
     {
         std::vector<std::pair<cTransform*, int>> transforms;
-        transforms.reserve(selectedObjects.size());
-        for (auto& objRef : selectedObjects)
+        transforms.reserve(selectedObjects->size());
+        for (auto& objRef : *selectedObjects)
         {
             if (objRef.isValid()) {
                 auto* t = objRef.getComponentPtr<cTransform>();

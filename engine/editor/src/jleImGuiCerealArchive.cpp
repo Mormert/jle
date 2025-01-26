@@ -198,63 +198,62 @@ jleImGuiArchive::draw_ui_reference(const char *name,
 }
 
 bool
-jleImGuiArchive::draw_ui_lua_reference(const char *name, std::string &className)
+jleImGuiArchive::draw_ui_lua_reference(const char *name, jleLuaClassSerialization &value)
 {
     ImGui::PushID(elementCount++);
 
-    if (!ctx.get<jleLuaEnvironment>()) {
+    auto luaEnv = ctx.get<jleLuaEnvironment>();
+
+    if (!luaEnv) {
         ImGui::Text("Serialization context doesn't have a Lua Environment reference!");
         ImGui::PopID();
         return false;
     }
 
-    std::vector<char> charData(className.begin(), className.end());
+    std::vector<char> charData(value.luaClassName.begin(), value.luaClassName.end());
     charData.resize(1000);
 
     bool isEditedAndDeactivated = false;
 
     if (ImGui::InputText(jleImGuiHelpers::LeftLabelImGui(name).c_str(), &charData[0], charData.size())) {
-        className = std::string(charData.data());
+        value.luaClassName = std::string(charData.data());
     }
 
-    const auto &loadedClasses = ctx.get<jleLuaEnvironment>()->loadedLuaClasses();
+    const std::vector<jleLuaClass*> relevantLoadedClasses = value.baseClass ? luaEnv->getAllChildClasses(value.baseClass) : luaEnv->getAllLuaClasses();
 
     static std::set<int> isOpenSet;
 
     bool isOpen = isOpenSet.find(elementCount) != isOpenSet.end();
 
-    if (!loadedClasses.empty()) {
+    if (!relevantLoadedClasses.empty()) {
         bool isFocused = ImGui::IsItemFocused();
         isOpen |= ImGui::IsItemActive();
 
         if (isOpen) {
             static std::string lastValue = "non-empty";
             static std::vector<std::string> searchResults;
-            if (lastValue != className) {
-                lastValue = className;
+            if (lastValue != value.luaClassName) {
+                lastValue = value.luaClassName;
                 searchResults.clear();
 
                 // Perform search
-                for (auto &luaClassName : loadedClasses) {
-                    if (strstr(luaClassName.first.c_str(), className.c_str()) != NULL) {
-                        searchResults.push_back(luaClassName.first);
+                for (auto &luaClass : relevantLoadedClasses) {
+                    if (strstr(luaClass->getClassName().c_str(), value.luaClassName.c_str()) != NULL) {
+                        searchResults.push_back(luaClass->getClassName());
                     }
                 }
             }
 
             ImGui::SetNextWindowPos({ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y});
             ImGui::SetNextWindowSize({ImGui::GetItemRectSize().x, 0});
-            if (ImGui::Begin(std::string{"popup_" + std::string{name}}.c_str(),
-                             &isOpen,
-                             ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
-                                 ImGuiWindowFlags_Tooltip)) {
+            if (ImGui::Begin(std::string{"popup_" + std::string{name}}.c_str(), &isOpen, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_Tooltip)) {
                 ImGui::BringWindowToDisplayFront(ImGui::GetCurrentWindow());
                 isFocused |= ImGui::IsWindowFocused();
                 int ctr = 0;
                 for (auto &result : searchResults) {
                     if (ImGui::Selectable(result.c_str()) ||
                         (ImGui::IsItemFocused() && ImGui::IsKeyPressedMap(ImGuiKey_Enter))) {
-                        className = result;
+                        value.luaClassName = result;
                         isEditedAndDeactivated = true;
                         isOpen = false;
                     }
@@ -286,13 +285,13 @@ jleImGuiArchive::draw_ui_lua_reference(const char *name, std::string &className)
 }
 
 void
-jleImGuiArchive::draw_ui(jleImGuiArchive &ar,
-                                       const char *name,
-                                       jleLuaClassSerialization &value)
+jleImGuiArchive::draw_ui(jleImGuiArchive &ar, const char *name, jleLuaClassSerialization &value)
 {
     ImGui::PushID(elementCount++);
 
-    if (!ctx.get<jleLuaEnvironment>()) {
+    auto* luaEnv = ctx.get<jleLuaEnvironment>();
+
+    if (!luaEnv) {
         ImGui::Text("Serialization context doesn't have a Lua Environment reference!");
         ImGui::PopID();
         return;
@@ -301,39 +300,56 @@ jleImGuiArchive::draw_ui(jleImGuiArchive &ar,
     std::vector<char> charData(value.luaClassName.begin(), value.luaClassName.end());
     charData.resize(1000);
 
-    const auto &className = value.luaClassName;
-    const auto &loadedClasses = ctx.get<jleLuaEnvironment>()->loadedLuaClasses();
+    const std::string& className = value.luaClassName;
 
-    bool validClassName = false;
-    auto it = loadedClasses.find(className);
+    jleLuaClass* luaClass = nullptr;
+    std::string errorMessage;
 
-    if (it != loadedClasses.end()) {
-        validClassName = true;
+    if(value.baseClass)
+    {
+        auto children = luaEnv->getAllChildClasses(value.baseClass);
+        for(auto &child : children)
+        {
+            if(child->getClassName() == className)
+            {
+                luaClass = child;
+                break;
+            }
+        }
+        errorMessage = "The given lua class is not derived from base class: " + std::string{value.baseClass};
+    }
+    else
+    {
+        luaClass = luaEnv->getLuaClassPtr(className);
+        if(!luaClass)
+        {
+            errorMessage = "The lua class does not exist in the lua environment";
+        }
     }
 
-    if (!validClassName) {
+    if (!luaClass) {
         ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.8f, 0.0f, 0.0f, 1.0f)); // Red background
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.5f, 0.0f, 1.0f));    // Orange text
     } else {
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.76f, 0.0f, 1.0f)); // Green text
     }
 
-    bool isEditedAndDeactivated = draw_ui_lua_reference(name, value.luaClassName);
+    bool isEditedAndDeactivated = draw_ui_lua_reference(name, value);
     if (isEditedAndDeactivated) {
         value.load_minimal(ar, value.luaClassName);
     }
 
-    if (!validClassName) {
+    if (!luaClass) {
         if (ImGui::IsItemHovered()) {
             ImGui::BeginTooltip();
-            ImGui::Text("Class '%s' is not loaded in Lua environment!", className.c_str());
+            ImGui::Text("%s", errorMessage.c_str());
             ImGui::EndTooltip();
         }
 
         ImGui::PopStyleColor(2);
     } else {
         ImGui::PopStyleColor(1);
-        ImGui::Text("Loaded from script: %s", it->second.getScriptPathWhereClassIsDefined().getVirtualPath().str().c_str());
+        ImGui::Text("Loaded from script: %s", luaClass->getScriptPathWhereClassIsDefined().getVirtualPath().str().c_str());
         ImGui::Separator();
     }
 

@@ -72,4 +72,6 @@ private:
     int _lastSelectedIndex;
     int _expandParentIndex = -1;
     jlECS::ECS *_ecs;
+
+    bool _gameIsRunning = false;
 };

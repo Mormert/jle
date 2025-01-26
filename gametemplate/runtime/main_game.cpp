@@ -17,7 +17,7 @@ main(int argc, char *argv[])
     jleGameEngine::EngineConstructConfig config{
         .window = std::make_unique<jleWindow>(),
         .gameConfig = {
-            .gameCreator = std::make_unique<jleGame>,
+            .gameCreator = std::make_unique<GameTemplate>,
             .modulesCreator = jleModuleLoading::createDefaultModules,
             .ecsCreator = std::make_unique<jlECS::ECS> }
     };
