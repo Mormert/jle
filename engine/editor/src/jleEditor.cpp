@@ -121,7 +121,7 @@ public:
 
         frameGraph = std::make_shared<jleEditorFrameGraphWindow>("Frame Graph");
 
-        ecsWindow = std::make_shared<jleECSEditorWindow>("ECS Window");
+        ecsWindow = std::make_shared<jleECSEditorWindow>("Scene Hierarchy");
         menu->addWindow(ecsWindow);
     }
 

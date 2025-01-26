@@ -16,16 +16,6 @@
 #include "jleResourceHolder.h"
 #include "jleTypeReflectionUtils.h"
 
-inline std::shared_ptr<jleComponent>
-jleTypeReflectionUtils::instantiateComponentByString(const std::string &str)
-{
-    auto it = registeredComponentsRef().find(str);
-    if (it == registeredComponentsRef().end()) {
-        return nullptr;
-    }
-    return it->second();
-}
-
 inline std::map<std::string, std::function<std::shared_ptr<jleObject>()>> &
 jleTypeReflectionUtils::registeredObjectsRef()
 {
@@ -62,28 +52,6 @@ jleTypeReflectionUtils::registeredFileTypeLoadersRef()
             std::map<std::string, std::function<std::shared_ptr<jleResourceInterface>(const jlePath &path, jleSerializationContext& ctx)>>>();
     }
     return *_registeredFileTypeLoadersPtr;
-}
-
-template <typename T>
-inline jleObjectTypeRegistrator<T>::jleObjectTypeRegistrator(const std::string &oName)
-{
-#ifndef NDEBUG
-    std::cout << oName << " object registered.\n";
-#endif
-    std::function<std::shared_ptr<T>()> oCreationFunc = []() { return std::make_shared<T>(); };
-
-    jleTypeReflectionUtils::registeredObjectsRef().insert(std::make_pair(oName, oCreationFunc));
-}
-
-template <typename T>
-inline jleComponentTypeRegistrator<T>::jleComponentTypeRegistrator(const std::string &cName)
-{
-#ifndef NDEBUG
-    std::cout << cName << " component registered.\n";
-#endif
-    std::function<std::shared_ptr<T>()> cCreationFunc = []() { return std::make_shared<T>(); };
-
-    jleTypeReflectionUtils::registeredComponentsRef().insert(std::make_pair(cName, cCreationFunc));
 }
 
 template <typename T>

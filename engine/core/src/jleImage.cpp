@@ -138,30 +138,6 @@ jleImage::width() const
     return _width;
 }
 
-std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>
-jleImage::pixelAtLocation(uint32_t x, uint32_t y) const
-{
-    if (x >= _width) {
-        LOGW << "x was outside bounds: " << x << ", can't be larger than or equal to " << _width;
-        return std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>{0, 0, 0, 0};
-    }
-
-    if (y >= _height) {
-        LOGW << "y was outside bounds: " << y << ", can't be larger than or equal to " << _height;
-        return std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>{0, 0, 0, 0};
-    }
-
-    int32_t bytesPerPixel = _nrChannels;
-    const uint8_t *pixelOffset = image_data + (x + _width * y) * bytesPerPixel;
-    const uint8_t r = pixelOffset[0];
-    const uint8_t g = pixelOffset[1];
-    const uint8_t b = pixelOffset[2];
-    const uint8_t a = _nrChannels >= 4 ? pixelOffset[3] : 0;
-
-    LOGV << int(r) << " " << int(g) << " " << int(b) << " " << int(a);
-
-    return std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>{r, g, b, a};
-}
 void
 jleImage::setFlipImage(bool flip)
 {

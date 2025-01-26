@@ -32,8 +32,8 @@ end
 
 function TestComponent:updateTimer(dt)
     self.myNumber = self.myNumber + 1
-    if(self.myNumber % 10 == 0) then
-        print("updating TestComponent " .. self.myNumbero)
+    if(self.myNumber % 100 == 0) then
+        print("Updating TestComponent " .. self.myNumber)
     end
 end
 
@@ -50,3 +50,4 @@ end
 function TestComponent:destroy()
     print("Destroy TestComponent")
 end
+

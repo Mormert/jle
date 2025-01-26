@@ -25,7 +25,7 @@
 #include <BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
 #include <LinearMath/btAlignedObjectArray.h>
 
-#include "core/jleProfiler.h"
+//#include "core/jleProfiler.h"
 #include "components/cRigidbody.h"
 
 jlePhysics::~jlePhysics() = default;

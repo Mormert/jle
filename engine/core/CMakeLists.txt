@@ -13,7 +13,6 @@ add_library(jleCore STATIC
         "src/jleImage.cpp"
         "src/jleImageFlipped.cpp"
         "src/jleComponent.cpp"
-        "src/jleObject.cpp"
         "src/jleScene.cpp"
         "src/jleMalloc.cpp"
 )

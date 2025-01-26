@@ -16,8 +16,6 @@
 #include "jleLuaEnvironment.h"
 #include "jleLuaScript.h"
 
-#include "core/jleFileWatcher.h"
-#include "core/jleObject.h"
 #include "core/jlePath.h"
 #include "core/jlePathDefines.h"
 #include "core/jleResourceRef.h"

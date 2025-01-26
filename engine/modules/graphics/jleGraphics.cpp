@@ -15,7 +15,6 @@
 
 #include "jleGraphics.h"
 #include "core/jleCamera.h"
-#include "core/jleProfiler.h"
 
 #include "jle3DSettings.h"
 #include "jleFramePacket.h"

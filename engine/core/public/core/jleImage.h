@@ -54,8 +54,6 @@ public:
 
     [[nodiscard]] unsigned char *data() const;
 
-    [[nodiscard]] std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> pixelAtLocation(uint32_t x, uint32_t y) const;
-
     static void setFlipImage(bool flip);
 
 private:

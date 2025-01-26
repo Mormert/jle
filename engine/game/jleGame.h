@@ -21,9 +21,9 @@
 #include <vector>
 
 #include "core/jleCamera.h"
-#include "core/jleProfiler.h"
+//#include "core/jleProfiler.h"
 #include "core/jleResourceHolder.h"
-#include "core/jleScene.h"
+//#include "core/jleScene.h"
 #include "jlECS/jlECS.h"
 
 #include <modules/jleEngineUpdateContext.h>

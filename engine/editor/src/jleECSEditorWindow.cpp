@@ -370,8 +370,21 @@ jleECSEditorWindow::renderUI(const RenderUIInput& input)
         ImGuiWindowFlags_NoScrollbar |
         ImGuiWindowFlags_NoScrollWithMouse;
 
+    if (!input.editorUpdate.engineUpdateContext.gameRuntime.isGameKilled())
+    {
+        ImVec4 currentBg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
+        ImVec4 darkerBg = ImVec4(currentBg.x * 0.75f, currentBg.y * 0.75f, currentBg.z * 0.9f, currentBg.w);
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, darkerBg);
+    }
+
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     ImGui::Begin(window_name.c_str(), &isOpened, flags);
+
+    if(!input.editorUpdate.engineUpdateContext.gameRuntime.isGameKilled())
+    {
+        ImGui::Text("Running game - changes won't be savable.");
+        ImGui::PopStyleColor();
+    }
 
     auto& serializationContext = input.editorUpdate.engineUpdateContext.serializationContext;
     auto& ecs = input.ecs;
@@ -397,15 +410,18 @@ void jleECSEditorWindow::handleUndoRedoShortcuts(const RenderUIInput& input, jle
 {
     ZoneScoped;
 
-    ImGuiIO& io = ImGui::GetIO();
-    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z, false))
+    if(input.editorUpdate.engineUpdateContext.gameRuntime.isGameKilled())
     {
-        input.undoRedo.undo(undoRedoCommandCtx);
-    }
-    if ((io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y, false)) ||
-        (io.KeyCtrl && io.KeyShift && ImGui::IsKeyPressed(ImGuiKey_Z, false)))
-    {
-        input.undoRedo.redo(undoRedoCommandCtx);
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z, false))
+        {
+            input.undoRedo.undo(undoRedoCommandCtx);
+        }
+        if ((io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y, false)) ||
+            (io.KeyCtrl && io.KeyShift && ImGui::IsKeyPressed(ImGuiKey_Z, false)))
+        {
+            input.undoRedo.redo(undoRedoCommandCtx);
+        }
     }
 }
 

@@ -14,7 +14,7 @@
  *********************************************************************************************/
 
 #include "jleWindow.h"
-#include "core/jleProfiler.h"
+//#include "core/jleProfiler.h"
 
 #include "modules/graphics/core/jleIncludeGL.h"
 

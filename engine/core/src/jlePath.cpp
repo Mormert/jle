@@ -73,7 +73,7 @@ public:
 private:
     mutable std::shared_mutex _mutex;
     std::unordered_map<jleVirtualPath, jlePathHash>    _virtualPathToHash;
-    std::unordered_map<jlePathHash, jleVirtualPath>       _hashToVirtualPath;
+    std::unordered_map<jlePathHash, jleVirtualPath>    _hashToVirtualPath;
     std::unordered_map<jlePathHash, jleRealPath>       _hashToRealPath;
 };
 
