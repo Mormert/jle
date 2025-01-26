@@ -21,16 +21,6 @@
 
 #include <functional>
 #include <memory>
-#include <unordered_map>
-
-namespace SoLoud
-{
-class Soloud;
-};
-namespace Rml
-{
-class Context;
-};
 
 namespace wi::jobsystem
 {
@@ -76,17 +66,15 @@ class jleGameEngine
 public:
     virtual ~jleGameEngine();
 
-    struct EngineConstructConfig{
-        std::unique_ptr<jleWindow> window;
+    struct EngineConstructConfig
+    {
+        std::function<std::unique_ptr<jleWindow>()> windowCreator = {};
         const jleGameConstructConfig& gameConfig;
     };
 
-    jleGameEngine(EngineConstructConfig& config);
+    explicit jleGameEngine(const EngineConstructConfig& config);
 
     void run();
-
-    static inline Rml::Context *rmlContext_notUsed{};
-
 protected:
     jleSerializationContext createSerializationContext();
     jleEngineUpdateContext createUpdateContext();
@@ -114,10 +102,6 @@ protected:
 protected:
     virtual void start();
 
-    void startRmlUi();
-
-    void killRmlUi();
-
     virtual void render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem::context &jobsCtx);
 
     virtual void exiting();
@@ -127,7 +111,6 @@ protected:
     std::unique_ptr<jleResourceHolder> _resources;
     std::shared_ptr<jleWindow> _window;
     std::unique_ptr<jleInput> _input;
-    std::unique_ptr<SoLoud::Soloud> _soLoud;
 
     friend class jleSceneEditorWindow;
     std::unique_ptr<jleGraphics> _3dRenderer;
@@ -138,6 +121,8 @@ protected:
 
     struct jleEngineInternal;
     std::unique_ptr<jleEngineInternal> _internal;
+
+    const EngineConstructConfig _engineConstructConfig;
 
     [[nodiscard]] jleEngineSettings& getSettings() const;
 

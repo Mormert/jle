@@ -75,9 +75,6 @@ jleGameRuntime::executeNextFrame(jleEngineUpdateContext &ctx)
     auto gameHaltedTemp = _gameHalted;
     _gameHalted = false;
 
-    //
-   // jleCamera camera = getGame();
-
     // Game thread
     wi::jobsystem::context jobsCtx;
     wi::jobsystem::Execute(jobsCtx, [&](wi::jobsystem::JobArgs args) { update(ctx); });
@@ -132,7 +129,7 @@ jleGameRuntime::update(jleEngineUpdateContext &ctx)
     }
 
     if (!_gameHalted && _game) {
-        _game->update(ctx);
+        _gameConstructConfig.modulesUpdate(ctx.gameRuntime.getGame().getModules(), ctx, _game->getECS());
     }
 }
 
@@ -145,15 +142,16 @@ jleGameRuntime::getGame()
 void
 jleGameRuntime::startGame(jleSerializationContext& serializationContext)
 {
-    _game = _gameConstructConfig.gameCreator();
+    _game = std::make_unique<jleGame>();
 
     std::unique_ptr<jlECS::ECS> ecs = _gameConstructConfig.ecsCreator();
-    std::unique_ptr<jleGameModules> modules = createModules(*ecs, serializationContext, true);
+
+    constexpr bool gameRunning = true;
+    std::unique_ptr<jleGameModules> modules = _gameConstructConfig.modulesCreator(gameRunning);
+    _gameConstructConfig.modulesInitialize(*modules, *ecs, serializationContext);
 
     _game->_modules = std::move(modules);
     _game->_ecs = std::move(ecs);
-
-    _game->start(serializationContext);
 }
 
 void
@@ -185,12 +183,4 @@ void
 jleGameRuntime::removeGameWindowResizeCallback(unsigned int callbackId)
 {
     _gameWindowResizedCallbacks.erase(callbackId);
-}
-
-std::unique_ptr<jleGameModules>
-jleGameRuntime::createModules(jlECS::ECS& ecs, jleSerializationContext& serializationContext, bool gameRunning)
-{
-    std::unique_ptr<jleGameModules> modules = _gameConstructConfig.modulesCreator(gameRunning);
-    modules->initialize(ecs, serializationContext);
-    return modules;
 }

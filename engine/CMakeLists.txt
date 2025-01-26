@@ -41,7 +41,7 @@ add_library(engine STATIC
         "modules/jleGameModules.cpp"
         "game/jleGameRuntime.cpp"
         "game/jleGame.cpp"
-        "game/loader/jleGameModulesLoader.cpp"
+        "game/jleDefaultGameFunctions.cpp"
         )
 
 

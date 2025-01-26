@@ -31,12 +31,6 @@
 #include "modules/windowing/jleWindow.h"
 
 #include <plog/Log.h>
-#include <soloud.h>
-
-#include <RmlUi/Core.h>
-#include <RmlUi/Debugger.h>
-#include <RmlUi_Backend.h>
-#include <shell/include/Shell.h>
 
 #undef max
 #undef min
@@ -53,7 +47,8 @@ struct jleGameEngine::jleEngineInternal {
     jleResourceRef<jleEngineSettings> engineSettings;
 };
 
-jleGameEngine::jleGameEngine(EngineConstructConfig& config)
+jleGameEngine::jleGameEngine(const EngineConstructConfig& config) :
+    _engineConstructConfig{config}
 {
     LOGI << "Project built on: " << __DATE__ ", at " << __TIME__;
 
@@ -85,7 +80,7 @@ jleGameEngine::jleGameEngine(EngineConstructConfig& config)
 
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
     {
-        _window = std::move(config.window);
+        _window = config.windowCreator();
 
         PLOG_INFO << "Initializing the window";
         _window->settings(_internal->engineSettings.get()->windowSettings);
@@ -96,10 +91,6 @@ jleGameEngine::jleGameEngine(EngineConstructConfig& config)
         _3dRenderer = std::make_unique<jleGraphics>(serializationContext);
         _currentFramePacket = std::make_unique<jleFramePacket>();
         _3dRendererSettings = std::make_unique<jle3DSettings>();
-        _soLoud = std::make_unique<SoLoud::Soloud>();
-
-        PLOG_INFO << "Initializing sound engine...";
-        _soLoud->init();
     }
 
     jleNetworkingModule::initialize();
@@ -112,68 +103,10 @@ jleGameEngine::~jleGameEngine()
     LOGI << "Shutting down job system";
     wi::jobsystem::ShutDown();
 
-    JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
-    {
-        PLOG_INFO << "Destroying the sound engine...";
-        _soLoud->deinit();
-    }
-
     jleNetworkingModule::deinitialize();
 
     _gameRuntime.reset();
     _resources.reset();
-}
-
-void
-jleGameEngine::startRmlUi()
-{
-
-    auto width = 1024;
-    auto height = 1024;
-
-    if (!Shell::Initialize()) {
-        LOGE << "Failed to init Shell for RmlUi";
-        return;
-    }
-
-    // Constructs the system and render interfaces, creates a window, and attaches the renderer.
-    if (!Backend::Initialize("RmlUiWindow", width, height, true, _window->glfwWindow())) {
-        LOGE << "Failed to init backend for RmlUi";
-        return;
-    }
-
-    // Install the custom interfaces constructed by the backend before initializing RmlUi.
-    Rml::SetSystemInterface(Backend::GetSystemInterface());
-    Rml::SetRenderInterface(Backend::GetRenderInterface());
-
-    // RmlUi initialisation.
-    Rml::Initialise();
-
-    Rml::Log::Message(Rml::Log::LT_WARNING, "Test warning.");
-
-    rmlContext_notUsed = Rml::CreateContext("main", Rml::Vector2i(width, height));
-    if (!rmlContext_notUsed) {
-        Rml::Shutdown();
-        Backend::Shutdown();
-        Shell::Shutdown();
-        LOGE << "Failed to init backend for RmlUi";
-        return;
-    }
-
-    Rml::Debugger::Initialise(rmlContext_notUsed);
-
-    Shell::LoadFonts();
-
-    Rml::LoadFontFace("C:/dev/cgfx/cgfx/GameResources/LatoLatin-Regular.ttf");
-    Rml::LoadFontFace("C:/dev/cgfx/cgfx/GameResources/LatoLatin-Bold.ttf");
-    Rml::LoadFontFace("C:/dev/cgfx/cgfx/GameResources/LatoLatin-Italic.ttf");
-    Rml::LoadFontFace("C:/dev/cgfx/cgfx/GameResources/LatoLatin-BoldItalic.ttf");
-
-    if (auto doc = rmlContext_notUsed->LoadDocument("assets/demo.rml")) {
-        doc->Show();
-    }
-
-    Rml::Debugger::SetVisible(true);
 }
 
 void
@@ -182,8 +115,6 @@ jleGameEngine::start()
     auto serializationContext = createSerializationContext();
     JLE_EXEC_IF_NOT(JLE_BUILD_HEADLESS)
     {
-        startRmlUi();
-
         _fullscreen_renderer = std::make_unique<jleFullscreenRendering>(serializationContext);
 
         JLE_EXEC_IF_NOT(JLE_BUILD_EDITOR)
@@ -235,15 +166,6 @@ void
 jleGameEngine::exiting()
 {
     _gameRuntime->killGame();
-    killRmlUi();
-}
-
-void
-jleGameEngine::killRmlUi()
-{
-    Rml::Shutdown();
-    Backend::Shutdown();
-    Shell::Shutdown();
 }
 
 void
@@ -364,9 +286,8 @@ jleGameEngine::createSerializationContext()
     std::vector<jleSerializableInterface *> interfaces;
     interfaces.push_back(_renderThread.get());
 
-    if(jleGameModules* gameModules = getCurrentGameModules())
-    {
-        gameModules->populateSerializeableInterfaces(interfaces);
+    if (auto *gameModules = getCurrentGameModules()) {
+        _engineConstructConfig.gameConfig.populateSerializationInterfaces(*gameModules, interfaces);
     }
 
     return jleSerializationContext {

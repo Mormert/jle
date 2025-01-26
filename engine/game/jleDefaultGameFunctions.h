@@ -15,56 +15,24 @@
 
 #pragma once
 
-#include <memory>
 #include <vector>
+#include <memory>
 
 class jleSerializableInterface;
+struct jleEngineUpdateContext;
 struct jleSerializationContext;
+struct jleGameModules;
+
 namespace jlECS
 {
 class ECS;
 }
-struct jleEngineUpdateContext;
 
-struct jleGameBaseModule {
-    virtual ~jleGameBaseModule() = default;
-};
-
-struct jleGameModules
+namespace jleDefaultGameFunctions
 {
-    template <typename T>
-    T* getModule()
-    {
-        static_assert(std::is_base_of<jleGameBaseModule, T>::value, "Module must derive from jleGameBaseModule");
-
-        if (ModuleNum<T>::num == UINT16_MAX) {
-            return nullptr;
-        }
-
-        return static_cast<T*>(_modules[ModuleNum<T>::num].get());
-    }
-
-    template <typename Primary, typename... Aliases>
-    void addModule(std::unique_ptr<Primary> module)
-    {
-        static_assert(std::is_base_of<jleGameBaseModule, Primary>::value, "Module must derive from jleGameBaseModule");
-
-        uint16_t index = static_cast<uint16_t>(_modules.size());
-        _modules.push_back(std::move(module));
-
-        ModuleNum<Primary>::num = index;
-        (void)std::initializer_list<int>{
-            (ModuleNum<Aliases>::num = index, 0)...
-        };
-    }
-
-private:
-    template <class T>
-    class ModuleNum
-    {
-    public:
-        static inline uint16_t num = UINT16_MAX;
-    };
-
-    std::vector<std::unique_ptr<jleGameBaseModule>> _modules;
-};
+    std::unique_ptr<jleGameModules> createDefaultModules(bool gameRunning);
+    void defaultModulesInitialize(jleGameModules& modules, jlECS::ECS& ecs, jleSerializationContext& serializationContext);
+    void defaultModulesUpdate(jleGameModules& modules, jleEngineUpdateContext& ctx, jlECS::ECS& ecs);
+    void defaultModulesUpdateRenderablesOnly(jleGameModules& modules, jleEngineUpdateContext& ctx, jlECS::ECS& ecs);
+    void defaultPopulateSerializeableInterfaces(jleGameModules &modules, std::vector<jleSerializableInterface *> &interfaces);
+}

@@ -40,25 +40,22 @@
 #include "jlECS/jlECS.h"
 
 #include "game/jleGame.h"
+#include "modules/windowing/jleWindow.h"
 #include "modules/graphics/core/jleFramebufferMultisample.h"
 #include "modules/graphics/core/jleFramebufferScreen.h"
 #include "modules/graphics/core/jleGLError.h"
 #include "modules/graphics/jleGraphics.h"
 #include "modules/graphics/jleQuadRendering.h"
 #include "modules/graphics/jleRenderThread.h"
-#include "modules/physics/jlePhysics.h"
 #include "modules/scripting/jleLuaEnvironment.h"
-#include "modules/windowing/jleWindow.h"
+#include <modules/hierarchy/editor/jleHierarchyModuleEditor.h>
+#include <modules/scripting/editor/jleLuaEditorModule.h>
 
 #include <ImGui/ImGuizmo.h>
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
 #include <implot/implot.h>
-#include <modules/hierarchy/editor/jleHierarchyModuleEditor.h>
-#include <modules/graphics/editor/jleGraphicsModuleEditor.h>
-#include <modules/physics/editor/jlePhysicsModuleEditor.h>
-#include <modules/scripting/editor/jleLuaEditorModule.h>
 
 #include <WickedEngine/wiJobSystem.h>
 #include <plog/Log.h>
@@ -81,8 +78,7 @@ public:
     {
         jleSerializationContext& serializationContext = ctx.serializationContext;
 
-        // Note: Important that menu comes first here, since the others are
-        // dependent on the menu's dockspace.
+        // Note: Important that menu comes first here, since the others are dependent on the menu's dockspace.
         menu = std::make_shared<jleEditorWindowsPanel>("Menu", serializationContext, ctx.engineSettings);
 
         textEditWindow = std::make_shared<jleEditorTextEdit>("Text Editor");
@@ -185,7 +181,9 @@ public:
     }
 };
 
-jleEditor::jleEditor(EngineConstructConfig& config) : jleGameEngine(config) {}
+jleEditor::jleEditor(const EditorConstructConfig & editorConfig, const EngineConstructConfig & engineConfig)
+    : jleGameEngine(engineConfig),
+    _editorConstructConfig{editorConfig} {}
 
 void
 jleEditor::start()
@@ -196,7 +194,10 @@ jleEditor::start()
     _gizmos = std::make_unique<jleEditorGizmos>(serializationContext);
 
     _editorEcs = std::make_unique<jlECS::Debug::ECS_Debug>();
-    _editorModules = _gameRuntime->createModules(*_editorEcs, serializationContext, false);
+
+    constexpr bool gameRunning = false;
+    _editorModules = _engineConstructConfig.gameConfig.modulesCreator(gameRunning);
+    _engineConstructConfig.gameConfig.modulesInitialize(*_editorModules, *_editorEcs, serializationContext);
 
     LOG_INFO << "Starting the editor";
 
@@ -228,8 +229,6 @@ jleEditor::start()
 
     LOG_INFO << "Starting the game in editor mode";
 
-    startRmlUi();
-
     if (saveState().gameRunning) {
         _gameRuntime->startGame(serializationContext);
     }
@@ -254,7 +253,7 @@ jleEditor::render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem:
     }
     else
     {
-       _editorModules->updateRenderablesOnly(ctx, *_editorEcs);
+        _editorConstructConfig.modulesUpdateRenderablesOnly(*_editorModules, ctx, *_editorEcs);
     }
 
     // Wait for game thread
@@ -273,7 +272,7 @@ jleEditor::render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem:
             .editorGameModules = *_editorModules
         };
 
-        updateEditorGameModules(editorUpdateCtx);
+        _editorConstructConfig.updateEditorGameModules(editorUpdateCtx);
 
         renderEditorSceneView(editorUpdateCtx);
 
@@ -464,24 +463,4 @@ jleEditor::~jleEditor()
     // Clear the ECS before the modules as the ECS may reference things in the modules
     _editorEcs.reset();
     _editorModules.reset();
-}
-
-void jleEditor::updateEditorGameModules(jleEditorUpdateContext &ctx) {
-    ZoneScoped;
-
-    jleGameModules& modules = ctx.getCurrentModules();
-
-    const std::vector<glm::mat4>& worldMatrices = modules.getModule<jleHierarchyModule>()->getWorldMatrices();
-
-    if (auto* graphicsEditorModule = modules.getModule<jleGraphicsModuleEditor>()){
-        graphicsEditorModule->updateEditor(ctx, worldMatrices);
-    }
-
-    if (auto* physicsEditorModule = modules.getModule<jlePhysicsModuleEditor>()){
-        physicsEditorModule->updateEditor(ctx.editorFramePacket);
-    }
-
-    if (auto* luaEditorModule = modules.getModule<jleLuaEditorModule>()){
-        luaEditorModule->updateEditor(ctx.engineUpdateContext.serializationContext);
-    }
 }

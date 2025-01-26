@@ -18,6 +18,7 @@
 #include <functional>
 #include <memory>
 
+class jleSerializableInterface;
 struct jleSerializationContext;
 class jleGame;
 struct jleGameModules;
@@ -33,10 +34,13 @@ class ECS_Debug;
 }
 }
 
-struct jleGameConstructConfig{
-    std::function<std::unique_ptr<jleGame>()> gameCreator = {};
+struct jleGameConstructConfig
+{
     std::function<std::unique_ptr<jleGameModules>(bool /*gameRunning*/)> modulesCreator = {};
     std::function<std::unique_ptr<jlECS::ECS>()> ecsCreator = {};
+    std::function<void(jleGameModules&, jlECS::ECS&, jleSerializationContext&)> modulesInitialize = {};
+    std::function<void(jleGameModules&, jleEngineUpdateContext&, jlECS::ECS&)> modulesUpdate = {};
+    std::function<void(jleGameModules&, std::vector<jleSerializableInterface*>&)> populateSerializationInterfaces = {};
 };
 
 class jleGameRuntime
@@ -69,9 +73,6 @@ public:
     void resizeMainFramebuffer(jleEngineUpdateContext &ctx, unsigned int width, unsigned int height);
 
     std::unique_ptr<jleFramebufferInterface> mainGameScreenFramebuffer;
-
-    std::unique_ptr<jleGameModules> createModules(jlECS::ECS& ecs, jleSerializationContext& serializationContext, bool gameRunning);
-
 private:
     void update(jleEngineUpdateContext &ctx);
 

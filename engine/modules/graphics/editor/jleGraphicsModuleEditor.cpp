@@ -54,7 +54,7 @@ namespace {
         cCamera &cameraComponent = *thiz->getPtr<cCamera>(componentIndex);
         archive(cameraComponent);
 
-        if (auto* editorGraphicsModule = archive.editorCtx.engineUpdateContext.gameRuntime.getGame().getModules().getModule<jleGraphicsModuleEditor>()) {
+        if (auto* editorGraphicsModule = archive.editorCtx.getCurrentModules().getModule<jleGraphicsModuleEditor>()) {
             constexpr unsigned int width = 400;
             constexpr unsigned int height = 400;
 
@@ -75,15 +75,12 @@ namespace {
 
             auto &fb = *editorGraphicsModule->cameraPreviewFramebuffer;
 
-            archive.editorCtx.engineUpdateContext.graphics.render(*editorGraphicsModule->cameraPreviewFramebuffer,
-                archive.editorCtx.engineUpdateContext.currentFramePacket);
+            archive.editorCtx.engineUpdateContext.graphics.render(*editorGraphicsModule->cameraPreviewFramebuffer, archive.editorCtx.engineUpdateContext.currentFramePacket);
 
             // Get the texture from the framebuffer
             glBindTexture(GL_TEXTURE_2D, (unsigned int)fb.texture());
             ImGui::Image((void *)(intptr_t)fb.texture(), ImVec2(width / 2.f, height / 2.f),ImVec2(0, 1), ImVec2(1, 0));
         }
-
-
     }
 }
 

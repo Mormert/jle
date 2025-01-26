@@ -51,7 +51,12 @@ class ECS_Debug;
 class jleEditor : public jleGameEngine
 {
 public:
-    explicit jleEditor(EngineConstructConfig& config);
+    struct EditorConstructConfig{
+        std::function<void(jleGameModules&, jleEngineUpdateContext&, jlECS::ECS&)> modulesUpdateRenderablesOnly = {};
+        std::function<void(jleEditorUpdateContext&)> updateEditorGameModules = {};
+    };
+
+    explicit jleEditor(const EditorConstructConfig &editorConfig, const EngineConstructConfig &engineConfig);
 
     ~jleEditor() override;
 
@@ -96,6 +101,5 @@ private:
     std::unique_ptr<jlECS::Debug::ECS_Debug> _editorEcs;
     std::unique_ptr<jleGameModules> _editorModules;
 
-protected:
-    virtual void updateEditorGameModules(jleEditorUpdateContext& ctx);
+    EditorConstructConfig _editorConstructConfig;
 };
