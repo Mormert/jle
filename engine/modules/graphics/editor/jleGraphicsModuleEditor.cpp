@@ -75,7 +75,7 @@ namespace {
 
             auto &fb = *editorGraphicsModule->cameraPreviewFramebuffer;
 
-            archive.editorCtx.engineUpdateContext.graphics.render(*editorGraphicsModule->cameraPreviewFramebuffer, archive.editorCtx.engineUpdateContext.currentFramePacket);
+            archive.editorCtx.getCurrentModules().getModule<jleGraphicsModule>()->getGraphics().render(*editorGraphicsModule->cameraPreviewFramebuffer, archive.editorCtx.engineUpdateContext.currentFramePacket);
 
             // Get the texture from the framebuffer
             glBindTexture(GL_TEXTURE_2D, (unsigned int)fb.texture());

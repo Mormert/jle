@@ -106,7 +106,7 @@ public:
 
 private:
     std::vector<jle3DQueuedMesh> _meshes;
-    std::vector<jle3DQueuedMesh> _translucentMeshes;
+    mutable std::vector<jle3DQueuedMesh> _translucentMeshes;
     std::vector<jle3DQueuedSkinnedMesh> _skinnedMeshes;
     std::vector<std::vector<jle3DLineVertex>> _lineStrips;
     std::vector<jle3DLineVertex> _lines;

@@ -103,12 +103,9 @@ jleGraphics::~jleGraphics()
 
 void
 jleGraphics::render(jleFramebufferInterface &framebufferOut,
-                      const jleFramePacket &framePacketRef)
+                      const jleFramePacket &framePacket)
 {
     ZoneScoped;
-
-    // TODO: Don't make this silly copy here, this is just a work around since the frame packet needs to be const ref
-    jleFramePacket framePacket = framePacketRef;
 
     framebufferOut.bind();
 
@@ -124,8 +121,7 @@ jleGraphics::render(jleFramebufferInterface &framebufferOut,
     // Sort translucency early on another thread, sync before rendering translucency
     wi::jobsystem::context sortCtx;
     if (!framePacket._translucentMeshes.empty()) {
-        wi::jobsystem::Execute(
-            sortCtx, [&](wi::jobsystem::JobArgs args) { sortTranslucentMeshes(framePacket.camera, framePacket._translucentMeshes); });
+        wi::jobsystem::Execute(sortCtx, [&](wi::jobsystem::JobArgs args) { sortTranslucentMeshes(framePacket.camera, framePacket._translucentMeshes); });
     }
 
     // Directional light renders to the shadow mapping framebuffer
@@ -174,20 +170,6 @@ jleGraphics::render(jleFramebufferInterface &framebufferOut,
         renderMeshes(framePacket.camera, framePacket._translucentMeshes, framePacket._lights, framePacket.settings);
         glCheckError("3D Render - Translucent Meshes");
     }
-
-    // gEngine->context->Update();
-
-    /*
-     * Temporarily disables RmlUi rendering, causing some problems since it's a WIP
-        gEngine->context->SetDimensions(Rml::Vector2i(framebufferOut.width(), framebufferOut.height()));
-
-        // Disable depth testing here because the UI doesnt use depth
-        glDisable(GL_DEPTH_TEST);
-        Backend::BeginFrame();
-        gEngine->context->Render();
-        Backend::PresentFrame();
-
-     */
 
     framebufferOut.bindDefault();
 }

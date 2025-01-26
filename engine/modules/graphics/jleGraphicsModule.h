@@ -15,14 +15,18 @@
 
 #pragma once
 
+#include "core/jleFramebufferMultisample.h"
+#include "core/jleFullscreenRendering.h"
+#include "jleFramePacket.h"
+#include "jleGraphics.h"
+#include "jleRenderThread.h"
+
 #include "modules/jleGameModules.h"
 
-#include <cstdint>
 #include <glm/glm.hpp>
 #include <vector>
 
-class jleFramePacket;
-class jleCamera;
+struct jleCamera;
 
 namespace jlECS
 {
@@ -33,6 +37,15 @@ class jleGraphicsModule : public jleGameBaseModule
 {
 public:
     virtual void initializeECS(jlECS::ECS &ecs);
+    void initializeModule(jleSerializationContext& ctx);
+
+    void preRender();
+    void render(int windowX, int windowY);
+    void postRender();
+
+    ~jleGraphicsModule() override;
+
+    void populateSerializeableInterface(std::vector<jleSerializableInterface *> & interfaces);
 
     struct UpdateContext {
         struct In {
@@ -44,11 +57,23 @@ public:
         struct InOut {
             jlECS::ECS &ecs;
         } inOut;
-
-        struct Out {
-            jleFramePacket &framePacket;
-        } out;
     };
 
     void update(const UpdateContext &ctx);
+
+    jleGraphics& getGraphics() const { return *_graphics; }
+
+private:
+    std::unique_ptr<jleGraphics> _graphics;
+    std::unique_ptr<jleFullscreenRendering> _fullscreen_renderer;
+    std::unique_ptr<jleFramebufferInterface> _screenFramebuffer;
+    std::unique_ptr<jleFramebufferMultisample> _msaaFramebuffer;
+
+    jleFramePacket _framePackets[2]; // Current and previous frame's packet
+    int _currentFramePacketIndex = 0;
+
+    jleFramePacket& getCurrentFramePacket() { return _currentFramePacketIndex == 0 ? _framePackets[0] : _framePackets[1]; }
+    jleFramePacket& getPreviousFramePacket() { return _currentFramePacketIndex == 0 ? _framePackets[1] : _framePackets[0]; }
+
+    std::unique_ptr<jleRenderThread> _renderThread;
 };

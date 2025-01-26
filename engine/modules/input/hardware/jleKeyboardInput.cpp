@@ -15,9 +15,9 @@
 
 #include "jleKeyboardInput.h"
 
-#include "modules/windowing/jleWindow.h"
+#include "modules/windowing/jleWindowModule.h"
 
-jleKeyboardInput::jleKeyboardInput(const jleWindow &window) : _window{window} {}
+jleKeyboardInput::jleKeyboardInput(const jleWindowModule &window) : _window{window} {}
 
 bool
 jleKeyboardInput::keyPressed(jleKey key)

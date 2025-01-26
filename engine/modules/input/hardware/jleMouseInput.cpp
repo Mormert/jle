@@ -15,9 +15,9 @@
 
 #include "jleMouseInput.h"
 
-#include "modules/windowing/jleWindow.h"
+#include "modules/windowing/jleWindowModule.h"
 
-jleMouseInput::jleMouseInput(jleWindow &window) : _window{window} {}
+jleMouseInput::jleMouseInput(jleWindowModule &window) : _window{window} {}
 
 int
 jleMouseInput::mouseX()

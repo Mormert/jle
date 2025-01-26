@@ -20,28 +20,18 @@
 #include "jleGameEngine.h"
 #include "jlECS/jlECS.h"
 
-#include <modules/graphics/jleRenderThread.h>
-#include <modules/input/jleInput.h>
 #include <modules/graphics/core/jleFramebufferScreen.h>
+#include <modules/graphics/jleRenderThread.h>
+#include <modules/input/jleInputModule.h>
 
 #include <WickedEngine/wiJobSystem.h>
 
-jleGameRuntime::jleGameRuntime(const jleGameConstructConfig &config, jleGameEngine& engine) : _engine(engine)
+jleGameRuntime::jleGameRuntime(const jleGameConstructConfig &config)
 {
     _gameConstructConfig = config;
     if(!_gameConstructConfig.ecsCreator){
         _gameConstructConfig.ecsCreator = [](){ return std::make_unique<jlECS::ECS>(); };
     }
-
-    constexpr int initialScreenX = 1024;
-    constexpr int initialScreenY = 1024;
-    mainGameScreenFramebuffer = std::make_unique<jleFramebufferScreen>(initialScreenX, initialScreenY);
-
-    addGameWindowResizeCallback([this](auto &&PH1, auto &&PH2) {
-        auto updateContext = _engine.createUpdateContext();
-        _engine._gameRuntime->resizeMainFramebuffer(
-            updateContext, std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
-    });
 }
 
 void
@@ -102,15 +92,6 @@ jleGameRuntime::isGameHalted() const
 }
 
 void
-jleGameRuntime::resizeMainFramebuffer(jleEngineUpdateContext &ctx, unsigned int width, unsigned int height)
-{
-    ctx.renderThread.runOnRenderThread([this, width, height]() { mainGameScreenFramebuffer->resize(width, height); });
-
-    auto &inputMouse = ctx.input.mouse;
-    inputMouse.setScreenSize(width, height);
-}
-
-void
 jleGameRuntime::update(jleEngineUpdateContext &ctx)
 {
     ZoneScoped;
@@ -129,7 +110,7 @@ jleGameRuntime::update(jleEngineUpdateContext &ctx)
     }
 
     if (!_gameHalted && _game) {
-        _gameConstructConfig.modulesUpdate(ctx.gameRuntime.getGame().getModules(), ctx, _game->getECS());
+        _gameConstructConfig.modulesUpdate(getGame().getModules(), ctx, _game->getECS());
     }
 }
 
@@ -152,35 +133,4 @@ jleGameRuntime::startGame(jleSerializationContext& serializationContext)
 
     _game->_modules = std::move(modules);
     _game->_ecs = std::move(ecs);
-}
-
-void
-jleGameRuntime::gameWindowResizedEvent(unsigned int w, unsigned int h)
-{
-    for (const auto &callback : _gameWindowResizedCallbacks) {
-        callback.second(w, h);
-    }
-}
-
-int
-jleGameRuntime::addGameWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback)
-{
-    unsigned int i = 0;
-
-    // Find first available callback id
-    for (auto it = _gameWindowResizedCallbacks.cbegin(), end = _gameWindowResizedCallbacks.cend();
-         it != end && i == it->first;
-         ++it, ++i) {
-    }
-
-    _gameWindowResizedCallbacks.insert(
-        std::make_pair(i, std::bind(callback, std::placeholders::_1, std::placeholders::_2)));
-
-    return i;
-}
-
-void
-jleGameRuntime::removeGameWindowResizeCallback(unsigned int callbackId)
-{
-    _gameWindowResizedCallbacks.erase(callbackId);
 }

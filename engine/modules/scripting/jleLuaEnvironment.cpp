@@ -20,7 +20,7 @@
 #include "core/jlePathDefines.h"
 #include "core/jleResourceRef.h"
 
-#include "modules/input/jleInput.h"
+#include "modules/input/jleInputModule.h"
 
 #include <glm/ext/matrix_transform.hpp>
 
@@ -276,8 +276,8 @@ jleLuaEnvironment::setupLuaBindings(sol::state &lua)
                                     &jleMouseInput::isFpsMode);
 
     // TODO: Add accessor to this somewhere
-    lua.new_usertype<jleInput>(
-        "jleInput", "keyboard", sol::readonly(&jleInput::keyboard), "mouse", sol::readonly(&jleInput::mouse));
+    lua.new_usertype<jleInputModule>(
+        "jleInput", "keyboard", sol::readonly(&jleInputModule::keyboard), "mouse", sol::readonly(&jleInputModule::mouse));
 
     //lua.new_usertype<jleTransform>("jleTransform",
     //                               "getLocalPosition",

@@ -39,12 +39,7 @@ jleFullscreenRendering::jleFullscreenRendering(jleSerializationContext& ctx)
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1,
-                          2,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          4 * sizeof(float),
-                          (void *)(2 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
 }
 
 jleFullscreenRendering::~jleFullscreenRendering() {
@@ -53,11 +48,9 @@ jleFullscreenRendering::~jleFullscreenRendering() {
 }
 
 void
-jleFullscreenRendering::renderFramebufferFullscreen(jleFramebufferInterface &framebuffer,
-                                                    unsigned int screenWidth,
-                                                    unsigned int screenHeight)
+jleFullscreenRendering::renderFramebufferFullscreen(jleFramebufferInterface &framebuffer, unsigned int screenWidth, unsigned int screenHeight)
 {
-    // Back to default screen framebuffer
+    // Bind to default screen framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glClearColor(0.f, 0.f, 0.f, 1.f);

@@ -29,7 +29,7 @@ public:
 
 struct jleSerializationContext {
     jleResourceHolder *resources{nullptr};
-    const std::vector<jleSerializableInterface *> serializationInterfaces = {};
+    std::vector<jleSerializableInterface *> serializationInterfaces = {};
 
     template <typename T>
     T* get()

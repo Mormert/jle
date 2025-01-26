@@ -15,13 +15,13 @@
 
 #pragma once
 
-#include "modules/windowing/jleWindow.h"
+#include "modules/windowing/jleWindowModule.h"
 
 #ifdef __APPLE__
 void customizeTitleBarMacOS(GLFWwindow *window);
 #endif
 
-class jleEditorWindow : public jleWindow
+class jleEditorWindow : public jleWindowModule
 {
 public:
     GLFWwindow *initGlfwWindow(int width, int height, const char *title) override;

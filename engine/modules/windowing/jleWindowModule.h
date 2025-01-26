@@ -15,16 +15,12 @@
 
 #pragma once
 
-#include "core/jleCommon.h"
-
 #include "jleWindowSettings.h"
-
-#include <map>
-#include <memory>
+#include "modules/jleGameModules.h"
 
 struct GLFWwindow;
 
-struct jleWindowResizeEvent {
+struct jleWindowDimensions {
     // Main framebuffer dimensions
     int framebufferWidth;
     int framebufferHeight;
@@ -41,10 +37,10 @@ struct jleWindowResizeEvent {
     float contentScaleY;
 };
 
-class jleWindow
+class jleWindowModule : public jleGameBaseModule
 {
 public:
-    ~jleWindow();
+    ~jleWindowModule() override;
 
     static void error_callback(int error, const char *description);
 
@@ -66,13 +62,7 @@ public:
 
     [[nodiscard]] unsigned int width() const;
 
-    void initWindow();
-
-    unsigned int addWindowResizeCallback(std::function<void(const jleWindowResizeEvent &resizeEvent)> callback);
-
-    void removeWindowResizeCallback(unsigned int callback_id);
-
-    void executeResizeCallbacks(const jleWindowResizeEvent &resizeEvent);
+    void initWindowModule();
 
     void updateWindow();
 
@@ -96,20 +86,23 @@ public:
 
     GLFWwindow *glfwWindow();
 
-    virtual GLFWwindow *initGlfwWindow(int width, int height, const char *title);
+    const jleWindowDimensions& getDimensions() const { return windowDimensions; }
 
 protected:
-    GLFWwindow *_glfwWindow;
+    virtual GLFWwindow *initGlfwWindow(int width, int height, const char *title);
 
-    WindowSettings windowSettings;
+    GLFWwindow *_glfwWindow = nullptr;
 
-    float _currentScrollX;
-    float _currentScrollY;
+    WindowSettings windowSettings{};
+
+    jleWindowDimensions windowDimensions{};
+
+    float _currentScrollX{};
+    float _currentScrollY{};
 
     bool _cursorVisible{false};
 
-    bool _pressedKeys[512];
-    bool _releasedKeys[512];
-
-    std::map<unsigned int, std::function<void(const jleWindowResizeEvent &resizeEvent)>> windowResizedCallbacks;
+    // TODO: Use bitset instead of bool arrays for key states
+    bool _pressedKeys[512] = {};
+    bool _releasedKeys[512] = {};
 };

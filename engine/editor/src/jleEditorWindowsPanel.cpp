@@ -18,7 +18,7 @@
 #include "jleEngineSettings.h"
 #include "jleGameEditorWindow.h"
 #include "jleSystemUsageTracker.h"
-#include "modules/windowing/jleWindow.h"
+#include "modules/windowing/jleWindowModule.h"
 
 #include "core/jleMalloc.h"
 

@@ -13,26 +13,28 @@
  *                                                                                           *
  *********************************************************************************************/
 
+#pragma once
 
-#include "jleInput.h"
-#include "modules/input/hardware/jleKeyboardInput.h"
-#include "modules/input/hardware/jleMouseInput.h"
+#include "hardware/jleKeyboardInput.h"
+#include "hardware/jleMouseInput.h"
 
-jleInput::jleInput(jleWindow& window)
-    : keyboard{window}, mouse{window}
+#include "modules/jleGameModules.h"
+
+class jleWindowModule;
+
+class jleInputModule : public jleGameBaseModule
 {
-}
+public:
+    ~jleInputModule() override = default;
 
-void
-jleInput::setInputEnabled(bool isEnabled)
-{
-    _isInputEnabled = isEnabled;
-    keyboard.setEnabled(isEnabled);
-    mouse.setEnabled(isEnabled);
-}
+    explicit jleInputModule(jleWindowModule &window);
 
-bool
-jleInput::getInputEnabled() const
-{
-    return _isInputEnabled;
-}
+    jleKeyboardInput keyboard;
+    jleMouseInput mouse;
+
+    void setInputEnabled(bool isEnabled);
+    [[nodiscard]] bool getInputEnabled() const;
+
+private:
+    bool _isInputEnabled = true;
+};

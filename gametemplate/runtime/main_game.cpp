@@ -4,27 +4,32 @@
 
 #include "GameTemplate.h"
 
+#include "game/jleDefaultGameFunctions.h"
 #include <jleGameEngine.h>
-#include <modules/windowing/jleWindow.h>
+#include <modules/windowing/jleWindowModule.h>
 #include <runtime/jleKickStarter.h>
 
 int
 main(int argc, char *argv[])
 {
-    auto kickstarter = jleKickStarter{};
+    jleCommandArguments commandArguments{argc, argv};
 
     jleGameEngine::EngineConstructConfig config{
-        .windowCreator = std::make_unique<jleWindow>,
+        .windowCreator = std::make_unique<jleWindowModule>,
         .gameConfig = {
             .modulesCreator = GameTemplateFunctions::createModules,
             .ecsCreator = std::make_unique<jlECS::Debug::ECS_Debug>,
             .modulesInitialize = GameTemplateFunctions::modulesInitialize,
             .modulesUpdate = GameTemplateFunctions::modulesUpdate,
-            .populateSerializationInterfaces = GameTemplateFunctions::populateSerializeableInterfaces
+            .populateSerializationInterfaces = GameTemplateFunctions::populateSerializeableInterfaces,
+            .modulesPreRender = jleDefaultGameFunctions::defaultPreRender,
+            .modulesRender = jleDefaultGameFunctions::defaultRender,
+            .modulesPostRender = jleDefaultGameFunctions::defaultPostRender
         }
     };
 
-    auto engine = std::make_unique<jleGameEngine>(config);
-    kickstarter.kickStart(std::move(engine), argc, argv);
+    auto engine = jleGameEngine{config};
+    engine.run();
+
     return 0;
 }

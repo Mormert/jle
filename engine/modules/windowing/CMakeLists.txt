@@ -1,5 +1,5 @@
 add_library(jleWindowing STATIC
-        jleWindow.cpp
+        jleWindowModule.cpp
 )
 
 if (NOT JLE_BUILD_EMSCRIPTEN) # Native build, excluding some Emscripten-embedded libraries

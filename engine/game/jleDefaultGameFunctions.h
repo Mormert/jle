@@ -35,4 +35,7 @@ namespace jleDefaultGameFunctions
     void defaultModulesUpdate(jleGameModules& modules, jleEngineUpdateContext& ctx, jlECS::ECS& ecs);
     void defaultModulesUpdateRenderablesOnly(jleGameModules& modules, jleEngineUpdateContext& ctx, jlECS::ECS& ecs);
     void defaultPopulateSerializeableInterfaces(jleGameModules &modules, std::vector<jleSerializableInterface *> &interfaces);
+    void defaultPreRender(jleGameModules &modules, jleSerializationContext &ctx);
+    bool defaultRender(jleGameModules &modules, jleSerializationContext &ctx);
+    void defaultPostRender(jleGameModules &modules, jleSerializationContext &ctx);
 }

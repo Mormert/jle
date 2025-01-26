@@ -36,8 +36,8 @@ class jleEditorSaveState;
 class jlePath;
 class jleObject;
 class jleResourceIndexer;
-struct jleWindowResizeEvent;
 class jleSerializationContext;
+struct jleWindowDimensions;
 
 namespace jlECS
 {
@@ -83,7 +83,7 @@ private:
 
     void initImgui();
 
-    void mainEditorWindowResized(const jleWindowResizeEvent &resizeEvent);
+    void mainEditorWindowResized(const jleWindowDimensions &windowDimensions);
 
     class jleEditorWindows;
     std::unique_ptr<jleEditorWindows> _editorWindows{};

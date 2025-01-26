@@ -4,10 +4,11 @@
 
 #include "GameTemplate.h"
 #include "GameTemplateEditor.h"
+#include "game/jleDefaultGameFunctions.h"
 
+#include <core/jleMalloc.h>
 #include <editor/jleEditor.h>
 #include <editor/jleEditorWindow.h>
-#include <core/jleMalloc.h>
 
 #include <runtime/jleKickStarter.h>
 
@@ -30,7 +31,10 @@ main(int argc, char *argv[])
             .ecsCreator = std::make_unique<jlECS::Debug::ECS_Debug>,
             .modulesInitialize = GameTemplateFunctions::modulesInitialize,
             .modulesUpdate = GameTemplateFunctions::modulesUpdate,
-            .populateSerializationInterfaces = GameTemplateFunctions::populateSerializeableInterfaces
+            .populateSerializationInterfaces = GameTemplateFunctions::populateSerializeableInterfaces,
+            .modulesPreRender = jleDefaultGameFunctions::defaultPreRender,
+            .modulesRender = jleDefaultGameFunctions::defaultRender,
+            .modulesPostRender = jleDefaultGameFunctions::defaultPostRender
         }
     };
 

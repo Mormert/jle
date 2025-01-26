@@ -15,7 +15,7 @@
 
 #pragma once
 
-class jleWindow;
+class jleWindowModule;
 
 enum class jleButton : int
 {
@@ -36,7 +36,7 @@ enum class jleButton : int
 class jleMouseInput
 {
 public:
-    explicit jleMouseInput(jleWindow& window);
+    explicit jleMouseInput(jleWindowModule& window);
 
     void updateDeltas();
 
@@ -63,7 +63,7 @@ public:
     [[nodiscard]] bool isFpsMode() const;
 
 private:
-    jleWindow& _window;
+    jleWindowModule& _window;
 
     int _lastMouseX{}, _lastMouseY{};
     int _deltaX{}, _deltaY{};

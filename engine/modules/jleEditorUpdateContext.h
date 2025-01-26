@@ -33,7 +33,7 @@ public:
     jleEngineUpdateContext &engineUpdateContext;
     jleResourceIndexer &resourceIndexer;
     jleEditorGizmos &gizmos;
-    jleFramePacket &editorFramePacket;
+    //jleFramePacket &editorFramePacket;
     jlECS::ECS &editorEcs;
     jleGameModules &editorGameModules;
 

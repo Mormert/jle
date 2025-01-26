@@ -16,8 +16,8 @@
 #include "jleGameEditorWindow.h"
 #include "modules/graphics/core/jleFrameBufferInterface.h"
 #include "modules/input/hardware/jleMouseInput.h"
-#include "modules/input/jleInput.h"
-#include "modules/windowing/jleWindow.h"
+#include "modules/input/jleInputModule.h"
+#include "modules/windowing/jleWindowModule.h"
 
 #include "modules/graphics/core/jleIncludeGL.h"
 
@@ -29,7 +29,7 @@ jleGameEditorWindow::jleGameEditorWindow(const std::string &window_name) : jleEd
 }
 
 void
-jleGameEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleInput& input)
+jleGameEditorWindow::renderUI(jleEngineUpdateContext &ctx, jleInputModule& input)
 {
     ZoneScoped;
     if (!isOpened) {

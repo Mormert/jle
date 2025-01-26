@@ -14,21 +14,22 @@
  *********************************************************************************************/
 
 #include "jleSceneEditorWindow.h"
+#include "game/jleGame.h"
 #include "jleEditor.h"
 #include "jleEditorGizmos.h"
 #include "jleUndoRedo.h"
-#include "game/jleGame.h"
 #include "modules/graphics/core/jleFramebufferMultisample.h"
 #include "modules/graphics/core/jleFramebufferPicking.h"
 #include "modules/graphics/core/jleIncludeGL.h"
 #include "modules/graphics/jleFramePacket.h"
 #include "modules/graphics/jleGraphics.h"
+#include "modules/graphics/jleGraphicsModule.h"
 #include "modules/graphics/runtime/components/cMesh.h"
-#include "modules/input/jleInput.h"
+#include "modules/hierarchy/components/cTransform.h"
+#include "modules/input/jleInputModule.h"
 #include "modules/physics/components/cRigidbody.h"
 #include "modules/physics/jlePhysics.h"
-#include "modules/windowing/jleWindow.h"
-#include "modules/hierarchy/components/cTransform.h"
+#include "modules/windowing/jleWindowModule.h"
 #include <modules/graphics/core/jleFramebufferScreen.h>
 
 #include <ImGui/imgui.h>
@@ -180,7 +181,7 @@ jleSceneEditorWindow::renderUI(const RenderUIInput& input)
         int dragWidth  = std::abs(_selectCurrentX - _selectStartX);
         int dragHeight = std::abs(_selectCurrentY - _selectStartY);
 
-        input.editorUpdate.engineUpdateContext.graphics.renderMeshesPicking(
+        input.editorUpdate.getCurrentModules().getModule<jleGraphicsModule>()->getGraphics().renderMeshesPicking(
             *_pickingFramebuffer, _renderCamera, input.editorUpdate.editorFramePacket);
         _pickingFramebuffer->bind();
 
@@ -526,7 +527,7 @@ jleSceneEditorWindow::render(jleFramePacket &framePacket, const jleEditorUpdateC
     }
 
     framePacket.camera = _renderCamera;
-    ctx.engineUpdateContext.graphics.render(*_msaa, framePacket);
+    ctx.editorGameModules.getModule<jleGraphicsModule>()->getGraphics().render(*_msaa, framePacket);
 
     _msaa->blitToOther(*_framebuffer);
 }

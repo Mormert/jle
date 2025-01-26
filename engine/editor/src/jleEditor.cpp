@@ -40,14 +40,15 @@
 #include "jlECS/jlECS.h"
 
 #include "game/jleGame.h"
-#include "modules/windowing/jleWindow.h"
 #include "modules/graphics/core/jleFramebufferMultisample.h"
 #include "modules/graphics/core/jleFramebufferScreen.h"
 #include "modules/graphics/core/jleGLError.h"
 #include "modules/graphics/jleGraphics.h"
+#include "modules/graphics/jleGraphicsModule.h"
 #include "modules/graphics/jleQuadRendering.h"
 #include "modules/graphics/jleRenderThread.h"
 #include "modules/scripting/jleLuaEnvironment.h"
+#include "modules/windowing/jleWindowModule.h"
 #include <modules/hierarchy/editor/jleHierarchyModuleEditor.h>
 #include <modules/scripting/editor/jleLuaEditorModule.h>
 
@@ -221,8 +222,6 @@ jleEditor::start()
     _sceneWindow = _editorWindows->sceneWindow;
     _editorSceneObjects = _editorWindows->editorSceneObjects;
 
-    _window->addWindowResizeCallback([this]<typename T0>(T0 && PH1) { mainEditorWindowResized(std::forward<T0>(PH1)); });
-
     int x, y;
     glfwGetFramebufferSize(_window->glfwWindow(), &x, &y);
     _window->glfwFramebufferSizeCallback(_window->glfwWindow(), x, y);
@@ -259,6 +258,7 @@ jleEditor::render(jleCamera& camera, jleEngineUpdateContext &ctx, wi::jobsystem:
     // Wait for game thread
     Wait(jobsCtx);
 
+    ctx.
     if (_previousFramePacket) {
         jleFramePacket& framePacketModifiedByEditor = *_previousFramePacket;
         _editorWindows->sceneWindow->renderEditorGrid(framePacketModifiedByEditor);
@@ -294,7 +294,7 @@ jleEditor::renderGameView(const jleFramePacket &framePacketIn,
         msaa.resize(framebufferOut.width(), framebufferOut.height());
     }
 
-    renderer().render(msaa, framePacketIn);
+    getCurrentGameModules()->getModule<jleGraphicsModule>()->getGraphics().render(msaa, framePacketIn);
     msaa.blitToOther(framebufferOut);
 
     glCheckError("Render MSAA Game View");
@@ -385,15 +385,15 @@ jleEditor::initImgui()
 
 
 void
-jleEditor::mainEditorWindowResized(const jleWindowResizeEvent &resizeEvent)
+jleEditor::mainEditorWindowResized(const jleWindowDimensions &windowDimensions)
 {
     auto &&io = ImGui::GetIO();
     io.FontGlobalScale = 1.0f;
-    int w = resizeEvent.framebufferWidth;
-    int h = resizeEvent.framebufferHeight;
+    int w = windowDimensions.framebufferWidth;
+    int h = windowDimensions.framebufferHeight;
 
-    w = static_cast<int>(static_cast<float>(w) / resizeEvent.contentScaleX);
-    h = static_cast<int>(static_cast<float>(h) / resizeEvent.contentScaleY);
+    w = static_cast<int>(static_cast<float>(w) / windowDimensions.contentScaleX);
+    h = static_cast<int>(static_cast<float>(h) / windowDimensions.contentScaleY);
 
     constexpr int scale0 = 1080 * 720;
     constexpr int scale1 = 1920 * 1080;

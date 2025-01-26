@@ -27,7 +27,7 @@
  */
 
 #include "jleGameEngine.h"
-#include "modules/windowing/jleWindow.h"
+#include "modules/windowing/jleWindowModule.h"
 
 #include "RmlUi_Backend.h"
 #include "RmlUi_Platform_GLFW.h"
@@ -286,9 +286,9 @@ static void SetupCallbacks(GLFWwindow* window)
 	//glfwSetFramebufferSizeCallback(window, [](GLFWwindow* /*window*/, int width, int height) {
         //});
 
-        jleWindow* w = reinterpret_cast<jleWindow *>(glfwGetWindowUserPointer(window));
-        w->addWindowResizeCallback([&](const jleWindowResizeEvent& resizeEvent){
-            data->render_interface.SetViewport(resizeEvent.framebufferWidth, resizeEvent.framebufferHeight);
-            RmlGLFW::ProcessFramebufferSizeCallback(data->context, resizeEvent.framebufferWidth, resizeEvent.framebufferHeight);
-        });
+        //jleWindow* w = reinterpret_cast<jleWindow *>(glfwGetWindowUserPointer(window));
+        //w->addWindowResizeCallback([&](const jleWindowResizeEvent& resizeEvent){
+        //    data->render_interface.SetViewport(resizeEvent.framebufferWidth, resizeEvent.framebufferHeight);
+        //    RmlGLFW::ProcessFramebufferSizeCallback(data->context, resizeEvent.framebufferWidth, resizeEvent.framebufferHeight);
+        //});
 }
