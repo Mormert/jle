@@ -1,0 +1,238 @@
+/*********************************************************************************************
+ *                                                                                           *
+ *               ,     .     ,                      .   ,--.                                 *
+ *               |     |     |                      |   |            o                       *
+ *               | ,-. |- -- |    ,-: ,-: ,-: ,-. ,-|   |-   ;-. ,-: . ;-. ,-.               *
+ *               | |-' |     |    | | | | | | |-' | |   |    | | | | | | | |-'               *
+ *              -' `-' `-'   `--' `-` `-| `-| `-' `-'   `--' ' ' `-| ' ' ' `-'               *
+ *                                                                                           *
+ *     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     *
+ *          Jet-Lagged Engine (jle) is licenced under GNU General Public License v3.0.       *
+ *     The licence can be found here: https://github.com/Mormert/jle/blob/master/LICENSE     *
+ *                  Copyright (c) 2020-2024 Johan Lind. All rights reserved.                 *
+ *                                                                                           *
+ *********************************************************************************************/
+
+#include "cAnimator.h"
+
+#include "core/jleResourceRef.h"
+
+#include <modules/hierarchy/components/cTransform.h>
+
+#include <sol2/sol.hpp>
+#include <glm/gtc/quaternion.hpp>
+
+
+cAnimator::cAnimator()
+{
+    _animationMatrices = std::make_shared<jleAnimationFinalMatrices>();
+}
+
+void
+cAnimator::start()
+{
+    for (auto &animation : _animations) {
+        animation.currentAnimationLocal = *animation.currentAnimation.get();
+    }
+}
+
+
+void
+cAnimator::animate(float dt)
+{
+    for (auto &animation : _animations) {
+        ZoneScopedN("AnimBlendIteration");
+        // if (animation.currentAnimationLocal) {
+        animation.deltaTime = dt * animation.animationSpeed;
+        animation.currentTime += animation.currentAnimationLocal.getTicksPerSec() * animation.deltaTime;
+        if (animation.currentTime / animation.currentAnimationLocal.getDuration() > 1.f) {
+            animation.animationLoopedThisFrame = true;
+        } else {
+            animation.animationLoopedThisFrame = false;
+        }
+        animation.currentTime = fmod(animation.currentTime, animation.currentAnimationLocal.getDuration());
+
+        calculateBoneTransform(animation.currentAnimationLocal.getRootNode(), glm::identity<glm::mat4>(), animation);
+        // }
+    }
+
+    blendAnimations();
+
+    // TODO add back root motion support
+    //applyRootMotion();
+}
+
+void
+cAnimator::registerLua(sol::state &lua)
+{
+    // ??
+    //lua.new_usertype<cAnimator>("cAnimator", sol::constructors<>, "setAnimation", &cAnimator::setAnimation);
+}
+
+void
+cAnimator::calculateBoneTransform(const jleAnimationNode &node,
+                                  const glm::mat4 &parentTransform,
+                                  cAnimatorAnimation &animation)
+{
+    // ZoneScoped;
+    const std::string &nodeName = node.name;
+    glm::mat4 nodeTransform = node.transformation;
+
+    jleAnimationBone *bone;
+    {
+        // ZoneScopedN("FindBone");
+        bone = animation.currentAnimationLocal.findBone(nodeName);
+    }
+
+    if (bone) {
+        // ZoneScopedN("BoneUpdate");
+        bone->update(animation.currentTime);
+        nodeTransform = bone->getLocalTransform();
+
+        if (bone->getName() == _rootMotionBone && _enableRootMotion) {
+            auto newPos = glm::vec3(bone->getLocalTransform()[3]);
+
+            auto rootMotionDiff = animation.lastFrameRootPosition - newPos;
+            animation.lastFrameRootPosition = newPos;
+
+            if (!animation.animationLoopedThisFrame) {
+                animation.thisFrameRootMotionTranslation = rootMotionDiff;
+            } else {
+                animation.thisFrameRootMotionTranslation = newPos;
+            }
+        } else if (!_enableRootMotion) {
+            animation.thisFrameRootMotionTranslation = glm::vec3{0.f};
+        }
+    }
+
+    glm::mat4 globalTransformation = parentTransform * nodeTransform;
+
+    {
+        // ZoneScopedN("BoneMapping");
+
+        const auto &boneMapping = animation.currentAnimationLocal.getBoneMapping();
+        const auto &meshBone = boneMapping.find(nodeName);
+        if (meshBone != boneMapping.end()) {
+            int index = meshBone->second.index;
+            const glm::mat4 &offset = meshBone->second.offset;
+
+            animation.animationMatrices.matrices[index] = globalTransformation * offset;
+        }
+    }
+
+    for (int i = 0; i < node.childNodes.size(); ++i) {
+        calculateBoneTransform(node.childNodes[i], globalTransformation, animation);
+    }
+}
+
+const std::shared_ptr<jleAnimationFinalMatrices> &
+cAnimator::animationMatrices() const
+{
+    return _animationMatrices;
+}
+
+void
+cAnimator::editorInspectorImGuiRender(jleEditorUpdateContext & ctx)
+{
+    /*
+#if JLE_BUILD_IMGUI
+    int p = 0;
+    ImGui::Separator();
+    for (auto &animation : _animations) {
+        ImGui::PushID(p++);
+        ImGui::Text("%s", animation.currentAnimationLocal.path.getVirtualPath().c_str());
+        // if (animation.currentAnimation) {
+       // if (gEditor.isGameKilled()) {
+            if (ImGui::IsItemEdited()) {
+                if (!_editorPreviewAnimation) {
+                    _animationMatrices = std::make_shared<jleAnimationFinalMatrices>();
+                }
+            }
+       // }
+        ImGui::SliderFloat("Current Time", &animation.currentTime, 0.f, animation.currentAnimationLocal.getDuration());
+        //}
+        ImGui::PopID();
+    }
+
+    ImGui::Checkbox("Preview Animation", &_editorPreviewAnimation);
+
+#endif
+     */
+}
+
+void
+cAnimator::blendAnimations()
+{
+    ZoneScoped;
+    if (_animations.size() == 1) {
+        // if (_animations[0].currentAnimation) {
+        *_animationMatrices = _animations[0].animationMatrices;
+        _animations[0].blendFactorStrength = 1.f;
+        // }
+    } else if (_animations.size() == 2) {
+        for (int i = 0; i < 100; ++i) {
+            glm::mat4 &matrix1 = _animations[0].animationMatrices.matrices[i];
+            glm::mat4 &matrix2 = _animations[1].animationMatrices.matrices[i];
+            _animationMatrices->matrices[i] = matrix1 * (1.0f - _blendFactor) + matrix2 * _blendFactor;
+        }
+        //_animations[0].thisFrameRootMotionTranslation *= 1.0f - _blendFactor;
+        //_animations[1].thisFrameRootMotionTranslation *= _blendFactor;
+        _animations[0].blendFactorStrength = 1.0f - _blendFactor;
+        _animations[1].blendFactorStrength = _blendFactor;
+    }
+}
+
+void
+cAnimator::applyRootMotion(cTransform& transform)
+{
+    ZoneScoped;
+    glm::mat4 matrix = glm::mat4(glm::vec4(transform.getRight(), 0.0f),
+                                 glm::vec4(transform.getUp(), 0.0f),
+                                 glm::vec4(transform.getForward(), 0.0f),
+                                 glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+    auto quat = glm::quat(matrix);
+
+    glm::vec3 scale;
+    auto modelMatrix = transform.getLocalMatrix();
+    scale.x = glm::length(glm::vec3(modelMatrix[0]));
+    scale.y = glm::length(glm::vec3(modelMatrix[1]));
+    scale.z = glm::length(glm::vec3(modelMatrix[2]));
+
+    for (auto &animation : _animations) {
+        if (!animation.animationLoopedThisFrame) {
+
+            glm::vec3 rotatedVec = -(quat * animation.thisFrameRootMotionTranslation * animation.blendFactorStrength);
+            animation.totalRootMotionTranslation += rotatedVec;
+
+            // gEngine->renderGraph().sendLine(getTransform().getWorldPosition(),
+            //                                getTransform().getWorldPosition() + rotatedVec);
+
+            transform.translate(rotatedVec * scale);
+        } else {
+            animation.totalRootMotionTranslation = glm::vec3{0.f};
+        }
+    }
+
+    glm::vec3 addedRootMotionForChildren{0.f};
+    for (const auto &animation : _animations) {
+        addedRootMotionForChildren += animation.totalRootMotionTranslation;
+    }
+
+    // Todo: implement adding root motion for children
+    //for (auto &child : object()->childObjects()) {
+    //    child->getTransform().setLocalPosition(addedRootMotionForChildren);
+    //}
+}
+
+void
+cAnimator::setAnimation(const jlePath &path, jleSerializationContext& ctx)
+{
+    _animations.clear();
+    _animations.push_back({});
+    _animations[0].currentAnimation = jleResourceRef<jleAnimation>(path, ctx);
+
+    for (auto &animation : _animations) {
+        animation.currentAnimationLocal = *animation.currentAnimation.get();
+    }
+}

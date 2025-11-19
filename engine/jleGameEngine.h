@@ -15,20 +15,15 @@
 
 #pragma once
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
+#include "game/jleGameRuntime.h"
+#include "modules/jleEngineUpdateContext.h"
+#include "plog/Appenders/ColorConsoleAppender.h"
+#include "plog/Appenders/RollingFileAppender.h"
+#include "plog/Formatters/TxtFormatter.h"
 
 #include <functional>
 #include <memory>
-#include <unordered_map>
-
-namespace SoLoud
-{
-class Soloud;
-};
-namespace Rml
-{
-class Context;
-};
 
 namespace wi::jobsystem
 {
@@ -36,159 +31,93 @@ struct context;
 }
 
 class jleGame;
-class jleResources;
+class jleResourceHolder;
 class jleEngineSettings;
-class jleInput;
 class jleWindow;
-class jleTimerManager;
-class jle3DRenderer;
+class jleGraphics;
 class jle3DSettings;
-class jle3DGraph;
+class jleFramePacket;
 class jleFullscreenRendering;
 class jleFramebufferInterface;
 class jleLuaEnvironment;
 class jleRenderThread;
+class jleGameRuntime;
+class jleCamera;
 
-class jleGameEngine;
-inline jleGameEngine *gEngine;
+class jleFrameInfo
+{
+public:
+    [[nodiscard]] inline int getFps() const                 { return _fps;}
+    [[nodiscard]] inline float getDeltaTime() const         { return _deltaTime; }
+    [[nodiscard]] inline float getCurrentFrameTime() const  { return _currentFrame; }
+    [[nodiscard]] inline float getLastFrameTime() const     { return _lastFrame; }
+
+    jleFrameInfo() {
+        _startTime = std::chrono::steady_clock::now();
+        _lastFrameTimePoint = _startTime;
+    }
+private:
+    int _fps = 0;
+    float _deltaTime = 0;
+    float _currentFrame = 0;
+    float _lastFrame = 0;
+
+    std::chrono::steady_clock::time_point _startTime;
+    std::chrono::steady_clock::time_point _lastFrameTimePoint;
+
+    friend class jleGameEngine;
+};
 
 class jleGameEngine
 {
 public:
     virtual ~jleGameEngine();
 
-    explicit jleGameEngine();
-
-    template <class T>
-    void
-    setGame()
+    struct EngineConstructConfig
     {
-        _gameCreator = []() { return std::make_unique<T>(); };
-    }
+        std::function<std::unique_ptr<jleWindow>()> windowCreator = {};
+        const jleGameConstructConfig& gameConfig;
+    };
+
+    explicit jleGameEngine(const EngineConstructConfig& config);
 
     void run();
 
-    jleTimerManager &timerManager();
+    [[nodiscard]] const EngineConstructConfig& getEngineConstructConfig() const { return _engineConstructConfig; }
+    [[nodiscard]] jleGameRuntime& getGameRuntime() const { return *_gameRuntime; }
+    [[nodiscard]] jleResourceHolder& getResources() const { return *_resources; }
+    [[nodiscard]] const jleFrameInfo& getFrameInfo() const { return _frameInfo; }
+    [[nodiscard]] jleEngineSettings& getSettings() const;
 
-    SoLoud::Soloud &soLoud();
+    jleSerializationContext createSerializationContext();
+    jleEngineUpdateContext createUpdateContext();
 
-    jleResources &resources();
-
-    jleWindow &window();
-
-    jleInput &input();
-
-    jle3DGraph &renderGraph();
-
-    jle3DSettings &renderSettings();
-
-    jleRenderThread &renderThread();
-
-    [[nodiscard]] jleEngineSettings &settings();
-
-    [[nodiscard]] int fps() const;
-
-    [[nodiscard]] float deltaFrameTime() const;
-
-    [[nodiscard]] float currentFrameTime() const;
-
-    [[nodiscard]] float lastFrameTime() const;
-
-    std::shared_ptr<jleFramebufferInterface> mainScreenFramebuffer;
-
-    void resizeMainFramebuffer(unsigned int width, unsigned int height);
-
-    int addGameWindowResizeCallback(std::function<void(unsigned int, unsigned int)> callback);
-
-    void removeGameWindowResizeCallback(unsigned int callbackId);
-
-    void executeGameWindowResizedCallbacks(unsigned int w, unsigned int h);
-
-    void startGame();
-
-    void restartGame();
-
-    void killGame();
-
-    void haltGame();
-
-    void unhaltGame();
-
-    void executeNextFrame();
-
-    [[nodiscard]] bool isGameKilled() const;
-
-    [[nodiscard]] bool isGameHalted() const;
-
-    jleGame &gameRef();
-
-    std::shared_ptr<jleLuaEnvironment> &luaEnvironment();
-
-    static inline Rml::Context *context{};
-
+    void updateFrameInfo();
 private:
+    jleGameModules* getCurrentGameModules();
+
     void mainLoop();
 
-    bool running{false};
+    bool _running{false};
 
-    static void
-    mainLoopEmscripten()
-    {
-        gEngine->mainLoop();
-    }
+#ifdef __EMSCRIPTEN__
+    static inline jleGameEngine *_emscriptenEnginePtr{};
+    static void  mainLoopEmscripten() { _emscriptenEnginePtr->mainLoop(); }
+#endif
 
     void loop();
+    void start();
 
-    std::function<std::unique_ptr<jleGame>()> _gameCreator;
-
-    std::unique_ptr<jleFullscreenRendering> _fullscreen_renderer;
-
-    friend class jleGameEditorWindow;
-    void gameWindowResizedEvent(unsigned int w, unsigned int h);
-
-    std::unordered_map<unsigned int, std::function<void(unsigned int, unsigned int)>> _gameWindowResizedCallbacks;
-
-protected:
-    virtual void start();
-
-    void startRmlUi();
-
-    void killRmlUi();
-
-    virtual void update(float dt);
-
-    virtual void render(wi::jobsystem::context& ctx);
-
-    virtual void exiting();
-
-    std::unique_ptr<jleResources> _resources;
-    // std::unique_ptr<jleFontData> _fontData;
-    std::unique_ptr<jleTimerManager> _timerManager;
-    std::shared_ptr<jleWindow> _window;
-    std::unique_ptr<jleInput> _input;
-    std::unique_ptr<SoLoud::Soloud> _soLoud;
-
-    friend class jleSceneEditorWindow;
-    std::unique_ptr<jle3DRenderer> _3dRenderer;
-    std::unique_ptr<jle3DGraph> _3dRenderGraph;
-    std::unique_ptr<jle3DGraph> _3dRenderGraphForRendering;
-    std::unique_ptr<jle3DSettings> _3dRendererSettings;
-    std::unique_ptr<jleRenderThread> _renderThread;
+    std::unique_ptr<jleGameRuntime> _gameRuntime;
+    std::unique_ptr<jleResourceHolder> _resources;
 
     struct jleEngineInternal;
     std::unique_ptr<jleEngineInternal> _internal;
 
-    jle3DRenderer &renderer();
+    const EngineConstructConfig _engineConstructConfig;
 
-    void refreshDeltaTimes();
+    jleFrameInfo _frameInfo;
 
-    int _fps = 0;
-    float _deltaTime = 0;
-    double _currentFrame = 0;
-    double _lastFrame = 0;
-
-    std::shared_ptr<jleLuaEnvironment> _luaEnvironment;
-
-    std::unique_ptr<jleGame> game;
-    bool gameHalted = false;
+    plog::RollingFileAppender<plog::TxtFormatter> _loggingFileAppender;
+    plog::ColorConsoleAppender<plog::TxtFormatter> _loggingConsoleAppender;
 };

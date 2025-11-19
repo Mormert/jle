@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+    <Type Name="jlECS::ComponentRef&lt;*&gt;">
+        <DisplayString>{{ Valid = {isValid()}, Reference = {get()} }}</DisplayString>
+        <Expand>
+            <Item Name="[reference]">get()</Item>
+            <Item Name="[object ref]">objectRef</Item>
+            <Item Name="[is valid]">isValid()</Item>
+        </Expand>
+    </Type>
+
+    <Type Name="jlECS::ComponentDebug&lt;*&gt;">
+        <DisplayString>{{ Component = {componentPtr} }}</DisplayString>
+        <Expand>
+            <Item Name="[component]">componentPtr</Item>
+        </Expand>
+    </Type>
+
+    <Type Name="jlECS::ComponentContainer::ComponentContainerDebug&lt;*&gt;">
+        <DisplayString>{{ Component Type = {componentTypeName}, Components Count = {count} }}</DisplayString>
+        <Expand>
+            <Item Name="[component amount]">count</Item>
+            <ArrayItems>
+                <Size>count</Size>
+                <ValuePointer>debugArrayPointer</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+
+    <Type Name="jlECS::ComponentContainer">
+        <DisplayString>{{ Component Array = {*debug} }}</DisplayString>
+        <Expand>
+            <Item Name="[component array]">*debug</Item>
+        </Expand>
+    </Type>
+
+    <Type Name="jlECS::ObjectRef">
+        <DisplayString>{{ Component Count = {_componentCount()} }}</DisplayString>
+        <Expand>
+            <Item Name="[associated components]">*componentsDebug()</Item>
+        </Expand>
+    </Type>
+
+    <Type Name="jlECS::ECS">
+        <DisplayString>{{ Alive Objects = { objectArray.aliveObjectsCount }, Allocated Object Slots = { objectArray.aliveObjects.size() }, Registered Component Types = { componentContainers.size() }}}</DisplayString>
+        <Expand>
+            <Item Name="[object array]">*getAllObjectsDebug()</Item>
+            <Item Name="[component containers]">componentContainers</Item>
+            <Item Name="[free object indices]">objectArray.freeIndices</Item>
+            <Item Name="[allocated object slots]">objectArray.aliveObjects.size()</Item>
+        </Expand>
+    </Type>
+
+</AutoVisualizer>

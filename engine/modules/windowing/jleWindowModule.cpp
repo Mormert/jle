@@ -1,0 +1,441 @@
+/*********************************************************************************************
+ *                                                                                           *
+ *               ,     .     ,                      .   ,--.                                 *
+ *               |     |     |                      |   |            o                       *
+ *               | ,-. |- -- |    ,-: ,-: ,-: ,-. ,-|   |-   ;-. ,-: . ;-. ,-.               *
+ *               | |-' |     |    | | | | | | |-' | |   |    | | | | | | | |-'               *
+ *              -' `-' `-'   `--' `-` `-| `-| `-' `-'   `--' ' ' `-| ' ' ' `-'               *
+ *                                                                                           *
+ *     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     *
+ *          Jet-Lagged Engine (jle) is licenced under GNU General Public License v3.0.       *
+ *     The licence can be found here: https://github.com/Mormert/jle/blob/master/LICENSE     *
+ *                  Copyright (c) 2020-2024 Johan Lind. All rights reserved.                 *
+ *                                                                                           *
+ *********************************************************************************************/
+
+#include "jleWindowModule.h"
+// #include "core/jleProfiler.h"
+
+#include "modules/graphics/core/jleIncludeGL.h"
+
+#if JLE_BUILD_RUNTIME_CONFIGURABLE
+#include "core/jleCommandArguments.h"
+#endif
+
+#include <iostream>
+
+#include <stb/stb_image.h>
+#include <plog/Log.h>
+
+
+
+// JLE_EXTERN_TEMPLATE_CEREAL_CPP(WindowSettings)
+
+void
+jleWindow::error_callback(int error, const char *description)
+{
+    LOGE << "GLFW ERROR: " << description << '\n';
+}
+
+void
+jleWindow::glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
+    auto thiz = reinterpret_cast<jleWindow *>(glfwGetWindowUserPointer(window));
+    if (action == GLFW_PRESS) {
+        thiz->_pressedKeys[key] = true;
+    }
+
+    if (action == GLFW_RELEASE) {
+        thiz->_releasedKeys[key] = true;
+    }
+}
+
+void
+jleWindow::glfwScrollCallback(GLFWwindow *window, double xoffset, double yoffset)
+{
+    auto thiz = reinterpret_cast<jleWindow *>(glfwGetWindowUserPointer(window));
+
+    thiz->_currentScrollX = static_cast<float>(xoffset);
+    thiz->_currentScrollY = static_cast<float>(yoffset);
+}
+
+void
+jleWindow::glfwFramebufferSizeCallback(GLFWwindow *window, int fbWidth, int fbHeight)
+{
+    auto thiz = reinterpret_cast<jleWindow *>(glfwGetWindowUserPointer(window));
+
+    thiz->windowSettings.width = static_cast<unsigned int>(fbWidth);
+    thiz->windowSettings.height = static_cast<unsigned int>(fbHeight);
+
+    jleWindowDimensions newDimensions{};
+
+    auto monitor = glfwGetWindowMonitor(window);
+    if (!monitor) {
+        monitor = glfwGetPrimaryMonitor();
+    }
+
+    // Get the physical size of the monitor in millimeters
+    glfwGetMonitorPhysicalSize(monitor, &newDimensions.monitorPhysicalSizeWidth, &newDimensions.monitorPhysicalSizeHeight);
+
+    glfwGetMonitorContentScale(monitor, &newDimensions.contentScaleX, &newDimensions.contentScaleY);
+
+    // Calculate DPI
+    float dpiX = (float)fbWidth / ((float)newDimensions.monitorPhysicalSizeWidth / 25.4f);
+    float dpiY = (float)fbHeight / ((float)newDimensions.monitorPhysicalSizeHeight / 25.4f);
+
+    newDimensions.framebufferWidth = fbWidth;
+    newDimensions.framebufferHeight = fbHeight;
+    newDimensions.dpiWidth = dpiX;
+    newDimensions.dpiHeight = dpiY;
+
+    thiz->windowDimensions = newDimensions;
+}
+
+#ifdef __EMSCRIPTEN__
+extern "C" {
+EMSCRIPTEN_KEEPALIVE
+int
+resize_canvas_js(int width, int height)
+{
+    glViewport(0, 0, width, height);
+
+    printf("Change window size: %d, %d", width, height);
+
+    jleWindow::glfwFramebufferSizeCallback(nullptr, width, height);
+
+    return 1;
+}
+}
+#endif
+
+float
+jleWindow::getScrollX() const
+{
+    return _currentScrollX;
+}
+
+float
+jleWindow::getScrollY() const
+{
+    return _currentScrollY;
+}
+
+jleWindow::~jleWindow()
+{
+    glfwDestroyWindow(_glfwWindow);
+    glfwTerminate();
+}
+
+void
+jleWindow::settings(WindowSettings &windowSettings)
+{
+    this->windowSettings = windowSettings;
+}
+
+void
+jleWindow::displayCursor(bool enable)
+{
+    if (enable) {
+        glfwSetInputMode(_glfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    } else {
+        glfwSetInputMode(_glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+    _cursorVisible = enable;
+}
+
+bool
+jleWindow::isCursorDisplayed() const
+{
+    return _cursorVisible;
+}
+
+unsigned int
+jleWindow::getHeight() const
+{
+    return windowSettings.height;
+}
+
+unsigned int
+jleWindow::getWidth() const
+{
+    return windowSettings.width;
+}
+
+void
+jleWindow::initWindow()
+{
+    glfwSetErrorCallback(error_callback);
+
+    if (!glfwInit()) {
+        std::cerr << "GLFW ERROR: COULD NOT INITIALIZE";
+        exit(1);
+    }
+
+    if (windowSettings.isRezisable) {
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+    } else {
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    }
+
+    const std::string& windowTitle = windowSettings.WindowTitle;
+
+    _glfwWindow = initGlfwWindow(windowSettings.width, windowSettings.height, windowTitle.c_str());
+
+    glfwSetWindowUserPointer(_glfwWindow, this);
+    glfwSetKeyCallback(_glfwWindow, glfwKeyCallback);
+    glfwSetScrollCallback(_glfwWindow, glfwScrollCallback);
+    glfwSetFramebufferSizeCallback(_glfwWindow, glfwFramebufferSizeCallback);
+    glfwSetWindowSizeLimits(_glfwWindow, windowSettings.widthMin, windowSettings.heightMin, GLFW_DONT_CARE, GLFW_DONT_CARE);
+
+    displayCursor(windowSettings.shouldDisplayCursor);
+
+#ifdef __EMSCRIPTEN__
+    glfwSwapInterval(1);
+#else
+    if (windowSettings.isCappedFps) {
+        glfwSwapInterval(1);
+    } else {
+        glfwSwapInterval(0);
+    }
+#endif
+
+    int w, h;
+    glfwGetFramebufferSize(_glfwWindow, &w, &h);
+    glfwFramebufferSizeCallback(_glfwWindow, w, h);
+
+    if (!windowSettings.iconPath.isEmpty()) {
+        GLFWimage images[1];
+        images[0].pixels = stbi_load(windowSettings.iconPath.getRealPath().str().c_str(), &images[0].width, &images[0].height, nullptr, 4);
+#ifndef __linux__
+        glfwSetWindowIcon(_glfwWindow, 1, images);
+#endif
+        stbi_image_free(images[0].pixels);
+    }
+}
+
+void
+jleWindow::updateWindow()
+{
+    ZoneScoped;
+
+    _currentScrollX = 0.f;
+    _currentScrollY = 0.f;
+
+    std::memset(_pressedKeys, 0, sizeof(_pressedKeys));
+    std::memset(_releasedKeys, 0, sizeof(_pressedKeys));
+    glfwPollEvents();
+    glfwSwapBuffers(_glfwWindow);
+}
+
+bool
+jleWindow::windowShouldClose()
+{
+    ZoneScoped;
+    return glfwWindowShouldClose(_glfwWindow);
+}
+
+bool
+jleWindow::getKeyDown(int key) const
+{
+    return glfwGetKey(_glfwWindow, key);
+}
+
+bool
+jleWindow::getKeyPressed(int key) const
+{
+    return _pressedKeys[key];
+}
+
+bool
+jleWindow::getKeyReleased(int key) const
+{
+    return _releasedKeys[key];
+}
+
+std::pair<int, int>
+jleWindow::getCursor() const
+{
+    double x, y;
+    glfwGetCursorPos(_glfwWindow, &x, &y);
+    return std::pair<int, int>(static_cast<int>(x), static_cast<int>(y));
+}
+
+bool
+jleWindow::getMouseClick(int button)
+{
+    return glfwGetMouseButton(_glfwWindow, button);
+}
+void
+jleWindow::setCursorPosition(int x, int y)
+{
+    glfwSetCursorPos(_glfwWindow, x, y);
+}
+
+#ifndef __EMSCRIPTEN__
+#ifndef NDEBUG
+void APIENTRY
+glDebugOutput(GLenum source,
+              GLenum type,
+              unsigned int id,
+              GLenum severity,
+              GLsizei length,
+              const char *message,
+              const void *userParam)
+{
+    // ignore non-significant error/warning codes
+    if (id == 131169 || id == 131185 || id == 131218 || id == 131204)
+        return;
+
+    // ADD BREAKPOINT ON SOME LINE BELOW TO FIND THE CALLING OPENGL FUNCTION THAT CAUSED THE ERROR!
+    // Note: This does not work on OS X (tested, and info online confirms this)
+    LOGE << "OpenGL Debug Output (id=" << id << "): " << message;
+
+    switch (source) {
+    case GL_DEBUG_SOURCE_API:
+        LOGE << "Source: API";
+        break;
+    case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+        LOGE << "Source: Window System";
+        break;
+    case GL_DEBUG_SOURCE_SHADER_COMPILER:
+        LOGE << "Source: Shader Compiler";
+        break;
+    case GL_DEBUG_SOURCE_THIRD_PARTY:
+        LOGE << "Source: Third Party";
+        break;
+    case GL_DEBUG_SOURCE_APPLICATION:
+        LOGE << "Source: Application";
+        break;
+    default:
+    case GL_DEBUG_SOURCE_OTHER:
+        LOGE << "Source: Other";
+        break;
+    }
+
+    switch (type) {
+    case GL_DEBUG_TYPE_ERROR:
+        LOGE << "Type: Error";
+        break;
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+        LOGE << "Type: Deprecated Behaviour";
+        break;
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+        LOGE << "Type: Undefined Behaviour";
+        break;
+    case GL_DEBUG_TYPE_PORTABILITY:
+        LOGE << "Type: Portability";
+        break;
+    case GL_DEBUG_TYPE_PERFORMANCE:
+        LOGE << "Type: Performance";
+        break;
+    case GL_DEBUG_TYPE_MARKER:
+        LOGE << "Type: Marker";
+        break;
+    case GL_DEBUG_TYPE_PUSH_GROUP:
+        LOGE << "Type: Push Group";
+        break;
+    case GL_DEBUG_TYPE_POP_GROUP:
+        LOGE << "Type: Pop Group";
+        break;
+    default:
+    case GL_DEBUG_TYPE_OTHER:
+        LOGE << "Type: Other";
+        break;
+    }
+
+    switch (severity) {
+    case GL_DEBUG_SEVERITY_HIGH:
+        LOGE << "Severity: high";
+        break;
+    case GL_DEBUG_SEVERITY_MEDIUM:
+        LOGE << "Severity: medium";
+        break;
+    case GL_DEBUG_SEVERITY_LOW:
+        LOGE << "Severity: low";
+        break;
+    case GL_DEBUG_SEVERITY_NOTIFICATION:
+        LOGE << "Severity: notification";
+        break;
+    }
+}
+#endif
+#endif
+
+GLFWwindow *
+jleWindow::initGlfwWindow(int width, int height, const char *title)
+{
+    JLE_EXEC_IF(JLE_BUILD_OPENGLES30)
+    {
+        // Runs on OpenGL ES 3.0
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    }
+    else
+    {
+        // Runs on OpenGL Core 3.3
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    }
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    // To Enable MSAA
+    glfwWindowHint(GLFW_SAMPLES, 4);
+
+#ifndef __EMSCRIPTEN__
+#ifndef NDEBUG
+    // Debugging with immediate error messages require the system to run OpenGL 4.3 +
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+#endif
+#endif
+
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+    // Special case for Mac's Retina screens
+    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
+#endif
+
+    GLFWwindow *glfwWindow = glfwCreateWindow(width, height, title, nullptr, nullptr);
+
+    if (!glfwWindow) {
+        glfwTerminate();
+        std::cerr << "GLFW ERROR: COULD NOT CREATE WINDOW";
+        exit(1);
+    }
+
+    glfwMakeContextCurrent(glfwWindow);
+#ifndef __EMSCRIPTEN__
+    JLE_EXEC_IF(JLE_BUILD_OPENGLES30)
+    {
+        if (!gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress)) {
+            std::cerr << "ERROR: Failed to initialize GLAD\n";
+            exit(1);
+        }
+    }
+    else
+    {
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+            std::cerr << "ERROR: Failed to initialize GLAD\n";
+            exit(1);
+        }
+    }
+#endif
+
+    // Set the debug output for OpenGL errors
+#ifndef __EMSCRIPTEN__
+#ifndef NDEBUG
+    int flags;
+    glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+    if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(glDebugOutput, nullptr);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+    }
+#endif
+#endif
+
+    return glfwWindow;
+}

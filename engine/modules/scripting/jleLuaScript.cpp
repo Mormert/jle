@@ -1,0 +1,71 @@
+/*********************************************************************************************
+ *                                                                                           *
+ *               ,     .     ,                      .   ,--.                                 *
+ *               |     |     |                      |   |            o                       *
+ *               | ,-. |- -- |    ,-: ,-: ,-: ,-. ,-|   |-   ;-. ,-: . ;-. ,-.               *
+ *               | |-' |     |    | | | | | | |-' | |   |    | | | | | | | |-'               *
+ *              -' `-' `-'   `--' `-` `-| `-| `-' `-'   `--' ' ' `-| ' ' ' `-'               *
+ *                                                                                           *
+ *     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     *
+ *          Jet-Lagged Engine (jle) is licenced under GNU General Public License v3.0.       *
+ *     The licence can be found here: https://github.com/Mormert/jle/blob/master/LICENSE     *
+ *                  Copyright (c) 2020-2024 Johan Lind. All rights reserved.                 *
+ *                                                                                           *
+ *********************************************************************************************/
+
+#include "jleLuaScript.h"
+
+#include <sol2/sol.hpp>
+
+#include "jleLuaClass.h"
+#include "jleLuaEnvironment.h"
+
+bool
+jleLuaScript::loadFromFile(jleSerializationContext& ctx, const jlePath &path)
+{
+    std::ifstream load{path.getRealPath().str()};
+    if (!load.good()) {
+        return false;
+    }
+
+    std::stringstream buffer;
+    buffer << load.rdbuf();
+
+    _sourceCode = buffer.str();
+    _luaScriptName = path.getFileNameNoEnding();
+
+    if (jleLuaEnvironment* luaEnvironment = ctx.get<jleLuaEnvironment>()) {
+        luaEnvironment->loadScript(path, ctx);
+    }
+
+    return true;
+}
+
+void
+jleLuaScript::loadScriptIntoLuaEnv(jleLuaEnvironment& luaEnvironment)
+{
+    try {
+        const auto absoluteSrcCodePath = path.getRealPath();
+        luaEnvironment.getState().script(_sourceCode, absoluteSrcCodePath.str());
+        _failsLoading = false;
+
+        const auto classes = jleLuaClass::extractLuaClassesFromLuaSrc(path, _sourceCode);
+
+        for (auto &luaClass : classes) {
+            const auto &className = luaClass.getClassName();
+            luaEnvironment.insertLuaClass(className, luaClass);
+        }
+
+    } catch (std::exception &e) {
+        LOGE << "Loading script failed: " << e.what();
+        _failsLoading = true;
+    }
+    luaEnvironment.loadedScripts().insert(std::make_pair(path, std::static_pointer_cast<jleLuaScript>(shared_from_this())));
+}
+
+void
+jleLuaScript::saveToFile(jleSerializationContext& ctx)
+{
+    std::ofstream save{path.getRealPath().str()};
+    save << _sourceCode;
+}

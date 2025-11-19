@@ -16,12 +16,17 @@
 #ifndef JLE_ENGINESETTINGS
 #define JLE_ENGINESETTINGS
 
-#include "jleCommon.h"
+#include "core/jleCommon.h"
 
-#include "jleSerializedResource.h"
-#include "jleTypeReflectionUtils.h"
-#include "jleWindowSettings.h"
-#include "jleResourceRef.h"
+#include "core/jleResourceRef.h"
+#include "core/jleSerializedResource.h"
+#include "core/jleTypeReflectionUtils.h"
+#include "modules/windowing/jleWindowSettings.h"
+
+#include "core/serialization/jleBinaryArchive.h"
+#include "core/serialization/jleJSONArchive.h"
+
+#include <cereal/types/vector.hpp>
 
 class jleEngineSettings : public jleSerializedOnlyResource
 {
@@ -29,8 +34,6 @@ public:
     JLE_REGISTER_RESOURCE_TYPE(jleEngineSettings, "es")
 
     WindowSettings windowSettings;
-    bool enableNetworking{true};
-    std::vector<jlePath> initialScenesToLoad;
 
     SAVE_SHARED_THIS_SERIALIZED_JSON(jleSerializedOnlyResource)
 
@@ -41,7 +44,7 @@ public:
     serialize(Archive &ar)
     {
         try {
-            ar(CEREAL_NVP(windowSettings), CEREAL_NVP(enableNetworking), CEREAL_NVP(initialScenesToLoad));
+            ar(CEREAL_NVP(windowSettings));
         } catch (std::exception &e) {
         }
     }

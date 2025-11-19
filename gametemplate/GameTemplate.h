@@ -1,17 +1,16 @@
 // Copyright (c) 2023. Johan Lind
 
-#include "jleGame.h"
-
 #pragma once
 
-// Just an empty game template that can be started in editor or as a standalone program
+#include "game/jleGame.h"
 
-class GameTemplate final : public jleGame
+// An empty game template with default modules and functions.
+
+namespace GameTemplateFunctions
 {
-public:
-    ~GameTemplate() override = default;
-
-    void start() override;
-
-    void update(float dt) override;
-};
+    std::unique_ptr<jleGameModules> createModules(bool gameRunning);
+    void modulesInitialize(jleGameModules& modules, jlECS::ECS& ecs, jleSerializationContext& serializationContext);
+    void modulesUpdate(jleGameModules& modules, jleEngineUpdateContext& ctx, jlECS::ECS& ecs);
+    void modulesUpdateRenderablesOnly(jleGameModules& modules, jleEngineUpdateContext& ctx, jlECS::ECS& ecs);
+    void populateSerializeableInterfaces(jleGameModules &modules, std::vector<jleSerializableInterface *> &interfaces);
+}

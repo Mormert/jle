@@ -15,5 +15,3 @@ package.cpath = packageCPath
 
 -- Connect to LuaPanda debugger using LuaHelper extension in VS Code from Tencent
 require("LuaPanda").start("127.0.0.1", 8818)
-
-ScriptEnv.loadScript("ER:/scripts/globals.lua")

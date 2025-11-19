@@ -38,7 +38,7 @@ jobs:
           emmake make -C ${{github.workspace}}/build -j 4
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Wasm_Release
           path: |

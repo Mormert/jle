@@ -16,13 +16,12 @@
 # This cmake file is intended to be included in the game CMakeLists.txt
 # See the template project's CMakeLists.txt.
 
-target_include_directories(${JLE_GAME_BUILD} SYSTEM PUBLIC)
-
 option(JLE_BUILD_RUNTIME_CONFIGURABLE "Enable runtime configurations passed from command line" OFF)
 option(JLE_BUILD_EDITOR "Build the game in the editor" ON)
 option(JLE_BUILD_HEADLESS "Build the game without graphics (for servers)" OFF)
 option(JLE_BUILD_EMSCRIPTEN "Build with Emscripten targeting WebAssembly" OFF)
 option(JLE_BUILD_OPENGLES30 "Use OpenGL ES 3.0 instead of desktop core 3.3" ON)
+option(JLE_BUILD_MEMTRACK "Use memory tracking for each single allocation" OFF)
 option(JLE_BUILD_UNITY "Smash compilation units into chunks for faster build times" OFF)
 option(JLE_BUILD_PRECOMPILED_HEADER "Use the precompiled header technique for faster iteration build times" OFF)
 
@@ -56,7 +55,7 @@ if (MINGW)
 endif ()
 
 # Defines build-time macros to 0 or 1 depending on configuration
-configure_file(${JLE_ENGINE_PATH}/jleBuildConfig.in.h buildConfig/jleBuildConfig.h)
+configure_file(${JLE_ENGINE_PATH}/core/public/core/jleBuildConfig.in.h buildConfig/jleBuildConfig.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/buildConfig)
 
 if (JLE_BUILD_EMSCRIPTEN)
@@ -66,7 +65,7 @@ endif ()
 
 
 add_subdirectory("${JLE_ENGINE_PATH}" "${CMAKE_CURRENT_BINARY_DIR}/${JLE_GAME_BUILD}")
-target_link_libraries(${JLE_GAME_BUILD} LINK_PUBLIC engine)
+target_link_libraries(${JLE_GAME_BUILD} PUBLIC engine)
 
 if (JLE_BUILD_EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
